@@ -152,6 +152,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [9. Yêu cầu tương ứng (đã đưa vào SRS §3.8)](CUSTOMIZATION/9-yeu-cau-tuong-ung-da-dua-vao-srs-3-8.md) · 894 ký tự
 - [10. Khả thi](CUSTOMIZATION/10-kha-thi.md) · 1646 ký tự
 - [11. Vấn đề mở](CUSTOMIZATION/11-van-de-mo.md) · 399 ký tự
+- [12. Hướng 3D đầy đủ (sau 1.2) **[ĐỀ XUẤT, chưa chốt]**](CUSTOMIZATION/12-huong-3d-day-du-sau-1-2-de-xuat-chua-chot.md) · 3061 ký tự
 
 ## ANIMATION-CATALOG.md — Danh mục hiệu ứng chuyển động và đường cong nội suy
 

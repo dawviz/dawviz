@@ -5,7 +5,7 @@ section: "5. Hạt (particles) không trạng thái (AD-10)"
 path: "5. Hạt (particles) không trạng thái (AD-10)"
 chunk: 5-hat-particles-khong-trang-thai-ad-10.md
 source_lines: 128-145
-source_sha1: 252b907188
+source_sha1: 85632d9161
 ids: [AD-10]
 ---
 ## 5. Hạt (particles) không trạng thái (AD-10)

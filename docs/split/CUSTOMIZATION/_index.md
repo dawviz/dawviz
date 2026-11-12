@@ -1,6 +1,6 @@
 # Chỉ mục CUSTOMIZATION.md — Tùy biến tối đa: storyboard, chuyển cảnh nốt, đường cong easing, hạt, tài nguyên và preset cộng đồng
 
-nguồn: `CUSTOMIZATION.md` (sha1 252b907188)
+nguồn: `CUSTOMIZATION.md` (sha1 85632d9161)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -16,3 +16,4 @@ nguồn: `CUSTOMIZATION.md` (sha1 252b907188)
 | 9 | 9. Yêu cầu tương ứng (đã đưa vào SRS §3.8) | [9-yeu-cau-tuong-ung-da-dua-vao-srs-3-8.md](9-yeu-cau-tuong-ung-da-dua-vao-srs-3-8.md) | 894 | REQ-GRAPHICS-09, REQ-GRAPHICS-10, REQ-GRAPHICS-11, REQ-GRAPHICS-12, REQ-STORAGE-05, REQ-STORAGE-06 |
 | 10 | 10. Khả thi | [10-kha-thi.md](10-kha-thi.md) | 1646 | D-40 |
 | 11 | 11. Vấn đề mở | [11-van-de-mo.md](11-van-de-mo.md) | 399 | D-44, OI-15, OI-16 |
+| 12 | 12. Hướng 3D đầy đủ (sau 1.2) **[ĐỀ XUẤT, chưa chốt]** | [12-huong-3d-day-du-sau-1-2-de-xuat-chua-chot.md](12-huong-3d-day-du-sau-1-2-de-xuat-chua-chot.md) | 3061 | AD-07, AD-12, D-43, D-47, REQ-GRAPHICS-05, REQ-GRAPHICS-15… |

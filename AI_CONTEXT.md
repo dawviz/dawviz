@@ -71,7 +71,7 @@ node scripts/sync-docs.mjs --find "độ sáng"   # lấy liên kết mảnh#hea
 <!-- sync:begin docs-index -->
 <!-- Khối này do scripts/sync-docs.mjs sinh ra; đừng sửa tay. -->
 
-Có 17 tài liệu, 235 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
+Có 17 tài liệu, 236 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
 
 ### BRD.md — TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)
 
@@ -237,6 +237,7 @@ Nguồn: `docs/design/CUSTOMIZATION.md` · [thứ tự đọc](docs/split/CUSTOM
 - [9. Yêu cầu tương ứng (đã đưa vào SRS §3.8)](docs/split/CUSTOMIZATION/9-yeu-cau-tuong-ung-da-dua-vao-srs-3-8.md) · 0.9k
 - [10. Khả thi](docs/split/CUSTOMIZATION/10-kha-thi.md) · 1.6k
 - [11. Vấn đề mở](docs/split/CUSTOMIZATION/11-van-de-mo.md) · 0.4k
+- [12. Hướng 3D đầy đủ (sau 1.2) **[ĐỀ XUẤT, chưa chốt]**](docs/split/CUSTOMIZATION/12-huong-3d-day-du-sau-1-2-de-xuat-chua-chot.md) · 3.1k
 
 ### ANIMATION-CATALOG.md — Danh mục hiệu ứng chuyển động và đường cong nội suy
 

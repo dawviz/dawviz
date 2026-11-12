@@ -5,7 +5,7 @@ section: "7. Hiệu năng và giới hạn"
 path: "7. Hiệu năng và giới hạn"
 chunk: 7-hieu-nang-va-gioi-han.md
 source_lines: 180-190
-source_sha1: 252b907188
+source_sha1: 85632d9161
 ids: []
 ---
 ## 7. Hiệu năng và giới hạn

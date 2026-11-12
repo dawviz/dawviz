@@ -5,7 +5,7 @@ section: "10. Khả thi"
 path: "10. Khả thi"
 chunk: 10-kha-thi.md
 source_lines: 214-232
-source_sha1: 252b907188
+source_sha1: 85632d9161
 ids: [D-40]
 ---
 ## 10. Khả thi

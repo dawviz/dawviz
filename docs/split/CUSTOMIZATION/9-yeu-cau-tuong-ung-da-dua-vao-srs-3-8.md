@@ -5,7 +5,7 @@ section: "9. Yêu cầu tương ứng (đã đưa vào SRS §3.8)"
 path: "9. Yêu cầu tương ứng (đã đưa vào SRS §3.8)"
 chunk: 9-yeu-cau-tuong-ung-da-dua-vao-srs-3-8.md
 source_lines: 203-213
-source_sha1: 252b907188
+source_sha1: 85632d9161
 ids: [REQ-GRAPHICS-09, REQ-GRAPHICS-10, REQ-GRAPHICS-11, REQ-GRAPHICS-12, REQ-STORAGE-05, REQ-STORAGE-06]
 ---
 ## 9. Yêu cầu tương ứng (đã đưa vào SRS §3.8)

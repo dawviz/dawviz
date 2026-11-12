@@ -5,7 +5,7 @@ section: "6. Tài nguyên (assets) của phiên và của cộng đồng (AD-12)
 path: "6. Tài nguyên (assets) của phiên và của cộng đồng (AD-12)"
 chunk: 6-tai-nguyen-assets-cua-phien-va-cua-cong-dong-a.md
 source_lines: 146-179
-source_sha1: 252b907188
+source_sha1: 85632d9161
 ids: [AD-12, ERR_ASSET_DECODE, ERR_ASSET_TOO_LARGE, REQ-EXPORT-00, REQ-GRAPHICS-07, REQ-STORAGE-01, REQ-STORAGE-03, REQ-STORAGE-04]
 ---
 ## 6. Tài nguyên (assets) của phiên và của cộng đồng (AD-12)

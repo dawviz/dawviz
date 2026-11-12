@@ -5,7 +5,7 @@ section: "4. Đường cong chuyển động (easing) (AD-09)"
 path: "4. Đường cong chuyển động (easing) (AD-09)"
 chunk: 4-duong-cong-chuyen-dong-easing-ad-09.md
 source_lines: 112-127
-source_sha1: 252b907188
+source_sha1: 85632d9161
 ids: [AD-09]
 ---
 ## 4. Đường cong chuyển động (easing) (AD-09)

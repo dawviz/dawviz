@@ -329,6 +329,8 @@
   - [10. Khả thi](CUSTOMIZATION/10-kha-thi.md#10-khả-thi)
 - [11. Vấn đề mở](CUSTOMIZATION/11-van-de-mo.md)
   - [11. Vấn đề mở](CUSTOMIZATION/11-van-de-mo.md#11-vấn-đề-mở)
+- [12. Hướng 3D đầy đủ (sau 1.2) **[ĐỀ XUẤT, chưa chốt]**](CUSTOMIZATION/12-huong-3d-day-du-sau-1-2-de-xuat-chua-chot.md)
+  - [12. Hướng 3D đầy đủ (sau 1.2) [ĐỀ XUẤT, chưa chốt]](CUSTOMIZATION/12-huong-3d-day-du-sau-1-2-de-xuat-chua-chot.md#12-hướng-3d-đầy-đủ-sau-12-đề-xuất-chưa-chốt)
 
 ## ANIMATION-CATALOG.md
 

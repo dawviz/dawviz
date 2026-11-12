@@ -5,7 +5,7 @@ section: "3. Mô hình dữ liệu storyboard (AD-08)"
 path: "3. Mô hình dữ liệu storyboard (AD-08)"
 chunk: 3-mo-hinh-du-lieu-storyboard-ad-08.md
 source_lines: 35-111
-source_sha1: 252b907188
+source_sha1: 85632d9161
 ids: [AD-08, AD-11, AD-13, OI-16, REQ-AUDIO-01]
 ---
 ## 3. Mô hình dữ liệu storyboard (AD-08)

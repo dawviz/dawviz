@@ -2820,7 +2820,7 @@
   },
   "CUSTOMIZATION.md": {
    "title": "Tùy biến tối đa: storyboard, chuyển cảnh nốt, đường cong easing, hạt, tài nguyên và preset cộng đồng",
-   "sha1": "252b907188",
+   "sha1": "85632d9161",
    "chunks": [
     {
      "n": 0,
@@ -3037,12 +3037,34 @@
      "chars": 399,
      "lines": [
       233,
-      237
+      238
      ],
      "ids": [
       "D-44",
       "OI-15",
       "OI-16"
+     ]
+    },
+    {
+     "n": 12,
+     "file": "CUSTOMIZATION/12-huong-3d-day-du-sau-1-2-de-xuat-chua-chot.md",
+     "title": "12. Hướng 3D đầy đủ (sau 1.2) **[ĐỀ XUẤT, chưa chốt]**",
+     "path": [
+      "12. Hướng 3D đầy đủ (sau 1.2) **[ĐỀ XUẤT, chưa chốt]**"
+     ],
+     "chars": 3061,
+     "lines": [
+      239,
+      267
+     ],
+     "ids": [
+      "AD-07",
+      "AD-12",
+      "D-43",
+      "D-47",
+      "REQ-GRAPHICS-05",
+      "REQ-GRAPHICS-15",
+      "REQ-PARSER-00"
      ]
     }
    ]
@@ -5337,6 +5359,7 @@
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "BRD/8-cac-van-de-con-mo-open-issues.md",
    "SRS/req-storage-06-preset-moi-va-chia-se.md",
+   "CUSTOMIZATION/12-huong-3d-day-du-sau-1-2-de-xuat-chua-chot.md",
    "EXPRESSIONS/bieu-thuc-nguoi-dung-mo-hinh-bao-mat-va-kiem-duy.md",
    "EXPRESSIONS/6-kiem-duyet-template-va-preset-qua-cong-dong-ad.md",
    "COMMUNITY-CONTENT/5-cach-dong-gop.md"
@@ -5360,6 +5383,7 @@
    "SRS/req-graphics-03-truong-xoay-widget-d-15.md",
    "SRS/req-export-08-xuat-nen-trong-suot-de-ghep-trong.md",
    "SRS/req-graphics-15-khong-gian-2-5d-xoay-x-y-z-va-ca.md",
+   "CUSTOMIZATION/12-huong-3d-day-du-sau-1-2-de-xuat-chua-chot.md",
    "ANIMATION-CATALOG/6-hieu-ung-bien-doi-co-ban-transform.md"
   ],
   "REQ-AUDIO-01": [
@@ -5460,6 +5484,7 @@
    "SRS/3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md",
    "SRS/4-yeu-cau-phi-chuc-nang-non-functional-requireme.md",
    "SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md",
+   "CUSTOMIZATION/12-huong-3d-day-du-sau-1-2-de-xuat-chua-chot.md",
    "EXPRESSIONS/2-ma-doc-o-day-la-gi.md",
    "PARSER-SRS/srs-dac-ta-yeu-cau-thu-vien-parser-daw-visualize.md",
    "PARSER-SRS/3-2-gioi-han-va-an-toan-req-parser-00.md"
@@ -5482,6 +5507,7 @@
    "CUSTOMIZATION/tuy-bien-toi-da-storyboard-chuyen-canh-not-duong.md",
    "CUSTOMIZATION/6-tai-nguyen-assets-cua-phien-va-cua-cong-dong-a.md",
    "CUSTOMIZATION/8-quyet-dinh-de-xuat.md",
+   "CUSTOMIZATION/12-huong-3d-day-du-sau-1-2-de-xuat-chua-chot.md",
    "ANIMATION-CATALOG/danh-muc-hieu-ung-chuyen-dong-va-duong-cong-noi.md",
    "EXPRESSIONS/2-ma-doc-o-day-la-gi.md"
   ],
@@ -5825,6 +5851,7 @@
    "TECHNICAL-DESIGN/5-render-core-chi-tiet-phan-piano-roll-phan-con.md",
    "TDD/2-danh-muc-test-moi.md",
    "TDD/3-ma-tran-truy-vet.md",
+   "CUSTOMIZATION/12-huong-3d-day-du-sau-1-2-de-xuat-chua-chot.md",
    "SPIKE-1-EXPORT/5-doi-chieu-voi-tai-lieu-v1-1.md"
   ],
   "REQ-GRAPHICS-06": [
@@ -5852,6 +5879,7 @@
    "SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
    "SRS/req-graphics-03-truong-xoay-widget-d-15.md",
    "SRS/req-graphics-15-khong-gian-2-5d-xoay-x-y-z-va-ca.md",
+   "CUSTOMIZATION/12-huong-3d-day-du-sau-1-2-de-xuat-chua-chot.md",
    "ANIMATION-CATALOG/6-hieu-ung-bien-doi-co-ban-transform.md",
    "ANIMATION-CATALOG/15-camera.md"
   ],
@@ -6589,6 +6617,7 @@
    "ANIMATION/3-quyet-dinh.md",
    "CUSTOMIZATION/tuy-bien-toi-da-storyboard-chuyen-canh-not-duong.md",
    "CUSTOMIZATION/1-muc-tieu-va-ranh-gioi.md",
+   "CUSTOMIZATION/12-huong-3d-day-du-sau-1-2-de-xuat-chua-chot.md",
    "ANIMATION-CATALOG/0-cach-doc-bang.md",
    "EXPRESSIONS/3-ngon-ngu-bieu-thuc-ad-13.md"
   ],
