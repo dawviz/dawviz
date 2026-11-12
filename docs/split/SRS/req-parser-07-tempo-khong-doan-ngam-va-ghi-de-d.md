@@ -5,7 +5,7 @@ section: "REQ-PARSER-07: Tempo không đoán ngầm và ghi đè (D-24, D-29)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) > REQ-PARSER-07: Tempo không đoán ngầm và ghi đè (D-24, D-29)"
 chunk: req-parser-07-tempo-khong-doan-ngam-va-ghi-de-d.md
 source_lines: 333-338
-source_sha1: 77837e7134
+source_sha1: baed28c4a6
 ids: [D-24, D-29, ERR_AST_INVALID, OI-12, REQ-PARSER-07, WARN_TEMPO_FALLBACK, WARN_TEMPO_OVERRIDDEN]
 ---
 #### REQ-PARSER-07: Tempo không đoán ngầm và ghi đè (D-24, D-29)

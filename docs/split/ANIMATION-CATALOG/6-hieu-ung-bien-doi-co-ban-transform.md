@@ -5,8 +5,8 @@ section: "6. Hiệu ứng biến đổi cơ bản (transform)"
 path: "6. Hiệu ứng biến đổi cơ bản (transform)"
 chunk: 6-hieu-ung-bien-doi-co-ban-transform.md
 source_lines: 104-118
-source_sha1: 194f6b631f
-ids: []
+source_sha1: 94903865f6
+ids: [D-47, REQ-GRAPHICS-15]
 ---
 ## 6. Hiệu ứng biến đổi cơ bản (transform)
 
@@ -18,7 +18,7 @@ ids: []
 | Anchor point | Đổi tâm xoay/co giãn, có keyframe | v1.0 | C2D |
 | Skew / Shear | Xô nghiêng | v1.0 | C2D |
 | Flip | Lật ngang/dọc | v1.0 | C2D |
-| Tilt 3D giả | Phối cảnh xoay theo trục X/Y | v1.1 | GL |
+| Tilt 3D / xoay X/Y/Z | Lớp hoặc cả cảnh xoay theo X/Y/Z trong phối cảnh (SRS REQ-GRAPHICS-15, D-47) | v1.1 | GL |
 | Parenting | Phần tử con đi theo phần tử cha | v1.0 | C2D |
 | Orbit / Spiral | Quay quanh một điểm, xoắn ốc | v1.0 | C2D |
 | Follow / Lag | Đi theo đối tượng khác có trễ (bám đuôi) | v1.1 | C2D |

@@ -5,7 +5,7 @@ section: "4. Nội suy không gian và kiểu giá trị"
 path: "4. Nội suy không gian và kiểu giá trị"
 chunk: 4-noi-suy-khong-gian-va-kieu-gia-tri.md
 source_lines: 75-87
-source_sha1: 194f6b631f
+source_sha1: 94903865f6
 ids: [AD-11]
 ---
 ## 4. Nội suy không gian và kiểu giá trị

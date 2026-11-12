@@ -4,7 +4,7 @@
  "docs": {
   "BRD.md": {
    "title": "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)",
-   "sha1": "3ea60fc182",
+   "sha1": "dd08231245",
    "chunks": [
     {
      "n": 0,
@@ -174,7 +174,7 @@
       "4. PHẠM VI DỰ ÁN (PROJECT SCOPE)",
       "4.4. Phân bổ theo bản phát hành (D-40, chốt ở tài liệu v1.1)"
      ],
-     "chars": 2337,
+     "chars": 2540,
      "lines": [
       138,
       149
@@ -185,6 +185,7 @@
       "D-43",
       "D-44",
       "D-45",
+      "D-47",
       "P-01",
       "P-13",
       "REQ-AUDIO-01",
@@ -203,7 +204,7 @@
       "4. PHẠM VI DỰ ÁN (PROJECT SCOPE)",
       "4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)"
      ],
-     "chars": 1081,
+     "chars": 1118,
      "lines": [
       150,
       164
@@ -215,6 +216,7 @@
       "D-15",
       "D-28",
       "D-44",
+      "D-47",
       "OI-08"
      ]
     },
@@ -267,10 +269,10 @@
      "path": [
       "7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)"
      ],
-     "chars": 13138,
+     "chars": 13827,
      "lines": [
       195,
-      249
+      250
      ],
      "ids": [
       "AD-08",
@@ -326,6 +328,7 @@
       "D-44",
       "D-45",
       "D-46",
+      "D-47",
       "NFR-ACC-02",
       "NFR-SEC-01",
       "OI-01",
@@ -352,8 +355,8 @@
      ],
      "chars": 4634,
      "lines": [
-      250,
-      270
+      251,
+      271
      ],
      "ids": [
       "D-01",
@@ -392,7 +395,7 @@
   },
   "SRS.md": {
    "title": "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)",
-   "sha1": "77837e7134",
+   "sha1": "baed28c4a6",
    "chunks": [
     {
      "n": 0,
@@ -401,7 +404,7 @@
      "path": [
       "DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)"
      ],
-     "chars": 5316,
+     "chars": 5711,
      "lines": [
       2,
       39
@@ -428,6 +431,7 @@
       "D-36",
       "D-40",
       "D-45",
+      "D-47",
       "ERR_AUDIO_TOO_MANY",
       "NFR-COMP-03",
       "NFR-SEC-05",
@@ -436,13 +440,16 @@
       "REQ-EXPORT-00",
       "REQ-EXPORT-03",
       "REQ-EXPORT-04",
+      "REQ-EXPORT-08",
       "REQ-GRAPHICS-00",
+      "REQ-GRAPHICS-03",
       "REQ-GRAPHICS-04",
       "REQ-GRAPHICS-05",
       "REQ-GRAPHICS-06",
       "REQ-GRAPHICS-07",
       "REQ-GRAPHICS-09",
       "REQ-GRAPHICS-14",
+      "REQ-GRAPHICS-15",
       "REQ-PARSER-00",
       "REQ-PARSER-01",
       "REQ-PARSER-05",
@@ -949,14 +956,16 @@
       "3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02)",
       "REQ-GRAPHICS-03: Trường xoay widget (D-15)"
      ],
-     "chars": 193,
+     "chars": 372,
      "lines": [
       419,
       421
      ],
      "ids": [
       "D-15",
-      "REQ-GRAPHICS-03"
+      "D-47",
+      "REQ-GRAPHICS-03",
+      "REQ-GRAPHICS-15"
      ]
     },
     {
@@ -1496,6 +1505,25 @@
     },
     {
      "n": 46,
+     "file": "SRS/req-export-08-xuat-nen-trong-suot-de-ghep-trong.md",
+     "title": "REQ-EXPORT-08: Xuất nền trong suốt để ghép trong phần mềm dựng (D-47), bản 1.0",
+     "path": [
+      "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS)",
+      "3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07)",
+      "REQ-EXPORT-08: Xuất nền trong suốt để ghép trong phần mềm dựng (D-47), bản 1.0"
+     ],
+     "chars": 2121,
+     "lines": [
+      724,
+      735
+     ],
+     "ids": [
+      "D-47",
+      "REQ-EXPORT-08"
+     ]
+    },
+    {
+     "n": 47,
      "file": "SRS/req-export-07-thuc-thi-trong-worker-arc-02-d-21.md",
      "title": "REQ-EXPORT-07: Thực thi trong Worker (ARC-02, D-21)",
      "path": [
@@ -1505,8 +1533,8 @@
      ],
      "chars": 516,
      "lines": [
-      724,
-      732
+      736,
+      744
      ],
      "ids": [
       "ARC-02",
@@ -1516,7 +1544,7 @@
      ]
     },
     {
-     "n": 47,
+     "n": 48,
      "file": "SRS/3-7-da-ngon-ngu-va-cong-dong-dich-br-09-d-30-kpi.md",
      "title": "3.7. Đa ngôn ngữ và cộng đồng dịch (BR-09, D-30, KPI-08)",
      "path": [
@@ -1525,8 +1553,8 @@
      ],
      "chars": 2714,
      "lines": [
-      733,
-      747
+      745,
+      759
      ],
      "ids": [
       "BR-09",
@@ -1536,51 +1564,209 @@
      ]
     },
     {
-     "n": 48,
+     "n": 49,
      "file": "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md",
      "title": "3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)",
      "path": [
       "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS)",
       "3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)"
      ],
-     "chars": 4308,
+     "chars": 328,
      "lines": [
-      748,
-      778
+      760,
+      763
      ],
      "ids": [
       "AD-08",
-      "AD-11",
       "AD-12",
       "AD-13",
       "AD-15",
-      "D-14",
       "D-37",
       "D-38",
       "D-39",
       "D-40",
-      "D-43",
-      "ERR_ASSET_DECODE",
-      "ERR_ASSET_TOO_LARGE",
+      "REQ-GRAPHICS-05"
+     ]
+    },
+    {
+     "n": 50,
+     "file": "SRS/req-graphics-09-bo-may-keyframe-easing-va-graph.md",
+     "title": "REQ-GRAPHICS-09: Bộ máy keyframe, easing và Graph Editor",
+     "path": [
+      "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS)",
+      "3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)",
+      "REQ-GRAPHICS-09: Bộ máy keyframe, easing và Graph Editor"
+     ],
+     "chars": 844,
+     "lines": [
+      764,
+      767
+     ],
+     "ids": [
+      "REQ-GRAPHICS-09"
+     ]
+    },
+    {
+     "n": 51,
+     "file": "SRS/req-graphics-10-template-chuyen-canh-not.md",
+     "title": "REQ-GRAPHICS-10: Template chuyển cảnh nốt",
+     "path": [
+      "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS)",
+      "3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)",
+      "REQ-GRAPHICS-10: Template chuyển cảnh nốt"
+     ],
+     "chars": 408,
+     "lines": [
+      768,
+      770
+     ],
+     "ids": [
+      "AD-11",
+      "REQ-GRAPHICS-10"
+     ]
+    },
+    {
+     "n": 52,
+     "file": "SRS/req-graphics-11-hat-khong-trang-thai.md",
+     "title": "REQ-GRAPHICS-11: Hạt không trạng thái",
+     "path": [
+      "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS)",
+      "3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)",
+      "REQ-GRAPHICS-11: Hạt không trạng thái"
+     ],
+     "chars": 327,
+     "lines": [
+      771,
+      773
+     ],
+     "ids": [
+      "REQ-GRAPHICS-11"
+     ]
+    },
+    {
+     "n": 53,
+     "file": "SRS/req-graphics-12-storyboard-hieu-ung-va-chu-dong.md",
+     "title": "REQ-GRAPHICS-12: Storyboard, hiệu ứng và chữ động",
+     "path": [
+      "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS)",
+      "3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)",
+      "REQ-GRAPHICS-12: Storyboard, hiệu ứng và chữ động"
+     ],
+     "chars": 529,
+     "lines": [
+      774,
+      776
+     ],
+     "ids": [
+      "REQ-GRAPHICS-12"
+     ]
+    },
+    {
+     "n": 54,
+     "file": "SRS/req-graphics-13-bieu-thuc-thuoc-tinh.md",
+     "title": "REQ-GRAPHICS-13: Biểu thức thuộc tính",
+     "path": [
+      "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS)",
+      "3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)",
+      "REQ-GRAPHICS-13: Biểu thức thuộc tính"
+     ],
+     "chars": 339,
+     "lines": [
+      777,
+      779
+     ],
+     "ids": [
+      "REQ-GRAPHICS-13"
+     ]
+    },
+    {
+     "n": 55,
+     "file": "SRS/req-graphics-14-khoang-hien-thi-theo-thoi-gian-v.md",
+     "title": "REQ-GRAPHICS-14: Khoảng hiển thị theo thời gian và theo track",
+     "path": [
+      "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS)",
+      "3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)",
+      "REQ-GRAPHICS-14: Khoảng hiển thị theo thời gian và theo track"
+     ],
+     "chars": 759,
+     "lines": [
+      780,
+      784
+     ],
+     "ids": [
       "P-04",
       "P-09",
       "P-10",
-      "REQ-GRAPHICS-05",
       "REQ-GRAPHICS-09",
-      "REQ-GRAPHICS-10",
-      "REQ-GRAPHICS-11",
-      "REQ-GRAPHICS-12",
-      "REQ-GRAPHICS-13",
       "REQ-GRAPHICS-14",
-      "REQ-STORAGE-04",
-      "REQ-STORAGE-05",
-      "REQ-STORAGE-06",
       "REQ-UI-03",
       "REQ-WIDGET-07"
      ]
     },
     {
-     "n": 49,
+     "n": 56,
+     "file": "SRS/req-graphics-15-khong-gian-2-5d-xoay-x-y-z-va-ca.md",
+     "title": "REQ-GRAPHICS-15: Không gian 2.5D: xoay X/Y/Z và camera phối cảnh (D-47), bản 1.1",
+     "path": [
+      "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS)",
+      "3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)",
+      "REQ-GRAPHICS-15: Không gian 2.5D: xoay X/Y/Z và camera phối cảnh (D-47), bản 1.1"
+     ],
+     "chars": 1874,
+     "lines": [
+      785,
+      793
+     ],
+     "ids": [
+      "D-47",
+      "REQ-GRAPHICS-05",
+      "REQ-GRAPHICS-09",
+      "REQ-GRAPHICS-15"
+     ]
+    },
+    {
+     "n": 57,
+     "file": "SRS/req-storage-05-tai-nguyen-cua-phien.md",
+     "title": "REQ-STORAGE-05: Tài nguyên của phiên",
+     "path": [
+      "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS)",
+      "3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)",
+      "REQ-STORAGE-05: Tài nguyên của phiên"
+     ],
+     "chars": 322,
+     "lines": [
+      794,
+      796
+     ],
+     "ids": [
+      "ERR_ASSET_DECODE",
+      "ERR_ASSET_TOO_LARGE",
+      "REQ-STORAGE-05"
+     ]
+    },
+    {
+     "n": 58,
+     "file": "SRS/req-storage-06-preset-moi-va-chia-se.md",
+     "title": "REQ-STORAGE-06: Preset mới và chia sẻ",
+     "path": [
+      "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS)",
+      "3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)",
+      "REQ-STORAGE-06: Preset mới và chia sẻ"
+     ],
+     "chars": 444,
+     "lines": [
+      797,
+      799
+     ],
+     "ids": [
+      "D-14",
+      "D-43",
+      "REQ-STORAGE-04",
+      "REQ-STORAGE-06"
+     ]
+    },
+    {
+     "n": 59,
      "file": "SRS/4-yeu-cau-phi-chuc-nang-non-functional-requireme.md",
      "title": "4. YÊU CẦU PHI CHỨC NĂNG (NON-FUNCTIONAL REQUIREMENTS)",
      "path": [
@@ -1588,8 +1774,8 @@
      ],
      "chars": 5167,
      "lines": [
-      779,
-      825
+      800,
+      846
      ],
      "ids": [
       "ARC-07",
@@ -1631,7 +1817,7 @@
      ]
     },
     {
-     "n": 50,
+     "n": 60,
      "file": "SRS/5-1-bo-cuc-khong-gian-lam-viec.md",
      "title": "5.1. Bố cục không gian làm việc",
      "path": [
@@ -1640,13 +1826,13 @@
      ],
      "chars": 3717,
      "lines": [
-      828,
-      860
+      849,
+      881
      ],
      "ids": []
     },
     {
-     "n": 51,
+     "n": 61,
      "file": "SRS/5-2-che-do-tuong-tac.md",
      "title": "5.2. Chế độ tương tác",
      "path": [
@@ -1655,15 +1841,15 @@
      ],
      "chars": 358,
      "lines": [
-      861,
-      865
+      882,
+      886
      ],
      "ids": [
       "REQ-GRAPHICS-05"
      ]
     },
     {
-     "n": 52,
+     "n": 62,
      "file": "SRS/5-3-yeu-cau-giao-dien.md",
      "title": "5.3. Yêu cầu giao diện",
      "path": [
@@ -1672,8 +1858,8 @@
      ],
      "chars": 5525,
      "lines": [
-      866,
-      886
+      887,
+      907
      ],
      "ids": [
       "ARC-05",
@@ -1704,7 +1890,7 @@
      ]
     },
     {
-     "n": 53,
+     "n": 63,
      "file": "SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md",
      "title": "6. MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU",
      "path": [
@@ -1712,8 +1898,8 @@
      ],
      "chars": 1419,
      "lines": [
-      887,
-      902
+      908,
+      923
      ],
      "ids": [
       "BR-01",
@@ -1765,7 +1951,7 @@
      ]
     },
     {
-     "n": 54,
+     "n": 64,
      "file": "SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md",
      "title": "7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO",
      "path": [
@@ -1773,8 +1959,8 @@
      ],
      "chars": 5718,
      "lines": [
-      903,
-      935
+      924,
+      956
      ],
      "ids": [
       "ARC-01",
@@ -1830,7 +2016,7 @@
      ]
     },
     {
-     "n": 55,
+     "n": 65,
      "file": "SRS/8-cac-van-de-con-mo-cua-srs.md",
      "title": "8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS",
      "path": [
@@ -1838,8 +2024,8 @@
      ],
      "chars": 4032,
      "lines": [
-      936,
-      962
+      957,
+      983
      ],
      "ids": [
       "D-20",
@@ -1884,7 +2070,7 @@
      ]
     },
     {
-     "n": 56,
+     "n": 66,
      "file": "SRS/phu-luc-a-ma-loi.md",
      "title": "Phụ lục A: Mã lỗi",
      "path": [
@@ -1893,8 +2079,8 @@
      ],
      "chars": 2039,
      "lines": [
-      965,
-      986
+      986,
+      1007
      ],
      "ids": [
       "ERR_ARCHIVE_INVALID",
@@ -1918,7 +2104,7 @@
      ]
     },
     {
-     "n": 57,
+     "n": 67,
      "file": "SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md",
      "title": "Phụ lục A2: Mã cảnh báo của Parser Library",
      "path": [
@@ -1927,8 +2113,8 @@
      ],
      "chars": 1066,
      "lines": [
-      987,
-      992
+      1008,
+      1013
      ],
      "ids": [
       "REQ-AUDIO-01",
@@ -1964,7 +2150,7 @@
      ]
     },
     {
-     "n": 58,
+     "n": 68,
      "file": "SRS/phu-luc-b-ghi-chu-ra-soat.md",
      "title": "Phụ lục B: Ghi chú rà soát",
      "path": [
@@ -1973,8 +2159,8 @@
      ],
      "chars": 2889,
      "lines": [
-      993,
-      1024
+      1014,
+      1045
      ],
      "ids": [
       "D-20",
@@ -2863,7 +3049,7 @@
   },
   "ANIMATION-CATALOG.md": {
    "title": "Danh mục hiệu ứng chuyển động và đường cong nội suy",
-   "sha1": "194f6b631f",
+   "sha1": "94903865f6",
    "chunks": [
     {
      "n": 0,
@@ -2979,12 +3165,15 @@
      "path": [
       "6. Hiệu ứng biến đổi cơ bản (transform)"
      ],
-     "chars": 711,
+     "chars": 768,
      "lines": [
       104,
       118
      ],
-     "ids": []
+     "ids": [
+      "D-47",
+      "REQ-GRAPHICS-15"
+     ]
     },
     {
      "n": 8,
@@ -3108,12 +3297,14 @@
      "path": [
       "15. Camera"
      ],
-     "chars": 473,
+     "chars": 597,
      "lines": [
       236,
-      246
+      247
      ],
-     "ids": []
+     "ids": [
+      "REQ-GRAPHICS-15"
+     ]
     },
     {
      "n": 17,
@@ -3124,8 +3315,8 @@
      ],
      "chars": 403,
      "lines": [
-      247,
-      255
+      248,
+      256
      ],
      "ids": []
     },
@@ -3138,8 +3329,8 @@
      ],
      "chars": 476,
      "lines": [
-      256,
-      267
+      257,
+      268
      ],
      "ids": []
     },
@@ -3152,8 +3343,8 @@
      ],
      "chars": 910,
      "lines": [
-      268,
-      283
+      269,
+      284
      ],
      "ids": [
       "OI-11"
@@ -3168,8 +3359,8 @@
      ],
      "chars": 665,
      "lines": [
-      284,
-      297
+      285,
+      298
      ],
      "ids": []
     },
@@ -3182,8 +3373,8 @@
      ],
      "chars": 500,
      "lines": [
-      298,
-      307
+      299,
+      308
      ],
      "ids": []
     },
@@ -3196,8 +3387,8 @@
      ],
      "chars": 642,
      "lines": [
-      308,
-      312
+      309,
+      313
      ],
      "ids": []
     }
@@ -5017,7 +5208,7 @@
    "BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/1-gioi-thieu-muc-tieu-he-thong.md",
-   "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md"
+   "SRS/req-storage-06-preset-moi-va-chia-se.md"
   ],
   "KPI-01": [
    "BRD/2-muc-tieu-kinh-doanh-chi-so-do-luong-yeu-cau-ng.md",
@@ -5145,7 +5336,7 @@
    "BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "BRD/8-cac-van-de-con-mo-open-issues.md",
-   "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md",
+   "SRS/req-storage-06-preset-moi-va-chia-se.md",
    "EXPRESSIONS/bieu-thuc-nguoi-dung-mo-hinh-bao-mat-va-kiem-duy.md",
    "EXPRESSIONS/6-kiem-duyet-template-va-preset-qua-cong-dong-ad.md",
    "COMMUNITY-CONTENT/5-cach-dong-gop.md"
@@ -5160,6 +5351,16 @@
    "ANIMATION-CATALOG/8-hinh-dang-shape-va-bien-dang-hinh-hoc.md",
    "EXPRESSIONS/9-van-de-mo.md",
    "SPIKE-1-EXPORT/5-doi-chieu-voi-tai-lieu-v1-1.md"
+  ],
+  "D-47": [
+   "BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md",
+   "BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md",
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
+   "SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "SRS/req-graphics-03-truong-xoay-widget-d-15.md",
+   "SRS/req-export-08-xuat-nen-trong-suot-de-ghep-trong.md",
+   "SRS/req-graphics-15-khong-gian-2-5d-xoay-x-y-z-va-ca.md",
+   "ANIMATION-CATALOG/6-hieu-ung-bien-doi-co-ban-transform.md"
   ],
   "REQ-AUDIO-01": [
    "BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md",
@@ -5183,7 +5384,7 @@
   "REQ-GRAPHICS-14": [
    "BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md",
    "SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
-   "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md"
+   "SRS/req-graphics-14-khoang-hien-thi-theo-thoi-gian-v.md"
   ],
   "REQ-UI-10": [
    "BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md",
@@ -5197,7 +5398,7 @@
    "SRS/2-4-danh-gia-kien-truc-hien-tai.md",
    "SRS/req-widget-07-audio-spectrum-meter-d-10-arc-03-a.md",
    "SRS/req-audio-01-am-thanh-theo-track-stem-ban-1-2.md",
-   "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md",
+   "SRS/req-graphics-14-khoang-hien-thi-theo-thoi-gian-v.md",
    "SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md"
   ],
   "D-13": [
@@ -5583,10 +5784,19 @@
    "SRS/req-export-04-ghep-container-qua-mediabunny-d-04.md",
    "SPIKE-1-EXPORT/5-doi-chieu-voi-tai-lieu-v1-1.md"
   ],
+  "REQ-EXPORT-08": [
+   "SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "SRS/req-export-08-xuat-nen-trong-suot-de-ghep-trong.md"
+  ],
   "REQ-GRAPHICS-00": [
    "SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
    "SRS/req-graphics-00-do-phan-giai-thiet-ke-logic-d-06.md",
    "SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md"
+  ],
+  "REQ-GRAPHICS-03": [
+   "SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "SRS/1-gioi-thieu-muc-tieu-he-thong.md",
+   "SRS/req-graphics-03-truong-xoay-widget-d-15.md"
   ],
   "REQ-GRAPHICS-04": [
    "SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
@@ -5606,6 +5816,7 @@
    "SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md",
    "SRS/req-export-01-xung-nhip-khung-hinh-doc-lap.md",
    "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md",
+   "SRS/req-graphics-15-khong-gian-2-5d-xoay-x-y-z-va-ca.md",
    "SRS/4-yeu-cau-phi-chuc-nang-non-functional-requireme.md",
    "SRS/5-2-che-do-tuong-tac.md",
    "SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md",
@@ -5631,9 +5842,18 @@
   ],
   "REQ-GRAPHICS-09": [
    "SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
-   "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md",
+   "SRS/req-graphics-09-bo-may-keyframe-easing-va-graph.md",
+   "SRS/req-graphics-14-khoang-hien-thi-theo-thoi-gian-v.md",
+   "SRS/req-graphics-15-khong-gian-2-5d-xoay-x-y-z-va-ca.md",
    "CUSTOMIZATION/tuy-bien-toi-da-storyboard-chuyen-canh-not-duong.md",
    "CUSTOMIZATION/9-yeu-cau-tuong-ung-da-dua-vao-srs-3-8.md"
+  ],
+  "REQ-GRAPHICS-15": [
+   "SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "SRS/req-graphics-03-truong-xoay-widget-d-15.md",
+   "SRS/req-graphics-15-khong-gian-2-5d-xoay-x-y-z-va-ca.md",
+   "ANIMATION-CATALOG/6-hieu-ung-bien-doi-co-ban-transform.md",
+   "ANIMATION-CATALOG/15-camera.md"
   ],
   "REQ-PARSER-01": [
    "SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
@@ -5668,7 +5888,7 @@
   "REQ-STORAGE-05": [
    "SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
    "SRS/req-graphics-07-kieu-dang-not-tuy-chinh-va-ban-p.md",
-   "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md",
+   "SRS/req-storage-05-tai-nguyen-cua-phien.md",
    "SRS/8-cac-van-de-con-mo-cua-srs.md",
    "CUSTOMIZATION/tuy-bien-toi-da-storyboard-chuyen-canh-not-duong.md",
    "CUSTOMIZATION/9-yeu-cau-tuong-ung-da-dua-vao-srs-3-8.md"
@@ -5735,10 +5955,6 @@
   "SOI-20": [
    "SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
    "SRS/8-cac-van-de-con-mo-cua-srs.md"
-  ],
-  "REQ-GRAPHICS-03": [
-   "SRS/1-gioi-thieu-muc-tieu-he-thong.md",
-   "SRS/req-graphics-03-truong-xoay-widget-d-15.md"
   ],
   "REQ-UI-01": [
    "SRS/1-gioi-thieu-muc-tieu-he-thong.md",
@@ -6009,24 +6225,24 @@
   "P-09": [
    "SRS/req-graphics-06-do-sang-track-theo-automation-d.md",
    "SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md",
-   "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md"
+   "SRS/req-graphics-14-khoang-hien-thi-theo-thoi-gian-v.md"
   ],
   "REQ-GRAPHICS-12": [
    "SRS/req-graphics-06-do-sang-track-theo-automation-d.md",
    "SRS/req-audio-01-am-thanh-theo-track-stem-ban-1-2.md",
-   "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md",
+   "SRS/req-graphics-12-storyboard-hieu-ung-va-chu-dong.md",
    "CUSTOMIZATION/9-yeu-cau-tuong-ung-da-dua-vao-srs-3-8.md"
   ],
   "REQ-GRAPHICS-13": [
    "SRS/req-graphics-06-do-sang-track-theo-automation-d.md",
-   "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md",
+   "SRS/req-graphics-13-bieu-thuc-thuoc-tinh.md",
    "EXPRESSIONS/bieu-thuc-nguoi-dung-mo-hinh-bao-mat-va-kiem-duy.md",
    "EXPRESSIONS/7-yeu-cau-tuong-ung-da-dua-vao-srs-v1-1.md"
   ],
   "P-04": [
    "SRS/req-graphics-07-kieu-dang-not-tuy-chinh-va-ban-p.md",
    "SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md",
-   "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md"
+   "SRS/req-graphics-14-khoang-hien-thi-theo-thoi-gian-v.md"
   ],
   "P-12": [
    "SRS/req-graphics-07-kieu-dang-not-tuy-chinh-va-ban-p.md",
@@ -6099,7 +6315,7 @@
   ],
   "P-10": [
    "SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md",
-   "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md"
+   "SRS/req-graphics-14-khoang-hien-thi-theo-thoi-gian-v.md"
   ],
   "P-11": [
    "SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md"
@@ -6119,7 +6335,7 @@
   ],
   "REQ-STORAGE-04": [
    "SRS/3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md",
-   "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md",
+   "SRS/req-storage-06-preset-moi-va-chia-se.md",
    "SRS/phu-luc-b-ghi-chu-ra-soat.md",
    "CUSTOMIZATION/6-tai-nguyen-assets-cua-phien-va-cua-cong-dong-a.md"
   ],
@@ -6165,37 +6381,37 @@
    "TECHNICAL-DESIGN/7-duong-ong-xuat-video-m3-spike-1-la-co-so.md"
   ],
   "AD-11": [
-   "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md",
+   "SRS/req-graphics-10-template-chuyen-canh-not.md",
    "CUSTOMIZATION/3-mo-hinh-du-lieu-storyboard-ad-08.md",
    "CUSTOMIZATION/8-quyet-dinh-de-xuat.md",
    "ANIMATION-CATALOG/4-noi-suy-khong-gian-va-kieu-gia-tri.md",
    "ANIMATION-CATALOG/8-hinh-dang-shape-va-bien-dang-hinh-hoc.md"
   ],
-  "ERR_ASSET_DECODE": [
-   "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md",
-   "CUSTOMIZATION/6-tai-nguyen-assets-cua-phien-va-cua-cong-dong-a.md"
-  ],
-  "ERR_ASSET_TOO_LARGE": [
-   "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md",
-   "CUSTOMIZATION/6-tai-nguyen-assets-cua-phien-va-cua-cong-dong-a.md"
-  ],
   "REQ-GRAPHICS-10": [
-   "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md",
+   "SRS/req-graphics-10-template-chuyen-canh-not.md",
    "CUSTOMIZATION/9-yeu-cau-tuong-ung-da-dua-vao-srs-3-8.md"
   ],
   "REQ-GRAPHICS-11": [
-   "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md",
-   "CUSTOMIZATION/9-yeu-cau-tuong-ung-da-dua-vao-srs-3-8.md"
-  ],
-  "REQ-STORAGE-06": [
-   "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md",
-   "SRS/5-3-yeu-cau-giao-dien.md",
+   "SRS/req-graphics-11-hat-khong-trang-thai.md",
    "CUSTOMIZATION/9-yeu-cau-tuong-ung-da-dua-vao-srs-3-8.md"
   ],
   "REQ-UI-03": [
-   "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md",
+   "SRS/req-graphics-14-khoang-hien-thi-theo-thoi-gian-v.md",
    "SRS/5-3-yeu-cau-giao-dien.md",
    "SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md"
+  ],
+  "ERR_ASSET_DECODE": [
+   "SRS/req-storage-05-tai-nguyen-cua-phien.md",
+   "CUSTOMIZATION/6-tai-nguyen-assets-cua-phien-va-cua-cong-dong-a.md"
+  ],
+  "ERR_ASSET_TOO_LARGE": [
+   "SRS/req-storage-05-tai-nguyen-cua-phien.md",
+   "CUSTOMIZATION/6-tai-nguyen-assets-cua-phien-va-cua-cong-dong-a.md"
+  ],
+  "REQ-STORAGE-06": [
+   "SRS/req-storage-06-preset-moi-va-chia-se.md",
+   "SRS/5-3-yeu-cau-giao-dien.md",
+   "CUSTOMIZATION/9-yeu-cau-tuong-ung-da-dua-vao-srs-3-8.md"
   ],
   "NFR-ACC-03": [
    "SRS/4-yeu-cau-phi-chuc-nang-non-functional-requireme.md",

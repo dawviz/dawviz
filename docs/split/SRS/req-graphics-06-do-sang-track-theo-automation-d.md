@@ -5,7 +5,7 @@ section: "REQ-GRAPHICS-06: Độ sáng track theo automation (D-33)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-06: Độ sáng track theo automation (D-33)"
 chunk: req-graphics-06-do-sang-track-theo-automation-d.md
 source_lines: 427-437
-source_sha1: 77837e7134
+source_sha1: baed28c4a6
 ids: [D-33, P-01, P-09, REQ-GRAPHICS-06, REQ-GRAPHICS-07, REQ-GRAPHICS-12, REQ-GRAPHICS-13, SOI-18, SOI-19]
 ---
 #### REQ-GRAPHICS-06: Độ sáng track theo automation (D-33)

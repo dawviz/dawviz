@@ -4,8 +4,8 @@ doc_title: "Danh mục hiệu ứng chuyển động và đường cong nội su
 section: "18. Riêng cho âm nhạc (điểm mạnh của DAW Visualizer)"
 path: "18. Riêng cho âm nhạc (điểm mạnh của DAW Visualizer)"
 chunk: 18-rieng-cho-am-nhac-diem-manh-cua-daw-visualize.md
-source_lines: 268-283
-source_sha1: 194f6b631f
+source_lines: 269-284
+source_sha1: 94903865f6
 ids: [OI-11]
 ---
 ## 18. Riêng cho âm nhạc (điểm mạnh của DAW Visualizer)

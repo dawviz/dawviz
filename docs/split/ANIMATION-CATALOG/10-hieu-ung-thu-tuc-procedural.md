@@ -5,7 +5,7 @@ section: "10. Hiệu ứng thủ tục (procedural)"
 path: "10. Hiệu ứng thủ tục (procedural)"
 chunk: 10-hieu-ung-thu-tuc-procedural.md
 source_lines: 161-172
-source_sha1: 194f6b631f
+source_sha1: 94903865f6
 ids: []
 ---
 ## 10. Hiệu ứng thủ tục (procedural)

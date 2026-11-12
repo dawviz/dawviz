@@ -4,8 +4,8 @@ doc_title: "Danh mục hiệu ứng chuyển động và đường cong nội su
 section: "19. Thời gian (time controls)"
 path: "19. Thời gian (time controls)"
 chunk: 19-thoi-gian-time-controls.md
-source_lines: 284-297
-source_sha1: 194f6b631f
+source_lines: 285-298
+source_sha1: 94903865f6
 ids: []
 ---
 ## 19. Thời gian (time controls)

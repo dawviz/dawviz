@@ -4,8 +4,8 @@ doc_title: "Danh mục hiệu ứng chuyển động và đường cong nội su
 section: "20. Hoà trộn và tổng hợp lớp"
 path: "20. Hoà trộn và tổng hợp lớp"
 chunk: 20-hoa-tron-va-tong-hop-lop.md
-source_lines: 298-307
-source_sha1: 194f6b631f
+source_lines: 299-308
+source_sha1: 94903865f6
 ids: []
 ---
 ## 20. Hoà trộn và tổng hợp lớp

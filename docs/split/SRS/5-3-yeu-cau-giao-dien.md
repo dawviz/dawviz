@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "5.3. Yêu cầu giao diện"
 path: "5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.3. Yêu cầu giao diện"
 chunk: 5-3-yeu-cau-giao-dien.md
-source_lines: 866-886
-source_sha1: 77837e7134
+source_lines: 887-907
+source_sha1: baed28c4a6
 ids: [ARC-05, BR-07, BR-09, D-19, D-25, D-29, D-30, ERR_UNSUPPORTED_FORMAT, KPI-04, REQ-GRAPHICS-07, REQ-PARSER-05, REQ-PARSER-07, REQ-STORAGE-06, REQ-UI-01, REQ-UI-02, REQ-UI-03, REQ-UI-04, REQ-UI-05, REQ-UI-06, REQ-UI-07, REQ-UI-08, REQ-UI-09, REQ-UI-10, REQ-UI-11, REQ-UI-12]
 ---
 ### 5.3. Yêu cầu giao diện

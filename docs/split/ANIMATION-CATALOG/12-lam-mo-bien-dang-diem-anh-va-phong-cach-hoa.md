@@ -5,7 +5,7 @@ section: "12. Làm mờ, biến dạng điểm ảnh và phong cách hoá"
 path: "12. Làm mờ, biến dạng điểm ảnh và phong cách hoá"
 chunk: 12-lam-mo-bien-dang-diem-anh-va-phong-cach-hoa.md
 source_lines: 188-206
-source_sha1: 194f6b631f
+source_sha1: 94903865f6
 ids: []
 ---
 ## 12. Làm mờ, biến dạng điểm ảnh và phong cách hoá

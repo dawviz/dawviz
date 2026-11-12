@@ -4,9 +4,9 @@ doc_title: "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT
 section: "7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)"
 path: "7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)"
 chunk: 7-nhat-ky-quyet-dinh-decision-log.md
-source_lines: 195-249
-source_sha1: 3ea60fc182
-ids: [AD-08, AD-12, AD-13, AD-15, ARC-01, ARC-02, ARC-06, D-01, D-02, D-03, D-04, D-05, D-06, D-07, D-08, D-09, D-10, D-11, D-12, D-13, D-14, D-15, D-16, D-17, D-18, D-19, D-20, D-21, D-22, D-23, D-24, D-25, D-26, D-27, D-28, D-29, D-30, D-31, D-32, D-33, D-34, D-35, D-36, D-37, D-38, D-39, D-40, D-41, D-42, D-43, D-44, D-45, D-46, NFR-ACC-02, NFR-SEC-01, OI-01, OI-05, OI-08, OI-11, OI-12, OI-14, P-01, P-13, SOI-04, SOI-06, SOI-16, SOI-17, SOI-19]
+source_lines: 195-250
+source_sha1: dd08231245
+ids: [AD-08, AD-12, AD-13, AD-15, ARC-01, ARC-02, ARC-06, D-01, D-02, D-03, D-04, D-05, D-06, D-07, D-08, D-09, D-10, D-11, D-12, D-13, D-14, D-15, D-16, D-17, D-18, D-19, D-20, D-21, D-22, D-23, D-24, D-25, D-26, D-27, D-28, D-29, D-30, D-31, D-32, D-33, D-34, D-35, D-36, D-37, D-38, D-39, D-40, D-41, D-42, D-43, D-44, D-45, D-46, D-47, NFR-ACC-02, NFR-SEC-01, OI-01, OI-05, OI-08, OI-11, OI-12, OI-14, P-01, P-13, SOI-04, SOI-06, SOI-16, SOI-17, SOI-19]
 ---
 ## 7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)
 
@@ -59,6 +59,7 @@ Các quyết định dưới đây do nhóm soạn thảo chọn thay cho ngư�
 | **D-44** | Nền tảng: 1.0 và 1.1 chỉ desktop (Chromium chính thức; Firefox/Safari, Linux theo khả năng phát hiện được). **1.2**: mở và xem/phát preset trên di động và máy tính bảng; xuất video vẫn khuyến nghị desktop. Ableton Session View đọc ở **1.2**. Morph đường SVG tự do ở **1.2**. | Tập trung nguồn lực cho trải nghiệm chính; các mục này cần dữ liệu và thiết bị thật. | Có nhu cầu lớn từ người dùng di động. |
 | **D-45** | **Chương trình tệp mẫu:** các mục [VERIFY] cần dữ liệu thật (OI-01, OI-05, OI-08, OI-12, OI-14, SOI-04, SOI-06, SOI-16, SOI-17, SOI-19) được giải quyết qua mẫu issue "Gửi tệp mẫu" (người gửi xác nhận quyền chia sẻ; tệp không công khai thì để `third-party/`). Mục chưa đủ dữ liệu khi phát hành được ghi là **hạn chế đã biết** trong ghi chú phát hành, không chặn bản phát hành. | Không để bản phát hành phụ thuộc vào dữ liệu chưa có. | — |
 | **D-46** | Tài liệu dự án (BRD, SRS, thiết kế, hướng dẫn đóng góp, trang web tài liệu) **giữ tiếng Việt** làm ngôn ngữ duy nhất ở thời điểm này. Bản tiếng Anh làm sau khi có nhu cầu, ưu tiên các trang cho người đóng góp (README, CONTRIBUTING, I18N, COMMUNITY-CONTENT, quy tắc kiểm duyệt). Giao diện ứng dụng vẫn đa ngôn ngữ en/vi (D-30), không bị ảnh hưởng. | Ngôn ngữ làm việc của chủ dự án; tránh hai bản lệch nhau khi tài liệu còn thay đổi nhiều. | Cộng đồng quốc tế lớn dần hoặc có người đóng góp không đọc được tiếng Việt. |
+| **D-47** | Hai cách cho góc nhìn nghiêng/3D: (1) **bản 1.0** xuất **nền trong suốt** (chuỗi PNG; WebM VP9 alpha nếu trình duyệt hỗ trợ) để người dùng xoay 3D trong After Effects/Premiere; (2) **bản 1.1** dựng sẵn **2.5D** trong ứng dụng: mỗi lớp và cả cảnh xoay theo X/Y/Z, camera phối cảnh, preset góc nhìn (nghiêng chéo, isometric, đường băng), ghép bằng WebGL2 sau Spike T-27. Nốt là khối 3D thật: cân nhắc sau 1.2. Thay thế D-15 từ bản 1.1. | Người dùng muốn nhìn dự án chéo thay vì vuông góc; cách (1) rẻ và mở đường cho người dùng chuyên nghiệp ngay, cách (2) cho người không dùng phần mềm dựng. | Spike WebGL2 cho thấy không đạt hiệu năng hoặc khác biệt Preview/Export quá lớn. |
 | **D-33** | Độ sáng/độ mờ của track có thể lấy từ automation (mặc định: âm lượng, to hơn thì sáng hơn); người dùng đổi nguồn (volume, pan, mute, mức tĩnh, tắt), đảo chiều và chỉnh ngưỡng. Cần AST có `track.mix`/`track.automation` và parser đọc envelope (đã làm cho Reaper). | Hiệu ứng trực quan có ý nghĩa âm nhạc, tất định cho Preview/Export; người dùng muốn tự chọn nguồn nên không khoá cứng. | Chấp nhận |
 
 ---

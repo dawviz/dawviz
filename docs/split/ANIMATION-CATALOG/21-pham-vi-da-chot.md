@@ -4,8 +4,8 @@ doc_title: "Danh mục hiệu ứng chuyển động và đường cong nội su
 section: "21. Phạm vi đã chốt"
 path: "21. Phạm vi đã chốt"
 chunk: 21-pham-vi-da-chot.md
-source_lines: 308-312
-source_sha1: 194f6b631f
+source_lines: 309-313
+source_sha1: 94903865f6
 ids: []
 ---
 ## 21. Phạm vi đã chốt

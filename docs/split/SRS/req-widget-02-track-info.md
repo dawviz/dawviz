@@ -5,7 +5,7 @@ section: "REQ-WIDGET-02: Track Info"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-02: Track Info"
 chunk: req-widget-02-track-info.md
 source_lines: 482-485
-source_sha1: 77837e7134
+source_sha1: baed28c4a6
 ids: [REQ-WIDGET-02]
 ---
 #### REQ-WIDGET-02: Track Info

@@ -1,6 +1,6 @@
 # Chỉ mục ANIMATION-CATALOG.md — Danh mục hiệu ứng chuyển động và đường cong nội suy
 
-nguồn: `ANIMATION-CATALOG.md` (sha1 194f6b631f)
+nguồn: `ANIMATION-CATALOG.md` (sha1 94903865f6)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -11,7 +11,7 @@ nguồn: `ANIMATION-CATALOG.md` (sha1 194f6b631f)
 | 4 | 3. Đồ thị (Graph Editor) | [3-do-thi-graph-editor.md](3-do-thi-graph-editor.md) | 1198 |  |
 | 5 | 4. Nội suy không gian và kiểu giá trị | [4-noi-suy-khong-gian-va-kieu-gia-tri.md](4-noi-suy-khong-gian-va-kieu-gia-tri.md) | 695 | AD-11 |
 | 6 | 5. Ngoại suy, lặp và bộ biến đổi đường cong | [5-ngoai-suy-lap-va-bo-bien-doi-duong-cong.md](5-ngoai-suy-lap-va-bo-bien-doi-duong-cong.md) | 830 |  |
-| 7 | 6. Hiệu ứng biến đổi cơ bản (transform) | [6-hieu-ung-bien-doi-co-ban-transform.md](6-hieu-ung-bien-doi-co-ban-transform.md) | 711 |  |
+| 7 | 6. Hiệu ứng biến đổi cơ bản (transform) | [6-hieu-ung-bien-doi-co-ban-transform.md](6-hieu-ung-bien-doi-co-ban-transform.md) | 768 | D-47, REQ-GRAPHICS-15 |
 | 8 | 7. Hiện/ẩn, che và lộ (reveal) | [7-hien-an-che-va-lo-reveal.md](7-hien-an-che-va-lo-reveal.md) | 759 |  |
 | 9 | 8. Hình dạng (shape) và biến dạng hình học | [8-hinh-dang-shape-va-bien-dang-hinh-hoc.md](8-hinh-dang-shape-va-bien-dang-hinh-hoc.md) | 691 | AD-11, D-44 |
 | 10 | 9. Chuyển động "có vật lý" (cảm giác tự nhiên) | [9-chuyen-dong-co-vat-ly-cam-giac-tu-nhien.md](9-chuyen-dong-co-vat-ly-cam-giac-tu-nhien.md) | 562 |  |
@@ -20,7 +20,7 @@ nguồn: `ANIMATION-CATALOG.md` (sha1 194f6b631f)
 | 13 | 12. Làm mờ, biến dạng điểm ảnh và phong cách hoá | [12-lam-mo-bien-dang-diem-anh-va-phong-cach-hoa.md](12-lam-mo-bien-dang-diem-anh-va-phong-cach-hoa.md) | 968 |  |
 | 14 | 13. Chữ (text) | [13-chu-text.md](13-chu-text.md) | 720 |  |
 | 15 | 14. Chuyển cảnh (giữa hai cảnh hoặc hai đoạn) | [14-chuyen-canh-giua-hai-canh-hoac-hai-doan.md](14-chuyen-canh-giua-hai-canh-hoac-hai-doan.md) | 701 |  |
-| 16 | 15. Camera | [15-camera.md](15-camera.md) | 473 |  |
+| 16 | 15. Camera | [15-camera.md](15-camera.md) | 597 | REQ-GRAPHICS-15 |
 | 17 | 16. Nhân bản và vệt | [16-nhan-ban-va-vet.md](16-nhan-ban-va-vet.md) | 403 |  |
 | 18 | 17. Hạt (bổ sung cho CUSTOMIZATION §5) | [17-hat-bo-sung-cho-customization-5.md](17-hat-bo-sung-cho-customization-5.md) | 476 |  |
 | 19 | 18. Riêng cho âm nhạc (điểm mạnh của DAW Visualizer) | [18-rieng-cho-am-nhac-diem-manh-cua-daw-visualize.md](18-rieng-cho-am-nhac-diem-manh-cua-daw-visualize.md) | 910 | OI-11 |

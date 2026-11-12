@@ -111,7 +111,7 @@ Quyết định giá trị thay đổi **thế nào** giữa hai keyframe.
 | Anchor point | Đổi tâm xoay/co giãn, có keyframe | v1.0 | C2D |
 | Skew / Shear | Xô nghiêng | v1.0 | C2D |
 | Flip | Lật ngang/dọc | v1.0 | C2D |
-| Tilt 3D giả | Phối cảnh xoay theo trục X/Y | v1.1 | GL |
+| Tilt 3D / xoay X/Y/Z | Lớp hoặc cả cảnh xoay theo X/Y/Z trong phối cảnh (SRS REQ-GRAPHICS-15, D-47) | v1.1 | GL |
 | Parenting | Phần tử con đi theo phần tử cha | v1.0 | C2D |
 | Orbit / Spiral | Quay quanh một điểm, xoắn ốc | v1.0 | C2D |
 | Follow / Lag | Đi theo đối tượng khác có trễ (bám đuôi) | v1.1 | C2D |
@@ -238,6 +238,7 @@ Chuyển cảnh gắn được vào **mốc nhạc**: đầu bar, marker của d
 | Hiệu ứng | Mô tả | Ưu tiên | Kỹ thuật |
 |---|---|---|---|
 | Pan / Zoom / Rotate | Camera 2D có keyframe | v1.0 | C2D |
+| Camera 3D | Phối cảnh hoặc trực giao, orbit, preset nghiêng chéo / isometric / đường băng (REQ-GRAPHICS-15) | v1.1 | GL |
 | Camera shake | Rung camera tất định, gắn với nốt mạnh hoặc beat | v1.0 | C2D |
 | Follow | Camera bám vạch phát hoặc một đối tượng | v1.1 | C2D |
 | Parallax | Các lớp di chuyển với tốc độ khác nhau theo độ sâu | v1.1 | C2D |
