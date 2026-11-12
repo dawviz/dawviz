@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "note-style",
+  "name": "Flat",
+  "author": "DAW Visualizer team",
+  "license": "Apache-2.0",
+  "description": "Khối phẳng, không phát sáng, không bo góc.",
+  "style": {
+    "cornerRadius": 0,
+    "heightScale": 1,
+    "glow": 0,
+    "glowRadius": 0,
+    "borderWidth": 0,
+    "inactiveOpacity": 0.85
+  }
+}

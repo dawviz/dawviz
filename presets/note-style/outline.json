@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "note-style",
+  "name": "Outline",
+  "author": "DAW Visualizer team",
+  "license": "Apache-2.0",
+  "description": "Nốt trong mờ với viền rõ.",
+  "style": {
+    "cornerRadius": 3,
+    "heightScale": 0.8,
+    "glow": 0.3,
+    "opacity": 0.35,
+    "borderWidth": 1.5,
+    "inactiveOpacity": 1
+  }
+}

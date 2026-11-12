@@ -1,0 +1,45 @@
+# Kiểm tra mỗi lần đẩy mã/PR: test, i18n, tài liệu (liên kết, mục lục), kiểu, build. [CHƯA CHẠY THỬ: viết tay, cần xác nhận trên GitHub]
+name: CI
+on:
+  push: { branches: [main] }
+  pull_request:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with: { node-version: 26, cache: npm }
+      - uses: actions/setup-python@v7
+        with: { python-version: '3.15' }
+      # Cài đúng phiên bản trong package-lock.json (lỗi nếu lock lệch với package.json).
+      - run: npm ci
+      - run: npm test
+      - name: Không commit tệp mẫu bên thứ ba (chỉ nằm trong test/fixtures/third-party/, bị gitignore)
+        run: |
+          bad=$(node --input-type=module -e "import { THIRD_PARTY } from './test/helpers.mjs'; import fs from 'node:fs'; console.log(THIRD_PARTY.filter((n) => fs.existsSync('test/fixtures/' + n)).join(' '))")
+          if [ -n "$bad" ]; then echo "Tệp bên thứ ba nằm sai chỗ: $bad (chuyển vào test/fixtures/third-party/)"; exit 1; fi
+      - run: npm run i18n:check
+      - name: Tài liệu khớp với mã và không có liên kết hỏng
+        run: |
+          npm run docs:sync
+          git diff --exit-code -- SKELETON.md AI_CONTEXT.md docs/split || (echo "Chạy 'npm run docs:sync' rồi commit kết quả" && exit 1)
+          npm run docs:check
+      - run: npm run docs:site
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm run test:components
+
+  # Chạy lại test, kiểu, build trên Windows: bắt lỗi chỉ có ở Windows (đường dẫn C:\, CRLF) mà job Linux không thấy.
+  # Không chạy bước tài liệu ở đây (cần python3 và git diff; job Linux đã kiểm).
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with: { node-version: 26, cache: npm }
+      - run: npm ci
+      - run: npm test
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm run test:components

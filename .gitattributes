@@ -1,0 +1,9 @@
+# Giữ LF cho mã và tài liệu (kiểm tra docs:check và sha của split ổn định trên Windows)
+* text=auto eol=lf
+# Tệp mẫu của các DAW: không đụng vào nội dung/dòng kết thúc (parser phải đọc đúng như bản gốc)
+test/fixtures/** -text
+*.als binary
+*.alp binary
+*.dawproject binary
+*.mid binary
+*.midi binary

@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "id": "demo-dbin",
+  "name": "Demo binary project (DBIN)",
+  "version": 1,
+  "extensions": ["dbin"],
+  "magic": { "ascii": "DBIN", "offset": 0 },
+  "endian": "big",
+  "root": {
+    "fields": [
+      { "type": "skip", "length": "4" },
+      { "name": "version", "type": "u16" },
+      { "assert": "version == 1", "message": "chỉ hỗ trợ DBIN version 1" },
+      { "name": "ppq", "type": "u16" },
+      { "name": "titleLen", "type": "u8" },
+      { "name": "title", "type": "utf8", "length": "titleLen" },
+      { "name": "tempoCount", "type": "u16" },
+      { "name": "tempos", "type": "array", "of": "Tempo", "count": "tempoCount" },
+      { "name": "trackCount", "type": "u16" },
+      { "name": "tracks", "type": "array", "of": "Track", "count": "trackCount" }
+    ]
+  },
+  "types": {
+    "Tempo": { "fields": [ { "name": "tick", "type": "u32" }, { "name": "bpm", "type": "f32" } ] },
+    "Track": { "fields": [
+      { "name": "nameLen", "type": "u8" },
+      { "name": "name", "type": "utf8", "length": "nameLen" },
+      { "name": "flags", "type": "u8" },
+      { "name": "noteCount", "type": "u32" },
+      { "name": "notes", "type": "array", "of": "Note", "count": "noteCount" }
+    ] },
+    "Note": { "fields": [
+      { "name": "pitch", "type": "u8" }, { "name": "vel", "type": "u8" },
+      { "name": "start", "type": "u32" }, { "name": "dur", "type": "u32" }
+    ] }
+  },
+  "ast": {
+    "title": "title",
+    "ppq": "ppq",
+    "timeUnit": "ticks",
+    "tempo": { "each": "tempos", "as": "t", "tick": "t.tick", "bpm": "t.bpm" },
+    "tracks": {
+      "each": "tracks", "as": "tr",
+      "name": "tr.name",
+      "muted": "(tr.flags & 1) == 1",
+      "notes": { "each": "tr.notes", "as": "n", "pitch": "n.pitch", "startTick": "n.start", "durationTick": "n.dur", "velocity": "n.vel" }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "@dawviz/parser-dawproject",
+  "version": "0.1.0",
+  "description": "DAWproject (.dawproject) -> UnifiedProjectAST",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "sideEffects": false,
+  "dependencies": {
+    "@dawviz/parser-core": "0.1.0"
+  },
+  "license": "Apache-2.0"
+}

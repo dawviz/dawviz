@@ -1,0 +1,13 @@
+{
+  "name": "@dawviz/parser-core",
+  "version": "0.1.0",
+  "description": "Nền tảng dùng chung: lỗi, giới hạn, giải nén có đếm byte, ZIP, XML scanner, TempoMap, buildAST, compareAST",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "sideEffects": false,
+  "dependencies": {},
+  "license": "Apache-2.0"
+}

@@ -1,0 +1,15 @@
+{
+  "name": "@dawviz/parser-als",
+  "version": "0.1.0",
+  "description": "Ableton Live .als (XML hoặc Gzip XML) và .alp (ZIP) -> UnifiedProjectAST",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "sideEffects": false,
+  "dependencies": {
+    "@dawviz/parser-core": "0.1.0"
+  },
+  "license": "Apache-2.0"
+}

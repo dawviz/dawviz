@@ -1,0 +1,20 @@
+{
+  "name": "@dawviz/parser",
+  "version": "0.1.0",
+  "description": "Cổng vào duy nhất: nhận dạng định dạng + parseProject() dispatch tới các parser con",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "sideEffects": false,
+  "dependencies": {
+    "@dawviz/parser-core": "0.1.0",
+    "@dawviz/parser-midi": "0.1.0",
+    "@dawviz/parser-als": "0.1.0",
+    "@dawviz/parser-rpp": "0.1.0",
+    "@dawviz/parser-dawproject": "0.1.0",
+    "@dawviz/parser-binary": "0.1.0"
+  },
+  "license": "Apache-2.0"
+}

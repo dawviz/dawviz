@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "note-style",
+  "name": "Neon",
+  "author": "DAW Visualizer team",
+  "license": "Apache-2.0",
+  "description": "Nốt mảnh, phát sáng mạnh, sáng cả khi chờ.",
+  "style": {
+    "cornerRadius": 4,
+    "heightScale": 0.7,
+    "glow": 0.9,
+    "glowRadius": 18,
+    "glowActiveOnly": false,
+    "inactiveOpacity": 0.7
+  }
+}

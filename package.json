@@ -1,0 +1,32 @@
+{
+  "name": "dawviz",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "test": "npm run test:parser && npm run test:render && npm run test:web && npm run test:docs-site",
+    "test:parser": "node --test test/*.test.js",
+    "test:render": "node --test packages/render-core/test/*.test.ts",
+    "test:web": "node --test apps/web/src/lib/*.test.ts",
+    "test:components": "npm run test:components -w @dawviz/web",
+    "dev": "npm run dev -w @dawviz/web",
+    "build": "npm run build -w @dawviz/web",
+    "typecheck": "npm run typecheck -w @dawviz/web",
+    "bundle": "node scripts/bundle.mjs",
+    "cli": "node bin/dawparse.mjs",
+    "i18n:check": "node scripts/check-i18n.mjs",
+    "docs:split": "python3 scripts/split_doc.py",
+    "docs:check": "node scripts/sync-docs.mjs --check",
+    "docs:sync": "node scripts/sync-docs.mjs",
+    "test:docs-site": "node --test scripts/docs-site/markdown.test.mjs",
+    "docs:site": "node scripts/docs-site/build.mjs",
+    "docs:serve": "node scripts/docs-site/build.mjs --serve"
+  },
+  "engines": {
+    "node": ">=22.18"
+  },
+  "license": "Apache-2.0"
+}

@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DAW Visualizer note-style preset",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schemaVersion",
+    "kind",
+    "name",
+    "license",
+    "style"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "kind": {
+      "const": "note-style"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "author": {
+      "type": "string",
+      "maxLength": 80
+    },
+    "license": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 40
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 300
+    },
+    "style": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "colorMode": {
+          "enum": [
+            "track",
+            "custom",
+            "pitch",
+            "velocity"
+          ]
+        },
+        "customColor": {
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        },
+        "opacity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "inactiveOpacity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "cornerRadius": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 999
+        },
+        "heightScale": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 1.5
+        },
+        "glow": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "glowRadius": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 64
+        },
+        "glowActiveOnly": {
+          "type": "boolean"
+        },
+        "borderWidth": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 8
+        },
+        "borderColor": {
+          "type": "string",
+          "pattern": "^(#[0-9a-fA-F]{6})?$"
+        }
+      }
+    }
+  }
+}

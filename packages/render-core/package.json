@@ -1,0 +1,19 @@
+{
+  "name": "@dawviz/render-core",
+  "version": "0.1.0",
+  "description": "Render Core dùng chung cho Preview và Export (ARC-01): hàm thuần của (AST, cấu hình, t). Không phụ thuộc React/DOM.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "typecheck": "tsc -p .",
+    "test": "node --test test/*.test.ts"
+  },
+  "dependencies": {
+    "@dawviz/parser-core": "0.1.0"
+  },
+  "license": "Apache-2.0"
+}

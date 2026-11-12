@@ -1,0 +1,22 @@
+# Tài liệu (docs/) được CÔNG KHAI và commit, kể cả docs/split (bản tách tự động; CI kiểm nó khớp nguồn).
+# Chỉ trang web tài liệu dựng ra (npm run docs:site) là sản phẩm sinh ra, không commit.
+
+# ── Sinh ra khi chạy / cài đặt ───────────────────────────────────────────
+node_modules/
+dist/
+dist-docs/
+*.tsbuildinfo
+coverage/
+.vite/
+__pycache__/
+
+# ── Bí mật & rác hệ thống ────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+Thumbs.db
+
+# ── Tệp mẫu bên thứ ba chưa xác nhận quyền phân phối (xem test/fixtures/README.md) ──
+test/fixtures/third-party/

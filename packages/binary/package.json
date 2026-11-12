@@ -1,0 +1,15 @@
+{
+  "name": "@dawviz/parser-binary",
+  "version": "0.1.0",
+  "description": "Parser nhị phân điều khiển bằng JSON schema (.bwproject và định dạng binary khác)",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "sideEffects": false,
+  "dependencies": {
+    "@dawviz/parser-core": "0.1.0"
+  },
+  "license": "Apache-2.0"
+}

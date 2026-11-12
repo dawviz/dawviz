@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "note-style",
+  "name": "Soft bars",
+  "author": "DAW Visualizer team",
+  "license": "Apache-2.0",
+  "description": "Thanh bo tròn dạng viên thuốc, quầng sáng nhẹ.",
+  "style": {
+    "cornerRadius": 999,
+    "heightScale": 0.6,
+    "glow": 0.35,
+    "glowRadius": 10,
+    "glowActiveOnly": true,
+    "inactiveOpacity": 0.8
+  }
+}

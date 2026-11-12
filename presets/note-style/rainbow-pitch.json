@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "note-style",
+  "name": "Rainbow pitch",
+  "author": "DAW Visualizer team",
+  "license": "Apache-2.0",
+  "description": "Mỗi lớp cao độ một màu, phát sáng vừa.",
+  "style": {
+    "colorMode": "pitch",
+    "cornerRadius": 4,
+    "heightScale": 0.7,
+    "glow": 0.7,
+    "glowRadius": 14
+  }
+}

@@ -1,0 +1,28 @@
+# Dựng và triển khai trang tài liệu lên GitHub Pages khi tài liệu đổi. [CHƯA CHẠY THỬ] Cần: Settings → Pages → Source = "GitHub Actions".
+name: Docs site
+on:
+  push:
+    branches: [main]
+    paths: ['docs/**', '*.md', 'scripts/docs-site/**', 'packages/**/README.md', 'locales/README.md']
+  workflow_dispatch:
+permissions: { contents: read, pages: write, id-token: write }
+concurrency: { group: pages, cancel-in-progress: true }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with: { node-version: 26 }
+      - name: Dựng site (repoUrl lấy từ repo hiện tại)
+        run: DOCS_REPO_URL="https://github.com/${{ github.repository }}" DOCS_BRANCH="${{ github.ref_name }}" npm run docs:site
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with: { path: dist-docs, include-hidden-files: true }  # giữ .nojekyll (bản mới mặc định bỏ tệp ẩn)
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: { name: github-pages, url: '${{ steps.deployment.outputs.page_url }}' }
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

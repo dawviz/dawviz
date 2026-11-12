@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DAW Visualizer — parser demo</title>
+<style>
+ :root{--bg:#111418;--fg:#dde3ea;--line:#333a44;--ok:#6fdc8c;--bad:#ff6b6b;--warn:#ffd166;--mut:#8b96a5}
+ body{font:14px system-ui;background:var(--bg);color:var(--fg);margin:20px;max-width:1100px}
+ fieldset{border:1px solid var(--line);margin:10px 0;padding:10px}
+ label{display:block;margin:6px 0}
+ pre{background:#0b0d10;padding:10px;overflow:auto;max-height:360px;border:1px solid #262b33;white-space:pre}
+ .ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}.mut{color:var(--mut)}
+ table{border-collapse:collapse}td,th{border:1px solid #333;padding:3px 8px;text-align:start}
+ #pack label.als{border:1px solid var(--line);border-radius:6px;padding:8px 10px;display:block;cursor:pointer}
+ #pack label.als.sel{border-color:var(--ok)} #pack label.als.off{opacity:.55;cursor:not-allowed}
+ #tempoRows div{margin:4px 0} button{margin-block:2px;margin-inline:0 4px}
+ #top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+ details.tech{display:inline-block;margin-inline-start:8px}details.tech summary{cursor:pointer;color:var(--mut)}
+ select,input,button{font:inherit}
+</style></head><body>
+<div id="top"><h2 data-i18n="app.title"></h2><label><span data-i18n="lang.label"></span> <select id="lang"></select></label></div>
+<p data-i18n="app.intro"></p>
+<fieldset>
+ <label><span data-i18n="file.label"></span> <input id="f" type="file"></label>
+ <div id="pack" hidden>
+  <b data-i18n="pack.title"></b>
+  <div id="packList"></div>
+ </div>
+ <div id="needMidi" hidden>
+  <b data-i18n="midi.title"></b>
+  <div id="midiNeeded" class="mut"></div>
+  <input id="extra" type="file" accept=".mid,.midi" multiple>
+ </div>
+ <div id="needSchema" hidden>
+  <b data-i18n="schema.title"></b>
+  <input id="schemas" type="file" accept=".json" multiple>
+ </div>
+ <div id="notice"></div>
+ <label><input id="muted" type="checkbox"> <span data-i18n="opt.muted"></span></label>
+ <button id="go" data-i18n="btn.analyze"></button> <button id="inv" data-i18n="btn.inventory"></button> <button id="self" data-i18n="btn.selftest"></button>
+</fieldset>
+<fieldset>
+ <legend data-i18n="tempo.legend"></legend>
+ <label><span data-i18n="tempo.unit.label"></span> <select id="unit">
+   <option value="time" data-i18n="tempo.unit.time"></option>
+   <option value="reaper" data-i18n="tempo.unit.reaper"></option>
+   <option value="sixteenth" data-i18n="tempo.unit.sixteenth"></option>
+  </select></label>
+ <div class="mut" id="tempoHint"></div>
+ <div id="tempoRows"></div>
+ <datalist id="sigs"><option value="4/4"><option value="3/4"><option value="2/4"><option value="5/4"><option value="6/8"><option value="7/8"><option value="9/8"><option value="12/8"></datalist>
+ <button id="addTempo" type="button" data-i18n="tempo.add"></button> <button id="clearTempo" type="button" data-i18n="tempo.clear"></button>
+</fieldset>
+<div id="out"></div>
+<fieldset><legend data-i18n="inv.legend"></legend><pre id="dumpout">-</pre></fieldset>
+<fieldset><legend data-i18n="ast.legend"></legend><pre id="ast">-</pre></fieldset>
+<script type="module">
+import { createI18n, loadLocales, matchLocale } from '../../packages/i18n/src/index.js';
+import * as P from '../../dist/dawviz-parser.bundle.js';
+const $ = (i) => document.getElementById(i);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+let seq = 0, alsIndex = null, numerator = 4, denominator = 4, probed = null, lastResult = null, packList = null, packMs = 0;
+
+// ---- i18n: danh mục ở /locales (đóng góp bản dịch: docs/I18N.md)
+const { manifest, catalogs } = await loadLocales('../../locales');
+const missing = new Set();
+const i18n = createI18n({ locale: 'en', fallback: manifest.source, catalogs, onMissing: (k) => { if (!missing.has(k)) { missing.add(k); console.warn('[i18n] thiếu chuỗi:', k, i18n.locale); } } });
+const t = (k, p) => i18n.t(k, p);
+const codes = manifest.locales.map((l) => l.code);
+let saved = null; try { saved = localStorage.getItem('dawviz.lang'); } catch { /* storage có thể bị chặn */ }
+$('lang').innerHTML = manifest.locales.map((l) => `<option value="${esc(l.code)}">${esc(l.name)}</option>`).join('');
+function applyStatic() {
+  document.documentElement.lang = i18n.locale; document.documentElement.dir = i18n.dir;
+  for (const el of document.querySelectorAll('[data-i18n]')) el.textContent = t(el.dataset.i18n);
+  document.title = t('app.title');
+  $('tempoHint').textContent = t('tempo.hint', { sig: `${numerator}/${denominator}` });
+  for (const d of $('tempoRows').children) tempoRowText(d);
+}
+function setLang(code, persist = true) {
+  i18n.setLocale(code); $('lang').value = code;
+  if (persist) { try { localStorage.setItem('dawviz.lang', code); } catch { /* bỏ qua */ } }
+  applyStatic(); renderPack(); updateNotice(); if (lastResult) show(lastResult);
+}
+$('lang').onchange = () => setLang($('lang').value);
+
+function run(msg, transfer = []) {
+  return new Promise((resolve) => {
+    const w = new Worker('parser-worker.js', { type: 'module' }), id = ++seq;
+    const timer = setTimeout(() => { w.terminate(); resolve({ ok: false, code: 'ERR_PARSER_TIMEOUT', msg: '> 30 s' }); }, 30000);
+    w.onmessage = (e) => { clearTimeout(timer); w.terminate(); resolve(e.data); };
+    w.onerror = (e) => { clearTimeout(timer); resolve({ ok: false, code: 'ERR_WORKER', msg: e.message }); };
+    w.postMessage({ id, ...msg }, transfer);
+  });
+}
+
+// mã lỗi/cảnh báo -> chuỗi theo ngôn ngữ; thông điệp gốc của thư viện (kỹ thuật) để trong "chi tiết"
+const tech = (raw) => (raw ? `<details class="tech"><summary>${esc(t('tech.details'))}</summary><code>${esc(raw)}</code></details>` : '');
+const errHtml = (code, raw) => `${esc(code)}: ${esc(i18n.has('errors.' + code) ? t('errors.' + code) : raw || '')}${tech(raw)}`;
+const warnHtml = (w) => `${esc(w.code)}: ${esc(i18n.has('warn.' + w.code) ? t('warn.' + w.code) : w.message)}${i18n.has('warn.' + w.code) ? tech(w.message) : ''}`;
+
+// ---- ô nhập BPM theo mốc (+ dấu nhịp)
+function tempoRowText(d) {
+  d.querySelector('.lp').textContent = t('tempo.pos'); d.querySelector('.lb').textContent = t('tempo.bpm'); d.querySelector('.ls').textContent = t('tempo.sig');
+  d.querySelector('.sig').placeholder = t('tempo.sigPlaceholder'); d.querySelector('.del').title = t('tempo.remove'); d.querySelector('.del').setAttribute('aria-label', t('tempo.remove'));
+}
+function addTempoRow(pos = '', bpm = '', sig = '') {
+  const d = document.createElement('div');
+  d.innerHTML = `<span class="lp"></span> <input type="text" class="pos" value="${esc(pos)}" placeholder="0:00.000" size="10"> &nbsp; <span class="lb"></span> <input type="number" class="bpm" min="10" max="1000" step="any" value="${esc(bpm)}" placeholder="120" style="width:90px"> &nbsp; <span class="ls"></span> <input type="text" class="sig" list="sigs" value="${esc(sig)}" size="5"> <button type="button" class="del">✕</button>`;
+  d.querySelector('.del').onclick = () => d.remove();
+  tempoRowText(d); $('tempoRows').appendChild(d);
+}
+const zeroPos = () => ({ time: '0:00.000', reaper: '1.1.00', sixteenth: '1.1.1' })[$('unit').value];
+$('addTempo').onclick = () => addTempoRow($('tempoRows').children.length ? '' : zeroPos(), '');
+$('clearTempo').onclick = () => { $('tempoRows').innerHTML = ''; };
+$('unit').onchange = () => { for (const d of $('tempoRows').children) if (d === $('tempoRows').firstChild) d.querySelector('.pos').value = zeroPos(); };
+function tempoOverride() {
+  const rows = [...$('tempoRows').children].map((d) => ({ pos: d.querySelector('.pos').value.trim(), bpm: d.querySelector('.bpm').value, sig: d.querySelector('.sig').value.trim() })).filter((r) => r.bpm !== '');
+  if (!rows.length) return undefined;
+  const atZero = (p) => p === '' || /^[0:.\s]+$/.test(p) || /^1\.1(\.0*1?)?$/.test(p);
+  if (rows.length === 1 && atZero(rows[0].pos) && !rows[0].sig) return Number(rows[0].bpm);
+  return rows;
+}
+
+const f0ext = () => (($('f').files[0]?.name || '').split('.').pop() || '').toLowerCase();
+// ---- thông báo thiếu đầu vào bổ sung
+function updateNotice() {
+  const msgs = [];
+  if (probed?.needs.externalMidi.length && !$('extra').files.length) msgs.push(t('notice.missingMidi', { files: probed.needs.externalMidi.join(', ') }));
+  if (probed?.needs.schema && !$('schemas').files.length) msgs.push(t('notice.missingSchema', { ext: f0ext() }));
+  $('notice').innerHTML = msgs.map((m) => `<div class="warn">⚠ ${esc(m)}</div>`).join('');
+  $('midiNeeded').textContent = probed?.needs.externalMidi.length ? t('midi.needed', { files: probed.needs.externalMidi.join(', ') }) : '';
+}
+async function probe(f, buffer) {
+  const schemas = []; for (const s of $('schemas').files) schemas.push(await s.text());
+  const r = await run({ type: 'probe', name: f.name, buffer: buffer.slice(0), schemas });
+  probed = r.ok ? r.probe : null;
+  $('needMidi').hidden = !probed?.needs.externalMidi.length;
+  $('needSchema').hidden = !probed?.needs.schema;
+  updateNotice();
+}
+$('extra').onchange = () => { updateNotice(); if ($('f').files[0]) analyze(); };
+$('schemas').onchange = async () => { const f = $('f').files[0]; if (f) { await probe(f, await f.arrayBuffer()); analyze(); } };
+
+// ---- gói .alp: liệt kê các .als sau khi nạp
+function renderPack() {
+  if (!packList) { $('pack').hidden = true; return; }
+  const l = packList;
+  $('packList').innerHTML = l.files.map((x) => {
+    const usable = !x.error;
+    const tr = usable ? x.tracks.map((tk) => esc(t(tk.muted ? 'pack.trackMuted' : 'pack.track', { name: tk.name, notes: tk.notes }))).join(' · ') : esc(x.message || x.error);
+    const info = t('pack.info', { mb: (x.bytes / 1e6).toFixed(1), bpm: x.bpm ? x.bpm.toFixed(2) : '?' });
+    return `<label class="als ${usable ? '' : 'off'} ${x.index === alsIndex ? 'sel' : ''}"><input type="radio" name="als" value="${x.index}" ${x.index === alsIndex ? 'checked' : ''} ${usable ? '' : 'disabled'}> <b>${esc(x.name)}</b> <span class="mut">${esc(info)}</span><br><span class="${usable ? 'mut' : 'bad'}">${tr}</span></label>`;
+  }).join('');
+  $('pack').hidden = false;
+  for (const el of document.querySelectorAll('input[name=als]')) el.onchange = () => { alsIndex = Number(el.value); markSel(); analyze(); };
+}
+function markSel() { for (const el of document.querySelectorAll('#packList label.als')) el.classList.toggle('sel', el.querySelector('input').checked); }
+async function onFileChosen() {
+  alsIndex = null; probed = null; packList = null; lastResult = null; renderPack();
+  $('needMidi').hidden = true; $('needSchema').hidden = true; $('notice').innerHTML = ''; $('extra').value = ''; $('schemas').value = '';
+  const f = $('f').files[0]; if (!f) return;
+  await probe(f, await f.arrayBuffer());
+  if (!/\.alp$/i.test(f.name)) { if (!probed?.needs.schema) analyze(); return; }
+  $('out').textContent = t('pack.reading');
+  const buffer = await f.arrayBuffer();
+  const r = await run({ type: 'list', name: f.name, buffer }, [buffer]);
+  if (!r.ok) { show(r); return; }
+  packList = r.list; packMs = r.ms; alsIndex = r.list.defaultIndex; renderPack();
+  $('out').innerHTML = `<div class="ok">${esc(t('pack.loaded', { container: r.list.container, ms: Math.round(r.ms), count: r.list.files.length }))}</div>`;
+  analyze();
+}
+$('f').onchange = onFileChosen;
+
+async function collect() {
+  const f = $('f').files[0]; if (!f) { $('out').innerHTML = `<div class="bad">${esc(t('out.noFile'))}</div>`; return null; }
+  const buffer = await f.arrayBuffer();
+  const schemas = []; for (const s of $('schemas').files) schemas.push(await s.text());
+  const extraFiles = {}; for (const e of $('extra').files) extraFiles[e.name] = await e.arrayBuffer();
+  return { msg: { name: f.name, buffer, schemas, tempo: tempoOverride(), posUnit: $('unit').value, numerator, denominator, extraFiles, showMuted: $('muted').checked, alsIndex }, tr: [buffer] };
+}
+// Automation: mô tả từng lane; lane volume vẽ thêm đường "độ sáng" 0..1 (volumeToUnit, floor -36 dB, ceil 0 dB) để thấy hiệu ứng track sáng/tối theo âm lượng
+function autoHtml(tk) {
+  const a = tk.automation; if (!a) return '';
+  const out = [];
+  if (a.volume) {
+    const pts = a.volume.points, dbs = pts.map((p) => P.gainToDb(p.value));
+    const last = pts[pts.length - 1].tick, span = Math.max(1, last * 1.1), W = 120, H = 22, N = 60;
+    const xy = Array.from({ length: N + 1 }, (_, i) => { const tick = (span * i) / N; return `${(W * i / N).toFixed(1)},${(H - 2 - (H - 4) * P.volumeToUnit(P.sampleLane(a.volume, tick))).toFixed(1)}`; }).join(' ');
+    out.push(`${esc(t('auto.volume', { count: pts.length, min: Math.min(...dbs).toFixed(1), max: Math.max(...dbs).toFixed(1) }))}<br><svg width="${W}" height="${H}" style="background:#0b0d10;border:1px solid #333"><polyline fill="none" stroke="#6fdc8c" stroke-width="1.5" points="${xy}"/></svg>`);
+  }
+  if (a.pan) out.push(esc(t('auto.pan', { count: a.pan.points.length })));
+  if (a.mute) out.push(esc(t('auto.mute', { count: a.mute.points.length })));
+  return out.join('<br>');
+}
+function show(r) {
+  lastResult = r;
+  if (!r.ok) { $('out').innerHTML = `<div class="bad">${errHtml(r.code, r.msg)}</div>`; return; }
+  if (!r.ast) return;
+  const a = r.ast, m = a.meta, p0 = a.tempoMap[0];
+  numerator = p0?.timeSigNumerator || 4; denominator = p0?.timeSigDenominator || 4; $('tempoHint').textContent = t('tempo.hint', { sig: `${numerator}/${denominator}` });
+  const fmt = `${r.format}${r.info?.alsEntry ? ' · ' + r.info.alsEntry : ''}`;
+  let h = `<div class="ok">${esc(t('out.analyzed', { ms: Math.round(r.ms), format: fmt }))}</div>`;
+  h += `<div>${esc(t('out.source', { format: m.sourceFormat, version: m.sourceVersion || '', ppq: m.sourcePPQ, ticks: m.totalTicks, seconds: m.totalDurationSeconds.toFixed(2), points: a.tempoMap.length }))} | <b class="${m.tempoSource === 'file' || m.tempoSource === 'user' ? 'ok' : 'warn'}">${esc(t('out.tempoLine', { source: m.tempoSource, bpm: p0.bpm.toFixed(2), sig: `${numerator}/${denominator}` }))}</b></div>`;
+  if (m.tempoSource !== 'file' && m.tempoSource !== 'user') h += `<div class="warn">⚠ ${esc(t('notice.tempoUnknown', { source: m.tempoSource, bpm: p0.bpm.toFixed(0) }))}</div>`;
+  h += `<table><tr><th>${esc(t('th.track'))}</th><th>${esc(t('th.notes'))}</th><th>${esc(t('th.pitch'))}</th><th>${esc(t('th.visible'))}</th><th>${esc(t('th.mix'))}</th><th>${esc(t('th.automation'))}</th></tr>` + a.tracks.map((tk) => `<tr><td>${esc(tk.name)}</td><td>${i18n.number(tk.notes.length)}</td><td>${tk.pitchRange ? tk.pitchRange.min + '-' + tk.pitchRange.max : ''}</td><td>${tk.isVisible ? '✓' : ''}</td><td>${tk.mix ? esc(t('mix.value', { db: tk.mix.volumeDb, pan: tk.mix.pan })) : ''}</td><td>${autoHtml(tk)}</td></tr>`).join('') + '</table>';
+  if (r.warnings.length) h += `<div class="warn"><b>${esc(t('warnings.title'))}</b><br>` + r.warnings.map(warnHtml).join('<br>') + '</div>';
+  $('out').innerHTML = h;
+  const slim = JSON.parse(JSON.stringify(a)); for (const tk of slim.tracks) tk.notes = tk.notes.slice(0, 5);
+  $('ast').textContent = JSON.stringify(slim, null, 1);
+}
+async function analyze() { const c = await collect(); if (!c) return; $('out').textContent = t('out.analyzing'); show(await run(c.msg, c.tr)); }
+$('go').onclick = analyze;
+$('inv').onclick = async () => { const f = $('f').files[0]; if (!f) return; const buffer = await f.arrayBuffer(); const r = await run({ type: 'inventory', name: f.name, buffer }, [buffer]); $('dumpout').textContent = r.ok ? r.inventory : `${r.code}: ${r.msg}`; };
+
+// MIDI tổng hợp có đổi tempo/nhịp: cùng bản nhạc ở PPQ 960 và 480 phải khớp nhau sau khi quy đổi về 960.
+const vlq = (n) => { const b = [n & 0x7f]; while ((n >>= 7)) b.unshift((n & 0x7f) | 0x80); return b; };
+function synthMidi(ppq) {
+  const ev = []; const add = (tick, bytes) => ev.push({ tick, bytes });
+  add(0, [0xff, 0x51, 3, 0x07, 0xa1, 0x20]); add(0, [0xff, 0x58, 4, 4, 2, 24, 8]);
+  add(ppq * 8, [0xff, 0x51, 3, 0x05, 0x16, 0x15]); add(ppq * 8, [0xff, 0x58, 4, 6, 3, 24, 8]);
+  for (const [p, s, d] of [[60, 0, 1], [64, 1, 1], [67, 2, 2.5], [72, 7.5, 1], [60, 8, 0.5], [62, 9.25, 0.75]]) { add(Math.round(s * ppq), [0x90, p, 90]); add(Math.round((s + d) * ppq), [0x80, p, 0]); }
+  ev.sort((a, b) => a.tick - b.tick); let last = 0; const trk = [];
+  for (const e of ev) { trk.push(...vlq(e.tick - last), ...e.bytes); last = e.tick; }
+  trk.push(0, 0xff, 0x2f, 0);
+  const len = trk.length;
+  return new Uint8Array([0x4d, 0x54, 0x68, 0x64, 0, 0, 0, 6, 0, 0, 0, 1, ppq >> 8, ppq & 255, 0x4d, 0x54, 0x72, 0x6b, len >>> 24, (len >> 16) & 255, (len >> 8) & 255, len & 255, ...trk]);
+}
+$('self').onclick = async () => {
+  const P = await import('../../dist/dawviz-parser.bundle.js');
+  const ra = await P.parseProject('a960.mid', synthMidi(960)), rb = await P.parseProject('b480.mid', synthMidi(480));
+  const c = P.compareAST(ra.ast, rb.ast);
+  $('out').innerHTML = `<div class="${c.pass ? 'ok' : 'bad'}">${esc(t('selftest.result', { verdict: t(c.pass ? 'selftest.pass' : 'selftest.fail'), matched: c.matched, total: c.notesA, delta: c.maxStartDelta }))}</div>`;
+  $('ast').textContent = JSON.stringify(ra.ast.tempoMap, null, 1);
+};
+
+setLang(matchLocale(saved ? [saved] : navigator.languages, codes, manifest.source), false);
+</script></body></html>

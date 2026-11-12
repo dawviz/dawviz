@@ -1,0 +1,16 @@
+{
+  "name": "@dawviz/parser-rpp",
+  "version": "0.1.0",
+  "description": "Cockos Reaper .rpp -> UnifiedProjectAST",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "sideEffects": false,
+  "dependencies": {
+    "@dawviz/parser-core": "0.1.0",
+    "@dawviz/parser-midi": "0.1.0"
+  },
+  "license": "Apache-2.0"
+}

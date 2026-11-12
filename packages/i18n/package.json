@@ -1,0 +1,13 @@
+{
+  "name": "@dawviz/i18n",
+  "version": "0.1.0",
+  "description": "Đa ngôn ngữ không phụ thuộc: danh mục JSON phẳng, nội suy {tham_số}, số nhiều (Intl.PluralRules), chuỗi dự phòng, nhận diện locale, hướng chữ",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "sideEffects": false,
+  "dependencies": {},
+  "license": "Apache-2.0"
+}

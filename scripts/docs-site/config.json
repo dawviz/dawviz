@@ -1,0 +1,172 @@
+{
+  "title": "DAW Visualizer — Tài liệu",
+  "lang": "vi",
+  "repoUrl": "",
+  "branch": "main",
+  "nav": [
+    {
+      "group": "Bắt đầu",
+      "items": [
+        {
+          "src": "README.md",
+          "title": "Giới thiệu"
+        },
+        {
+          "src": "docs/README.md",
+          "title": "Hướng dẫn về tài liệu"
+        },
+        {
+          "src": "CONTRIBUTING.md",
+          "title": "Đóng góp"
+        },
+        {
+          "src": "docs/PUBLISHING.md",
+          "title": "Xuất bản lên GitHub"
+        },
+        {
+          "src": "docs/COMMUNITY-CONTENT.md",
+          "title": "Presets và assets cộng đồng"
+        },
+        {
+          "src": "presets/README.md",
+          "title": "Bộ kiểu (presets)"
+        },
+        {
+          "src": "assets/README.md",
+          "title": "Tài nguyên (assets)"
+        },
+        {
+          "src": "test/fixtures/README.md",
+          "title": "Tệp mẫu kiểm thử"
+        }
+      ]
+    },
+    {
+      "group": "Sản phẩm",
+      "items": [
+        {
+          "src": "docs/product/BRD.md",
+          "title": "BRD — yêu cầu nghiệp vụ"
+        },
+        {
+          "src": "docs/product/SRS.md",
+          "title": "SRS — đặc tả yêu cầu"
+        }
+      ]
+    },
+    {
+      "group": "Thiết kế ứng dụng",
+      "items": [
+        {
+          "src": "docs/design/SDD.md",
+          "title": "SDD — thiết kế phần mềm"
+        },
+        {
+          "src": "docs/design/TECHNICAL-DESIGN.md",
+          "title": "Thiết kế kỹ thuật chi tiết"
+        },
+        {
+          "src": "docs/design/TDD.md",
+          "title": "TDD — thiết kế kiểm thử"
+        },
+        {
+          "src": "docs/design/ANIMATION.md",
+          "title": "Hiệu ứng chuyển động và xuất video"
+        },
+        {
+          "src": "docs/design/CUSTOMIZATION.md",
+          "title": "Tùy biến: storyboard, chuyển cảnh, hạt"
+        },
+        {
+          "src": "docs/design/ANIMATION-CATALOG.md",
+          "title": "Danh mục hiệu ứng và đường cong"
+        },
+        {
+          "src": "docs/design/EXPRESSIONS.md",
+          "title": "Biểu thức, bảo mật, kiểm duyệt"
+        }
+      ]
+    },
+    {
+      "group": "Thư viện parser",
+      "items": [
+        {
+          "src": "packages/README.md",
+          "title": "Các package"
+        },
+        {
+          "src": "docs/parser/PARSER-SRS.md",
+          "title": "Parser — yêu cầu"
+        },
+        {
+          "src": "docs/parser/PARSER-SDD.md",
+          "title": "Parser — thiết kế"
+        },
+        {
+          "src": "docs/parser/PARSER-TDD.md",
+          "title": "Parser — kiểm thử"
+        }
+      ]
+    },
+    {
+      "group": "Spike (thử nghiệm kỹ thuật)",
+      "items": [
+        {
+          "src": "docs/spikes/SPIKE-1-EXPORT.md",
+          "title": "Spike 1: đường ống xuất video"
+        },
+        {
+          "src": "docs/spikes/SPIKE-2-PARSER.md",
+          "title": "Spike 2: parser và AST"
+        }
+      ]
+    },
+    {
+      "group": "Đa ngôn ngữ",
+      "items": [
+        {
+          "src": "docs/I18N.md",
+          "title": "Hướng dẫn dịch"
+        },
+        {
+          "src": "locales/README.md",
+          "title": "Danh mục ngôn ngữ"
+        }
+      ]
+    },
+    {
+      "group": "Cho AI và người đóng góp",
+      "items": [
+        {
+          "src": "AI_CONTEXT.md",
+          "title": "AI_CONTEXT — điểm vào"
+        },
+        {
+          "src": "ARCHITECTURE.md",
+          "title": "Kiến trúc"
+        },
+        {
+          "src": "SKELETON.md",
+          "title": "Cấu trúc mã nguồn"
+        },
+        {
+          "src": "PROGRESS.md",
+          "title": "Tiến độ"
+        }
+      ]
+    },
+    {
+      "group": "Tra cứu",
+      "items": [
+        {
+          "src": "docs/split/INDEX.md",
+          "title": "Mục lục các mảnh"
+        },
+        {
+          "src": "docs/split/HEADINGS.md",
+          "title": "Mọi heading và neo"
+        }
+      ]
+    }
+  ]
+}
