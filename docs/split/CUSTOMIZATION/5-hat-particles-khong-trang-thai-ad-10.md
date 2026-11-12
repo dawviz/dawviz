@@ -4,8 +4,8 @@ doc_title: "Tùy biến tối đa: storyboard, chuyển cảnh nốt, đường 
 section: "5. Hạt (particles) không trạng thái (AD-10)"
 path: "5. Hạt (particles) không trạng thái (AD-10)"
 chunk: 5-hat-particles-khong-trang-thai-ad-10.md
-source_lines: 127-144
-source_sha1: e3b1cd1a13
+source_lines: 128-145
+source_sha1: 252b907188
 ids: [AD-10]
 ---
 ## 5. Hạt (particles) không trạng thái (AD-10)

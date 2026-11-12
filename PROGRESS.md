@@ -98,6 +98,13 @@ Lần chạy 2026-11-12 (Node 22.23): `npm test`: parser 66/66 ✅ (khi có đ�
 | T-45 | Morph đường SVG tự do (lấy mẫu lại, ghép điểm) | 1.2 | không xoắn rối với bộ hình mẫu |
 | T-46 | Xem lại `.flp`/`.bwproject` (nếu có tệp mẫu), AAC bằng WASM (OI-04), parser khai báo XML/JSON (SOI-12) | 1.2 | quyết định ghi vào BRD |
 | T-47 | (Khi cần, D-46) Dịch tài liệu sang tiếng Anh: trước hết README, CONTRIBUTING, I18N, COMMUNITY-CONTENT, quy tắc kiểm duyệt; thêm nút đổi ngôn ngữ trên trang tài liệu và CI cảnh báo bản dịch cũ | sau | khi chủ dự án quyết định |
+| T-48 | Theme giao diện Sáng / Tối / Theo hệ thống (REQ-UI-10): biến CSS, Tailwind `darkMode: 'class'`, lưu tuỳ chọn, kiểm tương phản AA | 1.0 (M1–M2, rẻ) | đổi theme không tải lại trang; khung hình video không đổi |
+| T-49 | Bộ chọn màu dùng chung (REQ-UI-11): ô nhập HEX/RGB/RGBA/số thập phân/HSL/HSV/OKLCH/tên CSS, thanh alpha, hút màu (EyeDropper), màu gần đây; màu lưu `#rrggbbaa` (sửa `sanitizeStyle` nhận alpha); bảng màu: tạo, lưu preset, nhập từ danh sách mã / `.gpl` / JSON / biến CSS, áp lần lượt cho track | 1.0 (M2) | test hàm đọc màu cho mọi định dạng; nhập bảng màu gán đúng track |
+| T-50 | Ẩn/hiện và solo track (REQ-UI-12) cho mọi widget; thay cờ `showMuted` | 1.0 (M1–M2) | AT-23 mở rộng; hoàn tác được |
+| T-51 | Tuỳ chỉnh bàn phím và tên nốt trên phím (REQ-GRAPHICS-07): phạm vi phím, hình dạng, màu phím nhấn, đánh dấu thang âm, nhãn theo P-12, quy ước C3/C4 | 1.0 (M2, cùng T-37) | test bố cục nhãn tất định; Preview = Export |
+| T-52 | Khoảng hiển thị theo thời gian/marker và đổi tập track theo đoạn (REQ-GRAPHICS-14) | 1.0 (M2, cùng T-22) | ẩn/hiện đúng mốc khi tua |
+| T-53 | Spectrum/waveform nhiều kiểu (REQ-WIDGET-07): Bars, Mirrored, Line/Area, Dots, Oscilloscope, Waveform tổng quan, Meter, tham số hình dạng; 1.1 radial/xoắn ốc | 1.0 / 1.1 | làm mượt tất định; Preview = Export |
+| T-54 | Stem theo track (REQ-AUDIO-01): nạp nhiều tệp audio, tự ghép theo tên + kéo thả, offset từng stem, phân tích trong Worker rồi giải phóng PCM, lưu bộ đệm phân tích vào Pack, hướng dẫn xuất stem theo DAW, binding `track.audio.*`, cảnh báo `WARN_STEM_*`, `ERR_AUDIO_TOO_MANY` | 1.2 | AT-24 |
 | T-11 | Chương trình tệp mẫu (D-45). Cần dữ liệu thật từ người dùng: mẫu Ableton/Bitwig nhịp ghép (OI-12), automation Ableton (SOI-18), kiểm pan/mute (SOI-19) | song song | đóng OI |
 
 ## 5. Đánh giá khả thi: làm hết trong 1 tuần với AI Agent?

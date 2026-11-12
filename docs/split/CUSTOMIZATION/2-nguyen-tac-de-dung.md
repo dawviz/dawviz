@@ -5,7 +5,7 @@ section: "2. Nguyên tắc dễ dùng"
 path: "2. Nguyên tắc dễ dùng"
 chunk: 2-nguyen-tac-de-dung.md
 source_lines: 15-34
-source_sha1: e3b1cd1a13
+source_sha1: 252b907188
 ids: []
 ---
 ## 2. Nguyên tắc dễ dùng

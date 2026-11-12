@@ -4,8 +4,8 @@ doc_title: "Tùy biến tối đa: storyboard, chuyển cảnh nốt, đường 
 section: "7. Hiệu năng và giới hạn"
 path: "7. Hiệu năng và giới hạn"
 chunk: 7-hieu-nang-va-gioi-han.md
-source_lines: 179-189
-source_sha1: e3b1cd1a13
+source_lines: 180-190
+source_sha1: 252b907188
 ids: []
 ---
 ## 7. Hiệu năng và giới hạn

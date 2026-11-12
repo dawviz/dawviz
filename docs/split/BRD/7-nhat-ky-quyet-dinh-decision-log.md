@@ -5,7 +5,7 @@ section: "7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)"
 path: "7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)"
 chunk: 7-nhat-ky-quyet-dinh-decision-log.md
 source_lines: 195-249
-source_sha1: 5173bcd17b
+source_sha1: 3ea60fc182
 ids: [AD-08, AD-12, AD-13, AD-15, ARC-01, ARC-02, ARC-06, D-01, D-02, D-03, D-04, D-05, D-06, D-07, D-08, D-09, D-10, D-11, D-12, D-13, D-14, D-15, D-16, D-17, D-18, D-19, D-20, D-21, D-22, D-23, D-24, D-25, D-26, D-27, D-28, D-29, D-30, D-31, D-32, D-33, D-34, D-35, D-36, D-37, D-38, D-39, D-40, D-41, D-42, D-43, D-44, D-45, D-46, NFR-ACC-02, NFR-SEC-01, OI-01, OI-05, OI-08, OI-11, OI-12, OI-14, P-01, P-13, SOI-04, SOI-06, SOI-16, SOI-17, SOI-19]
 ---
 ## 7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)

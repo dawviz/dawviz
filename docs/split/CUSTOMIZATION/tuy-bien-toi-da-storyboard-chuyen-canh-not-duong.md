@@ -5,7 +5,7 @@ section: "Tùy biến tối đa: storyboard, chuyển cảnh nốt, đường co
 path: "Tùy biến tối đa: storyboard, chuyển cảnh nốt, đường cong easing, hạt, tài nguyên và preset cộng đồng (mở đầu)"
 chunk: tuy-bien-toi-da-storyboard-chuyen-canh-not-duong.md
 source_lines: 1-4
-source_sha1: e3b1cd1a13
+source_sha1: 252b907188
 ids: [AD-07, AD-08, AD-12, D-37, D-38, D-40, OI-15, OI-16, REQ-GRAPHICS-09, REQ-STORAGE-05]
 ---
 # Tùy biến tối đa: storyboard, chuyển cảnh nốt, đường cong easing, hạt, tài nguyên và preset cộng đồng

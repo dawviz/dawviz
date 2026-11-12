@@ -4,9 +4,9 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "5.3. Yêu cầu giao diện"
 path: "5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.3. Yêu cầu giao diện"
 chunk: 5-3-yeu-cau-giao-dien.md
-source_lines: 831-844
-source_sha1: 6c3a823de0
-ids: [ARC-05, BR-07, BR-09, D-19, D-25, D-29, D-30, ERR_UNSUPPORTED_FORMAT, KPI-04, REQ-PARSER-05, REQ-PARSER-07, REQ-UI-01, REQ-UI-02, REQ-UI-03, REQ-UI-04, REQ-UI-05, REQ-UI-06, REQ-UI-07, REQ-UI-08, REQ-UI-09]
+source_lines: 866-886
+source_sha1: 77837e7134
+ids: [ARC-05, BR-07, BR-09, D-19, D-25, D-29, D-30, ERR_UNSUPPORTED_FORMAT, KPI-04, REQ-GRAPHICS-07, REQ-PARSER-05, REQ-PARSER-07, REQ-STORAGE-06, REQ-UI-01, REQ-UI-02, REQ-UI-03, REQ-UI-04, REQ-UI-05, REQ-UI-06, REQ-UI-07, REQ-UI-08, REQ-UI-09, REQ-UI-10, REQ-UI-11, REQ-UI-12]
 ---
 ### 5.3. Yêu cầu giao diện
 
@@ -19,5 +19,12 @@ ids: [ARC-05, BR-07, BR-09, D-19, D-25, D-29, D-30, ERR_UNSUPPORTED_FORMAT, KPI-
 * **REQ-UI-08 (Đầu vào bổ sung theo ngữ cảnh):** giao diện chỉ hiện ô nạp thêm khi file vừa chọn thật sự cần: (a) `.rpp` tham chiếu `.mid` ngoài → hiện ô nạp `.mid` kèm tên các file cần; (b) định dạng nhị phân chưa hỗ trợ trực tiếp (`.bwproject`, `.flp`, đuôi lạ) → hiện ô nạp schema JSON (REQ-PARSER-05). Không cần thì ẩn. Nếu người dùng chưa nạp file cần thiết, **phải** hiển thị thông báo nêu rõ thiếu gì và hậu quả (không có nốt/chưa phân tích được); tempo không đọc được từ file cũng phải được báo kèm gợi ý nhập BPM (REQ-UI-06). Thư viện cung cấp `probeProject`.
 * **REQ-UI-09 (Chọn ngôn ngữ, BR-09, D-30):** bộ chọn ngôn ngữ luôn thấy được, liệt kê theo tên ngôn ngữ viết bằng chính ngôn ngữ đó (lấy từ `locales/index.json`). Mặc định: lựa chọn đã lưu, nếu chưa có thì ngôn ngữ trình duyệt khớp theo chuỗi `vi-VN → vi`, cuối cùng là tiếng Anh. Đổi ngôn ngữ có hiệu lực ngay (kể cả kết quả đang hiển thị) và cập nhật `lang`/`dir` của trang.
 * **REQ-UI-05 (Người dùng mới, BR-07, KPI-04):** sau khi nạp file hợp lệ, hệ thống tự áp preset mặc định, gán track và hiển thị sẵn nút Export nổi bật; đường đi tối thiểu "nạp → (chọn đoạn) → Export" không cần mở Inspector.
+* **REQ-UI-10 (Theme sáng/tối cho giao diện, 1.0):** ba lựa chọn **Sáng**, **Tối** (mặc định hiện nay) và **Theo hệ thống** (`prefers-color-scheme`); lưu theo trình duyệt; đổi tức thì không tải lại trang. Theme chỉ đổi **giao diện ứng dụng**; màu khung hình video do cảnh và preset quyết định, không bị ảnh hưởng. Cả hai theme đạt tương phản WCAG AA cho chữ và điều khiển. Bảng màu theme khai báo bằng biến CSS để cộng đồng thêm theme giao diện về sau (1.1).
+* **REQ-UI-11 (Bộ chọn màu và bảng màu, 1.0):**
+  * Mọi ô chọn màu (màu track, nốt, nền, phím, chữ, gradient) dùng chung một bộ chọn: ô vuông màu + thanh hue + thanh alpha, và **ô nhập văn bản** nhận các dạng `#rgb`, `#rgba`, `#rrggbb`, `#rrggbbaa`, `rgb(255 0 0)` / `rgb(255, 0, 0)`, `rgba(…)`, số thập phân `255, 0, 0` hoặc `1.0, 0, 0`, `hsl(…)` / `hsla(…)`, **HSV/HSB** (`hsv(0 100% 100%)`), `oklch(…)`, và tên màu CSS. Có công tắc đổi cách hiển thị giữa HEX / RGB / HSL / HSV.
+  * **Alpha (RGBA):** màu lưu dạng `#rrggbbaa`; alpha nhân với độ đục của đối tượng (REQ-GRAPHICS-07).
+  * **Hút màu từ màn hình** bằng EyeDropper API khi trình duyệt hỗ trợ (Chromium); màu dùng gần đây (12 ô); sao chép màu ở định dạng đang chọn.
+  * **Bảng màu (palette):** tạo, đặt tên, lưu thành preset (REQ-STORAGE-06). **Nhập bảng màu** bằng cách dán danh sách mã (cách nhau bởi dấu phẩy, khoảng trắng hoặc xuống dòng, có hoặc không có `#`), tệp GIMP `.gpl`, JSON (mảng mã màu) hoặc biến CSS (`--x: #…`); 1.1 thêm Adobe `.ase` và đường dẫn bảng màu Coolors. **Áp bảng màu cho các track**: tự gán lần lượt theo thứ tự track, hoặc kéo thả từng ô màu vào track.
+* **REQ-UI-12 (Hiện/ẩn và solo track, 1.0):** mỗi track có nút **mắt** (hiện/ẩn) và nút **solo** (chỉ hiện track này, bấm Alt/Option khi solo để cộng thêm). Track tắt tiếng trong DAW mặc định ẩn nhưng có thể bật hiện (thay cho cờ `showMuted`). Ẩn/hiện áp cho mọi widget dùng track đó, lưu trong phiên và preset, hoàn tác được (REQ-UI-02). Có "Hiện tất cả" / "Ẩn tất cả".
 
 ---

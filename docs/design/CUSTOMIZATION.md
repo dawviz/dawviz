@@ -105,6 +105,7 @@ Thuộc tính có thể **lấy giá trị từ dữ liệu nhạc** thay cho ke
 | `beat.phase`, `bar.phase` (0..1 trong mỗi nhịp) | Nhấp nháy, thở theo nhịp |
 | `activeNotes.count`, `activeNotes.maxVelocity` | Độ rung màn hình, mật độ hạt |
 | `audio.rms` (sau khi có audio, T-08) | Phản ứng theo âm lượng; phải tính trước thành bảng theo thời gian để giữ tất định |
+| `track.audio.rms`, `track.audio.band(lo, hi)` (bản 1.2) | Phản ứng theo âm thanh của **riêng một track**; cần người dùng nạp stem của track đó (SRS REQ-AUDIO-01) |
 
 Dạng khai báo: `{ "bind": "note.velocity", "from": [0, 127], "to": [0.4, 1.2], "ease": "easeInQuad" }`. Khi cần kết hợp nhiều nguồn, điều kiện hay hàm toán học, dùng **biểu thức** (`{ "expr": "…" }`) chạy bằng trình thông dịch an toàn: xem [EXPRESSIONS.md](EXPRESSIONS.md) (AD-13). Biểu thức vẫn là dữ liệu, nên AD-08 giữ nguyên.
 

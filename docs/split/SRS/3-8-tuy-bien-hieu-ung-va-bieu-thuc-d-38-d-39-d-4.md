@@ -4,9 +4,9 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)"
 chunk: 3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md
-source_lines: 718-743
-source_sha1: 6c3a823de0
-ids: [AD-08, AD-11, AD-12, AD-13, AD-15, D-14, D-37, D-38, D-39, D-40, D-43, ERR_ASSET_DECODE, ERR_ASSET_TOO_LARGE, REQ-GRAPHICS-05, REQ-GRAPHICS-09, REQ-GRAPHICS-10, REQ-GRAPHICS-11, REQ-GRAPHICS-12, REQ-GRAPHICS-13, REQ-STORAGE-04, REQ-STORAGE-05, REQ-STORAGE-06]
+source_lines: 748-778
+source_sha1: 77837e7134
+ids: [AD-08, AD-11, AD-12, AD-13, AD-15, D-14, D-37, D-38, D-39, D-40, D-43, ERR_ASSET_DECODE, ERR_ASSET_TOO_LARGE, P-04, P-09, P-10, REQ-GRAPHICS-05, REQ-GRAPHICS-09, REQ-GRAPHICS-10, REQ-GRAPHICS-11, REQ-GRAPHICS-12, REQ-GRAPHICS-13, REQ-GRAPHICS-14, REQ-STORAGE-04, REQ-STORAGE-05, REQ-STORAGE-06, REQ-UI-03, REQ-WIDGET-07]
 ---
 ### 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)
 
@@ -27,6 +27,11 @@ Thiết kế chi tiết: `docs/design/CUSTOMIZATION.md` (AD-08…AD-12), `docs/d
 
 #### REQ-GRAPHICS-13: Biểu thức thuộc tính
 * **1.0:** mọi thuộc tính số/màu nhận biểu thức theo EXPRESSIONS §3 (danh sách trắng biến và hàm, không vòng lặp, giới hạn độ dài/độ sâu/bước); ô nhập báo lỗi theo vị trí; lỗi khi chạy dùng giá trị dự phòng và cảnh báo theo phần tử. **1.1:** tô màu cú pháp, gợi ý tên, nút "Bake thành keyframe".
+
+#### REQ-GRAPHICS-14: Khoảng hiển thị theo thời gian và theo track
+* **1.0:** mọi widget và phần tử cảnh có danh sách **khoảng hiển thị** (`from`–`to`), nhập bằng giây, `bar.beat` hoặc chọn **marker** của dự án (P-10); có thời gian hiện dần/ẩn dần và easing (REQ-GRAPHICS-09). Mặc định: hiện suốt bài. Kéo hai đầu khoảng trực tiếp trên timeline (REQ-UI-03).
+* **Gán track:** widget dùng dữ liệu nốt (Piano Roll, Track Info, Live Trigger, Event Counter, bàn phím, P-04…P-09) chọn một, nhiều hoặc tất cả track. Có thể **đổi tập track theo khoảng thời gian** (ví dụ đoạn verse chỉ hiện piano, đoạn điệp khúc hiện thêm dây), khai báo như một khoảng hiển thị kèm danh sách track.
+* Spectrum/waveform: khoảng hiển thị như trên; chọn nguồn audio theo REQ-WIDGET-07.
 
 #### REQ-STORAGE-05: Tài nguyên của phiên
 * **1.0:** ảnh (PNG/JPEG/WebP/GIF khung đầu), SVG (chỉ vẽ dạng ảnh), sprite sheet, phông (WOFF2/TTF/OTF); định danh SHA-256; lưu IndexedDB; giới hạn kích thước (`ERR_ASSET_TOO_LARGE`, `ERR_ASSET_DECODE`); đóng gói vào Project Pack; pre-flight báo thiếu tài nguyên trước khi xuất.

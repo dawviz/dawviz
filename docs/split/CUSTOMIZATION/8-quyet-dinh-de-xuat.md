@@ -4,8 +4,8 @@ doc_title: "Tùy biến tối đa: storyboard, chuyển cảnh nốt, đường 
 section: "8. Quyết định đề xuất"
 path: "8. Quyết định đề xuất"
 chunk: 8-quyet-dinh-de-xuat.md
-source_lines: 190-201
-source_sha1: e3b1cd1a13
+source_lines: 191-202
+source_sha1: 252b907188
 ids: [AD-08, AD-09, AD-10, AD-11, AD-12, D-06, D-38, OI-16]
 ---
 ## 8. Quyết định đề xuất

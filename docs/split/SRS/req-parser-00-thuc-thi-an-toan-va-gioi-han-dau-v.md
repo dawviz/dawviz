@@ -5,7 +5,7 @@ section: "REQ-PARSER-00: Thực thi an toàn và giới hạn đầu vào (R-05,
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) > REQ-PARSER-00: Thực thi an toàn và giới hạn đầu vào (R-05, R-09)"
 chunk: req-parser-00-thuc-thi-an-toan-va-gioi-han-dau-v.md
 source_lines: 254-262
-source_sha1: 6c3a823de0
+source_sha1: 77837e7134
 ids: [ERR_ARCHIVE_INVALID, ERR_ARCHIVE_TOO_LARGE, ERR_FILE_TOO_LARGE, ERR_NO_SUPPORTED_ENV, ERR_PARSER_TIMEOUT, REQ-PARSER-00]
 ---
 #### REQ-PARSER-00: Thực thi an toàn và giới hạn đầu vào (R-05, R-09)

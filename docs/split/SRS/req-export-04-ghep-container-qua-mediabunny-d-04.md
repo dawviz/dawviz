@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-EXPORT-04: Ghép container qua Mediabunny (D-04)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-EXPORT-04: Ghép container qua Mediabunny (D-04)"
 chunk: req-export-04-ghep-container-qua-mediabunny-d-04.md
-source_lines: 649-653
-source_sha1: 6c3a823de0
+source_lines: 679-683
+source_sha1: 77837e7134
 ids: [D-04, REQ-EXPORT-04, SOI-10]
 ---
 #### REQ-EXPORT-04: Ghép container qua Mediabunny (D-04)

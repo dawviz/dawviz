@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-GRAPHICS-05: Render Core dùng chung (ARC-01, D-20)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-05: Render Core dùng chung (ARC-01, D-20)"
 chunk: req-graphics-05-render-core-dung-chung-arc-01-d.md
-source_lines: 449-456
-source_sha1: 6c3a823de0
+source_lines: 462-469
+source_sha1: 77837e7134
 ids: [ARC-01, D-20, REQ-GRAPHICS-05]
 ---
 #### REQ-GRAPHICS-05: Render Core dùng chung (ARC-01, D-20)

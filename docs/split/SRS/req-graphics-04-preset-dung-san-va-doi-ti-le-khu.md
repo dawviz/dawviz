@@ -5,7 +5,7 @@ section: "REQ-GRAPHICS-04: Preset dựng sẵn và đổi tỉ lệ khung"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-04: Preset dựng sẵn và đổi tỉ lệ khung"
 chunk: req-graphics-04-preset-dung-san-va-doi-ti-le-khu.md
 source_lines: 422-426
-source_sha1: 6c3a823de0
+source_sha1: 77837e7134
 ids: [KPI-04, REQ-GRAPHICS-04, REQ-UI-02]
 ---
 #### REQ-GRAPHICS-04: Preset dựng sẵn và đổi tỉ lệ khung

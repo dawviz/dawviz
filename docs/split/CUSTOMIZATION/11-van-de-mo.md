@@ -4,8 +4,8 @@ doc_title: "Tùy biến tối đa: storyboard, chuyển cảnh nốt, đường 
 section: "11. Vấn đề mở"
 path: "11. Vấn đề mở"
 chunk: 11-van-de-mo.md
-source_lines: 232-236
-source_sha1: e3b1cd1a13
+source_lines: 233-237
+source_sha1: 252b907188
 ids: [D-44, OI-15, OI-16]
 ---
 ## 11. Vấn đề mở

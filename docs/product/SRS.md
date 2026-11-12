@@ -12,7 +12,7 @@
 | v0.2 | 2026-11-11 | Tái cấu trúc bám sát BRD v0.2: ma trận truy xuất BR-01 đến BR-08; Bitwig chuyển sang `.dawproject` (D-03); Mediabunny qua `MuxerAdapter` (D-04); trục Tick trong Unified AST (D-08); hệ tọa độ thiết kế logic (D-06); chuỗi dự phòng codec (D-05); Silent Audio (D-01); Pre-flight (REQ-EXPORT-00); ngưỡng hiệu năng gắn Máy chuẩn RM-1 (D-16). **Rà soát kiến trúc:** thêm Render Core dùng chung, Export Worker, giới hạn bộ nhớ audio, CSP đầy đủ (mục 2.4, Phụ lục B). |
 | v1.0 | 2026-11-12 | **Chốt đường cơ sở yêu cầu** sau Spike 1 và Spike 2 (xem BRD v1.0): thêm REQ-GRAPHICS-06 (độ sáng theo automation), track `mix`/`automation` trong AST, đọc envelope Reaper (REQ-RPP-07 của thư viện), mục 2.6 ngăn xếp giao diện và Render Core (D-34 đến D-36), AT-17 và AT-18, SOI-18/19. Mục còn [VERIFY] giữ nguyên làm Open Issue có chủ. |
 | v0.3 | 2026-11-12 | **Bổ sung sau cùng:** đa ngôn ngữ ngay từ đầu (REQ-I18N-01 đến 08, REQ-UI-09, NFR-COMP-03 sửa, AT-16); ghi đè tempo có dấu nhịp và 3 cách nhập mốc (REQ-PARSER-07, REQ-UI-06, AT-13); đề xuất widget và dữ liệu bổ sung (mục 3.4b); `IGNTEMPO` có mẫu cú pháp từ tài liệu Reaper; trạng thái Spike 1 và Spike 2: hoàn thành (Phụ lục B). **Theo Spike 1:** Silent Audio mặc định TẮT (REQ-EXPORT-03); nhập rộng × cao và tỉ lệ tuỳ ý (REQ-EXPORT-00); tên file chốt trước khi render (REQ-EXPORT-04); số đo A/V và tốc độ xuất; giới hạn di động. **Theo Spike 2:** thư viện parser độc lập (mục 2.5); không đoán tempo, ghi đè tempo theo mốc (REQ-PARSER-07, REQ-UI-06); widget Progress Bar (REQ-WIDGET-08, nay 8 widget). **Theo thư viện parser đã dựng:** `.als` XML thuần hoặc Gzip, sửa công thức clip/loop và đường dẫn đã kiểm bằng file thật (REQ-PARSER-01); `.alp` thật định dạng `pl-a` và chọn `.als` (REQ-PARSER-06, REQ-UI-07); cập nhật `.rpp`, `.dawproject`, `.mid`; parser nhị phân theo schema (REQ-PARSER-05); giới hạn nạp cập nhật (REQ-PARSER-00); AST thêm trường (REQ-AST-01); `.flp`/`.bwproject` ghi *chưa hỗ trợ*; mã lỗi và vấn đề còn mở cập nhật. |
-| v1.1 | 2026-11-12 | **Chốt sau rà soát:** thêm §3.8 (REQ-GRAPHICS-09…13, REQ-STORAGE-05/06: easing, template nốt, hạt, storyboard, biểu thức, tài nguyên phiên, preset cộng đồng); NFR-SEC-05…07 (trình thông dịch biểu thức, CSP + Trusted Types + origin riêng, mức tin cậy preset); §3.4b chuyển từ đề xuất thành **phạm vi bản 1.0** (D-40); AT-19…AT-23; cập nhật §8: đóng SOI-01, SOI-08, SOI-12, SOI-13, SOI-14; mục cần dữ liệu thật theo Chương trình tệp mẫu (D-45); ID trùng `SOI-18` thứ hai đổi thành SOI-20. **Đối chiếu Spike 1** (`docs/spikes/`): REQ-GRAPHICS-05 tách ngưỡng cùng đường vẽ (≤ 1/255) và khác đường vẽ (theo số đo max diff 57/255; tiêu chí phần trăm điểm ảnh + PSNR, [PROVISIONAL]); AT-05 so ảnh trước mã hoá; SOI-03 đạt trên Windows; REQ-EXPORT-00 thêm giao diện chọn kích thước (khoá tỉ lệ, tỉ lệ dựng sẵn); REQ-GRAPHICS-04 thêm "Neo theo cạnh". |
+| v1.1 | 2026-11-12 | **Chốt sau rà soát:** thêm §3.8 (REQ-GRAPHICS-09…13, REQ-STORAGE-05/06: easing, template nốt, hạt, storyboard, biểu thức, tài nguyên phiên, preset cộng đồng); NFR-SEC-05…07 (trình thông dịch biểu thức, CSP + Trusted Types + origin riêng, mức tin cậy preset); §3.4b chuyển từ đề xuất thành **phạm vi bản 1.0** (D-40); AT-19…AT-23; cập nhật §8: đóng SOI-01, SOI-08, SOI-12, SOI-13, SOI-14; mục cần dữ liệu thật theo Chương trình tệp mẫu (D-45); ID trùng `SOI-18` thứ hai đổi thành SOI-20. **Đối chiếu Spike 1** (`docs/spikes/`): REQ-GRAPHICS-05 tách ngưỡng cùng đường vẽ (≤ 1/255) và khác đường vẽ (theo số đo max diff 57/255; tiêu chí phần trăm điểm ảnh + PSNR, [PROVISIONAL]); AT-05 so ảnh trước mã hoá; SOI-03 đạt trên Windows; REQ-EXPORT-00 thêm giao diện chọn kích thước (khoá tỉ lệ, tỉ lệ dựng sẵn); REQ-GRAPHICS-04 thêm "Neo theo cạnh". **Bổ sung theo yêu cầu chủ dự án:** REQ-UI-10 (theme sáng/tối/theo hệ thống), REQ-UI-11 (bộ chọn màu HEX/RGB/RGBA/HSL/HSV/OKLCH, hút màu, nhập bảng màu), REQ-UI-12 (ẩn/hiện, solo track), REQ-GRAPHICS-14 (khoảng hiển thị theo thời gian, đổi track theo đoạn); REQ-GRAPHICS-07 thêm tuỳ chỉnh bàn phím và tên nốt trên phím; REQ-WIDGET-07 thêm tuỳ chỉnh hình dạng spectrum/waveform, nguồn stem theo track (1.2); REQ-GRAPHICS-06 giải thích đảo chiều và phân biệt với velocity. Thêm **REQ-AUDIO-01** (âm thanh theo track: người dùng xuất stem từ DAW, điều kiện tệp, tự ghép theo tên, chỉ dùng để phân tích, giới hạn bộ nhớ, hướng dẫn xuất stem trong ứng dụng; bản 1.2), `ERR_AUDIO_TOO_MANY`, AT-24. |
 
 ### Quy ước trong tài liệu
 
@@ -427,6 +427,8 @@ Mọi widget có trường `layout.rotation` (độ). Ở v1.0 giá trị khóa 
 #### REQ-GRAPHICS-06: Độ sáng track theo automation (D-33)
 * Mỗi track có **Nguồn độ sáng**: `volume` (**mặc định**), `pan`, `mute`, `mức fader tĩnh` hoặc `tắt`; chọn riêng từng track hoặc áp cho tất cả. Người dùng quyết định sáng hơn hay tối hơn khi âm lượng lớn: có công tắc **đảo chiều**.
 * **Volume**: `B(t) = lerp(minB, maxB, volumeToUnit(gain(t), floorDb, ceilDb))`, mặc định `floorDb = −36 dB`, `ceilDb = 0 dB`, `minB = 0,25`, `maxB = 1`; các giá trị này chỉnh được. Giá trị trên `ceilDb` (ví dụ +3 dB) kẹp ở sáng nhất.
+* **Đảo chiều**: mặc định giá trị nguồn càng lớn thì càng sáng (âm lượng to → sáng). Bật đảo chiều thì ngược lại (âm lượng to → tối), tức `k = 1 − u` thay cho `k = u` trong công thức trên. Hữu ích khi muốn track đang "lùi" (fade out) nổi bật hơn, hoặc làm hiệu ứng tối dần khi nhạc dồn lên.
+* **Phân biệt với cường độ nốt (velocity):** độ sáng ở đây lấy theo **automation của cả track** (fader, pan, mute trong DAW) và thay đổi theo thời gian. Độ mạnh của **từng nốt** (velocity 0–127) là chuyện khác: chọn ở chế độ màu `velocity` của kiểu nốt (REQ-GRAPHICS-07) hoặc gắn vào bất kỳ thuộc tính nào qua binding `note.velocity` (REQ-GRAPHICS-12) và biểu thức (REQ-GRAPHICS-13).
 * **Pan / Mute**: dùng lane tương ứng; pan theo độ lệch khỏi giữa, mute sáng/tối theo trạng thái. Chiều pan và nghĩa giá trị mute chưa kiểm (SOI-19), nên hai nguồn này đánh dấu thử nghiệm.
 * **Mức fader tĩnh**: dùng `track.mix.volumeDb` khi track không có envelope. Track không có dữ liệu nguồn thì `B = 1` (hình ảnh không đổi).
 * Độ sáng áp lên màu nốt/nền của Piano Roll, Live Trigger, Track Info và các widget P-01, P-09; cách áp (đổi độ sáng HSL, độ mờ, hoặc cả hai) tuỳ widget.
@@ -439,6 +441,17 @@ Mọi widget có trường `layout.rotation` (độ). Ở v1.0 giá trị khóa 
 * Giá trị ngoài miền hợp lệ bị **kẹp** (không ném lỗi); màu sai định dạng quay về mặc định. Độ sáng theo automation (REQ-GRAPHICS-06) nhân thêm vào độ đục và cường độ phát sáng.
 * Có **bộ kiểu dựng sẵn** (neon, thanh bo tròn, phẳng, chỉ viền) làm điểm xuất phát; người dùng chọn rồi chỉnh tiếp.
 * **Bàn phím piano** (widget P-01) dùng chung trục cao độ với Piano Roll, phím đang phát lấy màu nốt. Bật/tắt được. Bản đầu gắn cạnh Piano Roll; tách thành widget độc lập khi có Scene (T-05).
+* **Tuỳ chỉnh bàn phím (bổ sung v1.1 tài liệu, bản phát hành 1.0):**
+  * **Phạm vi phím:** theo nội dung (mặc định), 88 / 76 / 61 / 49 / 37 / 25 phím, hoặc tuỳ chọn từ–đến (ví dụ C2–C6); luôn khớp trục cao độ với Piano Roll.
+  * **Hướng:** theo hướng cuộn của Piano Roll (dọc bên trái khi nốt chạy ngang; nằm ngang ở dưới khi nốt rơi).
+  * **Hình dạng:** màu phím trắng, phím đen, khe giữa phím, tỉ lệ dài phím đen (0,5–0,8), bo góc, kiểu phẳng hoặc có bóng nổi, viền.
+  * **Phím đang nhấn:** màu theo track, theo nốt (cùng chế độ màu với nốt) hoặc một màu cố định; độ lún theo velocity; phát sáng; thời gian nhả dần (ms).
+  * **Đánh dấu thang âm:** tô nhạt các phím thuộc giọng đang chọn hoặc giọng nhận diện được (P-04).
+* **Tên nốt trên phím (note label, 1.0):**
+  * **Hiện ở:** không; chỉ phím C; mọi phím trắng; mọi phím; chỉ phím đang nhấn.
+  * **Cách ghi tên:** dùng thiết lập chung P-12 / REQ-I18N-08 (`C D E`, `Do Re Mi`, `H` thay `B`, `ハニホ`…); thăng/giáng hiển thị `♯`/`♭` hoặc `#`/`b`.
+  * **Số quãng tám:** chọn quy ước Đô giữa (MIDI 60) là **C4** (mặc định, theo chuẩn khoa học) hay **C3** (kiểu Yamaha/Ableton) để khớp DAW người dùng; tuỳ chọn ẩn số.
+  * **Kiểu chữ:** phông (gồm phông người dùng nạp, REQ-STORAGE-05), cỡ, màu, vị trí (đáy phím / giữa), xoay theo hướng bàn phím.
 * Mọi kiểu dáng vẽ qua Render Core nên Preview và Export giống nhau (REQ-GRAPHICS-05). Phát sáng dùng `shadowBlur`; chi phí khi xuất độ phân giải cao cần đo (T-09).
 
 #### REQ-GRAPHICS-08: Hiệu ứng chuyển động tất định (D-37)
@@ -502,6 +515,23 @@ Mỗi widget có thuộc tính hình học `(x, y, width, height, zIndex, rotati
 * **FFT tất định**: tự cài FFT (cửa sổ Hann, kích thước 2048 **[PROVISIONAL]**) tính từ PCM tại thời điểm `t`; Preview không dùng `AnalyserNode` để Export cho cùng kết quả.
 * **Kiểu hiển thị**: Frequency Bars (16–128 cột, thang log hoặc tuyến tính), Mirrored Spectrum, Oscilloscope, Peak & Crest Factor Meter (dBFS đỉnh và tỉ số đỉnh/RMS).
 * Khi chưa có audio nhưng widget vẫn được đặt: áp dụng quy tắc trạng thái rỗng ở đầu mục 3.4.
+* **Tuỳ chỉnh hình dạng (bổ sung v1.1 tài liệu):**
+  * **1.0:** kiểu Bars, Mirrored, Line/Area (đường phổ liền), Dots, Oscilloscope (dạng sóng tức thời), **Waveform tổng quan** (toàn bài, có vạch phát và phần đã phát tô màu khác), Peak/RMS Meter. Tham số: số cột 8–256, thang tần số log/tuyến tính/mel, dải tần (ví dụ 30 Hz–16 kHz), độ rộng và khe cột, bo góc, hướng (lên, xuống, đối xứng giữa), làm mượt theo thời gian (attack/release ms, tính tất định từ PCM, không mô phỏng), chấm đỉnh rơi chậm (peak cap), màu đơn / gradient theo tần số / gradient theo biên độ, độ đục, phát sáng.
+  * **1.1:** dạng **tròn/radial** (cột toả quanh tâm, có thể đặt ảnh hoặc logo ở giữa), xoắn ốc, đường cong tuỳ vẽ làm "đường nền" cho cột chạy theo; hình cột là sprite người dùng nạp; mọi tham số gắn được keyframe/biểu thức (ví dụ bán kính đập theo kick).
+* **Nguồn âm thanh:** 1.0 dùng một tệp audio tổng (mix). Hiện spectrum, waveform hay meter **riêng cho từng track** cần âm thanh tách track (stem) do người dùng xuất từ DAW: xem **REQ-AUDIO-01** (bản 1.2). Widget chọn nguồn là tệp tổng hoặc stem của track nào.
+
+#### REQ-AUDIO-01: Âm thanh theo track (stem), bản 1.2
+Tệp dự án DAW chỉ chứa nốt, tempo, automation và **đường dẫn** tới sample/plugin, không chứa âm thanh đã trộn của từng track; một tệp mix chung cũng không tách ngược ra từng track được. Vì vậy mọi thứ cần **âm thanh của riêng một track** đòi người dùng **xuất (render) thêm tệp âm thanh cho track đó** từ DAW.
+
+* **Cần stem:** spectrum, waveform, oscilloscope, meter của riêng một track; binding phản ứng theo âm thanh của một track (`track.audio.rms`, `track.audio.band(lo, hi)`, REQ-GRAPHICS-12/13). **Không cần stem:** mọi thứ dựa trên nốt và automation (Piano Roll, bàn phím, Live Trigger, Event Counter, hợp âm và giọng từ MIDI, độ sáng theo automation, P-02…P-13); widget âm thanh dùng tệp mix chung.
+* **Định dạng:** như tệp mix (`.wav`, `.mp3`, `.ogg`, `.flac`, `.m4a`; khả năng giải mã phụ thuộc trình duyệt). Khuyến nghị WAV hoặc FLAC; MP3 có độ trễ đệm đầu tệp của bộ mã hoá (encoder delay) nên có thể lệch vài chục ms.
+* **Điều kiện tệp:** mọi stem và tệp mix xuất **từ cùng điểm bắt đầu dự án** (bar 1 hoặc vị trí 0) và cùng độ dài; không cắt khoảng lặng đầu (tắt "trim silence"); cùng tần số lấy mẫu là tốt nhất (khác nhau vẫn nhận, được chuyển đổi khi phân tích). Lệch độ dài quá 50 ms thì cảnh báo `WARN_STEM_LENGTH`; mỗi stem có thanh **offset** riêng ±10 s, bước 1 ms như REQ-WIDGET-07.
+* **Ghép stem với track:** tự ghép theo tên tệp so với tên track (không phân biệt hoa thường; bỏ tiền tố số như `01 `, `03-`, `Track 3 - `; bỏ hậu tố như ` (stem)`); tệp không ghép được hiện trong danh sách chờ để **kéo thả** vào track (`WARN_STEM_UNMATCHED`). Một stem có thể gán cho nhiều track (ví dụ stem của nhóm/bus), một track có thể không có stem.
+* **Phát và xuất:** có tệp mix thì phát và xuất bằng mix; stem mặc định **chỉ dùng để phân tích**, không phát, tránh âm thanh bị cộng đôi. Không có mix thì cho chọn "phát bằng tổng các stem" (cộng có hệ số, cảnh báo nguy cơ vượt 0 dBFS).
+* **Bộ nhớ và hiệu năng:** giải mã từng stem theo khối trong Worker, tính sẵn bộ đệm phân tích dạng mono (đỉnh/RMS, FFT theo khung) rồi **giải phóng PCM** của stem (stem không phát). Giới hạn **[PROVISIONAL]**: tối đa 24 stem, tổng thời lượng stem ≤ 240 phút; vượt thì `ERR_AUDIO_TOO_MANY` kèm gợi ý gộp stem.
+* **Lưu trữ:** bộ đệm phân tích (nhỏ) lưu trong phiên và Project Pack, nên mở lại dự án **không cần nạp lại stem**; tệp stem gốc lưu kèm Pack là tuỳ chọn (mặc định không, vì nặng). Nạp lại stem khi muốn đổi tham số phân tích (kích thước FFT, dải tần).
+* **Hướng dẫn trong ứng dụng:** khi người dùng chọn một track làm nguồn cho widget âm thanh mà track chưa có stem, hiện thông báo kèm hướng dẫn xuất stem theo DAW nhận diện được từ tệp dự án (bằng ngôn ngữ đang chọn), ví dụ: Ableton Live: *File → Export Audio/Video → Rendered Track: All Individual Tracks*; Reaper: *File → Render → Source: Stems (selected tracks)*; FL Studio: xuất WAV với tuỳ chọn *Split mixer tracks*; Bitwig Studio, Studio One và DAW khác: chức năng xuất stem/track riêng của DAW. Pre-flight (REQ-EXPORT-00) báo widget nào đang thiếu stem.
+* **Ngoài phạm vi:** tách nguồn bằng AI ngay trong trình duyệt (tự tách vocal/trống/bass từ tệp mix). Mô hình nặng và kết quả không tất định trên mọi máy; chỉ cân nhắc sau 1.2.
 
 #### REQ-WIDGET-08: Progress Bar (D-27)
 * Thanh tiến độ của bài nhạc, người dùng tự thêm vào Canvas (theo đề xuất Spike 2). Tiến độ `P = clamp((t − rangeStart) / (rangeEnd − rangeStart), 0, 1)`, trong đó khoảng là Export Range nếu có, không thì toàn bộ thời lượng (cùng định nghĩa thời lượng ở REQ-EXPORT-00). Khác `Progress` của Event Counter (theo số nốt).
@@ -735,6 +765,11 @@ Thiết kế chi tiết: `docs/design/CUSTOMIZATION.md` (AD-08…AD-12), `docs/d
 #### REQ-GRAPHICS-13: Biểu thức thuộc tính
 * **1.0:** mọi thuộc tính số/màu nhận biểu thức theo EXPRESSIONS §3 (danh sách trắng biến và hàm, không vòng lặp, giới hạn độ dài/độ sâu/bước); ô nhập báo lỗi theo vị trí; lỗi khi chạy dùng giá trị dự phòng và cảnh báo theo phần tử. **1.1:** tô màu cú pháp, gợi ý tên, nút "Bake thành keyframe".
 
+#### REQ-GRAPHICS-14: Khoảng hiển thị theo thời gian và theo track
+* **1.0:** mọi widget và phần tử cảnh có danh sách **khoảng hiển thị** (`from`–`to`), nhập bằng giây, `bar.beat` hoặc chọn **marker** của dự án (P-10); có thời gian hiện dần/ẩn dần và easing (REQ-GRAPHICS-09). Mặc định: hiện suốt bài. Kéo hai đầu khoảng trực tiếp trên timeline (REQ-UI-03).
+* **Gán track:** widget dùng dữ liệu nốt (Piano Roll, Track Info, Live Trigger, Event Counter, bàn phím, P-04…P-09) chọn một, nhiều hoặc tất cả track. Có thể **đổi tập track theo khoảng thời gian** (ví dụ đoạn verse chỉ hiện piano, đoạn điệp khúc hiện thêm dây), khai báo như một khoảng hiển thị kèm danh sách track.
+* Spectrum/waveform: khoảng hiển thị như trên; chọn nguồn audio theo REQ-WIDGET-07.
+
 #### REQ-STORAGE-05: Tài nguyên của phiên
 * **1.0:** ảnh (PNG/JPEG/WebP/GIF khung đầu), SVG (chỉ vẽ dạng ảnh), sprite sheet, phông (WOFF2/TTF/OTF); định danh SHA-256; lưu IndexedDB; giới hạn kích thước (`ERR_ASSET_TOO_LARGE`, `ERR_ASSET_DECODE`); đóng gói vào Project Pack; pre-flight báo thiếu tài nguyên trước khi xuất.
 
@@ -839,6 +874,13 @@ style-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-a
 * **REQ-UI-08 (Đầu vào bổ sung theo ngữ cảnh):** giao diện chỉ hiện ô nạp thêm khi file vừa chọn thật sự cần: (a) `.rpp` tham chiếu `.mid` ngoài → hiện ô nạp `.mid` kèm tên các file cần; (b) định dạng nhị phân chưa hỗ trợ trực tiếp (`.bwproject`, `.flp`, đuôi lạ) → hiện ô nạp schema JSON (REQ-PARSER-05). Không cần thì ẩn. Nếu người dùng chưa nạp file cần thiết, **phải** hiển thị thông báo nêu rõ thiếu gì và hậu quả (không có nốt/chưa phân tích được); tempo không đọc được từ file cũng phải được báo kèm gợi ý nhập BPM (REQ-UI-06). Thư viện cung cấp `probeProject`.
 * **REQ-UI-09 (Chọn ngôn ngữ, BR-09, D-30):** bộ chọn ngôn ngữ luôn thấy được, liệt kê theo tên ngôn ngữ viết bằng chính ngôn ngữ đó (lấy từ `locales/index.json`). Mặc định: lựa chọn đã lưu, nếu chưa có thì ngôn ngữ trình duyệt khớp theo chuỗi `vi-VN → vi`, cuối cùng là tiếng Anh. Đổi ngôn ngữ có hiệu lực ngay (kể cả kết quả đang hiển thị) và cập nhật `lang`/`dir` của trang.
 * **REQ-UI-05 (Người dùng mới, BR-07, KPI-04):** sau khi nạp file hợp lệ, hệ thống tự áp preset mặc định, gán track và hiển thị sẵn nút Export nổi bật; đường đi tối thiểu "nạp → (chọn đoạn) → Export" không cần mở Inspector.
+* **REQ-UI-10 (Theme sáng/tối cho giao diện, 1.0):** ba lựa chọn **Sáng**, **Tối** (mặc định hiện nay) và **Theo hệ thống** (`prefers-color-scheme`); lưu theo trình duyệt; đổi tức thì không tải lại trang. Theme chỉ đổi **giao diện ứng dụng**; màu khung hình video do cảnh và preset quyết định, không bị ảnh hưởng. Cả hai theme đạt tương phản WCAG AA cho chữ và điều khiển. Bảng màu theme khai báo bằng biến CSS để cộng đồng thêm theme giao diện về sau (1.1).
+* **REQ-UI-11 (Bộ chọn màu và bảng màu, 1.0):**
+  * Mọi ô chọn màu (màu track, nốt, nền, phím, chữ, gradient) dùng chung một bộ chọn: ô vuông màu + thanh hue + thanh alpha, và **ô nhập văn bản** nhận các dạng `#rgb`, `#rgba`, `#rrggbb`, `#rrggbbaa`, `rgb(255 0 0)` / `rgb(255, 0, 0)`, `rgba(…)`, số thập phân `255, 0, 0` hoặc `1.0, 0, 0`, `hsl(…)` / `hsla(…)`, **HSV/HSB** (`hsv(0 100% 100%)`), `oklch(…)`, và tên màu CSS. Có công tắc đổi cách hiển thị giữa HEX / RGB / HSL / HSV.
+  * **Alpha (RGBA):** màu lưu dạng `#rrggbbaa`; alpha nhân với độ đục của đối tượng (REQ-GRAPHICS-07).
+  * **Hút màu từ màn hình** bằng EyeDropper API khi trình duyệt hỗ trợ (Chromium); màu dùng gần đây (12 ô); sao chép màu ở định dạng đang chọn.
+  * **Bảng màu (palette):** tạo, đặt tên, lưu thành preset (REQ-STORAGE-06). **Nhập bảng màu** bằng cách dán danh sách mã (cách nhau bởi dấu phẩy, khoảng trắng hoặc xuống dòng, có hoặc không có `#`), tệp GIMP `.gpl`, JSON (mảng mã màu) hoặc biến CSS (`--x: #…`); 1.1 thêm Adobe `.ase` và đường dẫn bảng màu Coolors. **Áp bảng màu cho các track**: tự gán lần lượt theo thứ tự track, hoặc kéo thả từng ô màu vào track.
+* **REQ-UI-12 (Hiện/ẩn và solo track, 1.0):** mỗi track có nút **mắt** (hiện/ẩn) và nút **solo** (chỉ hiện track này, bấm Alt/Option khi solo để cộng thêm). Track tắt tiếng trong DAW mặc định ẩn nhưng có thể bật hiện (thay cho cờ `showMuted`). Ẩn/hiện áp cho mọi widget dùng track đó, lưu trong phiên và preset, hoàn tác được (REQ-UI-02). Có "Hiện tất cả" / "Ẩn tất cả".
 
 ---
 
@@ -887,6 +929,7 @@ Phiên bản đạt nghiệm thu khi vượt qua toàn bộ các kiểm thử sa
 | **AT-21** | An toàn biểu thức (1.0) | Bộ mẫu tấn công (EXPRESSIONS §4) đều bị từ chối hoặc ra giá trị dự phòng; fuzz 100.000 biểu thức không treo, không lỗi ngoài `ExprError`; trang chạy đủ chức năng với CSP bật. |
 | **AT-22** | Tài nguyên và preset (1.0) | Nạp cùng ảnh hai lần chỉ lưu một bản; Project Pack mở trên trình duyệt khác đủ tài nguyên; preset sai schema hoặc vượt giới hạn bị từ chối kèm mã lỗi. |
 | **AT-23** | Widget bổ sung (1.0) | P-01…P-13 hiển thị đúng với tệp mẫu (marker và lời với tệp có dữ liệu tương ứng); đổi cách ghi tên nốt áp cho mọi widget. |
+| **AT-24** | Stem theo track (1.2) | Nạp tệp mix + 4 stem xuất từ Reaper và Ableton (cùng điểm đầu): tự ghép đúng tên track; spectrum của từng track khớp âm thanh của track đó; stem lệch độ dài có cảnh báo; mở lại dự án từ Project Pack không cần stem mà widget vẫn vẽ được. |
 
 ---
 
@@ -935,6 +978,7 @@ Phiên bản đạt nghiệm thu khi vượt qua toàn bộ các kiểm thử sa
 | `ERR_NO_SUPPORTED_ENV` | Môi trường thiếu `DecompressionStream` | Dùng Chrome/Edge bản mới. |
 | `ERR_AUDIO_DECODE` | Trình duyệt không giải mã được audio | Đổi sang `.wav`/`.mp3`; vẫn có thể tiếp tục không audio. |
 | `ERR_AUDIO_TOO_LONG` | Audio dài hơn giới hạn giải mã | Cắt ngắn audio. |
+| `ERR_AUDIO_TOO_MANY` | Số stem hoặc tổng thời lượng stem vượt giới hạn (REQ-AUDIO-01) | Gộp bớt stem (theo nhóm nhạc cụ) hoặc chỉ nạp stem của track cần hiện. |
 | `ERR_PRESET_INVALID` | Preset hỏng hoặc sai lược đồ | Dùng preset khác. |
 | `ERR_SCHEMA_NEWER` | Dữ liệu từ phiên bản mới hơn | Cập nhật ứng dụng. |
 | `ERR_NO_SUPPORTED_ENCODER` | Không có bộ mã hóa phù hợp (Tier 4) | Dùng Chrome/Edge bản mới trên Windows/macOS. |
@@ -943,6 +987,8 @@ Phiên bản đạt nghiệm thu khi vượt qua toàn bộ các kiểm thử sa
 ### Phụ lục A2: Mã cảnh báo của Parser Library
 
 `WARN_TEMPO_FALLBACK`, `WARN_TEMPO_MIDI_DEFAULT`, `WARN_TEMPO_OVERRIDDEN`, `WARN_TEMPO_RAMP`, `WARN_TEMPO_SHAPE`, `WARN_TEMPO_AUTOMATION`, `WARN_TIMESIG_DEFAULT`, `WARN_ZERO_LENGTH_NOTES`, `WARN_SESSION_CLIPS_IGNORED`, `WARN_CLIP_SKIPPED`, `WARN_ALP_MULTIPLE_ALS`, `WARN_MIDI_HANGING_NOTES`, `WARN_MIDI_TRUNCATED`, `WARN_RPP_EXTERNAL_MIDI`, `WARN_RPP_LOOPED_ITEMS`, `WARN_RPP_MUTED_ITEMS`, `WARN_RPP_SOFFS`, `WARN_RPP_PROJOFFS`, `WARN_RPP_HANGING_NOTES`, `WARN_DAWPROJECT_NO_METADATA`, `WARN_DAWPROJECT_NO_NOTE_TRACKS`, `WARN_TIME_UNIT_MIXED`, `WARN_DAWPROJECT_NO_ARRANGEMENT`, `WARN_RPP_LOOP_UNKNOWN_LEN`, `WARN_RPP_SRC_UNIT`, `WARN_TEMPO_AUTOMATION_SECONDS`, `WARN_RPP_ENVELOPES_IGNORED`. Mỗi mã có khoá dịch `warn.<mã>` trong `locales/*.json` (REQ-I18N-03). Danh sách đầy đủ và điều kiện: `docs/parser/PARSER-SRS.md` mục 4.
+
+**Cảnh báo của ứng dụng (không thuộc parser):** `WARN_STEM_LENGTH` (stem lệch độ dài với tệp mix quá 50 ms), `WARN_STEM_UNMATCHED` (tệp stem chưa ghép được với track nào), xem REQ-AUDIO-01.
 
 ### Phụ lục B: Ghi chú rà soát
 
