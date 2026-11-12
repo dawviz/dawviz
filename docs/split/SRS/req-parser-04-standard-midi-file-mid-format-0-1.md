@@ -5,7 +5,7 @@ section: "REQ-PARSER-04: Standard MIDI File (`.mid`, format 0/1)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) > REQ-PARSER-04: Standard MIDI File (`.mid`, format 0/1)"
 chunk: req-parser-04-standard-midi-file-mid-format-0-1.md
 source_lines: 309-317
-source_sha1: baed28c4a6
+source_sha1: 1654c314a5
 ids: [ERR_UNSUPPORTED_FORMAT, REQ-PARSER-04, REQ-PARSER-07, WARN_MIDI_TRUNCATED, WARN_TEMPO_MIDI_DEFAULT]
 ---
 #### REQ-PARSER-04: Standard MIDI File (`.mid`, format 0/1)

@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "5.1. Bố cục không gian làm việc"
 path: "5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.1. Bố cục không gian làm việc"
 chunk: 5-1-bo-cuc-khong-gian-lam-viec.md
-source_lines: 849-881
-source_sha1: baed28c4a6
+source_lines: 860-892
+source_sha1: 1654c314a5
 ids: []
 ---
 ### 5.1. Bố cục không gian làm việc

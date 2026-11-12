@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-WIDGET-07: Audio Spectrum & Meter (D-10, ARC-03, ARC-06)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-07: Audio Spectrum & Meter (D-10, ARC-03, ARC-06)"
 chunk: req-widget-07-audio-spectrum-meter-d-10-arc-03-a.md
-source_lines: 511-522
-source_sha1: baed28c4a6
+source_lines: 522-533
+source_sha1: 1654c314a5
 ids: [ARC-03, ARC-06, D-10, ERR_AUDIO_DECODE, ERR_AUDIO_TOO_LONG, REQ-AUDIO-01, REQ-WIDGET-07]
 ---
 #### REQ-WIDGET-07: Audio Spectrum & Meter (D-10, ARC-03, ARC-06)

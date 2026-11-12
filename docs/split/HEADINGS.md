@@ -91,6 +91,8 @@
       - [REQ-GRAPHICS-01: Phân lớp đồ họa (D-07)](SRS/req-graphics-01-phan-lop-do-hoa-d-07.md#req-graphics-01-phân-lớp-đồ-họa-d-07)
 - [REQ-GRAPHICS-02: Bắt dính thông minh](SRS/req-graphics-02-bat-dinh-thong-minh.md)
       - [REQ-GRAPHICS-02: Bắt dính thông minh](SRS/req-graphics-02-bat-dinh-thong-minh.md#req-graphics-02-bắt-dính-thông-minh)
+- [REQ-GRAPHICS-16: Thanh phát (playhead) tuỳ chỉnh](SRS/req-graphics-16-thanh-phat-playhead-tuy-chinh.md)
+      - [REQ-GRAPHICS-16: Thanh phát (playhead) tuỳ chỉnh](SRS/req-graphics-16-thanh-phat-playhead-tuy-chinh.md#req-graphics-16-thanh-phát-playhead-tuỳ-chỉnh)
 - [REQ-GRAPHICS-03: Trường xoay widget (D-15)](SRS/req-graphics-03-truong-xoay-widget-d-15.md)
       - [REQ-GRAPHICS-03: Trường xoay widget (D-15)](SRS/req-graphics-03-truong-xoay-widget-d-15.md#req-graphics-03-trường-xoay-widget-d-15)
 - [REQ-GRAPHICS-04: Preset dựng sẵn và đổi tỉ lệ khung](SRS/req-graphics-04-preset-dung-san-va-doi-ti-le-khu.md)

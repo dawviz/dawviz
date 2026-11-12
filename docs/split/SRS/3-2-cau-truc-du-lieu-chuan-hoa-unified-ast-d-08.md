@@ -5,7 +5,7 @@ section: "3.2. Cấu trúc dữ liệu chuẩn hóa (Unified AST, D-08, D-09)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.2. Cấu trúc dữ liệu chuẩn hóa (Unified AST, D-08, D-09)"
 chunk: 3-2-cau-truc-du-lieu-chuan-hoa-unified-ast-d-08.md
 source_lines: 339-399
-source_sha1: baed28c4a6
+source_sha1: 1654c314a5
 ids: [D-08, D-09, D-24, ERR_AST_INVALID, ERR_AST_TOO_LARGE, ERR_NO_NOTES, NFR-ACC-02, REQ-AST-01, REQ-GRAPHICS-06, WARN_ZERO_LENGTH_NOTES]
 ---
 ### 3.2. Cấu trúc dữ liệu chuẩn hóa (Unified AST, D-08, D-09)

@@ -10,16 +10,16 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [3. CHÂN DUNG NGƯỜI DÙNG MỤC TIÊU (USER PERSONAS)](BRD/3-chan-dung-nguoi-dung-muc-tieu-user-personas.md) · 1342 ký tự
 - [4.1. Trong phạm vi phiên bản 1.0 (In-Scope)](BRD/4-1-trong-pham-vi-phien-ban-1-0-in-scope.md) · 3226 ký tự
 - [4.3. Lộ trình phát hành (Milestones)](BRD/4-3-lo-trinh-phat-hanh-milestones.md) · 892 ký tự
-- [4.4. Phân bổ theo bản phát hành (D-40, chốt ở tài liệu v1.1)](BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md) · 2540 ký tự
+- [4.4. Phân bổ theo bản phát hành (D-40, chốt ở tài liệu v1.1)](BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md) · 2624 ký tự
 - [4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1118 ký tự
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4347 ký tự
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](BRD/6-gia-dinh-assumptions.md) · 554 ký tự
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 13827 ký tự
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 14359 ký tự
 - [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](BRD/8-cac-van-de-con-mo-open-issues.md) · 4634 ký tự
 
 ## SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
-- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 5711 ký tự
+- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 5996 ký tự
 - [1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG](SRS/1-gioi-thieu-muc-tieu-he-thong.md) · 4632 ký tự
 - [2.1. Kiến trúc phân tầng hệ thống](SRS/2-1-kien-truc-phan-tang-he-thong.md) · 6588 ký tự
 - [2.2. Luồng dữ liệu chính](SRS/2-2-luong-du-lieu-chinh.md) · 641 ký tự
@@ -39,6 +39,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [REQ-GRAPHICS-00: Độ phân giải thiết kế logic (D-06)](SRS/req-graphics-00-do-phan-giai-thiet-ke-logic-d-06.md) · 421 ký tự
 - [REQ-GRAPHICS-01: Phân lớp đồ họa (D-07)](SRS/req-graphics-01-phan-lop-do-hoa-d-07.md) · 445 ký tự
 - [REQ-GRAPHICS-02: Bắt dính thông minh](SRS/req-graphics-02-bat-dinh-thong-minh.md) · 607 ký tự
+- [REQ-GRAPHICS-16: Thanh phát (playhead) tuỳ chỉnh](SRS/req-graphics-16-thanh-phat-playhead-tuy-chinh.md) · 1143 ký tự
 - [REQ-GRAPHICS-03: Trường xoay widget (D-15)](SRS/req-graphics-03-truong-xoay-widget-d-15.md) · 372 ký tự
 - [REQ-GRAPHICS-04: Preset dựng sẵn và đổi tỉ lệ khung](SRS/req-graphics-04-preset-dung-san-va-doi-ti-le-khu.md) · 673 ký tự
 - [REQ-GRAPHICS-06: Độ sáng track theo automation (D-33)](SRS/req-graphics-06-do-sang-track-theo-automation-d.md) · 2018 ký tự
@@ -46,7 +47,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [REQ-GRAPHICS-08: Hiệu ứng chuyển động tất định (D-37)](SRS/req-graphics-08-hieu-ung-chuyen-dong-tat-dinh-d.md) · 442 ký tự
 - [REQ-GRAPHICS-05: Render Core dùng chung (ARC-01, D-20)](SRS/req-graphics-05-render-core-dung-chung-arc-01-d.md) · 1021 ký tự
 - [3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04)](SRS/3-4-dac-ta-8-widget-hud-br-02-br-03-br-04.md) · 368 ký tự
-- [REQ-WIDGET-01: Piano Roll](SRS/req-widget-01-piano-roll.md) · 810 ký tự
+- [REQ-WIDGET-01: Piano Roll](SRS/req-widget-01-piano-roll.md) · 1411 ký tự
 - [REQ-WIDGET-02: Track Info](SRS/req-widget-02-track-info.md) · 262 ký tự
 - [REQ-WIDGET-03: Event Counter](SRS/req-widget-03-event-counter.md) · 360 ký tự
 - [REQ-WIDGET-04: Live Note Trigger](SRS/req-widget-04-live-note-trigger.md) · 358 ký tự
@@ -70,7 +71,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [3.7. Đa ngôn ngữ và cộng đồng dịch (BR-09, D-30, KPI-08)](SRS/3-7-da-ngon-ngu-va-cong-dong-dich-br-09-d-30-kpi.md) · 2714 ký tự
 - [3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)](SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md) · 328 ký tự
 - [REQ-GRAPHICS-09: Bộ máy keyframe, easing và Graph Editor](SRS/req-graphics-09-bo-may-keyframe-easing-va-graph.md) · 844 ký tự
-- [REQ-GRAPHICS-10: Template chuyển cảnh nốt](SRS/req-graphics-10-template-chuyen-canh-not.md) · 408 ký tự
+- [REQ-GRAPHICS-10: Template chuyển cảnh nốt](SRS/req-graphics-10-template-chuyen-canh-not.md) · 467 ký tự
 - [REQ-GRAPHICS-11: Hạt không trạng thái](SRS/req-graphics-11-hat-khong-trang-thai.md) · 327 ký tự
 - [REQ-GRAPHICS-12: Storyboard, hiệu ứng và chữ động](SRS/req-graphics-12-storyboard-hieu-ung-va-chu-dong.md) · 529 ký tự
 - [REQ-GRAPHICS-13: Biểu thức thuộc tính](SRS/req-graphics-13-bieu-thuc-thuoc-tinh.md) · 339 ký tự
@@ -81,7 +82,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [4. YÊU CẦU PHI CHỨC NĂNG (NON-FUNCTIONAL REQUIREMENTS)](SRS/4-yeu-cau-phi-chuc-nang-non-functional-requireme.md) · 5167 ký tự
 - [5.1. Bố cục không gian làm việc](SRS/5-1-bo-cuc-khong-gian-lam-viec.md) · 3717 ký tự
 - [5.2. Chế độ tương tác](SRS/5-2-che-do-tuong-tac.md) · 358 ký tự
-- [5.3. Yêu cầu giao diện](SRS/5-3-yeu-cau-giao-dien.md) · 5525 ký tự
+- [5.3. Yêu cầu giao diện](SRS/5-3-yeu-cau-giao-dien.md) · 9238 ký tự
 - [6. MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU](SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md) · 1419 ký tự
 - [7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO](SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md) · 5718 ký tự
 - [8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS](SRS/8-cac-van-de-con-mo-cua-srs.md) · 4032 ký tự
