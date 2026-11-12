@@ -7,9 +7,9 @@ const PRESETS = Object.keys(STYLE_PRESETS);
 
 function Slider({ id, label, value, min, max, step, onChange }: { id: string; label: string; value: number; min: number; max: number; step: number; onChange(v: number): void }) {
   return (
-    <label className="grid grid-cols-[7.5rem_1fr_3rem] items-center gap-2 text-xs text-ink-300" htmlFor={id}>
-      <span>{label}</span>
-      <input id={id} type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} />
+    <label className="grid grid-cols-[7rem_minmax(0,1fr)_2.5rem] items-center gap-2 text-xs text-ink-300" htmlFor={id}>
+      <span className="truncate" title={label}>{label}</span>
+      <input id={id} className="w-full min-w-0" type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} />
       <output className="text-right tabular-nums text-ink-100">{Number.isInteger(step) ? value : value.toFixed(2)}</output>
     </label>
   );
@@ -31,10 +31,10 @@ export function StylePanel({ style, keyboard, onStyle, onKeyboard }: { style: St
             className="rounded-full border border-ink-700 px-2.5 py-0.5 text-xs text-ink-100 hover:border-ink-300">{i18n.t(`web.style.preset.${p}`)}</button>
         ))}
       </div>
-      <label className="grid grid-cols-[7.5rem_1fr] items-center gap-2 text-xs text-ink-300">
+      <label className="grid grid-cols-[7rem_minmax(0,1fr)] items-center gap-2 text-xs text-ink-300">
         <span>{i18n.t('web.style.colorMode')}</span>
-        <span className="flex items-center gap-2">
-          <select value={b.colorMode} onChange={(e) => set({ colorMode: e.target.value as ColorMode })} className="rounded border border-ink-700 bg-ink-950 px-1.5 py-0.5 text-ink-100">
+        <span className="flex min-w-0 items-center gap-2">
+          <select value={b.colorMode} onChange={(e) => set({ colorMode: e.target.value as ColorMode })} className="min-w-0 max-w-full rounded border border-ink-700 bg-ink-950 px-1.5 py-0.5 text-ink-100">
             {MODES.map((m) => <option key={m} value={m}>{i18n.t(`web.style.mode.${m}`)}</option>)}
           </select>
           {b.colorMode === 'custom' && <input type="color" aria-label={i18n.t('web.style.customColor')} value={b.customColor} onChange={(e) => set({ customColor: e.target.value })} />}

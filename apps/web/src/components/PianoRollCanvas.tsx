@@ -1,5 +1,5 @@
 // Canvas Piano Roll: chỉ lo kích thước/DPR, gọi Render Core theo thời điểm t.
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { buildIndex, layoutPianoRoll, layoutKeyboard, drawPianoRoll, drawKeyboard, DEFAULT_KEYBOARD_STYLE, type UnifiedProjectAST, type BrightnessConfig, type StyleConfig, type KeyboardStyle } from '@dawviz/render-core';
 
 const WINDOW_SECONDS = 8, PLAYHEAD_RATIO = 0.25;
@@ -7,6 +7,14 @@ const WINDOW_SECONDS = 8, PLAYHEAD_RATIO = 0.25;
 /** Vẽ khung hình tại thời điểm `t`. Toàn bộ bố cục/vẽ nằm ở Render Core; component chỉ lo canvas và DPR. */
 export function PianoRollCanvas({ ast, t, brightness, style, keyboard, height = 360 }: { ast: UnifiedProjectAST; t: number; brightness: Record<string, BrightnessConfig>; style: StyleConfig; keyboard: KeyboardStyle; height?: number }) {
   const ref = useRef<HTMLCanvasElement>(null);
+  // Vẽ lại khi khung đổi bề rộng (đổi cỡ cửa sổ khi đang dừng), không chỉ khi t đổi.
+  const [cssWidth, setCssWidth] = useState(0);
+  useEffect(() => {
+    const c = ref.current; if (!c || typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(() => setCssWidth(c.clientWidth));
+    ro.observe(c);
+    return () => ro.disconnect();
+  }, []);
   const index = useMemo(() => buildIndex(ast.tracks, ast.meta.totalDurationSeconds), [ast]);
   const [pitchMin, pitchMax] = useMemo(() => {
     let lo = 127, hi = 0;
@@ -28,7 +36,7 @@ export function PianoRollCanvas({ ast, t, brightness, style, keyboard, height = 
       const ks = { ...DEFAULT_KEYBOARD_STYLE, ...keyboard, width: left };
       drawKeyboard(ctx, layoutKeyboard(index, t, { height: h, pitchMin, pitchMax, style: ks, noteStyle: style }), { width: left, height: h, whiteColor: ks.whiteColor });
     }
-  }, [ast, index, t, brightness, style, keyboard, pitchMin, pitchMax, height]);
+  }, [ast, index, t, brightness, style, keyboard, pitchMin, pitchMax, height, cssWidth]);
 
   return <canvas ref={ref} data-testid="piano-roll" className="w-full rounded-xl" style={{ height }} />;
 }

@@ -95,8 +95,8 @@ export function App() {
       <AnimatePresence>
         {loaded && (
           <motion.main key={loaded.name} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className="grid gap-4 lg:grid-cols-[1fr_20rem]">
-            <section className="space-y-3">
+            className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+            <section className="min-w-0 space-y-3 lg:sticky lg:top-4">
               <p className="text-sm text-ink-300">
                 {i18n.t('web.loaded', { name: loaded.name, format: loaded.format, ms: Math.round(loaded.ms), tracks: loaded.ast.tracks.length })}
               </p>
@@ -104,7 +104,7 @@ export function App() {
               <Transport t={clock.t} duration={duration} playing={clock.playing}
                 onToggle={() => setClock((s) => togglePlay(s, duration))} onSeek={(t) => setClock((s) => seek(s, t, duration))} />
             </section>
-            <aside className="space-y-4">
+            <aside className="min-w-0 space-y-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto lg:pr-1 lg:sticky lg:top-4">
               <StylePanel style={style} keyboard={keyboard} onStyle={setStyle} onKeyboard={setKeyboard} />
               <h2 className="mb-2 text-sm font-medium text-ink-300">{i18n.t('web.tracks')}</h2>
               <TrackPanel tracks={loaded.ast.tracks} config={brightness} overrides={style.tracks} onChange={patchBrightness} onStyle={patchTrackStyle} />

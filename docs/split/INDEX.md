@@ -127,7 +127,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [2. Danh mục test mới](TDD/2-danh-muc-test-moi.md) · 1348 ký tự
 - [3. Ma trận truy vết](TDD/3-ma-tran-truy-vet.md) · 399 ký tự
 - [4. Khoảng trống đã biết](TDD/4-khoang-trong-da-biet.md) · 442 ký tự
-- [5. Danh sách kiểm thủ công cho AT-18 (Chrome)](TDD/5-danh-sach-kiem-thu-cong-cho-at-18-chrome.md) · 883 ký tự
+- [5. Danh sách kiểm thủ công cho AT-18 (Chrome)](TDD/5-danh-sach-kiem-thu-cong-cho-at-18-chrome.md) · 1236 ký tự
 
 ## ANIMATION.md — Hiệu ứng chuyển động và xuất video: so sánh công cụ và quyết định
 

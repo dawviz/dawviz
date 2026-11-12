@@ -208,7 +208,7 @@ Nguồn: `docs/design/TDD.md` · [thứ tự đọc](docs/split/TDD/_index.md)
 - [2. Danh mục test mới](docs/split/TDD/2-danh-muc-test-moi.md) · 1.3k
 - [3. Ma trận truy vết](docs/split/TDD/3-ma-tran-truy-vet.md) · 0.4k
 - [4. Khoảng trống đã biết](docs/split/TDD/4-khoang-trong-da-biet.md) · 0.4k
-- [5. Danh sách kiểm thủ công cho AT-18 (Chrome)](docs/split/TDD/5-danh-sach-kiem-thu-cong-cho-at-18-chrome.md) · 0.9k
+- [5. Danh sách kiểm thủ công cho AT-18 (Chrome)](docs/split/TDD/5-danh-sach-kiem-thu-cong-cho-at-18-chrome.md) · 1.2k
 
 ### ANIMATION.md — Hiệu ứng chuyển động và xuất video: so sánh công cụ và quyết định
 

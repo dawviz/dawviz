@@ -23,10 +23,10 @@ export function TrackPanel({ tracks, config, overrides, onChange, onStyle }: { t
                 <span className="text-xs text-ink-300">{i18n.t('web.track.notes', { n: tr.notes.length })}</span>
               </div>
               <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-ink-300">
-                <label className="flex items-center gap-1">
+                <label className="flex min-w-0 items-center gap-1">
                   <span>{i18n.t('web.brightness.source')}</span>
                   <select value={c.source} onChange={(e) => onChange(tr.id, { source: e.target.value as BrightnessSource })}
-                    className="rounded border border-ink-700 bg-ink-950 px-1.5 py-0.5 text-ink-100">
+                    className="min-w-0 max-w-[10rem] rounded border border-ink-700 bg-ink-950 px-1.5 py-0.5 text-ink-100">
                     {SOURCES.map((s) => <option key={s} value={s}>{i18n.t(`web.brightness.${s}`)}{EXPERIMENTAL.has(s) ? ` (${i18n.t('web.experimental')})` : ''}</option>)}
                   </select>
                 </label>

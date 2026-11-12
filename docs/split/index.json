@@ -2645,7 +2645,7 @@
   },
   "TDD.md": {
    "title": "TÀI LIỆU THIẾT KẾ KIỂM THỬ (TDD = Test Design Document) — ỨNG DỤNG DAW VISUALIZER",
-   "sha1": "21a6598042",
+   "sha1": "f04d786942",
    "chunks": [
     {
      "n": 0,
@@ -2736,10 +2736,10 @@
      "path": [
       "5. Danh sách kiểm thủ công cho AT-18 (Chrome)"
      ],
-     "chars": 883,
+     "chars": 1236,
      "lines": [
       62,
-      69
+      71
      ],
      "ids": [
       "AT-18",
