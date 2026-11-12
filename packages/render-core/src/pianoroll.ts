@@ -2,6 +2,7 @@
 import { notesInRange, type TimelineIndex } from './notes.ts';
 import { trackBrightness, DEFAULT_BRIGHTNESS, type BrightnessConfig } from './brightness.ts';
 import type { TempoPoint } from './types.ts';
+import { glowAmount } from './glow.ts';
 import { resolveNoteStyle, noteColor, shade, DEFAULT_KEYBOARD_STYLE, type StyleConfig, type KeyboardStyle } from './style.ts';
 
 export interface PianoRollOptions {
@@ -35,7 +36,7 @@ export function layoutPianoRoll(index: TimelineIndex, tempoMap: TempoPoint[], t:
         brightness: trackBrightness(ti.track, tempoMap, Math.max(0, n.startTimeSeconds), cfg),
         active, velocity: n.velocity, pitch: n.pitch,
         opacity: st.opacity * (active ? 1 : st.inactiveOpacity), radius: Math.min(st.cornerRadius, h / 2, w / 2),
-        glow: st.glow > 0 && (active || !st.glowActiveOnly) ? st.glow : 0, glowRadius: st.glowRadius,
+        glow: st.glow > 0 ? st.glow * glowAmount(st, { track: ti.track, note: n, t, tempoMap, pitchMin: o.pitchMin, pitchMax: o.pitchMax }) : 0, glowRadius: st.glowRadius,
         borderWidth: st.borderWidth, borderColor: st.borderColor || shade(color, 0.45),
       });
     }

@@ -12,7 +12,7 @@
 | v0.2 | 2026-11-11 | Tái cấu trúc bám sát BRD v0.2: ma trận truy xuất BR-01 đến BR-08; Bitwig chuyển sang `.dawproject` (D-03); Mediabunny qua `MuxerAdapter` (D-04); trục Tick trong Unified AST (D-08); hệ tọa độ thiết kế logic (D-06); chuỗi dự phòng codec (D-05); Silent Audio (D-01); Pre-flight (REQ-EXPORT-00); ngưỡng hiệu năng gắn Máy chuẩn RM-1 (D-16). **Rà soát kiến trúc:** thêm Render Core dùng chung, Export Worker, giới hạn bộ nhớ audio, CSP đầy đủ (mục 2.4, Phụ lục B). |
 | v1.0 | 2026-11-12 | **Chốt đường cơ sở yêu cầu** sau Spike 1 và Spike 2 (xem BRD v1.0): thêm REQ-GRAPHICS-06 (độ sáng theo automation), track `mix`/`automation` trong AST, đọc envelope Reaper (REQ-RPP-07 của thư viện), mục 2.6 ngăn xếp giao diện và Render Core (D-34 đến D-36), AT-17 và AT-18, SOI-18/19. Mục còn [VERIFY] giữ nguyên làm Open Issue có chủ. |
 | v0.3 | 2026-11-12 | **Bổ sung sau cùng:** đa ngôn ngữ ngay từ đầu (REQ-I18N-01 đến 08, REQ-UI-09, NFR-COMP-03 sửa, AT-16); ghi đè tempo có dấu nhịp và 3 cách nhập mốc (REQ-PARSER-07, REQ-UI-06, AT-13); đề xuất widget và dữ liệu bổ sung (mục 3.4b); `IGNTEMPO` có mẫu cú pháp từ tài liệu Reaper; trạng thái Spike 1 và Spike 2: hoàn thành (Phụ lục B). **Theo Spike 1:** Silent Audio mặc định TẮT (REQ-EXPORT-03); nhập rộng × cao và tỉ lệ tuỳ ý (REQ-EXPORT-00); tên file chốt trước khi render (REQ-EXPORT-04); số đo A/V và tốc độ xuất; giới hạn di động. **Theo Spike 2:** thư viện parser độc lập (mục 2.5); không đoán tempo, ghi đè tempo theo mốc (REQ-PARSER-07, REQ-UI-06); widget Progress Bar (REQ-WIDGET-08, nay 8 widget). **Theo thư viện parser đã dựng:** `.als` XML thuần hoặc Gzip, sửa công thức clip/loop và đường dẫn đã kiểm bằng file thật (REQ-PARSER-01); `.alp` thật định dạng `pl-a` và chọn `.als` (REQ-PARSER-06, REQ-UI-07); cập nhật `.rpp`, `.dawproject`, `.mid`; parser nhị phân theo schema (REQ-PARSER-05); giới hạn nạp cập nhật (REQ-PARSER-00); AST thêm trường (REQ-AST-01); `.flp`/`.bwproject` ghi *chưa hỗ trợ*; mã lỗi và vấn đề còn mở cập nhật. |
-| v1.1 | 2026-11-12 | **Chốt sau rà soát:** thêm §3.8 (REQ-GRAPHICS-09…13, REQ-STORAGE-05/06: easing, template nốt, hạt, storyboard, biểu thức, tài nguyên phiên, preset cộng đồng); NFR-SEC-05…07 (trình thông dịch biểu thức, CSP + Trusted Types + origin riêng, mức tin cậy preset); §3.4b chuyển từ đề xuất thành **phạm vi bản 1.0** (D-40); AT-19…AT-23; cập nhật §8: đóng SOI-01, SOI-08, SOI-12, SOI-13, SOI-14; mục cần dữ liệu thật theo Chương trình tệp mẫu (D-45); ID trùng `SOI-18` thứ hai đổi thành SOI-20. **Đối chiếu Spike 1** (`docs/spikes/`): REQ-GRAPHICS-05 tách ngưỡng cùng đường vẽ (≤ 1/255) và khác đường vẽ (theo số đo max diff 57/255; tiêu chí phần trăm điểm ảnh + PSNR, [PROVISIONAL]); AT-05 so ảnh trước mã hoá; SOI-03 đạt trên Windows; REQ-EXPORT-00 thêm giao diện chọn kích thước (khoá tỉ lệ, tỉ lệ dựng sẵn); REQ-GRAPHICS-04 thêm "Neo theo cạnh". **Bổ sung theo yêu cầu chủ dự án:** REQ-UI-10 (theme sáng/tối/theo hệ thống), REQ-UI-11 (bộ chọn màu HEX/RGB/RGBA/HSL/HSV/OKLCH, hút màu, nhập bảng màu), REQ-UI-12 (ẩn/hiện, solo track), REQ-GRAPHICS-14 (khoảng hiển thị theo thời gian, đổi track theo đoạn); REQ-GRAPHICS-07 thêm tuỳ chỉnh bàn phím và tên nốt trên phím; REQ-WIDGET-07 thêm tuỳ chỉnh hình dạng spectrum/waveform, nguồn stem theo track (1.2); REQ-GRAPHICS-06 giải thích đảo chiều và phân biệt với velocity. Thêm **REQ-AUDIO-01** (âm thanh theo track: người dùng xuất stem từ DAW, điều kiện tệp, tự ghép theo tên, chỉ dùng để phân tích, giới hạn bộ nhớ, hướng dẫn xuất stem trong ứng dụng; bản 1.2), `ERR_AUDIO_TOO_MANY`, AT-24. Thêm **REQ-GRAPHICS-15** (2.5D: xoay X/Y/Z, camera phối cảnh, preset góc nhìn; bản 1.1) và **REQ-EXPORT-08** (xuất nền trong suốt: chuỗi PNG, WebM VP9 alpha [VERIFY]; bản 1.0); REQ-GRAPHICS-03 mở khoá xoay từ 1.1 (D-47). REQ-EXPORT-08 thêm chọn lớp cho từng lần xuất (xuất nền và tiền cảnh riêng), "Xuất tách lớp" ở 1.1; REQ-GRAPHICS-15 thêm cách xử lý lớp nền khi xoay (mặc định gắn màn hình). Thêm **REQ-GRAPHICS-16** (thanh phát tuỳ chỉnh: kiểu, độ dày, màu, phát sáng, phản ứng khi chạm; sprite và keyframe ở 1.1), **góc chảy tự do 0–360°** trong REQ-WIDGET-01, **REQ-UI-13** (chế độ Cơ bản/Nâng cao, hỏi lần đầu, nút "Thêm tuỳ chọn" từng bảng, bảng phân bổ tính năng; D-48). **Bổ sung sau T-61 (lỗi tràn giao diện):** **REQ-UI-14** (danh sách track xếp Dọc/Ngang/Lưới, mật độ, sắp xếp/lọc/nhóm, vị trí bảng) và **REQ-UI-15** (mọi điều khiển kéo có ô nhập kèm: đơn vị, phép tính, tương đối, phạm vi mềm/giới hạn cứng), AT-25, D-49; thêm 2 dòng vào bảng phân bổ REQ-UI-13. |
+| v1.1 | 2026-11-12 | **Chốt sau rà soát:** thêm §3.8 (REQ-GRAPHICS-09…13, REQ-STORAGE-05/06: easing, template nốt, hạt, storyboard, biểu thức, tài nguyên phiên, preset cộng đồng); NFR-SEC-05…07 (trình thông dịch biểu thức, CSP + Trusted Types + origin riêng, mức tin cậy preset); §3.4b chuyển từ đề xuất thành **phạm vi bản 1.0** (D-40); AT-19…AT-23; cập nhật §8: đóng SOI-01, SOI-08, SOI-12, SOI-13, SOI-14; mục cần dữ liệu thật theo Chương trình tệp mẫu (D-45); ID trùng `SOI-18` thứ hai đổi thành SOI-20. **Đối chiếu Spike 1** (`docs/spikes/`): REQ-GRAPHICS-05 tách ngưỡng cùng đường vẽ (≤ 1/255) và khác đường vẽ (theo số đo max diff 57/255; tiêu chí phần trăm điểm ảnh + PSNR, [PROVISIONAL]); AT-05 so ảnh trước mã hoá; SOI-03 đạt trên Windows; REQ-EXPORT-00 thêm giao diện chọn kích thước (khoá tỉ lệ, tỉ lệ dựng sẵn); REQ-GRAPHICS-04 thêm "Neo theo cạnh". **Bổ sung theo yêu cầu chủ dự án:** REQ-UI-10 (theme sáng/tối/theo hệ thống), REQ-UI-11 (bộ chọn màu HEX/RGB/RGBA/HSL/HSV/OKLCH, hút màu, nhập bảng màu), REQ-UI-12 (ẩn/hiện, solo track), REQ-GRAPHICS-14 (khoảng hiển thị theo thời gian, đổi track theo đoạn); REQ-GRAPHICS-07 thêm tuỳ chỉnh bàn phím và tên nốt trên phím; REQ-WIDGET-07 thêm tuỳ chỉnh hình dạng spectrum/waveform, nguồn stem theo track (1.2); REQ-GRAPHICS-06 giải thích đảo chiều và phân biệt với velocity. Thêm **REQ-AUDIO-01** (âm thanh theo track: người dùng xuất stem từ DAW, điều kiện tệp, tự ghép theo tên, chỉ dùng để phân tích, giới hạn bộ nhớ, hướng dẫn xuất stem trong ứng dụng; bản 1.2), `ERR_AUDIO_TOO_MANY`, AT-24. Thêm **REQ-GRAPHICS-15** (2.5D: xoay X/Y/Z, camera phối cảnh, preset góc nhìn; bản 1.1) và **REQ-EXPORT-08** (xuất nền trong suốt: chuỗi PNG, WebM VP9 alpha [VERIFY]; bản 1.0); REQ-GRAPHICS-03 mở khoá xoay từ 1.1 (D-47). REQ-EXPORT-08 thêm chọn lớp cho từng lần xuất (xuất nền và tiền cảnh riêng), "Xuất tách lớp" ở 1.1; REQ-GRAPHICS-15 thêm cách xử lý lớp nền khi xoay (mặc định gắn màn hình). Thêm **REQ-GRAPHICS-16** (thanh phát tuỳ chỉnh: kiểu, độ dày, màu, phát sáng, phản ứng khi chạm; sprite và keyframe ở 1.1), **góc chảy tự do 0–360°** trong REQ-WIDGET-01, **REQ-UI-13** (chế độ Cơ bản/Nâng cao, hỏi lần đầu, nút "Thêm tuỳ chọn" từng bảng, bảng phân bổ tính năng; D-48). **Bổ sung sau T-61 (lỗi tràn giao diện):** **REQ-UI-14** (danh sách track xếp Dọc/Ngang/Lưới, mật độ, sắp xếp/lọc/nhóm, vị trí bảng) và **REQ-UI-15** (mọi điều khiển kéo có ô nhập kèm: đơn vị, phép tính, tương đối, phạm vi mềm/giới hạn cứng), AT-25, D-49; thêm 2 dòng vào bảng phân bổ REQ-UI-13. **Bổ sung 2026-11-12 (D-50):** độ sáng nền REQ-GRAPHICS-06 mặc định **đều nhau**; thêm **REQ-GRAPHICS-17** (phát sáng động khi chạm theo velocity/cao độ/pan/fade/automation), **REQ-AST-02** (automation tổng quát: lane tuỳ ý gồm send, tham số plugin, MIDI CC, pitch bend; chuẩn hoá 0..1; điều khiển mọi thuộc tính qua bindings); REQ-UI-14 sửa (Lưới N cột do người dùng chọn có animation, Danh sách dạng dòng gọn); AT-26. |
 
 ### Quy ước trong tài liệu
 
@@ -367,12 +367,12 @@ export interface ProjectTrack {
   isMuted: boolean; isVisible: boolean;
   sourceId?: string;                  // id gốc trong file nguồn (v0.3)
   mix?: { volumeDb: number; pan: number };            // mức fader tĩnh (Reaper VOLPAN) (v0.3)
-  automation?: { volume?: AutomationLane; pan?: AutomationLane; mute?: AutomationLane };   // v0.3, REQ-GRAPHICS-06
+  automation?: { volume?: AutomationLane; pan?: AutomationLane; mute?: AutomationLane; [laneId: string]: AutomationLane | undefined };   // v0.3; lane tuỳ ý: REQ-AST-02
 
   notes: ASTNote[];
   pitchRange: { min: number; max: number };   // 0-127
 }
-export interface AutomationLane { kind: 'volume' | 'pan' | 'mute'; points: { tick: number; timeSeconds: number; value: number; shape: number; tension?: number }[] }   // volume: gain tuyến tính
+export interface AutomationLane { kind: 'volume' | 'pan' | 'mute' | 'send' | 'plugin' | 'midi-cc' | 'pitch-bend' | 'other'; name?: string; plugin?: { name: string; vendor?: string }; param?: { name: string; index?: number }; range?: { min: number; max: number; unit?: string }; points: { tick: number; timeSeconds: number; value: number; shape: number; tension?: number }[] }   // volume: gain tuyến tính
 export interface ASTNote {
   id: string; pitch: number; pitchName: string;      // "C4", "G#5"
   startTick: number; durationTick: number; endTick: number;   // nguồn sự thật
@@ -435,7 +435,8 @@ Mọi widget có trường `layout.rotation` (độ). Ở v1.0 giá trị khóa 
 * Đổi tỉ lệ khung khi đã chỉnh layout: hộp thoại cho chọn "Áp preset của tỉ lệ mới", "Co giãn bố cục hiện tại theo tỉ lệ tương đối" hoặc **"Neo theo cạnh"** (v1.1: mỗi widget giữ khoảng cách tới cạnh hoặc tâm gần nhất và giữ kích thước theo cạnh ngắn, hợp với tỉ lệ tuỳ ý như 21:9 hay 4:5); thao tác phải hoàn tác được (REQ-UI-02).
 
 #### REQ-GRAPHICS-06: Độ sáng track theo automation (D-33)
-* Mỗi track có **Nguồn độ sáng**: `volume` (**mặc định**), `pan`, `mute`, `mức fader tĩnh` hoặc `tắt`; chọn riêng từng track hoặc áp cho tất cả. Người dùng quyết định sáng hơn hay tối hơn khi âm lượng lớn: có công tắc **đảo chiều**.
+* Mỗi track có **Nguồn độ sáng**: **`tắt` = đều nhau (mặc định từ 2026-11-12, D-50)**, `volume`, `pan`, `mute` hoặc `mức fader tĩnh`; chọn riêng từng track hoặc áp cho tất cả. Người dùng quyết định sáng hơn hay tối hơn khi âm lượng lớn: có công tắc **đảo chiều**.
+* **Sửa 2026-11-12 (D-50):** trong giao diện mục này gọi là **"Độ sáng nền"** và mặc định là **đều nhau**: mọi nốt cùng độ sáng, không theo automation. Độ sáng nền tác động lên độ đục của nốt **suốt thời gian** (kể cả nốt chưa tới). Muốn nốt **phát sáng khi thanh phát chạm** theo velocity, cao độ, pan, fade hay automation thì dùng REQ-GRAPHICS-17; hai cơ chế độc lập và có thể dùng cùng lúc.
 * **Volume**: `B(t) = lerp(minB, maxB, volumeToUnit(gain(t), floorDb, ceilDb))`, mặc định `floorDb = −36 dB`, `ceilDb = 0 dB`, `minB = 0,25`, `maxB = 1`; các giá trị này chỉnh được. Giá trị trên `ceilDb` (ví dụ +3 dB) kẹp ở sáng nhất.
 * **Đảo chiều**: mặc định giá trị nguồn càng lớn thì càng sáng (âm lượng to → sáng). Bật đảo chiều thì ngược lại (âm lượng to → tối), tức `k = 1 − u` thay cho `k = u` trong công thức trên. Hữu ích khi muốn track đang "lùi" (fade out) nổi bật hơn, hoặc làm hiệu ứng tối dần khi nhạc dồn lên.
 * **Phân biệt với cường độ nốt (velocity):** độ sáng ở đây lấy theo **automation của cả track** (fader, pan, mute trong DAW) và thay đổi theo thời gian. Độ mạnh của **từng nốt** (velocity 0–127) là chuyện khác: chọn ở chế độ màu `velocity` của kiểu nốt (REQ-GRAPHICS-07) hoặc gắn vào bất kỳ thuộc tính nào qua binding `note.velocity` (REQ-GRAPHICS-12) và biểu thức (REQ-GRAPHICS-13).
@@ -476,6 +477,39 @@ Mọi widget có trường `layout.rotation` (độ). Ở v1.0 giá trị khóa 
   * *Cùng đường vẽ* (cùng loại target, cùng máy, cùng `t`): sai khác ≤ 1/255 mỗi kênh màu. Dùng cho kiểm thử hồi quy bằng ảnh chụp và cho tính tất định (tua tới `t` so với phát liên tục tới `t`).
   * *Khác đường vẽ* (Canvas luồng chính ↔ `OffscreenCanvas` trong Worker): khác biệt khử răng cưa ở mép hình là bình thường (Spike 1 đo **max diff = 57/255**), nên **không** dùng max diff. Tiêu chí **[PROVISIONAL]**: ≥ 99,5% điểm ảnh lệch ≤ 2/255 mỗi kênh và PSNR ≥ 40 dB; đo lại phân bố sai khác ở M3 (T-09) rồi chốt.
 * Font người dùng nạp phải được nạp xong (`FontFace.load`) trước khi vẽ khung đầu tiên khi xuất.
+
+#### REQ-GRAPHICS-17: Phát sáng động khi chạm (D-50, 1.0)
+Thay cho việc lấy automation làm cơ chế mặc định, mặc định mọi nốt **phát sáng như nhau**; người dùng bật **phát sáng động** để cường độ phát sáng lúc thanh phát chạm nốt phụ thuộc một tiêu chí.
+
+* **Chế độ** (`NoteStyle.glowMode`): `uniform` = **Đều nhau** (mặc định) · `dynamic` = **Động khi chạm**. Thuộc `NoteStyle`, nên có hai tầng như REQ-GRAPHICS-07: mặc định toàn cục và ghi đè theo track (ví dụ trống theo velocity, pad theo automation).
+* **Thời điểm sáng (bao thời gian):** khi `glowActiveOnly` bật (mặc định), nốt chỉ sáng từ lúc thanh phát chạm đầu nốt tới hết nốt; tắt thì nốt luôn sáng (cường độ vẫn theo tiêu chí). **Tắt dần sau nốt** `glowRelease` 0–4 s (mặc định 0): sau khi nốt kết thúc, phát sáng giảm tuyến tính về 0 trong khoảng này.
+* **Tiêu chí** (`glowSource`), mỗi tiêu chí cho giá trị `s` chuẩn hoá 0..1:
+
+| Tiêu chí | Cách tính `s` | Ghi chú |
+| :--- | :--- | :--- |
+| `velocity` | `velocity / 127` | Nốt đánh mạnh sáng hơn |
+| `pitch` | vị trí cao độ trong tầm cao độ đang hiển thị của widget | Nốt cao sáng hơn (đảo chiều để ngược lại) |
+| `pan` | pan của track **lúc nốt bắt đầu** (lane pan nếu có, không thì `mix.pan`). Hai cách đọc (`glowPanMode`): **Trái → phải** (mặc định) −1..1 → 0..1, trái hẳn yếu nhất; **Lệch khỏi giữa** `|pan|`, giữa yếu nhất, càng lệch trái hoặc phải càng mạnh. Cách đọc cũng áp cho lane pan khi tiêu chí là `automation` | Chiều pan trong tệp theo SOI-19 **[VERIFY]** |
+| `fade` | `1` lúc chạm, giảm tuyến tính về `0` ở cuối nốt | Hiệu ứng "chạm rồi tắt dần" theo độ dài nốt (chủ dự án xác nhận 2026-11-12) |
+| `automation` | giá trị lane đã chọn (`glowLane`) **tại thời điểm `t`** trong lúc nốt kêu, chuẩn hoá theo loại lane | Mọi lane trong REQ-AST-02: âm lượng, pan, mute, send, tham số plugin… |
+
+* **Ánh xạ:** cường độ = `glow × env(t) × lerp(glowMin, glowMax, s')`, với `s' = 1 − s` khi bật **Đảo chiều** (`glowInvert`). Mặc định `glowMin = 0,15`, `glowMax = 1`. Không có dữ liệu cho tiêu chí (ví dụ track không có lane đã chọn) thì `s = 1`, tức sáng như chế độ đều nhau; giao diện ghi rõ lane "không có trong dự án".
+* **Mở rộng (sau 1.0):** độ dài nốt, nốt thuộc hợp âm đang vang, pha nhịp (`beat.phase`), âm lượng stem của track (REQ-AUDIO-01, 1.2), và biểu thức tuỳ ý (REQ-GRAPHICS-13). Tiêu chí mới chỉ cần trả `s` 0..1 nên không đổi phần còn lại.
+* **Quan hệ với cơ chế khác:** độc lập với độ sáng nền (REQ-GRAPHICS-06). Pha `hit` của template chuyển cảnh nốt (REQ-GRAPHICS-10) dùng **cùng bộ tiêu chí** này để điều khiển hiệu ứng chạm (nảy, rung, toả hạt…), không chỉ phát sáng.
+* **Tất định:** cường độ chỉ phụ thuộc `(t, nốt, track, kiểu)`, tính trong Render Core (`packages/render-core/src/glow.ts`), giống nhau ở Preview và Export.
+
+#### REQ-AST-02: Automation tổng quát (D-50; 1.0 cho Reaper track + MIDI CC, các nguồn khác theo tệp mẫu)
+Automation phải điều khiển được **mọi thuộc tính số** của khung hình (phát sáng, kích thước, màu, vị trí, tham số hiệu ứng…), **miễn là DAW hoặc plugin lưu automation đó trong tệp dự án**.
+
+* **Lược đồ:** ngoài `automation.volume/pan/mute` hiện có (giữ để tương thích), `ProjectTrack.automation` nhận **lane tuỳ ý** theo khoá `id`. Mỗi lane có `kind`: `volume` | `pan` | `mute` | `send` | `plugin` | `midi-cc` | `pitch-bend` | `other`; nhãn `name` hiển thị; với `plugin` thêm `plugin: { name, vendor? }` và `param: { name, index? }`; tuỳ chọn `range: { min, max, unit? }` để chuẩn hoá. Điểm giữ dạng `{ tick, timeSeconds, value, shape, tension? }` như cũ.
+* **Chuẩn hoá về 0..1** (dùng chung cho REQ-GRAPHICS-17 và bindings): `volume` theo dB trong [−36, 0] (như REQ-GRAPHICS-06); `pan` −1..1 → 0..1; `mute` 0/1; `midi-cc` `value / 127`; `pitch-bend` −8192..8191 → 0..1; `plugin` và `other` dùng `range` nếu có, không thì coi giá trị đã ở 0..1 (Reaper và DAWproject lưu tham số plugin dạng chuẩn hoá) **[VERIFY]**.
+* **Nguồn theo DAW** (trạng thái):
+  * Reaper: `VOLENV2/PANENV2/MUTEENV` của track **đã đọc**; envelope tham số FX `PARMENV` và send `AUXVOLENV` **chưa đọc** **[VERIFY]**; envelope trong item/take chưa đọc (SOI-18).
+  * `.mid`: Control Change (CC1 mod wheel, CC7, CC10, CC11, CC64…) và pitch bend thành lane `midi-cc`/`pitch-bend` **chưa đọc** (làm được ngay, không cần tệp mẫu đặc biệt).
+  * Ableton `.als`: `AutomationEnvelopes` ghép `PointeeId` với tham số mixer/thiết bị **chưa đọc** **[VERIFY]** (SOI-18).
+  * DAWproject: `<Points target=…>` theo tham số **chưa đọc** **[VERIFY]** (SOI-18).
+* **Giới hạn:** điều chế bên trong plugin (LFO, envelope nội bộ của synth) không được lưu thành automation trong tệp dự án, nên không đọc được; người dùng cần ghi nó thành automation trong DAW hoặc nạp stem (REQ-AUDIO-01).
+* **Dùng automation cho thuộc tính khác:** qua bindings (`{ "bind": "track.automation.<id>", … }`, CUSTOMIZATION §3.3) và biểu thức (REQ-GRAPHICS-13). Giao diện liệt kê lane theo tên đọc được (ví dụ "Serum · Filter Cutoff"); lane không có trong dự án đang mở được đánh dấu.
 
 ### 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04)
 
@@ -925,8 +959,8 @@ style-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-a
 | :--- | :--- | :--- |
 | Nạp tệp | Kéo thả; chọn `.als` trong `.alp`; nạp `.mid` ngoài khi được hỏi (REQ-UI-07, 08) | Nạp schema nhị phân; xem cấu trúc tệp (inventory); hiện track tắt tiếng |
 | Tempo | Một ô BPM và dấu nhịp, hiện nổi bật khi tệp thiếu tempo | Nhiều mốc tempo, nhập theo `bar.beat`/giây, dấu nhịp theo mốc (REQ-UI-06) |
-| Track | Màu, ẩn/hiện, solo, dán bảng màu (REQ-UI-11, 12) | Nguồn độ sáng, đảo chiều, ngưỡng dB (REQ-GRAPHICS-06); kiểu nốt riêng từng track; gán stem (1.2) |
-| Kiểu nốt | Theme/preset; chế độ màu; độ dày; bo góc; phát sáng bật/tắt và mức | Độ đục khi chờ, bán kính phát sáng, viền, chỉ sáng khi phát, gradient, biểu thức |
+| Track | Màu, ẩn/hiện, solo, dán bảng màu (REQ-UI-11, 12) | Độ sáng nền (mặc định đều nhau), đảo chiều, ngưỡng dB (REQ-GRAPHICS-06); kiểu nốt riêng từng track; gán stem (1.2) |
+| Kiểu nốt | Theme/preset; chế độ màu; độ dày; bo góc; phát sáng bật/tắt và mức; phát sáng Đều nhau / Động khi chạm + chọn tiêu chí (REQ-GRAPHICS-17) | Độ đục khi chờ, bán kính phát sáng, viền, chỉ sáng khi phát, mức yếu/mạnh nhất, đảo chiều, tắt dần sau nốt, lane automation, gradient, biểu thức |
 | Hướng và chuyển cảnh nốt | 4 hướng; chọn template nốt (rơi, nảy, phóng…); tốc độ cuộn | Góc tự do; chỉnh từng pha `enter/hit/sustain/exit`, easing, morph (REQ-GRAPHICS-10) |
 | Thanh phát | Hiện/ẩn, màu, độ dày, kiểu nét dựng sẵn, vị trí | Dải và gradient, mũi tên, phát sáng, phản ứng khi chạm, độ dài; 1.1: sprite, keyframe (REQ-GRAPHICS-16) |
 | Bàn phím | Hiện/ẩn; tên nốt bật/tắt và cách ghi tên; số phím tự động | Phạm vi tuỳ chọn, hình dạng phím, màu phím nhấn, độ lún, thang âm, quy ước C3/C4, phông (REQ-GRAPHICS-07) |
@@ -938,18 +972,20 @@ style-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-a
 | Nền và tài nguyên | Màu/ảnh nền, logo, phông | Sprite sheet, quản lý tài nguyên, giới hạn và dung lượng (REQ-STORAGE-05) |
 | Xuất | Preset nền tảng (YouTube 16:9, Shorts/TikTok/Reels 9:16, Instagram 4:5 và 1:1); chất lượng Thấp/Vừa/Cao; 30/60 fps; kích thước tuỳ chỉnh rộng × cao; đoạn xuất | Codec, bitrate, fast-start, nền trong suốt, chuỗi PNG, chọn lớp/tách lớp, Silent AAC, offset audio (REQ-EXPORT-00…08) |
 | Preset và cộng đồng | Cài/áp preset, chia sẻ (bắt buộc chọn giấy phép) | Sửa từng phần của preset, xem dữ liệu thô, quản lý phiên bản |
-| Danh sách track | Kiểu xếp Dọc/Ngang/Lưới; mật độ Gọn/Đầy đủ; lọc theo tên (REQ-UI-14) | Sắp xếp theo tiêu chí, kéo đổi thứ tự, số cột lưới, vị trí dock, nhóm/folder track |
+| Danh sách track | Lưới (số cột tự động hoặc tự chọn) / Danh sách dòng gọn; lọc theo tên (REQ-UI-14) | Sắp xếp theo tiêu chí, kéo đổi thứ tự, nhóm/folder track |
 | Nhập giá trị | Mọi điều khiển kéo có ô nhập kèm: số, đơn vị, phép tính `+ - * /`, ↑/↓ (REQ-UI-15) | Tương đối `+=`/`-=`/`*=`/`/=` cho nhiều đối tượng; biểu thức (tiền tố `=`, REQ-GRAPHICS-13) |
 | Giao diện | Theme sáng/tối, ngôn ngữ, chế độ | Như Cơ bản |
 
-* **REQ-UI-14 (Bố cục danh sách track, D-49, 1.0):**
-  * **Kiểu xếp:** **Dọc** (danh sách, mặc định), **Ngang** (dải thẻ cuộn ngang, hợp khi bảng track đặt dưới canvas) và **Lưới** (thẻ; số cột tự theo bề rộng hoặc chọn 1–6). Đổi kiểu xếp không tải lại trang, không làm mất trạng thái đang chỉnh của track.
-  * **Mật độ:** **Gọn** (một dòng: màu, tên, mắt, solo) hoặc **Đầy đủ** (thêm số nốt, nguồn độ sáng, kiểu nốt riêng…). Tên dài cắt bằng dấu "…", hiện đủ khi rê chuột; không phần tử nào được tràn khỏi thẻ ở mọi kiểu xếp (bài học T-61).
-  * **Thứ tự và lọc:** mặc định theo thứ tự trong DAW; sắp theo tên, số nốt, màu; kéo thả để đổi thứ tự hiển thị; ô lọc theo tên. Thứ tự trong danh sách **không** đổi thứ tự vẽ trên canvas, trừ khi bật "Vẽ theo thứ tự danh sách" (khi đó thứ tự được lưu vào dự án và hoàn tác được, REQ-UI-02).
-  * **Nhóm:** track nhóm/folder (Reaper folder, Ableton Group, DAWproject group) thu gọn/mở được; cần parser đọc thêm thông tin nhóm **[VERIFY]**, chưa có thì hiện phẳng.
-  * **Vị trí bảng:** trái (mặc định, §5.1), phải hoặc dưới; đặt ở dưới thì gợi ý chuyển sang Ngang. Bảng co giãn và thu gọn được. Bề rộng quá hẹp cho Lưới thì tự hạ về Dọc (không đổi lựa chọn đã lưu).
-  * **Lưu:** kiểu xếp, mật độ, sắp xếp, vị trí là **tuỳ chọn giao diện** lưu theo trình duyệt, không vào preset video và không đổi khung hình xuất.
-  * **Bàn phím và trợ năng:** phím mũi tên đi theo hướng xếp (↑/↓ ở Dọc, ←/→ ở Ngang, cả hai ở Lưới); vai trò `list`/`grid` tương ứng; kéo thả luôn có cách thay thế bằng nút "Lên/Xuống" hoặc ô nhập vị trí (REQ-UI-15).
+* **REQ-UI-14 (Bố cục danh sách track, D-49, sửa 2026-11-12 theo D-50, 1.0):**
+  * **Hai kiểu trình bày** (không xếp thẻ to chồng thành một cột dài):
+    * **Lưới (mặc định):** thẻ track xếp theo **hàng ngang**, nằm dưới khung xem trước và trải hết bề rộng. **Số cột do người dùng chọn** bằng ô nhập (REQ-UI-15) hoặc để **Tự động** (vừa bề rộng). Không có trần cứng: tối đa là số track. Nếu bề rộng hiện tại không đủ cho số cột đã chọn (mỗi thẻ cần tối thiểu ~224 px để không tràn) thì vẽ ít cột hơn và **báo** "Bề rộng hiện tại chỉ vừa N cột", giữ nguyên lựa chọn để khi cửa sổ rộng ra lại đủ cột.
+    * **Danh sách:** ở cột phải, **mỗi track một dòng gọn**: chấm màu, tên (cắt "…"), số nốt, độ sáng hiện tại (khi độ sáng nền khác "đều nhau") và mũi tên ▸. Bấm dòng hoặc Enter/Space để **mở rộng tại chỗ** phần chỉnh (độ sáng nền, đảo chiều, thông tin track, ngưỡng); nhiều dòng mở cùng lúc được.
+  * **Animation:** khi đổi số cột, đổi kiểu trình bày, thêm/bớt track hay mở/đóng dòng, thẻ **di chuyển mượt tới vị trí mới** (cùng một thẻ bay từ lưới sang danh sách và ngược lại; Framer Motion `layout` + `layoutId`, lò xo ~0,3 s). Tôn trọng "giảm chuyển động" của hệ điều hành (`prefers-reduced-motion` → bỏ chuyển động).
+  * **Không đè nội dung:** ở kiểu Lưới, khung xem trước và cột kiểu nốt **không dính** khi cuộn (để không che thẻ track); ở kiểu Danh sách, khung xem trước và cột phải dính trên màn hình rộng như trước.
+  * **Thứ tự và lọc (chưa làm):** mặc định theo thứ tự trong DAW; sắp theo tên, số nốt, màu; kéo thả để đổi thứ tự hiển thị (luôn có cách thay thế bằng bàn phím); ô lọc theo tên. Thứ tự trong danh sách **không** đổi thứ tự vẽ, trừ khi bật "Vẽ theo thứ tự danh sách" (lưu vào dự án, hoàn tác được).
+  * **Nhóm (chưa làm):** track nhóm/folder thu gọn/mở được; cần parser đọc thông tin nhóm **[VERIFY]**.
+  * **Lưu:** kiểu trình bày và số cột là **tuỳ chọn giao diện** lưu theo trình duyệt, không vào preset video và không đổi khung hình xuất.
+  * **Bàn phím và trợ năng:** phím mũi tên đi theo hướng xếp (trái/phải/lên/xuống tới thẻ gần nhất theo hướng, đúng cả với lưới tự động); vai trò `list`; dòng mở rộng có `aria-expanded`.
 * **REQ-UI-15 (Nhập giá trị chính xác cho mọi điều khiển, D-49, 1.0):**
   * **Quy tắc chung:** mọi thuộc tính chỉnh được bằng kéo (thanh trượt, núm xoay, kéo/co giãn widget trên canvas, tay nắm bezier và keyframe trên Graph Editor, ô màu, tay nắm xoay 3D, mốc đầu/cuối đoạn trên timeline, offset audio…) **phải** có ô nhập đi kèm, hiện giá trị hiện tại và sửa được bằng bàn phím. Không thuộc tính nào chỉ chỉnh được bằng chuột. Áp dụng ở cả Cơ bản và Nâng cao.
   * **Cách nhập:** Enter hoặc rời ô để áp; Esc để huỷ. ↑/↓ tăng giảm theo bước, Shift ×10, Alt/Option ×0,1; kết quả làm tròn theo bước. Kéo ngang trên nhãn để chỉnh (scrub) như phần mềm dựng hình; con lăn chuột chỉ đổi giá trị khi ô đang được chọn.
@@ -1009,6 +1045,7 @@ Phiên bản đạt nghiệm thu khi vượt qua toàn bộ các kiểm thử sa
 | **AT-22** | Tài nguyên và preset (1.0) | Nạp cùng ảnh hai lần chỉ lưu một bản; Project Pack mở trên trình duyệt khác đủ tài nguyên; preset sai schema hoặc vượt giới hạn bị từ chối kèm mã lỗi. |
 | **AT-23** | Widget bổ sung (1.0) | P-01…P-13 hiển thị đúng với tệp mẫu (marker và lời với tệp có dữ liệu tương ứng); đổi cách ghi tên nốt áp cho mọi widget. |
 | **AT-25** | Bố cục track và nhập giá trị (1.0) | Đổi Dọc/Ngang/Lưới và Gọn/Đầy đủ với dự án 15+ track: không phần tử tràn khỏi thẻ ở bề rộng 1440/1100/800 px, phím mũi tên đi đúng hướng; mọi thuộc tính có tay nắm kéo đều có ô nhập; gõ `1920/2`, `+=10`, `0,5`, `50%` cho kết quả đúng; chuỗi sai giữ giá trị cũ; giá trị ngoài giới hạn cứng bị kẹp và trùng với giá trị Render Core vẽ. |
+| **AT-26** | Phát sáng động và bố cục track (1.0) | Mặc định mọi nốt sáng như nhau và độ sáng nền "đều nhau". Bật "Động khi chạm": theo velocity thì nốt velocity 127 sáng hơn rõ nốt velocity 30; theo fade thì sáng nhất lúc chạm rồi tắt dần; theo automation âm lượng (`BigProject4b.rpp`) thì đổi theo envelope; track không có lane sáng đều. Dự án 15 track: Lưới tự động không tràn ở 1440/1100/800 px; chọn 8 cột ở 1280 px thì báo chỉ vừa 4; đổi số cột và đổi Lưới ↔ Danh sách thấy thẻ di chuyển mượt; Danh sách mở dòng bằng Enter; tải lại trang giữ lựa chọn. |
 | **AT-24** | Stem theo track (1.2) | Nạp tệp mix + 4 stem xuất từ Reaper và Ableton (cùng điểm đầu): tự ghép đúng tên track; spectrum của từng track khớp âm thanh của track đó; stem lệch độ dài có cảnh báo; mở lại dự án từ Project Pack không cần stem mà widget vẫn vẽ được. |
 
 ---
@@ -1063,6 +1100,17 @@ Phiên bản đạt nghiệm thu khi vượt qua toàn bộ các kiểm thử sa
 | `ERR_SCHEMA_NEWER` | Dữ liệu từ phiên bản mới hơn | Cập nhật ứng dụng. |
 | `ERR_NO_SUPPORTED_ENCODER` | Không có bộ mã hóa phù hợp (Tier 4) | Dùng Chrome/Edge bản mới trên Windows/macOS. |
 | `ERR_EXPORT_FAILED` | Export Worker lỗi bất ngờ | Thử lại; hạ độ phân giải hoặc dùng Export Range. |
+
+### Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)
+
+Mọi cảnh báo có `details.path` (đường dẫn JSON, ví dụ `$.widgets[1].properties.lookaheadSeconds`) và `details.value`.
+
+| Mã | Ý nghĩa | Xử lý |
+| :--- | :--- | :--- |
+| `WARN_PRESET_VALUE` | Giá trị sai kiểu, ngoài khoảng, id trùng hoặc `pitchMin > pitchMax` | Dùng mặc định / kẹp / đổi id / đổi chỗ; preset vẫn nạp |
+| `WARN_PRESET_WIDGET_UNKNOWN` | `type` không thuộc 8 loại hợp lệ | Bỏ widget đó |
+| `WARN_PRESET_UNSUPPORTED` | Tính năng chưa có ở bản này (hướng dọc/góc tự do của Piano Roll, xoay widget trước 1.1, ảnh nền) | Bỏ qua tính năng, vẽ như mặc định |
+| `WARN_PRESET_VERSION` | Cùng phiên bản chính nhưng khác phiên bản phụ/vá | Đọc theo phiên bản hiện tại |
 
 ### Phụ lục A2: Mã cảnh báo của Parser Library
 

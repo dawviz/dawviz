@@ -100,8 +100,9 @@ Thuộc tính có thể **lấy giá trị từ dữ liệu nhạc** thay cho ke
 
 | Nguồn | Ví dụ dùng |
 |---|---|
-| `note.velocity`, `note.pitch`, `note.durationSec` | Kích thước, màu, cường độ phát sáng theo độ mạnh nốt |
-| `track.automation.volume` / `pan` (đã có trong AST) | Độ sáng track (đã làm), vị trí ngang theo pan |
+| `note.velocity`, `note.pitch`, `note.durationSec`, `note.progress` (0 lúc chạm → 1 cuối nốt) | Kích thước, màu, cường độ phát sáng theo độ mạnh nốt; bộ tiêu chí phát sáng động REQ-GRAPHICS-17 là trường hợp đặc biệt đã làm sẵn (velocity/cao độ/pan/fade/automation) |
+| `track.automation.volume` / `pan` (đã có trong AST) | Độ sáng nền (REQ-GRAPHICS-06), phát sáng động khi chạm (REQ-GRAPHICS-17, đã làm), vị trí ngang theo pan |
+| `track.automation.<id>` (lane tuỳ ý, SRS REQ-AST-02): send, tham số plugin (ví dụ `Serum · Filter Cutoff`), `midi-cc`, `pitch-bend` | **Bất kỳ thuộc tính số nào**: cỡ quầng sáng theo cutoff, độ rung theo mod wheel, màu theo send reverb… Giá trị đã chuẩn hoá 0..1; chỉ có khi DAW/plugin lưu automation đó trong tệp |
 | `beat.phase`, `bar.phase` (0..1 trong mỗi nhịp) | Nhấp nháy, thở theo nhịp |
 | `activeNotes.count`, `activeNotes.maxVelocity` | Độ rung màn hình, mật độ hạt |
 | `audio.rms` (sau khi có audio, T-08) | Phản ứng theo âm lượng; phải tính trước thành bảng theo thời gian để giữ tất định |

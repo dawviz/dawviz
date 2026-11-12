@@ -5,6 +5,8 @@ declare module '@dawviz/parser' {
   export interface ParseResult { ast: UnifiedProjectAST; warnings: ParseWarning[]; format: string; info?: unknown }
   export function parseProject(name: string, buffer: ArrayBuffer | Uint8Array, options?: Record<string, unknown>): Promise<ParseResult>;
   export function probeProject(name: string, buffer: ArrayBuffer | Uint8Array, options?: Record<string, unknown>): { format: string | null; needs: { externalMidi: string[]; schema: boolean }; code?: string; message?: string };
+  /** Khoá so tên .mid ngoài (không phân biệt hoa/thường, khoảng trắng ≡ gạch dưới) — cùng quy tắc parser dùng khi ghép tệp. */
+  export function externalMidiKey(name: string): string;
   export const SUPPORTED: unknown[];
 }
 declare module '@dawviz/i18n' {

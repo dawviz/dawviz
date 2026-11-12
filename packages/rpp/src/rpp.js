@@ -88,13 +88,16 @@ function readEmbeddedSource(src, warnings) {
   return { ppq, length: tick, notes: pairs.notes, guid, ignTempoBpm: ign, noEvents, hanging: hang, muted };
 }
 
+/** Khoá so tên file .mid ngoài: bỏ thư mục, không phân biệt hoa/thường, khoảng trắng ≡ gạch dưới (tên hay bị đổi khi tải lên). */
+export function externalMidiKey(n) { return String(n).replace(/^.*[\\/]/, '').toLowerCase().replace(/[\s_]+/g, '_'); }
+
 async function loadExternal(path, options, warnings) {
   const base = path.replace(/^.*[\\/]/, '');
   let buf = null;
   if (options.resolveFile) buf = await options.resolveFile(path, base);
   else if (options.files) {
     const entries = options.files instanceof Map ? [...options.files.entries()] : Object.entries(options.files);
-    const norm = (n) => String(n).replace(/^.*[\\/]/, '').toLowerCase().replace(/[\s_]+/g, '_'); // tên có thể bị đổi khoảng trắng/gạch dưới khi tải lên
+    const norm = externalMidiKey;
     const hit = entries.find(([k]) => k === base || k === path) || entries.find(([k]) => norm(k) === norm(base));
     buf = hit ? hit[1] : null;
   }

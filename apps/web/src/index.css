@@ -4,3 +4,8 @@
 
 :root { color-scheme: dark; }
 body { @apply font-sans antialiased; }
+
+/* Ô màu track tròn (Chrome/Safari bọc ô màu trong wrapper có padding và viền vuông). */
+input[type='color'].swatch::-webkit-color-swatch-wrapper { padding: 0; }
+input[type='color'].swatch::-webkit-color-swatch { border: none; border-radius: 9999px; }
+input[type='color'].swatch::-moz-color-swatch { border: none; border-radius: 9999px; }

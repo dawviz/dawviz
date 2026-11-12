@@ -46,7 +46,7 @@ UnifiedProjectAST {
           totalTicks, totalDurationSeconds }
   tempoMap: { tick, timeSeconds, bpm, num?, den? }[]          // sắp theo tick, điểm đầu ở tick 0
   tracks: { id, index, name, color, isMuted, isVisible, notes[], pitchRange,
-            mix?: { volumeDb, pan }, automation?: { volume?, pan?, mute? } }[]
+            mix?: { volumeDb, pan }, automation?: { volume?, pan?, mute?, [laneId]: Lane } }[]   // lane tuỳ ý: SRS REQ-AST-02
 }
 ASTNote { id, pitch, startTick, endTick, startTimeSeconds, endTimeSeconds, velocity, channel? }
 ```
@@ -59,6 +59,8 @@ Bất biến do `buildAST` bảo đảm và được test: nốt có `endTick > 
 
 ### 2.3 Automation 🟢
 `Lane { kind, points:[{tick, timeSeconds, value, shape, tension?}] }`. `sampleLane(lane, tick)`: giữ giá trị biên ngoài khoảng; trong khoảng tìm đoạn bằng tìm nhị phân, áp `shapeCurve` (0 tuyến tính, 1 bậc thang, 2 mượt, 3 nhanh đầu, 4 nhanh cuối, 5 bezier xấp xỉ), riêng **volume** nội suy trong không gian fader `p = gain^0,25` (khớp ≤ 0,3 dB với Reaper tại hai điểm đo; hệ số này còn [VERIFY], SOI-19). `volumeToUnit(gain, {floorDb, ceilDb})` cho độ sáng 0..1.
+
+**Lane tổng quát (SRS REQ-AST-02, D-50):** `Lane.kind` mở rộng thành `volume | pan | mute | send | plugin | midi-cc | pitch-bend | other`, thêm `name?`, `range? {min, max, unit?}` (kiểu ở `packages/render-core/src/types.ts`); `automation` nhận khoá tuỳ ý. Chuẩn hoá 0..1 dùng chung ở `laneUnit(track, laneId, tempoMap, t)` (`packages/render-core/src/glow.ts`): `volume` → dB trong [−36, 0]; `pan` −1..1 → 0..1; `midi-cc` `/127`; `pitch-bend` −8192..8191 → 0..1; có `range` thì `(v − min)/(max − min)`; còn lại coi như đã 0..1 **[VERIFY]**. Parser hiện chỉ sinh `volume/pan/mute` của track Reaper; MIDI CC/pitch bend, Reaper `PARMENV`/`AUXVOLENV`, Ableton `AutomationEnvelopes`, DAWproject `Points target`: T-66.
 
 ## 3. Đường ống phân tích (parser) 🟢
 
@@ -98,21 +100,34 @@ parseProject(name, buffer, options)
 
 Quy tắc: dữ liệu dẫn xuất là **hàm thuần** của AST + cấu hình, tính một lần ngoài vòng vẽ, có thể chuyển sang Export Worker bằng `postMessage` (transfer khi là `ArrayBuffer`).
 
-## 5. Render Core (chi tiết) 🟢 phần Piano Roll, ⚪ phần còn lại
+## 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại
 
 ### 5.0 Kiểu dáng nốt và bàn phím 🟢 (REQ-GRAPHICS-07)
 `packages/render-core/src/style.ts` giữ `NoteStyle`/`StyleConfig` (mặc định + ghi đè theo track), `resolveNoteStyle` (gộp và kẹp), `noteColor`, `STYLE_PRESETS`. `layoutPianoRoll` nhận `style` và `left` (chừa chỗ bàn phím) rồi trả `NoteRect` đã giải sẵn màu, độ đục, bán kính, phát sáng, viền; `drawPianoRoll` chỉ việc vẽ (đường dẫn bo góc bằng `arcTo`, phát sáng bằng `shadowBlur` rồi trả về 0). `layoutKeyboard`/`drawKeyboard` cùng trục cao độ, gọi sau Piano Roll. Giao diện (`StylePanel`, `TrackPanel`) chỉ sửa dữ liệu; tuỳ chọn lưu `localStorage` qua `lib/prefs.ts`.
 
-### 5.1 Giao diện chính ⚪ (mở rộng từ `layoutPianoRoll` + `drawPianoRoll` hiện có)
+### 5.1 Giao diện chính 🟢
+Làm ở T-05 (2026-11-12): `packages/render-core/src/scene.ts`, `render.ts`.
+
 ```ts
 interface SceneDocument { schemaVersion: string; canvas: CanvasSpec; widgets: WidgetSpec[] }       // = Preset (SRS REQ-STORAGE-02)
 interface Derived { index: TimelineIndex; chords?: ChordTimeline; audioPeaks?: Float32Array; brightness: Record<TrackId, BrightnessConfig> }
 interface RenderTarget { ctx: Ctx2D; width: number; height: number }                                // Canvas hoặc OffscreenCanvas
 function renderFrame(scene: SceneDocument, derived: Derived, ast: UnifiedProjectAST, t: number, target: RenderTarget, scale: number): void
 ```
-`renderFrame`: (1) tô nền (màu hoặc ảnh, cover); (2) sắp widget theo `zIndex`; (3) với mỗi widget gọi `WidgetRenderer[type].layout(...)` ra danh sách hình học thuần, rồi `draw(...)`. Không đọc `Date`, `performance`, `Math.random`, `requestAnimationFrame` (bắt buộc bởi test tĩnh: quét mã nguồn Render Core tìm các từ khoá này ⚪).
+`renderFrame`: (1) tô nền (màu hoặc ảnh, cover); (2) sắp widget theo `zIndex`; (3) với mỗi widget gọi `WidgetRenderer[type].layout(...)` ra danh sách hình học thuần, rồi `draw(...)`. Không đọc `Date`, `performance`, `Math.random`, `requestAnimationFrame` (bắt buộc bởi test tĩnh: quét mã nguồn Render Core tìm các từ khoá này 🟢 `test/scene.test.ts`).
 
-### 5.2 Hợp đồng widget ⚪
+**Đã làm (T-05):**
+- `SceneDocument` theo đúng tên trường của preset mẫu (SRS REQ-STORAGE-02, `schemaVersion` 0.3.0): `canvas` + `widgets[]` (`id`, `type`, `zIndex`, `visible`, `layout {x,y,width,height,rotation}`, `trackMappingMode` `ALL`/`MANUAL`/`AUTO_ASSIGN_FIRST_MELODIC`, `assignedTrackIndices`, `properties`). `defaultScene()` = một Piano Roll phủ kín khung 1920×1080. Thuộc tính Piano Roll: `pitchRangeMode`, `pitchMin/Max`, `lookaheadSeconds` (1–8, mặc định 3), `playheadPositionRatio` (mặc định 0,3), `noteStyle` (StyleConfig của T-14), `keyboard`, `playheadColor`, `playheadWidth`. Cửa sổ nhìn = `lookahead / (1 − ratio)`.
+- `sanitizeScene(raw)`: trường lạ bị bỏ; giá trị sai kiểu/ngoài khoảng về mặc định hoặc bị kẹp kèm `WARN_PRESET_VALUE` (có `details.path` kiểu `$.widgets[1].properties.lookaheadSeconds`); loại widget lạ bị bỏ (`WARN_PRESET_WIDGET_UNKNOWN`); thứ chưa hỗ trợ (hướng dọc, xoay widget, ảnh nền) `WARN_PRESET_UNSUPPORTED`; khác bản vá/phụ `WARN_PRESET_VERSION`; không đọc được (không phải đối tượng, thiếu `schemaVersion`/`canvas`, khác phiên bản chính) ném `ERR_PRESET_INVALID`. Widget chưa có renderer giữ nguyên `properties` để lưu lại không mất dữ liệu. Tên cũ `noteBorderRadius` được đọc thành `noteStyle.base.cornerRadius`.
+- `renderFrame(scene, derived, ast, t, target, scale)`: xoá đích theo pixel → `setTransform(scale)` → tô nền theo pt → mỗi widget `save/translate/clip theo khung/drawPrimitives/restore`. `layoutFrame(...)` là phần thuần (sắp `zIndex`, cùng `zIndex` giữ thứ tự tài liệu, bỏ widget ẩn hoặc chưa có renderer) để test.
+- **Lệch so với phác thảo:** `WidgetRenderer` chỉ có `layout`; việc vẽ dùng chung `drawPrimitives` cho mọi widget (primitive hiện có `rect`: toạ độ pt, `alpha` đã gộp độ sáng × độ đục, `radius`, `glowBlur`, `stroke`). Widget mới thêm kiểu primitive (text, path…) vào `drawPrimitives` thay vì tự vẽ, để Preview/Export không thể lệch nhau theo widget. `RenderCtx` = `Ctx2D` + `save/restore/setTransform/translate/rect/clip`.
+- `layoutPianoRoll`/`layoutKeyboard` giữ nguyên làm hàm cấp thấp; `drawPianoRoll`/`drawKeyboard` cũ còn cho test cũ nhưng giao diện không dùng nữa.
+- Giao diện: `SceneCanvas` (thay `PianoRollCanvas`) giữ tỉ lệ khung thiết kế, `scale = bề rộng điểm ảnh / designWidth`. Kiểu nốt và bàn phím vẫn chỉnh ở bảng phải rồi ghép vào scene mặc định; scene vào store + hoàn tác + Preset ở T-07.
+- Chưa làm: làm tròn toạ độ theo `scale` ở bước cuối (5.5), ảnh nền, xoay widget (1.1), hướng dọc/góc tự do (T-59), mô hình lớp/phần tử storyboard (T-22, sẽ là `schemaVersion` mới có hàm di trú từ 0.3.0).
+
+### 5.2 Hợp đồng widget 🟢
+Xem mục "Lệch so với phác thảo" ở 5.1.
+
 ```ts
 interface WidgetRenderer<P> {
   type: WidgetType;
@@ -129,10 +144,22 @@ Toạ độ widget tính bằng **pt logic** theo `designWidth × designHeight` 
 - Cửa sổ nhìn `windowSeconds`, playhead tại `playheadRatio`; `t0 = t − window × ratio`.
 - `notesInRange(track, t0, t1)`: tìm nhị phân nốt đầu có `start ≥ t0 − maxDur`, duyệt tới khi `start > t1`; O(log n + k).
 - Toạ độ x = `(start − t0) × pxPerSec`, y theo hàng cao độ `(pitchMax − pitch) × rowH`; độ rộng tối thiểu 1 px.
-- Độ sáng: `trackBrightness` lấy tại thời điểm bắt đầu nốt (không nhấp nháy trong nốt); alpha = `clamp(brightness × (active ? 1 : 0,85), 0,05, 1)`.
+- Độ sáng nền: `trackBrightness` lấy tại thời điểm bắt đầu nốt (không nhấp nháy trong nốt); alpha = `clamp(brightness × opacity × (active ? 1 : inactiveOpacity), 0,05, 1)`. **Mặc định nguồn `off` → brightness = 1, mọi nốt như nhau** (D-50).
+- Phát sáng: `NoteRect.glow = style.glow × glowAmount(...)` (mục 5.6); `glowBlur = glowRadius × glow × (0,4 + 0,6 × brightness)`.
 
 ### 5.5 Quy tắc tất định (kiểm bằng test)
 Cùng `(scene, derived, ast, t, scale)` → cùng danh sách `Primitive` (so sánh sâu) ở Node, và ảnh khớp theo hai ngưỡng của SRS REQ-GRAPHICS-05 (sửa v1.1): ≤ 1/255 mỗi kênh khi **cùng đường vẽ**; giữa Canvas và OffscreenCanvas (khác đường vẽ, Spike 1 đo max diff 57/255 do khử răng cưa) dùng tỉ lệ điểm ảnh lệch ≤ 2/255 và PSNR, **[PROVISIONAL]**, so ảnh trước khi mã hoá (test ảnh chụp trong trình duyệt, M3 ⚪). Mẹo giảm sai khác: vẽ Primitive về toạ độ đã làm tròn theo `scale`, cùng `imageSmoothingQuality`, cùng phông đã nạp. Font người dùng phải `FontFace.load()` xong trước khung đầu khi xuất.
+
+### 5.6 Phát sáng động khi chạm 🟢
+SRS REQ-GRAPHICS-17, D-50; `packages/render-core/src/glow.ts`, test `test/glow.test.ts`.
+
+- **Trường trong `NoteStyle`** (nên có hai tầng toàn cục/theo track như mọi trường kiểu nốt): `glowMode` (`uniform` mặc định | `dynamic`), `glowSource` (`velocity` | `pitch` | `pan` | `fade` | `automation`), `glowPanMode` (`lr` mặc định | `spread`), `glowLane`, `glowMin` (0,15), `glowMax` (1), `glowInvert`, `glowRelease` (0–4 s, mặc định 0). `sanitizeStyle` điền mặc định cho trường vắng, nên tuỳ chọn/preset cũ vẫn đọc được.
+- **Công thức:** `glowAmount = env(t) × (uniform ? 1 : lerp(glowMin, glowMax, s'))`, với
+  - `env = 1` khi nốt đang phát hoặc `glowActiveOnly = false`; sau khi nốt hết, `env = 1 − (t − end)/glowRelease` trong `glowRelease` giây; ngoài ra `0` (không tính gì thêm).
+  - `s` theo nguồn: velocity `v/127`; pitch theo tầm cao độ đang hiển thị của widget (`pitchMin..pitchMax` truyền vào `layoutPianoRoll`); pan = lane pan **lúc nốt bắt đầu** (không có lane thì `mix.pan`), qua `panUnit`: `lr` giữ `u`, `spread` = `|2u − 1|` (giữa yếu nhất, lệch càng nhiều càng mạnh); fade `1 − (t − start)/(end − start)`; automation = `laneUnit(glowLane)` **tại t** (lane loại `pan` cũng qua `panUnit`).
+  - `s' = glowInvert ? 1 − s : s`; nguồn không có dữ liệu → `s = 1` (sáng như đều nhau).
+- **Ranh giới:** chỉ đổi cường độ phát sáng (`glow`), không đổi độ đục; độ đục do độ sáng nền (REQ-GRAPHICS-06) và `opacity/inactiveOpacity`. Pha `hit` của template nốt (T-18) sẽ gọi cùng `glowSourceValue` để dùng chung bộ tiêu chí.
+- **Thêm tiêu chí mới:** thêm giá trị vào `GLOW_SOURCES` + một nhánh trong `glowSourceValue` trả 0..1 + chuỗi `web.glow.source.<x>` và `web.glow.hint.<x>`; không đụng `glowAmount`, `layoutPianoRoll` hay giao diện khác.
 
 ## 6. Ứng dụng web và phát lại 🟡
 
@@ -141,7 +168,9 @@ Cùng `(scene, derived, ast, t, scale)` → cùng danh sách `Primitive` (so sá
 |---|---|---|
 | Tệp đã nạp `{ast, warnings, format}` | `App` (`useState`) | Bất biến; thay cả khối khi nạp tệp mới |
 | Đồng hồ `{t, playing, rate}` | `App` (`useState` + `lib/clock.ts`) | Vòng `requestAnimationFrame` chỉ gọi `advance(s, dt, duration)` |
-| Cấu hình độ sáng theo track | `App` | Sẽ chuyển vào `SceneDocument`/Preset (M2) |
+| Cấu hình độ sáng nền theo track | `App` → `Derived.brightness` | Mặc định `off` (đều nhau); truyền vào `renderFrame` qua `Derived`; vào Preset ở T-07 |
+| Kiểu nốt (gồm phát sáng động) và bàn phím | `App`, lưu `localStorage` (`dawviz.prefs.v1.style`, `.keyboard`) | Ghép vào Piano Roll của `defaultScene()` mỗi lần đổi; vào Scene/Preset ở T-07 |
+| Kiểu trình bày danh sách track | `App`, lưu `localStorage` (`dawviz.prefs.v1.trackLayout` = `{mode: 'grid'\|'list', columns: number\|'auto'}`) | Tuỳ chọn giao diện, không vào Preset (REQ-UI-14) |
 | Ngôn ngữ | `I18nProvider` | `localStorage` có try/catch |
 | Scene, lựa chọn widget, undo/redo ⚪ | Store riêng (M2) | Xem 6.3 |
 
@@ -150,7 +179,17 @@ Cùng `(scene, derived, ast, t, scale)` → cùng danh sách `Primitive` (so sá
 - **Có audio (M2/M3):** `AudioContext` là đồng hồ chủ: `t = audioCtx.currentTime − startedAt + offset`; UI đọc `t` mỗi khung. Tua = dừng source, tạo `AudioBufferSourceNode` mới từ vị trí mới. Offset audio người dùng chỉnh được (SRS). Trình duyệt chặn autoplay → chỉ tạo/resume `AudioContext` trong sự kiện bấm.
 - Khi tab ẩn, `requestAnimationFrame` dừng; khi quay lại `t` được tính lại từ đồng hồ chủ, không cộng dồn.
 
-### 6.3 Chế độ chỉnh sửa ⚪ (M2)
+### 6.3 Danh sách track 🟢
+SRS REQ-UI-14 (sửa theo D-50); `apps/web/src/components/TrackPanel.tsx`.
+
+- **Hai kiểu:** `TrackGrid` (mặc định; App đặt ở hàng riêng `lg:col-span-2` dưới khung xem trước) và `TrackList` (dòng gọn trong cột phải, mở rộng tại chỗ bằng `AnimatePresence` + chiều cao `auto`). Phần dùng chung: `TrackHeader` (màu, tên, số nốt, độ sáng hiện tại khi nguồn ≠ `off`), `TrackControls` (độ sáng nền, đảo chiều, bỏ màu tuỳ chỉnh), `TrackInfo` (tầm cao độ, fader, lane automation có dữ liệu, ngưỡng). `TrackLayoutBar` chọn kiểu và số cột (dùng `NumberField`, tối đa = số track).
+- **Số cột:** `effectiveColumns(chosen, widthPx, count)` (hàm thuần, có test): `fit = floor((W + gap)/(MIN_CARD_PX + gap))`, `MIN_CARD_PX = 224`; `auto` → `min(fit, count)`; số người dùng chọn → `min(chosen, fit)` và `limited = chosen > fit` để hiện thông báo. Bề rộng lấy bằng `ResizeObserver`; lưới vẽ bằng `grid-template-columns: repeat(cols, minmax(0, 1fr))`.
+- **Animation:** mỗi thẻ là `motion.li` có `layout` và `layoutId = track-<id>` dùng chung giữa hai kiểu, bọc cả App trong `LayoutGroup`, nên đổi cột hoặc đổi kiểu thì thẻ di chuyển từ chỗ cũ sang chỗ mới (lò xo `stiffness 420, damping 38`). `MotionConfig reducedMotion="user"` tắt chuyển động khi hệ điều hành bật giảm chuyển động.
+- **Dính khi cuộn:** khung xem trước và cột phải chỉ `lg:sticky` ở kiểu Danh sách; ở kiểu Lưới, nếu dính sẽ đè lên thẻ track ở hàng dưới (lỗi đã gặp khi kiểm 2026-11-12).
+- **Bàn phím:** `arrowNav` tìm phần tử `[data-track-focus]` gần nhất theo hướng mũi tên bằng toạ độ thật, nên đúng với cả lưới tự động; Enter/Space mở dòng ở kiểu Danh sách.
+- **Chống tràn:** mọi lưới con dùng `minmax(0, …)`; `SliderField` co nhãn (`minmax(0,7rem)`) và giữ thanh trượt ≥ 3rem; tên track `truncate`. Kiểm tự động bằng Playwright: đếm phần tử con vượt mép phải thẻ ở 1440/1100/800 px.
+
+### 6.4 Chế độ chỉnh sửa ⚪ (M2)
 - Mô hình lệnh (command pattern): mọi thay đổi Scene là `Command{ do, undo, mergeKey? }`; ngăn xếp undo ≥ 50 bước (REQ-UI-02); kéo thả gộp theo `mergeKey` thành một lệnh.
 - Kéo/đổi cỡ widget: toạ độ logic; `snap(x, y, w, h, others, grid)` thuần (lưới 8/16 pt, ngưỡng guide ≤ 5 pt, phím `Alt/Shift`) – test bằng Node.
 - Lớp tương tác (khung chọn, điểm neo, đường gióng) là DOM/SVG phủ lên canvas, **không** vẽ vào canvas của Render Core, nên tự động biến mất ở Preview/Export.
@@ -206,7 +245,7 @@ Danh mục phẳng `locales/<mã>.json` (`{tham_số}`, `{n, plural, one {#…} 
 Cần đo thật ở M2–M3; số liệu thực ghi vào TDD mục khoảng trống.
 
 ## 12. Bảo mật và quyền riêng tư
-Không backend, không telemetry; tệp người dùng không rời máy. Không `eval`/`new Function`. Đọc XML/ZIP có trần (xem mục 3). Preset và pack nhập vào được kiểm schema và giới hạn kích thước. Font/ảnh nạp qua `FontFace`/`createImageBitmap`, không chèn HTML từ dữ liệu người dùng (chuỗi tên track luôn render dạng văn bản; trong canvas là `fillText`). Giấy phép font/thư viện: OI-07.
+Không backend, không telemetry; tệp người dùng không rời máy. Không `eval`/`new Function` (ô nhập số dùng bộ đọc viết tay, `lib/numberInput.ts`). **CSP + Trusted Types 🟢** (T-30, 2026-11-12): chính sách ở `apps/web/src/lib/csp.ts`, chèn thẻ `meta` khi build; Worker tạo qua chính sách `dawviz-worker` chỉ nhận URL cùng origin (`lib/trustedTypes.ts`); `npm run dev` không có CSP (HMR cần script nội tuyến). Đọc XML/ZIP có trần (xem mục 3). Preset và pack nhập vào được kiểm schema và giới hạn kích thước. Font/ảnh nạp qua `FontFace`/`createImageBitmap`, không chèn HTML từ dữ liệu người dùng (chuỗi tên track luôn render dạng văn bản; trong canvas là `fillText`). Giấy phép font/thư viện: OI-07.
 
 ## 13. Xây dựng, kiểm thử, phát hành
 - **Công cụ:** npm workspaces; Vite (dev, build, Worker module); `tsc --noEmit` cho kiểu; Node ≥ 22.18 chạy `.ts` trực tiếp cho test logic.
@@ -218,8 +257,8 @@ Không backend, không telemetry; tệp người dùng không rời máy. Không
 ## 14. Việc cần làm theo mốc (từ thiết kế này)
 | Mốc | Công việc kỹ thuật chính |
 |---|---|
-| M1 (khung đã có) | `npm install` + build; sửa lỗi biên dịch; chỉ nhận kết quả parse mới nhất; chỉnh ngưỡng độ sáng trong UI; Track Info |
-| M2 | `SceneDocument` + `renderFrame` + `WidgetRenderer` cho 8 widget; store + Command/undo; snapping; Preset; audio làm đồng hồ chủ; ChordTimeline |
+| M1 ✅ (đóng 2026-11-12) | build; chỉ nhận kết quả parse mới nhất; ngưỡng độ sáng; Track Info; CSP; báo thiếu `.mid` ngoài |
+| M2 | ~~`SceneDocument` + `renderFrame` + `WidgetRenderer`~~ (T-05 ✅), phát sáng động (✅), danh sách track (✅ phần lõi); `WidgetRenderer` cho 8 widget; automation tổng quát ở parser (T-66); store + Command/undo; snapping; Preset; audio làm đồng hồ chủ; ChordTimeline |
 | M3 | Export Worker (7.1), `MuxerAdapter`, pre-flight, tiến độ/hủy, tier dự phòng; test ảnh chụp Preview↔Export; test A/V |
 | M4 | Dexie, Project Pack, nạp schema nhị phân trong UI, nhập tempo ghi đè trong UI |
 | M5 | Đo hiệu năng, trợ năng, bản dịch cộng đồng, đóng OI |

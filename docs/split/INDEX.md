@@ -10,17 +10,17 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [3. CHÂN DUNG NGƯỜI DÙNG MỤC TIÊU (USER PERSONAS)](BRD/3-chan-dung-nguoi-dung-muc-tieu-user-personas.md) · 1342 ký tự
 - [4.1. Trong phạm vi phiên bản 1.0 (In-Scope)](BRD/4-1-trong-pham-vi-phien-ban-1-0-in-scope.md) · 3226 ký tự
 - [4.3. Lộ trình phát hành (Milestones)](BRD/4-3-lo-trinh-phat-hanh-milestones.md) · 892 ký tự
-- [4.4. Phân bổ theo bản phát hành (D-40, chốt ở tài liệu v1.1)](BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md) · 2723 ký tự
+- [4.4. Phân bổ theo bản phát hành (D-40, chốt ở tài liệu v1.1)](BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md) · 2931 ký tự
 - [4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1118 ký tự
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4347 ký tự
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](BRD/6-gia-dinh-assumptions.md) · 554 ký tự
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 15108 ký tự
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 16293 ký tự
 - [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](BRD/8-cac-van-de-con-mo-open-issues.md) · 4634 ký tự
 
 ## SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
 - [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 422 ký tự
-- [Lịch sử phiên bản](SRS/lich-su-phien-ban.md) · 4684 ký tự
+- [Lịch sử phiên bản](SRS/lich-su-phien-ban.md) · 5104 ký tự
 - [Quy ước trong tài liệu](SRS/quy-uoc-trong-tai-lieu.md) · 818 ký tự
 - [Mục lục](SRS/muc-luc.md) · 365 ký tự
 - [1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG](SRS/1-gioi-thieu-muc-tieu-he-thong.md) · 4632 ký tự
@@ -38,17 +38,19 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [REQ-PARSER-05: Parser JSON khai báo (D-18, D-28, R-05)](SRS/req-parser-05-parser-json-khai-bao-d-18-d-28-r-0.md) · 1509 ký tự
 - [REQ-PARSER-06: Ableton Live Pack (`.alp`)](SRS/req-parser-06-ableton-live-pack-alp.md) · 1100 ký tự
 - [REQ-PARSER-07: Tempo không đoán ngầm và ghi đè (D-24, D-29)](SRS/req-parser-07-tempo-khong-doan-ngam-va-ghi-de-d.md) · 1665 ký tự
-- [3.2. Cấu trúc dữ liệu chuẩn hóa (Unified AST, D-08, D-09)](SRS/3-2-cau-truc-du-lieu-chuan-hoa-unified-ast-d-08.md) · 3193 ký tự
+- [3.2. Cấu trúc dữ liệu chuẩn hóa (Unified AST, D-08, D-09)](SRS/3-2-cau-truc-du-lieu-chuan-hoa-unified-ast-d-08.md) · 3457 ký tự
 - [REQ-GRAPHICS-00: Độ phân giải thiết kế logic (D-06)](SRS/req-graphics-00-do-phan-giai-thiet-ke-logic-d-06.md) · 421 ký tự
 - [REQ-GRAPHICS-01: Phân lớp đồ họa (D-07)](SRS/req-graphics-01-phan-lop-do-hoa-d-07.md) · 445 ký tự
 - [REQ-GRAPHICS-02: Bắt dính thông minh](SRS/req-graphics-02-bat-dinh-thong-minh.md) · 607 ký tự
 - [REQ-GRAPHICS-16: Thanh phát (playhead) tuỳ chỉnh](SRS/req-graphics-16-thanh-phat-playhead-tuy-chinh.md) · 1143 ký tự
 - [REQ-GRAPHICS-03: Trường xoay widget (D-15)](SRS/req-graphics-03-truong-xoay-widget-d-15.md) · 372 ký tự
 - [REQ-GRAPHICS-04: Preset dựng sẵn và đổi tỉ lệ khung](SRS/req-graphics-04-preset-dung-san-va-doi-ti-le-khu.md) · 673 ký tự
-- [REQ-GRAPHICS-06: Độ sáng track theo automation (D-33)](SRS/req-graphics-06-do-sang-track-theo-automation-d.md) · 2018 ký tự
+- [REQ-GRAPHICS-06: Độ sáng track theo automation (D-33)](SRS/req-graphics-06-do-sang-track-theo-automation-d.md) · 2443 ký tự
 - [REQ-GRAPHICS-07: Kiểu dáng nốt tuỳ chỉnh và bàn phím](SRS/req-graphics-07-kieu-dang-not-tuy-chinh-va-ban-p.md) · 2601 ký tự
 - [REQ-GRAPHICS-08: Hiệu ứng chuyển động tất định (D-37)](SRS/req-graphics-08-hieu-ung-chuyen-dong-tat-dinh-d.md) · 442 ký tự
 - [REQ-GRAPHICS-05: Render Core dùng chung (ARC-01, D-20)](SRS/req-graphics-05-render-core-dung-chung-arc-01-d.md) · 1021 ký tự
+- [REQ-GRAPHICS-17: Phát sáng động khi chạm (D-50, 1.0)](SRS/req-graphics-17-phat-sang-dong-khi-cham-d-50-1-0.md) · 2766 ký tự
+- [REQ-AST-02: Automation tổng quát (D-50; 1.0 cho Reaper track + MIDI CC, các nguồn khác theo tệp mẫu)](SRS/req-ast-02-automation-tong-quat-d-50-1-0-cho-rea.md) · 2214 ký tự
 - [3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04)](SRS/3-4-dac-ta-8-widget-hud-br-02-br-03-br-04.md) · 368 ký tự
 - [REQ-WIDGET-01: Piano Roll](SRS/req-widget-01-piano-roll.md) · 1411 ký tự
 - [REQ-WIDGET-02: Track Info](SRS/req-widget-02-track-info.md) · 262 ký tự
@@ -85,11 +87,12 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [4. YÊU CẦU PHI CHỨC NĂNG (NON-FUNCTIONAL REQUIREMENTS)](SRS/4-yeu-cau-phi-chuc-nang-non-functional-requireme.md) · 5167 ký tự
 - [5.1. Bố cục không gian làm việc](SRS/5-1-bo-cuc-khong-gian-lam-viec.md) · 3717 ký tự
 - [5.2. Chế độ tương tác](SRS/5-2-che-do-tuong-tac.md) · 358 ký tự
-- [5.3. Yêu cầu giao diện](SRS/5-3-yeu-cau-giao-dien.md) · 13371 ký tự
+- [5.3. Yêu cầu giao diện](SRS/5-3-yeu-cau-giao-dien.md) · 14090 ký tự
 - [6. MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU](SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md) · 1419 ký tự
-- [7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO](SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md) · 6104 ký tự
+- [7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO](SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md) · 6665 ký tự
 - [8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS](SRS/8-cac-van-de-con-mo-cua-srs.md) · 4032 ký tự
 - [Phụ lục A: Mã lỗi](SRS/phu-luc-a-ma-loi.md) · 2039 ký tự
+- [Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)](SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md) · 740 ký tự
 - [Phụ lục A2: Mã cảnh báo của Parser Library](SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md) · 1066 ký tự
 - [Phụ lục B: Ghi chú rà soát](SRS/phu-luc-b-ghi-chu-ra-soat.md) · 2889 ký tự
 
@@ -109,19 +112,25 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 
 - [THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER (mở đầu)](TECHNICAL-DESIGN/thiet-ke-ky-thuat-chi-tiet-technical-design-daw.md) · 720 ký tự
 - [1. Bức tranh tổng thể](TECHNICAL-DESIGN/1-buc-tranh-tong-the.md) · 2420 ký tự
-- [2. Mô hình dữ liệu và thời gian 🟢](TECHNICAL-DESIGN/2-mo-hinh-du-lieu-va-thoi-gian.md) · 2160 ký tự
+- [2. Mô hình dữ liệu và thời gian 🟢](TECHNICAL-DESIGN/2-mo-hinh-du-lieu-va-thoi-gian.md) · 2921 ký tự
 - [3. Đường ống phân tích (parser) 🟢](TECHNICAL-DESIGN/3-duong-ong-phan-tich-parser.md) · 1875 ký tự
 - [4. Dữ liệu dẫn xuất (derived) 🟢/⚪](TECHNICAL-DESIGN/4-du-lieu-dan-xuat-derived.md) · 780 ký tự
-- [5. Render Core (chi tiết) 🟢 phần Piano Roll, ⚪ phần còn lại](TECHNICAL-DESIGN/5-render-core-chi-tiet-phan-piano-roll-phan-con.md) · 3573 ký tự
-- [6. Ứng dụng web và phát lại 🟡](TECHNICAL-DESIGN/6-ung-dung-web-va-phat-lai.md) · 1685 ký tự
+- [5.0 Kiểu dáng nốt và bàn phím 🟢 (REQ-GRAPHICS-07)](TECHNICAL-DESIGN/5-0-kieu-dang-not-va-ban-phim-req-graphics-07.md) · 624 ký tự
+- [5.1 Giao diện chính 🟢](TECHNICAL-DESIGN/5-1-giao-dien-chinh.md) · 3593 ký tự
+- [5.2 Hợp đồng widget 🟢](TECHNICAL-DESIGN/5-2-hop-dong-widget.md) · 459 ký tự
+- [5.3 Hệ toạ độ và tỉ lệ 🟡](TECHNICAL-DESIGN/5-3-he-toa-do-va-ti-le.md) · 364 ký tự
+- [5.4 Piano Roll 🟢](TECHNICAL-DESIGN/5-4-piano-roll.md) · 714 ký tự
+- [5.5 Quy tắc tất định (kiểm bằng test)](TECHNICAL-DESIGN/5-5-quy-tac-tat-dinh-kiem-bang-test.md) · 640 ký tự
+- [5.6 Phát sáng động khi chạm 🟢](TECHNICAL-DESIGN/5-6-phat-sang-dong-khi-cham.md) · 1776 ký tự
+- [6. Ứng dụng web và phát lại 🟡](TECHNICAL-DESIGN/6-ung-dung-web-va-phat-lai.md) · 4007 ký tự
 - [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở)](TECHNICAL-DESIGN/7-duong-ong-xuat-video-m3-spike-1-la-co-so.md) · 2020 ký tự
 - [8. Lưu trữ ⚪ (M4)](TECHNICAL-DESIGN/8-luu-tru-m4.md) · 827 ký tự
 - [9. Đa ngôn ngữ 🟢](TECHNICAL-DESIGN/9-da-ngon-ngu.md) · 492 ký tự
 - [10. Lỗi, ghi nhật ký, quan sát](TECHNICAL-DESIGN/10-loi-ghi-nhat-ky-quan-sat.md) · 470 ký tự
 - [11. Hiệu năng và bộ nhớ (ngân sách)](TECHNICAL-DESIGN/11-hieu-nang-va-bo-nho-ngan-sach.md) · 589 ký tự
-- [12. Bảo mật và quyền riêng tư](TECHNICAL-DESIGN/12-bao-mat-va-quyen-rieng-tu.md) · 413 ký tự
+- [12. Bảo mật và quyền riêng tư](TECHNICAL-DESIGN/12-bao-mat-va-quyen-rieng-tu.md) · 728 ký tự
 - [13. Xây dựng, kiểm thử, phát hành](TECHNICAL-DESIGN/13-xay-dung-kiem-thu-phat-hanh.md) · 906 ký tự
-- [14. Việc cần làm theo mốc (từ thiết kế này)](TECHNICAL-DESIGN/14-viec-can-lam-theo-moc-tu-thiet-ke-nay.md) · 656 ký tự
+- [14. Việc cần làm theo mốc (từ thiết kế này)](TECHNICAL-DESIGN/14-viec-can-lam-theo-moc-tu-thiet-ke-nay.md) · 760 ký tự
 
 ## TDD.md — TÀI LIỆU THIẾT KẾ KIỂM THỬ (TDD = Test Design Document) — ỨNG DỤNG DAW VISUALIZER
 
@@ -130,7 +139,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [2. Danh mục test mới](TDD/2-danh-muc-test-moi.md) · 1348 ký tự
 - [3. Ma trận truy vết](TDD/3-ma-tran-truy-vet.md) · 399 ký tự
 - [4. Khoảng trống đã biết](TDD/4-khoang-trong-da-biet.md) · 442 ký tự
-- [5. Danh sách kiểm thủ công cho AT-18 (Chrome)](TDD/5-danh-sach-kiem-thu-cong-cho-at-18-chrome.md) · 1482 ký tự
+- [5. Danh sách kiểm thủ công cho AT-18 (Chrome)](TDD/5-danh-sach-kiem-thu-cong-cho-at-18-chrome.md) · 4128 ký tự
 
 ## ANIMATION.md — Hiệu ứng chuyển động và xuất video: so sánh công cụ và quyết định
 
@@ -147,7 +156,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [Tùy biến tối đa: storyboard, chuyển cảnh nốt, đường cong easing, hạt, tài nguyên và preset cộng đồng (mở đầu)](CUSTOMIZATION/tuy-bien-toi-da-storyboard-chuyen-canh-not-duong.md) · 870 ký tự
 - [1. Mục tiêu và ranh giới](CUSTOMIZATION/1-muc-tieu-va-ranh-gioi.md) · 906 ký tự
 - [2. Nguyên tắc dễ dùng](CUSTOMIZATION/2-nguyen-tac-de-dung.md) · 1605 ký tự
-- [3. Mô hình dữ liệu storyboard (AD-08)](CUSTOMIZATION/3-mo-hinh-du-lieu-storyboard-ad-08.md) · 4395 ký tự
+- [3. Mô hình dữ liệu storyboard (AD-08)](CUSTOMIZATION/3-mo-hinh-du-lieu-storyboard-ad-08.md) · 4930 ký tự
 - [4. Đường cong chuyển động (easing) (AD-09)](CUSTOMIZATION/4-duong-cong-chuyen-dong-easing-ad-09.md) · 1239 ký tự
 - [5. Hạt (particles) không trạng thái (AD-10)](CUSTOMIZATION/5-hat-particles-khong-trang-thai-ad-10.md) · 1397 ký tự
 - [6. Tài nguyên (assets) của phiên và của cộng đồng (AD-12)](CUSTOMIZATION/6-tai-nguyen-assets-cua-phien-va-cua-cong-dong-a.md) · 2250 ký tự

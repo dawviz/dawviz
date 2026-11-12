@@ -21,16 +21,19 @@ test('activeNotes: biên [start, end) và nốt dài bắt đầu rất sớm', 
   assert.equal(notesInRange(ti, 5, 6).length, 1);
 });
 
-test('trackBrightness: không có dữ liệu → 1; static/volume/invert/off', () => {
+test('trackBrightness: không có dữ liệu → 1; static/volume/invert/off; mặc định là đều nhau (off)', () => {
+  assert.equal(DEFAULT_BRIGHTNESS.source, 'off');
+  const VOL = { ...DEFAULT_BRIGHTNESS, source: 'volume' as const };
   const tm = [{ tick: 0, timeSeconds: 0, bpm: 120 }];
   const none = mk([[0, 1, 60]]);
-  assert.equal(trackBrightness(none, tm, 0), 1);
+  assert.equal(trackBrightness(none, tm, 0, VOL), 1);
   const lane = { kind: 'volume' as const, points: [
     { tick: 0, timeSeconds: 0, value: 1, shape: 0 }, { tick: 1920, timeSeconds: 2, value: 10 ** (-36 / 20), shape: 0 }] };
   const tr = mk([[0, 1, 60]], { automation: { volume: lane } });
-  assert.equal(trackBrightness(tr, tm, 0), 1);                 // 0 dB → sáng nhất
-  assert.ok(Math.abs(trackBrightness(tr, tm, 2) - 0.25) < 1e-9); // -36 dB → minBrightness
-  assert.ok(Math.abs(trackBrightness(tr, tm, 2, { ...DEFAULT_BRIGHTNESS, invert: true }) - 1) < 1e-9);
+  assert.equal(trackBrightness(tr, tm, 2), 1);                 // mặc định: không đổi theo automation
+  assert.equal(trackBrightness(tr, tm, 0, VOL), 1);            // 0 dB → sáng nhất
+  assert.ok(Math.abs(trackBrightness(tr, tm, 2, VOL) - 0.25) < 1e-9); // -36 dB → minBrightness
+  assert.ok(Math.abs(trackBrightness(tr, tm, 2, { ...VOL, invert: true }) - 1) < 1e-9);
   assert.equal(trackBrightness(tr, tm, 2, { ...DEFAULT_BRIGHTNESS, source: 'off' }), 1);
   const st = mk([[0, 1, 60]], { mix: { volumeDb: -18, pan: 0 } });
   assert.ok(Math.abs(trackBrightness(st, tm, 0, { ...DEFAULT_BRIGHTNESS, source: 'static' }) - 0.625) < 1e-9); // unit .5 → .25+.75*.5
@@ -51,11 +54,12 @@ test('Reaper BigProject4b: độ sáng đổi theo envelope volume, bám đúng 
   const { ast } = await parseProject('BigProject4b.rpp', load('BigProject4b.rpp'), {});
   const tr = ast.tracks.find((t: any) => t.automation?.volume);
   assert.ok(tr, 'cần có track có envelope volume');
-  const b0 = trackBrightness(tr, ast.tempoMap, 0), b3 = trackBrightness(tr, ast.tempoMap, 3);
+  const VOL = { ...DEFAULT_BRIGHTNESS, source: 'volume' as const };
+  const b0 = trackBrightness(tr, ast.tempoMap, 0, VOL), b3 = trackBrightness(tr, ast.tempoMap, 3, VOL);
   assert.equal(b0, 1);
   assert.ok(b3 < b0 && b3 > 0.25);
   // −25.36 dB → unit (36−25.36)/36 = 0.2956 → 0.25 + 0.75*0.2956 ≈ 0.4717 tại 2.92 s
-  assert.ok(Math.abs(trackBrightness(tr, ast.tempoMap, 2.92) - 0.4717) < 0.01);
+  assert.ok(Math.abs(trackBrightness(tr, ast.tempoMap, 2.92, VOL) - 0.4717) < 0.01);
 });
 
 const fakeCtx = () => {
@@ -122,4 +126,29 @@ test('layoutKeyboard + drawKeyboard: phím đang phát lấy màu track; phím �
   assert.equal(layoutKeyboard(idx, 5, { height: 120, pitchMin: 60, pitchMax: 71 }).some((k) => k.active), false);
   const { ctx, calls } = fakeCtx(); drawKeyboard(ctx, keys, { width: 64, height: 120, whiteColor: '#fff' });
   assert.equal(calls.length, 7 + 5 * 2 + 1); // 7 phím trắng + 5 × (nền + phím đen) + đường kẻ
+});
+
+import { sanitizeBrightness, pitchName } from '../src/index.ts';
+test('sanitizeBrightness: sàn < trần ≥ 1 dB, min ≤ max, giữ trường vừa sửa, sửa giá trị hỏng; trackBrightness không ra NaN', () => {
+  const base = { ...DEFAULT_BRIGHTNESS };
+  assert.deepEqual(sanitizeBrightness(base), base);
+  let c = sanitizeBrightness({ ...base, floorDb: 5, ceilDb: 0 }, 'floorDb');
+  assert.equal(c.floorDb, 5); assert.equal(c.ceilDb, 6);
+  c = sanitizeBrightness({ ...base, floorDb: -10, ceilDb: -20 }, 'ceilDb');
+  assert.equal(c.ceilDb, -20); assert.equal(c.floorDb, -21);
+  c = sanitizeBrightness({ ...base, floorDb: 24, ceilDb: 24 }, 'floorDb');
+  assert.equal(c.floorDb, 23); assert.equal(c.ceilDb, 24);
+  c = sanitizeBrightness({ ...base, minBrightness: 0.9, maxBrightness: 0.5 }, 'minBrightness');
+  assert.equal(c.maxBrightness, 0.9);
+  c = sanitizeBrightness({ ...base, minBrightness: 0.9, maxBrightness: 0.5 }, 'maxBrightness');
+  assert.equal(c.minBrightness, 0.5);
+  c = sanitizeBrightness({ ...base, floorDb: NaN, maxBrightness: 7, source: 'xyz' as any });
+  assert.equal(c.floorDb, DEFAULT_BRIGHTNESS.floorDb); assert.equal(c.maxBrightness, 1); assert.equal(c.source, DEFAULT_BRIGHTNESS.source);
+  const tr = mk([[0, 1, 60]], { mix: { volumeDb: -6, pan: 0 } });
+  const b = trackBrightness(tr as any, [{ tick: 0, timeSeconds: 0, bpm: 120 }], 0.5, { ...base, source: 'static', floorDb: -6, ceilDb: -6 });
+  assert.ok(Number.isFinite(b));
+});
+test('pitchName: C4 = 60 mặc định, đổi quy ước, ngoài phạm vi', () => {
+  assert.equal(pitchName(60), 'C4'); assert.equal(pitchName(61), 'C#4'); assert.equal(pitchName(21), 'A0');
+  assert.equal(pitchName(60, 3), 'C3'); assert.equal(pitchName(128), '?'); assert.equal(pitchName(0), 'C-1');
 });

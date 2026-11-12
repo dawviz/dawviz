@@ -1,19 +1,22 @@
 // Thành phần gốc: giữ trạng thái tệp đã nạp, đồng hồ phát, cấu hình độ sáng; nối Worker parse với giao diện.
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { DEFAULT_BRIGHTNESS, DEFAULT_KEYBOARD_STYLE, defaultStyleConfig, type BrightnessConfig, type NoteStyle, type StyleConfig, type KeyboardStyle, type UnifiedProjectAST } from '@dawviz/render-core';
+import { AnimatePresence, LayoutGroup, MotionConfig, motion } from 'framer-motion';
+import { DEFAULT_BRIGHTNESS, DEFAULT_KEYBOARD_STYLE, defaultStyleConfig, sanitizeBrightness, buildIndex, defaultScene, type Derived, type PianoRollProps, type SceneDocument, type WidgetSpec, type BrightnessConfig, type NoteStyle, type StyleConfig, type KeyboardStyle, type UnifiedProjectAST } from '@dawviz/render-core';
 import { useI18n } from './i18n/I18nProvider.tsx';
 import { LanguageSelect } from './components/LanguageSelect.tsx';
 import { FileDrop, type Picked } from './components/FileDrop.tsx';
 import { Notices } from './components/Notices.tsx';
-import { PianoRollCanvas } from './components/PianoRollCanvas.tsx';
+import { MissingMidiPanel } from './components/MissingMidiPanel.tsx';
+import { mergeExtras, missingMidiLevel, type ExternalMidiInfo } from './lib/externalMidi.ts';
+import { SceneCanvas } from './components/SceneCanvas.tsx';
 import { Transport } from './components/Transport.tsx';
-import { TrackPanel } from './components/TrackPanel.tsx';
+import { TrackPanel, TrackLayoutBar, DEFAULT_TRACK_LAYOUT, type TrackLayout } from './components/TrackPanel.tsx';
 import { StylePanel } from './components/StylePanel.tsx';
 import { loadPref, savePref } from './lib/prefs.ts';
 import { advance, initialClock, seek, togglePlay, type ClockState } from './lib/clock.ts';
 import { describeProblem, type Problem } from './lib/problems.ts';
-import { createLatestGate, parseInWorker, ParseFailure } from './lib/parserClient.ts';
+import { createLatestGate, ParseFailure } from './lib/parserClient.ts';
+import { parseInWorker } from './lib/parseInWorker.ts';
 import type { ParseWarning } from '@dawviz/parser';
 
 interface Loaded { name: string; ast: UnifiedProjectAST; warnings: ParseWarning[]; format: string; ms: number }
@@ -23,30 +26,52 @@ export function App() {
   const [busy, setBusy] = useState(false);
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [failure, setFailure] = useState<{ code: string; message: string; details?: Record<string, unknown> } | null>(null);
+  // Lần chọn tệp gần nhất (để nạp thêm .mid mà không phải chọn lại dự án) và tình trạng .mid ngoài (REQ-UI-08).
+  const [source, setSource] = useState<Picked | null>(null);
+  const [midi, setMidi] = useState<ExternalMidiInfo | undefined>(undefined);
   const [clock, setClock] = useState<ClockState>(initialClock);
   const [brightness, setBrightness] = useState<Record<string, BrightnessConfig>>({});
   const [style, setStyle] = useState<StyleConfig>(() => { const s = loadPref<Partial<StyleConfig>>('style', {}); return { base: { ...defaultStyleConfig().base, ...(s.base ?? {}) }, tracks: s.tracks ?? {} }; });
   const [keyboard, setKeyboard] = useState<KeyboardStyle>(() => ({ ...DEFAULT_KEYBOARD_STYLE, ...loadPref<Partial<KeyboardStyle>>('keyboard', {}) }));
   useEffect(() => savePref('style', style), [style]);
   useEffect(() => savePref('keyboard', keyboard), [keyboard]);
+  // REQ-UI-14: kiểu trình bày danh sách track là tuỳ chọn giao diện (không vào preset video).
+  const [trackLayout, setTrackLayout] = useState<TrackLayout>(() => {
+    const p = loadPref<Partial<TrackLayout>>('trackLayout', {});
+    const mode = p.mode === 'list' ? 'list' : 'grid';
+    const columns = p.columns === 'auto' || (typeof p.columns === 'number' && p.columns >= 1) ? p.columns : DEFAULT_TRACK_LAYOUT.columns;
+    return { mode, columns };
+  });
+  useEffect(() => savePref('trackLayout', trackLayout), [trackLayout]);
   const duration = loaded?.ast.meta.totalDurationSeconds ?? 0;
+
+  // T-05: khung hình = renderFrame(scene, derived, ast, t). Kiểu nốt và bàn phím hiện vẫn chỉnh ở bảng bên phải và được
+  // ghép vào Piano Roll của scene mặc định; T-07 sẽ đưa scene vào store có hoàn tác và Preset.
+  const scene: SceneDocument = useMemo(() => {
+    const s = defaultScene();
+    const w = s.widgets[0] as WidgetSpec<PianoRollProps>;
+    w.properties = { ...w.properties, noteStyle: style, keyboard: { ...w.properties.keyboard, enabled: keyboard.enabled } };
+    return s;
+  }, [style, keyboard]);
+  const index = useMemo(() => (loaded ? buildIndex(loaded.ast.tracks, loaded.ast.meta.totalDurationSeconds) : null), [loaded]);
+  const derived: Derived | null = useMemo(() => (index ? { index, brightness } : null), [index, brightness]);
 
   // T-02: chọn tệp mới khi tệp cũ đang parse -> chỉ kết quả của lần chọn mới nhất được áp dụng; busy chỉ tắt khi lần mới nhất xong.
   const gate = useRef(createLatestGate()).current;
   const onPick = useCallback(async ({ main, extras }: Picked) => {
     const ticket = gate.begin();
-    setBusy(true); setFailure(null);
+    setBusy(true); setFailure(null); setSource({ main, extras });
     try {
       const files: Record<string, ArrayBuffer> = {};
       for (const f of extras) files[f.name] = await f.arrayBuffer();
       const r = await parseInWorker({ name: main.name, buffer: await main.arrayBuffer(), files });
       if (!gate.isLatest(ticket)) return;
-      setLoaded({ name: main.name, ast: r.ast, warnings: r.warnings, format: r.format, ms: r.ms });
+      setLoaded({ name: main.name, ast: r.ast, warnings: r.warnings, format: r.format, ms: r.ms }); setMidi(r.midi);
       setBrightness(Object.fromEntries(r.ast.tracks.map((t) => [t.id, { ...DEFAULT_BRIGHTNESS } as BrightnessConfig])));
       setClock(initialClock);
     } catch (e) {
       if (!gate.isLatest(ticket)) return;
-      const f = e as ParseFailure; setLoaded(null);
+      const f = e as ParseFailure; setLoaded(null); setMidi(f.midi);
       setFailure({ code: f.code ?? 'ERR_UNKNOWN', message: f.message, details: f.details });
     } finally { if (gate.isLatest(ticket)) setBusy(false); }
   }, [gate]);
@@ -65,15 +90,24 @@ export function App() {
     return () => cancelAnimationFrame(raf);
   }, [clock.playing, duration]);
 
+  const midiLevel = missingMidiLevel(midi, !!failure);
+  const addMidi = useCallback((files: File[]) => { if (source) void onPick({ main: source.main, extras: mergeExtras(source.extras, files) }); }, [source, onPick]);
+
   const problems: Problem[] = useMemo(() => {
     const out: Problem[] = [];
-    if (failure) out.push(describeProblem(i18n, 'error', failure.code, failure.message, failure.details));
-    for (const w of loaded?.warnings ?? []) out.push(describeProblem(i18n, 'warning', w.code, w.message, w.details));
+    // Bảng "thiếu .mid" đã nói rõ hơn: không lặp lại cảnh báo từng item và lỗi "không có nốt" do thiếu tệp.
+    const covered = (code: string) => !!midi?.missing.length && (code === 'WARN_RPP_EXTERNAL_MIDI' || code === 'ERR_NO_NOTES');
+    if (failure && !covered(failure.code)) out.push(describeProblem(i18n, 'error', failure.code, failure.message, failure.details));
+    for (const w of loaded?.warnings ?? []) if (!covered(w.code)) out.push(describeProblem(i18n, 'warning', w.code, w.message, w.details));
     return out;
-  }, [failure, loaded, i18n]);
+  }, [failure, loaded, i18n, midi]);
 
   const patchBrightness = useCallback((id: string, patch: Partial<BrightnessConfig>) =>
-    setBrightness((b) => ({ ...b, [id]: { ...b[id], ...patch } })), []);
+    setBrightness((b) => {
+      // Một trường được sửa thì giữ trường đó, đẩy trường đối diện (sàn/trần dB, min/max độ sáng).
+      const keys = Object.keys(patch) as (keyof BrightnessConfig)[];
+      return { ...b, [id]: sanitizeBrightness({ ...b[id], ...patch }, keys.length === 1 ? keys[0] : undefined) };
+    }), []);
 
   const patchTrackStyle = useCallback((id: string, patch: Partial<NoteStyle> | null) =>
     setStyle((s) => {
@@ -82,7 +116,20 @@ export function App() {
       return { ...s, tracks };
     }), []);
 
+  // Lane automation có trong dự án (nguồn phát sáng "automation", REQ-GRAPHICS-17).
+  const lanes = useMemo(() => [...new Set((loaded?.ast.tracks ?? []).flatMap((tr) => Object.entries(tr.automation ?? {}).filter(([, l]) => l?.points.length).map(([k]) => k)))], [loaded]);
+  const tracksSection = loaded && (
+    <section aria-labelledby="tracks-h" className="space-y-2">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 id="tracks-h" className="text-sm font-medium text-ink-300">{i18n.t('web.tracks')} <span className="tabular-nums">({loaded.ast.tracks.length})</span></h2>
+        <TrackLayoutBar value={trackLayout} onChange={setTrackLayout} count={loaded.ast.tracks.length} />
+      </div>
+      <TrackPanel tracks={loaded.ast.tracks} config={brightness} overrides={style.tracks} onChange={patchBrightness} onStyle={patchTrackStyle} t={clock.t} tempoMap={loaded.ast.tempoMap} layout={trackLayout} />
+    </section>
+  );
+
   return (
+    <MotionConfig reducedMotion="user"><LayoutGroup>
     <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-4 p-4 sm:p-6">
       <header className="flex items-center justify-between">
         <h1 className="text-xl font-semibold tracking-tight">{i18n.t('web.title')}</h1>
@@ -90,28 +137,31 @@ export function App() {
       </header>
 
       <FileDrop onPick={onPick} busy={busy} />
+      {midi && midiLevel && <MissingMidiPanel info={midi} level={midiLevel} busy={busy} onAdd={addMidi} />}
       <Notices problems={problems} />
 
       <AnimatePresence>
         {loaded && (
           <motion.main key={loaded.name} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
             className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
-            <section className="min-w-0 space-y-3 lg:sticky lg:top-4">
+            {/* Khung xem trước chỉ "dính" khi danh sách track nằm ở cột phải; ở chế độ lưới, thẻ track nằm bên dưới nên không được che. */}
+            <section className={`min-w-0 space-y-3 ${trackLayout.mode === 'list' ? 'lg:sticky lg:top-4' : ''}`}>
               <p className="text-sm text-ink-300">
                 {i18n.t('web.loaded', { name: loaded.name, format: loaded.format, ms: Math.round(loaded.ms), tracks: loaded.ast.tracks.length })}
               </p>
-              <PianoRollCanvas ast={loaded.ast} t={clock.t} brightness={brightness} style={style} keyboard={keyboard} />
+              {derived && <SceneCanvas scene={scene} derived={derived} ast={loaded.ast} t={clock.t} />}
               <Transport t={clock.t} duration={duration} playing={clock.playing}
                 onToggle={() => setClock((s) => togglePlay(s, duration))} onSeek={(t) => setClock((s) => seek(s, t, duration))} />
             </section>
-            <aside className="min-w-0 space-y-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto lg:pr-1 lg:sticky lg:top-4">
-              <StylePanel style={style} keyboard={keyboard} onStyle={setStyle} onKeyboard={setKeyboard} />
-              <h2 className="mb-2 text-sm font-medium text-ink-300">{i18n.t('web.tracks')}</h2>
-              <TrackPanel tracks={loaded.ast.tracks} config={brightness} overrides={style.tracks} onChange={patchBrightness} onStyle={patchTrackStyle} />
+            <aside className={`min-w-0 space-y-4 ${trackLayout.mode === 'list' ? 'lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto lg:pr-1 lg:sticky lg:top-4' : ''}`}>
+              <StylePanel style={style} keyboard={keyboard} onStyle={setStyle} onKeyboard={setKeyboard} lanes={lanes} />
+              {trackLayout.mode === 'list' && tracksSection}
             </aside>
+            {trackLayout.mode === 'grid' && <div className="min-w-0 lg:col-span-2">{tracksSection}</div>}
           </motion.main>
         )}
       </AnimatePresence>
     </div>
+    </LayoutGroup></MotionConfig>
   );
 }

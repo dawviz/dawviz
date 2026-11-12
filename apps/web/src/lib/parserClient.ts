@@ -2,10 +2,13 @@
 // Worker crash (hết bộ nhớ, lỗi nạp mô-đun…) -> mọi yêu cầu đang chờ bị từ chối với ERR_WORKER_CRASHED
 // và Worker được tạo lại ở lần gọi sau, để giao diện không kẹt ở trạng thái "đang xử lý".
 import type { ParseRequest, ParseResponse } from '../workers/parser.worker.ts';
+import type { ExternalMidiInfo } from './externalMidi.ts';
 
 export class ParseFailure extends Error {
   code: string;
   details?: Record<string, unknown>;
+  /** REQ-UI-08: tình trạng .mid ngoài (kể cả khi parse thất bại vì thiếu chúng). */
+  midi?: ExternalMidiInfo;
   // Không dùng "parameter property" (public code…) để chạy được với node --test (chế độ chỉ bỏ kiểu).
   constructor(code: string, message: string, details?: Record<string, unknown>) { super(message); this.code = code; this.details = details; }
 }
@@ -37,7 +40,7 @@ export function createParserClient(spawn: () => WorkerLike) {
     const w = spawn();
     w.onmessage = (e) => {
       const p = pending.get(e.data.id); if (!p) return; pending.delete(e.data.id);
-      if (e.data.ok) p.resolve(e.data); else p.reject(new ParseFailure(e.data.code, e.data.message, e.data.details));
+      if (e.data.ok) p.resolve(e.data); else { const f = new ParseFailure(e.data.code, e.data.message, e.data.details); f.midi = e.data.midi; p.reject(f); }
     };
     const crash = (message: string) => {
       if (worker === w) worker = null;
@@ -62,10 +65,7 @@ export function createParserClient(spawn: () => WorkerLike) {
   return { parse, pendingCount: () => pending.size };
 }
 
-const client = createParserClient(() =>
-  new Worker(new URL('../workers/parser.worker.ts', import.meta.url), { type: 'module' }) as unknown as WorkerLike);
-
-export const parseInWorker = client.parse;
+// Client thật (Worker + Trusted Types) nằm ở `parseInWorker.ts` để tệp này vẫn chạy được bằng node --test.
 
 /**
  * Chỉ nhận kết quả của yêu cầu mới nhất (T-02): mỗi lần bắt đầu lấy một vé; kết quả về muộn của vé cũ bị bỏ qua.

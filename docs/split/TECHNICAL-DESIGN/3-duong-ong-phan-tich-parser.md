@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "3. Đường ống phân tích (parser) 🟢"
 path: "3. Đường ống phân tích (parser) 🟢"
 chunk: 3-duong-ong-phan-tich-parser.md
-source_lines: 63-89
-source_sha1: 10dd2f7ff3
+source_lines: 65-91
+source_sha1: a953f6ccd4
 ids: [ERR_FILE_TOO_LARGE, ERR_UNSUPPORTED_FORMAT, WARN_RPP_ENVELOPES_IGNORED, WARN_RPP_EXTERNAL_MIDI, WARN_RPP_SRC_UNIT]
 ---
 ## 3. Đường ống phân tích (parser) 🟢

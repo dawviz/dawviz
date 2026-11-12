@@ -5,3 +5,7 @@ export * from './notes.ts';
 export * from './pianoroll.ts';
 export * from './draw.ts';
 export * from './style.ts';
+export * from './music.ts';
+export * from './glow.ts';
+export * from './scene.ts';
+export * from './render.ts';

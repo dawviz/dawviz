@@ -1,6 +1,11 @@
 // Kiểu dáng nốt và bàn phím (SRS REQ-GRAPHICS-07). Dữ liệu thuần, tuần tự hoá được (sau này lưu vào Preset/Pack).
 // Kiểu có hai tầng: mặc định toàn cục + ghi đè theo track (chỉ cần khai báo trường khác mặc định).
 export type ColorMode = 'track' | 'custom' | 'pitch' | 'velocity';
+export type GlowMode = 'uniform' | 'dynamic';
+export type GlowSource = 'velocity' | 'pitch' | 'pan' | 'fade' | 'automation';
+/** Cách đọc pan: 'lr' = trái yếu → phải mạnh; 'spread' = càng lệch khỏi giữa càng mạnh (giữa = yếu nhất). */
+export type GlowPanMode = 'lr' | 'spread';
+export const GLOW_SOURCES: readonly GlowSource[] = ['velocity', 'pitch', 'pan', 'fade', 'automation'];
 export interface NoteStyle {
   colorMode: ColorMode;
   customColor: string;      // dùng khi colorMode = 'custom' (#rrggbb)
@@ -11,6 +16,15 @@ export interface NoteStyle {
   glow: number;             // 0..1, cường độ phát sáng; 0 = tắt
   glowRadius: number;       // px, bán kính toả sáng tối đa
   glowActiveOnly: boolean;  // chỉ nốt đang phát mới sáng
+  // Phát sáng động (REQ-GRAPHICS-17): 'uniform' = mọi nốt sáng như nhau (mặc định); 'dynamic' = cường độ theo glowSource.
+  glowMode: GlowMode;
+  glowSource: GlowSource;
+  glowPanMode: GlowPanMode; // dùng khi glowSource = 'pan' (và lane pan khi glowSource = 'automation')
+  glowLane: string;         // tên lane automation khi glowSource = 'automation' ('volume' | 'pan' | 'mute' | lane tham số plugin sau này)
+  glowMin: number;          // 0..1, cường độ khi giá trị nguồn thấp nhất
+  glowMax: number;          // 0..1, cường độ khi giá trị nguồn cao nhất
+  glowInvert: boolean;      // đảo chiều nguồn
+  glowRelease: number;      // giây, phát sáng tắt dần sau khi nốt kết thúc (0 = tắt ngay)
   borderWidth: number;      // px; 0 = không viền
   borderColor: string;      // '' = tự lấy màu nốt sáng hơn
 }
@@ -20,6 +34,7 @@ export interface KeyboardStyle { enabled: boolean; width: number; whiteColor: st
 export const DEFAULT_NOTE_STYLE: Readonly<NoteStyle> = Object.freeze({
   colorMode: 'track', customColor: '#7cc4ff', opacity: 1, inactiveOpacity: 0.85, cornerRadius: 3, heightScale: 0.8,
   glow: 0.5, glowRadius: 12, glowActiveOnly: true, borderWidth: 0, borderColor: '',
+  glowMode: 'uniform', glowSource: 'velocity', glowPanMode: 'lr', glowLane: 'volume', glowMin: 0.15, glowMax: 1, glowInvert: false, glowRelease: 0,
 });
 export const DEFAULT_KEYBOARD_STYLE: Readonly<KeyboardStyle> = Object.freeze({
   enabled: true, width: 64, whiteColor: '#e8eaf2', blackColor: '#14161f', useTrackColor: true,
@@ -34,6 +49,7 @@ export const STYLE_PRESETS: Readonly<Record<string, Partial<NoteStyle>>> = Objec
   outline: { cornerRadius: 3, heightScale: 0.8, glow: 0.3, opacity: 0.35, borderWidth: 1.5, inactiveOpacity: 1 },
 });
 
+const num = (v: unknown, d: number) => (typeof v === 'number' && Number.isFinite(v) ? v : d); // trường mới có thể vắng trong preset/tuỳ chọn cũ
 const clamp = (v: number, lo: number, hi: number) => (Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : lo);
 /** Chuẩn hoá về miền hợp lệ (giá trị lạ từ UI/preset không làm sập vẽ). */
 export function sanitizeStyle(s: NoteStyle): NoteStyle {
@@ -45,6 +61,12 @@ export function sanitizeStyle(s: NoteStyle): NoteStyle {
     cornerRadius: clamp(s.cornerRadius, 0, 999), heightScale: clamp(s.heightScale, 0.1, 1.5),
     glow: clamp(s.glow, 0, 1), glowRadius: clamp(s.glowRadius, 0, 64), glowActiveOnly: !!s.glowActiveOnly,
     borderWidth: clamp(s.borderWidth, 0, 8), borderColor: s.borderColor && /^#[0-9a-f]{6}$/i.test(s.borderColor) ? s.borderColor : '',
+    glowMode: s.glowMode === 'dynamic' ? 'dynamic' : 'uniform',
+    glowSource: GLOW_SOURCES.includes(s.glowSource) ? s.glowSource : DEFAULT_NOTE_STYLE.glowSource,
+    glowPanMode: s.glowPanMode === 'spread' ? 'spread' : 'lr',
+    glowLane: typeof s.glowLane === 'string' && /^[\w.:-]{1,64}$/.test(s.glowLane) ? s.glowLane : DEFAULT_NOTE_STYLE.glowLane,
+    glowMin: clamp(num(s.glowMin, DEFAULT_NOTE_STYLE.glowMin), 0, 1), glowMax: clamp(num(s.glowMax, DEFAULT_NOTE_STYLE.glowMax), 0, 1),
+    glowInvert: !!s.glowInvert, glowRelease: clamp(num(s.glowRelease, 0), 0, 4),
   };
 }
 export const resolveNoteStyle = (cfg: StyleConfig | undefined, trackId: string): NoteStyle =>

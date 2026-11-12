@@ -5,7 +5,7 @@ section: "REQ-GRAPHICS-02: Bắt dính thông minh"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-02: Bắt dính thông minh"
 chunk: req-graphics-02-bat-dinh-thong-minh.md
 source_lines: 413-418
-source_sha1: 06736f0e5a
+source_sha1: d7467a1f28
 ids: [REQ-GRAPHICS-02]
 ---
 #### REQ-GRAPHICS-02: Bắt dính thông minh

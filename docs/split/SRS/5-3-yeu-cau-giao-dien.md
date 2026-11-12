@@ -4,9 +4,9 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "5.3. Yêu cầu giao diện"
 path: "5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.3. Yêu cầu giao diện"
 chunk: 5-3-yeu-cau-giao-dien.md
-source_lines: 898-965
-source_sha1: 06736f0e5a
-ids: [ARC-05, BR-07, BR-09, D-19, D-25, D-29, D-30, D-48, D-49, ERR_UNSUPPORTED_FORMAT, KPI-04, NFR-SEC-05, REQ-EXPORT-00, REQ-GRAPHICS-06, REQ-GRAPHICS-07, REQ-GRAPHICS-09, REQ-GRAPHICS-10, REQ-GRAPHICS-11, REQ-GRAPHICS-13, REQ-GRAPHICS-14, REQ-GRAPHICS-15, REQ-GRAPHICS-16, REQ-PARSER-05, REQ-PARSER-07, REQ-STORAGE-05, REQ-STORAGE-06, REQ-UI-01, REQ-UI-02, REQ-UI-03, REQ-UI-04, REQ-UI-05, REQ-UI-06, REQ-UI-07, REQ-UI-08, REQ-UI-09, REQ-UI-10, REQ-UI-11, REQ-UI-12, REQ-UI-13, REQ-UI-14, REQ-UI-15, REQ-WIDGET-07]
+source_lines: 932-1001
+source_sha1: d7467a1f28
+ids: [ARC-05, BR-07, BR-09, D-19, D-25, D-29, D-30, D-48, D-49, D-50, ERR_UNSUPPORTED_FORMAT, KPI-04, NFR-SEC-05, REQ-EXPORT-00, REQ-GRAPHICS-06, REQ-GRAPHICS-07, REQ-GRAPHICS-09, REQ-GRAPHICS-10, REQ-GRAPHICS-11, REQ-GRAPHICS-13, REQ-GRAPHICS-14, REQ-GRAPHICS-15, REQ-GRAPHICS-16, REQ-GRAPHICS-17, REQ-PARSER-05, REQ-PARSER-07, REQ-STORAGE-05, REQ-STORAGE-06, REQ-UI-01, REQ-UI-02, REQ-UI-03, REQ-UI-04, REQ-UI-05, REQ-UI-06, REQ-UI-07, REQ-UI-08, REQ-UI-09, REQ-UI-10, REQ-UI-11, REQ-UI-12, REQ-UI-13, REQ-UI-14, REQ-UI-15, REQ-WIDGET-07]
 ---
 ### 5.3. Yêu cầu giao diện
 
@@ -38,8 +38,8 @@ ids: [ARC-05, BR-07, BR-09, D-19, D-25, D-29, D-30, D-48, D-49, ERR_UNSUPPORTED_
 | :--- | :--- | :--- |
 | Nạp tệp | Kéo thả; chọn `.als` trong `.alp`; nạp `.mid` ngoài khi được hỏi (REQ-UI-07, 08) | Nạp schema nhị phân; xem cấu trúc tệp (inventory); hiện track tắt tiếng |
 | Tempo | Một ô BPM và dấu nhịp, hiện nổi bật khi tệp thiếu tempo | Nhiều mốc tempo, nhập theo `bar.beat`/giây, dấu nhịp theo mốc (REQ-UI-06) |
-| Track | Màu, ẩn/hiện, solo, dán bảng màu (REQ-UI-11, 12) | Nguồn độ sáng, đảo chiều, ngưỡng dB (REQ-GRAPHICS-06); kiểu nốt riêng từng track; gán stem (1.2) |
-| Kiểu nốt | Theme/preset; chế độ màu; độ dày; bo góc; phát sáng bật/tắt và mức | Độ đục khi chờ, bán kính phát sáng, viền, chỉ sáng khi phát, gradient, biểu thức |
+| Track | Màu, ẩn/hiện, solo, dán bảng màu (REQ-UI-11, 12) | Độ sáng nền (mặc định đều nhau), đảo chiều, ngưỡng dB (REQ-GRAPHICS-06); kiểu nốt riêng từng track; gán stem (1.2) |
+| Kiểu nốt | Theme/preset; chế độ màu; độ dày; bo góc; phát sáng bật/tắt và mức; phát sáng Đều nhau / Động khi chạm + chọn tiêu chí (REQ-GRAPHICS-17) | Độ đục khi chờ, bán kính phát sáng, viền, chỉ sáng khi phát, mức yếu/mạnh nhất, đảo chiều, tắt dần sau nốt, lane automation, gradient, biểu thức |
 | Hướng và chuyển cảnh nốt | 4 hướng; chọn template nốt (rơi, nảy, phóng…); tốc độ cuộn | Góc tự do; chỉnh từng pha `enter/hit/sustain/exit`, easing, morph (REQ-GRAPHICS-10) |
 | Thanh phát | Hiện/ẩn, màu, độ dày, kiểu nét dựng sẵn, vị trí | Dải và gradient, mũi tên, phát sáng, phản ứng khi chạm, độ dài; 1.1: sprite, keyframe (REQ-GRAPHICS-16) |
 | Bàn phím | Hiện/ẩn; tên nốt bật/tắt và cách ghi tên; số phím tự động | Phạm vi tuỳ chọn, hình dạng phím, màu phím nhấn, độ lún, thang âm, quy ước C3/C4, phông (REQ-GRAPHICS-07) |
@@ -51,18 +51,20 @@ ids: [ARC-05, BR-07, BR-09, D-19, D-25, D-29, D-30, D-48, D-49, ERR_UNSUPPORTED_
 | Nền và tài nguyên | Màu/ảnh nền, logo, phông | Sprite sheet, quản lý tài nguyên, giới hạn và dung lượng (REQ-STORAGE-05) |
 | Xuất | Preset nền tảng (YouTube 16:9, Shorts/TikTok/Reels 9:16, Instagram 4:5 và 1:1); chất lượng Thấp/Vừa/Cao; 30/60 fps; kích thước tuỳ chỉnh rộng × cao; đoạn xuất | Codec, bitrate, fast-start, nền trong suốt, chuỗi PNG, chọn lớp/tách lớp, Silent AAC, offset audio (REQ-EXPORT-00…08) |
 | Preset và cộng đồng | Cài/áp preset, chia sẻ (bắt buộc chọn giấy phép) | Sửa từng phần của preset, xem dữ liệu thô, quản lý phiên bản |
-| Danh sách track | Kiểu xếp Dọc/Ngang/Lưới; mật độ Gọn/Đầy đủ; lọc theo tên (REQ-UI-14) | Sắp xếp theo tiêu chí, kéo đổi thứ tự, số cột lưới, vị trí dock, nhóm/folder track |
+| Danh sách track | Lưới (số cột tự động hoặc tự chọn) / Danh sách dòng gọn; lọc theo tên (REQ-UI-14) | Sắp xếp theo tiêu chí, kéo đổi thứ tự, nhóm/folder track |
 | Nhập giá trị | Mọi điều khiển kéo có ô nhập kèm: số, đơn vị, phép tính `+ - * /`, ↑/↓ (REQ-UI-15) | Tương đối `+=`/`-=`/`*=`/`/=` cho nhiều đối tượng; biểu thức (tiền tố `=`, REQ-GRAPHICS-13) |
 | Giao diện | Theme sáng/tối, ngôn ngữ, chế độ | Như Cơ bản |
 
-* **REQ-UI-14 (Bố cục danh sách track, D-49, 1.0):**
-  * **Kiểu xếp:** **Dọc** (danh sách, mặc định), **Ngang** (dải thẻ cuộn ngang, hợp khi bảng track đặt dưới canvas) và **Lưới** (thẻ; số cột tự theo bề rộng hoặc chọn 1–6). Đổi kiểu xếp không tải lại trang, không làm mất trạng thái đang chỉnh của track.
-  * **Mật độ:** **Gọn** (một dòng: màu, tên, mắt, solo) hoặc **Đầy đủ** (thêm số nốt, nguồn độ sáng, kiểu nốt riêng…). Tên dài cắt bằng dấu "…", hiện đủ khi rê chuột; không phần tử nào được tràn khỏi thẻ ở mọi kiểu xếp (bài học T-61).
-  * **Thứ tự và lọc:** mặc định theo thứ tự trong DAW; sắp theo tên, số nốt, màu; kéo thả để đổi thứ tự hiển thị; ô lọc theo tên. Thứ tự trong danh sách **không** đổi thứ tự vẽ trên canvas, trừ khi bật "Vẽ theo thứ tự danh sách" (khi đó thứ tự được lưu vào dự án và hoàn tác được, REQ-UI-02).
-  * **Nhóm:** track nhóm/folder (Reaper folder, Ableton Group, DAWproject group) thu gọn/mở được; cần parser đọc thêm thông tin nhóm **[VERIFY]**, chưa có thì hiện phẳng.
-  * **Vị trí bảng:** trái (mặc định, §5.1), phải hoặc dưới; đặt ở dưới thì gợi ý chuyển sang Ngang. Bảng co giãn và thu gọn được. Bề rộng quá hẹp cho Lưới thì tự hạ về Dọc (không đổi lựa chọn đã lưu).
-  * **Lưu:** kiểu xếp, mật độ, sắp xếp, vị trí là **tuỳ chọn giao diện** lưu theo trình duyệt, không vào preset video và không đổi khung hình xuất.
-  * **Bàn phím và trợ năng:** phím mũi tên đi theo hướng xếp (↑/↓ ở Dọc, ←/→ ở Ngang, cả hai ở Lưới); vai trò `list`/`grid` tương ứng; kéo thả luôn có cách thay thế bằng nút "Lên/Xuống" hoặc ô nhập vị trí (REQ-UI-15).
+* **REQ-UI-14 (Bố cục danh sách track, D-49, sửa 2026-11-12 theo D-50, 1.0):**
+  * **Hai kiểu trình bày** (không xếp thẻ to chồng thành một cột dài):
+    * **Lưới (mặc định):** thẻ track xếp theo **hàng ngang**, nằm dưới khung xem trước và trải hết bề rộng. **Số cột do người dùng chọn** bằng ô nhập (REQ-UI-15) hoặc để **Tự động** (vừa bề rộng). Không có trần cứng: tối đa là số track. Nếu bề rộng hiện tại không đủ cho số cột đã chọn (mỗi thẻ cần tối thiểu ~224 px để không tràn) thì vẽ ít cột hơn và **báo** "Bề rộng hiện tại chỉ vừa N cột", giữ nguyên lựa chọn để khi cửa sổ rộng ra lại đủ cột.
+    * **Danh sách:** ở cột phải, **mỗi track một dòng gọn**: chấm màu, tên (cắt "…"), số nốt, độ sáng hiện tại (khi độ sáng nền khác "đều nhau") và mũi tên ▸. Bấm dòng hoặc Enter/Space để **mở rộng tại chỗ** phần chỉnh (độ sáng nền, đảo chiều, thông tin track, ngưỡng); nhiều dòng mở cùng lúc được.
+  * **Animation:** khi đổi số cột, đổi kiểu trình bày, thêm/bớt track hay mở/đóng dòng, thẻ **di chuyển mượt tới vị trí mới** (cùng một thẻ bay từ lưới sang danh sách và ngược lại; Framer Motion `layout` + `layoutId`, lò xo ~0,3 s). Tôn trọng "giảm chuyển động" của hệ điều hành (`prefers-reduced-motion` → bỏ chuyển động).
+  * **Không đè nội dung:** ở kiểu Lưới, khung xem trước và cột kiểu nốt **không dính** khi cuộn (để không che thẻ track); ở kiểu Danh sách, khung xem trước và cột phải dính trên màn hình rộng như trước.
+  * **Thứ tự và lọc (chưa làm):** mặc định theo thứ tự trong DAW; sắp theo tên, số nốt, màu; kéo thả để đổi thứ tự hiển thị (luôn có cách thay thế bằng bàn phím); ô lọc theo tên. Thứ tự trong danh sách **không** đổi thứ tự vẽ, trừ khi bật "Vẽ theo thứ tự danh sách" (lưu vào dự án, hoàn tác được).
+  * **Nhóm (chưa làm):** track nhóm/folder thu gọn/mở được; cần parser đọc thông tin nhóm **[VERIFY]**.
+  * **Lưu:** kiểu trình bày và số cột là **tuỳ chọn giao diện** lưu theo trình duyệt, không vào preset video và không đổi khung hình xuất.
+  * **Bàn phím và trợ năng:** phím mũi tên đi theo hướng xếp (trái/phải/lên/xuống tới thẻ gần nhất theo hướng, đúng cả với lưới tự động); vai trò `list`; dòng mở rộng có `aria-expanded`.
 * **REQ-UI-15 (Nhập giá trị chính xác cho mọi điều khiển, D-49, 1.0):**
   * **Quy tắc chung:** mọi thuộc tính chỉnh được bằng kéo (thanh trượt, núm xoay, kéo/co giãn widget trên canvas, tay nắm bezier và keyframe trên Graph Editor, ô màu, tay nắm xoay 3D, mốc đầu/cuối đoạn trên timeline, offset audio…) **phải** có ô nhập đi kèm, hiện giá trị hiện tại và sửa được bằng bàn phím. Không thuộc tính nào chỉ chỉnh được bằng chuột. Áp dụng ở cả Cơ bản và Nâng cao.
   * **Cách nhập:** Enter hoặc rời ô để áp; Esc để huỷ. ↑/↓ tăng giảm theo bước, Shift ×10, Alt/Option ×0,1; kết quả làm tròn theo bước. Kéo ngang trên nhãn để chỉnh (scrub) như phần mềm dựng hình; con lăn chuột chỉ đổi giá trị khi ô đang được chọn.

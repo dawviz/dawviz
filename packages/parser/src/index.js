@@ -10,6 +10,7 @@ export * from '@dawviz/parser-core';
 export { parseMidi, parseAls, parseAlp, parseRpp, parseDawproject, parseBinaryWithSchema, matchSchema };
 export { inspectRpp } from '@dawviz/parser-rpp';
 export { listExternalMidi };
+export { externalMidiKey } from '@dawviz/parser-rpp';
 export { alsInventory, listAlp } from '@dawviz/parser-als';
 export { dawprojectInventory } from '@dawviz/parser-dawproject';
 export { validateSchema, readBinary } from '@dawviz/parser-binary';

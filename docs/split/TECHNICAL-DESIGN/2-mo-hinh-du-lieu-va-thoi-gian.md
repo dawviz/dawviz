@@ -4,9 +4,9 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "2. Mô hình dữ liệu và thời gian 🟢"
 path: "2. Mô hình dữ liệu và thời gian 🟢"
 chunk: 2-mo-hinh-du-lieu-va-thoi-gian.md
-source_lines: 38-62
-source_sha1: 10dd2f7ff3
-ids: [SOI-19, WARN_TEMPO_RAMP]
+source_lines: 38-64
+source_sha1: a953f6ccd4
+ids: [D-50, REQ-AST-02, SOI-19, WARN_TEMPO_RAMP]
 ---
 ## 2. Mô hình dữ liệu và thời gian 🟢
 
@@ -19,7 +19,7 @@ UnifiedProjectAST {
           totalTicks, totalDurationSeconds }
   tempoMap: { tick, timeSeconds, bpm, num?, den? }[]          // sắp theo tick, điểm đầu ở tick 0
   tracks: { id, index, name, color, isMuted, isVisible, notes[], pitchRange,
-            mix?: { volumeDb, pan }, automation?: { volume?, pan?, mute? } }[]
+            mix?: { volumeDb, pan }, automation?: { volume?, pan?, mute?, [laneId]: Lane } }[]   // lane tuỳ ý: SRS REQ-AST-02
 }
 ASTNote { id, pitch, startTick, endTick, startTimeSeconds, endTimeSeconds, velocity, channel? }
 ```
@@ -32,3 +32,5 @@ Bất biến do `buildAST` bảo đảm và được test: nốt có `endTick > 
 
 ### 2.3 Automation 🟢
 `Lane { kind, points:[{tick, timeSeconds, value, shape, tension?}] }`. `sampleLane(lane, tick)`: giữ giá trị biên ngoài khoảng; trong khoảng tìm đoạn bằng tìm nhị phân, áp `shapeCurve` (0 tuyến tính, 1 bậc thang, 2 mượt, 3 nhanh đầu, 4 nhanh cuối, 5 bezier xấp xỉ), riêng **volume** nội suy trong không gian fader `p = gain^0,25` (khớp ≤ 0,3 dB với Reaper tại hai điểm đo; hệ số này còn [VERIFY], SOI-19). `volumeToUnit(gain, {floorDb, ceilDb})` cho độ sáng 0..1.
+
+**Lane tổng quát (SRS REQ-AST-02, D-50):** `Lane.kind` mở rộng thành `volume | pan | mute | send | plugin | midi-cc | pitch-bend | other`, thêm `name?`, `range? {min, max, unit?}` (kiểu ở `packages/render-core/src/types.ts`); `automation` nhận khoá tuỳ ý. Chuẩn hoá 0..1 dùng chung ở `laneUnit(track, laneId, tempoMap, t)` (`packages/render-core/src/glow.ts`): `volume` → dB trong [−36, 0]; `pan` −1..1 → 0..1; `midi-cc` `/127`; `pitch-bend` −8192..8191 → 0..1; có `range` thì `(v − min)/(max − min)`; còn lại coi như đã 0..1 **[VERIFY]**. Parser hiện chỉ sinh `volume/pan/mute` của track Reaper; MIDI CC/pitch bend, Reaper `PARMENV`/`AUXVOLENV`, Ableton `AutomationEnvelopes`, DAWproject `Points target`: T-66.

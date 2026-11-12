@@ -15,9 +15,11 @@ dawviz/
 │     │  ├─ components/
 │     │  │  ├─ FileDrop.tsx
 │     │  │  ├─ LanguageSelect.tsx
+│     │  │  ├─ MissingMidiPanel.tsx
 │     │  │  ├─ Notices.tsx
 │     │  │  ├─ NumberField.tsx
-│     │  │  ├─ PianoRollCanvas.tsx
+│     │  │  ├─ SceneCanvas.tsx
+│     │  │  ├─ SliderField.tsx
 │     │  │  ├─ StylePanel.tsx
 │     │  │  ├─ TrackPanel.tsx
 │     │  │  └─ Transport.tsx
@@ -26,14 +28,20 @@ dawviz/
 │     │  ├─ lib/
 │     │  │  ├─ clock.test.ts
 │     │  │  ├─ clock.ts
+│     │  │  ├─ csp.test.ts
+│     │  │  ├─ csp.ts
+│     │  │  ├─ externalMidi.test.ts
+│     │  │  ├─ externalMidi.ts
 │     │  │  ├─ numberInput.test.ts
 │     │  │  ├─ numberInput.ts
+│     │  │  ├─ parseInWorker.ts
 │     │  │  ├─ parserClient.test.ts
 │     │  │  ├─ parserClient.ts
 │     │  │  ├─ prefs.test.ts
 │     │  │  ├─ prefs.ts
 │     │  │  ├─ problems.test.ts
-│     │  │  └─ problems.ts
+│     │  │  ├─ problems.ts
+│     │  │  └─ trustedTypes.ts
 │     │  ├─ types/
 │     │  │  └─ dawviz.d.ts
 │     │  ├─ workers/
@@ -109,15 +117,21 @@ dawviz/
 │  │  ├─ src/
 │  │  │  ├─ brightness.ts
 │  │  │  ├─ draw.ts
+│  │  │  ├─ glow.ts
 │  │  │  ├─ index.ts
+│  │  │  ├─ music.ts
 │  │  │  ├─ notes.ts
 │  │  │  ├─ parser-core.d.ts
 │  │  │  ├─ pianoroll.ts
+│  │  │  ├─ render.ts
+│  │  │  ├─ scene.ts
 │  │  │  ├─ style.ts
 │  │  │  └─ types.ts
 │  │  ├─ test/
+│  │  │  ├─ glow.test.ts
 │  │  │  ├─ presets.test.ts
-│  │  │  └─ render-core.test.ts
+│  │  │  ├─ render-core.test.ts
+│  │  │  └─ scene.test.ts
 │  │  ├─ package.json
 │  │  └─ tsconfig.json
 │  ├─ rpp/   # @dawviz/parser-rpp: Reaper .rpp
@@ -416,6 +430,7 @@ re-export * from '@dawviz/parser-core'
 re-export { parseMidi, parseAls, parseAlp, parseRpp, parseDawproject, parseBinaryWithSchema, matchSchema }
 re-export { inspectRpp } from '@dawviz/parser-rpp'
 re-export { listExternalMidi }
+re-export { externalMidiKey } from '@dawviz/parser-rpp'
 re-export { alsInventory, listAlp } from '@dawviz/parser-als'
 re-export { dawprojectInventory } from '@dawviz/parser-dawproject'
 re-export { validateSchema, readBinary } from '@dawviz/parser-binary'
@@ -435,6 +450,8 @@ async function parseProject(name, buffer, options = {})
 type BrightnessSource
 interface BrightnessConfig
 const DEFAULT_BRIGHTNESS
+const BRIGHTNESS_DB_RANGE   // Giới hạn ngưỡng dB cho ô nhập và cho sanitize (khớp REQ-GRAPHICS-06). Khoảng cách tối thiểu giữa sàn và trần:…
+function sanitizeBrightness(cfg: BrightnessConfig, edited?: keyof BrightnessConfig): BrightnessConfig   // Đưa cấu hình độ sáng về hợp lệ: dB trong [-120, 24], sàn < trần ít nhất 1 dB, độ sáng trong [0, 1], min ≤ max…
 function sourceUnit(track: ProjectTrack, tempoMap: TempoPoint[], t: number, cfg: BrightnessConfig): number | undefined   // Giá trị nguồn chuẩn hoá 0..1 tại giây `t`; undefined nếu track không có dữ liệu cho nguồn đó.
 function trackBrightness(track: ProjectTrack, tempoMap: TempoPoint[], t: number, cfg: BrightnessConfig = DEFAULT_BRIGHTNESS): number   // Độ sáng B(t) trong [minBrightness, maxBrightness]; track không có dữ liệu nguồn → 1 (hình ảnh không đổi).
 ```
@@ -449,6 +466,18 @@ function drawPianoRoll(ctx: Ctx2D, rects: NoteRect[], size: { width: number; hei
 function drawKeyboard(ctx: Ctx2D, keys: KeyRect[], o: { width: number; height: number; whiteColor: string; separator?: string }): void   // Vẽ bàn phím lên vùng bên trái (gọi SAU drawPianoRoll nên che phần nốt đã trôi qua).
 ```
 
+#### `packages/render-core/src/glow.ts`
+
+Phát sáng động khi thanh phát chạm nốt (SRS REQ-GRAPHICS-17). Hàm thuần của (kiểu, track, nốt, t): tất định.
+
+```text
+interface GlowCtx
+function laneUnit(track: ProjectTrack, name: string, tempoMap: TempoPoint[], t: number): number | undefined   // Giá trị lane automation tại t, chuẩn hoá 0..1 theo loại lane. Không có lane → undefined.
+function glowSourceValue(st: NoteStyle, c: GlowCtx): number | undefined   // Giá trị nguồn 0..1 cho nốt tại t; undefined = không có dữ liệu (khi đó coi như 1: sáng như chế độ đều nhau).
+function glowAmount(st: NoteStyle, c: GlowCtx): number   // Hệ số nhân 0..1 cho `glow` của nốt tại t (đã gồm bao thời gian: đang phát / tắt dần sau nốt / luôn sáng).
+function panUnit(u: number, st: Pick<NoteStyle, 'glowPanMode'>): number   // u = pan đã chuẩn hoá 0..1 (0 trái, 0,5 giữa, 1 phải). 'lr' giữ nguyên; 'spread' = độ lệch khỏi giữa |2u − 1|.
+```
+
 #### `packages/render-core/src/index.ts`
 
 Cổng vào của @dawviz/render-core: kiểu AST, độ sáng, chỉ mục nốt, bố cục và vẽ Piano Roll.
@@ -460,6 +489,18 @@ re-export * from './notes.ts'
 re-export * from './pianoroll.ts'
 re-export * from './draw.ts'
 re-export * from './style.ts'
+re-export * from './music.ts'
+re-export * from './glow.ts'
+re-export * from './scene.ts'
+re-export * from './render.ts'
+```
+
+#### `packages/render-core/src/music.ts`
+
+Tiện ích âm nhạc dùng chung cho giao diện và widget (không phụ thuộc DOM).
+
+```text
+function pitchName(pitch: number, middleCOctave = 4): string   // Tên nốt của số MIDI 0–127. Quy ước mặc định C4 = 60 (Yamaha dùng C3 = 60: truyền `middleCOctave = 3`). Cách g…
 ```
 
 #### `packages/render-core/src/notes.ts`
@@ -486,12 +527,61 @@ interface KeyRect
 function layoutKeyboard(index: TimelineIndex, t: number, o: { height: number; pitchMin: number; pitchMax: number; style?: Partial<KeyboardStyle>; noteStyle?: StyleConfig }): KeyRect[]
 ```
 
+#### `packages/render-core/src/render.ts`
+
+T-05: renderFrame + hợp đồng WidgetRenderer (Technical Design §5.1–5.2). Preview và Export gọi cùng hàm này,
+
+```text
+interface RenderCtx   // Ngữ cảnh vẽ đủ cho renderFrame (Canvas 2D và OffscreenCanvas đều có).
+interface RenderTarget   // `width`/`height` theo điểm ảnh thật của đích vẽ.
+interface Derived   // Dữ liệu dẫn xuất: tính một lần ngoài vòng vẽ (Technical Design §4).
+type Primitive   // Hình học thuần, đơn vị pt trong toạ độ widget. Đủ cho Piano Roll; widget sau thêm kiểu mới (text, path…).
+interface RectPrim
+interface LayoutCtx
+interface WidgetRenderer
+function tracksFor(spec: WidgetSpec<unknown>, index: TimelineIndex): TrackIndex[]   // Chọn track cho widget theo trackMappingMode (SRS REQ-STORAGE-02).
+function pianoRollPitchRange(p: PianoRollProps, tracks: TrackIndex[]): [number, number]   // Tầm cao độ của Piano Roll: FIT_CONTENT lấy min/max của track được gán (±1), rỗng thì C3–C6.
+const pianoRollRenderer
+const WIDGET_RENDERERS   // Bảng renderer theo loại. Widget chưa có renderer được bỏ qua khi vẽ (vẫn giữ trong Scene).
+function layoutFrame(scene: SceneDocument, derived: Derived, ast: UnifiedProjectAST, t: number, renderers = WIDGET_RENDERERS)   // Bố cục toàn khung (thuần): danh sách widget đã sắp theo zIndex kèm primitive của từng widget. Dùng để test tấ…
+function renderFrame(scene: SceneDocument, derived: Derived, ast: UnifiedProjectAST, t: number, target: RenderTarget, scale: number, renderers = WIDGET_RENDERERS): void   // Vẽ một khung hình. `scale` = điểm ảnh đích / pt (Preview: bề rộng canvas × DPR / designWidth; Export: W_expor…
+function drawPrimitives(g: Ctx2D, prims: Primitive[]): void   // Chỉ vẽ, không tính nghiệp vụ. Mọi trạng thái ctx bị đổi (alpha, shadow) được trả về mặc định sau mỗi hình.
+```
+
+#### `packages/render-core/src/scene.ts`
+
+T-05: SceneDocument (= Preset, SRS REQ-STORAGE-02) + kiểm/sửa lược đồ. Dữ liệu thuần, không DOM.
+
+```text
+const SCENE_SCHEMA_VERSION
+const WIDGET_TYPES
+type WidgetType
+interface WidgetLayout
+type TrackMappingMode
+interface WidgetSpec
+interface PianoRollProps
+interface CanvasSpec
+interface SceneDocument
+const DEFAULT_PIANO_ROLL
+const ASPECTS
+function defaultScene(aspect: keyof typeof ASPECTS = '16:9'): SceneDocument   // Scene mặc định: một Piano Roll phủ kín khung. Bố cục mặc định theo nền tảng (9:16 cho người mới, KPI-04) chốt…
+function pianoRollWidget(layout: WidgetLayout, props: Partial<PianoRollProps> = {}, id = 'piano-roll-main'): WidgetSpec<PianoRollProps>
+interface SceneWarning
+class SceneError extends Error
+  constructor(message: string, path: string)
+function sanitizeScene(raw: unknown):    // Đọc một preset/scene từ JSON thô. Trả scene hợp lệ + cảnh báo.
+```
+
 #### `packages/render-core/src/style.ts`
 
 Kiểu dáng nốt và bàn phím (SRS REQ-GRAPHICS-07). Dữ liệu thuần, tuần tự hoá được (sau này lưu vào Preset/Pack).
 
 ```text
 type ColorMode   // Kiểu dáng nốt và bàn phím (SRS REQ-GRAPHICS-07). Dữ liệu thuần, tuần tự hoá được (sau này lưu vào Preset/Pack…
+type GlowMode
+type GlowSource
+type GlowPanMode   // Cách đọc pan: 'lr' = trái yếu → phải mạnh; 'spread' = càng lệch khỏi giữa càng mạnh (giữa = yếu nhất).
+const GLOW_SOURCES
 interface NoteStyle
 interface StyleConfig
 interface KeyboardStyle
@@ -514,7 +604,7 @@ Kiểu tối thiểu của UnifiedProjectAST mà Render Core cần (khớp docs/
 ```text
 interface ASTNote   // Kiểu tối thiểu của UnifiedProjectAST mà Render Core cần (khớp docs/product/SRS.md, mục ProjectTrack/ASTNote).
 interface LanePoint
-interface AutomationLane
+interface AutomationLane   // REQ-AST-02: lane tuỳ ý (send, tham số plugin, MIDI CC…). Parser hiện chỉ sinh volume/pan/mute (T-66).
 interface ProjectTrack
 interface TempoPoint
 interface UnifiedProjectAST
@@ -524,10 +614,10 @@ interface UnifiedProjectAST
 
 #### `packages/rpp/src/index.js`
 
-Cổng vào của @dawviz/parser-rpp: parseRpp, inspectRpp, listExternalMidi.
+Cổng vào của @dawviz/parser-rpp: parseRpp, inspectRpp, listExternalMidi, externalMidiKey.
 
 ```text
-re-export { parseRpp, parseRppText, parseRppTree, inspectRpp, listExternalMidi, tokenize } from './rpp.js'
+re-export { parseRpp, parseRppText, parseRppTree, inspectRpp, listExternalMidi, externalMidiKey, tokenize } from './rpp.js'
 ```
 
 #### `packages/rpp/src/rpp.js`
@@ -537,6 +627,7 @@ Cockos Reaper (.rpp). REQ-PARSER-02. Đã kiểm bằng 3 dự án thật (MIDI 
 ```text
 const tokenize = (line) =>
 function parseRppTree(text, limits)   // Cây khối: { name, args, lines:[raw], kids:[{...,after}] } — `after` = số dòng thuộc tính đứng trước khối (giữ…
+function externalMidiKey(n)   // Khoá so tên file .mid ngoài: bỏ thư mục, không phân biệt hoa/thường, khoảng trắng ≡ gạch dưới (tên hay bị đổi…
 async function parseRpp(buffer, options = {})
 async function parseRppText(text, options = {})
 function listExternalMidi(input, options = {})   // Danh sách file .mid ngoài mà dự án tham chiếu (tên file, không trùng). Dùng để giao diện chỉ hiện ô nạp .mid …
@@ -570,6 +661,14 @@ function FileDrop({ onPick, busy }: { onPick(p: Picked): void; busy: boolean })
 function LanguageSelect()
 ```
 
+#### `apps/web/src/components/MissingMidiPanel.tsx`
+
+REQ-UI-08: dự án Reaper tham chiếu file .mid ngoài mà người dùng chưa nạp → nói rõ thiếu tệp nào, hậu quả, và cho nạp thêm
+
+```text
+function MissingMidiPanel({ info, level, busy, onAdd }: { info: ExternalMidiInfo; level: 'error' | 'warning'; busy: boolean; onAdd(files: File[]): void })
+```
+
 #### `apps/web/src/components/Notices.tsx`
 
 Danh sách lỗi/cảnh báo đã dịch, kèm chi tiết kỹ thuật gập lại.
@@ -586,12 +685,20 @@ function Notices({ problems }: { problems: Problem[] })
 function NumberField({ id, label, value, onChange, spec, className = '' }: { id?: string; label: string; value: number; onChange(v: number): void; spec: NumberSpec; className?: string })
 ```
 
-#### `apps/web/src/components/PianoRollCanvas.tsx`
+#### `apps/web/src/components/SceneCanvas.tsx`
 
-Canvas Piano Roll: chỉ lo kích thước/DPR, gọi Render Core theo thời điểm t.
+Canvas xem trước: chỉ lo kích thước điểm ảnh/DPR và gọi renderFrame (T-05). Mọi bố cục và vẽ nằm ở Render Core,
 
 ```text
-function PianoRollCanvas({ ast, t, brightness, style, keyboard, height = 360 }: { ast: UnifiedProjectAST; t: number; brightness: Record<string, BrightnessConfig>; style: StyleConfig; keyboard: KeyboardStyle; height?: number })   // Vẽ khung hình tại thời điểm `t`. Toàn bộ bố cục/vẽ nằm ở Render Core; component chỉ lo canvas và DPR.
+function SceneCanvas({ scene, derived, ast, t }: { scene: SceneDocument; derived: Derived; ast: UnifiedProjectAST; t: number })
+```
+
+#### `apps/web/src/components/SliderField.tsx`
+
+Thanh trượt + ô nhập số (REQ-UI-15) dùng chung cho mọi bảng. Lưới dùng minmax(0,1fr) để không tràn khung hẹp (T-61).
+
+```text
+function SliderField({ id, label, value, min, max, step, hardMin, hardMax, onChange }: { id: string; label: string; value: number; min: number; max: number; step: number; hardMin?: number; hardMax?: number; onChange(v: number): void })   // `min`/`max` là phạm vi thanh trượt (phạm vi mềm); `hardMin`/`hardMax` cho phép gõ vượt phạm vi đó (mặc định b…
 ```
 
 #### `apps/web/src/components/StylePanel.tsx`
@@ -599,15 +706,20 @@ function PianoRollCanvas({ ast, t, brightness, style, keyboard, height = 360 }: 
 Bảng tuỳ chỉnh kiểu dáng nốt (toàn cục) và bàn phím. Chỉ sửa dữ liệu StyleConfig; việc vẽ nằm ở Render Core.
 
 ```text
-function StylePanel({ style, keyboard, onStyle, onKeyboard }: { style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void })
+function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [] }: { style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[] })   // `lanes`: tên lane automation có trong dự án đang mở (cho nguồn phát sáng "automation").
 ```
 
 #### `apps/web/src/components/TrackPanel.tsx`
 
-Danh sách track và cấu hình nguồn độ sáng theo track.
+Danh sách track (REQ-UI-14 sửa 2026-11-12): hai cách trình bày.
 
 ```text
-function TrackPanel({ tracks, config, overrides, onChange, onStyle }: { tracks: ProjectTrack[]; config: Record<string, BrightnessConfig>; overrides: Record<string, Partial<NoteStyle>>; onChange(id: string, patch: Partial<BrightnessConfig>): void; onStyle(id: string, patch: Partial<NoteStyle> | null): void })
+const MIN_CARD_PX   // Bề rộng tối thiểu của một thẻ (px) để nội dung không tràn. Không phải giới hạn số cột: số cột do người dùng c…
+interface TrackLayout
+const DEFAULT_TRACK_LAYOUT
+function effectiveColumns(chosen: number | 'auto', widthPx: number, count: number, minCard = MIN_CARD_PX, gap = 8):    // Số cột thực vẽ: số người dùng chọn, nhưng không vượt số thẻ vừa bề rộng (hàm thuần, test được).
+function TrackPanel(props: Props)
+function TrackLayoutBar({ value, onChange, count }: { value: TrackLayout; onChange(v: TrackLayout): void; count: number })   // Thanh chọn kiểu trình bày: Lưới/Danh sách + số cột (ô nhập số, không giới hạn cứng ngoài số track).
 ```
 
 #### `apps/web/src/components/Transport.tsx`
@@ -639,6 +751,26 @@ const seek = (s: ClockState, t: number, duration: number) =>
 const togglePlay = (s: ClockState, duration: number) =>
 ```
 
+#### `apps/web/src/lib/csp.ts`
+
+Chính sách CSP của ứng dụng (NFR-SEC-03 + NFR-SEC-06). Chèn vào index.html lúc build bằng plugin trong vite.config.ts.
+
+```text
+const CSP_DIRECTIVES
+const CSP
+```
+
+#### `apps/web/src/lib/externalMidi.ts`
+
+REQ-UI-08: tóm tắt tình trạng file .mid ngoài mà dự án Reaper tham chiếu. Hàm thuần; cách so tên lấy từ parser
+
+```text
+interface ExternalMidiInfo
+function summarizeExternalMidi(referenced: string[], provided: string[], missing: string[], key: (n: string) => string): ExternalMidiInfo
+function mergeExtras<T extends { name: string }>(old: T[], added: T[]): T[]   // Gộp tệp phụ mới vào tệp phụ cũ; trùng tên thì tệp mới thay tệp cũ.
+function missingMidiLevel(info: ExternalMidiInfo | undefined, failed: boolean): 'error' | 'warning' | null   // Có cần hiện bảng "thiếu file .mid" không, và mức độ (lỗi: không có nốt nào; cảnh báo: chỉ vài track trống).
+```
+
 #### `apps/web/src/lib/numberInput.ts`
 
 Đọc và bước giá trị cho ô nhập số dùng chung (REQ-UI-15). Hàm thuần, không phụ thuộc DOM; không dùng eval/Function.
@@ -651,6 +783,14 @@ function nudge(value: number, dir: 1 | -1, spec: NumberSpec = {}, mods: { shift?
 function formatNumber(value: number, step = 1): string   // Hiển thị giá trị trong ô: số chữ số thập phân theo bước.
 ```
 
+#### `apps/web/src/lib/parseInWorker.ts`
+
+Client parse thật: tạo Worker từ URL do Vite sinh, qua chính sách Trusted Types (NFR-SEC-06).
+
+```text
+const parseInWorker
+```
+
 #### `apps/web/src/lib/parserClient.ts`
 
 Khách của Worker parse: parseInWorker() ghép id thông điệp với Promise; ParseFailure.
@@ -660,7 +800,6 @@ class ParseFailure extends Error
   constructor(code: string, message: string, details?: Record<string, unknown>)
 interface WorkerLike   // Tối thiểu của Worker mà client cần (để test thay bằng Worker giả).
 function createParserClient(spawn: () => WorkerLike)
-const parseInWorker
 function createLatestGate()   // Chỉ nhận kết quả của yêu cầu mới nhất (T-02): mỗi lần bắt đầu lấy một vé; kết quả về muộn của vé cũ bị bỏ qua…
 ```
 
@@ -680,6 +819,16 @@ Lỗi/cảnh báo của thư viện → chuỗi đã dịch theo mã (REQ-I18N-0
 ```text
 interface Problem
 function describeProblem(i18n: Pick<I18n, 'has' | 't'>, kind: 'error' | 'warning', code: string, message?: string, details?: Record<string, unknown>): Problem
+```
+
+#### `apps/web/src/lib/trustedTypes.ts`
+
+Trusted Types (NFR-SEC-06): trang chạy với `require-trusted-types-for 'script'`, nên mọi URL script (Worker) phải đi qua
+
+```text
+const WORKER_POLICY   // Trusted Types (NFR-SEC-06): trang chạy với `require-trusted-types-for 'script'`, nên mọi URL script (Worker) …
+function isSameOriginScript(u: string, base: string): boolean   // Hàm thuần: URL `u` (tương đối hoặc tuyệt đối) có cùng origin với `base` và dùng http(s)/blob không.
+function trustedWorkerURL(u: string): unknown   // Trả TrustedScriptURL khi trình duyệt có Trusted Types, nếu không trả chuỗi đã kiểm. Ném lỗi nếu URL khác orig…
 ```
 
 #### `apps/web/src/main.tsx`
@@ -712,13 +861,17 @@ type ParseResponse
 ## 4. Tệp test
 
 - `apps/web/src/lib/clock.test.ts`
+- `apps/web/src/lib/csp.test.ts`
+- `apps/web/src/lib/externalMidi.test.ts`
 - `apps/web/src/lib/numberInput.test.ts`
 - `apps/web/src/lib/parserClient.test.ts`
 - `apps/web/src/lib/prefs.test.ts`
 - `apps/web/src/lib/problems.test.ts`
 - `apps/web/test/components.test.tsx`
+- `packages/render-core/test/glow.test.ts`
 - `packages/render-core/test/presets.test.ts`
 - `packages/render-core/test/render-core.test.ts`
+- `packages/render-core/test/scene.test.ts`
 - `test/als.test.js`
 - `test/binary.test.js`
 - `test/dawproject.test.js`
@@ -727,4 +880,4 @@ type ParseResponse
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 175 ký hiệu công khai -->
+<!-- 10 thư mục src, 240 ký hiệu công khai -->

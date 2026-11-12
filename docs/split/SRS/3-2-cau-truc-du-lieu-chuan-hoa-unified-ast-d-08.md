@@ -5,8 +5,8 @@ section: "3.2. Cấu trúc dữ liệu chuẩn hóa (Unified AST, D-08, D-09)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.2. Cấu trúc dữ liệu chuẩn hóa (Unified AST, D-08, D-09)"
 chunk: 3-2-cau-truc-du-lieu-chuan-hoa-unified-ast-d-08.md
 source_lines: 339-399
-source_sha1: 06736f0e5a
-ids: [D-08, D-09, D-24, ERR_AST_INVALID, ERR_AST_TOO_LARGE, ERR_NO_NOTES, NFR-ACC-02, REQ-AST-01, REQ-GRAPHICS-06, WARN_ZERO_LENGTH_NOTES]
+source_sha1: d7467a1f28
+ids: [D-08, D-09, D-24, ERR_AST_INVALID, ERR_AST_TOO_LARGE, ERR_NO_NOTES, NFR-ACC-02, REQ-AST-01, REQ-AST-02, WARN_ZERO_LENGTH_NOTES]
 ---
 ### 3.2. Cấu trúc dữ liệu chuẩn hóa (Unified AST, D-08, D-09)
 
@@ -39,12 +39,12 @@ export interface ProjectTrack {
   isMuted: boolean; isVisible: boolean;
   sourceId?: string;                  // id gốc trong file nguồn (v0.3)
   mix?: { volumeDb: number; pan: number };            // mức fader tĩnh (Reaper VOLPAN) (v0.3)
-  automation?: { volume?: AutomationLane; pan?: AutomationLane; mute?: AutomationLane };   // v0.3, REQ-GRAPHICS-06
+  automation?: { volume?: AutomationLane; pan?: AutomationLane; mute?: AutomationLane; [laneId: string]: AutomationLane | undefined };   // v0.3; lane tuỳ ý: REQ-AST-02
 
   notes: ASTNote[];
   pitchRange: { min: number; max: number };   // 0-127
 }
-export interface AutomationLane { kind: 'volume' | 'pan' | 'mute'; points: { tick: number; timeSeconds: number; value: number; shape: number; tension?: number }[] }   // volume: gain tuyến tính
+export interface AutomationLane { kind: 'volume' | 'pan' | 'mute' | 'send' | 'plugin' | 'midi-cc' | 'pitch-bend' | 'other'; name?: string; plugin?: { name: string; vendor?: string }; param?: { name: string; index?: number }; range?: { min: number; max: number; unit?: string }; points: { tick: number; timeSeconds: number; value: number; shape: number; tension?: number }[] }   // volume: gain tuyến tính
 export interface ASTNote {
   id: string; pitch: number; pitchName: string;      // "C4", "G#5"
   startTick: number; durationTick: number; endTick: number;   // nguồn sự thật

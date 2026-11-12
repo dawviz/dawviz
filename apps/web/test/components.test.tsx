@@ -65,3 +65,96 @@ describe('NumberField trong StylePanel (REQ-UI-15)', () => {
     expect((box() as HTMLInputElement).value).toBe('54');
   });
 });
+
+import { TrackPanel, TrackLayoutBar, effectiveColumns } from '../src/components/TrackPanel.tsx';
+import { DEFAULT_BRIGHTNESS } from '@dawviz/render-core';
+describe('TrackPanel: Track Info và ngưỡng độ sáng (T-03)', () => {
+  const tr = { id: 't1', index: 0, name: 'Piano', color: '#4aa8f5', isMuted: true, isVisible: true, pitchRange: { min: 48, max: 72 },
+    notes: [{ id: 'n', pitch: 60, startTick: 0, endTick: 960, startTimeSeconds: 0, endTimeSeconds: 0.5, velocity: 100 }],
+    mix: { volumeDb: -12, pan: 0 } };
+  const tempo = [{ tick: 0, timeSeconds: 0, bpm: 120 }];
+  it('hiện tầm cao độ, fader, trạng thái tắt tiếng; độ sáng hiện tại theo ngưỡng; ô nhập đổi sàn dB', () => {
+    let patches: any[] = [];
+    const cfg = { t1: { ...DEFAULT_BRIGHTNESS, source: 'static' as const, floorDb: -24, ceilDb: 0 } };
+    wrap(<TrackPanel tracks={[tr as any]} config={cfg} overrides={{}} onChange={(_, p) => patches.push(p)} onStyle={() => {}} t={0.1} tempoMap={tempo} />);
+    const box = screen.getByTestId('track-details-t1');
+    expect(box.textContent).toMatch(/C3 – C5/);
+    expect(box.textContent).toMatch(/-12 dB/);
+    // -12 dB giữa sàn -24 và trần 0 → u = 0.5 → 0.25 + 0.75*0.5 = 62.5% → hiển thị 63%
+    expect(screen.getByTestId('brightness-now-t1').textContent).toMatch(/63\s?%/);
+    const floor = screen.getByRole('textbox', { name: /^(Floor|Sàn)/ });
+    fireEvent.focus(floor); fireEvent.change(floor, { target: { value: '-30' } }); fireEvent.keyDown(floor, { key: 'Enter' });
+    expect(patches.at(-1)).toEqual({ floorDb: -30 });
+  });
+  it('nguồn off thì ẩn các thanh ngưỡng', () => {
+    wrap(<TrackPanel tracks={[tr as any]} config={{ t1: { ...DEFAULT_BRIGHTNESS, source: 'off' } }} overrides={{}} onChange={() => {}} onStyle={() => {}} />);
+    expect(screen.queryByRole('textbox', { name: /^(Floor|Sàn)/ })).toBeNull();
+    expect(screen.queryByTestId('brightness-now-t1')).toBeNull(); // "đều nhau": không có số độ sáng
+  });
+});
+
+import { MissingMidiPanel } from '../src/components/MissingMidiPanel.tsx';
+describe('MissingMidiPanel (REQ-UI-08)', () => {
+  it('liệt kê file thiếu, nạp thêm chỉ nhận .mid; chỉ còn tệp không dùng thì không có nút nạp', () => {
+    let added: File[] = [];
+    const v = wrap(<MissingMidiPanel info={{ referenced: ['Oboe MIDI 001.mid'], missing: ['Oboe MIDI 001.mid'], unused: [] }} level="error" busy={false} onAdd={(f) => (added = f)} />);
+    expect(screen.getByTestId('missing-midi').textContent).toMatch(/Oboe MIDI 001\.mid/);
+    fireEvent.change(screen.getByTestId('missing-midi-input'), { target: { files: [new File(['x'], 'a.mid'), new File(['x'], 'b.png')] } });
+    expect(added.map((f) => f.name)).toEqual(['a.mid']);
+    v.unmount();
+    wrap(<MissingMidiPanel info={{ referenced: ['a.mid'], missing: [], unused: ['x.mid'] }} level="warning" busy={false} onAdd={() => {}} />);
+    expect(screen.getByTestId('missing-midi-unused').textContent).toMatch(/x\.mid/);
+    expect(screen.queryByRole('button')).toBeNull();
+  });
+});
+
+describe('Danh sách track: lưới N cột / danh sách gọn (REQ-UI-14 sửa)', () => {
+  const mkTr = (i: number) => ({ id: `t${i}`, index: i, name: `Track ${i}`, color: '#4aa8f5', isMuted: false, isVisible: true, pitchRange: { min: 60, max: 72 }, notes: [] });
+  const trs = [0, 1, 2, 3, 4].map(mkTr) as any[];
+  const cfg = Object.fromEntries(trs.map((t) => [t.id, { ...DEFAULT_BRIGHTNESS }]));
+  it('effectiveColumns: theo người dùng chọn, không vượt số thẻ vừa bề rộng; tự động = vừa bề rộng nhưng không quá số track', () => {
+    expect(effectiveColumns(3, 1000, 15)).toEqual({ cols: 3, limited: false });
+    expect(effectiveColumns(8, 1000, 15)).toEqual({ cols: 4, limited: true });   // 1000 px chỉ vừa 4 thẻ 224 px
+    expect(effectiveColumns(20, 6000, 30).cols).toBe(20);                        // không có trần cứng
+    expect(effectiveColumns('auto', 1000, 2)).toEqual({ cols: 2, limited: false });
+  });
+  it('lưới đặt số cột theo lựa chọn; danh sách: dòng gọn, bấm/Enter mở phần chỉnh', () => {
+    const v = wrap(<TrackPanel tracks={trs} config={cfg} overrides={{}} onChange={() => {}} onStyle={() => {}} layout={{ mode: 'grid', columns: 2 }} />);
+    expect(screen.getByTestId('track-grid').getAttribute('data-cols')).toBe('2');
+    v.unmount();
+    wrap(<TrackPanel tracks={trs} config={cfg} overrides={{}} onChange={() => {}} onStyle={() => {}} layout={{ mode: 'list', columns: 'auto' }} />);
+    expect(screen.getByTestId('track-list')).toBeInTheDocument();
+    expect(screen.queryByTestId('track-details-t2')).toBeNull();
+    const row = screen.getAllByRole('button', { expanded: false })[2];
+    fireEvent.keyDown(row, { key: 'Enter' });
+    expect(screen.getByTestId('track-details-t2')).toBeInTheDocument();
+  });
+  it('thanh trình bày: đổi kiểu, bỏ "tự động" rồi gõ số cột (tối đa = số track)', () => {
+    let v: any = { mode: 'grid', columns: 'auto' };
+    const r = wrap(<TrackLayoutBar value={v} onChange={(n) => (v = n)} count={15} />);
+    fireEvent.click(screen.getByRole('checkbox')); expect(v.columns).toBe(3);
+    r.rerender(<I18nProvider><TrackLayoutBar value={v} onChange={(n) => (v = n)} count={15} /></I18nProvider>);
+    const box = screen.getByRole('textbox'); fireEvent.focus(box); fireEvent.change(box, { target: { value: '99' } }); fireEvent.keyDown(box, { key: 'Enter' });
+    expect(v.columns).toBe(15);
+    fireEvent.click(screen.getByRole('radio', { name: /List|Danh sách/ })); expect(v.mode).toBe('list');
+  });
+});
+describe('Phát sáng động (REQ-GRAPHICS-17)', () => {
+  it('mặc định đều nhau; chọn "động khi chạm" hiện nguồn, chọn automation hiện lane', () => {
+    let st = defaultStyleConfig();
+    const props = () => ({ style: st, keyboard: { ...DEFAULT_KEYBOARD_STYLE }, onStyle: (n: any) => (st = n), onKeyboard: () => {}, lanes: ['volume'] });
+    const v = wrap(<StylePanel {...props()} />);
+    expect(st.base.glowMode).toBe('uniform');
+    expect(screen.queryByRole('combobox', { name: /Driven by|Theo/ })).toBeNull();
+    fireEvent.click(screen.getByRole('radio', { name: /Dynamic|Động/ })); expect(st.base.glowMode).toBe('dynamic');
+    v.rerender(<I18nProvider><StylePanel {...props()} /></I18nProvider>);
+    fireEvent.change(screen.getByRole('combobox', { name: /Driven by|Theo/ }), { target: { value: 'automation' } });
+    expect(st.base.glowSource).toBe('automation');
+    v.rerender(<I18nProvider><StylePanel {...props()} /></I18nProvider>);
+    expect(screen.getByRole('combobox', { name: /^Lane/ })).toBeInTheDocument();
+    fireEvent.change(screen.getByRole('combobox', { name: /Driven by|Theo/ }), { target: { value: 'pan' } });
+    v.rerender(<I18nProvider><StylePanel {...props()} /></I18nProvider>);
+    fireEvent.change(screen.getByRole('combobox', { name: /Pan reading|Cách đọc pan/ }), { target: { value: 'spread' } });
+    expect(st.base.glowPanMode).toBe('spread');
+  });
+});

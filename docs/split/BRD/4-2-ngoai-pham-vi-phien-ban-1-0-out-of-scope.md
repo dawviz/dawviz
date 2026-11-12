@@ -5,7 +5,7 @@ section: "4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)"
 path: "4. PHẠM VI DỰ ÁN (PROJECT SCOPE) > 4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)"
 chunk: 4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md
 source_lines: 150-164
-source_sha1: dda5a7c4ca
+source_sha1: bb7de0c18a
 ids: [D-12, D-13, D-14, D-15, D-28, D-44, D-47, OI-08]
 ---
 ### 4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)
