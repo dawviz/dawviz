@@ -16,6 +16,7 @@ dawviz/
 │     │  │  ├─ FileDrop.tsx
 │     │  │  ├─ LanguageSelect.tsx
 │     │  │  ├─ Notices.tsx
+│     │  │  ├─ NumberField.tsx
 │     │  │  ├─ PianoRollCanvas.tsx
 │     │  │  ├─ StylePanel.tsx
 │     │  │  ├─ TrackPanel.tsx
@@ -25,6 +26,8 @@ dawviz/
 │     │  ├─ lib/
 │     │  │  ├─ clock.test.ts
 │     │  │  ├─ clock.ts
+│     │  │  ├─ numberInput.test.ts
+│     │  │  ├─ numberInput.ts
 │     │  │  ├─ parserClient.test.ts
 │     │  │  ├─ parserClient.ts
 │     │  │  ├─ prefs.test.ts
@@ -575,6 +578,14 @@ Danh sách lỗi/cảnh báo đã dịch, kèm chi tiết kỹ thuật gập l�
 function Notices({ problems }: { problems: Problem[] })
 ```
 
+#### `apps/web/src/components/NumberField.tsx`
+
+Ô nhập số dùng chung (REQ-UI-15): gõ giá trị, phép tính, đơn vị, `+=`; ↑/↓ (Shift ×10, Alt ×0,1); Enter/rời ô để áp, Esc huỷ.
+
+```text
+function NumberField({ id, label, value, onChange, spec, className = '' }: { id?: string; label: string; value: number; onChange(v: number): void; spec: NumberSpec; className?: string })
+```
+
 #### `apps/web/src/components/PianoRollCanvas.tsx`
 
 Canvas Piano Roll: chỉ lo kích thước/DPR, gọi Render Core theo thời điểm t.
@@ -626,6 +637,18 @@ const initialClock
 function advance(s: ClockState, dtSeconds: number, duration: number, loop = false): ClockState
 const seek = (s: ClockState, t: number, duration: number) =>
 const togglePlay = (s: ClockState, duration: number) =>
+```
+
+#### `apps/web/src/lib/numberInput.ts`
+
+Đọc và bước giá trị cho ô nhập số dùng chung (REQ-UI-15). Hàm thuần, không phụ thuộc DOM; không dùng eval/Function.
+
+```text
+interface NumberSpec
+type ParseResult
+function parseNumberInput(text: string, current: number, spec: NumberSpec = {}): ParseResult   // Đọc chuỗi người dùng nhập; `current` dùng cho dạng tương đối `+=`/`-=`/`*=`/`/=`.
+function nudge(value: number, dir: 1 | -1, spec: NumberSpec = {}, mods: { shift?: boolean; alt?: boolean } = {}): number   // Bước bằng phím: dir = +1/-1; Shift ×10, Alt ×0,1. Kết quả làm tròn theo bước để tránh 0.30000000000000004.
+function formatNumber(value: number, step = 1): string   // Hiển thị giá trị trong ô: số chữ số thập phân theo bước.
 ```
 
 #### `apps/web/src/lib/parserClient.ts`
@@ -689,6 +712,7 @@ type ParseResponse
 ## 4. Tệp test
 
 - `apps/web/src/lib/clock.test.ts`
+- `apps/web/src/lib/numberInput.test.ts`
 - `apps/web/src/lib/parserClient.test.ts`
 - `apps/web/src/lib/prefs.test.ts`
 - `apps/web/src/lib/problems.test.ts`
@@ -703,4 +727,4 @@ type ParseResponse
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 169 ký hiệu công khai -->
+<!-- 10 thư mục src, 175 ký hiệu công khai -->

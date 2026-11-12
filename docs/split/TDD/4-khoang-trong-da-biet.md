@@ -5,7 +5,7 @@ section: "4. Khoảng trống đã biết"
 path: "4. Khoảng trống đã biết"
 chunk: 4-khoang-trong-da-biet.md
 source_lines: 55-61
-source_sha1: f04d786942
+source_sha1: 36a8291014
 ids: []
 ---
 ## 4. Khoảng trống đã biết

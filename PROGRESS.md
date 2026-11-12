@@ -14,7 +14,7 @@ Ký hiệu: ✅ xong và có test · 🟡 có mã nhưng chưa chạy/kiểm · 
 | Reaper: envelope volume/pan/mute, `mix` | ✅ | volume đối chiếu với số đọc trong Reaper (±0,3 dB); pan/mute thô |
 | i18n (en, vi) + kiểm danh mục | ✅ | `npm run i18n:check` |
 | `@dawviz/render-core` (độ sáng, chỉ mục nốt, Piano Roll, kiểu nốt, preset) | ✅ | 12 test, `tsc` sạch |
-| Logic ứng dụng (đồng hồ, dịch lỗi, tuỳ chọn, client Worker parse) | ✅ | 9 test |
+| Logic ứng dụng (đồng hồ, dịch lỗi, tuỳ chọn, client Worker parse, đọc ô nhập số) | ✅ | 13 test |
 | `apps/web` (React, Tailwind, Framer Motion) | ✅ (khung M1) | `npm install`, `typecheck`, `build` xanh (2026-11-12); 4 test thành phần (Vitest) xanh. **Đây là giao diện khung để kiểm parser/Render Core, chưa phải giao diện sản phẩm**: bố cục không gian làm việc theo [SRS §5.1](docs/split/SRS/5-1-bo-cuc-khong-gian-lam-viec.md#51-bố-cục-không-gian-làm-việc), chế độ Cơ bản/Nâng cao (T-60), theme (T-48) chưa làm. 2026-11-12: sửa lỗi tràn bảng "Kiểu nốt" (xem T-61). Chưa kiểm tay đầy đủ trên Chrome (T-04) |
 | Tài liệu: BRD/SRS 1.0, SDD, Technical Design, TDD, tài liệu parser | ✅ | công khai trong `docs/`; trang web: `npm run docs:site` |
 | Hệ thống ngữ cảnh AI (`AI_CONTEXT`, `ARCHITECTURE`, `SKELETON`, `PROGRESS`, `scripts/sync-docs.mjs`) | ✅ | `npm run docs:sync` / `docs:check` |
@@ -44,7 +44,7 @@ Các điểm dưới đây là **quyết định có chủ đích hoặc giới 
 
 ## 3. Số liệu kiểm thử gần nhất
 
-Lần chạy 2026-11-12 (Node 22.23): `npm test`: parser 66/66 ✅ (khi có đủ tệp `third-party/`; thiếu thì 45 qua, 21 bỏ qua) · render-core 12 ✅ · logic web 9 ✅ · docs-site 6 ✅. `npm run typecheck` ✅ · `npm run build` ✅ · Vitest thành phần 4 ✅ · `i18n:check` ✅ · `docs:check` ✅.
+Lần chạy 2026-11-12 (Node 22.23): `npm test`: parser 66/66 ✅ (khi có đủ tệp `third-party/`; thiếu thì 45 qua, 21 bỏ qua) · render-core 12 ✅ · logic web 13 ✅ · docs-site 6 ✅. `npm run typecheck` ✅ · `npm run build` ✅ · Vitest thành phần 5 ✅ · `i18n:check` ✅ · `docs:check` ✅.
 
 `npm audit`: **0 lỗ hổng** (2026-11-12, sau T-28: vite 8.3, vitest 5.1, @vitejs/plugin-react 6.3, @testing-library/jest-dom 7.0; không còn gói nào cần install script).
 
@@ -112,6 +112,8 @@ Lần chạy 2026-11-12 (Node 22.23): `npm test`: parser 66/66 ✅ (khi có đ�
 | T-59 | Góc chảy nốt tự do 0–360° (REQ-WIDGET-01): xoay làn, vạch phát, bàn phím; tự kéo dài làn phủ kín khung; tên nốt luôn đứng thẳng (tuỳ chọn) | 1.0 (M2) | ở mọi góc không lộ góc trống; tua tới/lui khớp |
 | T-60 | Chế độ Cơ bản/Nâng cao (REQ-UI-13, D-48): hộp chọn lần đầu, công tắc toàn cục, nút "Thêm tuỳ chọn" từng bảng, huy hiệu "Đã chỉnh nâng cao", tìm thiết lập; mọi bảng mới phải khai báo phần Cơ bản/Nâng cao theo bảng phân bổ | 1.0 (khung làm sớm ở M1–M2) | đổi chế độ không đổi dữ liệu; test thành phần cho cả hai chế độ |
 | ~~T-61~~ | ✅ **Xong 2026-11-12**: sửa tràn giao diện. Nguyên nhân: lưới thanh trượt `grid-cols-[7.5rem_1fr_3rem]` trong cột phải 20rem; cột `1fr` (= `minmax(auto,1fr)`) không co dưới bề rộng mặc định của `<input type=range>` (~129 px trên Chrome) nên số giá trị (1.00, 0.70…) bị đẩy ra ngoài khung. Sửa: `minmax(0,1fr)` + `w-full min-w-0` cho thanh trượt, `min-w-0` cho các cột lưới chính; cột phải `sticky` và tự cuộn khi nhiều track; Piano Roll vẽ lại khi đổi bề rộng (`ResizeObserver`). Còn lại (nhỏ): ô màu track hiện vuông thay vì tròn trên Chrome; dòng "Chi tiết kỹ thuật" của cảnh báo hiện thông điệp gốc tiếng Việt của parser khi giao diện là tiếng Anh (có chủ đích: phần dịch là dòng trên, theo mã) | M1 | TDD §5 mục 8–9; đo bằng Playwright ở 1440/1100/800 px: 0 phần tử tràn (trước sửa: 7) |
+| T-62 | Bố cục danh sách track (REQ-UI-14, D-49): kiểu xếp Dọc/Ngang/Lưới, mật độ Gọn/Đầy đủ, sắp xếp/lọc/kéo đổi thứ tự, vị trí bảng trái/phải/dưới, điều hướng bàn phím theo hướng xếp; nhóm/folder sau khi parser đọc thêm nhóm. Làm cùng bố cục không gian làm việc §5.1 và T-50/T-60, không làm trên giao diện khung hiện tại | 1.0 (M1–M2) | AT-25 phần track; test thành phần cho 3 kiểu xếp |
+| T-63 | Ô nhập giá trị cho mọi điều khiển kéo (REQ-UI-15, D-49). **Đã làm 2026-11-12:** `lib/numberInput.ts` (đọc số, dấu phẩy thập phân, đơn vị, `+ - * /` và ngoặc, `+=`…, kẹp, bước Shift/Alt; không `eval`; 4 test), `components/NumberField.tsx`, gắn vào mọi thanh trượt của `StylePanel` (giới hạn cứng trùng `sanitizeStyle`: bo góc 999, quầng sáng 64, viền 8); 1 test thành phần. **Còn lại:** scrub trên nhãn, hiện "—" khi chọn nhiều, gộp bước hoàn tác (cần T-07), ô nhập cho canvas/Graph Editor/timeline/màu khi các phần đó được làm | 1.0 (khung xong; áp dần theo từng bảng) | AT-25 phần nhập giá trị |
 | T-11 | Chương trình tệp mẫu (D-45). Cần dữ liệu thật từ người dùng: mẫu Ableton/Bitwig nhịp ghép (OI-12), automation Ableton (SOI-18), kiểm pan/mute (SOI-19) | song song | đóng OI |
 
 ## 5. Đánh giá khả thi: làm hết trong 1 tuần với AI Agent?

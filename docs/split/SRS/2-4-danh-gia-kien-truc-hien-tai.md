@@ -5,7 +5,7 @@ section: "2.4. Đánh giá kiến trúc hiện tại"
 path: "2. KIẾN TRÚC KỸ THUẬT, LUỒNG DỮ LIỆU & ĐÁNH GIÁ KIẾN TRÚC > 2.4. Đánh giá kiến trúc hiện tại"
 chunk: 2-4-danh-gia-kien-truc-hien-tai.md
 source_lines: 207-222
-source_sha1: 1654c314a5
+source_sha1: 06736f0e5a
 ids: [ARC-01, ARC-02, ARC-03, ARC-04, ARC-05, ARC-06, ARC-07, D-06, D-20, D-21, D-22, NFR-PERF-04, NFR-SEC-03, REQ-EXPORT-03, REQ-EXPORT-07, REQ-GRAPHICS-05, REQ-WIDGET-07]
 ---
 ### 2.4. Đánh giá kiến trúc hiện tại

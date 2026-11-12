@@ -71,7 +71,7 @@ node scripts/sync-docs.mjs --find "độ sáng"   # lấy liên kết mảnh#hea
 <!-- sync:begin docs-index -->
 <!-- Khối này do scripts/sync-docs.mjs sinh ra; đừng sửa tay. -->
 
-Có 17 tài liệu, 237 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
+Có 17 tài liệu, 240 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
 
 ### BRD.md — TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)
 
@@ -83,18 +83,21 @@ Nguồn: `docs/product/BRD.md` · [thứ tự đọc](docs/split/BRD/_index.md)
 - [3. CHÂN DUNG NGƯỜI DÙNG MỤC TIÊU (USER PERSONAS)](docs/split/BRD/3-chan-dung-nguoi-dung-muc-tieu-user-personas.md) · 1.3k
 - [4. PHẠM VI DỰ ÁN (PROJECT SCOPE) › 4.1. Trong phạm vi phiên bản 1.0 (In-Scope)](docs/split/BRD/4-1-trong-pham-vi-phien-ban-1-0-in-scope.md) · 3.2k
 - [4. PHẠM VI DỰ ÁN (PROJECT SCOPE) › 4.3. Lộ trình phát hành (Milestones)](docs/split/BRD/4-3-lo-trinh-phat-hanh-milestones.md) · 0.9k
-- [4. PHẠM VI DỰ ÁN (PROJECT SCOPE) › 4.4. Phân bổ theo bản phát hành (D-40, chốt ở tài liệu v1.1)](docs/split/BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md) · 2.6k
+- [4. PHẠM VI DỰ ÁN (PROJECT SCOPE) › 4.4. Phân bổ theo bản phát hành (D-40, chốt ở tài liệu v1.1)](docs/split/BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md) · 2.7k
 - [4. PHẠM VI DỰ ÁN (PROJECT SCOPE) › 4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](docs/split/BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1.1k
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](docs/split/BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4.3k
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](docs/split/BRD/6-gia-dinh-assumptions.md) · 0.6k
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 14.4k
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 15.1k
 - [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](docs/split/BRD/8-cac-van-de-con-mo-open-issues.md) · 4.6k
 
 ### SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
 Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 
-- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](docs/split/SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 6.0k
+- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](docs/split/SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 0.4k
+- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) › Lịch sử phiên bản](docs/split/SRS/lich-su-phien-ban.md) · 4.7k
+- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) › Quy ước trong tài liệu](docs/split/SRS/quy-uoc-trong-tai-lieu.md) · 0.8k
+- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) › Mục lục](docs/split/SRS/muc-luc.md) · 0.4k
 - [1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG](docs/split/SRS/1-gioi-thieu-muc-tieu-he-thong.md) · 4.6k
 - [2. KIẾN TRÚC KỸ THUẬT, LUỒNG DỮ LIỆU & ĐÁNH GIÁ KIẾN TRÚC › 2.1. Kiến trúc phân tầng hệ thống](docs/split/SRS/2-1-kien-truc-phan-tang-he-thong.md) · 6.6k
 - [2. KIẾN TRÚC KỸ THUẬT, LUỒNG DỮ LIỆU & ĐÁNH GIÁ KIẾN TRÚC › 2.2. Luồng dữ liệu chính](docs/split/SRS/2-2-luong-du-lieu-chinh.md) · 0.6k
@@ -157,9 +160,9 @@ Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 - [4. YÊU CẦU PHI CHỨC NĂNG (NON-FUNCTIONAL REQUIREMENTS)](docs/split/SRS/4-yeu-cau-phi-chuc-nang-non-functional-requireme.md) · 5.2k
 - [5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG › 5.1. Bố cục không gian làm việc](docs/split/SRS/5-1-bo-cuc-khong-gian-lam-viec.md) · 3.7k
 - [5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG › 5.2. Chế độ tương tác](docs/split/SRS/5-2-che-do-tuong-tac.md) · 0.4k
-- [5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG › 5.3. Yêu cầu giao diện](docs/split/SRS/5-3-yeu-cau-giao-dien.md) · 9.2k
+- [5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG › 5.3. Yêu cầu giao diện](docs/split/SRS/5-3-yeu-cau-giao-dien.md) · 13.4k
 - [6. MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU](docs/split/SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md) · 1.4k
-- [7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO](docs/split/SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md) · 5.7k
+- [7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO](docs/split/SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md) · 6.1k
 - [8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS](docs/split/SRS/8-cac-van-de-con-mo-cua-srs.md) · 4.0k
 - [9. PHỤ LỤC › Phụ lục A: Mã lỗi](docs/split/SRS/phu-luc-a-ma-loi.md) · 2.0k
 - [9. PHỤ LỤC › Phụ lục A2: Mã cảnh báo của Parser Library](docs/split/SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md) · 1.1k
@@ -208,7 +211,7 @@ Nguồn: `docs/design/TDD.md` · [thứ tự đọc](docs/split/TDD/_index.md)
 - [2. Danh mục test mới](docs/split/TDD/2-danh-muc-test-moi.md) · 1.3k
 - [3. Ma trận truy vết](docs/split/TDD/3-ma-tran-truy-vet.md) · 0.4k
 - [4. Khoảng trống đã biết](docs/split/TDD/4-khoang-trong-da-biet.md) · 0.4k
-- [5. Danh sách kiểm thủ công cho AT-18 (Chrome)](docs/split/TDD/5-danh-sach-kiem-thu-cong-cho-at-18-chrome.md) · 1.2k
+- [5. Danh sách kiểm thủ công cho AT-18 (Chrome)](docs/split/TDD/5-danh-sach-kiem-thu-cong-cho-at-18-chrome.md) · 1.5k
 
 ### ANIMATION.md — Hiệu ứng chuyển động và xuất video: so sánh công cụ và quyết định
 

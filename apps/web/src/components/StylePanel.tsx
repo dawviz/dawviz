@@ -1,17 +1,19 @@
 // Bảng tuỳ chỉnh kiểu dáng nốt (toàn cục) và bàn phím. Chỉ sửa dữ liệu StyleConfig; việc vẽ nằm ở Render Core.
 import { STYLE_PRESETS, DEFAULT_NOTE_STYLE, type StyleConfig, type NoteStyle, type ColorMode, type KeyboardStyle } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
+import { NumberField } from './NumberField.tsx';
 
 const MODES: ColorMode[] = ['track', 'custom', 'pitch', 'velocity'];
 const PRESETS = Object.keys(STYLE_PRESETS);
 
-function Slider({ id, label, value, min, max, step, onChange }: { id: string; label: string; value: number; min: number; max: number; step: number; onChange(v: number): void }) {
+/** Thanh trượt + ô nhập số (REQ-UI-15). `max` là phạm vi của thanh trượt; `hardMax` cho phép gõ vượt phạm vi đó (mặc định bằng `max`). */
+function Slider({ id, label, value, min, max, step, hardMax, onChange }: { id: string; label: string; value: number; min: number; max: number; step: number; hardMax?: number; onChange(v: number): void }) {
   return (
-    <label className="grid grid-cols-[7rem_minmax(0,1fr)_2.5rem] items-center gap-2 text-xs text-ink-300" htmlFor={id}>
-      <span className="truncate" title={label}>{label}</span>
-      <input id={id} className="w-full min-w-0" type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} />
-      <output className="text-right tabular-nums text-ink-100">{Number.isInteger(step) ? value : value.toFixed(2)}</output>
-    </label>
+    <div className="grid grid-cols-[7rem_minmax(0,1fr)_3.25rem] items-center gap-2 text-xs text-ink-300">
+      <label htmlFor={id} className="truncate" title={label}>{label}</label>
+      <input id={id} className="w-full min-w-0" type="range" min={min} max={max} step={step} value={Math.min(value, max)} onChange={(e) => onChange(Number(e.target.value))} />
+      <NumberField label={label} value={value} onChange={onChange} spec={{ min, max: hardMax ?? max, step }} />
+    </div>
   );
 }
 
@@ -43,10 +45,10 @@ export function StylePanel({ style, keyboard, onStyle, onKeyboard }: { style: St
       <Slider id="st-opacity" label={i18n.t('web.style.opacity')} value={b.opacity} min={0} max={1} step={0.05} onChange={(v) => set({ opacity: v })} />
       <Slider id="st-inactive" label={i18n.t('web.style.inactiveOpacity')} value={b.inactiveOpacity} min={0} max={1} step={0.05} onChange={(v) => set({ inactiveOpacity: v })} />
       <Slider id="st-height" label={i18n.t('web.style.heightScale')} value={b.heightScale} min={0.1} max={1.5} step={0.05} onChange={(v) => set({ heightScale: v })} />
-      <Slider id="st-radius" label={i18n.t('web.style.cornerRadius')} value={Math.min(b.cornerRadius, 20)} min={0} max={20} step={1} onChange={(v) => set({ cornerRadius: v })} />
+      <Slider id="st-radius" label={i18n.t('web.style.cornerRadius')} value={b.cornerRadius} min={0} max={20} hardMax={999} step={1} onChange={(v) => set({ cornerRadius: v })} />
       <Slider id="st-glow" label={i18n.t('web.style.glow')} value={b.glow} min={0} max={1} step={0.05} onChange={(v) => set({ glow: v })} />
-      <Slider id="st-glowr" label={i18n.t('web.style.glowRadius')} value={b.glowRadius} min={0} max={40} step={1} onChange={(v) => set({ glowRadius: v })} />
-      <Slider id="st-border" label={i18n.t('web.style.borderWidth')} value={b.borderWidth} min={0} max={6} step={0.5} onChange={(v) => set({ borderWidth: v })} />
+      <Slider id="st-glowr" label={i18n.t('web.style.glowRadius')} value={b.glowRadius} min={0} max={40} hardMax={64} step={1} onChange={(v) => set({ glowRadius: v })} />
+      <Slider id="st-border" label={i18n.t('web.style.borderWidth')} value={b.borderWidth} min={0} max={6} hardMax={8} step={0.5} onChange={(v) => set({ borderWidth: v })} />
       <label className="flex items-center gap-2 text-xs text-ink-300">
         <input type="checkbox" checked={b.glowActiveOnly} onChange={(e) => set({ glowActiveOnly: e.target.checked })} />{i18n.t('web.style.glowActiveOnly')}
       </label>

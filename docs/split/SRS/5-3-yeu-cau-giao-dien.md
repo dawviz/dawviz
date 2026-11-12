@@ -4,9 +4,9 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "5.3. Yêu cầu giao diện"
 path: "5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.3. Yêu cầu giao diện"
 chunk: 5-3-yeu-cau-giao-dien.md
-source_lines: 898-945
-source_sha1: 1654c314a5
-ids: [ARC-05, BR-07, BR-09, D-19, D-25, D-29, D-30, D-48, ERR_UNSUPPORTED_FORMAT, KPI-04, REQ-EXPORT-00, REQ-GRAPHICS-06, REQ-GRAPHICS-07, REQ-GRAPHICS-09, REQ-GRAPHICS-10, REQ-GRAPHICS-11, REQ-GRAPHICS-14, REQ-GRAPHICS-15, REQ-GRAPHICS-16, REQ-PARSER-05, REQ-PARSER-07, REQ-STORAGE-05, REQ-STORAGE-06, REQ-UI-01, REQ-UI-02, REQ-UI-03, REQ-UI-04, REQ-UI-05, REQ-UI-06, REQ-UI-07, REQ-UI-08, REQ-UI-09, REQ-UI-10, REQ-UI-11, REQ-UI-12, REQ-UI-13, REQ-WIDGET-07]
+source_lines: 898-965
+source_sha1: 06736f0e5a
+ids: [ARC-05, BR-07, BR-09, D-19, D-25, D-29, D-30, D-48, D-49, ERR_UNSUPPORTED_FORMAT, KPI-04, NFR-SEC-05, REQ-EXPORT-00, REQ-GRAPHICS-06, REQ-GRAPHICS-07, REQ-GRAPHICS-09, REQ-GRAPHICS-10, REQ-GRAPHICS-11, REQ-GRAPHICS-13, REQ-GRAPHICS-14, REQ-GRAPHICS-15, REQ-GRAPHICS-16, REQ-PARSER-05, REQ-PARSER-07, REQ-STORAGE-05, REQ-STORAGE-06, REQ-UI-01, REQ-UI-02, REQ-UI-03, REQ-UI-04, REQ-UI-05, REQ-UI-06, REQ-UI-07, REQ-UI-08, REQ-UI-09, REQ-UI-10, REQ-UI-11, REQ-UI-12, REQ-UI-13, REQ-UI-14, REQ-UI-15, REQ-WIDGET-07]
 ---
 ### 5.3. Yêu cầu giao diện
 
@@ -51,7 +51,27 @@ ids: [ARC-05, BR-07, BR-09, D-19, D-25, D-29, D-30, D-48, ERR_UNSUPPORTED_FORMAT
 | Nền và tài nguyên | Màu/ảnh nền, logo, phông | Sprite sheet, quản lý tài nguyên, giới hạn và dung lượng (REQ-STORAGE-05) |
 | Xuất | Preset nền tảng (YouTube 16:9, Shorts/TikTok/Reels 9:16, Instagram 4:5 và 1:1); chất lượng Thấp/Vừa/Cao; 30/60 fps; kích thước tuỳ chỉnh rộng × cao; đoạn xuất | Codec, bitrate, fast-start, nền trong suốt, chuỗi PNG, chọn lớp/tách lớp, Silent AAC, offset audio (REQ-EXPORT-00…08) |
 | Preset và cộng đồng | Cài/áp preset, chia sẻ (bắt buộc chọn giấy phép) | Sửa từng phần của preset, xem dữ liệu thô, quản lý phiên bản |
+| Danh sách track | Kiểu xếp Dọc/Ngang/Lưới; mật độ Gọn/Đầy đủ; lọc theo tên (REQ-UI-14) | Sắp xếp theo tiêu chí, kéo đổi thứ tự, số cột lưới, vị trí dock, nhóm/folder track |
+| Nhập giá trị | Mọi điều khiển kéo có ô nhập kèm: số, đơn vị, phép tính `+ - * /`, ↑/↓ (REQ-UI-15) | Tương đối `+=`/`-=`/`*=`/`/=` cho nhiều đối tượng; biểu thức (tiền tố `=`, REQ-GRAPHICS-13) |
 | Giao diện | Theme sáng/tối, ngôn ngữ, chế độ | Như Cơ bản |
+
+* **REQ-UI-14 (Bố cục danh sách track, D-49, 1.0):**
+  * **Kiểu xếp:** **Dọc** (danh sách, mặc định), **Ngang** (dải thẻ cuộn ngang, hợp khi bảng track đặt dưới canvas) và **Lưới** (thẻ; số cột tự theo bề rộng hoặc chọn 1–6). Đổi kiểu xếp không tải lại trang, không làm mất trạng thái đang chỉnh của track.
+  * **Mật độ:** **Gọn** (một dòng: màu, tên, mắt, solo) hoặc **Đầy đủ** (thêm số nốt, nguồn độ sáng, kiểu nốt riêng…). Tên dài cắt bằng dấu "…", hiện đủ khi rê chuột; không phần tử nào được tràn khỏi thẻ ở mọi kiểu xếp (bài học T-61).
+  * **Thứ tự và lọc:** mặc định theo thứ tự trong DAW; sắp theo tên, số nốt, màu; kéo thả để đổi thứ tự hiển thị; ô lọc theo tên. Thứ tự trong danh sách **không** đổi thứ tự vẽ trên canvas, trừ khi bật "Vẽ theo thứ tự danh sách" (khi đó thứ tự được lưu vào dự án và hoàn tác được, REQ-UI-02).
+  * **Nhóm:** track nhóm/folder (Reaper folder, Ableton Group, DAWproject group) thu gọn/mở được; cần parser đọc thêm thông tin nhóm **[VERIFY]**, chưa có thì hiện phẳng.
+  * **Vị trí bảng:** trái (mặc định, §5.1), phải hoặc dưới; đặt ở dưới thì gợi ý chuyển sang Ngang. Bảng co giãn và thu gọn được. Bề rộng quá hẹp cho Lưới thì tự hạ về Dọc (không đổi lựa chọn đã lưu).
+  * **Lưu:** kiểu xếp, mật độ, sắp xếp, vị trí là **tuỳ chọn giao diện** lưu theo trình duyệt, không vào preset video và không đổi khung hình xuất.
+  * **Bàn phím và trợ năng:** phím mũi tên đi theo hướng xếp (↑/↓ ở Dọc, ←/→ ở Ngang, cả hai ở Lưới); vai trò `list`/`grid` tương ứng; kéo thả luôn có cách thay thế bằng nút "Lên/Xuống" hoặc ô nhập vị trí (REQ-UI-15).
+* **REQ-UI-15 (Nhập giá trị chính xác cho mọi điều khiển, D-49, 1.0):**
+  * **Quy tắc chung:** mọi thuộc tính chỉnh được bằng kéo (thanh trượt, núm xoay, kéo/co giãn widget trên canvas, tay nắm bezier và keyframe trên Graph Editor, ô màu, tay nắm xoay 3D, mốc đầu/cuối đoạn trên timeline, offset audio…) **phải** có ô nhập đi kèm, hiện giá trị hiện tại và sửa được bằng bàn phím. Không thuộc tính nào chỉ chỉnh được bằng chuột. Áp dụng ở cả Cơ bản và Nâng cao.
+  * **Cách nhập:** Enter hoặc rời ô để áp; Esc để huỷ. ↑/↓ tăng giảm theo bước, Shift ×10, Alt/Option ×0,1; kết quả làm tròn theo bước. Kéo ngang trên nhãn để chỉnh (scrub) như phần mềm dựng hình; con lăn chuột chỉ đổi giá trị khi ô đang được chọn.
+  * **Cú pháp:** số với dấu chấm hoặc dấu phẩy thập phân (`0.7`, `0,7`; chuỗi mơ hồ như `1,000.5` bị từ chối, không đoán); đơn vị khai báo cho từng thuộc tính (`px`, `pt`, `%`, `s`, `ms`, `deg`, `beat`, `bar`), quy đổi về đơn vị gốc; phép tính `+ - * /` và ngoặc (`1920/2`, `(4+2)*3`); tương đối với giá trị hiện tại `+=`, `-=`, `*=`, `/=` (hữu ích khi chọn nhiều đối tượng). Tiền tố `=` chuyển sang ô biểu thức đầy đủ (REQ-GRAPHICS-13). Bộ đọc là hàm thuần viết tay, **không** dùng `eval`/`Function` (NFR-SEC-05).
+  * **Giới hạn:** thanh trượt có **phạm vi mềm** (khoảng hay dùng), ô nhập cho gõ vượt tới **giới hạn cứng** của thuộc tính (ví dụ bán kính phát sáng: kéo 0–40, gõ tới 64; bo góc: kéo 0–20, gõ tới 999 để thành viên thuốc). Vượt giới hạn cứng thì kẹp. Giới hạn cứng của ô nhập phải trùng với giới hạn kẹp trong Render Core (`sanitizeStyle` và tương đương) để giá trị hiện ra là giá trị thực được vẽ.
+  * **Lỗi:** chuỗi không đọc được thì viền đỏ, `aria-invalid`, giữ nguyên giá trị cũ, không áp nửa chừng; rời ô thì trả lại giá trị cũ.
+  * **Nhiều đối tượng:** khi chọn nhiều đối tượng có giá trị khác nhau, ô hiện "—"; gõ số tuyệt đối áp cho tất cả, gõ dạng tương đối áp riêng cho từng đối tượng.
+  * **Hoàn tác:** mỗi lần áp từ ô là một bước hoàn tác; một lần kéo liên tục (thanh trượt, scrub) gộp thành một bước (REQ-UI-02).
+  * **Hiển thị:** số chữ số thập phân theo bước; đơn vị hiện cạnh ô; ô đủ hẹp để không làm tràn bảng (tối thiểu 3,25rem ở bảng 20rem).
 
 
 ---

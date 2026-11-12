@@ -4,9 +4,9 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO"
 path: "7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO"
 chunk: 7-dieu-kien-nghiem-thu-va-ban-giao.md
-source_lines: 962-994
-source_sha1: 1654c314a5
-ids: [ARC-01, AT-01, AT-02, AT-03, AT-04, AT-05, AT-06, AT-07, AT-08, AT-09, AT-10, AT-11, AT-12, AT-13, AT-14, AT-15, AT-16, AT-17, AT-18, AT-19, AT-20, AT-21, AT-22, AT-23, AT-24, BR-01, BR-02, BR-05, BR-08, BR-09, D-11, D-25, D-29, KPI-01, KPI-02, KPI-03, KPI-04, KPI-05, KPI-06, KPI-07, KPI-08, NFR-COMP-02, NFR-PERF-03, OI-01, OI-02, P-01, P-13, REQ-GRAPHICS-05, REQ-GRAPHICS-06, REQ-UI-08]
+source_lines: 982-1015
+source_sha1: 06736f0e5a
+ids: [ARC-01, AT-01, AT-02, AT-03, AT-04, AT-05, AT-06, AT-07, AT-08, AT-09, AT-10, AT-11, AT-12, AT-13, AT-14, AT-15, AT-16, AT-17, AT-18, AT-19, AT-20, AT-21, AT-22, AT-23, AT-24, AT-25, BR-01, BR-02, BR-05, BR-08, BR-09, D-11, D-25, D-29, KPI-01, KPI-02, KPI-03, KPI-04, KPI-05, KPI-06, KPI-07, KPI-08, NFR-COMP-02, NFR-PERF-03, OI-01, OI-02, P-01, P-13, REQ-GRAPHICS-05, REQ-GRAPHICS-06, REQ-UI-08]
 ---
 ## 7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO
 
@@ -37,6 +37,7 @@ Phiên bản đạt nghiệm thu khi vượt qua toàn bộ các kiểm thử sa
 | **AT-21** | An toàn biểu thức (1.0) | Bộ mẫu tấn công (EXPRESSIONS §4) đều bị từ chối hoặc ra giá trị dự phòng; fuzz 100.000 biểu thức không treo, không lỗi ngoài `ExprError`; trang chạy đủ chức năng với CSP bật. |
 | **AT-22** | Tài nguyên và preset (1.0) | Nạp cùng ảnh hai lần chỉ lưu một bản; Project Pack mở trên trình duyệt khác đủ tài nguyên; preset sai schema hoặc vượt giới hạn bị từ chối kèm mã lỗi. |
 | **AT-23** | Widget bổ sung (1.0) | P-01…P-13 hiển thị đúng với tệp mẫu (marker và lời với tệp có dữ liệu tương ứng); đổi cách ghi tên nốt áp cho mọi widget. |
+| **AT-25** | Bố cục track và nhập giá trị (1.0) | Đổi Dọc/Ngang/Lưới và Gọn/Đầy đủ với dự án 15+ track: không phần tử tràn khỏi thẻ ở bề rộng 1440/1100/800 px, phím mũi tên đi đúng hướng; mọi thuộc tính có tay nắm kéo đều có ô nhập; gõ `1920/2`, `+=10`, `0,5`, `50%` cho kết quả đúng; chuỗi sai giữ giá trị cũ; giá trị ngoài giới hạn cứng bị kẹp và trùng với giá trị Render Core vẽ. |
 | **AT-24** | Stem theo track (1.2) | Nạp tệp mix + 4 stem xuất từ Reaper và Ableton (cùng điểm đầu): tự ghép đúng tên track; spectrum của từng track khớp âm thanh của track đó; stem lệch độ dài có cảnh báo; mở lại dự án từ Project Pack không cần stem mà widget vẫn vẽ được. |
 
 ---

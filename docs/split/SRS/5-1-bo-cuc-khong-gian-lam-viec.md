@@ -5,7 +5,7 @@ section: "5.1. Bố cục không gian làm việc"
 path: "5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.1. Bố cục không gian làm việc"
 chunk: 5-1-bo-cuc-khong-gian-lam-viec.md
 source_lines: 860-892
-source_sha1: 1654c314a5
+source_sha1: 06736f0e5a
 ids: []
 ---
 ### 5.1. Bố cục không gian làm việc

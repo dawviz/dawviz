@@ -5,7 +5,7 @@ section: "REQ-EXPORT-00: Pre-flight (R-01, D-17)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-EXPORT-00: Pre-flight (R-01, D-17)"
 chunk: req-export-00-pre-flight-r-01-d-17.md
 source_lines: 652-674
-source_sha1: 1654c314a5
+source_sha1: 06736f0e5a
 ids: [D-17, D-26, KPI-05, REQ-EXPORT-00, REQ-GRAPHICS-04, SOI-05]
 ---
 #### REQ-EXPORT-00: Pre-flight (R-01, D-17)

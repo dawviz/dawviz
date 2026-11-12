@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "Phụ lục B: Ghi chú rà soát"
 path: "9. PHỤ LỤC > Phụ lục B: Ghi chú rà soát"
 chunk: phu-luc-b-ghi-chu-ra-soat.md
-source_lines: 1052-1083
-source_sha1: 1654c314a5
+source_lines: 1073-1104
+source_sha1: 06736f0e5a
 ids: [D-20, D-22, KPI-01, NFR-ACC-02, NFR-COMP-01, OI-02, OI-08, REQ-AST-01, REQ-CAP-01, REQ-EXPORT-07, REQ-GRAPHICS-04, REQ-PARSER-06, REQ-STORAGE-04, REQ-UI-01, REQ-UI-06, REQ-UI-07, REQ-UI-08, SOI-12]
 ---
 ### Phụ lục B: Ghi chú rà soát

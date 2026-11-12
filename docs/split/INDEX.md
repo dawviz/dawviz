@@ -10,16 +10,19 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [3. CHÂN DUNG NGƯỜI DÙNG MỤC TIÊU (USER PERSONAS)](BRD/3-chan-dung-nguoi-dung-muc-tieu-user-personas.md) · 1342 ký tự
 - [4.1. Trong phạm vi phiên bản 1.0 (In-Scope)](BRD/4-1-trong-pham-vi-phien-ban-1-0-in-scope.md) · 3226 ký tự
 - [4.3. Lộ trình phát hành (Milestones)](BRD/4-3-lo-trinh-phat-hanh-milestones.md) · 892 ký tự
-- [4.4. Phân bổ theo bản phát hành (D-40, chốt ở tài liệu v1.1)](BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md) · 2624 ký tự
+- [4.4. Phân bổ theo bản phát hành (D-40, chốt ở tài liệu v1.1)](BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md) · 2723 ký tự
 - [4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1118 ký tự
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4347 ký tự
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](BRD/6-gia-dinh-assumptions.md) · 554 ký tự
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 14359 ký tự
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 15108 ký tự
 - [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](BRD/8-cac-van-de-con-mo-open-issues.md) · 4634 ký tự
 
 ## SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
-- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 5996 ký tự
+- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 422 ký tự
+- [Lịch sử phiên bản](SRS/lich-su-phien-ban.md) · 4684 ký tự
+- [Quy ước trong tài liệu](SRS/quy-uoc-trong-tai-lieu.md) · 818 ký tự
+- [Mục lục](SRS/muc-luc.md) · 365 ký tự
 - [1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG](SRS/1-gioi-thieu-muc-tieu-he-thong.md) · 4632 ký tự
 - [2.1. Kiến trúc phân tầng hệ thống](SRS/2-1-kien-truc-phan-tang-he-thong.md) · 6588 ký tự
 - [2.2. Luồng dữ liệu chính](SRS/2-2-luong-du-lieu-chinh.md) · 641 ký tự
@@ -82,9 +85,9 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [4. YÊU CẦU PHI CHỨC NĂNG (NON-FUNCTIONAL REQUIREMENTS)](SRS/4-yeu-cau-phi-chuc-nang-non-functional-requireme.md) · 5167 ký tự
 - [5.1. Bố cục không gian làm việc](SRS/5-1-bo-cuc-khong-gian-lam-viec.md) · 3717 ký tự
 - [5.2. Chế độ tương tác](SRS/5-2-che-do-tuong-tac.md) · 358 ký tự
-- [5.3. Yêu cầu giao diện](SRS/5-3-yeu-cau-giao-dien.md) · 9238 ký tự
+- [5.3. Yêu cầu giao diện](SRS/5-3-yeu-cau-giao-dien.md) · 13371 ký tự
 - [6. MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU](SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md) · 1419 ký tự
-- [7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO](SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md) · 5718 ký tự
+- [7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO](SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md) · 6104 ký tự
 - [8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS](SRS/8-cac-van-de-con-mo-cua-srs.md) · 4032 ký tự
 - [Phụ lục A: Mã lỗi](SRS/phu-luc-a-ma-loi.md) · 2039 ký tự
 - [Phụ lục A2: Mã cảnh báo của Parser Library](SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md) · 1066 ký tự
@@ -127,7 +130,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [2. Danh mục test mới](TDD/2-danh-muc-test-moi.md) · 1348 ký tự
 - [3. Ma trận truy vết](TDD/3-ma-tran-truy-vet.md) · 399 ký tự
 - [4. Khoảng trống đã biết](TDD/4-khoang-trong-da-biet.md) · 442 ký tự
-- [5. Danh sách kiểm thủ công cho AT-18 (Chrome)](TDD/5-danh-sach-kiem-thu-cong-cho-at-18-chrome.md) · 1236 ký tự
+- [5. Danh sách kiểm thủ công cho AT-18 (Chrome)](TDD/5-danh-sach-kiem-thu-cong-cho-at-18-chrome.md) · 1482 ký tự
 
 ## ANIMATION.md — Hiệu ứng chuyển động và xuất video: so sánh công cụ và quyết định
 

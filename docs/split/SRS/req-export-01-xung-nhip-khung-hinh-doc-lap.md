@@ -5,7 +5,7 @@ section: "REQ-EXPORT-01: Xung nhịp khung hình độc lập"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-EXPORT-01: Xung nhịp khung hình độc lập"
 chunk: req-export-01-xung-nhip-khung-hinh-doc-lap.md
 source_lines: 675-680
-source_sha1: 1654c314a5
+source_sha1: 06736f0e5a
 ids: [REQ-EXPORT-01, REQ-GRAPHICS-05]
 ---
 #### REQ-EXPORT-01: Xung nhịp khung hình độc lập
