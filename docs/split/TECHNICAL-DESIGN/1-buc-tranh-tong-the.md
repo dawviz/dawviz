@@ -5,7 +5,7 @@ section: "1. Bức tranh tổng thể"
 path: "1. Bức tranh tổng thể"
 chunk: 1-buc-tranh-tong-the.md
 source_lines: 7-37
-source_sha1: af52e37072
+source_sha1: a5669eb68f
 ids: [ARC-01]
 ---
 ## 1. Bức tranh tổng thể

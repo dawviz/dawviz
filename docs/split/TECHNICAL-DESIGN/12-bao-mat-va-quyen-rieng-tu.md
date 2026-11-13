@@ -5,7 +5,7 @@ section: "12. Bảo mật và quyền riêng tư"
 path: "12. Bảo mật và quyền riêng tư"
 chunk: 12-bao-mat-va-quyen-rieng-tu.md
 source_lines: 409-411
-source_sha1: af52e37072
+source_sha1: a5669eb68f
 ids: [OI-07]
 ---
 ## 12. Bảo mật và quyền riêng tư

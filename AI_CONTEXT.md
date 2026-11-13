@@ -132,7 +132,7 @@ Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-WIDGET-03: Event Counter](docs/split/SRS/req-widget-03-event-counter.md) · 1.1k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-WIDGET-04: Live Note Trigger](docs/split/SRS/req-widget-04-live-note-trigger.md) · 0.9k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-WIDGET-05: Time & Bar Counter](docs/split/SRS/req-widget-05-time-bar-counter.md) · 1.5k
-- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-WIDGET-06: Chord Detection (D-09)](docs/split/SRS/req-widget-06-chord-detection-d-09.md) · 1.8k
+- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-WIDGET-06: Chord Detection (D-09)](docs/split/SRS/req-widget-06-chord-detection-d-09.md) · 2.3k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-WIDGET-07: Audio Spectrum & Meter (D-10, ARC-03, ARC-06)](docs/split/SRS/req-widget-07-audio-spectrum-meter-d-10-arc-03-a.md) · 2.5k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-AUDIO-01: Âm thanh theo track (stem), bản 1.2](docs/split/SRS/req-audio-01-am-thanh-theo-track-stem-ban-1-2.md) · 3.3k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-WIDGET-08: Progress Bar (D-27)](docs/split/SRS/req-widget-08-progress-bar-d-27.md) · 0.8k
@@ -193,7 +193,7 @@ Nguồn: `docs/design/TECHNICAL-DESIGN.md` · [thứ tự đọc](docs/split/TEC
 - [1. Bức tranh tổng thể](docs/split/TECHNICAL-DESIGN/1-buc-tranh-tong-the.md) · 2.4k
 - [2. Mô hình dữ liệu và thời gian 🟢](docs/split/TECHNICAL-DESIGN/2-mo-hinh-du-lieu-va-thoi-gian.md) · 2.9k
 - [3. Đường ống phân tích (parser) 🟢](docs/split/TECHNICAL-DESIGN/3-duong-ong-phan-tich-parser.md) · 1.9k
-- [4. Dữ liệu dẫn xuất (derived) 🟢/⚪](docs/split/TECHNICAL-DESIGN/4-du-lieu-dan-xuat-derived.md) · 1.3k
+- [4. Dữ liệu dẫn xuất (derived) 🟢/⚪](docs/split/TECHNICAL-DESIGN/4-du-lieu-dan-xuat-derived.md) · 1.5k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.0 Kiểu dáng nốt và bàn phím 🟢 (REQ-GRAPHICS-07)](docs/split/TECHNICAL-DESIGN/5-0-kieu-dang-not-va-ban-phim-req-graphics-07.md) · 0.6k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.1 Giao diện chính 🟢](docs/split/TECHNICAL-DESIGN/5-1-giao-dien-chinh.md) · 5.3k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.2 Hợp đồng widget 🟢](docs/split/TECHNICAL-DESIGN/5-2-hop-dong-widget.md) · 0.5k

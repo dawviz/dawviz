@@ -5,7 +5,7 @@ section: "REQ-WIDGET-08: Progress Bar (D-27)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-08: Progress Bar (D-27)"
 chunk: req-widget-08-progress-bar-d-27.md
 source_lines: 604-609
-source_sha1: f3c5cc8778
+source_sha1: 7ab053e2fc
 ids: [D-27, REQ-EXPORT-00, REQ-GRAPHICS-05, REQ-WIDGET-08]
 ---
 #### REQ-WIDGET-08: Progress Bar (D-27)

@@ -430,7 +430,7 @@
   },
   "SRS.md": {
    "title": "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)",
-   "sha1": "f3c5cc8778",
+   "sha1": "7ab053e2fc",
    "chunks": [
     {
      "n": 0,
@@ -1399,7 +1399,7 @@
       "3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04)",
       "REQ-WIDGET-06: Chord Detection (D-09)"
      ],
-     "chars": 1767,
+     "chars": 2250,
      "lines": [
       568,
       577
@@ -1408,7 +1408,8 @@
       "D-09",
       "KPI-06",
       "REQ-WIDGET-06",
-      "SOI-09"
+      "SOI-09",
+      "WARN_PRESET_"
      ]
     },
     {
@@ -2601,7 +2602,7 @@
   },
   "TECHNICAL-DESIGN.md": {
    "title": "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER",
-   "sha1": "af52e37072",
+   "sha1": "a5669eb68f",
    "chunks": [
     {
      "n": 0,
@@ -2677,7 +2678,7 @@
      "path": [
       "4. Dữ liệu dẫn xuất (derived) 🟢/⚪"
      ],
-     "chars": 1266,
+     "chars": 1495,
      "lines": [
       92,
       104
@@ -7604,6 +7605,10 @@
    "SRS/req-widget-06-chord-detection-d-09.md",
    "SRS/8-cac-van-de-con-mo-cua-srs.md"
   ],
+  "WARN_PRESET_": [
+   "SRS/req-widget-06-chord-detection-d-09.md",
+   "TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md"
+  ],
   "ERR_AUDIO_DECODE": [
    "SRS/req-widget-07-audio-spectrum-meter-d-10-arc-03-a.md",
    "SRS/phu-luc-a-ma-loi.md",
@@ -7923,9 +7928,6 @@
    "TECHNICAL-DESIGN/5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md"
   ],
   "ERR_PRESET_": [
-   "TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md"
-  ],
-  "WARN_PRESET_": [
    "TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md"
   ],
   "AD-09": [

@@ -5,7 +5,7 @@ section: "REQ-GRAPHICS-14: Khoảng hiển thị theo thời gian và theo track
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) > REQ-GRAPHICS-14: Khoảng hiển thị theo thời gian và theo track"
 chunk: req-graphics-14-khoang-hien-thi-theo-thoi-gian-v.md
 source_lines: 848-852
-source_sha1: f3c5cc8778
+source_sha1: 7ab053e2fc
 ids: [P-04, P-09, P-10, REQ-GRAPHICS-09, REQ-GRAPHICS-14, REQ-UI-03, REQ-WIDGET-07]
 ---
 #### REQ-GRAPHICS-14: Khoảng hiển thị theo thời gian và theo track

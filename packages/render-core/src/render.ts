@@ -7,7 +7,7 @@ import { layoutPianoRoll, layoutKeyboard } from './pianoroll.ts';
 import { DEFAULT_KEYBOARD_STYLE } from './style.ts';
 import type { PianoRollProps, SceneDocument, WidgetSpec } from './scene.ts';
 import type { Derived, Primitive, RectPrim, TextPrim, WidgetRenderer } from './prims.ts';
-import { HUD_RENDERERS, buildHud, type HudData } from './hud.ts';
+import { HUD_RENDERERS, buildHud, type ChordProps, type HudData } from './hud.ts';
 import { measureText } from './text.ts';
 
 /** Ngữ cảnh vẽ đủ cho renderFrame (Canvas 2D và OffscreenCanvas đều có). */
@@ -98,7 +98,8 @@ export const WIDGET_RENDERERS: Partial<Record<WidgetSpec['type'], WidgetRenderer
 /** Bố cục toàn khung (thuần): danh sách widget đã sắp theo zIndex kèm primitive của từng widget. Dùng để test tất định. */
 /** HudData cho một scene: số đếm, lưới ô nhịp và hợp âm của mọi widget Chord Detection. Gọi ở bước derived (một lần cho mỗi dự án × scene). */
 export const buildSceneHud = (scene: SceneDocument, ast: UnifiedProjectAST, index: TimelineIndex): HudData =>
-  buildHud(ast, index, scene.widgets.filter((w) => w.type === 'CHORD_DETECTION').map((w) => tracksFor(w, index)));
+  buildHud(ast, index, scene.widgets.filter((w) => w.type === 'CHORD_DETECTION')
+    .map((w) => ({ tracks: tracksFor(w, index), mode: (w.properties as ChordProps).mode ?? 'sustained' })));
 const hudMemo = new WeakMap<Derived, WeakMap<SceneDocument, HudData>>();
 /** Derived có hud: dùng cái đã dựng; thiếu (gọi trực tiếp, kiểm thử) thì dựng một lần cho (derived, scene) rồi đệm. */
 function withHud(scene: SceneDocument, derived: Derived, ast: UnifiedProjectAST): Derived {

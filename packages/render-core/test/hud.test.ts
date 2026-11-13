@@ -177,3 +177,34 @@ test('hợp âm C + track trống → C: kênh 10 và track Drums bị loại kh
   mixed.tracks[0].notes.forEach((n) => { delete n.channel; });
   assert.notDeepEqual(name(mixed), ['C']);
 });
+
+test('Chord Strike: gom nốt lệch ≤ 30 ms, giữ tên đến lần dập kế; nốt giai điệu đơn không cắt; hết nốt cuối thì thôi', () => {
+  // C (0 s, lệch 20 ms) dài 0,25 s; nốt E5 đơn ở 0,5 s; Am ở 1 s; im lặng 1,5–3 s; G ở 3–3,5 s.
+  const ast = synthAst({ tracks: [{ name: 'Piano', color: '#fff', notes: [[60, 0, 0.5, 80], [64, 0.04, 0.5, 80], [67, 0, 0.5, 80], [76, 1, 0.5, 90], [57, 2, 1, 80], [60, 2, 1, 80], [64, 2, 1, 80], [55, 6, 1, 80], [59, 6, 1, 80], [62, 6, 1, 80]] }] });
+  const strike = sceneWith('CHORD_DETECTION', { mode: 'strike' }), sus = sceneWith('CHORD_DETECTION', {});
+  assert.deepEqual(texts(prims(strike, 0.1, ast)), ['C']);
+  assert.deepEqual(texts(prims(sus, 0.4, ast)), []);          // Sustained: hết nốt là hết tên
+  assert.deepEqual(texts(prims(strike, 0.4, ast)), ['C']);    // Strike: giữ tên dù nốt đã nhả
+  assert.deepEqual(texts(prims(strike, 0.6, ast)), ['C']);    // nốt E5 đơn không phải lần dập hợp âm
+  assert.deepEqual(texts(prims(strike, 1.2, ast)), ['Am']);
+  assert.deepEqual(texts(prims(strike, 2, ast)), ['Am']);     // SRS: giữ đến lần dập kế, kể cả qua khoảng lặng
+  assert.deepEqual(texts(prims(strike, 3.2, ast)), ['G']);
+  assert.deepEqual(texts(prims(strike, 5, ast)), []);         // sau nốt cuối
+  // nốt lệch quá 30 ms thuộc lần dập khác; một nốt đơn không thành lần dập
+  const idx = derivedOf(ast).index, hud = buildHud(ast, idx);
+  assert.notEqual(chordTimeline(hud, idx.tracks, 'strike'), chordTimeline(hud, idx.tracks, 'sustained')); // đệm theo chế độ
+  const late = synthAst({ tracks: [{ name: 'k', color: '#fff', notes: [[60, 0, 2, 80], [64, 0, 2, 80], [67, 0.1, 2, 80]] }] });
+  const li = derivedOf(late).index;
+  assert.deepEqual(chordTimeline(buildHud(late, li), li.tracks, 'strike').map((s) => s.pitches), [[60, 64]]);
+  // mode lạ → cảnh báo, về sustained
+  const r = sanitizeScene({ schemaVersion: '0.4.0', canvas: {}, widgets: [{ type: 'CHORD_DETECTION', id: 'c', properties: { mode: 'arp' } }] });
+  assert.equal((r.scene.widgets[0].properties as any).mode, 'sustained');
+  assert.ok(r.warnings.some((w) => w.details.path === '$.widgets[0].properties.mode'));
+});
+
+test('buildSceneHud dựng hợp âm theo chế độ của từng widget', () => {
+  const ast = synthAst();
+  const { scene } = sanitizeScene({ schemaVersion: '0.4.0', canvas: {}, widgets: [{ id: 'a', type: 'CHORD_DETECTION', properties: { mode: 'strike' } }, { id: 'b', type: 'CHORD_DETECTION', properties: {} }] });
+  const hud = buildSceneHud(scene, ast, derivedOf(ast).index);
+  assert.deepEqual([...hud.chords.keys()].map((k) => k.split(':')[0]).sort(), ['strike', 'sustained']);
+});

@@ -57,7 +57,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [REQ-WIDGET-03: Event Counter](SRS/req-widget-03-event-counter.md) · 1126 ký tự
 - [REQ-WIDGET-04: Live Note Trigger](SRS/req-widget-04-live-note-trigger.md) · 935 ký tự
 - [REQ-WIDGET-05: Time & Bar Counter](SRS/req-widget-05-time-bar-counter.md) · 1520 ký tự
-- [REQ-WIDGET-06: Chord Detection (D-09)](SRS/req-widget-06-chord-detection-d-09.md) · 1767 ký tự
+- [REQ-WIDGET-06: Chord Detection (D-09)](SRS/req-widget-06-chord-detection-d-09.md) · 2250 ký tự
 - [REQ-WIDGET-07: Audio Spectrum & Meter (D-10, ARC-03, ARC-06)](SRS/req-widget-07-audio-spectrum-meter-d-10-arc-03-a.md) · 2473 ký tự
 - [REQ-AUDIO-01: Âm thanh theo track (stem), bản 1.2](SRS/req-audio-01-am-thanh-theo-track-stem-ban-1-2.md) · 3254 ký tự
 - [REQ-WIDGET-08: Progress Bar (D-27)](SRS/req-widget-08-progress-bar-d-27.md) · 822 ký tự
@@ -114,7 +114,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [1. Bức tranh tổng thể](TECHNICAL-DESIGN/1-buc-tranh-tong-the.md) · 2420 ký tự
 - [2. Mô hình dữ liệu và thời gian 🟢](TECHNICAL-DESIGN/2-mo-hinh-du-lieu-va-thoi-gian.md) · 2921 ký tự
 - [3. Đường ống phân tích (parser) 🟢](TECHNICAL-DESIGN/3-duong-ong-phan-tich-parser.md) · 1875 ký tự
-- [4. Dữ liệu dẫn xuất (derived) 🟢/⚪](TECHNICAL-DESIGN/4-du-lieu-dan-xuat-derived.md) · 1266 ký tự
+- [4. Dữ liệu dẫn xuất (derived) 🟢/⚪](TECHNICAL-DESIGN/4-du-lieu-dan-xuat-derived.md) · 1495 ký tự
 - [5.0 Kiểu dáng nốt và bàn phím 🟢 (REQ-GRAPHICS-07)](TECHNICAL-DESIGN/5-0-kieu-dang-not-va-ban-phim-req-graphics-07.md) · 624 ký tự
 - [5.1 Giao diện chính 🟢](TECHNICAL-DESIGN/5-1-giao-dien-chinh.md) · 5301 ký tự
 - [5.2 Hợp đồng widget 🟢](TECHNICAL-DESIGN/5-2-hop-dong-widget.md) · 459 ký tự

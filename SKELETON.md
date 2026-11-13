@@ -599,6 +599,7 @@ interface EventCounterProps
 interface LiveTriggerProps
 interface ClockCfg
 interface TimeBarProps
+type ChordMode
 interface ChordProps
 interface ProgressBarProps
 const DEFAULT_TRACK_INFO
@@ -614,10 +615,12 @@ interface ChordSeg
 interface BarPos
 function buildBarGrid(tempoMap: TempoPoint[], ppq = 960): BarGrid
 function barPosAt(g: BarGrid, t: number): BarPos   // Vị trí nhạc tại t (giây). Bar, Beat đếm từ 1; Sub là tick lẻ trong beat. Một beat dài ppq×4/den tick.
-function buildHud(ast: UnifiedProjectAST, index: TimelineIndex, chordGroups: TrackIndex[][] = []): HudData   // `chordGroups`: các nhóm track mà widget Chord Detection sẽ đọc; dò hợp âm (
+interface ChordGroup   // Nhóm track + chế độ của một widget Chord Detection.
+function buildHud(ast: UnifiedProjectAST, index: TimelineIndex, chordGroups: ChordGroup[] = []): HudData   // `chordGroups`: các nhóm track mà widget Chord Detection sẽ đọc; dò hợp âm (
 function hudOf(derived: Derived, ast: UnifiedProjectAST): HudData   // HudData của derived. `layoutFrame` bảo đảm `derived.hud` có sẵn (dựng ở bước derived); thiếu thì chỉ còn số đ…
 const isDrumTrack = (name: string) =>
-function chordTimeline(hud: HudData, tracks: TrackIndex[]): ChordSeg[]   // Danh sách đoạn hợp âm (Sustained, SRS REQ-WIDGET-06) của một nhóm track; đệm theo (derived, nhóm track).
+const STRIKE_WINDOW_SEC   // Khung gom nốt của chế độ Strike: các nốt bắt đầu cách nốt đầu nhóm ≤ 30 ms là một lần dập (SRS REQ-WIDGET-06).
+function chordTimeline(hud: HudData, tracks: TrackIndex[], mode: ChordMode = 'sustained'): ChordSeg[]   // Danh sách đoạn hợp âm (SRS REQ-WIDGET-06) của một nhóm track theo chế độ; đệm theo (derived, chế độ, nhóm tra…
 const trackInfoRenderer   // ───────────────────────────── widget ─────────────────────────────
 const eventCounterRenderer
 const liveTriggerRenderer
@@ -1592,4 +1595,4 @@ type ParseResponse
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 547 ký hiệu công khai -->
+<!-- 10 thư mục src, 550 ký hiệu công khai -->

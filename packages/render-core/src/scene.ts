@@ -358,7 +358,7 @@ const HUD_SANITIZERS = {
   },
   CHORD_DETECTION(P: Obj, p: string, S: Sanitizer): ChordProps {
     const d = DEFAULT_CHORD;
-    return { align: S.oneOf(P.align, ALIGNS, d.align, `${p}.align`), nameStyle: textStyle(S, P.nameStyle, d.nameStyle, `${p}.nameStyle`), notesStyle: textStyle(S, P.notesStyle, d.notesStyle, `${p}.notesStyle`),
+    return { mode: S.oneOf(P.mode, ['sustained', 'strike'] as const, d.mode, `${p}.mode`), align: S.oneOf(P.align, ALIGNS, d.align, `${p}.align`), nameStyle: textStyle(S, P.nameStyle, d.nameStyle, `${p}.nameStyle`), notesStyle: textStyle(S, P.notesStyle, d.notesStyle, `${p}.notesStyle`),
       alwaysShowNotes: S.bool(P.alwaysShowNotes, d.alwaysShowNotes, `${p}.alwaysShowNotes`), notesTemplate: tpl(S, P.notesTemplate, d.notesTemplate, `${p}.notesTemplate`, TEMPLATE_KEYS.CHORD_DETECTION),
       unrecognized: S.oneOf(P.unrecognized, ['nc', 'notes'] as const, d.unrecognized, `${p}.unrecognized`), noChordText: S.str(P.noChordText, d.noChordText, `${p}.noChordText`, (s) => s.length <= 20) };
   },

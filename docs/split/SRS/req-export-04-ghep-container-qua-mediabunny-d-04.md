@@ -5,7 +5,7 @@ section: "REQ-EXPORT-04: Ghép container qua Mediabunny (D-04)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-EXPORT-04: Ghép container qua Mediabunny (D-04)"
 chunk: req-export-04-ghep-container-qua-mediabunny-d-04.md
 source_lines: 747-751
-source_sha1: f3c5cc8778
+source_sha1: 7ab053e2fc
 ids: [D-04, REQ-EXPORT-04, SOI-10]
 ---
 #### REQ-EXPORT-04: Ghép container qua Mediabunny (D-04)

@@ -24,7 +24,8 @@ export interface TimeBarProps {
   timeGroups: [number, number, number]; beatGroups: [number, number, number];
   showBars: boolean; barLength: number; barThickness: number; barColor: string; barTrackColor: string;
 }
-export interface ChordProps { align: Align; nameStyle: TextStyle; notesStyle: TextStyle; alwaysShowNotes: boolean; notesTemplate: string; unrecognized: 'nc' | 'notes'; noChordText: string }
+export type ChordMode = 'sustained' | 'strike';
+export interface ChordProps { mode: ChordMode; align: Align; nameStyle: TextStyle; notesStyle: TextStyle; alwaysShowNotes: boolean; notesTemplate: string; unrecognized: 'nc' | 'notes'; noChordText: string }
 export interface ProgressBarProps { orientation: 'HORIZONTAL' | 'VERTICAL'; thickness: number; progressColor: string; trackColor: string; radius: number; showTime: boolean; timeStyle: TextStyle; timeTemplate: string; timeAlign: Align }
 
 const ts = (size: number, weight: number, color: string, font = DEFAULT_FONT): TextStyle => ({ font, size, weight, color });
@@ -45,7 +46,7 @@ export const DEFAULT_TIME_BAR: Readonly<TimeBarProps> = Object.freeze<TimeBarPro
   showBars: true, barLength: 64, barThickness: 3, barColor: '#999999', barTrackColor: '#E4E4E4',
 });
 export const DEFAULT_CHORD: Readonly<ChordProps> = Object.freeze({
-  align: 'right', nameStyle: ts(34, 700, '#111111'), notesStyle: ts(17, 400, '#777777'),
+  mode: 'sustained', align: 'right', nameStyle: ts(34, 700, '#111111'), notesStyle: ts(17, 400, '#777777'),
   alwaysShowNotes: false, notesTemplate: 'Notes: {notes}', unrecognized: 'nc', noChordText: 'N.C.',
 });
 export const DEFAULT_PROGRESS_BAR: Readonly<ProgressBarProps> = Object.freeze({
@@ -94,12 +95,14 @@ export function barPosAt(g: BarGrid, t: number): BarPos {
   return { bar: sg.barStart + bar + 1, beat: beat + 1, sub: Math.floor(inBeat), beatPhase: inBeat / perBeat, barPhase: inBar / perBar, bpm: tp.bpm, num: sg.num, den: sg.den };
 }
 
+/** Nhóm track + chế độ của một widget Chord Detection. */
+export interface ChordGroup { tracks: TrackIndex[]; mode: ChordMode }
 /** `chordGroups`: các nhóm track mà widget Chord Detection sẽ đọc; dò hợp âm (@tonaljs/chord-detect) chạy ở ĐÂY, ở bước derived, không chạy khi vẽ khung. */
-export function buildHud(ast: UnifiedProjectAST, index: TimelineIndex, chordGroups: TrackIndex[][] = []): HudData {
+export function buildHud(ast: UnifiedProjectAST, index: TimelineIndex, chordGroups: ChordGroup[] = []): HudData {
   const starts = new Map<string, Float64Array>();
   for (const ti of index.tracks) starts.set(ti.track.id, Float64Array.from(ti.notes, (n) => n.startTimeSeconds)); // đã sắp theo bắt đầu
   const hud: HudData = { starts, bars: buildBarGrid(ast.tempoMap, ast.meta.internalPPQ || 960), chords: new Map() };
-  for (const g of chordGroups) chordTimeline(hud, shown(g));
+  for (const g of chordGroups) chordTimeline(hud, shown(g.tracks), g.mode);
   return hud;
 }
 /** HudData của derived. `layoutFrame` bảo đảm `derived.hud` có sẵn (dựng ở bước derived); thiếu thì chỉ còn số đếm/lưới ô nhịp, không có hợp âm. */
@@ -112,22 +115,16 @@ const shown = (tracks: TrackIndex[]) => tracks.filter((ti) => ti.track.isVisible
 /** Trống không có cao độ hoà âm: kênh MIDI 10 (chỉ số 9) và track tên Drums/Percussion bị loại khỏi nhận diện hợp âm (SRS REQ-WIDGET-06 nguồn nốt). */
 const DRUM_CHANNEL = 9;
 export const isDrumTrack = (name: string) => /\b(drums?|percussion|perc|kit)\b|\(drums\)|trống/i.test(name);
-const chordKey = (tracks: TrackIndex[]) => tracks.map((ti) => ti.track.id).join('|');
-/** Danh sách đoạn hợp âm (Sustained, SRS REQ-WIDGET-06) của một nhóm track; đệm theo (derived, nhóm track). */
-export function chordTimeline(hud: HudData, tracks: TrackIndex[]): ChordSeg[] {
-  const key = chordKey(tracks);
+const chordKey = (tracks: TrackIndex[], mode: ChordMode = 'sustained') => `${mode}:${tracks.map((ti) => ti.track.id).join('|')}`;
+/** Khung gom nốt của chế độ Strike: các nốt bắt đầu cách nốt đầu nhóm ≤ 30 ms là một lần dập (SRS REQ-WIDGET-06). */
+export const STRIKE_WINDOW_SEC = 0.03;
+/** Danh sách đoạn hợp âm (SRS REQ-WIDGET-06) của một nhóm track theo chế độ; đệm theo (derived, chế độ, nhóm track). */
+export function chordTimeline(hud: HudData, tracks: TrackIndex[], mode: ChordMode = 'sustained'): ChordSeg[] {
+  const key = chordKey(tracks, mode);
   const hit = hud.chords.get(key); if (hit) return hit;
-  const ev: { t: number; p: number; d: number }[] = [];
-  for (const ti of tracks) if (!isDrumTrack(ti.track.name)) for (const n of ti.notes) if (n.channel !== DRUM_CHANNEL) { ev.push({ t: n.startTimeSeconds, p: n.pitch, d: 1 }); ev.push({ t: n.endTimeSeconds, p: n.pitch, d: -1 }); }
-  ev.sort((a, b) => a.t - b.t || a.p - b.p || a.d - b.d);
-  const raw: ChordSeg[] = [], held = new Map<number, number>();
-  for (let i = 0; i < ev.length;) {
-    const t0 = ev[i].t;
-    for (; i < ev.length && ev[i].t === t0; i++) { const c = (held.get(ev[i].p) ?? 0) + ev[i].d; if (c > 0) held.set(ev[i].p, c); else held.delete(ev[i].p); }
-    const pitches = [...held.keys()].sort((a, b) => a - b);
-    const prev = raw[raw.length - 1]; if (prev) prev.end = t0;
-    raw.push({ start: t0, end: Infinity, pitches, name: chordName(pitches) });
-  }
+  const notes: ASTNote[] = [];
+  for (const ti of tracks) if (!isDrumTrack(ti.track.name)) for (const n of ti.notes) if (n.channel !== DRUM_CHANNEL) notes.push(n);
+  const raw = mode === 'strike' ? strikeSegments(notes) : sustainedSegments(notes);
   // Đoạn ngắn hơn 80 ms gộp vào đoạn trước (SOI-09 [PROVISIONAL]); đoạn liền kề cùng nốt thì hợp nhất.
   const out: ChordSeg[] = [];
   for (const s of raw) {
@@ -137,6 +134,44 @@ export function chordTimeline(hud: HudData, tracks: TrackIndex[]): ChordSeg[] {
   }
   hud.chords.set(key, out);
   return out;
+}
+/** Sustained: mọi nốt đang giữ tại t. */
+function sustainedSegments(notes: ASTNote[]): ChordSeg[] {
+  const ev: { t: number; p: number; d: number }[] = [];
+  for (const n of notes) { ev.push({ t: n.startTimeSeconds, p: n.pitch, d: 1 }); ev.push({ t: n.endTimeSeconds, p: n.pitch, d: -1 }); }
+  ev.sort((a, b) => a.t - b.t || a.p - b.p || a.d - b.d);
+  const raw: ChordSeg[] = [], held = new Map<number, number>();
+  for (let i = 0; i < ev.length;) {
+    const t0 = ev[i].t;
+    for (; i < ev.length && ev[i].t === t0; i++) { const c = (held.get(ev[i].p) ?? 0) + ev[i].d; if (c > 0) held.set(ev[i].p, c); else held.delete(ev[i].p); }
+    const pitches = [...held.keys()].sort((a, b) => a - b);
+    const prev = raw[raw.length - 1]; if (prev) prev.end = t0;
+    raw.push({ start: t0, end: Infinity, pitches, name: chordName(pitches) });
+  }
+  return raw;
+}
+/**
+ * Strike: nốt bắt đầu cách nốt đầu nhóm ≤ STRIKE_WINDOW_SEC gom thành một lần dập; tên giữ đến lần dập kế.
+ * Nhóm chỉ có một pitch class (nốt giai điệu đơn, quãng tám) không phải lần dập hợp âm: không cắt tên đang giữ.
+ * Tên giữ qua cả chỗ nhả nốt (staccato) đúng như SRS; lần dập cuối giữ đến khi nốt cuối cùng tắt.
+ */
+function strikeSegments(notes: ASTNote[]): ChordSeg[] {
+  const sorted = [...notes].sort((a, b) => a.startTimeSeconds - b.startTimeSeconds || a.pitch - b.pitch);
+  const raw: ChordSeg[] = [];
+  let soundEnd = -Infinity; // thời điểm nốt cuối cùng tắt
+  for (let i = 0; i < sorted.length;) {
+    const t0 = sorted[i].startTimeSeconds, group = new Set<number>();
+    let groupEnd = -Infinity;
+    for (; i < sorted.length && sorted[i].startTimeSeconds - t0 <= STRIKE_WINDOW_SEC; i++) { group.add(sorted[i].pitch); groupEnd = Math.max(groupEnd, sorted[i].endTimeSeconds); }
+    const prev = raw[raw.length - 1];
+    soundEnd = Math.max(soundEnd, groupEnd);
+    if (new Set([...group].map((p) => p % 12)).size < 2) continue;
+    const pitches = [...group].sort((a, b) => a - b);
+    if (prev) prev.end = t0;
+    raw.push({ start: t0, end: Infinity, pitches, name: chordName(pitches) });
+  }
+  const last = raw[raw.length - 1]; if (last) last.end = soundEnd;
+  return raw;
 }
 const PC = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 function chordName(pitches: number[]): string | null {
@@ -283,7 +318,7 @@ export const chordRenderer: WidgetRenderer<ChordProps> = {
   type: 'CHORD_DETECTION',
   layout({ ast, derived, tracks, measure }, spec, t) {
     const p = spec.properties, W = spec.layout.width, x = xFor(p.align, W), out: Primitive[] = [];
-    const seg = chordAt(hudOf(derived, ast).chords.get(chordKey(shown(tracks))) ?? [], t);
+    const seg = chordAt(hudOf(derived, ast).chords.get(chordKey(shown(tracks), p.mode)) ?? [], t);
     const notes = seg ? seg.pitches.map((n) => pitchName(n)).join(' ') : '';
     const name = seg?.name ?? null;
     const notesLine = notes ? formatTemplate(p.notesTemplate, { notes, chord: name ?? '' }) : '';

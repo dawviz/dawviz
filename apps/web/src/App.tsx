@@ -136,7 +136,7 @@ export function App() {
   const fonts = useFontsStatus(scene); // chưa nạp xong phông thì không vẽ khung có chữ (TECHNICAL-DESIGN 5.7)
   const index = useMemo(() => (renderAst ? buildIndex(renderAst.tracks, renderAst.meta.totalDurationSeconds) : null), [renderAst]);
   // Dò hợp âm là việc nặng của bước derived: dựng lại chỉ khi đổi dự án/track hiển thị/widget Chord (không phải mỗi lần kéo thanh trượt kiểu nốt).
-  const chordSig = JSON.stringify(scene.widgets.filter((w) => w.type === 'CHORD_DETECTION').map((w) => [w.trackMappingMode, w.assignedTrackIndices]));
+  const chordSig = JSON.stringify(scene.widgets.filter((w) => w.type === 'CHORD_DETECTION').map((w) => [w.trackMappingMode, w.assignedTrackIndices, (w.properties as { mode?: string }).mode]));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const hud = useMemo(() => (renderAst && index ? buildSceneHud(scene, renderAst, index) : undefined), [renderAst, index, chordSig]);
   const derived: Derived | null = useMemo(() => (index ? { index, brightness, hud, fontsReady: fonts === 'ready' } : null), [index, brightness, hud, fonts]);

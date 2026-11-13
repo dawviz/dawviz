@@ -5,7 +5,7 @@ section: "REQ-GRAPHICS-16: Thanh phát (playhead) tuỳ chỉnh"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-16: Thanh phát (playhead) tuỳ chỉnh"
 chunk: req-graphics-16-thanh-phat-playhead-tuy-chinh.md
 source_lines: 424-433
-source_sha1: f3c5cc8778
+source_sha1: 7ab053e2fc
 ids: [REQ-GRAPHICS-09, REQ-GRAPHICS-11, REQ-GRAPHICS-16, REQ-STORAGE-05, REQ-UI-11, REQ-WIDGET-01]
 ---
 #### REQ-GRAPHICS-16: Thanh phát (playhead) tuỳ chỉnh
