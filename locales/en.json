@@ -109,6 +109,7 @@
   "web.technical": "Technical detail",
   "web.drop.title": "Drop a project file here, or click to choose",
   "web.drop.busy": "Reading project…",
+  "web.drop.replace": "Open another file",
   "web.drop.hint": "Supported: .als .alp .rpp .dawproject .mid. If a Reaper project references external .mid files, select them together with the project.",
   "web.loaded": "{name} · {format} · {tracks, plural, one {# track} other {# tracks}} · read in {ms} ms",
   "web.play": "Play",

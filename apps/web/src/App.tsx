@@ -119,9 +119,9 @@ export function App() {
   // Lane automation có trong dự án (nguồn phát sáng "automation", REQ-GRAPHICS-17).
   const lanes = useMemo(() => [...new Set((loaded?.ast.tracks ?? []).flatMap((tr) => Object.entries(tr.automation ?? {}).filter(([, l]) => l?.points.length).map(([k]) => k)))], [loaded]);
   const tracksSection = loaded && (
-    <section aria-labelledby="tracks-h" className="space-y-2">
+    <section aria-labelledby="tracks-h" className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 id="tracks-h" className="text-sm font-medium text-ink-300">{i18n.t('web.tracks')} <span className="tabular-nums">({loaded.ast.tracks.length})</span></h2>
+        <h2 id="tracks-h" className="panel-title flex items-center gap-2">{i18n.t('web.tracks')} <span className="rounded-full bg-ink-800 px-1.5 py-px text-[10px] tabular-nums text-ink-100">{loaded.ast.tracks.length}</span></h2>
         <TrackLayoutBar value={trackLayout} onChange={setTrackLayout} count={loaded.ast.tracks.length} />
       </div>
       <TrackPanel tracks={loaded.ast.tracks} config={brightness} overrides={style.tracks} onChange={patchBrightness} onStyle={patchTrackStyle} t={clock.t} tempoMap={loaded.ast.tempoMap} layout={trackLayout} />
@@ -130,38 +130,67 @@ export function App() {
 
   return (
     <MotionConfig reducedMotion="user"><LayoutGroup>
-    <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-4 p-4 sm:p-6">
-      <header className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold tracking-tight">{i18n.t('web.title')}</h1>
-        <LanguageSelect />
+    <div className="flex min-h-screen flex-col">
+      <header className="sticky top-0 z-20 border-b border-ink-700/60 bg-ink-950/75 backdrop-blur-md">
+        <div className="mx-auto flex h-14 max-w-7xl items-center gap-4 px-4 sm:px-6">
+          <h1 className="flex items-center gap-2.5 text-[15px] font-semibold tracking-tight text-ink-50">
+            <Logo />{i18n.t('web.title')}
+          </h1>
+          {loaded && <span className="hidden min-w-0 truncate text-xs text-ink-300 md:block" title={loaded.name}>
+            <span className="text-ink-500">/</span> <span className="text-ink-100">{loaded.name}</span>
+          </span>}
+          <div className="ml-auto flex items-center gap-3">
+            {loaded && <FileDrop onPick={onPick} busy={busy} compact />}
+            <LanguageSelect />
+          </div>
+        </div>
       </header>
 
-      <FileDrop onPick={onPick} busy={busy} />
+    <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 p-4 sm:p-6">
+      {!loaded && <FileDrop onPick={onPick} busy={busy} />}
       {midi && midiLevel && <MissingMidiPanel info={midi} level={midiLevel} busy={busy} onAdd={addMidi} />}
       <Notices problems={problems} />
 
       <AnimatePresence>
         {loaded && (
           <motion.main key={loaded.name} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+            className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
             {/* Khung xem trước chỉ "dính" khi danh sách track nằm ở cột phải; ở chế độ lưới, thẻ track nằm bên dưới nên không được che. */}
-            <section className={`min-w-0 space-y-3 ${trackLayout.mode === 'list' ? 'lg:sticky lg:top-4' : ''}`}>
-              <p className="text-sm text-ink-300">
-                {i18n.t('web.loaded', { name: loaded.name, format: loaded.format, ms: Math.round(loaded.ms), tracks: loaded.ast.tracks.length })}
-              </p>
-              {derived && <SceneCanvas scene={scene} derived={derived} ast={loaded.ast} t={clock.t} />}
-              <Transport t={clock.t} duration={duration} playing={clock.playing}
-                onToggle={() => setClock((s) => togglePlay(s, duration))} onSeek={(t) => setClock((s) => seek(s, t, duration))} />
+            <section className={`min-w-0 ${trackLayout.mode === 'list' ? 'lg:sticky lg:top-[4.5rem]' : ''}`}>
+              {/* "Sân khấu": khung hình + thanh phát là một khối, để khung xem trước tách khỏi nền trang. */}
+              <div className="overflow-hidden rounded-2xl bg-ink-900 shadow-stage">
+                <div className="flex items-center justify-between gap-3 border-b border-ink-700/70 px-3 py-2 text-xs text-ink-300">
+                  <span className="truncate">{i18n.t('web.loaded', { name: loaded.name, format: loaded.format, ms: Math.round(loaded.ms), tracks: loaded.ast.tracks.length })}</span>
+                  <span className="shrink-0 rounded border border-ink-700 px-1.5 py-px font-mono text-[10px] text-ink-300">{scene.canvas.designWidth}×{scene.canvas.designHeight}</span>
+                </div>
+                <div className="bg-black">
+                  {derived && <SceneCanvas scene={scene} derived={derived} ast={loaded.ast} t={clock.t} />}
+                </div>
+                <div className="border-t border-ink-700/70">
+                  <Transport t={clock.t} duration={duration} playing={clock.playing}
+                    onToggle={() => setClock((s) => togglePlay(s, duration))} onSeek={(t) => setClock((s) => seek(s, t, duration))} />
+                </div>
+              </div>
             </section>
-            <aside className={`min-w-0 space-y-4 ${trackLayout.mode === 'list' ? 'lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto lg:pr-1 lg:sticky lg:top-4' : ''}`}>
+            <aside className={`min-w-0 space-y-4 ${trackLayout.mode === 'list' ? 'lg:max-h-[calc(100vh-5.5rem)] lg:overflow-y-auto lg:pr-1 lg:sticky lg:top-[4.5rem]' : ''}`}>
               <StylePanel style={style} keyboard={keyboard} onStyle={setStyle} onKeyboard={setKeyboard} lanes={lanes} />
               {trackLayout.mode === 'list' && tracksSection}
             </aside>
-            {trackLayout.mode === 'grid' && <div className="min-w-0 lg:col-span-2">{tracksSection}</div>}
+            {trackLayout.mode === 'grid' && <div className="min-w-0 pt-2 lg:col-span-2">{tracksSection}</div>}
           </motion.main>
         )}
       </AnimatePresence>
     </div>
+    </div>
     </LayoutGroup></MotionConfig>
+  );
+}
+
+/** Biểu tượng ứng dụng: vài thanh nốt lệch nhau, gợi piano roll. */
+function Logo() {
+  return (
+    <span aria-hidden className="grid h-7 w-7 place-items-center rounded-lg bg-gradient-to-br from-accent-400 to-accent-600 shadow-[0_4px_14px_-4px_rgb(var(--accent-500)/0.7)]">
+      <svg viewBox="0 0 16 16" className="h-4 w-4 text-ink-950"><g fill="currentColor"><rect x="2" y="3" width="6" height="2" rx="1" /><rect x="6" y="7" width="8" height="2" rx="1" /><rect x="3" y="11" width="5" height="2" rx="1" /></g></svg>
+    </span>
   );
 }

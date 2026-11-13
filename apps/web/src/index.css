@@ -2,10 +2,98 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: dark; }
-body { @apply font-sans antialiased; }
+/* Token màu giao diện (REQ-UI-10). Chỉ đổi giao diện ứng dụng, không đổi khung hình video.
+   Theme sáng sau này chỉ cần thêm một khối [data-theme='light'] khai báo lại các biến này. */
+:root {
+  color-scheme: dark;
+  --ink-50: 244 245 248;
+  --ink-100: 230 232 239;
+  --ink-300: 163 169 189;
+  --ink-500: 91 98 122;
+  --ink-700: 42 47 66;
+  --ink-800: 27 31 46;
+  --ink-900: 19 22 34;
+  --ink-950: 12 14 22;
+  --accent-300: 168 214 255;
+  --accent-400: 124 196 255;
+  --accent-500: 74 168 245;
+  --accent-600: 43 139 224;
+}
+
+@layer base {
+  body {
+    @apply bg-ink-950 font-sans text-ink-100 antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+    /* Ánh sáng nền rất nhẹ phía trên để trang có chiều sâu thay vì một mảng đen phẳng. */
+    background-image: radial-gradient(1200px 500px at 50% -200px, rgb(var(--accent-500) / 0.08), transparent 70%);
+    background-attachment: fixed;
+  }
+  :focus-visible { outline: 2px solid rgb(var(--accent-400)); outline-offset: 2px; }
+  ::selection { background: rgb(var(--accent-500) / 0.35); }
+
+  /* Điều khiển gốc của trình duyệt được vẽ lại cho đồng bộ với theme (thanh trượt, ô chọn, ô đánh dấu). */
+  input[type='checkbox'], input[type='radio'] { accent-color: rgb(var(--accent-500)); }
+
+  select {
+    appearance: none;
+    padding-right: 1.5rem !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23a3a9bd' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 6.5 8 10l3.5-3.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.35rem center;
+    background-size: 0.9rem;
+    cursor: pointer;
+  }
+  select:hover { border-color: rgb(var(--ink-500)); }
+
+  input[type='range'] {
+    appearance: none; background: transparent; height: 1rem; cursor: pointer;
+    --fill: rgb(var(--accent-500));
+  }
+  /* --p (0%–100%) do component đặt để tô phần đã chọn; Firefox dùng ::-moz-range-progress. */
+  input[type='range']::-webkit-slider-runnable-track {
+    height: 4px; border-radius: 9999px;
+    background: linear-gradient(to right, var(--fill) var(--p, 0%), rgb(var(--ink-700)) var(--p, 0%));
+  }
+  input[type='range']::-moz-range-track { height: 4px; border-radius: 9999px; background: rgb(var(--ink-700)); }
+  input[type='range']::-moz-range-progress { height: 4px; border-radius: 9999px; background: var(--fill); }
+  input[type='range']::-webkit-slider-thumb {
+    appearance: none; width: 12px; height: 12px; margin-top: -4px; border-radius: 9999px;
+    background: rgb(var(--ink-50)); box-shadow: 0 0 0 3px rgb(var(--accent-500) / 0.35), 0 1px 3px rgb(0 0 0 / 0.5);
+    transition: box-shadow 120ms;
+  }
+  input[type='range']::-moz-range-thumb {
+    width: 12px; height: 12px; border: 0; border-radius: 9999px;
+    background: rgb(var(--ink-50)); box-shadow: 0 0 0 3px rgb(var(--accent-500) / 0.35), 0 1px 3px rgb(0 0 0 / 0.5);
+  }
+  input[type='range']:hover::-webkit-slider-thumb, input[type='range']:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 5px rgb(var(--accent-500) / 0.35), 0 1px 3px rgb(0 0 0 / 0.5); }
+  input[type='range']:focus-visible { outline: none; }
+
+  details > summary { list-style: none; }
+  details > summary::-webkit-details-marker { display: none; }
+}
+
+@layer components {
+  /* Bề mặt bảng: một cấp nổi duy nhất, viền mảnh + vệt sáng mép trên. Dùng chung cho mọi bảng để nhịp điệu đồng nhất. */
+  .panel { @apply rounded-xl border border-ink-700/80 bg-ink-900/80 shadow-panel; }
+  .panel-title { @apply text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-300; }
+  .btn-ghost { @apply rounded-md px-1.5 py-0.5 text-xs text-ink-300 transition hover:bg-ink-800 hover:text-ink-100; }
+  .chip { @apply rounded-full border border-ink-700 bg-ink-950/40 px-2.5 py-0.5 text-xs text-ink-100 transition hover:border-ink-500 hover:bg-ink-800; }
+  .chip-on { @apply border-accent-500 bg-accent-600/20 text-ink-50; }
+  .disclosure { @apply flex cursor-pointer select-none items-center gap-1 text-ink-300 transition hover:text-ink-100; }
+  .disclosure::before {
+    content: ''; width: 0.75rem; height: 0.75rem; flex-shrink: 0; transition: transform 150ms;
+    background: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 4l4 4-4 4'/%3E%3C/svg%3E") center / contain no-repeat;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 4l4 4-4 4'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+  details[open] > .disclosure::before { transform: rotate(90deg); }
+}
 
 /* Ô màu track tròn (Chrome/Safari bọc ô màu trong wrapper có padding và viền vuông). */
 input[type='color'].swatch::-webkit-color-swatch-wrapper { padding: 0; }
 input[type='color'].swatch::-webkit-color-swatch { border: none; border-radius: 9999px; }
 input[type='color'].swatch::-moz-color-swatch { border: none; border-radius: 9999px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0ms !important; }
+}

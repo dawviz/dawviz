@@ -109,6 +109,7 @@
   "web.technical": "Chi tiết kỹ thuật",
   "web.drop.title": "Thả file dự án vào đây, hoặc bấm để chọn",
   "web.drop.busy": "Đang đọc dự án…",
+  "web.drop.replace": "Mở file khác",
   "web.drop.hint": "Hỗ trợ: .als .alp .rpp .dawproject .mid. Nếu dự án Reaper tham chiếu file .mid ngoài, hãy chọn kèm các file đó cùng dự án.",
   "web.loaded": "{name} · {format} · {tracks, plural, other {# track}} · đọc trong {ms} ms",
   "web.play": "Phát",

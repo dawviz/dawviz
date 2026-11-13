@@ -12,21 +12,21 @@ export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [] }:
   const b = style.base;
   const set = (patch: Partial<NoteStyle>) => onStyle({ ...style, base: { ...b, ...patch } });
   return (
-    <section aria-label={i18n.t('web.style.title')} className="space-y-2 rounded-xl border border-ink-700 bg-ink-900 p-3" data-testid="style-panel">
+    <section aria-label={i18n.t('web.style.title')} className="panel space-y-2.5 p-3.5" data-testid="style-panel">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-medium text-ink-300">{i18n.t('web.style.title')}</h2>
-        <button type="button" className="text-xs text-ink-300 underline" onClick={() => onStyle({ base: { ...DEFAULT_NOTE_STYLE }, tracks: {} })}>{i18n.t('web.style.reset')}</button>
+        <h2 className="panel-title">{i18n.t('web.style.title')}</h2>
+        <button type="button" className="btn-ghost" onClick={() => onStyle({ base: { ...DEFAULT_NOTE_STYLE }, tracks: {} })}>{i18n.t('web.style.reset')}</button>
       </div>
-      <div className="flex flex-wrap gap-1.5" role="group" aria-label={i18n.t('web.style.presets')}>
+      <div className="flex flex-wrap gap-1.5 pb-1" role="group" aria-label={i18n.t('web.style.presets')}>
         {PRESETS.map((p) => (
           <button key={p} type="button" onClick={() => onStyle({ ...style, base: { ...DEFAULT_NOTE_STYLE, ...STYLE_PRESETS[p] } })}
-            className="rounded-full border border-ink-700 px-2.5 py-0.5 text-xs text-ink-100 hover:border-ink-300">{i18n.t(`web.style.preset.${p}`)}</button>
+            className="chip">{i18n.t(`web.style.preset.${p}`)}</button>
         ))}
       </div>
       <label className="grid grid-cols-[7rem_minmax(0,1fr)] items-center gap-2 text-xs text-ink-300">
         <span>{i18n.t('web.style.colorMode')}</span>
         <span className="flex min-w-0 items-center gap-2">
-          <select value={b.colorMode} onChange={(e) => set({ colorMode: e.target.value as ColorMode })} className="min-w-0 max-w-full rounded border border-ink-700 bg-ink-950 px-1.5 py-0.5 text-ink-100">
+          <select value={b.colorMode} onChange={(e) => set({ colorMode: e.target.value as ColorMode })} className={sel}>
             {MODES.map((m) => <option key={m} value={m}>{i18n.t(`web.style.mode.${m}`)}</option>)}
           </select>
           {b.colorMode === 'custom' && <input type="color" aria-label={i18n.t('web.style.customColor')} value={b.customColor} onChange={(e) => set({ customColor: e.target.value })} />}
@@ -43,7 +43,7 @@ export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [] }:
       <label className="flex items-center gap-2 text-xs text-ink-300">
         <input type="checkbox" checked={b.glowActiveOnly} onChange={(e) => set({ glowActiveOnly: e.target.checked })} />{i18n.t('web.style.glowActiveOnly')}
       </label>
-      <div className="border-t border-ink-700 pt-2">
+      <div className="border-t border-ink-700/70 pt-2.5">
         <label className="flex items-center gap-2 text-xs text-ink-300">
           <input type="checkbox" checked={keyboard.enabled} onChange={(e) => onKeyboard({ ...keyboard, enabled: e.target.checked })} />{i18n.t('web.keyboard.show')}
         </label>
@@ -52,7 +52,7 @@ export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [] }:
   );
 }
 
-const sel = 'min-w-0 max-w-full rounded border border-ink-700 bg-ink-950 px-1.5 py-0.5 text-ink-100';
+const sel = 'min-w-0 max-w-full rounded-md border border-ink-700 bg-ink-950 py-1 pl-2 text-ink-100';
 
 /** REQ-GRAPHICS-17: đều nhau (mặc định) hoặc phát sáng động khi thanh phát chạm nốt, theo một tiêu chí. */
 function GlowSection({ b, set, lanes }: { b: NoteStyle; set(p: Partial<NoteStyle>): void; lanes: string[] }) {
@@ -60,13 +60,13 @@ function GlowSection({ b, set, lanes }: { b: NoteStyle; set(p: Partial<NoteStyle
   const dyn = b.glowMode === 'dynamic';
   const laneList = lanes.includes(b.glowLane) ? lanes : [b.glowLane, ...lanes];
   return (
-    <div className="space-y-2 rounded-lg border border-ink-700/70 p-2" data-testid="glow-section">
+    <div className="space-y-2 rounded-lg border border-ink-700/60 bg-ink-950/40 p-2.5" data-testid="glow-section">
       <div className="space-y-1 text-xs text-ink-300">
         <span className="block">{i18n.t('web.glow.mode')}</span>
-        <div className="flex min-w-0 gap-1" role="radiogroup" aria-label={i18n.t('web.glow.mode')}>
+        <div className="flex min-w-0 gap-0.5 rounded-lg bg-ink-950/70 p-0.5" role="radiogroup" aria-label={i18n.t('web.glow.mode')}>
           {(['uniform', 'dynamic'] as const).map((m) => (
             <button key={m} type="button" role="radio" aria-checked={b.glowMode === m} onClick={() => set({ glowMode: m })}
-              className={`min-w-0 flex-1 truncate rounded-full border px-2 py-0.5 ${b.glowMode === m ? 'border-accent-500 bg-accent-600/20 text-ink-50' : 'border-ink-700 text-ink-300 hover:border-ink-500'}`}>
+              className={`min-w-0 flex-1 truncate rounded-md px-2 py-1 transition ${b.glowMode === m ? 'bg-ink-700 text-ink-50 shadow-sm' : 'text-ink-300 hover:text-ink-100'}`}>
               {i18n.t(`web.glow.mode.${m}`)}
             </button>
           ))}

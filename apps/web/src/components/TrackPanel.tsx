@@ -41,10 +41,10 @@ export function TrackPanel(props: Props) {
 /** Thanh chọn kiểu trình bày: Lưới/Danh sách + số cột (ô nhập số, không giới hạn cứng ngoài số track). */
 export function TrackLayoutBar({ value, onChange, count }: { value: TrackLayout; onChange(v: TrackLayout): void; count: number }) {
   const { i18n } = useI18n();
-  const btn = (on: boolean) => `rounded-full border px-2.5 py-0.5 text-xs ${on ? 'border-accent-500 bg-accent-600/20 text-ink-50' : 'border-ink-700 text-ink-300 hover:border-ink-500'}`;
+  const btn = (on: boolean) => `rounded-md px-2.5 py-1 text-xs transition ${on ? 'bg-ink-700 text-ink-50 shadow-sm' : 'text-ink-300 hover:text-ink-100'}`;
   return (
     <div className="flex flex-wrap items-center gap-2" data-testid="track-layout-bar">
-      <div className="flex gap-1" role="radiogroup" aria-label={i18n.t('web.tracks.layout')}>
+      <div className="flex gap-0.5 rounded-lg border border-ink-700/70 bg-ink-900 p-0.5" role="radiogroup" aria-label={i18n.t('web.tracks.layout')}>
         {(['grid', 'list'] as const).map((m) => (
           <button key={m} type="button" role="radio" aria-checked={value.mode === m} className={btn(value.mode === m)} onClick={() => onChange({ ...value, mode: m })}>
             {i18n.t(`web.tracks.layout.${m}`)}
@@ -100,16 +100,18 @@ function TrackGrid({ tracks, config, overrides, onChange, onStyle, t = 0, tempoM
   return (
     <div>
       {limited && <p className="mb-2 text-xs text-amber-200" data-testid="track-columns-limited">{i18n.t('web.tracks.columns.limited', { n: cols })}</p>}
-      <ul ref={ref} role="list" className="grid gap-2" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }} data-testid="track-grid" data-cols={cols}>
+      <ul ref={ref} role="list" className="grid gap-3" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }} data-testid="track-grid" data-cols={cols}>
         <AnimatePresence initial={false}>
           {tracks.map((tr) => (
             <motion.li key={tr.id} layout layoutId={`track-${tr.id}`} transition={SPRING} initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }}
-              className="min-w-0 rounded-xl border border-ink-700 bg-ink-900 p-3">
+              className="panel relative min-w-0 overflow-hidden p-3 pt-3.5 transition-colors hover:border-ink-500/80">
+              {/* Dải màu track ở mép trên: nhận ra track bằng màu như trong DAW, không chỉ bằng chấm nhỏ. */}
+              <span aria-hidden className="absolute inset-x-0 top-0 h-[3px]" style={{ background: overrides[tr.id]?.customColor ?? tr.color }} />
               <TrackHeader tr={tr} c={config[tr.id]} overrides={overrides} onStyle={onStyle} t={t} tempoMap={tempoMap}
                 focusProps={{ tabIndex: 0, 'data-track-focus': '', onKeyDown: (e: KeyboardEvent<HTMLElement>) => arrowNav(e, ref.current) }} />
               <TrackControls tr={tr} c={config[tr.id]} overrides={overrides} onChange={onChange} onStyle={onStyle} />
-              <details className="mt-2 text-xs text-ink-300" data-testid={`track-details-${tr.id}`}>
-                <summary className="cursor-pointer">{i18n.t('web.track.details')}</summary>
+              <details className="mt-2.5 border-t border-ink-700/60 pt-2 text-xs text-ink-300" data-testid={`track-details-${tr.id}`}>
+                <summary className="disclosure">{i18n.t('web.track.details')}</summary>
                 <TrackInfo tr={tr} c={config[tr.id]} onChange={(p) => onChange(tr.id, p)} />
               </details>
             </motion.li>
@@ -126,7 +128,7 @@ function TrackList({ tracks, config, overrides, onChange, onStyle, t = 0, tempoM
   const [open, setOpen] = useState<Set<string>>(new Set());
   const toggle = (id: string) => setOpen((s) => { const n = new Set(s); if (n.has(id)) n.delete(id); else n.add(id); return n; });
   return (
-    <ul ref={ref} role="list" className="divide-y divide-ink-700 overflow-hidden rounded-xl border border-ink-700 bg-ink-900" data-testid="track-list">
+    <ul ref={ref} role="list" className="panel divide-y divide-ink-700/70 overflow-hidden" data-testid="track-list">
       <AnimatePresence initial={false}>
         {tracks.map((tr) => {
           const isOpen = open.has(tr.id);
@@ -164,11 +166,11 @@ function TrackHeader({ tr, c, overrides, onStyle, t, tempoMap, compact, focusPro
   const pct = i18n.number(b, { style: 'percent', maximumFractionDigits: 0 });
   return (
     <div className="flex min-w-0 flex-1 items-center gap-2">
-      <input type="color" aria-label={`${i18n.t('web.track.color')}: ${tr.name}`} className="swatch h-4 w-4 shrink-0 cursor-pointer rounded-full border-0 bg-transparent p-0"
+      <input type="color" aria-label={`${i18n.t('web.track.color')}: ${tr.name}`} className="swatch h-4 w-4 shrink-0 cursor-pointer rounded-full border-0 bg-transparent p-0 ring-2 ring-ink-950 ring-offset-1 ring-offset-ink-700"
         value={overrides[tr.id]?.customColor ?? tr.color} onChange={(e) => onStyle(tr.id, { colorMode: 'custom', customColor: e.target.value })} />
       <div {...focusProps} className={`flex min-w-0 flex-1 items-center gap-2 rounded focus:outline-none focus:ring-1 focus:ring-accent-400 ${compact ? 'cursor-pointer' : ''}`}>
-        <span className={`min-w-0 flex-1 truncate ${compact ? 'text-sm' : 'font-medium'}`} title={tr.name}>{tr.name}</span>
-        <span className="shrink-0 text-xs tabular-nums text-ink-300">{i18n.t('web.track.notes', { n: tr.notes.length })}</span>
+        <span className={`min-w-0 flex-1 truncate ${compact ? 'text-sm' : 'text-[15px] font-semibold tracking-tight text-ink-50'}`} title={tr.name}>{tr.name}</span>
+        <span className="shrink-0 rounded-full bg-ink-800 px-1.5 py-px text-[11px] tabular-nums text-ink-300">{i18n.t('web.track.notes', { n: tr.notes.length })}</span>
         {c.source !== 'off' && <span className="shrink-0 text-xs tabular-nums text-ink-100" title={i18n.t('web.brightness.now')} data-testid={`brightness-now-${tr.id}`}>{pct}</span>}
         {compact && <span aria-hidden className="shrink-0 text-ink-300">{(focusProps['aria-expanded'] as boolean) ? '▾' : '▸'}</span>}
       </div>
@@ -180,10 +182,10 @@ function TrackControls({ tr, c, overrides, onChange, onStyle }: { tr: ProjectTra
   const { i18n } = useI18n();
   return (
     <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-300">
-      <label className="flex min-w-0 max-w-full items-center gap-1">
+      <label className="flex min-w-0 max-w-full flex-1 items-center gap-2">
         <span className="shrink-0">{i18n.t('web.brightness.source')}</span>
         <select value={c.source} onChange={(e) => onChange(tr.id, { source: e.target.value as BrightnessSource })}
-          className="min-w-0 max-w-[10rem] rounded border border-ink-700 bg-ink-950 px-1.5 py-0.5 text-ink-100">
+          className="min-w-0 flex-1 truncate rounded-md border border-ink-700 bg-ink-950 py-1 pl-2 text-ink-100">
           {SOURCES.map((s) => <option key={s} value={s}>{i18n.t(`web.brightness.${s}`)}{EXPERIMENTAL.has(s) ? ` (${i18n.t('web.experimental')})` : ''}</option>)}
         </select>
       </label>
@@ -193,7 +195,7 @@ function TrackControls({ tr, c, overrides, onChange, onStyle }: { tr: ProjectTra
           <span>{i18n.t('web.brightness.invert')}</span>
         </label>
       )}
-      {overrides[tr.id] && <button type="button" className="underline" onClick={() => onStyle(tr.id, null)}>{i18n.t('web.track.colorReset')}</button>}
+      {overrides[tr.id] && <button type="button" className="btn-ghost" onClick={() => onStyle(tr.id, null)}>{i18n.t('web.track.colorReset')}</button>}
     </div>
   );
 }
@@ -223,7 +225,7 @@ function TrackInfo({ tr, c, onChange }: { tr: ProjectTrack; c: BrightnessConfig;
           </>}
           <SliderField id={id('min')} label={i18n.t('web.brightness.min')} value={c.minBrightness} min={0} max={1} step={0.05} onChange={(v) => onChange({ minBrightness: v })} />
           <SliderField id={id('max')} label={i18n.t('web.brightness.max')} value={c.maxBrightness} min={0} max={1} step={0.05} onChange={(v) => onChange({ maxBrightness: v })} />
-          <button type="button" className="underline" onClick={() => onChange({ floorDb: DEFAULT_BRIGHTNESS.floorDb, ceilDb: DEFAULT_BRIGHTNESS.ceilDb, minBrightness: DEFAULT_BRIGHTNESS.minBrightness, maxBrightness: DEFAULT_BRIGHTNESS.maxBrightness })}>{i18n.t('web.brightness.reset')}</button>
+          <button type="button" className="btn-ghost -ml-1.5" onClick={() => onChange({ floorDb: DEFAULT_BRIGHTNESS.floorDb, ceilDb: DEFAULT_BRIGHTNESS.ceilDb, minBrightness: DEFAULT_BRIGHTNESS.minBrightness, maxBrightness: DEFAULT_BRIGHTNESS.maxBrightness })}>{i18n.t('web.brightness.reset')}</button>
         </div>
       )}
     </>
