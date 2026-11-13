@@ -5,7 +5,7 @@ section: "6.2.5 Sóng âm cho thanh tua (việc để dành từ T-70)"
 path: "6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.5 Sóng âm cho thanh tua (việc để dành từ T-70)"
 chunk: 6-2-5-song-am-cho-thanh-tua-viec-de-danh-tu-t-70.md
 source_lines: 262-268
-source_sha1: 185dbf38d8
+source_sha1: af52e37072
 ids: [REQ-WIDGET-07]
 ---
 #### 6.2.5 Sóng âm cho thanh tua (việc để dành từ T-70)

@@ -5,7 +5,7 @@ section: "REQ-EXPORT-06: Chuỗi dự phòng codec (D-05, R-06)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-EXPORT-06: Chuỗi dự phòng codec (D-05, R-06)"
 chunk: req-export-06-chuoi-du-phong-codec-d-05-r-06.md
 source_lines: 755-791
-source_sha1: f91921e0ca
+source_sha1: f3c5cc8778
 ids: [D-05, D-17, ERR_NO_SUPPORTED_ENCODER, KPI-03, REQ-EXPORT-06]
 ---
 #### REQ-EXPORT-06: Chuỗi dự phòng codec (D-05, R-06)

@@ -22,7 +22,9 @@ export function layoutPianoRoll(index: TimelineIndex, tempoMap: TempoPoint[], t:
   const left = o.left ?? 0, pxPerSec = (o.width - left) / o.windowSeconds;
   const rows = o.pitchMax - o.pitchMin + 1, rowH = o.height / rows;
   const rects: NoteRect[] = [];
-  for (const ti of index.tracks) {
+  // D-56: thứ tự track = thứ tự ưu tiên hiển thị, tracks[0] (trên cùng danh sách) nằm trên cùng → vẽ từ track cuối lên track đầu.
+  for (let k = index.tracks.length - 1; k >= 0; k--) {
+    const ti = index.tracks[k];
     if (!ti.track.isVisible) continue;
     const cfg = o.brightness?.[ti.track.id] ?? DEFAULT_BRIGHTNESS;
     for (const n of notesInRange(ti, t0, t1)) {
@@ -51,11 +53,11 @@ export interface KeyRect { pitch: number; x: number; y: number; w: number; h: nu
 export function layoutKeyboard(index: TimelineIndex, t: number, o: { height: number; pitchMin: number; pitchMax: number; style?: Partial<KeyboardStyle>; noteStyle?: StyleConfig }): KeyRect[] {
   const ks = { ...DEFAULT_KEYBOARD_STYLE, ...(o.style ?? {}) };
   const rows = o.pitchMax - o.pitchMin + 1, rowH = o.height / rows, activeBy = new Map<number, string>();
-  for (const ti of index.tracks) {
+  for (const ti of index.tracks) { // D-56: hai track cùng phím → màu của track đứng trước (ưu tiên cao hơn)
     if (!ti.track.isVisible) continue;
     const st = resolveNoteStyle(o.noteStyle, ti.track.id);
     for (const n of notesInRange(ti, t, t)) if (n.startTimeSeconds <= t && t < n.endTimeSeconds && n.pitch >= o.pitchMin && n.pitch <= o.pitchMax)
-      activeBy.set(n.pitch, ks.useTrackColor ? noteColor(st, ti.track.color, n.pitch, n.velocity) : '#7cc4ff');
+      if (!activeBy.has(n.pitch)) activeBy.set(n.pitch, ks.useTrackColor ? noteColor(st, ti.track.color, n.pitch, n.velocity) : '#7cc4ff');
   }
   const keys: KeyRect[] = [];
   for (let p = o.pitchMin; p <= o.pitchMax; p++) {

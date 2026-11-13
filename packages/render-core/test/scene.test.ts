@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { parseProject } from '@dawviz/parser';
 import { DEFAULT_CHORD, buildIndex, defaultScene, sanitizeScene, renderFrame, layoutFrame, pianoRollWidget, tracksFor, pianoRollPitchRange,
-  DEFAULT_BRIGHTNESS, SCENE_SCHEMA_VERSION, pianoRollGeometry, layoutPianoRoll, type Derived, type Primitive, type RectPrim } from '../src/index.ts';
+  DEFAULT_BRIGHTNESS, SCENE_SCHEMA_VERSION, pianoRollGeometry, layoutPianoRoll, layoutKeyboard, type Derived, type Primitive, type RectPrim } from '../src/index.ts';
 
 const fixtures = new URL('../../../test/fixtures/', import.meta.url);
 const load = async () => {
@@ -102,7 +102,24 @@ test('layoutPianoRoll: nốt đang phát nằm sau cùng (vẽ đè lên nốt c
   const tracks = [track('t1', [mk('C', 0, 1), mk('A', 1, 9)]), track('t2', [mk('B', 6, 8)])];
   const index = buildIndex(tracks, 10);
   const rects = layoutPianoRoll(index, [{ tick: 0, bpm: 120 } as any], 5, { width: 1000, height: 100, windowSeconds: 10, playheadRatio: 0.5, pitchMin: 59, pitchMax: 61 });
-  assert.deepEqual(rects.map((r) => [r.id, r.active]), [['C', false], ['B', false], ['A', true]]);
+  // D-56: t2 vẽ trước (ưu tiên thấp hơn) rồi t1; nốt đang phát vẫn sau cùng
+  assert.deepEqual(rects.map((r) => [r.id, r.active]), [['B', false], ['C', false], ['A', true]]);
+});
+
+test('D-56: track đứng trước trong danh sách vẽ đè lên track sau; bàn phím lấy màu track đứng trước khi trùng phím', () => {
+  const mk = (id: string) => ({ id, pitch: 60, velocity: 100, startTick: 0, durationTick: 0, startTimeSeconds: 1, endTimeSeconds: 3 });
+  const track = (id: string, color: string) => ({ id, name: id, color, isVisible: true, isMuted: false, pitchRange: { min: 60, max: 60 }, notes: [mk(id + '-n')], automation: [] }) as any;
+  const opts = { width: 1000, height: 100, windowSeconds: 10, playheadRatio: 0.5, pitchMin: 59, pitchMax: 61 };
+  const tempo = [{ tick: 0, bpm: 120 } as any];
+  const piano = buildIndex([track('piano', '#ff0000'), track('violin', '#00ff00')], 10);
+  const violinFirst = buildIndex([track('violin', '#00ff00'), track('piano', '#ff0000')], 10);
+  for (const t of [0, 2]) { // chưa phát và đang phát: track đầu danh sách luôn ở cuối mảng (vẽ sau cùng)
+    assert.deepEqual(layoutPianoRoll(piano, tempo, t, opts).map((r) => r.trackId), ['violin', 'piano'], `t=${t}`);
+    assert.deepEqual(layoutPianoRoll(violinFirst, tempo, t, opts).map((r) => r.trackId), ['piano', 'violin'], `t=${t}`);
+  }
+  const key = (idx: typeof piano) => layoutKeyboard(idx, 2, { height: 100, pitchMin: 59, pitchMax: 61 }).find((k) => k.pitch === 60)!.color;
+  assert.equal(key(piano), '#ff0000');
+  assert.equal(key(violinFirst), '#00ff00');
 });
 
 test('tracksFor + tầm cao độ: MANUAL theo chỉ số track; FIT_CONTENT ±1; CUSTOM giữ nguyên; rỗng → C3–C6', async () => {

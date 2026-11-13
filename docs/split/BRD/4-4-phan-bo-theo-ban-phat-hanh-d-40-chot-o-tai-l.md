@@ -5,7 +5,7 @@ section: "4.4. Phân bổ theo bản phát hành (D-40, chốt ở tài liệu v
 path: "4. PHẠM VI DỰ ÁN (PROJECT SCOPE) > 4.4. Phân bổ theo bản phát hành (D-40, chốt ở tài liệu v1.1)"
 chunk: 4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md
 source_lines: 140-151
-source_sha1: 3e8360d118
+source_sha1: e0f99b8321
 ids: [D-14, D-40, D-43, D-44, D-45, D-47, D-48, D-49, D-50, P-01, P-13, REQ-AST-02, REQ-AUDIO-01, REQ-GRAPHICS-07, REQ-GRAPHICS-14, REQ-GRAPHICS-17, REQ-UI-10, REQ-UI-14, REQ-WIDGET-07, SOI-12]
 ---
 ### 4.4. Phân bổ theo bản phát hành (D-40, chốt ở tài liệu v1.1)

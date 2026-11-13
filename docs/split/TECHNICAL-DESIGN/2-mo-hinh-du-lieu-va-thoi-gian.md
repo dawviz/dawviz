@@ -5,7 +5,7 @@ section: "2. Mô hình dữ liệu và thời gian 🟢"
 path: "2. Mô hình dữ liệu và thời gian 🟢"
 chunk: 2-mo-hinh-du-lieu-va-thoi-gian.md
 source_lines: 38-64
-source_sha1: 185dbf38d8
+source_sha1: af52e37072
 ids: [D-50, REQ-AST-02, SOI-19, WARN_TEMPO_RAMP]
 ---
 ## 2. Mô hình dữ liệu và thời gian 🟢

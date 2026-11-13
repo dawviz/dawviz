@@ -5,7 +5,7 @@ section: "3. CHÂN DUNG NGƯỜI DÙNG MỤC TIÊU (USER PERSONAS)"
 path: "3. CHÂN DUNG NGƯỜI DÙNG MỤC TIÊU (USER PERSONAS)"
 chunk: 3-chan-dung-nguoi-dung-muc-tieu-user-personas.md
 source_lines: 81-100
-source_sha1: 3e8360d118
+source_sha1: e0f99b8321
 ids: [D-19]
 ---
 ## 3. CHÂN DUNG NGƯỜI DÙNG MỤC TIÊU (USER PERSONAS)

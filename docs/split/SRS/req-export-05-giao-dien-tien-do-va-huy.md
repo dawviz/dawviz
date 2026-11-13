@@ -5,7 +5,7 @@ section: "REQ-EXPORT-05: Giao diện tiến độ và hủy"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-EXPORT-05: Giao diện tiến độ và hủy"
 chunk: req-export-05-giao-dien-tien-do-va-huy.md
 source_lines: 752-754
-source_sha1: f91921e0ca
+source_sha1: f3c5cc8778
 ids: [REQ-EXPORT-05]
 ---
 #### REQ-EXPORT-05: Giao diện tiến độ và hủy

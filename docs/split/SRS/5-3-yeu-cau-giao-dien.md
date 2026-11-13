@@ -5,8 +5,8 @@ section: "5.3. Yêu cầu giao diện"
 path: "5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.3. Yêu cầu giao diện"
 chunk: 5-3-yeu-cau-giao-dien.md
 source_lines: 955-1024
-source_sha1: f91921e0ca
-ids: [ARC-05, BR-07, BR-09, D-19, D-25, D-29, D-30, D-48, D-49, D-50, D-52, ERR_UNSUPPORTED_FORMAT, KPI-04, NFR-SEC-05, REQ-EXPORT-00, REQ-GRAPHICS-03, REQ-GRAPHICS-06, REQ-GRAPHICS-07, REQ-GRAPHICS-09, REQ-GRAPHICS-10, REQ-GRAPHICS-11, REQ-GRAPHICS-13, REQ-GRAPHICS-14, REQ-GRAPHICS-15, REQ-GRAPHICS-16, REQ-GRAPHICS-17, REQ-PARSER-05, REQ-PARSER-07, REQ-STORAGE-05, REQ-STORAGE-06, REQ-UI-01, REQ-UI-02, REQ-UI-03, REQ-UI-04, REQ-UI-05, REQ-UI-06, REQ-UI-07, REQ-UI-08, REQ-UI-09, REQ-UI-10, REQ-UI-11, REQ-UI-12, REQ-UI-13, REQ-UI-14, REQ-UI-15, REQ-WIDGET-07]
+source_sha1: f3c5cc8778
+ids: [ARC-05, BR-07, BR-09, D-19, D-25, D-29, D-30, D-48, D-49, D-50, D-52, D-56, ERR_UNSUPPORTED_FORMAT, KPI-04, NFR-SEC-05, REQ-EXPORT-00, REQ-GRAPHICS-03, REQ-GRAPHICS-06, REQ-GRAPHICS-07, REQ-GRAPHICS-09, REQ-GRAPHICS-10, REQ-GRAPHICS-11, REQ-GRAPHICS-13, REQ-GRAPHICS-14, REQ-GRAPHICS-15, REQ-GRAPHICS-16, REQ-GRAPHICS-17, REQ-PARSER-05, REQ-PARSER-07, REQ-STORAGE-05, REQ-STORAGE-06, REQ-UI-01, REQ-UI-02, REQ-UI-03, REQ-UI-04, REQ-UI-05, REQ-UI-06, REQ-UI-07, REQ-UI-08, REQ-UI-09, REQ-UI-10, REQ-UI-11, REQ-UI-12, REQ-UI-13, REQ-UI-14, REQ-UI-15, REQ-WIDGET-07]
 ---
 ### 5.3. Yêu cầu giao diện
 
@@ -61,7 +61,7 @@ ids: [ARC-05, BR-07, BR-09, D-19, D-25, D-29, D-30, D-48, D-49, D-50, D-52, ERR_
     * **Danh sách:** ở cột phải, **mỗi track một dòng gọn**: chấm màu, tên (cắt "…"), số nốt, độ sáng hiện tại (khi độ sáng nền khác "đều nhau") và mũi tên ▸. Bấm dòng hoặc Enter/Space để **mở rộng tại chỗ** phần chỉnh (độ sáng nền, đảo chiều, thông tin track, ngưỡng); nhiều dòng mở cùng lúc được.
   * **Animation:** khi đổi số cột, đổi kiểu trình bày, thêm/bớt track hay mở/đóng dòng, thẻ **di chuyển mượt tới vị trí mới** (cùng một thẻ bay từ lưới sang danh sách và ngược lại; Framer Motion `layout` + `layoutId`, lò xo ~0,3 s). Tôn trọng "giảm chuyển động" của hệ điều hành (`prefers-reduced-motion` → bỏ chuyển động).
   * **Không đè nội dung:** ở kiểu Lưới, khung xem trước và cột kiểu nốt **không dính** khi cuộn (để không che thẻ track); ở kiểu Danh sách, khung xem trước và cột phải dính trên màn hình rộng như trước.
-  * **Thứ tự và lọc (chưa làm):** mặc định theo thứ tự trong DAW; sắp theo tên, số nốt, màu; kéo thả để đổi thứ tự hiển thị (luôn có cách thay thế bằng bàn phím); ô lọc theo tên. Thứ tự trong danh sách **không** đổi thứ tự vẽ, trừ khi bật "Vẽ theo thứ tự danh sách" (lưu vào dự án, hoàn tác được).
+  * **Thứ tự và lọc (chưa làm):** mặc định theo thứ tự trong DAW; sắp theo tên, số nốt, màu; kéo thả để đổi thứ tự hiển thị (luôn có cách thay thế bằng bàn phím); ô lọc theo tên. **Thứ tự trong danh sách là thứ tự ưu tiên hiển thị (D-56):** track nằm trên trong danh sách luôn được vẽ đè lên track nằm dưới ở mọi widget vẽ nhiều track; đổi thứ tự danh sách là đổi thứ tự vẽ (lưu vào dự án, hoàn tác được). Không có công tắc bật/tắt; sắp theo tiêu chí cũng đổi thứ tự vẽ. Trong cùng một track, nốt đang phát vẫn nằm trên cùng (T-71).
   * **Nhóm (chưa làm):** track nhóm/folder thu gọn/mở được; cần parser đọc thông tin nhóm **[VERIFY]**.
   * **Lưu:** kiểu trình bày và số cột là **tuỳ chọn giao diện** lưu theo trình duyệt, không vào preset video và không đổi khung hình xuất.
   * **Bàn phím và trợ năng:** phím mũi tên đi theo hướng xếp (trái/phải/lên/xuống tới thẻ gần nhất theo hướng, đúng cả với lưới tự động); vai trò `list`; dòng mở rộng có `aria-expanded`.

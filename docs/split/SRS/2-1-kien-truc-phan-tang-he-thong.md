@@ -5,7 +5,7 @@ section: "2.1. Kiến trúc phân tầng hệ thống"
 path: "2. KIẾN TRÚC KỸ THUẬT, LUỒNG DỮ LIỆU & ĐÁNH GIÁ KIẾN TRÚC > 2.1. Kiến trúc phân tầng hệ thống"
 chunk: 2-1-kien-truc-phan-tang-he-thong.md
 source_lines: 111-188
-source_sha1: f91921e0ca
+source_sha1: f3c5cc8778
 ids: [ARC-01, ARC-02, ARC-04, D-04, D-05, D-06, D-07, D-08, D-09, D-10, D-11, D-28]
 ---
 ### 2.1. Kiến trúc phân tầng hệ thống

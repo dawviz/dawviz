@@ -1,6 +1,6 @@
 # Chỉ mục SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
-nguồn: `SRS.md` (sha1 f91921e0ca)
+nguồn: `SRS.md` (sha1 f3c5cc8778)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -72,7 +72,7 @@ nguồn: `SRS.md` (sha1 f91921e0ca)
 | 65 | 4. YÊU CẦU PHI CHỨC NĂNG (NON-FUNCTIONAL REQUIREMENTS) | [4-yeu-cau-phi-chuc-nang-non-functional-requireme.md](4-yeu-cau-phi-chuc-nang-non-functional-requireme.md) | 5167 | ARC-07, BR-08, D-05, D-12, D-16, D-30… |
 | 66 | 5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.1. Bố cục không gian làm việc | [5-1-bo-cuc-khong-gian-lam-viec.md](5-1-bo-cuc-khong-gian-lam-viec.md) | 3717 |  |
 | 67 | 5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.2. Chế độ tương tác | [5-2-che-do-tuong-tac.md](5-2-che-do-tuong-tac.md) | 364 | REQ-GRAPHICS-05 |
-| 68 | 5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.3. Yêu cầu giao diện | [5-3-yeu-cau-giao-dien.md](5-3-yeu-cau-giao-dien.md) | 15926 | ARC-05, BR-07, BR-09, D-19, D-25, D-29… |
+| 68 | 5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.3. Yêu cầu giao diện | [5-3-yeu-cau-giao-dien.md](5-3-yeu-cau-giao-dien.md) | 16161 | ARC-05, BR-07, BR-09, D-19, D-25, D-29… |
 | 69 | 6. MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU | [6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md](6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md) | 1419 | BR-01, BR-02, BR-03, BR-04, BR-05, BR-06… |
 | 70 | 7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO | [7-dieu-kien-nghiem-thu-va-ban-giao.md](7-dieu-kien-nghiem-thu-va-ban-giao.md) | 6665 | ARC-01, AT-01, AT-02, AT-03, AT-04, AT-05… |
 | 71 | 8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS | [8-cac-van-de-con-mo-cua-srs.md](8-cac-van-de-con-mo-cua-srs.md) | 4032 | D-20, D-21, D-22, D-31, D-44, D-45… |

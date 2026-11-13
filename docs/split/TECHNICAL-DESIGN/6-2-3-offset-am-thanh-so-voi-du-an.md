@@ -5,7 +5,7 @@ section: "6.2.3 Offset âm thanh so với dự án"
 path: "6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.3 Offset âm thanh so với dự án"
 chunk: 6-2-3-offset-am-thanh-so-voi-du-an.md
 source_lines: 246-253
-source_sha1: 185dbf38d8
+source_sha1: af52e37072
 ids: [REQ-UI-15, REQ-WIDGET-07]
 ---
 #### 6.2.3 Offset âm thanh so với dự án

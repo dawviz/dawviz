@@ -5,7 +5,7 @@ section: "1. THÔNG TIN CHUNG & BỐI CẢNH DỰ ÁN"
 path: "1. THÔNG TIN CHUNG & BỐI CẢNH DỰ ÁN"
 chunk: 1-thong-tin-chung-boi-canh-du-an.md
 source_lines: 27-41
-source_sha1: 3e8360d118
+source_sha1: e0f99b8321
 ids: [D-54]
 ---
 ## 1. THÔNG TIN CHUNG & BỐI CẢNH DỰ ÁN

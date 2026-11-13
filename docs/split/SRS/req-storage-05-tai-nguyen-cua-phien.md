@@ -5,7 +5,7 @@ section: "REQ-STORAGE-05: Tài nguyên của phiên"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) > REQ-STORAGE-05: Tài nguyên của phiên"
 chunk: req-storage-05-tai-nguyen-cua-phien.md
 source_lines: 862-864
-source_sha1: f91921e0ca
+source_sha1: f3c5cc8778
 ids: [ERR_ASSET_DECODE, ERR_ASSET_TOO_LARGE, REQ-STORAGE-05]
 ---
 #### REQ-STORAGE-05: Tài nguyên của phiên
