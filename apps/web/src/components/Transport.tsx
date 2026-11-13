@@ -11,14 +11,14 @@ export function Transport({ t, duration, playing, onToggle, onSeek }: { t: numbe
   return (
     <div className="flex items-center gap-3 px-3 py-2.5">
       <button type="button" onClick={onToggle} aria-label={label} title={label}
-        className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-accent-500 text-ink-950 shadow-[0_0_0_4px_rgb(var(--accent-500)/0.15)] transition hover:bg-accent-400 active:scale-95">
+        className="grid h-9 w-9 shrink-0 place-items-center rounded bg-accent text-on-accent transition hover:ring-1 hover:ring-line-strong hover:ring-offset-2 hover:ring-offset-surface active:scale-95">
         {playing ? <PauseIcon /> : <PlayIcon />}
       </button>
-      <span className="w-12 shrink-0 text-right text-xs font-medium tabular-nums text-ink-100">{i18n.duration(t)}</span>
+      <span className={`w-12 shrink-0 text-right text-xs font-medium tabular-nums ${playing ? 'text-accent' : 'text-fg'}`}>{i18n.duration(t)}</span>
       <input aria-label={i18n.t('web.seek')} type="range" min={0} max={duration} step={0.01} value={t}
         style={{ '--p': `${pct}%` } as React.CSSProperties}
         onChange={(e) => onSeek(Number(e.target.value))} className="min-w-0 flex-1" />
-      <span className="w-12 shrink-0 text-xs tabular-nums text-ink-300">{i18n.duration(duration)}</span>
+      <span className="w-12 shrink-0 text-xs tabular-nums text-muted">{i18n.duration(duration)}</span>
     </div>
   );
 }

@@ -4,8 +4,8 @@ doc_title: "Định hướng hình ảnh: khung preview và giao diện web"
 section: "3.7 Khung bố cục chung (từ vòng 1, dùng cho vòng 2)"
 path: "3. Bộ prompt sinh ảnh giao diện web > 3.7 Khung bố cục chung (từ vòng 1, dùng cho vòng 2)"
 chunk: 3-7-khung-bo-cuc-chung-tu-vong-1-dung-cho-vong-2.md
-source_lines: 159-176
-source_sha1: cae014d43d
+source_lines: 160-177
+source_sha1: a66e3a3c8c
 ids: [REQ-UI-13]
 ---
 ### 3.7 Khung bố cục chung (từ vòng 1, dùng cho vòng 2)

@@ -11,6 +11,8 @@ dawviz/
 │  │  ├─ index.html
 │  │  └─ parser-worker.js
 │  └─ web/   # ứng dụng React (Vite, Tailwind, Framer Motion)
+│     ├─ public/
+│     │  └─ theme-boot.js
 │     ├─ src/
 │     │  ├─ components/
 │     │  │  ├─ FileDrop.tsx
@@ -19,8 +21,11 @@ dawviz/
 │     │  │  ├─ Notices.tsx
 │     │  │  ├─ NumberField.tsx
 │     │  │  ├─ SceneCanvas.tsx
+│     │  │  ├─ Select.tsx
 │     │  │  ├─ SliderField.tsx
+│     │  │  ├─ StatusIcon.tsx
 │     │  │  ├─ StylePanel.tsx
+│     │  │  ├─ ThemeSelect.tsx
 │     │  │  ├─ TrackPanel.tsx
 │     │  │  └─ Transport.tsx
 │     │  ├─ i18n/
@@ -41,6 +46,8 @@ dawviz/
 │     │  │  ├─ prefs.ts
 │     │  │  ├─ problems.test.ts
 │     │  │  ├─ problems.ts
+│     │  │  ├─ theme.test.ts
+│     │  │  ├─ theme.ts
 │     │  │  └─ trustedTypes.ts
 │     │  ├─ types/
 │     │  │  └─ dawviz.d.ts
@@ -695,6 +702,14 @@ Canvas xem trước: chỉ lo kích thước điểm ảnh/DPR và gọi renderF
 function SceneCanvas({ scene, derived, ast, t }: { scene: SceneDocument; derived: Derived; ast: UnifiedProjectAST; t: number })
 ```
 
+#### `apps/web/src/components/Select.tsx`
+
+Ô chọn dùng chung: <select> gốc của trình duyệt (bàn phím, trình đọc màn hình giữ nguyên) bọc trong khung vẽ mũi tên
+
+```text
+function Select({ wrapClassName = '', className = '', ...props }: SelectHTMLAttributes<HTMLSelectElement> & { wrapClassName?: string })
+```
+
 #### `apps/web/src/components/SliderField.tsx`
 
 Thanh trượt + ô nhập số (REQ-UI-15) dùng chung cho mọi bảng. Lưới dùng minmax(0,1fr) để không tràn khung hẹp (T-61).
@@ -703,12 +718,29 @@ Thanh trượt + ô nhập số (REQ-UI-15) dùng chung cho mọi bảng. Lướ
 function SliderField({ id, label, value, min, max, step, hardMin, hardMax, onChange }: { id: string; label: string; value: number; min: number; max: number; step: number; hardMin?: number; hardMax?: number; onChange(v: number): void })   // `min`/`max` là phạm vi thanh trượt (phạm vi mềm); `hardMin`/`hardMax` cho phép gõ vượt phạm vi đó (mặc định b…
 ```
 
+#### `apps/web/src/components/StatusIcon.tsx`
+
+Biểu tượng trạng thái cho lỗi và cảnh báo. Bắt buộc đi kèm màu danger/warning (DESIGN.md "Danger-Is-Not-Accent"):
+
+```text
+function StatusIcon({ kind, className = 'h-4 w-4' }: { kind: 'error' | 'warning'; className?: string })   // Biểu tượng trạng thái cho lỗi và cảnh báo. Bắt buộc đi kèm màu danger/warning (DESIGN.md "Danger-Is-Not-Accen…
+```
+
 #### `apps/web/src/components/StylePanel.tsx`
 
 Bảng tuỳ chỉnh kiểu dáng nốt (toàn cục) và bàn phím. Chỉ sửa dữ liệu StyleConfig; việc vẽ nằm ở Render Core.
 
 ```text
 function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [] }: { style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[] })   // `lanes`: tên lane automation có trong dự án đang mở (cho nguồn phát sáng "automation").
+```
+
+#### `apps/web/src/components/ThemeSelect.tsx`
+
+"Giao diện ứng dụng" (REQ-UI-10, D-52): Sáng / Tối / Theo hệ thống và bảng màu nhấn. Chỉ đổi màu giao diện app,
+
+```text
+function useTheme(): [ThemePref, (p: ThemePref) => void]
+function ThemeSelect()
 ```
 
 #### `apps/web/src/components/TrackPanel.tsx`
@@ -823,6 +855,33 @@ interface Problem
 function describeProblem(i18n: Pick<I18n, 'has' | 't'>, kind: 'error' | 'warning', code: string, message?: string, details?: Record<string, unknown>): Problem
 ```
 
+#### `apps/web/src/lib/theme.ts`
+
+Theme giao diện ứng dụng (REQ-UI-10, D-52): chỉ đổi màu qua bộ token cố định (UI-DIRECTION mục 5.2, 5.4).
+
+```text
+const THEME_TOKENS   // Bộ token màu của một theme (UI-DIRECTION 5.2). Không có token nào khác được nhận.
+type ThemeToken
+type ThemeColors
+type ThemeMode
+const THEME_MODES
+const PALETTES
+type Palette
+interface ThemePref
+const DEFAULT_THEME   // Tối là mặc định hiện nay (REQ-UI-10); Studio cam là bảng màu mặc định (D-53).
+const THEME_STORAGE_KEY   // Khoá localStorage; public/theme-boot.js đọc đúng khoá này để áp theme trước lần vẽ đầu.
+function sanitizeThemePref(v: unknown): ThemePref
+function resolveMode(mode: ThemeMode, systemDark: boolean): 'light' | 'dark'
+function applyTheme(root: HTMLElement, pref: ThemePref, systemDark: boolean): void   // Áp lên phần tử gốc bằng thuộc tính (không chèn style nội tuyến, hợp CSP `style-src 'self'`).
+function contrast(a: string, b: string): number
+interface ContrastFailure
+const VIDEO_GROUNDS   // Nền khung video mà đường gióng phải nổi lên: preset "Bản in" (D-51) và nền khung mặc định của Render Core.
+interface StateRule   // Trạng thái tô nhạt dùng trong giao diện (`bg-<tint>/<alpha>` của Tailwind, phủ lên một nền). Mỗi luật kiểm `f…
+const STATE_RULES
+function mix(tint: string, ground: string, alpha: number): string
+function checkTheme(colors: Record<string, string>): ContrastFailure[]   // Trả về mọi cặp trượt; mảng rỗng là theme đạt. Theme thiếu token hoặc có token lạ thì ném lỗi (không áp một ph…
+```
+
 #### `apps/web/src/lib/trustedTypes.ts`
 
 Trusted Types (NFR-SEC-06): trang chạy với `require-trusted-types-for 'script'`, nên mọi URL script (Worker) phải đi qua
@@ -869,6 +928,7 @@ type ParseResponse
 - `apps/web/src/lib/parserClient.test.ts`
 - `apps/web/src/lib/prefs.test.ts`
 - `apps/web/src/lib/problems.test.ts`
+- `apps/web/src/lib/theme.test.ts`
 - `apps/web/test/components.test.tsx`
 - `packages/render-core/test/glow.test.ts`
 - `packages/render-core/test/presets.test.ts`
@@ -882,4 +942,4 @@ type ParseResponse
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 240 ký hiệu công khai -->
+<!-- 10 thư mục src, 264 ký hiệu công khai -->

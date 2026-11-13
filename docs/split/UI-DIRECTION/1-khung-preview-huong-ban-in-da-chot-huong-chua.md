@@ -4,8 +4,8 @@ doc_title: "Định hướng hình ảnh: khung preview và giao diện web"
 section: "1. Khung preview: hướng \"Bản in\" 🟡 đã chốt hướng, chưa làm (D-51)"
 path: "1. Khung preview: hướng \"Bản in\" 🟡 đã chốt hướng, chưa làm (D-51)"
 chunk: 1-khung-preview-huong-ban-in-da-chot-huong-chua.md
-source_lines: 20-56
-source_sha1: cae014d43d
+source_lines: 21-57
+source_sha1: a66e3a3c8c
 ids: [D-51, REQ-GRAPHICS-00, REQ-GRAPHICS-04, REQ-GRAPHICS-07, REQ-GRAPHICS-10, REQ-GRAPHICS-16, REQ-WIDGET-01, REQ-WIDGET-02, REQ-WIDGET-03, REQ-WIDGET-04, REQ-WIDGET-05, REQ-WIDGET-06, REQ-WIDGET-08]
 ---
 ## 1. Khung preview: hướng "Bản in" 🟡 đã chốt hướng, chưa làm (D-51)

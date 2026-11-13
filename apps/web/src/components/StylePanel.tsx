@@ -1,6 +1,7 @@
 // Bảng tuỳ chỉnh kiểu dáng nốt (toàn cục) và bàn phím. Chỉ sửa dữ liệu StyleConfig; việc vẽ nằm ở Render Core.
 import { STYLE_PRESETS, DEFAULT_NOTE_STYLE, GLOW_SOURCES, type StyleConfig, type NoteStyle, type ColorMode, type KeyboardStyle, type GlowSource, type GlowPanMode } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
+import { Select } from './Select.tsx';
 import { SliderField as Slider } from './SliderField.tsx';
 
 const MODES: ColorMode[] = ['track', 'custom', 'pitch', 'velocity'];
@@ -23,12 +24,12 @@ export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [] }:
             className="chip">{i18n.t(`web.style.preset.${p}`)}</button>
         ))}
       </div>
-      <label className="grid grid-cols-[7rem_minmax(0,1fr)] items-center gap-2 text-xs text-ink-300">
+      <label className="grid grid-cols-[7rem_minmax(0,1fr)] items-center gap-2 text-xs text-muted">
         <span>{i18n.t('web.style.colorMode')}</span>
         <span className="flex min-w-0 items-center gap-2">
-          <select value={b.colorMode} onChange={(e) => set({ colorMode: e.target.value as ColorMode })} className={sel}>
+          <Select value={b.colorMode} onChange={(e) => set({ colorMode: e.target.value as ColorMode })} className="py-1 pl-2" wrapClassName="min-w-0 max-w-full">
             {MODES.map((m) => <option key={m} value={m}>{i18n.t(`web.style.mode.${m}`)}</option>)}
-          </select>
+          </Select>
           {b.colorMode === 'custom' && <input type="color" aria-label={i18n.t('web.style.customColor')} value={b.customColor} onChange={(e) => set({ customColor: e.target.value })} />}
         </span>
       </label>
@@ -40,11 +41,11 @@ export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [] }:
       <Slider id="st-glowr" label={i18n.t('web.style.glowRadius')} value={b.glowRadius} min={0} max={40} hardMax={64} step={1} onChange={(v) => set({ glowRadius: v })} />
       <Slider id="st-border" label={i18n.t('web.style.borderWidth')} value={b.borderWidth} min={0} max={6} hardMax={8} step={0.5} onChange={(v) => set({ borderWidth: v })} />
       <GlowSection b={b} set={set} lanes={lanes} />
-      <label className="flex items-center gap-2 text-xs text-ink-300">
+      <label className="flex items-center gap-2 text-xs text-muted">
         <input type="checkbox" checked={b.glowActiveOnly} onChange={(e) => set({ glowActiveOnly: e.target.checked })} />{i18n.t('web.style.glowActiveOnly')}
       </label>
-      <div className="border-t border-ink-700/70 pt-2.5">
-        <label className="flex items-center gap-2 text-xs text-ink-300">
+      <div className="border-t border-line pt-2.5">
+        <label className="flex items-center gap-2 text-xs text-muted">
           <input type="checkbox" checked={keyboard.enabled} onChange={(e) => onKeyboard({ ...keyboard, enabled: e.target.checked })} />{i18n.t('web.keyboard.show')}
         </label>
       </div>
@@ -52,7 +53,6 @@ export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [] }:
   );
 }
 
-const sel = 'min-w-0 max-w-full rounded-md border border-ink-700 bg-ink-950 py-1 pl-2 text-ink-100';
 
 /** REQ-GRAPHICS-17: đều nhau (mặc định) hoặc phát sáng động khi thanh phát chạm nốt, theo một tiêu chí. */
 function GlowSection({ b, set, lanes }: { b: NoteStyle; set(p: Partial<NoteStyle>): void; lanes: string[] }) {
@@ -60,45 +60,45 @@ function GlowSection({ b, set, lanes }: { b: NoteStyle; set(p: Partial<NoteStyle
   const dyn = b.glowMode === 'dynamic';
   const laneList = lanes.includes(b.glowLane) ? lanes : [b.glowLane, ...lanes];
   return (
-    <div className="space-y-2 rounded-lg border border-ink-700/60 bg-ink-950/40 p-2.5" data-testid="glow-section">
-      <div className="space-y-1 text-xs text-ink-300">
+    <div className="space-y-2 rounded border border-line p-2.5" data-testid="glow-section">
+      <div className="space-y-1 text-xs text-muted">
         <span className="block">{i18n.t('web.glow.mode')}</span>
-        <div className="flex min-w-0 gap-0.5 rounded-lg bg-ink-950/70 p-0.5" role="radiogroup" aria-label={i18n.t('web.glow.mode')}>
+        <div className="flex min-w-0 gap-0.5 rounded border border-control bg-raised p-0.5" role="radiogroup" aria-label={i18n.t('web.glow.mode')}>
           {(['uniform', 'dynamic'] as const).map((m) => (
             <button key={m} type="button" role="radio" aria-checked={b.glowMode === m} onClick={() => set({ glowMode: m })}
-              className={`min-w-0 flex-1 truncate rounded-md px-2 py-1 transition ${b.glowMode === m ? 'bg-ink-700 text-ink-50 shadow-sm' : 'text-ink-300 hover:text-ink-100'}`}>
+              className={`min-w-0 flex-1 truncate rounded-sm px-2 py-1 transition ${b.glowMode === m ? 'bg-accent text-on-accent' : 'text-muted hover:text-fg'}`}>
               {i18n.t(`web.glow.mode.${m}`)}
             </button>
           ))}
         </div>
       </div>
       {dyn && <>
-        <label className="grid grid-cols-[7rem_minmax(0,1fr)] items-center gap-2 text-xs text-ink-300">
+        <label className="grid grid-cols-[7rem_minmax(0,1fr)] items-center gap-2 text-xs text-muted">
           <span className="truncate">{i18n.t('web.glow.source')}</span>
-          <select value={b.glowSource} onChange={(e) => set({ glowSource: e.target.value as GlowSource })} className={sel}>
+          <Select value={b.glowSource} onChange={(e) => set({ glowSource: e.target.value as GlowSource })} className="py-1 pl-2" wrapClassName="min-w-0 max-w-full">
             {GLOW_SOURCES.map((s) => <option key={s} value={s}>{i18n.t(`web.glow.source.${s}`)}</option>)}
-          </select>
+          </Select>
         </label>
         {b.glowSource === 'automation' && (
-          <label className="grid grid-cols-[7rem_minmax(0,1fr)] items-center gap-2 text-xs text-ink-300">
+          <label className="grid grid-cols-[7rem_minmax(0,1fr)] items-center gap-2 text-xs text-muted">
             <span className="truncate">{i18n.t('web.glow.lane')}</span>
-            <select value={b.glowLane} onChange={(e) => set({ glowLane: e.target.value })} className={sel}>
+            <Select value={b.glowLane} onChange={(e) => set({ glowLane: e.target.value })} className="py-1 pl-2" wrapClassName="min-w-0 max-w-full">
               {laneList.map((l) => <option key={l} value={l}>{i18n.has(`web.glow.lane.${l}`) ? i18n.t(`web.glow.lane.${l}`) : l}{lanes.includes(l) ? '' : ` (${i18n.t('web.glow.lane.absent')})`}</option>)}
-            </select>
+            </Select>
           </label>
         )}
         {(b.glowSource === 'pan' || (b.glowSource === 'automation' && b.glowLane === 'pan')) && (
-          <label className="grid grid-cols-[7rem_minmax(0,1fr)] items-center gap-2 text-xs text-ink-300">
+          <label className="grid grid-cols-[7rem_minmax(0,1fr)] items-center gap-2 text-xs text-muted">
             <span className="truncate">{i18n.t('web.glow.panMode')}</span>
-            <select value={b.glowPanMode} onChange={(e) => set({ glowPanMode: e.target.value as GlowPanMode })} className={sel}>
+            <Select value={b.glowPanMode} onChange={(e) => set({ glowPanMode: e.target.value as GlowPanMode })} className="py-1 pl-2" wrapClassName="min-w-0 max-w-full">
               {(['lr', 'spread'] as const).map((m) => <option key={m} value={m}>{i18n.t(`web.glow.panMode.${m}`)}</option>)}
-            </select>
+            </Select>
           </label>
         )}
-        <p className="text-[11px] leading-snug text-ink-300/80">{i18n.t(b.glowSource === 'pan' ? `web.glow.hint.pan.${b.glowPanMode}` : `web.glow.hint.${b.glowSource}`)}</p>
+        <p className="text-[11px] leading-snug text-muted">{i18n.t(b.glowSource === 'pan' ? `web.glow.hint.pan.${b.glowPanMode}` : `web.glow.hint.${b.glowSource}`)}</p>
         <Slider id="st-gmin" label={i18n.t('web.glow.min')} value={b.glowMin} min={0} max={1} step={0.05} onChange={(v) => set({ glowMin: v })} />
         <Slider id="st-gmax" label={i18n.t('web.glow.max')} value={b.glowMax} min={0} max={1} step={0.05} onChange={(v) => set({ glowMax: v })} />
-        <label className="flex items-center gap-2 text-xs text-ink-300">
+        <label className="flex items-center gap-2 text-xs text-muted">
           <input type="checkbox" checked={b.glowInvert} onChange={(e) => set({ glowInvert: e.target.checked })} />{i18n.t('web.glow.invert')}
         </label>
       </>}

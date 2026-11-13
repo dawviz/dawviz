@@ -4,8 +4,8 @@ doc_title: "Định hướng hình ảnh: khung preview và giao diện web"
 section: "7. Nguyên tắc sản phẩm: trình dựng thật, mặc định đơn giản (D-54)"
 path: "7. Nguyên tắc sản phẩm: trình dựng thật, mặc định đơn giản (D-54)"
 chunk: 7-nguyen-tac-san-pham-trinh-dung-that-mac-dinh-d.md
-source_lines: 407-417
-source_sha1: cae014d43d
+source_lines: 420-430
+source_sha1: a66e3a3c8c
 ids: [D-15, D-54, REQ-GRAPHICS-03, REQ-GRAPHICS-15, REQ-UI-13, REQ-WIDGET-07]
 ---
 ## 7. Nguyên tắc sản phẩm: trình dựng thật, mặc định đơn giản (D-54)

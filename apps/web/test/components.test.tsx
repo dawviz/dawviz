@@ -5,6 +5,8 @@ import { I18nProvider } from '../src/i18n/I18nProvider.tsx';
 import { Transport } from '../src/components/Transport.tsx';
 import { Notices } from '../src/components/Notices.tsx';
 import { LanguageSelect } from '../src/components/LanguageSelect.tsx';
+import { ThemeSelect } from '../src/components/ThemeSelect.tsx';
+import { NumberField } from '../src/components/NumberField.tsx';
 import { StylePanel } from '../src/components/StylePanel.tsx';
 import { defaultStyleConfig, DEFAULT_KEYBOARD_STYLE, STYLE_PRESETS } from '@dawviz/render-core';
 
@@ -156,5 +158,36 @@ describe('Phát sáng động (REQ-GRAPHICS-17)', () => {
     v.rerender(<I18nProvider><StylePanel {...props()} /></I18nProvider>);
     fireEvent.change(screen.getByRole('combobox', { name: /Pan reading|Cách đọc pan/ }), { target: { value: 'spread' } });
     expect(st.base.glowPanMode).toBe('spread');
+  });
+});
+describe('ThemeSelect', () => {
+  it('đổi sáng/tối và bảng màu áp ngay lên <html>, lưu lựa chọn (REQ-UI-10)', () => {
+    localStorage.clear();
+    wrap(<ThemeSelect />);
+    const root = document.documentElement;
+    expect(root.dataset.theme).toBe('dark'); expect(root.dataset.palette).toBe('studio');
+    fireEvent.change(screen.getByTestId('theme-mode'), { target: { value: 'light' } });
+    fireEvent.change(screen.getByTestId('theme-palette'), { target: { value: 'riso' } });
+    expect(root.dataset.theme).toBe('light'); expect(root.dataset.palette).toBe('riso');
+    expect(JSON.parse(localStorage.getItem('dawviz.prefs.v1.theme') ?? '{}')).toEqual({ mode: 'light', palette: 'riso' });
+  });
+});
+describe('NumberField', () => {
+  it('giá trị không đọc được: báo bằng chữ qua aria-describedby, rời ô thì nói đã giữ giá trị cũ (WCAG 1.4.1)', () => {
+    let v = 0.5;
+    wrap(<NumberField label="Độ đục" value={v} spec={{ min: 0, max: 1, step: 0.05 }} onChange={(x) => (v = x)} />);
+    const input = screen.getByRole('textbox', { name: 'Độ đục' });
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: 'abc' } });
+    fireEvent.keyDown(input, { key: 'Enter' });
+    expect(input).toHaveAttribute('aria-invalid', 'true');
+    const msg = document.getElementById(input.getAttribute('aria-describedby')!)!;
+    expect(msg.textContent).toMatch(/1920\/2/);
+    fireEvent.blur(input);
+    expect(v).toBe(0.5);
+    expect((input as HTMLInputElement).value).toBe('0.50');
+    expect(msg.textContent).toMatch(/(Kept the previous value|Đã giữ giá trị cũ)/);
+    fireEvent.change(input, { target: { value: '0.7' } });
+    expect(input).not.toHaveAttribute('aria-describedby');
   });
 });

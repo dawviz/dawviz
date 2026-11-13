@@ -4,8 +4,8 @@ doc_title: "Định hướng hình ảnh: khung preview và giao diện web"
 section: "3.1 Cách dùng"
 path: "3. Bộ prompt sinh ảnh giao diện web > 3.1 Cách dùng"
 chunk: 3-1-cach-dung.md
-source_lines: 79-85
-source_sha1: cae014d43d
+source_lines: 80-86
+source_sha1: a66e3a3c8c
 ids: []
 ---
 ### 3.1 Cách dùng

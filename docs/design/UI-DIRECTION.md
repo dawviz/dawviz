@@ -5,6 +5,7 @@
 | v0.1 | 2026-11-13 | Chốt hướng khung preview theo ảnh tham chiếu "usagin" (D-51). Chẩn đoán vì sao giao diện web hiện trông "AI slop". Bộ prompt sinh ảnh để thử các hướng giao diện web; **chưa chọn hướng web**. |
 | v0.2 | 2026-11-13 | Ghi kết quả vòng 1 (ChatGPT 4 khung, Gemini Swiss sáng). Chốt khung bố cục: ba thẻ Preview / Editor / Settings, cách sắp Cơ bản/Nâng cao theo REQ-UI-13 (mục 3.7). Bộ prompt vòng 2 cho 6 phong cách, dùng kèm tệp đính kèm, mỗi phong cách có cả theme sáng và tối (mục 3.8). |
 | v0.3 | 2026-11-13 | Ghi kết quả vòng 2 (6 phong cách × 4 khung, Gemini; bảng preset của ChatGPT). Chốt: theme giao diện **chỉ đổi màu** qua bộ token cố định (D-52, mục 5). Hệ quả: 6 phong cách gộp thành **một cấu trúc + nhiều bảng màu**; đề xuất cấu trúc và vòng 3 (mục 5.3, 6). |
+| v0.6 | 2026-11-13 | Chốt giá trị nhóm trạng thái khi làm T-48 (`danger`, `warning`, `success`, `selection`) và các token dẫn xuất (`focus`, `scrub-played`, `scrub-rest`, `waveform`), mục 5.4. Giá trị nằm trong `apps/web/src/index.css`; test đọc tệp đó và kiểm AA cho 4 bảng màu × sáng/tối. |
 | v0.5 | 2026-11-13 | Kiểm tương phản AA bảng 5.4 và chỉnh chỗ trượt: `text-faint` đạt 4,5:1, thêm token `line-control` (viền điều khiển, 3:1), làm đậm `accent` sáng của Studio cam, Đồng, Riso hồng để đặt được trên `bg`. Ba quy tắc AA (mục 5.4). `guide` đổi sang xanh mòng két `#008C9E`, khác tông mọi màu nhấn (sửa SRS REQ-GRAPHICS-02). Quyết định: BRD D-55. |
 | v0.4 | 2026-11-13 | **Chốt cấu trúc giao diện web D + A + E** (D-53, mục 5.3) và bảng màu dựng sẵn (mục 5.4). Ghi nguyên tắc sản phẩm "sức mạnh của trình dựng thật, mặc định đơn giản" (D-54, mục 7): xoay tự do mọi widget từ 1.0, spectrum đổi hướng cột. |
 
@@ -372,6 +373,13 @@ Nền, bề mặt, kẻ và chữ **dùng chung** cho mọi bảng; mỗi bảng
 
 | Token | Sáng và tối | Ghi chú |
 | :--- | :--- | :--- |
+| `danger` | `#951A12` / `#FF8A80` | Thẫm hơn đỏ Bản in rõ rệt ở theme sáng (1,54:1 giữa hai màu); luôn kèm biểu tượng lỗi. |
+| `warning` | `#8A5A00` / `#E8B44A` | Gần tông Đồng, nên luôn kèm biểu tượng cảnh báo; không dùng màu một mình để báo. |
+| `success` | `#2E6B34` / `#7FC48A` | |
+| `selection` | `#D3CFC6` / `#3B3F45` | Nền chữ được chọn, trung tính cho mọi bảng màu; `text` trên nó 10,98:1 / 8,47:1. |
+| `focus` | = `accent` | Vòng focus 2 px. |
+| `scrub-played`, `scrub-rest` | = `text`, = `line-control` | Thanh tua và mọi thanh trượt: phần đã chọn đậm như chữ, phần còn lại như viền điều khiển. Màu nhấn để dành cho trạng thái bật. |
+| `waveform` | = `text-faint` | |
 | `guide` | `#008C9E` (cả hai theme) | Xanh mòng két, khác tông cả bốn màu nhấn (cam, đỏ, đồng, hồng) và `danger`. Đường gióng vẽ trên khung video chứ không trên nền app, nên dùng một giá trị cho cả hai theme. Thay `#FF5500` cũ vì cam trùng tông Studio cam (REQ-GRAPHICS-02 đã sửa). |
 
 #### Quy tắc tương phản (AA)
@@ -382,6 +390,8 @@ Ba quy tắc dưới đây sinh ra từ lần kiểm v0.5: giá trị khởi đ�
 3. **Màu nhấn đứng được trên mọi nền.** `accent` đạt **4,5:1** trên `bg`, `surface` và `surface-raised` (để làm chữ: thời gian kiểu nhạc, thẻ đang mở, liên kết), và `accent-text` đạt 4,5:1 trên `accent` (chữ nút chính). Ở v0.4, Studio cam, Đồng, Riso hồng sáng trượt trên `bg` (4,38 / 4,2 / 4,42:1).
 
 Cách chỉnh: giữ nguyên tông và độ rực (OKLCH H, C), chỉ dịch độ sáng L tới mức đạt ngưỡng cộng một chút dư, để bảng màu không đổi tính cách.
+
+**Trạng thái tô nhạt** (màu phủ có độ đục lên nền) cũng phải đạt các ngưỡng trên, đo sau khi trộn với từng nền `bg`, `surface`, `surface-raised`. Chỉ dùng các kiểu đã kiểm: `accent/15`, `accent/10`, `danger/10`, `warning/10` (`STATE_RULES` trong `apps/web/src/lib/theme.ts`). **Không** làm nhạt nút nhấn khi hover (`accent/90`): chữ trắng trên Đồng sáng chỉ còn 4,39:1; hover dùng vòng `line-strong` cách nút 2 px.
 
 Số đo sau chỉnh (tỉ lệ thấp nhất trên `bg`/`surface`/`surface-raised`):
 
@@ -395,6 +405,9 @@ Số đo sau chỉnh (tỉ lệ thấp nhất trên `bg`/`surface`/`surface-rais
 | `accent` Bản in đỏ | 4,73:1 (5,6:1) | 4,81:1 (5,89:1) |
 | `accent` Đồng | 4,6:1 (5,44:1) | 6,33:1 (7,76:1) |
 | `accent` Riso hồng | 4,63:1 (5,47:1) | 5,26:1 (6,45:1) |
+| `danger` | 7,3:1 | 6,47:1 |
+| `warning` | 5,01:1 | 7,78:1 |
+| `success` | 5,43:1 | 7,15:1 |
 | `guide` trên khung video | 4,0:1 trên `#FFFFFF` ("Bản in") | 4,81:1 trên `#0C0E16` (nền khung tối mặc định) |
 
 ## 6. Việc tiếp theo đề xuất

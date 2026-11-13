@@ -2,84 +2,125 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Token màu giao diện (REQ-UI-10). Chỉ đổi giao diện ứng dụng, không đổi khung hình video.
-   Theme sáng sau này chỉ cần thêm một khối [data-theme='light'] khai báo lại các biến này. */
+/* Theme giao diện ứng dụng (REQ-UI-10, D-52): CHỈ token màu, theo docs/design/UI-DIRECTION.md mục 5.2 và 5.4 (v0.5, đã kiểm AA).
+   Đây là nguồn giá trị duy nhất của theme dựng sẵn; test/theme.test.ts đọc tệp này và kiểm AA cho 4 bảng màu × sáng/tối.
+   Dạng "r g b" để Tailwind dùng được độ đục (`bg-accent/15`). Theme không đổi khung video (canvas do Render Core vẽ).
+   Áp bằng thuộc tính trên <html>: data-theme="light|dark" (đã giải "theo hệ thống") và data-palette="studio|print|brass|riso". */
+
+/* Tối (mặc định) — nền, bề mặt, kẻ, chữ, trạng thái dùng chung cho mọi bảng màu. */
 :root {
   color-scheme: dark;
-  --ink-50: 244 245 248;
-  --ink-100: 230 232 239;
-  --ink-300: 163 169 189;
-  --ink-500: 91 98 122;
-  --ink-700: 42 47 66;
-  --ink-800: 27 31 46;
-  --ink-900: 19 22 34;
-  --ink-950: 12 14 22;
-  --accent-300: 168 214 255;
-  --accent-400: 124 196 255;
-  --accent-500: 74 168 245;
-  --accent-600: 43 139 224;
+  --bg: 21 22 23;              /* #151617 */
+  --surface: 30 31 33;         /* #1E1F21 */
+  --surface-raised: 38 40 43;  /* #26282B */
+  --line: 51 54 58;            /* #33363A  chỉ để phân vùng */
+  --line-control: 112 115 120; /* #707378  viền điều khiển, 3:1 */
+  --line-strong: 230 230 227;  /* #E6E6E3 */
+  --text: 230 230 227;         /* #E6E6E3 */
+  --text-muted: 163 163 160;   /* #A3A3A0 */
+  --text-faint: 142 144 145;   /* #8E9091  vẫn là chữ, 4,5:1 */
+  --accent-text: 21 22 23;     /* #151617  = bg tối */
+  --selection: 59 63 69;       /* #3B3F45 */
+  --danger: 255 138 128;       /* #FF8A80 */
+  --warning: 232 180 74;       /* #E8B44A */
+  --success: 127 196 138;      /* #7FC48A */
+  --guide: 0 140 158;          /* #008C9E  vẽ trên khung video, giống nhau ở hai theme (D-55) */
+  /* Studio cam tối (mặc định) */
+  --accent: 255 106 43;        /* #FF6A2B */
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: 237 236 232;           /* #EDECE8 */
+  --surface: 246 245 242;      /* #F6F5F2 */
+  --surface-raised: 255 255 255; /* #FFFFFF */
+  --line: 214 212 206;         /* #D6D4CE */
+  --line-control: 135 133 128; /* #878580 */
+  --line-strong: 28 28 26;     /* #1C1C1A */
+  --text: 28 28 26;            /* #1C1C1A */
+  --text-muted: 94 92 87;      /* #5E5C57 */
+  --text-faint: 108 105 99;    /* #6C6963 */
+  --accent-text: 255 255 255;  /* #FFFFFF */
+  --selection: 211 207 198;    /* #D3CFC6 */
+  --danger: 149 26 18;         /* #951A12  thẫm hơn đỏ Bản in, luôn kèm biểu tượng */
+  --warning: 138 90 0;         /* #8A5A00 */
+  --success: 46 107 52;        /* #2E6B34 */
+  --guide: 0 140 158;          /* #008C9E */
+  --accent: 190 61 4;          /* #BE3D04  Studio cam sáng */
+}
+
+/* Bảng màu dựng sẵn: chỉ đổi nhóm nhấn (UI-DIRECTION 5.4). */
+:root[data-palette='studio'] { --accent: 255 106 43; }                  /* #FF6A2B */
+:root[data-palette='print'] { --accent: 255 90 79; }                    /* #FF5A4F */
+:root[data-palette='brass'] { --accent: 201 164 103; }                  /* #C9A467 */
+:root[data-palette='riso'] { --accent: 255 92 184; }                    /* #FF5CB8 */
+:root[data-theme='light'][data-palette='studio'] { --accent: 190 61 4; }  /* #BE3D04 */
+:root[data-theme='light'][data-palette='print'] { --accent: 200 38 30; }  /* #C8261E */
+:root[data-theme='light'][data-palette='brass'] { --accent: 133 100 46; } /* #85642E */
+:root[data-theme='light'][data-palette='riso'] { --accent: 190 44 123; }  /* #BE2C7B */
+
+/* Token dẫn xuất: cùng giá trị ở mọi theme dựng sẵn; theme cộng đồng (1.1) có thể khai báo riêng. */
+:root {
+  --focus: var(--accent);
+  --scrub-played: var(--text);
+  --scrub-rest: var(--line-control);
+  --waveform: var(--text-faint);
 }
 
 @layer base {
+  html, body { @apply bg-page text-fg; }
   body {
-    @apply bg-ink-950 font-sans text-ink-100 antialiased;
+    @apply font-sans antialiased;
     font-feature-settings: 'cv11', 'ss01';
-    /* Ánh sáng nền rất nhẹ phía trên để trang có chiều sâu thay vì một mảng đen phẳng. */
-    background-image: radial-gradient(1200px 500px at 50% -200px, rgb(var(--accent-500) / 0.08), transparent 70%);
-    background-attachment: fixed;
   }
-  :focus-visible { outline: 2px solid rgb(var(--accent-400)); outline-offset: 2px; }
-  ::selection { background: rgb(var(--accent-500) / 0.35); }
+  :focus-visible { outline: 2px solid rgb(var(--focus)); outline-offset: 2px; }
+  ::selection { background: rgb(var(--selection)); color: rgb(var(--text)); }
+  * { scrollbar-color: rgb(var(--line-control)) transparent; }
 
-  /* Điều khiển gốc của trình duyệt được vẽ lại cho đồng bộ với theme (thanh trượt, ô chọn, ô đánh dấu). */
-  input[type='checkbox'], input[type='radio'] { accent-color: rgb(var(--accent-500)); }
+  /* Điều khiển gốc của trình duyệt vẽ lại theo token (ô đánh dấu, ô chọn, thanh trượt). */
+  input[type='checkbox'], input[type='radio'] { accent-color: rgb(var(--accent)); }
 
-  select {
-    appearance: none;
-    padding-right: 1.5rem !important;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23a3a9bd' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 6.5 8 10l3.5-3.5'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.35rem center;
-    background-size: 0.9rem;
-    cursor: pointer;
-  }
-  select:hover { border-color: rgb(var(--ink-500)); }
+  /* Mũi tên ô chọn vẽ ở .select-wrap (components/Select.tsx) bằng mask + currentColor để theo theme. */
+  select { appearance: none; padding-right: 1.5rem !important; cursor: pointer; }
+  select:hover { border-color: rgb(var(--line-strong)); }
 
+  /* Thanh trượt kiểu fader phẳng: phần đã chọn = scrub-played, phần còn lại = scrub-rest. Màu nhấn để dành cho trạng thái bật. */
   input[type='range'] {
     appearance: none; background: transparent; height: 1rem; cursor: pointer;
-    --fill: rgb(var(--accent-500));
+    --fill: rgb(var(--scrub-played));
   }
   /* --p (0%–100%) do component đặt để tô phần đã chọn; Firefox dùng ::-moz-range-progress. */
   input[type='range']::-webkit-slider-runnable-track {
-    height: 4px; border-radius: 9999px;
-    background: linear-gradient(to right, var(--fill) var(--p, 0%), rgb(var(--ink-700)) var(--p, 0%));
+    height: 3px; border-radius: 1px;
+    background: linear-gradient(to right, var(--fill) var(--p, 0%), rgb(var(--scrub-rest)) var(--p, 0%));
   }
-  input[type='range']::-moz-range-track { height: 4px; border-radius: 9999px; background: rgb(var(--ink-700)); }
-  input[type='range']::-moz-range-progress { height: 4px; border-radius: 9999px; background: var(--fill); }
+  input[type='range']::-moz-range-track { height: 3px; border-radius: 1px; background: rgb(var(--scrub-rest)); }
+  input[type='range']::-moz-range-progress { height: 3px; border-radius: 1px; background: var(--fill); }
   input[type='range']::-webkit-slider-thumb {
-    appearance: none; width: 12px; height: 12px; margin-top: -4px; border-radius: 9999px;
-    background: rgb(var(--ink-50)); box-shadow: 0 0 0 3px rgb(var(--accent-500) / 0.35), 0 1px 3px rgb(0 0 0 / 0.5);
-    transition: box-shadow 120ms;
+    appearance: none; width: 10px; height: 14px; margin-top: -5.5px; border-radius: 2px;
+    background: rgb(var(--surface-raised)); border: 1px solid rgb(var(--line-strong));
   }
   input[type='range']::-moz-range-thumb {
-    width: 12px; height: 12px; border: 0; border-radius: 9999px;
-    background: rgb(var(--ink-50)); box-shadow: 0 0 0 3px rgb(var(--accent-500) / 0.35), 0 1px 3px rgb(0 0 0 / 0.5);
+    width: 10px; height: 14px; border-radius: 2px;
+    background: rgb(var(--surface-raised)); border: 1px solid rgb(var(--line-strong));
   }
-  input[type='range']:hover::-webkit-slider-thumb, input[type='range']:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 5px rgb(var(--accent-500) / 0.35), 0 1px 3px rgb(0 0 0 / 0.5); }
   input[type='range']:focus-visible { outline: none; }
+  input[type='range']:focus-visible::-webkit-slider-thumb { outline: 2px solid rgb(var(--focus)); outline-offset: 1px; }
+  input[type='range']:focus-visible::-moz-range-thumb { outline: 2px solid rgb(var(--focus)); outline-offset: 1px; }
 
   details > summary { list-style: none; }
   details > summary::-webkit-details-marker { display: none; }
 }
 
 @layer components {
-  /* Bề mặt bảng: một cấp nổi duy nhất, viền mảnh + vệt sáng mép trên. Dùng chung cho mọi bảng để nhịp điệu đồng nhất. */
-  .panel { @apply rounded-xl border border-ink-700/80 bg-ink-900/80 shadow-panel; }
-  .panel-title { @apply text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-300; }
-  .btn-ghost { @apply rounded-md px-1.5 py-0.5 text-xs text-ink-300 transition hover:bg-ink-800 hover:text-ink-100; }
-  .chip { @apply rounded-full border border-ink-700 bg-ink-950/40 px-2.5 py-0.5 text-xs text-ink-100 transition hover:border-ink-500 hover:bg-ink-800; }
-  .chip-on { @apply border-accent-500 bg-accent-600/20 text-ink-50; }
-  .disclosure { @apply flex cursor-pointer select-none items-center gap-1 text-ink-300 transition hover:text-ink-100; }
+  /* Vùng: phẳng, kẻ 1 px, không bóng (D-53). */
+  .panel { @apply rounded-md border border-line bg-surface; }
+  .panel-title { @apply text-[11px] font-semibold uppercase tracking-[0.08em] text-muted; }
+  .btn-ghost { @apply rounded px-1.5 py-0.5 text-xs text-muted transition hover:bg-raised hover:text-fg; }
+  .chip { @apply rounded border border-control bg-raised px-2.5 py-0.5 text-xs text-fg transition hover:border-line-strong; }
+  .chip-on { @apply border-accent bg-accent text-on-accent; }
+  .field { @apply rounded border border-control bg-raised text-fg; }
+  .disclosure { @apply flex cursor-pointer select-none items-center gap-1 text-muted transition hover:text-fg; }
   .disclosure::before {
     content: ''; width: 0.75rem; height: 0.75rem; flex-shrink: 0; transition: transform 150ms;
     background: currentColor;
@@ -87,6 +128,15 @@
             mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 4l4 4-4 4'/%3E%3C/svg%3E") center / contain no-repeat;
   }
   details[open] > .disclosure::before { transform: rotate(90deg); }
+  .select-wrap { position: relative; display: inline-flex; min-width: 0; color: rgb(var(--text-muted)); }
+  .select-wrap > select { width: 100%; }
+  .select-wrap::after {
+    content: ''; position: absolute; right: 0.35rem; top: 50%; width: 0.9rem; height: 0.9rem; transform: translateY(-50%);
+    pointer-events: none; background: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 6.5 8 10l3.5-3.5'/%3E%3C/svg%3E") center / contain no-repeat;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 6.5 8 10l3.5-3.5'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+  .select-wrap:hover { color: rgb(var(--text)); }
 }
 
 /* Ô màu track tròn (Chrome/Safari bọc ô màu trong wrapper có padding và viền vuông). */

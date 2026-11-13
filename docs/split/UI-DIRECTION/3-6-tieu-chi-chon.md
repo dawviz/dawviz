@@ -4,8 +4,8 @@ doc_title: "Định hướng hình ảnh: khung preview và giao diện web"
 section: "3.6 Tiêu chí chọn"
 path: "3. Bộ prompt sinh ảnh giao diện web > 3.6 Tiêu chí chọn"
 chunk: 3-6-tieu-chi-chon.md
-source_lines: 149-158
-source_sha1: cae014d43d
+source_lines: 150-159
+source_sha1: a66e3a3c8c
 ids: [REQ-UI-10, REQ-UI-13, REQ-UI-14]
 ---
 ### 3.6 Tiêu chí chọn

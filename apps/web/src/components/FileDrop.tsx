@@ -30,7 +30,8 @@ export function FileDrop({ onPick, busy, compact = false }: { onPick(p: Picked):
   const handlers = {
     role: 'button', tabIndex: 0, 'aria-busy': busy,
     onClick: () => input.current?.click(),
-    onKeyDown: (e: React.KeyboardEvent) => (e.key === 'Enter' || e.key === ' ') && input.current?.click(),
+    // Space mặc định cuộn trang; ô thả tệp đóng vai nút nên chặn hành vi đó (như <button> gốc).
+    onKeyDown: (e: React.KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.current?.click(); } },
     onDragOver: (e: React.DragEvent) => { e.preventDefault(); setOver(true); },
     onDragLeave: () => setOver(false),
     onDrop: (e: React.DragEvent) => { e.preventDefault(); setOver(false); take(e.dataTransfer.files); },
@@ -43,8 +44,8 @@ export function FileDrop({ onPick, busy, compact = false }: { onPick(p: Picked):
   if (compact) {
     return (
       <motion.div {...handlers} layoutId="file-drop" title={i18n.t('web.drop.title')}
-        className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-1.5 text-sm transition ${over ? 'border-accent-500 bg-accent-600/15 text-ink-50' : 'border-ink-700 bg-ink-900/70 text-ink-100 hover:border-ink-500'}`}>
-        <UploadIcon className={`h-4 w-4 ${busy ? 'animate-pulse text-accent-400' : 'text-ink-300'}`} />
+        className={`flex cursor-pointer items-center gap-2 rounded border px-3 py-1.5 text-sm transition ${over ? 'border-accent bg-accent/15 text-fg' : 'border-control bg-raised text-fg hover:border-line-strong'}`}>
+        <UploadIcon className={`h-4 w-4 ${busy ? 'motion-safe:animate-pulse text-accent' : 'text-muted'}`} />
         <span className="whitespace-nowrap">{busy ? i18n.t('web.drop.busy') : i18n.t('web.drop.replace')}</span>
         {fileInput}
       </motion.div>
@@ -54,15 +55,15 @@ export function FileDrop({ onPick, busy, compact = false }: { onPick(p: Picked):
   return (
     <motion.div {...handlers} layoutId="file-drop"
       animate={{ scale: over ? 1.01 : 1 }}
-      className={`group relative flex cursor-pointer flex-col items-center justify-center gap-3 overflow-hidden rounded-2xl border border-dashed px-6 py-16 text-center transition-colors ${over ? 'border-accent-500 bg-accent-600/10' : 'border-ink-700 bg-ink-900/50 hover:border-ink-500 hover:bg-ink-900/80'}`}>
-      <div className={`grid h-14 w-14 place-items-center rounded-2xl border transition ${over ? 'border-accent-500 bg-accent-600/20 text-accent-300' : 'border-ink-700 bg-ink-800 text-ink-300 group-hover:text-ink-100'}`}>
-        <UploadIcon className={`h-6 w-6 ${busy ? 'animate-pulse' : ''}`} />
+      className={`group relative flex cursor-pointer flex-col items-center justify-center gap-3 overflow-hidden rounded-md border border-dashed px-6 py-16 text-center transition-colors ${over ? 'border-accent bg-accent/10' : 'border-control bg-surface hover:border-line-strong'}`}>
+      <div className={`grid h-14 w-14 place-items-center rounded-md border transition ${over ? 'border-accent text-accent' : 'border-line bg-page text-muted group-hover:text-fg'}`}>
+        <UploadIcon className={`h-6 w-6 ${busy ? 'motion-safe:animate-pulse' : ''}`} />
       </div>
-      <p className="text-lg font-semibold tracking-tight text-ink-50">{busy ? i18n.t('web.drop.busy') : i18n.t('web.drop.title')}</p>
+      <p className="text-lg font-semibold tracking-tight text-fg">{busy ? i18n.t('web.drop.busy') : i18n.t('web.drop.title')}</p>
       <div className="flex flex-wrap justify-center gap-1.5" aria-hidden>
-        {FORMATS.map((f) => <span key={f} className="rounded-md border border-ink-700 bg-ink-950/60 px-2 py-0.5 font-mono text-[11px] text-ink-300">{f}</span>)}
+        {FORMATS.map((f) => <span key={f} className="rounded border border-line bg-page px-2 py-0.5 font-mono text-[11px] text-muted">{f}</span>)}
       </div>
-      <p className="max-w-md text-sm leading-relaxed text-ink-300">{i18n.t('web.drop.hint')}</p>
+      <p className="max-w-md text-sm leading-relaxed text-muted">{i18n.t('web.drop.hint')}</p>
       {fileInput}
     </motion.div>
   );

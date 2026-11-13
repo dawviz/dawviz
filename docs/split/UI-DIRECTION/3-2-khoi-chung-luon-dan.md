@@ -4,8 +4,8 @@ doc_title: "Định hướng hình ảnh: khung preview và giao diện web"
 section: "3.2 Khối chung (luôn dán)"
 path: "3. Bộ prompt sinh ảnh giao diện web > 3.2 Khối chung (luôn dán)"
 chunk: 3-2-khoi-chung-luon-dan.md
-source_lines: 86-99
-source_sha1: cae014d43d
+source_lines: 87-100
+source_sha1: a66e3a3c8c
 ids: []
 ---
 ### 3.2 Khối chung (luôn dán)

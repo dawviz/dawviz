@@ -22,3 +22,22 @@ test('trustedTypes: chỉ nhận script cùng origin', () => {
   assert.ok(!isSameOriginScript('javascript:alert(1)', base));
   assert.ok(!isSameOriginScript('blob:https://evil.example/1', base));
 });
+test('csp: theme-boot.js là script ngoài cùng origin (được script-src \'self\' cho chạy), không có script nội tuyến', async () => {
+  const { readFileSync } = await import('node:fs');
+  const html = readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
+  const scripts = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)];
+  assert.ok(scripts.length >= 2);
+  for (const [, attrs, body] of scripts) {
+    const src = /\bsrc="([^"]+)"/.exec(attrs)?.[1];
+    assert.ok(src, `script nội tuyến bị CSP chặn: ${body.slice(0, 40)}`);
+    assert.equal(body.trim(), '');
+    assert.ok(src.startsWith('/') && !src.startsWith('//'), `script phải cùng origin: ${src}`);
+  }
+  const boot = scripts.find(([, a]) => a.includes('src="/theme-boot.js"'));
+  assert.ok(boot, 'index.html phải nạp /theme-boot.js');
+  assert.ok(!/\btype="module"/.test(boot[1]), 'theme-boot.js chạy đồng bộ trong <head> để áp theme trước lần vẽ đầu');
+  assert.ok(html.indexOf('theme-boot.js') < html.indexOf('</head>'));
+  // Tệp phải nằm trong public/ để Vite chép nguyên vào bản build, và không dùng sink bị Trusted Types/CSP chặn.
+  const code = readFileSync(new URL('../../public/theme-boot.js', import.meta.url), 'utf8');
+  assert.ok(!/\beval\s*\(|new\s+Function|innerHTML|outerHTML|document\.write|insertAdjacentHTML|\.style\s*=|setAttribute\(\s*['"]style/.test(code));
+});

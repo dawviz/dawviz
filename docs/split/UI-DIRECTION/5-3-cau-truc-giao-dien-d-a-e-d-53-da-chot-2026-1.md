@@ -4,8 +4,8 @@ doc_title: "Định hướng hình ảnh: khung preview và giao diện web"
 section: "5.3 Cấu trúc giao diện: D + A + E (D-53, đã chốt 2026-11-13)"
 path: "5. Theme giao diện chỉ đổi màu (D-52) > 5.3 Cấu trúc giao diện: D + A + E (D-53, đã chốt 2026-11-13)"
 chunk: 5-3-cau-truc-giao-dien-d-a-e-d-53-da-chot-2026-1.md
-source_lines: 328-348
-source_sha1: cae014d43d
+source_lines: 329-349
+source_sha1: a66e3a3c8c
 ids: [D-53, REQ-UI-13, REQ-UI-15]
 ---
 ### 5.3 Cấu trúc giao diện: D + A + E (D-53, đã chốt 2026-11-13)

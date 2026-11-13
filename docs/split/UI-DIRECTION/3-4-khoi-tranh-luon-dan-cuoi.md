@@ -4,8 +4,8 @@ doc_title: "Định hướng hình ảnh: khung preview và giao diện web"
 section: "3.4 Khối tránh (luôn dán cuối)"
 path: "3. Bộ prompt sinh ảnh giao diện web > 3.4 Khối tránh (luôn dán cuối)"
 chunk: 3-4-khoi-tranh-luon-dan-cuoi.md
-source_lines: 132-136
-source_sha1: cae014d43d
+source_lines: 133-137
+source_sha1: a66e3a3c8c
 ids: []
 ---
 ### 3.4 Khối tránh (luôn dán cuối)

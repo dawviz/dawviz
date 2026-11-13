@@ -299,7 +299,7 @@ Nguồn: `docs/design/EXPRESSIONS.md` · [thứ tự đọc](docs/split/EXPRESSI
 
 Nguồn: `docs/design/UI-DIRECTION.md` · [thứ tự đọc](docs/split/UI-DIRECTION/_index.md)
 
-- [Định hướng hình ảnh: khung preview và giao diện web (mở đầu)](docs/split/UI-DIRECTION/dinh-huong-hinh-anh-khung-preview-va-giao-dien-w.md) · 1.9k
+- [Định hướng hình ảnh: khung preview và giao diện web (mở đầu)](docs/split/UI-DIRECTION/dinh-huong-hinh-anh-khung-preview-va-giao-dien-w.md) · 2.2k
 - [1. Khung preview: hướng "Bản in" 🟡 đã chốt hướng, chưa làm (D-51)](docs/split/UI-DIRECTION/1-khung-preview-huong-ban-in-da-chot-huong-chua.md) · 4.1k
 - [2. Giao diện web: vì sao đang trông "AI slop"](docs/split/UI-DIRECTION/2-giao-dien-web-vi-sao-dang-trong-ai-slop.md) · 1.5k
 - [3. Bộ prompt sinh ảnh giao diện web › 3.1 Cách dùng](docs/split/UI-DIRECTION/3-1-cach-dung.md) · 0.5k
@@ -314,7 +314,7 @@ Nguồn: `docs/design/UI-DIRECTION.md` · [thứ tự đọc](docs/split/UI-DIRE
 - [5. Theme giao diện chỉ đổi màu (D-52) › 5.1 Quyết định](docs/split/UI-DIRECTION/5-1-quyet-dinh.md) · 0.8k
 - [5. Theme giao diện chỉ đổi màu (D-52) › 5.2 Bộ token (đề xuất, chốt khi làm)](docs/split/UI-DIRECTION/5-2-bo-token-de-xuat-chot-khi-lam.md) · 1.0k
 - [5. Theme giao diện chỉ đổi màu (D-52) › 5.3 Cấu trúc giao diện: D + A + E (D-53, đã chốt 2026-11-13)](docs/split/UI-DIRECTION/5-3-cau-truc-giao-dien-d-a-e-d-53-da-chot-2026-1.md) · 2.2k
-- [5. Theme giao diện chỉ đổi màu (D-52) › 5.4 Bảng màu dựng sẵn (đã kiểm AA, v0.5)](docs/split/UI-DIRECTION/5-4-bang-mau-dung-san-da-kiem-aa-v0-5.md) · 3.3k
+- [5. Theme giao diện chỉ đổi màu (D-52) › 5.4 Bảng màu dựng sẵn (đã kiểm AA, v0.5)](docs/split/UI-DIRECTION/5-4-bang-mau-dung-san-da-kiem-aa-v0-5.md) · 4.5k
 - [6. Việc tiếp theo đề xuất](docs/split/UI-DIRECTION/6-viec-tiep-theo-de-xuat.md) · 0.9k
 - [7. Nguyên tắc sản phẩm: trình dựng thật, mặc định đơn giản (D-54)](docs/split/UI-DIRECTION/7-nguyen-tac-san-pham-trinh-dung-that-mac-dinh-d.md) · 1.1k
 

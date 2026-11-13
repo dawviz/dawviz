@@ -1,6 +1,8 @@
 /** @type {import('tailwindcss').Config} */
-// Màu giao diện đọc từ biến CSS (src/index.css) để có thể thêm theme sáng/tối và theme cộng đồng (REQ-UI-10)
-// mà không sửa class trong component. Dạng "r g b" cho phép dùng độ đục kiểu `bg-ink-900/60`.
+// Màu giao diện đọc từ token CSS (src/index.css, UI-DIRECTION 5.2) nên đổi theme không cần sửa class trong component (D-52).
+// Tên lớp ↔ token: page=bg, surface, raised=surface-raised, line, control=line-control, line-strong, fg=text,
+// muted=text-muted, faint=text-faint, accent, on-accent=accent-text, focus, selection, danger, warning, success,
+// scrub-played, scrub-rest, waveform, guide. Không dùng màu Tailwind có sẵn (red-500, amber-…) trong giao diện app.
 const v = (name) => `rgb(var(--${name}) / <alpha-value>)`;
 
 export default {
@@ -8,14 +10,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: { 50: v('ink-50'), 100: v('ink-100'), 300: v('ink-300'), 500: v('ink-500'), 700: v('ink-700'), 800: v('ink-800'), 900: v('ink-900'), 950: v('ink-950') },
-        accent: { 300: v('accent-300'), 400: v('accent-400'), 500: v('accent-500'), 600: v('accent-600') },
+        page: v('bg'), surface: v('surface'), raised: v('surface-raised'),
+        line: v('line'), control: v('line-control'), 'line-strong': v('line-strong'),
+        fg: v('text'), muted: v('text-muted'), faint: v('text-faint'),
+        accent: v('accent'), 'on-accent': v('accent-text'), focus: v('focus'), selection: v('selection'),
+        danger: v('danger'), warning: v('warning'), success: v('success'),
+        'scrub-played': v('scrub-played'), 'scrub-rest': v('scrub-rest'), waveform: v('waveform'), guide: v('guide'),
       },
       fontFamily: { sans: ['"Inter Variable"', 'Inter', 'system-ui', 'sans-serif'] },
-      boxShadow: {
-        panel: '0 1px 0 0 rgb(255 255 255 / 0.04) inset, 0 8px 24px -12px rgb(0 0 0 / 0.6)',
-        stage: '0 0 0 1px rgb(var(--ink-700) / 0.8), 0 24px 60px -24px rgb(0 0 0 / 0.8)',
-      },
     },
   },
   plugins: [],

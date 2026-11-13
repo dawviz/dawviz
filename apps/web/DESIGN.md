@@ -63,7 +63,7 @@ Vai trò của màu nhấn, và chỉ những vai trò này: nút chính "Export
 | `text-faint` | `#6C6963` | `#8E9091` | Bậc chữ phụ thứ ba (vẫn đạt 4,5:1) |
 
 ### Trạng thái và thanh phát
-Token đã định danh nhưng chưa có giá trị: `focus`, `selection`, `danger`, `warning`, `success`, `scrub-played`, `scrub-rest`, `waveform` **[to be resolved during implementation]**. `guide` (đường gióng ở Edit Mode, REQ-GRAPHICS-02) là `#008C9E` ở cả hai theme: xanh mòng két khác tông mọi màu nhấn, vẽ trên khung video nên không đổi theo theme.
+Chốt khi làm T-48 (UI-DIRECTION 5.4 v0.6): `danger` `#951A12` / `#FF8A80`, `warning` `#8A5A00` / `#E8B44A`, `success` `#2E6B34` / `#7FC48A` (sáng / tối), mỗi lỗi và cảnh báo luôn kèm biểu tượng; `selection` `#D3CFC6` / `#3B3F45`; `focus` = `accent`; thanh trượt và thanh tua dùng `scrub-played` = `text` và `scrub-rest` = `line-control`; `waveform` = `text-faint`. `guide` (đường gióng ở Edit Mode, REQ-GRAPHICS-02) là `#008C9E` ở cả hai theme: xanh mòng két khác tông mọi màu nhấn, vẽ trên khung video nên không đổi theo theme.
 
 ### Named Rules
 **The One Signal Rule.** Mỗi màn hình chỉ có một màu nhấn, dùng cho đúng các vai trò kể trên. Không có màu nhấn thứ hai, không gradient, không phát sáng.
@@ -146,6 +146,7 @@ Thanh trượt luôn đi kèm ô số căn phải (REQ-UI-15, D-49): không thu�
 - **Do** kiểm AA tự động khi nạp theme (chữ và `accent` 4,5:1 trên ba nền, `accent-text`/`accent` 4,5:1, `line-control` và `guide` 3:1) và từ chối cả theme nếu trượt.
 - **Do** phân vùng bằng đường kẻ 1 px và đánh số mục `01`, `02`, `03` ở inspector.
 - **Do** đặt mọi số liệu bằng chữ số đều, căn phải; mọi thanh trượt có ô số.
+- **Do** làm hover của nút chính bằng vòng `line-strong` cách nút 2 px; chỉ dùng các kiểu tô nhạt đã có luật kiểm trong `STATE_RULES` (`accent/15`, `accent/10`, `danger/10`, `warning/10`).
 - **Do** tự host mọi phông và đưa mọi chữ qua `locales/`.
 - **Do** gọi phong cách khung video là "Video styles" / "Phong cách video", và theme app là "Giao diện ứng dụng".
 - **Do** đặt khoá (lock) chỉ ở danh sách lớp của Editor; dòng track ở Preview có tay nắm kéo, ô màu, mắt, `S`, số nốt.
@@ -158,5 +159,6 @@ Thanh trượt luôn đi kèm ô số căn phải (REQ-UI-15, D-49): không thu�
 - **Don't** dùng nhãn bọc trong ngoặc kiểu `[IN HOA]`.
 - **Don't** nhận CSS tuỳ ý trong theme, hoặc cho theme đổi phông, cỡ, khoảng cách, bố cục.
 - **Don't** dùng `line` làm viền duy nhất của điều khiển, hoặc dùng màu cam của màu nhấn cho đường gióng.
+- **Don't** làm nhạt nền nhấn khi hover (`accent/90`): chữ trắng trên Đồng sáng chỉ còn 4,39:1.
 - **Don't** dùng tên, bài hát hay nhận diện của kênh tham chiếu trong preset "Bản in".
 - **Don't** dùng ảnh thử AI trong UI-DIRECTION mục 4 như ảnh chụp sản phẩm hay như bản vẽ chi tiết phải chép theo.

@@ -4,8 +4,8 @@ doc_title: "Định hướng hình ảnh: khung preview và giao diện web"
 section: "4. Nhật ký thử và hướng được chọn"
 path: "4. Nhật ký thử và hướng được chọn"
 chunk: 4-nhat-ky-thu-va-huong-duoc-chon.md
-source_lines: 284-303
-source_sha1: cae014d43d
+source_lines: 285-304
+source_sha1: a66e3a3c8c
 ids: [D-51, D-53]
 ---
 ## 4. Nhật ký thử và hướng được chọn

@@ -4,6 +4,7 @@ import { AnimatePresence, LayoutGroup, MotionConfig, motion } from 'framer-motio
 import { DEFAULT_BRIGHTNESS, DEFAULT_KEYBOARD_STYLE, defaultStyleConfig, sanitizeBrightness, buildIndex, defaultScene, type Derived, type PianoRollProps, type SceneDocument, type WidgetSpec, type BrightnessConfig, type NoteStyle, type StyleConfig, type KeyboardStyle, type UnifiedProjectAST } from '@dawviz/render-core';
 import { useI18n } from './i18n/I18nProvider.tsx';
 import { LanguageSelect } from './components/LanguageSelect.tsx';
+import { ThemeSelect } from './components/ThemeSelect.tsx';
 import { FileDrop, type Picked } from './components/FileDrop.tsx';
 import { Notices } from './components/Notices.tsx';
 import { MissingMidiPanel } from './components/MissingMidiPanel.tsx';
@@ -121,7 +122,7 @@ export function App() {
   const tracksSection = loaded && (
     <section aria-labelledby="tracks-h" className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 id="tracks-h" className="panel-title flex items-center gap-2">{i18n.t('web.tracks')} <span className="rounded-full bg-ink-800 px-1.5 py-px text-[10px] tabular-nums text-ink-100">{loaded.ast.tracks.length}</span></h2>
+        <h2 id="tracks-h" className="panel-title flex items-center gap-2">{i18n.t('web.tracks')} <span className="rounded border border-line bg-page px-1.5 py-px text-[10px] tabular-nums text-fg">{loaded.ast.tracks.length}</span></h2>
         <TrackLayoutBar value={trackLayout} onChange={setTrackLayout} count={loaded.ast.tracks.length} />
       </div>
       <TrackPanel tracks={loaded.ast.tracks} config={brightness} overrides={style.tracks} onChange={patchBrightness} onStyle={patchTrackStyle} t={clock.t} tempoMap={loaded.ast.tempoMap} layout={trackLayout} />
@@ -131,16 +132,17 @@ export function App() {
   return (
     <MotionConfig reducedMotion="user"><LayoutGroup>
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-20 border-b border-ink-700/60 bg-ink-950/75 backdrop-blur-md">
+      <header className="sticky top-0 z-20 border-b border-line bg-surface">
         <div className="mx-auto flex h-14 max-w-7xl items-center gap-4 px-4 sm:px-6">
-          <h1 className="flex items-center gap-2.5 text-[15px] font-semibold tracking-tight text-ink-50">
+          <h1 className="flex items-center gap-2.5 text-[15px] font-semibold tracking-tight text-fg">
             <Logo />{i18n.t('web.title')}
           </h1>
-          {loaded && <span className="hidden min-w-0 truncate text-xs text-ink-300 md:block" title={loaded.name}>
-            <span className="text-ink-500">/</span> <span className="text-ink-100">{loaded.name}</span>
+          {loaded && <span className="hidden min-w-0 truncate text-xs text-muted md:block" title={loaded.name}>
+            <span className="text-faint">/</span> <span className="text-fg">{loaded.name}</span>
           </span>}
           <div className="ml-auto flex items-center gap-3">
             {loaded && <FileDrop onPick={onPick} busy={busy} compact />}
+            <ThemeSelect />
             <LanguageSelect />
           </div>
         </div>
@@ -158,15 +160,15 @@ export function App() {
             {/* Khung xem trước chỉ "dính" khi danh sách track nằm ở cột phải; ở chế độ lưới, thẻ track nằm bên dưới nên không được che. */}
             <section className={`min-w-0 ${trackLayout.mode === 'list' ? 'lg:sticky lg:top-[4.5rem]' : ''}`}>
               {/* "Sân khấu": khung hình + thanh phát là một khối, để khung xem trước tách khỏi nền trang. */}
-              <div className="overflow-hidden rounded-2xl bg-ink-900 shadow-stage">
-                <div className="flex items-center justify-between gap-3 border-b border-ink-700/70 px-3 py-2 text-xs text-ink-300">
+              <div className="overflow-hidden rounded-md border border-line bg-surface">
+                <div className="flex items-center justify-between gap-3 border-b border-line px-3 py-2 text-xs text-muted">
                   <span className="truncate">{i18n.t('web.loaded', { name: loaded.name, format: loaded.format, ms: Math.round(loaded.ms), tracks: loaded.ast.tracks.length })}</span>
-                  <span className="shrink-0 rounded border border-ink-700 px-1.5 py-px font-mono text-[10px] text-ink-300">{scene.canvas.designWidth}×{scene.canvas.designHeight}</span>
+                  <span className="shrink-0 rounded border border-line px-1.5 py-px text-[10px] tabular-nums text-muted">{scene.canvas.designWidth}×{scene.canvas.designHeight}</span>
                 </div>
-                <div className="bg-black">
+                <div className="bg-page">
                   {derived && <SceneCanvas scene={scene} derived={derived} ast={loaded.ast} t={clock.t} />}
                 </div>
-                <div className="border-t border-ink-700/70">
+                <div className="border-t border-line">
                   <Transport t={clock.t} duration={duration} playing={clock.playing}
                     onToggle={() => setClock((s) => togglePlay(s, duration))} onSeek={(t) => setClock((s) => seek(s, t, duration))} />
                 </div>
@@ -189,8 +191,8 @@ export function App() {
 /** Biểu tượng ứng dụng: vài thanh nốt lệch nhau, gợi piano roll. */
 function Logo() {
   return (
-    <span aria-hidden className="grid h-7 w-7 place-items-center rounded-lg bg-gradient-to-br from-accent-400 to-accent-600 shadow-[0_4px_14px_-4px_rgb(var(--accent-500)/0.7)]">
-      <svg viewBox="0 0 16 16" className="h-4 w-4 text-ink-950"><g fill="currentColor"><rect x="2" y="3" width="6" height="2" rx="1" /><rect x="6" y="7" width="8" height="2" rx="1" /><rect x="3" y="11" width="5" height="2" rx="1" /></g></svg>
+    <span aria-hidden className="grid h-7 w-7 place-items-center rounded bg-accent">
+      <svg viewBox="0 0 16 16" className="h-4 w-4 text-on-accent"><g fill="currentColor"><rect x="2" y="3" width="6" height="2" rx="1" /><rect x="6" y="7" width="8" height="2" rx="1" /><rect x="3" y="11" width="5" height="2" rx="1" /></g></svg>
     </span>
   );
 }

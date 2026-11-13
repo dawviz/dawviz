@@ -8,6 +8,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { BRIGHTNESS_DB_RANGE, DEFAULT_BRIGHTNESS, pitchName, trackBrightness, type ProjectTrack, type BrightnessConfig, type BrightnessSource, type NoteStyle, type TempoPoint } from '@dawviz/render-core';
 import { SliderField } from './SliderField.tsx';
 import { NumberField } from './NumberField.tsx';
+import { Select } from './Select.tsx';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 
 const SOURCES: BrightnessSource[] = ['off', 'volume', 'static', 'pan', 'mute'];
@@ -41,10 +42,10 @@ export function TrackPanel(props: Props) {
 /** Thanh chọn kiểu trình bày: Lưới/Danh sách + số cột (ô nhập số, không giới hạn cứng ngoài số track). */
 export function TrackLayoutBar({ value, onChange, count }: { value: TrackLayout; onChange(v: TrackLayout): void; count: number }) {
   const { i18n } = useI18n();
-  const btn = (on: boolean) => `rounded-md px-2.5 py-1 text-xs transition ${on ? 'bg-ink-700 text-ink-50 shadow-sm' : 'text-ink-300 hover:text-ink-100'}`;
+  const btn = (on: boolean) => `rounded-sm px-2.5 py-1 text-xs transition ${on ? 'bg-accent text-on-accent' : 'text-muted hover:text-fg'}`;
   return (
     <div className="flex flex-wrap items-center gap-2" data-testid="track-layout-bar">
-      <div className="flex gap-0.5 rounded-lg border border-ink-700/70 bg-ink-900 p-0.5" role="radiogroup" aria-label={i18n.t('web.tracks.layout')}>
+      <div className="flex gap-0.5 rounded border border-control bg-raised p-0.5" role="radiogroup" aria-label={i18n.t('web.tracks.layout')}>
         {(['grid', 'list'] as const).map((m) => (
           <button key={m} type="button" role="radio" aria-checked={value.mode === m} className={btn(value.mode === m)} onClick={() => onChange({ ...value, mode: m })}>
             {i18n.t(`web.tracks.layout.${m}`)}
@@ -52,7 +53,7 @@ export function TrackLayoutBar({ value, onChange, count }: { value: TrackLayout;
         ))}
       </div>
       {value.mode === 'grid' && (
-        <div className="flex items-center gap-2 text-xs text-ink-300">
+        <div className="flex items-center gap-2 text-xs text-muted">
           <label className="flex items-center gap-1">
             <input type="checkbox" checked={value.columns === 'auto'} onChange={(e) => onChange({ ...value, columns: e.target.checked ? 'auto' : 3 })} />
             {i18n.t('web.tracks.columns.auto')}
@@ -99,18 +100,18 @@ function TrackGrid({ tracks, config, overrides, onChange, onStyle, t = 0, tempoM
   const { cols, limited } = effectiveColumns(columns, width || MIN_CARD_PX * 3, tracks.length);
   return (
     <div>
-      {limited && <p className="mb-2 text-xs text-amber-200" data-testid="track-columns-limited">{i18n.t('web.tracks.columns.limited', { n: cols })}</p>}
+      {limited && <p className="mb-2 text-xs text-warning" data-testid="track-columns-limited">{i18n.t('web.tracks.columns.limited', { n: cols })}</p>}
       <ul ref={ref} role="list" className="grid gap-3" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }} data-testid="track-grid" data-cols={cols}>
         <AnimatePresence initial={false}>
           {tracks.map((tr) => (
             <motion.li key={tr.id} layout layoutId={`track-${tr.id}`} transition={SPRING} initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }}
-              className="panel relative min-w-0 overflow-hidden p-3 pt-3.5 transition-colors hover:border-ink-500/80">
+              className="panel relative min-w-0 overflow-hidden p-3 pt-3.5 transition-colors hover:border-line-strong">
               {/* Dải màu track ở mép trên: nhận ra track bằng màu như trong DAW, không chỉ bằng chấm nhỏ. */}
               <span aria-hidden className="absolute inset-x-0 top-0 h-[3px]" style={{ background: overrides[tr.id]?.customColor ?? tr.color }} />
               <TrackHeader tr={tr} c={config[tr.id]} overrides={overrides} onStyle={onStyle} t={t} tempoMap={tempoMap}
                 focusProps={{ tabIndex: 0, 'data-track-focus': '', onKeyDown: (e: KeyboardEvent<HTMLElement>) => arrowNav(e, ref.current) }} />
               <TrackControls tr={tr} c={config[tr.id]} overrides={overrides} onChange={onChange} onStyle={onStyle} />
-              <details className="mt-2.5 border-t border-ink-700/60 pt-2 text-xs text-ink-300" data-testid={`track-details-${tr.id}`}>
+              <details className="mt-2.5 border-t border-line pt-2 text-xs text-muted" data-testid={`track-details-${tr.id}`}>
                 <summary className="disclosure">{i18n.t('web.track.details')}</summary>
                 <TrackInfo tr={tr} c={config[tr.id]} onChange={(p) => onChange(tr.id, p)} />
               </details>
@@ -128,13 +129,13 @@ function TrackList({ tracks, config, overrides, onChange, onStyle, t = 0, tempoM
   const [open, setOpen] = useState<Set<string>>(new Set());
   const toggle = (id: string) => setOpen((s) => { const n = new Set(s); if (n.has(id)) n.delete(id); else n.add(id); return n; });
   return (
-    <ul ref={ref} role="list" className="panel divide-y divide-ink-700/70 overflow-hidden" data-testid="track-list">
+    <ul ref={ref} role="list" className="panel divide-y divide-line overflow-hidden" data-testid="track-list">
       <AnimatePresence initial={false}>
         {tracks.map((tr) => {
           const isOpen = open.has(tr.id);
           return (
             <motion.li key={tr.id} layout layoutId={`track-${tr.id}`} transition={SPRING} className="min-w-0">
-              <div className={`flex items-center gap-2 px-3 py-1.5 ${isOpen ? 'bg-ink-800' : 'hover:bg-ink-800/60'}`}>
+              <div className={`flex items-center gap-2 px-3 py-1.5 ${isOpen ? 'bg-raised' : 'hover:bg-raised'}`}>
                 <TrackHeader tr={tr} c={config[tr.id]} overrides={overrides} onStyle={onStyle} t={t} tempoMap={tempoMap} compact
                   focusProps={{ role: 'button', tabIndex: 0, 'aria-expanded': isOpen, 'data-track-focus': '', onClick: () => toggle(tr.id),
                     onKeyDown: (e: KeyboardEvent<HTMLElement>) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(tr.id); } else arrowNav(e, ref.current); } }} />
@@ -145,7 +146,7 @@ function TrackList({ tracks, config, overrides, onChange, onStyle, t = 0, tempoM
                     className="overflow-hidden" data-testid={`track-details-${tr.id}`}>
                     <div className="px-3 pb-3 pt-1">
                       <TrackControls tr={tr} c={config[tr.id]} overrides={overrides} onChange={onChange} onStyle={onStyle} />
-                      <div className="mt-2 text-xs text-ink-300"><TrackInfo tr={tr} c={config[tr.id]} onChange={(p) => onChange(tr.id, p)} /></div>
+                      <div className="mt-2 text-xs text-muted"><TrackInfo tr={tr} c={config[tr.id]} onChange={(p) => onChange(tr.id, p)} /></div>
                     </div>
                   </motion.div>
                 )}
@@ -154,7 +155,7 @@ function TrackList({ tracks, config, overrides, onChange, onStyle, t = 0, tempoM
           );
         })}
       </AnimatePresence>
-      {tracks.length === 0 && <li className="px-3 py-2 text-xs text-ink-300">{i18n.t('web.track.none')}</li>}
+      {tracks.length === 0 && <li className="px-3 py-2 text-xs text-muted">{i18n.t('web.track.none')}</li>}
     </ul>
   );
 }
@@ -166,13 +167,13 @@ function TrackHeader({ tr, c, overrides, onStyle, t, tempoMap, compact, focusPro
   const pct = i18n.number(b, { style: 'percent', maximumFractionDigits: 0 });
   return (
     <div className="flex min-w-0 flex-1 items-center gap-2">
-      <input type="color" aria-label={`${i18n.t('web.track.color')}: ${tr.name}`} className="swatch h-4 w-4 shrink-0 cursor-pointer rounded-full border-0 bg-transparent p-0 ring-2 ring-ink-950 ring-offset-1 ring-offset-ink-700"
+      <input type="color" aria-label={`${i18n.t('web.track.color')}: ${tr.name}`} className="swatch h-4 w-4 shrink-0 cursor-pointer rounded-full border-0 bg-transparent p-0 ring-1 ring-control ring-offset-1 ring-offset-surface"
         value={overrides[tr.id]?.customColor ?? tr.color} onChange={(e) => onStyle(tr.id, { colorMode: 'custom', customColor: e.target.value })} />
-      <div {...focusProps} className={`flex min-w-0 flex-1 items-center gap-2 rounded focus:outline-none focus:ring-1 focus:ring-accent-400 ${compact ? 'cursor-pointer' : ''}`}>
-        <span className={`min-w-0 flex-1 truncate ${compact ? 'text-sm' : 'text-[15px] font-semibold tracking-tight text-ink-50'}`} title={tr.name}>{tr.name}</span>
-        <span className="shrink-0 rounded-full bg-ink-800 px-1.5 py-px text-[11px] tabular-nums text-ink-300">{i18n.t('web.track.notes', { n: tr.notes.length })}</span>
-        {c.source !== 'off' && <span className="shrink-0 text-xs tabular-nums text-ink-100" title={i18n.t('web.brightness.now')} data-testid={`brightness-now-${tr.id}`}>{pct}</span>}
-        {compact && <span aria-hidden className="shrink-0 text-ink-300">{(focusProps['aria-expanded'] as boolean) ? '▾' : '▸'}</span>}
+      <div {...focusProps} className={`flex min-w-0 flex-1 items-center gap-2 rounded focus:outline-none focus:ring-1 focus:ring-focus ${compact ? 'cursor-pointer' : ''}`}>
+        <span className={`min-w-0 flex-1 truncate ${compact ? 'text-sm' : 'text-[15px] font-semibold tracking-tight text-fg'}`} title={tr.name}>{tr.name}</span>
+        <span className="shrink-0 rounded border border-line bg-page px-1.5 py-px text-[11px] tabular-nums text-muted">{i18n.t('web.track.notes', { n: tr.notes.length })}</span>
+        {c.source !== 'off' && <span className="shrink-0 text-xs tabular-nums text-fg" title={i18n.t('web.brightness.now')} data-testid={`brightness-now-${tr.id}`}>{pct}</span>}
+        {compact && <span aria-hidden className="shrink-0 text-muted">{(focusProps['aria-expanded'] as boolean) ? '▾' : '▸'}</span>}
       </div>
     </div>
   );
@@ -181,13 +182,13 @@ function TrackHeader({ tr, c, overrides, onStyle, t, tempoMap, compact, focusPro
 function TrackControls({ tr, c, overrides, onChange, onStyle }: { tr: ProjectTrack; c: BrightnessConfig; overrides: Props['overrides']; onChange: Props['onChange']; onStyle: Props['onStyle'] }) {
   const { i18n } = useI18n();
   return (
-    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-300">
+    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
       <label className="flex min-w-0 max-w-full flex-1 items-center gap-2">
         <span className="shrink-0">{i18n.t('web.brightness.source')}</span>
-        <select value={c.source} onChange={(e) => onChange(tr.id, { source: e.target.value as BrightnessSource })}
-          className="min-w-0 flex-1 truncate rounded-md border border-ink-700 bg-ink-950 py-1 pl-2 text-ink-100">
+        <Select value={c.source} onChange={(e) => onChange(tr.id, { source: e.target.value as BrightnessSource })}
+          wrapClassName="min-w-0 flex-1" className="truncate py-1 pl-2">
           {SOURCES.map((s) => <option key={s} value={s}>{i18n.t(`web.brightness.${s}`)}{EXPERIMENTAL.has(s) ? ` (${i18n.t('web.experimental')})` : ''}</option>)}
-        </select>
+        </Select>
       </label>
       {c.source !== 'off' && (
         <label className="flex items-center gap-1">
@@ -212,13 +213,13 @@ function TrackInfo({ tr, c, onChange }: { tr: ProjectTrack; c: BrightnessConfig;
   return (
     <>
       <dl className="mt-2 grid grid-cols-[minmax(0,7rem)_minmax(0,1fr)] gap-x-2 gap-y-1">
-        <dt className="truncate">{i18n.t('web.track.range')}</dt><dd className="truncate text-ink-100">{tr.notes.length ? `${pitchName(tr.pitchRange.min)} – ${pitchName(tr.pitchRange.max)}` : '—'}</dd>
-        <dt className="truncate">{i18n.t('web.track.fader')}</dt><dd className="truncate text-ink-100">{tr.mix ? `${db(tr.mix.volumeDb)} · ${i18n.t('web.track.pan')} ${i18n.number(tr.mix.pan, { maximumFractionDigits: 2 })}` : '—'}</dd>
-        <dt className="truncate">{i18n.t('web.track.automation')}</dt><dd className="truncate text-ink-100">{lanes.length ? lanes.map(laneName).join(', ') : i18n.t('web.track.none')}</dd>
-        {tr.isMuted && <><dt className="truncate">{i18n.t('web.track.state')}</dt><dd className="text-amber-200">{i18n.t('web.track.mutedInDaw')}</dd></>}
+        <dt className="truncate">{i18n.t('web.track.range')}</dt><dd className="truncate text-fg">{tr.notes.length ? `${pitchName(tr.pitchRange.min)} – ${pitchName(tr.pitchRange.max)}` : '—'}</dd>
+        <dt className="truncate">{i18n.t('web.track.fader')}</dt><dd className="truncate text-fg">{tr.mix ? `${db(tr.mix.volumeDb)} · ${i18n.t('web.track.pan')} ${i18n.number(tr.mix.pan, { maximumFractionDigits: 2 })}` : '—'}</dd>
+        <dt className="truncate">{i18n.t('web.track.automation')}</dt><dd className="truncate text-fg">{lanes.length ? lanes.map(laneName).join(', ') : i18n.t('web.track.none')}</dd>
+        {tr.isMuted && <><dt className="truncate">{i18n.t('web.track.state')}</dt><dd className="text-warning">{i18n.t('web.track.mutedInDaw')}</dd></>}
       </dl>
       {c.source !== 'off' && (
-        <div className="mt-2 space-y-1.5 border-t border-ink-700 pt-2">
+        <div className="mt-2 space-y-1.5 border-t border-line pt-2">
           {usesDb && <>
             <SliderField id={id('floor')} label={i18n.t('web.brightness.floorDb')} value={c.floorDb} min={-60} max={0} hardMin={dLo} hardMax={dHi} step={1} onChange={(v) => onChange({ floorDb: v })} />
             <SliderField id={id('ceil')} label={i18n.t('web.brightness.ceilDb')} value={c.ceilDb} min={-48} max={12} hardMin={dLo} hardMax={dHi} step={1} onChange={(v) => onChange({ ceilDb: v })} />
