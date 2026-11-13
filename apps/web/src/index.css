@@ -59,6 +59,11 @@
 :root[data-theme='light'][data-palette='brass'] { --accent: 133 100 46; } /* #85642E */
 :root[data-theme='light'][data-palette='riso'] { --accent: 190 44 123; }  /* #BE2C7B */
 
+/* Sàn vùng bấm (WCAG 2.5.8 AA): mọi điều khiển nhỏ hơn 24 px được nới vùng bấm bằng phần tử vô hình hoặc padding trừ lề,
+   KHÔNG đổi kích thước nhìn thấy. Một quy tắc dùng chung (DESIGN.md, Shapes): `.hit`, `.btn-ghost`, `.tog` dùng ::after;
+   ô nhập, thanh trượt và ô màu (không có ::after) dùng --hit làm chiều cao tối thiểu / padding. */
+:root { --hit: 1.5rem; }
+
 /* Token dẫn xuất: cùng giá trị ở mọi theme dựng sẵn; theme cộng đồng (1.1) có thể khai báo riêng. */
 :root {
   --focus: var(--accent);
@@ -86,7 +91,7 @@
 
   /* Thanh trượt kiểu fader phẳng: phần đã chọn = scrub-played, phần còn lại = scrub-rest. Màu nhấn để dành cho trạng thái bật. */
   input[type='range'] {
-    appearance: none; background: transparent; height: 1rem; cursor: pointer;
+    appearance: none; background: transparent; height: var(--hit); margin-block: calc((1rem - var(--hit)) / 2); cursor: pointer; /* cao 24 px, chiếm chỗ 16 px */
     --fill: rgb(var(--scrub-played));
   }
   /* --p (0%–100%) do component đặt để tô phần đã chọn; Firefox dùng ::-moz-range-progress. */
@@ -113,13 +118,18 @@
 }
 
 @layer components {
-  /* Vùng: phẳng, kẻ 1 px, không bóng (D-53). */
-  .panel { @apply rounded-md border border-line bg-surface; }
-  .panel-title { @apply text-[11px] font-semibold uppercase tracking-[0.08em] text-muted; }
+  .hit, .btn-ghost, .tog { position: relative; }
+  .hit::after, .btn-ghost::after, .tog::after {
+    content: ''; position: absolute; left: 50%; top: 50%; width: 100%; height: 100%; min-width: var(--hit); min-height: var(--hit); transform: translate(-50%, -50%);
+  }
   .btn-ghost { @apply rounded px-1.5 py-0.5 text-xs text-muted transition hover:bg-raised hover:text-fg; }
-  .chip { @apply rounded border border-control bg-raised px-2.5 py-0.5 text-xs text-fg transition hover:border-line-strong; }
-  .chip-on { @apply border-accent bg-accent text-on-accent; }
   .field { @apply rounded border border-control bg-raised text-fg; }
+  /* Nút chọn chia đoạn và nút bật/tắt: ô đang chọn dùng màu TRUNG TÍNH (nền nổi + vòng line-strong + chữ đậm).
+     Màu nhấn đặc chỉ dành cho nút Phát, nút Xuất video và gạch chân thẻ (DESIGN.md, Colors). */
+  .seg { @apply flex gap-0.5 rounded border border-control bg-page p-0.5; }
+  .seg-btn { @apply min-w-0 rounded-sm px-2.5 py-1 text-xs text-muted transition hover:text-fg; }
+  .tog { @apply grid h-6 w-6 shrink-0 place-items-center rounded-sm text-muted transition hover:bg-raised hover:text-fg; }
+  .seg-btn[aria-checked='true'], .tog[aria-pressed='true'] { @apply bg-raised font-semibold text-fg ring-1 ring-line-strong; }
   .disclosure { @apply flex cursor-pointer select-none items-center gap-1 text-muted transition hover:text-fg; }
   .disclosure::before {
     content: ''; width: 0.75rem; height: 0.75rem; flex-shrink: 0; transition: transform 150ms;
@@ -139,10 +149,15 @@
   .select-wrap:hover { color: rgb(var(--text)); }
 }
 
-/* Ô màu track tròn (Chrome/Safari bọc ô màu trong wrapper có padding và viền vuông). */
+/* Ô màu track tròn 14 px nhìn thấy (Chrome/Safari bọc ô màu trong wrapper có padding và viền vuông). Ô nhận bấm cao/rộng --hit:
+   padding đưa phần nhìn thấy về 14 px, lề âm trả lại chỗ chiếm trong dòng. Vòng viền vẽ trên phần nhìn thấy. */
+input[type='color'].swatch {
+  box-sizing: border-box; width: var(--hit); height: var(--hit); padding: calc((var(--hit) - 0.875rem) / 2); margin: calc((0.875rem - var(--hit)) / 2);
+  border: 0; background: transparent; cursor: pointer; flex-shrink: 0;
+}
 input[type='color'].swatch::-webkit-color-swatch-wrapper { padding: 0; }
-input[type='color'].swatch::-webkit-color-swatch { border: none; border-radius: 9999px; }
-input[type='color'].swatch::-moz-color-swatch { border: none; border-radius: 9999px; }
+input[type='color'].swatch::-webkit-color-swatch { border: none; border-radius: 9999px; box-shadow: 0 0 0 1px rgb(var(--line-control)); }
+input[type='color'].swatch::-moz-color-swatch { border: none; border-radius: 9999px; box-shadow: 0 0 0 1px rgb(var(--line-control)); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0ms !important; }

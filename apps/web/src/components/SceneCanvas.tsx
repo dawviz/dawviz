@@ -23,5 +23,5 @@ export function SceneCanvas({ scene, derived, ast, t }: { scene: SceneDocument; 
     renderFrame(scene, derived, ast, t, { ctx: ctx as unknown as RenderCtx, width: pw, height: ph }, pw / W);
   }, [scene, derived, ast, t, cssWidth, W, H]);
 
-  return <canvas ref={ref} data-testid="scene-canvas" className="block w-full rounded-xl" style={{ aspectRatio: `${W} / ${H}` }} />;
+  return <canvas ref={ref} data-testid="scene-canvas" className="block w-full" style={{ aspectRatio: `${W} / ${H}` }} />;
 }

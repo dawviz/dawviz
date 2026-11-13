@@ -1,11 +1,12 @@
 // "Giao diện ứng dụng" (REQ-UI-10, D-52): Sáng / Tối / Theo hệ thống và bảng màu nhấn. Chỉ đổi màu giao diện app,
 // không đổi khung video. Đổi tức thì, không tải lại trang; lựa chọn lưu theo trình duyệt (public/theme-boot.js áp lúc mở).
-// Ở T-70 bảng màu chuyển vào thẻ Settings; thanh trên giữ nút sáng/tối.
+// Thanh trên chỉ có nút sáng/tối (ThemeToggle); đủ lựa chọn nằm ở thẻ Settings (AppearanceSettings), theo UI-DIRECTION 5.3.
 import { useEffect, useState } from 'react';
 import { useI18n } from '../i18n/I18nProvider.tsx';
-import { Select } from './Select.tsx';
 import { loadPref, savePref } from '../lib/prefs.ts';
-import { applyTheme, DEFAULT_THEME, PALETTES, sanitizeThemePref, THEME_MODES, type Palette, type ThemeMode, type ThemePref } from '../lib/theme.ts';
+import { applyTheme, DEFAULT_THEME, PALETTES, resolveMode, sanitizeThemePref, THEME_MODES, type Palette, type ThemeMode, type ThemePref } from '../lib/theme.ts';
+import { Moon, Sun } from './Icons.tsx';
+import { radioKeys, radioTab } from '../lib/a11y.ts';
 
 const DARK_QUERY = '(prefers-color-scheme: dark)';
 const systemDark = () => typeof matchMedia === 'function' && matchMedia(DARK_QUERY).matches;
@@ -24,30 +25,42 @@ export function useTheme(): [ThemePref, (p: ThemePref) => void] {
   return [pref, setPref];
 }
 
-const SunMoon = () => (
-  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" className="h-4 w-4" aria-hidden>
-    <circle cx="8" cy="8" r="5.75" /><path d="M8 2.25a5.75 5.75 0 0 0 0 11.5Z" fill="currentColor" />
-  </svg>
-);
-
-export function ThemeSelect() {
+/** Nút sáng/tối ở thanh trên: đổi sang chế độ ngược với chế độ đang thấy (kể cả khi đang "Theo hệ thống"). */
+export function ThemeToggle({ pref, onChange }: { pref: ThemePref; onChange(p: ThemePref): void }) {
   const { i18n } = useI18n();
-  const [pref, setPref] = useTheme();
+  const dark = resolveMode(pref.mode, systemDark()) === 'dark';
+  const label = dark ? i18n.t('web.theme.toLight') : i18n.t('web.theme.toDark');
   return (
-    <div className="flex items-center gap-1.5 text-sm text-muted" role="group" aria-label={i18n.t('web.theme')}>
-      <span title={i18n.t('web.theme')}><SunMoon /></span>
-      <label>
-        <span className="sr-only">{i18n.t('web.theme.mode')}</span>
-        <Select value={pref.mode} onChange={(e) => setPref({ ...pref, mode: e.target.value as ThemeMode })} className="py-1 pl-2" data-testid="theme-mode">
-          {THEME_MODES.map((m) => <option key={m} value={m}>{i18n.t(`web.theme.${m}`)}</option>)}
-        </Select>
-      </label>
-      <label>
-        <span className="sr-only">{i18n.t('web.theme.palette')}</span>
-        <Select value={pref.palette} onChange={(e) => setPref({ ...pref, palette: e.target.value as Palette })} className="py-1 pl-2" data-testid="theme-palette">
-          {PALETTES.map((p) => <option key={p} value={p}>{i18n.t(`web.theme.palette.${p}`)}</option>)}
-        </Select>
-      </label>
+    <button type="button" className="grid h-8 w-8 place-items-center rounded text-muted transition hover:bg-raised hover:text-fg"
+      aria-label={label} title={label} data-testid="theme-toggle" onClick={() => onChange({ ...pref, mode: dark ? 'light' : 'dark' })}>
+      {dark ? <Sun /> : <Moon />}
+    </button>
+  );
+}
+
+function Segmented<T extends string>({ label, value, options, name, onChange }: { label: string; value: T; options: readonly T[]; name(v: T): string; onChange(v: T): void }) {
+  return (
+    <div className="seg flex-wrap" role="radiogroup" aria-label={label} onKeyDown={radioKeys}>
+      {options.map((o) => (
+        <button key={o} type="button" role="radio" aria-checked={value === o} tabIndex={radioTab(value === o)} onClick={() => onChange(o)}
+          className="seg-btn px-3 text-[13px]">{name(o)}</button>
+      ))}
+    </div>
+  );
+}
+
+/** Thẻ Settings: sáng/tối/theo hệ thống và bảng màu nhấn. */
+export function AppearanceSettings({ pref, onChange }: { pref: ThemePref; onChange(p: ThemePref): void }) {
+  const { i18n } = useI18n();
+  return (
+    <div className="space-y-3" data-testid="appearance-settings">
+      <div className="grid grid-cols-[minmax(0,9rem)_minmax(0,1fr)] items-center gap-3 text-[13px] text-muted">
+        <span>{i18n.t('web.theme.mode')}</span>
+        <Segmented label={i18n.t('web.theme.mode')} value={pref.mode} options={THEME_MODES} name={(m) => i18n.t(`web.theme.${m}`)} onChange={(mode: ThemeMode) => onChange({ ...pref, mode })} />
+        <span>{i18n.t('web.theme.palette')}</span>
+        <Segmented label={i18n.t('web.theme.palette')} value={pref.palette} options={PALETTES} name={(p) => i18n.t(`web.theme.palette.${p}`)} onChange={(palette: Palette) => onChange({ ...pref, palette })} />
+      </div>
+      <p className="text-xs text-muted">{i18n.t('web.settings.appearanceHint')}</p>
     </div>
   );
 }

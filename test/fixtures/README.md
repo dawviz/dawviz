@@ -27,3 +27,7 @@ Về `.alp`: repo **không có tệp `.alp` thật**; test `.alp` dựng gói `p
 ## Muốn đưa một tệp vào nhóm 1
 
 Chỉ khi bạn có quyền phân phối (tự tạo, hoặc giấy phép cho phép, ví dụ liên hệ Cockos xin phép bằng văn bản). Khi đó chuyển tệp ra khỏi `third-party/`, bỏ tên khỏi `THIRD_PARTY` trong `test/helpers.mjs`, và ghi nguồn, tác giả, giấy phép vào bảng nhóm 1 trong cùng pull request. Ưu tiên tệp nhỏ.
+
+## Tệp mẫu tự sinh (`generate-synthetic.mjs`)
+
+Để thử giao diện với dữ liệu khó (16 track tên rất dài có tiếng Việt, dự án tham chiếu 9 tệp `.mid` ngoài) mà không dính bản quyền: `node test/fixtures/generate-synthetic.mjs` ghi vào `test/fixtures/generated/`. Thư mục này nằm trong `.gitignore` (sinh lại bất cứ lúc nào, hạt giống cố định nên lần nào cũng ra đúng cùng tệp); chỉ script được commit. Nguồn tự tạo, không có bên thứ ba.

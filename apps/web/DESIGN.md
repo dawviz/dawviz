@@ -138,6 +138,9 @@ Hình khối phẳng, gọn như mặt thiết bị. Đường kẻ phân vùng 
 
 Thanh trượt luôn đi kèm ô số căn phải (REQ-UI-15, D-49): không thuộc tính nào chỉ chỉnh được bằng chuột.
 
+### Named Rules
+**The 24-Pixel Hit Rule.** Mọi điều khiển bấm được có vùng nhận bấm tối thiểu 24 × 24 px (`--hit` trong `index.css`, WCAG 2.5.8 AA), dù phần nhìn thấy nhỏ hơn (ô màu 14 px, thanh trượt 16 px, nút ghost 20 px). Nới bằng vùng vô hình, không bằng chỗ chiếm trong bố cục: lớp `.hit`, `.btn-ghost`, `.tog` dùng `::after` căn giữa; ô nhập chữ/số, thanh trượt và ô màu (không có `::after`) dùng `--hit` làm chiều cao tối thiểu, hoặc padding trừ lề âm để phần nhìn thấy giữ nguyên. Điều khiển mới phải qua quy tắc này, không tự đặt cỡ riêng. Hai điểm cần biết: ô nhập số cao 24 px thay vì 22 px (khung nhìn thấy được); ô đánh dấu gốc 13 px luôn nằm trong `<label>` bấm được cả dòng, nên vùng bấm thật là cả dòng đó.
+
 ## Do's and Don'ts
 
 ### Do:

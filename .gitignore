@@ -26,4 +26,7 @@ test/fixtures/third-party/
 .claude/skills/impeccable/
 .claude/agents/impeccable-*.md
 .github/hooks/impeccable.json
-.impeccable/critique/
+**/.impeccable/critique/
+
+# tệp mẫu sinh bằng test/fixtures/generate-synthetic.mjs
+test/fixtures/generated/

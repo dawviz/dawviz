@@ -1,7 +1,7 @@
 // Khung thả/chọn tệp dự án (kèm .mid ngoài); hiệu ứng Framer Motion.
 // `compact`: sau khi đã nạp dự án, khung thu lại thành một nút nhỏ ở thanh trên (vẫn nhận kéo thả) để khung xem trước lên đầu trang.
 import { useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { Crop } from './Stage.tsx';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 
 export interface Picked { main: File; extras: File[] }
@@ -14,7 +14,8 @@ const UploadIcon = ({ className = '' }: { className?: string }) => (
   </svg>
 );
 
-export function FileDrop({ onPick, busy, compact = false }: { onPick(p: Picked): void; busy: boolean; compact?: boolean }) {
+/** `compact`: nút nhỏ ở thanh trên. `slim`: ô thả thu gọn một dòng, dùng khi bảng thiếu .mid đang hiện (hành động chính là nạp .mid, không phải chọn lại dự án). */
+export function FileDrop({ onPick, busy, compact = false, slim = false }: { onPick(p: Picked): void; busy: boolean; compact?: boolean; slim?: boolean }) {
   const { i18n } = useI18n();
   const [over, setOver] = useState(false);
   const input = useRef<HTMLInputElement>(null);
@@ -43,28 +44,45 @@ export function FileDrop({ onPick, busy, compact = false }: { onPick(p: Picked):
 
   if (compact) {
     return (
-      <motion.div {...handlers} layoutId="file-drop" title={i18n.t('web.drop.title')}
-        className={`flex cursor-pointer items-center gap-2 rounded border px-3 py-1.5 text-sm transition ${over ? 'border-accent bg-accent/15 text-fg' : 'border-control bg-raised text-fg hover:border-line-strong'}`}>
+      <div {...handlers} title={i18n.t('web.drop.title')}
+        className={`flex cursor-pointer items-center gap-2 rounded border px-3 py-1.5 text-[13px] transition ${over ? 'border-accent bg-accent/15 text-fg' : 'border-control bg-raised text-fg hover:border-line-strong'}`}>
         <UploadIcon className={`h-4 w-4 ${busy ? 'motion-safe:animate-pulse text-accent' : 'text-muted'}`} />
-        <span className="whitespace-nowrap">{busy ? i18n.t('web.drop.busy') : i18n.t('web.drop.replace')}</span>
+        <span className="whitespace-nowrap">{busy ? i18n.t('web.drop.busy') : i18n.t('web.open')}</span>
         {fileInput}
-      </motion.div>
+      </div>
     );
   }
 
+  if (slim) {
+    return (
+      <div {...handlers} data-testid="file-drop"
+        className={`flex cursor-pointer items-center justify-center gap-2 border border-dashed px-4 py-3 text-[13px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-focus ${over ? 'border-accent bg-accent/10 text-fg' : 'border-control bg-surface text-muted hover:border-line-strong hover:text-fg'}`}>
+        <UploadIcon className={`h-4 w-4 ${busy ? 'motion-safe:animate-pulse' : ''}`} />
+        <span>{busy ? i18n.t('web.drop.busy') : i18n.t('web.drop.again')}</span>
+        {fileInput}
+      </div>
+    );
+  }
+
+  // Màn đầu tiên dùng cùng ngôn ngữ với sân khấu: một tờ bản in thử chưa có gì (dấu cắt, dòng thông số), để ngay từ
+  // giây đầu người dùng thấy đây là nơi video của họ sẽ hiện. Kéo thả vào đâu trên tờ cũng được; bấm để chọn tệp.
   return (
-    <motion.div {...handlers} layoutId="file-drop"
-      animate={{ scale: over ? 1.01 : 1 }}
-      className={`group relative flex cursor-pointer flex-col items-center justify-center gap-3 overflow-hidden rounded-md border border-dashed px-6 py-16 text-center transition-colors ${over ? 'border-accent bg-accent/10' : 'border-control bg-surface hover:border-line-strong'}`}>
-      <div className={`grid h-14 w-14 place-items-center rounded-md border transition ${over ? 'border-accent text-accent' : 'border-line bg-page text-muted group-hover:text-fg'}`}>
-        <UploadIcon className={`h-6 w-6 ${busy ? 'motion-safe:animate-pulse' : ''}`} />
+    <div className="space-y-2" data-testid="file-drop">
+      <div className="flex justify-between gap-3 text-xs tabular-nums text-muted">
+        <span>{i18n.t('web.drop.empty')}</span><span aria-hidden>{FORMATS.join(' · ')}</span>
       </div>
-      <p className="text-lg font-semibold tracking-tight text-fg">{busy ? i18n.t('web.drop.busy') : i18n.t('web.drop.title')}</p>
-      <div className="flex flex-wrap justify-center gap-1.5" aria-hidden>
-        {FORMATS.map((f) => <span key={f} className="rounded border border-line bg-page px-2 py-0.5 font-mono text-[11px] text-muted">{f}</span>)}
+      <div className="relative">
+        <Crop className="-left-5 -top-5" /><Crop className="-right-5 -top-5 -scale-x-100" />
+        <Crop className="-bottom-5 -left-5 -scale-y-100" /><Crop className="-bottom-5 -right-5 -scale-100" />
+        <div {...handlers}
+          className={`group flex cursor-pointer flex-col items-center justify-center gap-3 border px-6 py-16 text-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-focus ${over ? 'border-accent bg-accent/10' : 'border-control bg-surface hover:border-line-strong'}`}>
+          <UploadIcon className={`h-7 w-7 transition ${over ? 'text-accent' : 'text-muted group-hover:text-fg'} ${busy ? 'motion-safe:animate-pulse' : ''}`} />
+          <p className="text-lg font-semibold tracking-tight text-fg">{busy ? i18n.t('web.drop.busy') : i18n.t('web.drop.title')}</p>
+          <p className="max-w-md text-sm leading-relaxed text-muted">{i18n.t('web.drop.hint')}</p>
+          <p className="max-w-md text-sm leading-relaxed text-muted">{i18n.t('web.drop.fl')}</p>
+          {fileInput}
+        </div>
       </div>
-      <p className="max-w-md text-sm leading-relaxed text-muted">{i18n.t('web.drop.hint')}</p>
-      {fileInput}
-    </motion.div>
+    </div>
   );
 }

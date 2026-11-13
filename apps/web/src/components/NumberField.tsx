@@ -48,7 +48,7 @@ export function NumberField({ id, label, value, onChange, spec, className = '' }
             setError(null); onChange(v); setText(formatNumber(v, spec.step));
           }
         }}
-        className={`w-full min-w-0 rounded border bg-raised px-1 py-0.5 text-right tabular-nums text-fg focus:outline-none focus:ring-1 focus:ring-focus ${error ? 'border-danger' : 'border-control'} ${className}`} />
+        className={`min-h-[var(--hit)] w-full min-w-0 rounded border bg-raised px-1 py-0.5 text-right tabular-nums text-fg focus:outline-none focus:ring-1 focus:ring-focus ${error ? 'border-danger' : 'border-control'} ${className}`} />
       <span id={msgId} role="status" aria-live="polite"
         className={error ? 'absolute right-0 top-full z-30 mt-1 flex w-max max-w-[16rem] gap-1.5 rounded border border-danger/60 bg-raised px-2 py-1 text-left text-xs leading-snug text-fg' : 'sr-only'}
         data-testid="number-error">

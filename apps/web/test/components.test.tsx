@@ -5,7 +5,9 @@ import { I18nProvider } from '../src/i18n/I18nProvider.tsx';
 import { Transport } from '../src/components/Transport.tsx';
 import { Notices } from '../src/components/Notices.tsx';
 import { LanguageSelect } from '../src/components/LanguageSelect.tsx';
-import { ThemeSelect } from '../src/components/ThemeSelect.tsx';
+import { AppearanceSettings, ThemeToggle, useTheme } from '../src/components/ThemeSelect.tsx';
+import { VideoStyles } from '../src/components/VideoStyles.tsx';
+import { createPlayback } from '../src/lib/playback.ts';
 import { NumberField } from '../src/components/NumberField.tsx';
 import { StylePanel } from '../src/components/StylePanel.tsx';
 import { defaultStyleConfig, DEFAULT_KEYBOARD_STYLE, STYLE_PRESETS } from '@dawviz/render-core';
@@ -14,11 +16,15 @@ const wrap = (ui: React.ReactElement) => render(<I18nProvider>{ui}</I18nProvider
 
 describe('Transport', () => {
   it('bấm nút gọi onToggle; kéo thanh gọi onSeek', () => {
-    let toggled = 0, sought = -1;
-    wrap(<Transport t={1} duration={10} playing={false} onToggle={() => toggled++} onSeek={(t) => (sought = t)} />);
-    fireEvent.click(screen.getByRole('button'));
+    const pb = createPlayback({ request: () => 1, cancel: () => {}, now: () => 0 }); pb.reset(10);
+    wrap(<Transport playback={pb} duration={10} />);
+    fireEvent.click(screen.getByRole('button', { name: /^(Play|Phát)$/ }));
+    expect(pb.get().playing).toBe(true);
     fireEvent.change(screen.getByRole('slider'), { target: { value: '4.5' } });
-    expect(toggled).toBe(1); expect(sought).toBe(4.5);
+    expect(pb.get().t).toBe(4.5);
+    expect(screen.getByTestId('transport-time').textContent).toBe('0:04.500');
+    fireEvent.click(screen.getByRole('button', { name: /Forward 5|Tới 5/ })); expect(pb.get().t).toBe(9.5);
+    fireEvent.click(screen.getByRole('button', { name: /Back 5|Lùi 5/ })); expect(pb.get().t).toBe(4.5);
   });
 });
 describe('Notices', () => {
@@ -37,15 +43,34 @@ describe('LanguageSelect', () => {
 });
 
 describe('StylePanel', () => {
-  it('thanh trượt và bộ dựng sẵn phát ra StyleConfig mới; bàn phím bật/tắt được', () => {
+  it('thanh trượt phát ra StyleConfig mới; bàn phím bật/tắt được', () => {
     let st = defaultStyleConfig(), kb = { ...DEFAULT_KEYBOARD_STYLE };
     wrap(<StylePanel style={st} keyboard={kb} onStyle={(n) => (st = n)} onKeyboard={(n) => (kb = n)} />);
     fireEvent.change(screen.getByRole('slider', { name: /^(Opacity|Độ đục(?! khi))/ }), { target: { value: '0.4' } });
     expect(st.base.opacity).toBe(0.4);
-    fireEvent.click(screen.getByRole('button', { name: /Neon/ }));
-    expect(st.base.glow).toBe(STYLE_PRESETS.neon.glow);
     fireEvent.click(screen.getByRole('checkbox', { name: /keyboard|bàn phím/i }));
     expect(kb.enabled).toBe(false);
+  });
+  it('Cơ bản ẩn dòng nâng cao (REQ-UI-13); Nâng cao hiện kèm nhãn ADV', () => {
+    const props = { style: defaultStyleConfig(), keyboard: { ...DEFAULT_KEYBOARD_STYLE }, onStyle: () => {}, onKeyboard: () => {} };
+    const v = wrap(<StylePanel {...props} advanced={false} />);
+    expect(screen.queryByRole('slider', { name: /^(Glow size|Cỡ quầng sáng)/i })).toBeNull();
+    expect(screen.getByRole('slider', { name: /^(Glow|Phát sáng)$/i })).toBeInTheDocument();
+    v.unmount();
+    wrap(<StylePanel {...props} advanced />);
+    expect(screen.getByRole('slider', { name: /^(Glow size|Cỡ quầng sáng)/i })).toBeInTheDocument();
+    expect(screen.getAllByTitle(/Advanced setting|Thiết lập nâng cao/).length).toBeGreaterThan(0);
+  });
+});
+describe('VideoStyles', () => {
+  it('chọn phong cách video; phong cách đang chọn hiện "đã chỉnh" khi khác bản gốc', () => {
+    let picked = '';
+    const v = wrap(<VideoStyles value="default" edited={false} onPick={(id) => (picked = id)} />);
+    fireEvent.click(screen.getByRole('radio', { name: /Neon/ })); expect(picked).toBe('neon');
+    expect(screen.getByRole('radio', { name: /Default|Mặc định/ })).toHaveAttribute('aria-checked', 'true');
+    v.rerender(<I18nProvider><VideoStyles value="neon" edited onPick={() => {}} /></I18nProvider>);
+    expect(screen.getByRole('radio', { name: /Neon/ }).textContent).toMatch(/edited|đã chỉnh/);
+    expect(STYLE_PRESETS.neon).toBeTruthy();
   });
 });
 
@@ -78,7 +103,7 @@ describe('TrackPanel: Track Info và ngưỡng độ sáng (T-03)', () => {
   it('hiện tầm cao độ, fader, trạng thái tắt tiếng; độ sáng hiện tại theo ngưỡng; ô nhập đổi sàn dB', () => {
     let patches: any[] = [];
     const cfg = { t1: { ...DEFAULT_BRIGHTNESS, source: 'static' as const, floorDb: -24, ceilDb: 0 } };
-    wrap(<TrackPanel tracks={[tr as any]} config={cfg} overrides={{}} onChange={(_, p) => patches.push(p)} onStyle={() => {}} t={0.1} tempoMap={tempo} />);
+    wrap(<TrackPanel tracks={[tr as any]} config={cfg} overrides={{}} onChange={(_, p) => patches.push(p)} onStyle={() => {}} t={0.1} tempoMap={tempo} advanced />);
     const box = screen.getByTestId('track-details-t1');
     expect(box.textContent).toMatch(/C3 – C5/);
     expect(box.textContent).toMatch(/-12 dB/);
@@ -89,7 +114,7 @@ describe('TrackPanel: Track Info và ngưỡng độ sáng (T-03)', () => {
     expect(patches.at(-1)).toEqual({ floorDb: -30 });
   });
   it('nguồn off thì ẩn các thanh ngưỡng', () => {
-    wrap(<TrackPanel tracks={[tr as any]} config={{ t1: { ...DEFAULT_BRIGHTNESS, source: 'off' } }} overrides={{}} onChange={() => {}} onStyle={() => {}} />);
+    wrap(<TrackPanel tracks={[tr as any]} config={{ t1: { ...DEFAULT_BRIGHTNESS, source: 'off' } }} overrides={{}} onChange={() => {}} onStyle={() => {}} advanced />);
     expect(screen.queryByRole('textbox', { name: /^(Floor|Sàn)/ })).toBeNull();
     expect(screen.queryByTestId('brightness-now-t1')).toBeNull(); // "đều nhau": không có số độ sáng
   });
@@ -131,6 +156,37 @@ describe('Danh sách track: lưới N cột / danh sách gọn (REQ-UI-14 sửa)
     fireEvent.keyDown(row, { key: 'Enter' });
     expect(screen.getByTestId('track-details-t2')).toBeInTheDocument();
   });
+  it('danh sách >6 track: một trạng thái cho giới hạn 6 dòng; mở chi tiết thì "Thu gọn"; không có nút nào bấm mà không tác dụng', () => {
+    const many = Array.from({ length: 10 }, (_, i) => mkTr(i)) as any[];
+    const cfgM = Object.fromEntries(many.map((t) => [t.id, { ...DEFAULT_BRIGHTNESS }]));
+    wrap(<TrackPanel tracks={many} config={cfgM} overrides={{}} onChange={() => {}} onStyle={() => {}} layout={{ mode: 'list', columns: 'auto' }} />);
+    const list = screen.getByTestId('track-list');
+    const btn = () => screen.getByTestId('track-list-all');
+    const capped = () => list.style.maxHeight !== '';
+    const rowBtn = (i: number) => screen.getAllByRole('button').filter((b) => b.hasAttribute('data-track-focus'))[i];
+    expect(capped()).toBe(true);
+    expect(btn().textContent).toMatch(/10/);
+    expect(btn().className).toMatch(/min-h-\[var\(--hit\)\]/);        // vùng bấm ≥ 24 px (DESIGN.md, 24-Pixel Hit Rule)
+    // Hiện tất cả <-> Thu gọn
+    fireEvent.click(btn()); expect(capped()).toBe(false); expect(btn().getAttribute('aria-expanded')).toBe('true'); expect(btn().textContent).not.toMatch(/10/);
+    fireEvent.click(btn()); expect(capped()).toBe(true); expect(btn().getAttribute('aria-expanded')).toBe('false');
+    // Mở chi tiết khi đang thu gọn -> "hiện tất cả", nút thành "Thu gọn"
+    fireEvent.click(rowBtn(3));
+    expect(screen.getByTestId('track-details-t3')).toBeInTheDocument();
+    expect(capped()).toBe(false); expect(btn().getAttribute('aria-expanded')).toBe('true');
+    const labelOpen = btn().textContent;
+    // Đóng chi tiết bằng tay giữ nguyên trạng thái danh sách
+    fireEvent.click(rowBtn(3));
+    expect(capped()).toBe(false); expect(btn().textContent).toBe(labelOpen);
+    // Mở lại rồi bấm "Thu gọn": về 6 dòng, đóng dòng đang mở, nút đổi chữ
+    fireEvent.click(rowBtn(3));
+    fireEvent.click(btn());
+    expect(capped()).toBe(true);
+    expect(btn().getAttribute('aria-expanded')).toBe('false'); expect(btn().textContent).not.toBe(labelOpen); expect(btn().textContent).toMatch(/10/);
+    expect(rowBtn(3).getAttribute('aria-expanded')).toBe('false');
+    // Nút luôn có tác dụng: mỗi lần bấm đổi trạng thái
+    for (let i = 0; i < 3; i++) { const before = capped(); fireEvent.click(btn()); expect(capped()).toBe(!before); }
+  });
   it('thanh trình bày: đổi kiểu, bỏ "tự động" rồi gõ số cột (tối đa = số track)', () => {
     let v: any = { mode: 'grid', columns: 'auto' };
     const r = wrap(<TrackLayoutBar value={v} onChange={(n) => (v = n)} count={15} />);
@@ -139,6 +195,22 @@ describe('Danh sách track: lưới N cột / danh sách gọn (REQ-UI-14 sửa)
     const box = screen.getByRole('textbox'); fireEvent.focus(box); fireEvent.change(box, { target: { value: '99' } }); fireEvent.keyDown(box, { key: 'Enter' });
     expect(v.columns).toBe(15);
     fireEvent.click(screen.getByRole('radio', { name: /List|Danh sách/ })); expect(v.mode).toBe('list');
+  });
+  it('dòng track: mắt và S bật/tắt (REQ-UI-12); tay nắm đổi thứ tự bằng Alt+↓ chỉ ở Nâng cao; không có khoá', () => {
+    const calls: string[] = [];
+    const base = { tracks: trs, config: cfg, overrides: {}, onChange: () => {}, onStyle: () => {}, layout: { mode: 'list' as const, columns: 'auto' as const },
+      view: { hidden: new Set(['t1']), solo: new Set<string>() },
+      onToggleHidden: (id: string) => calls.push(`hide:${id}`), onToggleSolo: (id: string) => calls.push(`solo:${id}`), onMove: (id: string, to: number) => calls.push(`move:${id}:${to}`) };
+    const v = wrap(<TrackPanel {...base} />);
+    expect(screen.getByRole('button', { name: /(Hide|Ẩn) Track 1/ })).toHaveAttribute('aria-pressed', 'true');
+    fireEvent.click(screen.getByRole('button', { name: /(Hide|Ẩn) Track 0/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Solo Track 2/ }));
+    expect(screen.queryByRole('button', { name: /(Reorder|Đổi thứ tự)/ })).toBeNull();
+    expect(screen.queryByRole('button', { name: /lock|khoá/i })).toBeNull();
+    v.unmount();
+    wrap(<TrackPanel {...base} advanced />);
+    fireEvent.keyDown(screen.getByRole('button', { name: /(Reorder|Đổi thứ tự) Track 3/ }), { key: 'ArrowDown', altKey: true });
+    expect(calls).toEqual(['hide:t0', 'solo:t2', 'move:t3:4']);
   });
 });
 describe('Phát sáng động (REQ-GRAPHICS-17)', () => {
@@ -160,16 +232,27 @@ describe('Phát sáng động (REQ-GRAPHICS-17)', () => {
     expect(st.base.glowPanMode).toBe('spread');
   });
 });
-describe('ThemeSelect', () => {
-  it('đổi sáng/tối và bảng màu áp ngay lên <html>, lưu lựa chọn (REQ-UI-10)', () => {
+function ThemeHarness() { const [p, set] = useTheme(); return <><ThemeToggle pref={p} onChange={set} /><AppearanceSettings pref={p} onChange={set} /></>; }
+describe('Giao diện ứng dụng', () => {
+  it('Settings đổi sáng/tối và bảng màu áp ngay lên <html> và lưu (REQ-UI-10); nút ở thanh trên đổi sáng/tối', () => {
     localStorage.clear();
-    wrap(<ThemeSelect />);
+    wrap(<ThemeHarness />);
     const root = document.documentElement;
     expect(root.dataset.theme).toBe('dark'); expect(root.dataset.palette).toBe('studio');
-    fireEvent.change(screen.getByTestId('theme-mode'), { target: { value: 'light' } });
-    fireEvent.change(screen.getByTestId('theme-palette'), { target: { value: 'riso' } });
+    fireEvent.click(screen.getByRole('radio', { name: /^(Light|Sáng)$/ }));
+    fireEvent.click(screen.getByRole('radio', { name: /Riso/ }));
     expect(root.dataset.theme).toBe('light'); expect(root.dataset.palette).toBe('riso');
     expect(JSON.parse(localStorage.getItem('dawviz.prefs.v1.theme') ?? '{}')).toEqual({ mode: 'light', palette: 'riso' });
+    fireEvent.click(screen.getByTestId('theme-toggle'));
+    expect(root.dataset.theme).toBe('dark');
+  });
+});
+describe('Notices', () => {
+  it('cảnh báo gộp thành một dòng thu gọn; lỗi hiện riêng', () => {
+    wrap(<Notices problems={[{ kind: 'warning', code: 'W1', text: 'A' }, { kind: 'warning', code: 'W2', text: 'B' }, { kind: 'error', code: 'E', text: 'Lỗi E' }]} />);
+    expect(screen.getByTestId('notices-warnings').textContent).toMatch(/2/);
+    expect(screen.getByTestId('notices-warnings')).not.toHaveAttribute('open');
+    expect(screen.getByRole('alert').textContent).toMatch(/Lỗi E/);
   });
 });
 describe('NumberField', () => {
@@ -189,5 +272,109 @@ describe('NumberField', () => {
     expect(msg.textContent).toMatch(/(Kept the previous value|Đã giữ giá trị cũ)/);
     fireEvent.change(input, { target: { value: '0.7' } });
     expect(input).not.toHaveAttribute('aria-describedby');
+  });
+});
+
+import { FileDrop } from '../src/components/FileDrop.tsx';
+import { isTypingTarget, spaceBelongsToTransport } from '../src/lib/a11y.ts';
+import { bindTransportKeys } from '../src/lib/transportKeys.ts';
+import { useEffect, useRef, useState } from 'react';
+describe('Sau critique T-70', () => {
+  it('nhóm radio: một điểm Tab, phím mũi tên chuyển và chọn (WAI-ARIA)', () => {
+    let picked = 'default';
+    const v = wrap(<VideoStyles value={picked} edited={false} onPick={(id) => (picked = id)} />);
+    const radios = screen.getAllByRole('radio');
+    expect(radios.filter((r) => r.tabIndex === 0)).toHaveLength(1);
+    fireEvent.keyDown(radios[0], { key: 'ArrowDown' });
+    expect(picked).toBe('neon');
+    fireEvent.keyDown(radios[0], { key: 'End' });
+    expect(picked).toBe('outline');
+    v.unmount();
+  });
+  it('thay phong cách khi đang chỉnh: hiện "Hoàn tác"', () => {
+    let undone = false;
+    wrap(<VideoStyles value="neon" edited={false} onPick={() => {}} onUndo={() => (undone = true)} />);
+    fireEvent.click(screen.getByRole('button', { name: /Undo|Hoàn tác/ }));
+    expect(undone).toBe(true);
+  });
+  it('màn đầu tiên hướng dẫn FL Studio xuất .mid (D-19), không dùng chữ mono', () => {
+    wrap(<FileDrop onPick={() => {}} busy={false} />);
+    expect(screen.getByTestId('file-drop').textContent).toMatch(/FL Studio/);
+    expect(screen.getByTestId('file-drop').querySelector('.font-mono')).toBeNull();
+  });
+  it('phím tắt toàn cục không nuốt phím khi đang gõ hoặc ở điều khiển', () => {
+    const input = document.createElement('input'), btn = document.createElement('button'), div = document.createElement('div');
+    expect(isTypingTarget(input)).toBe(true); expect(isTypingTarget(btn)).toBe(true); expect(isTypingTarget(div)).toBe(false);
+  });
+});
+
+describe('Space làm phím phát/dừng (critique P1)', () => {
+  const trs = [0, 1].map((i) => ({ id: `t${i}`, index: i, name: `Track ${i}`, color: '#4aa8f5', isMuted: false, isVisible: true, pitchRange: { min: 60, max: 72 }, notes: [] })) as any[];
+  const cfg = Object.fromEntries(trs.map((t) => [t.id, { ...DEFAULT_BRIGHTNESS }]));
+  let pb: ReturnType<typeof createPlayback>;
+  /** `keyboardFocus`: giả lập kết quả `:focus-visible` (jsdom không có heuristic chuột/bàn phím của trình duyệt). */
+  function Harness({ keyboardFocus }: { keyboardFocus: boolean }) {
+    const [solo, setSolo] = useState<ReadonlySet<string>>(new Set());
+    const playback = useRef(createPlayback({ request: () => 1, cancel: () => {}, now: () => 0 })).current;
+    pb = playback;
+    useEffect(() => { playback.reset(10); return bindTransportKeys(window, playback, () => keyboardFocus); }, [playback, keyboardFocus]);
+    return <TrackPanel tracks={trs} config={cfg} overrides={{}} onChange={() => {}} onStyle={() => {}} layout={{ mode: 'list', columns: 'auto' }}
+      view={{ hidden: new Set(), solo }} onToggleSolo={(id) => setSolo((s) => { const n = new Set(s); if (n.has(id)) n.delete(id); else n.add(id); return n; })} onToggleHidden={() => {}} />;
+  }
+  const soloBtn = () => screen.getByRole('button', { name: /Solo Track 0/ });
+  /** Nhấn Space như trình duyệt: keydown → (nếu chưa chặn) keyup rồi click lên nút đang focus. */
+  const pressSpace = (el: Element) => {
+    const notPrevented = fireEvent.keyDown(el, { code: 'Space', key: ' ' });
+    const upOk = fireEvent.keyUp(el, { code: 'Space', key: ' ' });
+    if (notPrevented && upOk && el instanceof HTMLButtonElement) fireEvent.click(el);
+    return notPrevented;
+  };
+
+  it('bấm CHUỘT vào S rồi Space: phát nhạc và GIỮ solo (không bấm lại nút)', () => {
+    wrap(<Harness keyboardFocus={false} />);
+    const b = soloBtn();
+    fireEvent.mouseDown(b); b.focus(); fireEvent.click(b);          // chuột: bật solo
+    expect(b).toHaveAttribute('aria-pressed', 'true');
+    expect(pb.get().playing).toBe(false);
+    expect(pressSpace(b)).toBe(false);                               // keydown bị chặn
+    expect(pb.get().playing).toBe(true);
+    expect(b).toHaveAttribute('aria-pressed', 'true');               // solo còn nguyên
+    pressSpace(b);
+    expect(pb.get().playing).toBe(false);
+  });
+
+  it('Tab tới S rồi Space: bấm nút như chuẩn (solo bật/tắt), không đụng thanh phát', () => {
+    wrap(<Harness keyboardFocus />);
+    const b = soloBtn(); b.focus();
+    expect(b).toHaveAttribute('aria-pressed', 'false');
+    expect(pressSpace(b)).toBe(true);                                // không chặn
+    expect(b).toHaveAttribute('aria-pressed', 'true');
+    pressSpace(b);
+    expect(b).toHaveAttribute('aria-pressed', 'false');
+    expect(pb.get().playing).toBe(false);
+  });
+
+  it('ô gõ chữ giữ nguyên Space; thân trang (không focus gì) thì phát/dừng; giữ phím không bật/tắt liên tục', () => {
+    wrap(<><Harness keyboardFocus={false} /><NumberField label="Độ đục" value={0.5} spec={{ min: 0, max: 1, step: 0.05 }} onChange={() => {}} /></>);
+    const box = screen.getByRole('textbox', { name: 'Độ đục' }); box.focus();
+    expect(fireEvent.keyDown(box, { code: 'Space', key: ' ' })).toBe(true);
+    expect(pb.get().playing).toBe(false);
+    expect(fireEvent.keyDown(document.body, { code: 'Space', key: ' ' })).toBe(false);
+    expect(pb.get().playing).toBe(true);
+    fireEvent.keyDown(document.body, { code: 'Space', key: ' ', repeat: true });
+    expect(pb.get().playing).toBe(true);
+  });
+
+  it('spaceBelongsToTransport: radio/thẻ/ô đánh dấu theo cùng luật với nút; select và ô gõ không bao giờ', () => {
+    const mk = (html: string) => { const d = document.createElement('div'); d.innerHTML = html; return d.firstElementChild as HTMLElement; };
+    const radio = mk('<button role="radio" aria-checked="true"></button>'), tab = mk('<button role="tab"></button>');
+    const check = mk('<input type="checkbox">'), sel = mk('<select></select>'), text = mk('<input type="text">'), range = mk('<input type="range">');
+    for (const el of [radio, tab, check]) {
+      expect(spaceBelongsToTransport(el, () => false)).toBe(true);   // focus bằng chuột
+      expect(spaceBelongsToTransport(el, () => true)).toBe(false);   // focus bằng bàn phím
+    }
+    for (const el of [sel, text]) { expect(spaceBelongsToTransport(el, () => false)).toBe(false); expect(spaceBelongsToTransport(el, () => true)).toBe(false); }
+    expect(spaceBelongsToTransport(range, () => true)).toBe(true);   // Space không làm gì trên thanh trượt
+    expect(spaceBelongsToTransport(null)).toBe(true);
   });
 });

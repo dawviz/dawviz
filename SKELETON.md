@@ -16,6 +16,8 @@ dawviz/
 │     ├─ src/
 │     │  ├─ components/
 │     │  │  ├─ FileDrop.tsx
+│     │  │  ├─ Icons.tsx
+│     │  │  ├─ Inspector.tsx
 │     │  │  ├─ LanguageSelect.tsx
 │     │  │  ├─ MissingMidiPanel.tsx
 │     │  │  ├─ Notices.tsx
@@ -23,14 +25,17 @@ dawviz/
 │     │  │  ├─ SceneCanvas.tsx
 │     │  │  ├─ Select.tsx
 │     │  │  ├─ SliderField.tsx
+│     │  │  ├─ Stage.tsx
 │     │  │  ├─ StatusIcon.tsx
 │     │  │  ├─ StylePanel.tsx
 │     │  │  ├─ ThemeSelect.tsx
 │     │  │  ├─ TrackPanel.tsx
-│     │  │  └─ Transport.tsx
+│     │  │  ├─ Transport.tsx
+│     │  │  └─ VideoStyles.tsx
 │     │  ├─ i18n/
 │     │  │  └─ I18nProvider.tsx
 │     │  ├─ lib/
+│     │  │  ├─ a11y.ts
 │     │  │  ├─ clock.test.ts
 │     │  │  ├─ clock.ts
 │     │  │  ├─ csp.test.ts
@@ -42,13 +47,19 @@ dawviz/
 │     │  │  ├─ parseInWorker.ts
 │     │  │  ├─ parserClient.test.ts
 │     │  │  ├─ parserClient.ts
+│     │  │  ├─ playback.test.ts
+│     │  │  ├─ playback.ts
 │     │  │  ├─ prefs.test.ts
 │     │  │  ├─ prefs.ts
 │     │  │  ├─ problems.test.ts
 │     │  │  ├─ problems.ts
 │     │  │  ├─ theme.test.ts
 │     │  │  ├─ theme.ts
-│     │  │  └─ trustedTypes.ts
+│     │  │  ├─ timeFormat.ts
+│     │  │  ├─ transportKeys.ts
+│     │  │  ├─ trustedTypes.ts
+│     │  │  ├─ usePref.ts
+│     │  │  └─ useStageWidth.ts
 │     │  ├─ types/
 │     │  │  └─ dawviz.d.ts
 │     │  ├─ workers/
@@ -647,7 +658,7 @@ function inspectRpp(input, options = {})   // Soi cấu trúc .rpp mà KHÔNG c�
 
 #### `apps/web/src/App.tsx`
 
-Thành phần gốc: giữ trạng thái tệp đã nạp, đồng hồ phát, cấu hình độ sáng; nối Worker parse với giao diện.
+Thành phần gốc (T-70, UI-DIRECTION 5.3 cấu trúc D + A + E): thanh trên hai hàng, ba thẻ Preview / Editor / Settings.
 
 ```text
 function App()
@@ -659,7 +670,38 @@ Khung thả/chọn tệp dự án (kèm .mid ngoài); hiệu ứng Framer Motion
 
 ```text
 interface Picked
-function FileDrop({ onPick, busy, compact = false }: { onPick(p: Picked): void; busy: boolean; compact?: boolean })
+function FileDrop({ onPick, busy, compact = false, slim = false }: { onPick(p: Picked): void; busy: boolean; compact?: boolean; slim?: boolean })   // `compact`: nút nhỏ ở thanh trên. `slim`: ô thả thu gọn một dòng, dùng khi bảng thiếu .mid đang hiện (hành độn…
+```
+
+#### `apps/web/src/components/Icons.tsx`
+
+Biểu tượng vẽ tay bằng SVG, một nét 1,5 trên lưới 16 (không dùng ký tự Unicode hay phông biểu tượng).
+
+```text
+const ChevronRight = (p: P) =>
+const Info = (p: P) =>
+const Eye = (p: P) =>
+const EyeOff = (p: P) =>
+const Grip = (p: P) =>
+const ToStart = (p: P) =>
+const Back = (p: P) =>
+const Forward = (p: P) =>
+const Play = ({ className = 'h-4 w-4' }: P) =>
+const Pause = ({ className = 'h-4 w-4' }: P) =>
+const Sun = (p: P) =>
+const Moon = (p: P) =>
+const Upload = (p: P) =>
+const Mark = ({ className = 'h-4 w-4' }: P) =>
+```
+
+#### `apps/web/src/components/Inspector.tsx`
+
+Inspector (UI-DIRECTION 5.3): mục đánh số 01, 02, 03…, phân cách bằng kẻ 1 px, không thẻ có bóng.
+
+```text
+function InspectorSection({ n, id, title, more, children }: { n: number; id: string; title: string; children: ReactNode; /** Có khi đang ở Cơ bản và mục có phần nâng cao. `edited`: phần nâng cao đang khác mặc định. */ more?: { open: boolean; edited: boolean; onToggle(): void }; })
+function AdvTag()   // Nhãn nhỏ cho dòng chỉ có ở Nâng cao.
+function Facts({ rows }: { rows: [string, ReactNode][] })   // Dòng nhãn – giá trị chỉ đọc (mục Bài).
 ```
 
 #### `apps/web/src/components/LanguageSelect.tsx`
@@ -680,10 +722,10 @@ function MissingMidiPanel({ info, level, busy, onAdd }: { info: ExternalMidiInfo
 
 #### `apps/web/src/components/Notices.tsx`
 
-Danh sách lỗi/cảnh báo đã dịch, kèm chi tiết kỹ thuật gập lại.
+Lỗi và cảnh báo khi đọc tệp, đã dịch. Lỗi (chặn việc dùng tệp) hiện đầy đủ từng cái.
 
 ```text
-function Notices({ problems }: { problems: Problem[] })
+function Notices({ problems, basic = false }: { problems: Problem[]; basic?: boolean })   // `basic`: ở chế độ Cơ bản, cảnh báo không đổi hình gộp vào một dòng thu gọn KHÔNG màu vàng (xám trung tính); c…
 ```
 
 #### `apps/web/src/components/NumberField.tsx`
@@ -715,7 +757,16 @@ function Select({ wrapClassName = '', className = '', ...props }: SelectHTMLAttr
 Thanh trượt + ô nhập số (REQ-UI-15) dùng chung cho mọi bảng. Lưới dùng minmax(0,1fr) để không tràn khung hẹp (T-61).
 
 ```text
-function SliderField({ id, label, value, min, max, step, hardMin, hardMax, onChange }: { id: string; label: string; value: number; min: number; max: number; step: number; hardMin?: number; hardMax?: number; onChange(v: number): void })   // `min`/`max` là phạm vi thanh trượt (phạm vi mềm); `hardMin`/`hardMax` cho phép gõ vượt phạm vi đó (mặc định b…
+function SliderField({ id, label, value, min, max, step, hardMin, hardMax, adv, onChange }: { id: string; label: string; value: number; min: number; max: number; step: number; hardMin?: number; hardMax?: number; adv?: boolean; onChange(v: number): void })   // `min`/`max` là phạm vi thanh trượt (phạm vi mềm); `hardMin`/`hardMax` cho phép gõ vượt phạm vi đó (mặc định b…
+```
+
+#### `apps/web/src/components/Stage.tsx`
+
+Sân khấu (UI-DIRECTION 5.3, hướng E): khung video do Render Core vẽ, đặt như một bản in thử. Dấu cắt ở bốn góc,
+
+```text
+const Crop = ({ className }: { className: string }) =>
+function Stage({ scene, derived, ast, playback, styleName, proof, width, children }: Props)
 ```
 
 #### `apps/web/src/components/StatusIcon.tsx`
@@ -728,10 +779,11 @@ function StatusIcon({ kind, className = 'h-4 w-4' }: { kind: 'error' | 'warning'
 
 #### `apps/web/src/components/StylePanel.tsx`
 
-Bảng tuỳ chỉnh kiểu dáng nốt (toàn cục) và bàn phím. Chỉ sửa dữ liệu StyleConfig; việc vẽ nằm ở Render Core.
+Mục "Hình thức" của inspector: kiểu dáng nốt (toàn cục) và bàn phím. Chỉ sửa dữ liệu StyleConfig; việc vẽ nằm ở Render Core.
 
 ```text
-function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [] }: { style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[] })   // `lanes`: tên lane automation có trong dự án đang mở (cho nguồn phát sáng "automation").
+const ADVANCED_STYLE_KEYS   // Trường chỉ có ở Nâng cao (REQ-UI-13). Dùng để biết phần nâng cao đang khác mặc định hay không.
+function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true }: { style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean })   // `lanes`: tên lane automation có trong dự án đang mở (cho nguồn phát sáng "automation"). `advanced`: hiện cả d…
 ```
 
 #### `apps/web/src/components/ThemeSelect.tsx`
@@ -740,28 +792,43 @@ function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [] }: { styl
 
 ```text
 function useTheme(): [ThemePref, (p: ThemePref) => void]
-function ThemeSelect()
+function ThemeToggle({ pref, onChange }: { pref: ThemePref; onChange(p: ThemePref): void })   // Nút sáng/tối ở thanh trên: đổi sang chế độ ngược với chế độ đang thấy (kể cả khi đang "Theo hệ thống").
+function AppearanceSettings({ pref, onChange }: { pref: ThemePref; onChange(p: ThemePref): void })   // Thẻ Settings: sáng/tối/theo hệ thống và bảng màu nhấn.
 ```
 
 #### `apps/web/src/components/TrackPanel.tsx`
 
-Danh sách track (REQ-UI-14 sửa 2026-11-12): hai cách trình bày.
+Danh sách track (REQ-UI-12, REQ-UI-14, UI-DIRECTION 5.3): hai cách trình bày.
 
 ```text
 const MIN_CARD_PX   // Bề rộng tối thiểu của một thẻ (px) để nội dung không tràn. Không phải giới hạn số cột: số cột do người dùng c…
 interface TrackLayout
 const DEFAULT_TRACK_LAYOUT
 function effectiveColumns(chosen: number | 'auto', widthPx: number, count: number, minCard = MIN_CARD_PX, gap = 8):    // Số cột thực vẽ: số người dùng chọn, nhưng không vượt số thẻ vừa bề rộng (hàm thuần, test được).
+interface TrackView   // Ẩn/hiện và solo (REQ-UI-12). Có track solo thì chỉ các track solo được vẽ.
+const EMPTY_VIEW
+function isShown(id: string, v: TrackView): boolean
 function TrackPanel(props: Props)
 function TrackLayoutBar({ value, onChange, count }: { value: TrackLayout; onChange(v: TrackLayout): void; count: number })   // Thanh chọn kiểu trình bày: Lưới/Danh sách + số cột (ô nhập số, không giới hạn cứng ngoài số track).
 ```
 
 #### `apps/web/src/components/Transport.tsx`
 
-Thanh phát/tạm dừng/tua và đồng hồ thời gian.
+Thanh phát (UI-DIRECTION 5.3): lùi / phát / tới bằng biểu tượng, thanh tua, thời gian m:ss.mmm tô màu nhấn khi đang phát.
 
 ```text
-function Transport({ t, duration, playing, onToggle, onSeek }: { t: number; duration: number; playing: boolean; onToggle(): void; onSeek(t: number): void })
+function Transport({ playback, duration }: { playback: Playback; duration: number })
+```
+
+#### `apps/web/src/components/VideoStyles.tsx`
+
+Cột "Video styles" / "Phong cách video" (UI-DIRECTION 5.3): chọn phong cách của KHUNG VIDEO, không phải theme app (D-52).
+
+```text
+const VIDEO_STYLES
+function videoStyleBase(id: string): NoteStyle
+function isEdited(id: string, base: NoteStyle): boolean   // Kiểu nốt hiện tại còn đúng như phong cách đã chọn không (để hiện "đã chỉnh").
+function VideoStyles({ value, edited, onPick, onUndo }: { value: string; edited: boolean; onPick(id: string): void; onUndo?(): void })
 ```
 
 #### `apps/web/src/i18n/I18nProvider.tsx`
@@ -771,6 +838,18 @@ Context đa ngôn ngữ: nạp locales/*.json, chọn và lưu ngôn ngữ, đ�
 ```text
 function I18nProvider({ children }: { children: ReactNode })
 function useI18n()
+```
+
+#### `apps/web/src/lib/a11y.ts`
+
+Mẫu radiogroup của WAI-ARIA: cả nhóm là một điểm Tab (chỉ ô đang chọn có tabIndex 0), phím mũi tên / Home / End
+
+```text
+function radioKeys(e: KeyboardEvent<HTMLElement>): void
+const radioTab = (checked: boolean, first = false, anyChecked = true) =>   // tabIndex cho một ô radio: ô đang chọn nhận Tab; nếu chưa ô nào chọn thì ô đầu tiên nhận.
+function isKeyboardFocused(el: Element): boolean   // Phần tử đang focus theo kiểu bàn phím? Dùng đúng bộ chọn `:focus-visible` của trình duyệt (chuột → không khớp…
+function spaceBelongsToTransport(t: EventTarget | null, focusedByKeyboard: (el: Element) => boolean = isKeyboardFocused): boolean   // Space có thuộc về thanh phát không (phím tắt kiểu DAW)? • Ô gõ chữ/số, select, contentEditable: không, giữ ng…
+function isTypingTarget(t: EventTarget | null): boolean   // Phím tắt khác (Home…): không nuốt khi đang gõ hoặc ở một điều khiển tự xử lý phím đó.
 ```
 
 #### `apps/web/src/lib/clock.ts`
@@ -837,6 +916,16 @@ function createParserClient(spawn: () => WorkerLike)
 function createLatestGate()   // Chỉ nhận kết quả của yêu cầu mới nhất (T-02): mỗi lần bắt đầu lấy một vé; kết quả về muộn của vé cũ bị bỏ qua…
 ```
 
+#### `apps/web/src/lib/playback.ts`
+
+Kho đồng hồ phát nằm ngoài state của React (T-70): vòng requestAnimationFrame chỉ cập nhật kho này, và chỉ các phần
+
+```text
+interface Playback
+function createPlayback(frame: Frame = browserFrame): Playback
+function usePlayback<T>(p: Playback, select: (s: ClockState) => T): T   // Theo dõi một phần của đồng hồ; chọn giá trị nguyên thuỷ (số, boolean) để chỉ vẽ lại khi nó đổi.
+```
+
 #### `apps/web/src/lib/prefs.ts`
 
 Lưu tuỳ chọn người dùng vào localStorage (tiện lợi cho từng trình duyệt; mọi truy cập đều có try/catch, thiếu thì dùng mặc định).
@@ -852,6 +941,7 @@ Lỗi/cảnh báo của thư viện → chuỗi đã dịch theo mã (REQ-I18N-0
 
 ```text
 interface Problem
+const COSMETIC_WARNINGS   // Cảnh báo KHÔNG làm đổi hình người dùng thấy: chỉ là xấp xỉ đường cong automation, automation chưa đọc (độ sán…
 function describeProblem(i18n: Pick<I18n, 'has' | 't'>, kind: 'error' | 'warning', code: string, message?: string, details?: Record<string, unknown>): Problem
 ```
 
@@ -882,6 +972,23 @@ function mix(tint: string, ground: string, alpha: number): string
 function checkTheme(colors: Record<string, string>): ContrastFailure[]   // Trả về mọi cặp trượt; mảng rỗng là theme đạt. Theme thiếu token hoặc có token lạ thì ném lỗi (không áp một ph…
 ```
 
+#### `apps/web/src/lib/timeFormat.ts`
+
+Định dạng thời gian kiểu đồng hồ DAW cho thanh phát và sân khấu (hàm thuần).
+
+```text
+function formatClock(sec: number): string   // `m:ss.mmm`, ví dụ 95.0834 → "1:35.083". Số âm hoặc không hữu hạn → "0:00.000".
+function bpmAt(tempoMap: readonly TempoPoint[], t: number): number | null   // BPM đang có hiệu lực tại thời điểm t (mốc tempo cuối cùng có timeSeconds ≤ t); không có mốc → null.
+```
+
+#### `apps/web/src/lib/transportKeys.ts`
+
+Phím tắt thanh phát kiểu DAW cho thẻ Preview: Space phát/dừng, Home về đầu.
+
+```text
+function bindTransportKeys(win: Pick<Window, 'addEventListener' | 'removeEventListener'>, playback: Playback, focusedByKeyboard?: (el: Element) => boolean): () => void
+```
+
 #### `apps/web/src/lib/trustedTypes.ts`
 
 Trusted Types (NFR-SEC-06): trang chạy với `require-trusted-types-for 'script'`, nên mọi URL script (Worker) phải đi qua
@@ -890,6 +997,29 @@ Trusted Types (NFR-SEC-06): trang chạy với `require-trusted-types-for 'scrip
 const WORKER_POLICY   // Trusted Types (NFR-SEC-06): trang chạy với `require-trusted-types-for 'script'`, nên mọi URL script (Worker) …
 function isSameOriginScript(u: string, base: string): boolean   // Hàm thuần: URL `u` (tương đối hoặc tuyệt đối) có cùng origin với `base` và dùng http(s)/blob không.
 function trustedWorkerURL(u: string): unknown   // Trả TrustedScriptURL khi trình duyệt có Trusted Types, nếu không trả chuỗi đã kiểm. Ném lỗi nếu URL khác orig…
+```
+
+#### `apps/web/src/lib/usePref.ts`
+
+Tuỳ chọn giao diện lưu theo trình duyệt (không vào preset video). Đọc một lần, ghi lại mỗi khi đổi.
+
+```text
+function usePref<T extends object>(name: string, fallback: T, sanitize: (raw: Partial<T>) => T = (r) => ({ ...fallback, ...r })): [T, (v: T | ((p: T) => T)) => void]
+type UiMode
+interface UiPrefs   // Tuỳ chọn bố cục T-70: chế độ (REQ-UI-13, mặc định Cơ bản cho người dùng chính), mục đang mở "Thêm tuỳ chọn", …
+const DEFAULT_UI
+function sanitizeUi(r: Partial<UiPrefs>): UiPrefs
+```
+
+#### `apps/web/src/lib/useStageWidth.ts`
+
+Chiều rộng khung xem trước (px), tính theo chỗ còn lại thực sự trong vùng cuộn giữa: khung + dòng thông số + thanh phát
+
+```text
+const STAGE_CHROME   // Chiều cao cố định (px) của phần quanh canvas trong khối sân khấu: dòng thông số, dòng thời gian, khoảng cách,…
+const STAGE_WEDGE   // Bề rộng thêm bên phải khi có dải xám: khe 16 px + dải 10 px.
+function fitStageWidth(o: { availW: number; availH: number; aspect: number; chrome: number; extra: number }): number   // Hàm thuần: rộng nhất sao cho khối sân khấu vừa cả chiều ngang lẫn chiều dọc.
+function useStageWidth(scroller: RefObject<HTMLElement>, stage: RefObject<HTMLElement>, o: { aspect: number; chrome: number; extra: number; active: boolean; fallback?: number }): number   // `stage` là phần tử bọc khối sân khấu; chỗ còn lại theo chiều dọc = phần vùng cuộn dưới mép trên của nó (tự tí…
 ```
 
 #### `apps/web/src/main.tsx`
@@ -926,6 +1056,7 @@ type ParseResponse
 - `apps/web/src/lib/externalMidi.test.ts`
 - `apps/web/src/lib/numberInput.test.ts`
 - `apps/web/src/lib/parserClient.test.ts`
+- `apps/web/src/lib/playback.test.ts`
 - `apps/web/src/lib/prefs.test.ts`
 - `apps/web/src/lib/problems.test.ts`
 - `apps/web/src/lib/theme.test.ts`
@@ -942,4 +1073,4 @@ type ParseResponse
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 264 ký hiệu công khai -->
+<!-- 10 thư mục src, 313 ký hiệu công khai -->
