@@ -1,7 +1,7 @@
 {
   "title": "DAW Visualizer — Tài liệu",
   "lang": "vi",
-  "repoUrl": "",
+  "repoUrl": "https://github.com/dawviz/dawviz",
   "branch": "main",
   "nav": [
     {
@@ -84,6 +84,10 @@
         {
           "src": "docs/design/EXPRESSIONS.md",
           "title": "Biểu thức, bảo mật, kiểm duyệt"
+        },
+        {
+          "src": "docs/design/UI-DIRECTION.md",
+          "title": "Định hướng hình ảnh và giao diện"
         }
       ]
     },

@@ -38,15 +38,16 @@ Mục tiêu đo được (BRD §2): từ file DAW đến MP4 cho đoạn ≤ 60 
 
 - **Định dạng vào:** Ableton `.als`/`.alp` (chỉ Arrangement), Reaper `.rpp`, `.dawproject` (Bitwig/Studio One), MIDI `.mid`, parser khai báo bằng JSON schema (nguồn nhị phân). `.flp` và `.bwproject` *chưa hỗ trợ*. Người dùng FL Studio xuất `.mid`, và màn hình nạp file phải hướng dẫn điều này (D-19). Audio kèm tuỳ chọn.
 - **Không bao giờ gán tempo ngầm:** thiếu tempo thì cảnh báo và cho người dùng nhập mốc BPM, dấu nhịp (D-24, D-29, D-31).
-- **Cảnh và widget:** 8 widget cốt lõi + đề xuất P-01…P-13 trong bản 1.0; snapping, smart guides, preset 9:16 / 16:9 / 1:1.
+- **Cảnh và widget:** 8 widget cốt lõi + đề xuất P-01…P-13 trong bản 1.0; snapping, smart guides, preset 9:16 / 16:9 / 1:1. Mọi widget chỉnh như lớp của trình dựng motion graphics: vị trí, kích thước, **xoay 2D tự do từ 1.0** (D-54, thay D-15), keyframe, biểu thức; xoay 3D X/Y/Z và camera ở 1.1 (D-47).
 - **Xuất:** MP4 (WebCodecs + Mediabunny), kích thước tuỳ ý (chẵn, ≤ 4096), chọn đoạn xuất, tiến độ và nút huỷ; nền trong suốt ở 1.0 (D-47).
-- **Theme giao diện:** Sáng / Tối (mặc định hiện nay) / Theo hệ thống, khai báo bằng biến CSS để cộng đồng thêm theme ở 1.1. Theme chỉ đổi giao diện ứng dụng, **không** đổi màu khung hình video (REQ-UI-10).
+- **Khung preview là video, không phải giao diện app:** khung do Render Core vẽ trên canvas, luôn theo preset video (mặc định "Bản in" nền trắng, D-51), kể cả khi theme app tối. Gọi là "Phong cách video"; không lẫn với theme app.
+- **Theme giao diện ("Giao diện ứng dụng"):** Sáng / Tối / Theo hệ thống (REQ-UI-10); theme cộng đồng ở 1.1. Theme **chỉ đổi màu** qua bộ token cố định (D-52): không đổi phông, cỡ, khoảng cách, bố cục hay component, không nhận CSS tuỳ ý; mỗi theme kiểm tương phản AA trước khi áp, không đạt thì từ chối cả theme.
 - **Mọi điều khiển kéo có ô nhập giá trị đi kèm** (số, đơn vị, phép tính, tương đối) (D-49).
-- **Đa ngôn ngữ:** en (nguồn) và vi đầy đủ; 100% chuỗi qua từ điển `locales/`, không chữ cứng; văn bản trên video cũng được dịch (BR-09, D-30). Giao diện phải chịu được chuỗi dài hơn tiếng Anh.
-- **An toàn:** không `eval`/`new Function`, CSP không `unsafe-eval`, Trusted Types; parse trong Web Worker (R-05, R-09).
+- **Đa ngôn ngữ:** en (nguồn) và vi đầy đủ; mọi chữ hiển thị đi qua `locales/en.json` và `locales/vi.json`, không chữ cứng; văn bản trên video cũng được dịch (BR-09, D-30). Giao diện phải chịu được chuỗi dài hơn tiếng Anh.
+- **An toàn:** không `eval`/`new Function`, CSP không `unsafe-eval`, Trusted Types; parse trong Web Worker (R-05, R-09). CSP chỉ cho `font-src 'self'` (cùng `data:`/`blob:`), nên **mọi phông phải tự host** trong repo, không dùng CDN phông; phông phải có giấy phép mở (OFL) để phân phối.
 - **Ngăn xếp:** React 18 + TypeScript + Vite + Tailwind CSS + Framer Motion; Canvas 2D cho khung hình video; Render Core thuần, không phụ thuộc React/DOM (D-34, D-36, D-37).
-- **Tình trạng hiện tại:** mốc M1 (nạp file → Piano Roll → phát/tua, en/vi). Chưa có xuất video (M3), lưu phiên (M4), đủ widget HUD (M2).
-- Ngoài phạm vi 1.0: Session View, giao diện di động, thư viện preset trong ứng dụng, WebGL, storyboard và Graph Editor đầy đủ (BRD §4.2, §4.4).
+- **Tình trạng hiện tại (2026-11-13):** M1 đóng 2026-11-12 (nạp file → Piano Roll → phát/tua, en/vi); M2 đang làm (Scene + `renderFrame` xong; tiếp theo store/hoàn tác/Preset rồi widget). Chưa có xuất video (M3), lưu phiên (M4). `apps/web` hiện là **giao diện khung** để kiểm parser/Render Core, chưa phải giao diện sản phẩm; bố cục sản phẩm (ba thẻ Preview / Editor / Settings, Cơ bản/Nâng cao, theme) sẽ dựng lại theo D-53 (T-48, T-60, T-70).
+- Ngoài phạm vi 1.0: Session View, giao diện di động, thư viện preset trong ứng dụng, WebGL, storyboard và Graph Editor đầy đủ (BRD §4.2, §4.4). "Biên tập video đa tầng" ngoài phạm vi nghĩa là cắt ghép clip/cảnh quay; lớp đồ hoạ, keyframe và timeline hiệu ứng **thuộc** phạm vi (D-54).
 
 ## Brand Commitments
 
@@ -55,6 +56,7 @@ Mục tiêu đo được (BRD §2): từ file DAW đến MP4 cho đoạn ≤ 60 
 - Riêng tư là cam kết sản phẩm: không gửi dữ liệu dự án lên server, không telemetry (BR-08, D-13).
 - Tài liệu dự án viết bằng tiếng Việt (D-46); giao diện ứng dụng đa ngôn ngữ.
 - Host trên tổ chức GitHub riêng của dự án (D-41).
+- **Nguồn sự thật về hình ảnh:** `docs/design/UI-DIRECTION.md` (mục 5.3 cấu trúc D + A + E, mục 5.4 token màu, mục 7 nguyên tắc) và BRD D-51…D-54. Khung preview mặc định "Bản in" (D-51) chỉ lấy ngôn ngữ trình bày từ ảnh tham chiếu, **không** dùng tên, bài hay nhận diện của kênh gốc. Giao diện web theo cấu trúc D + A + E (D-53) với bốn bảng màu dựng sẵn (Studio cam mặc định, Bản in đỏ, Đồng, Riso hồng), mỗi bảng có sáng và tối; thay đổi hướng hình ảnh phải sửa tài liệu đó và thêm quyết định `D-xx` vào BRD trước.
 
 ## Evidence on Hand
 
@@ -62,13 +64,14 @@ Mục tiêu đo được (BRD §2): từ file DAW đến MP4 cho đoạn ≤ 60 
 - Tệp dự án mẫu: `test/fixtures/*.rpp`; tệp bên thứ ba không được commit (`test/fixtures/third-party/`).
 - Preset kiểu nốt: `presets/note-style/` (flat, neon, outline, rainbow-pitch, soft-bars).
 - `assets/backgrounds/`, `assets/fonts/`: hiện trống.
+- Ảnh thử hướng giao diện trong `UI-DIRECTION.md` mục 4 là **ảnh AI minh hoạ**, có lỗi do mô hình sinh; không phải giao diện hiện có, không được dùng làm ảnh chụp sản phẩm.
 - **Chưa có:** logo, ảnh chụp sản phẩm, video demo, lời chứng thực, người dùng hay số liệu sử dụng. Không được bịa. KPI gắn **[PROVISIONAL]** chưa phải số đo, và KPI-02 chỉ đạt trên desktop (di động lệch −42,67 ms).
 
 ## Product Principles
 
-1. **Một phút tới video đầu tiên.** Mặc định, chế độ Cơ bản và lần mở đầu phục vụ beatmaker: kéo vào, chọn preset, xuất. Tùy biến sâu nằm sau "Thêm tuỳ chọn" chứ không chắn đường.
+1. **Quyền chỉnh của trình dựng thật, mặc định đơn giản (D-54).** Mặc định, chế độ Cơ bản và lần mở đầu phục vụ beatmaker: kéo vào, preset mẫu dùng ngay, kéo thả widget, xuất; một phút tới video đầu tiên. Toàn bộ quyền chỉnh (xoay, biến đổi, keyframe, biểu thức, timeline) mở dần qua "Thêm tuỳ chọn", Nâng cao và thẻ Editor, không chắn đường.
 2. **Hiểu dự án, không đoán.** Dữ liệu lấy từ tệp DAW; khi thiếu (tempo, nốt, định dạng chưa hỗ trợ) thì nói rõ và để người dùng sửa, không che bằng giá trị ngầm.
-3. **Xem trước là bản xuất.** Mọi thứ thấy trên canvas phải ra đúng như vậy trong video; giao diện ứng dụng và khung hình video là hai thế giới tách biệt.
+3. **Xem trước là bản xuất.** Mọi thứ thấy trên canvas phải ra đúng như vậy trong video; giao diện ứng dụng và khung hình video là hai thế giới tách biệt: theme app không đổi khung video, preset video không đổi theme app.
 4. **Máy của người dùng, dữ liệu của người dùng.** Không server, không telemetry, không chạy mã người dùng.
 5. **Cộng đồng mở rộng bằng tệp.** Ngôn ngữ, preset, theme, schema parser được thêm bằng JSON và pull request, không phải sửa mã.
 
