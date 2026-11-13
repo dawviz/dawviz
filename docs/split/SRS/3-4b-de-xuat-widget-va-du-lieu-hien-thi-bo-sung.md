@@ -5,7 +5,7 @@ section: "3.4b. Đề xuất widget và dữ liệu hiển thị bổ sung (D-32
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4b. Đề xuất widget và dữ liệu hiển thị bổ sung (D-32, OI-11) **[ĐỀ XUẤT, chưa cam kết v1.0]**"
 chunk: 3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md
 source_lines: 610-633
-source_sha1: 0b10d2a1a5
+source_sha1: 0fd28ef586
 ids: [D-32, D-40, OI-11, P-01, P-02, P-03, P-04, P-05, P-06, P-07, P-08, P-09, P-10, P-11, P-12, P-13, REQ-AST-01, REQ-GRAPHICS-05, REQ-GRAPHICS-06, SOI-18]
 ---
 ### 3.4b. Đề xuất widget và dữ liệu hiển thị bổ sung (D-32, OI-11) **[ĐỀ XUẤT, chưa cam kết v1.0]**

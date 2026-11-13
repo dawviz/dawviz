@@ -20,7 +20,7 @@ interface Props {
 }
 
 /** Canvas tự theo dõi `t`: chỉ phần này vẽ lại mỗi khung hình. */
-function LiveCanvas({ scene, derived, ast, playback, fonts = 'ready' }: Pick<Props, 'scene' | 'derived' | 'ast' | 'playback' | 'fonts'>) {
+export function LiveCanvas({ scene, derived, ast, playback, fonts = 'ready' }: Pick<Props, 'scene' | 'derived' | 'ast' | 'playback' | 'fonts'>) {
   const { i18n } = useI18n();
   const t = usePlayback(playback, (s) => s.t);
   return (

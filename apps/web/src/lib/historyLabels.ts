@@ -4,7 +4,7 @@ import type { I18n } from '@dawviz/i18n';
 import type { Cmd } from './commands.ts';
 import type { History } from './store.ts';
 
-export interface LabelCtx { i18n: Pick<I18n, 't' | 'has' | 'number'>; trackName(id: string): string }
+export interface LabelCtx { i18n: Pick<I18n, 't' | 'has' | 'number'>; trackName(id: string): string; widgetName?(id: string): string }
 
 /** Tên trường → khoá hiển thị. Trường không có trong bảng hiện đúng tên mã. */
 const NOTE_FIELD: Record<string, string> = {
@@ -45,10 +45,27 @@ function changeLabel(c: LabelCtx, what: string, fields: Record<string, string>, 
   return i18n.t('web.hist.many', { what: where ? `${where} · ${what}` : what, n: keys.length });
 }
 
+/** Tên điểm neo: một trong 9 điểm chuẩn ("Tâm", "Trên trái"…) hoặc phần trăm. */
+function anchorName(c: LabelCtx, a: unknown): string {
+  const { x, y } = obj(a) as { x?: number; y?: number };
+  const i = [0, 0.5, 1].indexOf(Number(y)) * 3 + [0, 0.5, 1].indexOf(Number(x));
+  if ([0, 0.5, 1].includes(Number(x)) && [0, 0.5, 1].includes(Number(y))) return c.i18n.t(`web.editor.anchorPt.${i}`);
+  return `${c.i18n.number(Math.round(Number(x) * 100))}% · ${c.i18n.number(Math.round(Number(y) * 100))}%`;
+}
+/** Nhãn của một lần đổi layout, theo thao tác người dùng làm: xoay, đổi neo, đổi cỡ hay di chuyển. */
+function layoutLabel(c: LabelCtx, widget: string, before: unknown, after: unknown): string {
+  const { i18n } = c, a = obj(after), keys = changedKeys(before, after);
+  const n = (v: unknown) => i18n.number(Math.round(Number(v)));
+  if (keys.includes('anchor')) return i18n.t('web.hist.anchor', { widget, point: anchorName(c, a.anchor) });
+  if (keys.includes('width') || keys.includes('height')) return i18n.t('web.hist.resize', { widget, w: n(a.width), h: n(a.height) });
+  if (keys.includes('rotation')) return i18n.t('web.hist.rotate', { widget, from: n(obj(before).rotation), to: n(a.rotation) });
+  return i18n.t('web.hist.moveWidget', { widget, x: n(a.x), y: n(a.y) });
+}
+
 export function describeCommand(cmd: Cmd, c: LabelCtx): string {
   const { i18n } = c, p = obj(cmd.params);
   const track = typeof p.track === 'string' ? c.trackName(p.track) : '';
-  const widget = typeof p.widget === 'string' ? p.widget : '';
+  const widget = typeof p.widget === 'string' ? (c.widgetName?.(p.widget) ?? p.widget) : '';
   switch (cmd.type) {
     case 'patchNoteStyle': return changeLabel(c, i18n.t('web.hist.what.noteStyle'), NOTE_FIELD, cmd);
     case 'patchKeyboard': return changeLabel(c, i18n.t('web.hist.what.keyboard'), KEYBOARD_FIELD, cmd);
@@ -69,7 +86,13 @@ export function describeCommand(cmd: Cmd, c: LabelCtx): string {
     case 'toggleSolo': return i18n.t(p.on ? 'web.hist.soloOn' : 'web.hist.soloOff', { track });
     case 'setAllHidden': return i18n.t(p.hidden ? 'web.hist.hideAll' : 'web.hist.showAll');
     case 'moveTrack': return i18n.t('web.hist.move', { track, from: String(p.from), to: String(p.to) });
-    case 'patchLayout': return changeLabel(c, i18n.t('web.hist.what.layout'), {}, cmd, widget);
+    case 'patchLayout': return layoutLabel(c, widget, cmd.before, cmd.after);
+    case 'patchLayouts': {
+      const ids = Array.isArray(p.widgets) ? (p.widgets as string[]) : [];
+      if (ids.length === 1) return layoutLabel(c, widget, obj(cmd.before)[ids[0]], obj(cmd.after)[ids[0]]);
+      const rotated = ids.some((id) => changedKeys(obj(cmd.before)[id], obj(cmd.after)[id]).includes('rotation'));
+      return i18n.t(rotated ? 'web.hist.rotateMany' : 'web.hist.moveMany', { n: ids.length });
+    }
     case 'patchWidgetProps': return changeLabel(c, i18n.t('web.hist.what.widgetProps'), {}, cmd, widget);
     case 'setWidgetVisible': return i18n.t(cmd.after ? 'web.hist.widgetShow' : 'web.hist.widgetHide', { widget });
     case 'reorderZ': return i18n.t('web.hist.reorderZ', { widget });

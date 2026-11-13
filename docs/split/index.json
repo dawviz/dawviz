@@ -430,7 +430,7 @@
   },
   "SRS.md": {
    "title": "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)",
-   "sha1": "0b10d2a1a5",
+   "sha1": "0fd28ef586",
    "chunks": [
     {
      "n": 0,
@@ -1093,7 +1093,7 @@
       "3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02)",
       "REQ-GRAPHICS-03: Xoay widget tự do (D-54, thay D-15)"
      ],
-     "chars": 1304,
+     "chars": 1684,
      "lines": [
       434,
       442
@@ -2602,7 +2602,7 @@
   },
   "TECHNICAL-DESIGN.md": {
    "title": "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER",
-   "sha1": "e5d905cf74",
+   "sha1": "89531c2f60",
    "chunks": [
     {
      "n": 0,
@@ -3084,7 +3084,7 @@
       "6. Ứng dụng web và phát lại 🟡",
       "6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)"
      ],
-     "chars": 12684,
+     "chars": 14312,
      "lines": [
       308,
       359

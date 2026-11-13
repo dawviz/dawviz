@@ -1,5 +1,5 @@
 // Thành phần gốc (T-70, UI-DIRECTION 5.3 cấu trúc D + A + E): thanh trên hai hàng, ba thẻ Preview / Editor / Settings.
-// Thẻ Preview: cột "Video styles" | sân khấu "bản in thử" + thanh phát | inspector đánh số. Editor và Settings mới là khung.
+// Thẻ Preview: cột "Video styles" | sân khấu "bản in thử" + thanh phát | inspector đánh số. Thẻ Editor: components/Editor.tsx (T-68).
 // Giữ trạng thái tệp đã nạp. Mọi thay đổi người dùng làm (kiểu nốt, ghi đè theo track, phong cách video, độ sáng, ẩn/solo/thứ tự track,
 // bố cục widget, mở preset) nằm trong store có hoàn tác (lib/store.ts, T-07). Đồng hồ phát nằm ở kho riêng (lib/playback.ts)
 // nên thành phần này không vẽ lại mỗi khung hình. Không có logic vẽ ở đây: khung hình = renderFrame của Render Core.
@@ -35,6 +35,7 @@ import { projectKey, styleThumbnail } from './lib/thumbnails.ts';
 import { Facts, InspectorSection } from './components/Inspector.tsx';
 import { Mark } from './components/Icons.tsx';
 import { HistoryMenu } from './components/HistoryMenu.tsx';
+import { Editor, useWidgetNames, type EditorActions } from './components/Editor.tsx';
 import { describeCommand, historyItems, type LabelCtx } from './lib/historyLabels.ts';
 import { mergeExtras, missingMidiLevel, type ExternalMidiInfo } from './lib/externalMidi.ts';
 import { loadPref, savePref } from './lib/prefs.ts';
@@ -216,7 +217,8 @@ export function App() {
   const [notice, setNotice] = useState<{ doc: Doc } | null>(null);
   const shortcuts = useMemo(() => shortcutLabels(), []);
   // Nhãn lịch sử dựng lúc hiển thị (đổi ngôn ngữ thì đổi theo) và thông báo cho trình đọc màn hình sau mỗi lần hoàn tác/làm lại/nhảy bước.
-  const labelCtx: LabelCtx = useMemo(() => ({ i18n, trackName: (id) => loaded?.ast.tracks.find((t) => t.id === id)?.name ?? id }), [i18n, loaded]);
+  const widgetName = useWidgetNames(doc.scene.widgets);
+  const labelCtx: LabelCtx = useMemo(() => ({ i18n, trackName: (id) => loaded?.ast.tracks.find((t) => t.id === id)?.name ?? id, widgetName }), [i18n, loaded, widgetName]);
   const stepLabel = useCallback((h: History<Doc>, position: number) => (position <= 0 ? i18n.t('web.hist.origin') : describeCommand(h.timeline[position - 1], labelCtx)), [i18n, labelCtx]);
   const [announce, setAnnounce] = useState({ n: 0, text: '' });
   const say = useCallback((text: string) => setAnnounce((a) => ({ n: a.n + 1, text })), []);
@@ -255,7 +257,13 @@ export function App() {
 
   // Phím tắt kiểu DAW (Space phát/dừng, Home về đầu) ở thẻ Preview. Space chỉ thuộc về thanh phát khi nút/radio đang focus
   // do chuột; focus do bàn phím thì Space bấm nút như chuẩn; ô gõ chữ giữ nguyên (lib/transportKeys.ts).
-  useEffect(() => (tab === 'preview' && loaded ? bindTransportKeys(window, playback) : undefined), [tab, loaded, playback]);
+  useEffect(() => (tab !== 'settings' && loaded ? bindTransportKeys(window, playback) : undefined), [tab, loaded, playback]);
+  const editorActions: EditorActions = useMemo(() => ({
+    layouts: (p) => run((d) => Cmds.patchLayouts(d, p)),
+    visible: (id, v) => run((d) => Cmds.setWidgetVisible(d, id, v)),
+    z: (id, where) => run((d) => Cmds.reorderZ(d, id, where)),
+    snapping: (p) => run((d) => Cmds.patchSnapping(d, p)),
+  }), [run]);
 
   // Lane automation có trong dự án (nguồn phát sáng "automation", REQ-GRAPHICS-17).
   const lanes = useMemo(() => [...new Set((loaded?.ast.tracks ?? []).flatMap((tr) => Object.entries(tr.automation ?? {}).filter(([, l]) => l?.points.length).map(([k]) => k)))], [loaded]);
@@ -368,11 +376,9 @@ export function App() {
         file={<FileDrop onPick={onPick} busy={busy} compact />} theme={<ThemeToggle pref={theme} onChange={setTheme} />} />
       <main className="min-h-0 flex-1">
         <div role="tabpanel" id="panel-preview" aria-labelledby="tab-preview" hidden={tab !== 'preview'} className="h-full">{preview}</div>
-        <div role="tabpanel" id="panel-editor" aria-labelledby="tab-editor" hidden={tab !== 'editor'} className="h-full overflow-y-auto bg-page">
-          <div className="mx-auto max-w-3xl px-6 py-8">
-            <h2 className="text-[15px] font-semibold text-fg">{i18n.t('web.editor.title')}</h2>
-            <p className="mt-2 text-[13px] text-muted">{i18n.t('web.editor.soon')}</p>
-          </div>
+        <div role="tabpanel" id="panel-editor" aria-labelledby="tab-editor" hidden={tab !== 'editor'} className="h-full">
+          <Editor scene={scene} derived={derived} ast={renderAst} playback={playback} fonts={fonts} advanced={advanced} actions={editorActions} active={tab === 'editor'}
+            transport={loaded ? <Transport playback={playback} duration={playDuration} offsetMs={offsetMs} wave={audio && peaks ? { peaks, durationSec: audio.durationSec } : null} /> : undefined} />
         </div>
         <div role="tabpanel" id="panel-settings" aria-labelledby="tab-settings" hidden={tab !== 'settings'} className="h-full overflow-y-auto bg-page">
           <div className="mx-auto max-w-3xl border-x border-line bg-surface lg:my-8 lg:border-y">

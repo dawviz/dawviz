@@ -5,7 +5,7 @@ section: "1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG"
 path: "1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG"
 chunk: 1-gioi-thieu-muc-tieu-he-thong.md
 source_lines: 45-108
-source_sha1: 0b10d2a1a5
+source_sha1: 0fd28ef586
 ids: [ARC-01, BR-01, BR-02, BR-03, BR-04, BR-05, BR-06, BR-07, BR-08, D-01, D-04, D-06, D-07, D-08, D-10, D-12, D-13, D-14, D-16, D-19, D-23, D-24, D-28, D-29, D-54, NFR-SEC-01, OI-08, REQ-EXPORT-00, REQ-GRAPHICS-03, REQ-GRAPHICS-15, REQ-PARSER-05, REQ-PARSER-06, REQ-UI-01, REQ-WIDGET-05]
 ---
 ## 1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG

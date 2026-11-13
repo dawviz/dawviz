@@ -43,7 +43,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [REQ-GRAPHICS-01: Phân lớp đồ họa (D-07)](SRS/req-graphics-01-phan-lop-do-hoa-d-07.md) · 525 ký tự
 - [REQ-GRAPHICS-02: Bắt dính thông minh](SRS/req-graphics-02-bat-dinh-thong-minh.md) · 790 ký tự
 - [REQ-GRAPHICS-16: Thanh phát (playhead) tuỳ chỉnh](SRS/req-graphics-16-thanh-phat-playhead-tuy-chinh.md) · 1489 ký tự
-- [REQ-GRAPHICS-03: Xoay widget tự do (D-54, thay D-15)](SRS/req-graphics-03-xoay-widget-tu-do-d-54-thay-d-15.md) · 1304 ký tự
+- [REQ-GRAPHICS-03: Xoay widget tự do (D-54, thay D-15)](SRS/req-graphics-03-xoay-widget-tu-do-d-54-thay-d-15.md) · 1684 ký tự
 - [REQ-GRAPHICS-04: Preset dựng sẵn và đổi tỉ lệ khung](SRS/req-graphics-04-preset-dung-san-va-doi-ti-le-khu.md) · 673 ký tự
 - [REQ-GRAPHICS-06: Độ sáng track theo automation (D-33)](SRS/req-graphics-06-do-sang-track-theo-automation-d.md) · 2443 ký tự
 - [REQ-GRAPHICS-07: Kiểu dáng nốt tuỳ chỉnh và bàn phím](SRS/req-graphics-07-kieu-dang-not-tuy-chinh-va-ban-p.md) · 3425 ký tự
@@ -136,7 +136,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [6.2.8 Kiểm thử (thuần, không cần trình duyệt)](TECHNICAL-DESIGN/6-2-8-kiem-thu-thuan-khong-can-trinh-duyet.md) · 1014 ký tự
 - [6.2.9 Quyết định đã duyệt](TECHNICAL-DESIGN/6-2-9-quyet-dinh-da-duyet.md) · 672 ký tự
 - [6.3 Danh sách track 🟢](TECHNICAL-DESIGN/6-3-danh-sach-track.md) · 1860 ký tự
-- [6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)](TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) · 12684 ký tự
+- [6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)](TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) · 14312 ký tự
 - [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở)](TECHNICAL-DESIGN/7-duong-ong-xuat-video-m3-spike-1-la-co-so.md) · 2020 ký tự
 - [8. Lưu trữ ⚪ (M4)](TECHNICAL-DESIGN/8-luu-tru-m4.md) · 1005 ký tự
 - [9. Đa ngôn ngữ 🟢](TECHNICAL-DESIGN/9-da-ngon-ngu.md) · 492 ký tự

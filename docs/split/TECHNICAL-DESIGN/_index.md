@@ -1,6 +1,6 @@
 # Chỉ mục TECHNICAL-DESIGN.md — THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER
 
-nguồn: `TECHNICAL-DESIGN.md` (sha1 e5d905cf74)
+nguồn: `TECHNICAL-DESIGN.md` (sha1 89531c2f60)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -30,7 +30,7 @@ nguồn: `TECHNICAL-DESIGN.md` (sha1 e5d905cf74)
 | 23 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.8 Kiểm thử (thuần, không cần trình duyệt) | [6-2-8-kiem-thu-thuan-khong-can-trinh-duyet.md](6-2-8-kiem-thu-thuan-khong-can-trinh-duyet.md) | 1014 | ERR_AUDIO_DECODE, ERR_AUDIO_TOO_LONG, ERR_FILE_TOO_LARGE |
 | 24 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.9 Quyết định đã duyệt | [6-2-9-quyet-dinh-da-duyet.md](6-2-9-quyet-dinh-da-duyet.md) | 672 |  |
 | 25 | 6. Ứng dụng web và phát lại 🟡 > 6.3 Danh sách track 🟢 | [6-3-danh-sach-track.md](6-3-danh-sach-track.md) | 1860 | D-50, REQ-UI-14 |
-| 26 | 6. Ứng dụng web và phát lại 🟡 > 6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68) | [6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md](6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) | 12684 | ARC-05, D-55, ERR_PRESET_, ERR_PRESET_INVALID, ERR_PRESET_TOO_LARGE, ERR_SCHEMA_NEWER… |
+| 26 | 6. Ứng dụng web và phát lại 🟡 > 6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68) | [6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md](6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) | 14312 | ARC-05, D-55, ERR_PRESET_, ERR_PRESET_INVALID, ERR_PRESET_TOO_LARGE, ERR_SCHEMA_NEWER… |
 | 27 | 7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) | [7-duong-ong-xuat-video-m3-spike-1-la-co-so.md](7-duong-ong-xuat-video-m3-spike-1-la-co-so.md) | 2020 | AT-03, D-01, ERR_EXPORT_FAILED, ERR_NO_SUPPORTED_ENCODER, REQ-EXPORT-00, REQ-EXPORT-02… |
 | 28 | 8. Lưu trữ ⚪ (M4) | [8-luu-tru-m4.md](8-luu-tru-m4.md) | 1005 | ERR_PRESET_INVALID, ERR_SCHEMA_NEWER, WARN_PRESET_MIGRATED |
 | 29 | 9. Đa ngôn ngữ 🟢 | [9-da-ngon-ngu.md](9-da-ngon-ngu.md) | 492 |  |

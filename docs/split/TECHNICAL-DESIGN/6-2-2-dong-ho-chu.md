@@ -5,7 +5,7 @@ section: "6.2.2 Đồng hồ chủ"
 path: "6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.2 Đồng hồ chủ"
 chunk: 6-2-2-dong-ho-chu.md
 source_lines: 226-246
-source_sha1: e5d905cf74
+source_sha1: 89531c2f60
 ids: []
 ---
 #### 6.2.2 Đồng hồ chủ

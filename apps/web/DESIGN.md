@@ -153,6 +153,7 @@ Thanh trượt luôn đi kèm ô số căn phải (REQ-UI-15, D-49): không thu�
 - **Do** tự host mọi phông và đưa mọi chữ qua `locales/`.
 - **Do** gọi phong cách khung video là "Video styles" / "Phong cách video", và theme app là "Giao diện ứng dụng".
 - **Do** đặt khoá (lock) chỉ ở danh sách lớp của Editor; dòng track ở Preview có tay nắm kéo, ô màu, mắt, `S`, số nốt.
+- **Do** vẽ lớp chỉnh sửa của Editor (khung chọn, tay nắm, đường gióng, dấu khoảng cách đều) bằng một màu `guide` trên nền trắng của tay nắm; chip số đo trên khung nền trắng, chữ `#1C1C1A`, viền `guide`. Đường gióng nét liền; khung chờ của widget là chấm mảnh nhạt. Lớp này nằm trong bàn đệm quanh khung và không bao giờ vào canvas (T-68).
 
 ### Don't:
 - **Don't** dùng nền xanh đen với màu nhấn xanh dương điện tử, gradient, kính mờ, phát sáng, thẻ bo góc có bóng xếp lưới đều, nút viên thuốc ở mọi nơi (mẫu "AI slop" của giao diện khung hiện tại, UI-DIRECTION mục 2).

@@ -5,7 +5,7 @@ section: "6.2.6 Cảnh báo lệch độ dài"
 path: "6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.6 Cảnh báo lệch độ dài"
 chunk: 6-2-6-canh-bao-lech-do-dai.md
 source_lines: 270-275
-source_sha1: e5d905cf74
+source_sha1: 89531c2f60
 ids: [REQ-PARSER-07, WARN_AUDIO_LENGTH]
 ---
 #### 6.2.6 Cảnh báo lệch độ dài

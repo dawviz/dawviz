@@ -5,7 +5,7 @@ section: "5.2. Chế độ tương tác"
 path: "5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.2. Chế độ tương tác"
 chunk: 5-2-che-do-tuong-tac.md
 source_lines: 950-954
-source_sha1: 0b10d2a1a5
+source_sha1: 0fd28ef586
 ids: [REQ-GRAPHICS-05]
 ---
 ### 5.2. Chế độ tương tác

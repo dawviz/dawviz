@@ -132,6 +132,18 @@ export const patchLayout = (d: Doc, widgetId: string, patch: Partial<WidgetLayou
   if (!w) return null;
   return slice(d, 'patchLayout', 'web.cmd.layout', (x) => x.scene.widgets.find((q) => q.id === widgetId)!.layout, (x, v) => withWidget(x, widgetId, (q) => ({ ...q, layout: v })), { ...w.layout, ...patch }, `layout:${widgetId}`, { widget: widgetId });
 };
+/**
+ * Đổi layout của một hoặc nhiều widget trong MỘT lệnh (Editor: kéo, đổi cỡ, xoay, xoay nhóm). Gộp theo tập widget:
+ * một cử chỉ kéo trên khung là một bước hoàn tác dù di chuyển mấy widget.
+ */
+export const patchLayouts = (d: Doc, patches: Record<string, Partial<WidgetLayout>>): Cmd | null => {
+  const ids = Object.keys(patches).filter((id) => d.scene.widgets.some((w) => w.id === id)).sort();
+  if (!ids.length) return null;
+  const get = (x: Doc) => Object.fromEntries(ids.map((id) => [id, x.scene.widgets.find((q) => q.id === id)!.layout]));
+  const set = (x: Doc, v: Record<string, WidgetLayout>) => ids.reduce((acc, id) => withWidget(acc, id, (q) => ({ ...q, layout: v[id] })), x);
+  const after = Object.fromEntries(ids.map((id) => [id, { ...d.scene.widgets.find((q) => q.id === id)!.layout, ...patches[id] }]));
+  return slice(d, 'patchLayouts', 'web.cmd.layout', get, set, after, `layouts:${ids.join('|')}`, { widgets: ids, ...(ids.length === 1 ? { widget: ids[0] } : {}) });
+};
 /** Đổi một số thuộc tính (`properties`) của widget. */
 export const patchWidgetProps = (d: Doc, widgetId: string, patch: Record<string, unknown>): Cmd | null => {
   const w = d.scene.widgets.find((x) => x.id === widgetId);

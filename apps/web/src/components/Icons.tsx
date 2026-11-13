@@ -33,3 +33,9 @@ export const Upload = (p: P) => <S {...p}><path d="M8 10.5V2.5m0 0L5.25 5.25M8 2
 export const Mark = ({ className = 'h-4 w-4' }: P) => (
   <svg viewBox="0 0 16 16" className={className} aria-hidden fill="currentColor"><rect x="2" y="3" width="6" height="2" rx=".5" /><rect x="6" y="7" width="8" height="2" rx=".5" /><rect x="3" y="11" width="5" height="2" rx=".5" /></svg>
 );
+export const Lock = (p: P) => <S {...p}><rect x="3.5" y="7" width="9" height="6.5" rx="1" /><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" /></S>;
+export const Unlock = (p: P) => <S {...p}><rect x="3.5" y="7" width="9" height="6.5" rx="1" /><path d="M5.5 7V5a2.5 2.5 0 0 1 4.9-.7" /></S>;
+/** Mũi tên vòng: đặt lại góc xoay. */
+export const RotateReset = (p: P) => <S {...p}><path d="M3 8a5 5 0 1 0 1.5-3.5" /><path d="M2.5 2.5v3h3" /></S>;
+export const ToFront = (p: P) => <S {...p}><rect x="5.5" y="5.5" width="8" height="8" rx="1" /><path d="M10.5 3.5v-1a1 1 0 0 0-1-1h-7a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h1" /></S>;
+export const ToBack = (p: P) => <S {...p}><rect x="2.5" y="2.5" width="8" height="8" rx="1" /><path d="M13.5 6.5v6a1 1 0 0 1-1 1h-6" strokeDasharray="1.6 1.8" /></S>;

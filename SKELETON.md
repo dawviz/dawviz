@@ -25,6 +25,8 @@ dawviz/
 │     ├─ src/
 │     │  ├─ components/
 │     │  │  ├─ AudioPanel.tsx
+│     │  │  ├─ Editor.tsx
+│     │  │  ├─ EditorOverlay.tsx
 │     │  │  ├─ FileDrop.tsx
 │     │  │  ├─ HistoryMenu.tsx
 │     │  │  ├─ Icons.tsx
@@ -65,6 +67,8 @@ dawviz/
 │     │  │  ├─ commands.ts
 │     │  │  ├─ csp.test.ts
 │     │  │  ├─ csp.ts
+│     │  │  ├─ editorGeometry.test.ts
+│     │  │  ├─ editorGeometry.ts
 │     │  │  ├─ externalMidi.test.ts
 │     │  │  ├─ externalMidi.ts
 │     │  │  ├─ fonts.ts
@@ -882,6 +886,24 @@ function offsetSummary(i18n: { t(k: string, p?: Record<string, unknown>): string
 function AudioPanel({ audio, busy, offsetMs, showOffset, onLoad, onRemove, onOffset }: { audio: AudioInfo | null; busy: boolean; offsetMs: number; showOffset: boolean; onLoad(file: File): void; onRemove(): void; onOffset(ms: number): void; })
 ```
 
+#### `apps/web/src/components/Editor.tsx`
+
+Thẻ Editor (T-68, UI-DIRECTION 5.3 mục 3, SRS 5.3 Edit Mode): bố cục widget trên khung video.
+
+```text
+interface EditorActions
+function useWidgetNames(widgets: readonly WidgetSpec[]): (id: string) => string   // Tên hiển thị của widget: tên loại theo ngôn ngữ, đánh số khi có nhiều widget cùng loại.
+function Editor({ scene, derived, ast, playback, fonts, advanced, actions, transport, active }: Props)
+```
+
+#### `apps/web/src/components/EditorOverlay.tsx`
+
+Lớp tương tác của Editor (T-68, SRS 5.3 Edit Mode, REQ-GRAPHICS-02/03): khung chọn, 8 tay nắm co giãn, tay nắm xoay,
+
+```text
+function EditorOverlay({ scene, cssWidth, selected, locked, onSelect, onLayouts, name, advanced }: Props)
+```
+
 #### `apps/web/src/components/FileDrop.tsx`
 
 Khung thả/chọn tệp dự án (kèm .mid ngoài); hiệu ứng Framer Motion.
@@ -924,6 +946,11 @@ const Sun = (p: P) =>
 const Moon = (p: P) =>
 const Upload = (p: P) =>
 const Mark = ({ className = 'h-4 w-4' }: P) =>
+const Lock = (p: P) =>
+const Unlock = (p: P) =>
+const RotateReset = (p: P) =>   // Mũi tên vòng: đặt lại góc xoay.
+const ToFront = (p: P) =>
+const ToBack = (p: P) =>
 ```
 
 #### `apps/web/src/components/Inspector.tsx`
@@ -1005,6 +1032,7 @@ function SliderField({ id, label, value, min, max, step, hardMin, hardMax, adv, 
 Sân khấu (UI-DIRECTION 5.3, hướng E): khung video do Render Core vẽ, đặt như một bản in thử. Dấu cắt ở bốn góc,
 
 ```text
+function LiveCanvas({ scene, derived, ast, playback, fonts = 'ready' }: Pick<Props, 'scene' | 'derived' | 'ast' | 'playback' | 'fonts'>)   // Canvas tự theo dõi `t`: chỉ phần này vẽ lại mỗi khung hình.
 const Crop = ({ className }: { className: string }) =>
 function Stage({ scene, derived, ast, playback, styleName, proof, width, fonts, children }: Props)
 ```
@@ -1226,6 +1254,7 @@ const setAllHidden = (d: Doc, hidden: boolean) =>
 const moveTrack = (d: Doc, id: TrackId, to: number) =>
 const setAudioOffset = (d: Doc, ms: number) =>   // Đặt offset âm thanh (ms). Gõ/bấm ± liên tiếp gộp thành một bước. Kẹp ±10 s, làm tròn 1 ms.
 const patchLayout = (d: Doc, widgetId: string, patch: Partial<WidgetLayout>) =>   // Đổi layout widget (x, y, width, height, rotation, anchor). Gộp theo widget: kéo/đổi cỡ/xoay trong một cử chỉ …
+const patchLayouts = (d: Doc, patches: Record<string, Partial<WidgetLayout>>) =>   // Đổi layout của một hoặc nhiều widget trong MỘT lệnh (Editor: kéo, đổi cỡ, xoay, xoay nhóm). Gộp theo tập widg…
 const patchWidgetProps = (d: Doc, widgetId: string, patch: Record<string, unknown>) =>   // Đổi một số thuộc tính (`properties`) của widget.
 const setWidgetVisible = (d: Doc, widgetId: string, visible: boolean) =>
 const reorderZ = (d: Doc, widgetId: string, where: 'front' | 'back') =>   // Đưa widget lên trên cùng / xuống dưới cùng bằng cách đổi zIndex của nó.
@@ -1241,6 +1270,24 @@ Chính sách CSP của ứng dụng (NFR-SEC-03 + NFR-SEC-06). Chèn vào index.
 ```text
 const CSP_DIRECTIVES
 const CSP
+```
+
+#### `apps/web/src/lib/editorGeometry.ts`
+
+Hình học thuần cho Editor (T-68, SRS REQ-GRAPHICS-02/03, REQ-UI 5.3 Edit Mode). Toạ độ là pt của khung thiết kế.
+
+```text
+type Handle
+const HANDLES
+const MIN_SIZE   // Cỡ nhỏ nhất khi kéo tay nắm (pt). Ô nhập số vẫn cho xuống 1 pt như lược đồ preset.
+function toCanvas(l: L, qx: number, qy: number): [number, number]   // Điểm trong widget (toạ độ widget) → điểm trên khung.
+function resizeLayout(start: L, handle: Handle, p: { x: number; y: number }, o: { shift?: boolean; alt?: boolean } = {}): L   // Đổi cỡ bằng tay nắm. `p`: con trỏ trên khung. Cạnh/góc đối diện đứng yên (theo hướng của chính widget, kể cả …
+function setAnchor(l: L, anchor: { x: number; y: number }): L   // Đổi điểm neo mà widget không nhảy chỗ trên khung.
+function pointerAngle(pivot: [number, number], p: { x: number; y: number }): number   // Góc (độ) của con trỏ quanh tâm xoay; 0° = hướng lên (tay nắm xoay nằm phía trên khung).
+function hitTest<W extends { id: string; zIndex: number; visible: boolean; layout: L }>(widgets: readonly W[], p: { x: number; y: number }, locked: ReadonlySet<string> = new Set()): W | null   // Widget trên cùng (zIndex lớn nhất, cùng zIndex thì đứng sau trong tài liệu) chứa điểm `p`; bỏ widget ẩn hoặc …
+const round = (l: L) =>
+function outsideFrame(l: WidgetLayout, W: number, H: number): boolean   // Widget nằm hẳn ngoài khung (khung bao đã xoay không giao với khung): video sẽ không thấy nó.
+function intoFrame(l: WidgetLayout, W: number, H: number):    // Dời widget ít nhất có thể để khung bao của nó nằm trong khung (lớn hơn khung thì canh mép trái/trên).
 ```
 
 #### `apps/web/src/lib/externalMidi.ts`
@@ -1569,6 +1616,7 @@ type ParseResponse
 - `apps/web/src/lib/audioPeaks.test.ts`
 - `apps/web/src/lib/clock.test.ts`
 - `apps/web/src/lib/csp.test.ts`
+- `apps/web/src/lib/editorGeometry.test.ts`
 - `apps/web/src/lib/externalMidi.test.ts`
 - `apps/web/src/lib/historyLabels.test.ts`
 - `apps/web/src/lib/masterClock.test.ts`
@@ -1602,4 +1650,4 @@ type ParseResponse
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 555 ký hiệu công khai -->
+<!-- 10 thư mục src, 577 ký hiệu công khai -->

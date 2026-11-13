@@ -339,3 +339,33 @@ describe('preset .json trong ứng dụng (T-07)', () => {
     expect(({} as any).polluted).toBeUndefined();
   });
 });
+
+describe('thẻ Editor (T-68)', () => {
+  const layerBtn = (re: RegExp) => [...screen.getByTestId('layers').querySelectorAll<HTMLButtonElement>('button[aria-pressed]')].find((b) => re.test(b.textContent ?? '') && !b.getAttribute('aria-label'))!;
+  it('chọn từ Lớp, gõ Y ra ngoài khung → cảnh báo + "Đưa vào khung"; một bước hoàn tác mỗi lần', async () => {
+    await openProject();
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    expect(screen.getByTestId('editor-noselection')).toBeInTheDocument();
+    fireEvent.click(layerBtn(/Piano roll/));
+    const y = screen.getByRole('textbox', { name: /^(Y position|Vị trí Y)$/ }) as HTMLInputElement;
+    fireEvent.focus(y); fireEvent.change(y, { target: { value: '5000' } }); fireEvent.keyDown(y, { key: 'Enter' });
+    await waitFor(() => expect(screen.getByTestId('editor-outside')).toBeInTheDocument());
+    expect(undoBtn().title).toMatch(/Move Piano roll to|Dời Piano roll tới/);
+    fireEvent.click(screen.getByRole('button', { name: /Bring into frame|Đưa vào khung/ }));
+    await waitFor(() => expect(screen.queryByTestId('editor-outside')).toBeNull());
+    ctrlZ(); await waitFor(() => expect(screen.getByTestId('editor-outside')).toBeInTheDocument());
+  });
+  it('khoá ở Lớp: vẫn chọn được, ô số bị khoá, có nút Mở khoá; điểm neo chỉ hiện ở Nâng cao', async () => {
+    await openProject();
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^(Lock|Khoá) Piano roll$/ }));
+    fireEvent.click(layerBtn(/Piano roll/));
+    expect(screen.getByTestId('editor-locked')).toBeInTheDocument();
+    expect((screen.getByRole('textbox', { name: /^(X position|Vị trí X)$/ }) as HTMLInputElement).disabled).toBe(true);
+    expect(screen.queryByTestId('anchor-picker')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: /^(Unlock|Mở khoá)$/ }));
+    expect((screen.getByRole('textbox', { name: /^(X position|Vị trí X)$/ }) as HTMLInputElement).disabled).toBe(false);
+    fireEvent.click(screen.getByRole('radio', { name: /Advanced|Nâng cao/ }));
+    expect(screen.getByTestId('anchor-picker')).toBeInTheDocument();
+  });
+});

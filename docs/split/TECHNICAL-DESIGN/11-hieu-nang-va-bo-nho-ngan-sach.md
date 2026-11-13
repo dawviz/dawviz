@@ -5,7 +5,7 @@ section: "11. Hiệu năng và bộ nhớ (ngân sách)"
 path: "11. Hiệu năng và bộ nhớ (ngân sách)"
 chunk: 11-hieu-nang-va-bo-nho-ngan-sach.md
 source_lines: 400-409
-source_sha1: e5d905cf74
+source_sha1: 89531c2f60
 ids: [NFR-PERF-04, NFR-PERF-05]
 ---
 ## 11. Hiệu năng và bộ nhớ (ngân sách)

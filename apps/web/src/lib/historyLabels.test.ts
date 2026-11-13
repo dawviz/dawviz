@@ -100,3 +100,27 @@ test('ẩn/hiện vạch phát: một bước hoàn tác, nhãn bật/tắt theo
   i18n.setLocale('en'); assert.match(describeCommand(item, ctx), /^Show playhead .+ → .+$/);
   s.undo(); assert.equal(C.pianoOf(s.get().scene)!.properties.playheadVisible, true);
 });
+
+test('patchLayouts: nhãn theo thao tác (dời, đổi cỡ, xoay, điểm neo tên chuẩn), tên widget theo ngôn ngữ, không JSON', () => {
+  let t = 0; const s = createStore<C.Doc>(doc(), { now: () => (t += 5000) });
+  const id = C.pianoOf(s.get().scene)!.id, L = () => C.pianoOf(s.get().scene)!.layout;
+  const wctx = { ...ctx, widgetName: (w: string) => (w === id ? 'Piano roll' : w) };
+  s.dispatch(C.patchLayouts(s.get(), { [id]: { x: 130, y: 168 } }));
+  s.dispatch(C.patchLayouts(s.get(), { [id]: { width: 690, height: 400 } }));
+  s.dispatch(C.patchLayouts(s.get(), { [id]: { rotation: 30 } }));
+  s.dispatch(C.patchLayouts(s.get(), { [id]: { anchor: { x: 0, y: 0.5 }, x: L().x + 3 } }));
+  s.dispatch(C.patchLayouts(s.get(), { [id]: { anchor: { x: 0.25, y: 0.5 } } }));
+  const other = s.get().scene.widgets.find((w) => w.id !== id);
+  if (other) s.dispatch(C.patchLayouts(s.get(), { [id]: { rotation: 45 }, [other.id]: { rotation: 15 } }));
+  const tl = s.state().history.timeline;
+  i18n.setLocale('en');
+  const en = tl.map((c) => describeCommand(c, wctx));
+  assert.deepEqual(en.slice(0, 5), ['Move Piano roll to 130, 168', 'Resize Piano roll to 690 × 400', 'Rotate Piano roll 0° → 30°', 'Anchor of Piano roll: Middle left', 'Anchor of Piano roll: 25% · 50%']);
+  if (other) assert.equal(en[5], 'Rotate 2 widgets');
+  i18n.setLocale('vi');
+  assert.equal(describeCommand(tl[0], wctx), 'Dời Piano roll tới 130, 168');
+  assert.equal(describeCommand(tl[3], wctx), 'Điểm neo của Piano roll: Giữa trái');
+  i18n.setLocale('en');
+  // một lệnh cho nhiều widget là MỘT bước hoàn tác
+  if (other) { const before = s.state().history.position; s.undo(); assert.equal(s.state().history.position, before - 1); }
+});

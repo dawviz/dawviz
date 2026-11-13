@@ -5,7 +5,7 @@ section: "7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở)"
 path: "7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở)"
 chunk: 7-duong-ong-xuat-video-m3-spike-1-la-co-so.md
 source_lines: 360-385
-source_sha1: e5d905cf74
+source_sha1: 89531c2f60
 ids: [AT-03, D-01, ERR_EXPORT_FAILED, ERR_NO_SUPPORTED_ENCODER, REQ-EXPORT-00, REQ-EXPORT-02, REQ-EXPORT-06, SOI-10]
 ---
 ## 7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở)
