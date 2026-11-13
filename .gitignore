@@ -20,3 +20,10 @@ Thumbs.db
 
 # ── Tệp mẫu bên thứ ba chưa xác nhận quyền phân phối (xem test/fixtures/README.md) ──
 test/fixtures/third-party/
+
+# impeccable: mỗi người tự cài bằng `npx impeccable install`
+.claude/settings.local.json
+.claude/skills/impeccable/
+.claude/agents/impeccable-*.md
+.github/hooks/impeccable.json
+.impeccable/critique/
