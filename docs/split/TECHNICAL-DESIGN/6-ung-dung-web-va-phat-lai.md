@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "6. Ứng dụng web và phát lại 🟡"
 path: "6. Ứng dụng web và phát lại 🟡"
 chunk: 6-ung-dung-web-va-phat-lai.md
-source_lines: 164-197
-source_sha1: cda0d46b82
+source_lines: 195-228
+source_sha1: 7d1c483e31
 ids: [D-50, REQ-UI-02, REQ-UI-14]
 ---
 ## 6. Ứng dụng web và phát lại 🟡

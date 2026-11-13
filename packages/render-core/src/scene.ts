@@ -1,6 +1,11 @@
 // T-05: SceneDocument (= Preset, SRS REQ-STORAGE-02) + kiểm/sửa lược đồ. Dữ liệu thuần, không DOM.
 // Mô hình hiện tại là "canvas + widgets" của preset 0.3.0. Lớp/phần tử storyboard (T-22) sẽ là schemaVersion mới,
 // có hàm di trú từ 0.3.0; vì vậy mọi trường ở đây giữ đúng tên trong SRS để không phải đổi tên khi di trú.
+import {
+  DEFAULT_CHORD, DEFAULT_EVENT_COUNTER, DEFAULT_LIVE_TRIGGER, DEFAULT_PROGRESS_BAR, DEFAULT_TIME_BAR, DEFAULT_TRACK_INFO, TEMPLATE_KEYS,
+  type Align, type ChordProps, type EventCounterProps, type LineCfg, type LiveTriggerProps, type ProgressBarProps, type TextStyle, type TimeBarProps, type TrackInfoProps,
+} from './hud.ts';
+import { unknownPlaceholders } from './text.ts';
 import { DEFAULT_KEYBOARD_STYLE, DEFAULT_NOTE_STYLE, sanitizeStyle, type KeyboardStyle, type NoteStyle, type StyleConfig } from './style.ts';
 
 export const SCENE_SCHEMA_VERSION = '0.3.0';
@@ -124,6 +129,8 @@ export function sanitizeScene(raw: unknown): { scene: SceneDocument; warnings: S
     return v as T;
   };
 
+  const S: Sanitizer = { num, str, bool, oneOf, warn: (path, value, message) => w('WARN_PRESET_VALUE', path, value, message) };
+
   const c = raw.canvas;
   const dw = Math.round(num(c.designWidth, 1920, 256, 4096, '$.canvas.designWidth'));
   const dh = Math.round(num(c.designHeight, 1080, 256, 4096, '$.canvas.designHeight'));
@@ -195,8 +202,10 @@ export function sanitizeScene(raw: unknown): { scene: SceneDocument; warnings: S
         playheadWidth: num(P.playheadWidth, d.playheadWidth, 0, 40, `${p}.properties.playheadWidth`),
       };
       widgets.push({ ...base, properties: props });
+    } else if (base.type in HUD_SANITIZERS) {
+      widgets.push({ ...base, properties: HUD_SANITIZERS[base.type as keyof typeof HUD_SANITIZERS](P, `${p}.properties`, S) });
     } else {
-      // Widget chưa có renderer (T-06, T-37…): giữ nguyên thuộc tính để không mất dữ liệu khi lưu lại; renderFrame bỏ qua.
+      // Widget chưa có renderer (T-37…): giữ nguyên thuộc tính để không mất dữ liệu khi lưu lại; renderFrame bỏ qua.
       widgets.push({ ...base, properties: JSON.parse(JSON.stringify(P)) as Record<string, unknown> });
     }
   });
@@ -206,3 +215,84 @@ export function sanitizeScene(raw: unknown): { scene: SceneDocument; warnings: S
     warnings,
   };
 }
+
+// ───────────────────────────── thuộc tính widget chữ (T-69) ─────────────────────────────
+/** Bộ kiểm giá trị dùng chung (đóng gói từ sanitizeScene để mỗi widget kiểm theo đường dẫn riêng). */
+export interface Sanitizer {
+  num(v: unknown, d: number, lo: number, hi: number, path: string): number;
+  str(v: unknown, d: string, path: string, ok?: (s: string) => boolean): string;
+  bool(v: unknown, d: boolean, path: string): boolean;
+  oneOf<T extends string>(v: unknown, list: readonly T[], d: T, path: string): T;
+  warn(path: string, value: unknown, message: string): void;
+}
+const FONT_OK = (s: string) => /^[\w][\w \-]{0,39}$/.test(s);
+const tpl = (S: Sanitizer, v: unknown, d: string, path: string, keys: readonly string[]): string => {
+  const t = S.str(v, d, path, (s) => s.length <= 200);
+  const bad = unknownPlaceholders(t, keys);
+  if (bad.length) S.warn(path, t, `chỗ giữ lạ {${bad.join('}, {')}}; chữ được giữ nguyên`);
+  return t;
+};
+const textStyle = (S: Sanitizer, v: unknown, d: TextStyle, path: string): TextStyle => {
+  const o = isObj(v) ? v : {};
+  return {
+    font: S.str(o.font, d.font, `${path}.font`, FONT_OK),
+    size: S.num(o.size, d.size, 4, 400, `${path}.size`),
+    weight: Math.round(S.num(o.weight, d.weight, 100, 900, `${path}.weight`) / 100) * 100,
+    color: S.str(o.color, d.color, `${path}.color`, (s) => HEX.test(s)),
+  };
+};
+const ALIGNS = ['left', 'center', 'right'] as const;
+const lineCfg = (S: Sanitizer, v: unknown, d: LineCfg, path: string, keys: readonly string[]): LineCfg => {
+  const o = isObj(v) ? v : {};
+  return { enabled: S.bool(o.enabled, d.enabled, `${path}.enabled`), template: tpl(S, o.template, d.template, `${path}.template`, keys) };
+};
+const groups = (S: Sanitizer, v: unknown, d: readonly number[], path: string): [number, number, number] => {
+  const a = Array.isArray(v) ? v : [];
+  return [0, 1, 2].map((i) => Math.round(S.num(a[i], d[i], 1, 8, `${path}[${i}]`))) as [number, number, number];
+};
+
+const HUD_SANITIZERS = {
+  TRACK_INFO(P: Obj, p: string, S: Sanitizer): TrackInfoProps {
+    const d = DEFAULT_TRACK_INFO;
+    return { align: S.oneOf(P.align, ALIGNS, d.align, `${p}.align`), titleText: S.str(P.titleText, d.titleText, `${p}.titleText`, (s) => s.length <= 200),
+      titleStyle: textStyle(S, P.titleStyle, d.titleStyle, `${p}.titleStyle`), artistText: S.str(P.artistText, d.artistText, `${p}.artistText`, (s) => s.length <= 200),
+      artistStyle: textStyle(S, P.artistStyle, d.artistStyle, `${p}.artistStyle`) };
+  },
+  EVENT_COUNTER(P: Obj, p: string, S: Sanitizer): EventCounterProps {
+    const d = DEFAULT_EVENT_COUNTER, L = isObj(P.lines) ? P.lines : {}, K = TEMPLATE_KEYS.EVENT_COUNTER;
+    return { align: S.oneOf(P.align, ALIGNS, d.align, `${p}.align`), style: textStyle(S, P.style, d.style, `${p}.style`),
+      lineHeight: S.num(P.lineHeight, d.lineHeight, 1, 3, `${p}.lineHeight`), decimals: Math.round(S.num(P.decimals, d.decimals, 0, 4, `${p}.decimals`)),
+      lines: { played: lineCfg(S, L.played, d.lines.played, `${p}.lines.played`, K), total: lineCfg(S, L.total, d.lines.total, `${p}.lines.total`, K),
+        progress: lineCfg(S, L.progress, d.lines.progress, `${p}.lines.progress`, K), tempo: lineCfg(S, L.tempo, d.lines.tempo, `${p}.lines.tempo`, K) } };
+  },
+  LIVE_TRIGGER(P: Obj, p: string, S: Sanitizer): LiveTriggerProps {
+    const d = DEFAULT_LIVE_TRIGGER, K = TEMPLATE_KEYS.LIVE_TRIGGER;
+    return { mode: S.oneOf(P.mode, ['list', 'inline'] as const, d.mode, `${p}.mode`), align: S.oneOf(P.align, ALIGNS, d.align, `${p}.align`), style: textStyle(S, P.style, d.style, `${p}.style`),
+      template: tpl(S, P.template, d.template, `${p}.template`, K), showTrack: S.bool(P.showTrack, d.showTrack, `${p}.showTrack`), trackTemplate: tpl(S, P.trackTemplate, d.trackTemplate, `${p}.trackTemplate`, K),
+      tailMs: S.num(P.tailMs, d.tailMs, 0, 1000, `${p}.tailMs`), maxLines: Math.round(S.num(P.maxLines, d.maxLines, 1, 32, `${p}.maxLines`)),
+      lineHeight: S.num(P.lineHeight, d.lineHeight, 1, 3, `${p}.lineHeight`), separator: S.str(P.separator, d.separator, `${p}.separator`, (s) => s.length <= 16) };
+  },
+  TIME_BAR(P: Obj, p: string, S: Sanitizer): TimeBarProps {
+    const d = DEFAULT_TIME_BAR, tm = isObj(P.time) ? P.time : {}, bt = isObj(P.beat) ? P.beat : {};
+    return { style: textStyle(S, P.style, d.style, `${p}.style`), labelStyle: textStyle(S, P.labelStyle, d.labelStyle, `${p}.labelStyle`), rowGap: S.num(P.rowGap, d.rowGap, 1, 5, `${p}.rowGap`),
+      time: { enabled: S.bool(tm.enabled, d.time.enabled, `${p}.time.enabled`), label: S.str(tm.label, d.time.label, `${p}.time.label`, (s) => s.length <= 40), format: S.oneOf(tm.format, ['grouped', 'clock'] as const, d.time.format, `${p}.time.format`) },
+      beat: { enabled: S.bool(bt.enabled, d.beat.enabled, `${p}.beat.enabled`), label: S.str(bt.label, d.beat.label, `${p}.beat.label`, (s) => s.length <= 40), format: S.oneOf(bt.format, ['grouped', 'bbs'] as const, d.beat.format, `${p}.beat.format`) },
+      timeGroups: groups(S, P.timeGroups, d.timeGroups, `${p}.timeGroups`), beatGroups: groups(S, P.beatGroups, d.beatGroups, `${p}.beatGroups`),
+      showBars: S.bool(P.showBars, d.showBars, `${p}.showBars`), barLength: S.num(P.barLength, d.barLength, 4, 1000, `${p}.barLength`), barThickness: S.num(P.barThickness, d.barThickness, 0.5, 40, `${p}.barThickness`),
+      barColor: S.str(P.barColor, d.barColor, `${p}.barColor`, (s) => HEX.test(s)), barTrackColor: S.str(P.barTrackColor, d.barTrackColor, `${p}.barTrackColor`, (s) => s === '' || HEX.test(s)) };
+  },
+  CHORD_DETECTION(P: Obj, p: string, S: Sanitizer): ChordProps {
+    const d = DEFAULT_CHORD;
+    return { align: S.oneOf(P.align, ALIGNS, d.align, `${p}.align`), nameStyle: textStyle(S, P.nameStyle, d.nameStyle, `${p}.nameStyle`), notesStyle: textStyle(S, P.notesStyle, d.notesStyle, `${p}.notesStyle`),
+      alwaysShowNotes: S.bool(P.alwaysShowNotes, d.alwaysShowNotes, `${p}.alwaysShowNotes`), notesTemplate: tpl(S, P.notesTemplate, d.notesTemplate, `${p}.notesTemplate`, TEMPLATE_KEYS.CHORD_DETECTION),
+      unrecognized: S.oneOf(P.unrecognized, ['nc', 'notes'] as const, d.unrecognized, `${p}.unrecognized`), noChordText: S.str(P.noChordText, d.noChordText, `${p}.noChordText`, (s) => s.length <= 20) };
+  },
+  PROGRESS_BAR(P: Obj, p: string, S: Sanitizer): ProgressBarProps {
+    const d = DEFAULT_PROGRESS_BAR;
+    return { orientation: S.oneOf(P.orientation, ['HORIZONTAL', 'VERTICAL'] as const, d.orientation, `${p}.orientation`), thickness: S.num(P.thickness, d.thickness, 1, 200, `${p}.thickness`),
+      progressColor: S.str(P.progressColor, d.progressColor, `${p}.progressColor`, (s) => HEX.test(s)), trackColor: S.str(P.trackColor, d.trackColor, `${p}.trackColor`, (s) => s === '' || HEX.test(s)),
+      radius: S.num(P.radius, d.radius, 0, 100, `${p}.radius`), showTime: S.bool(P.showTime, d.showTime, `${p}.showTime`), timeStyle: textStyle(S, P.timeStyle, d.timeStyle, `${p}.timeStyle`),
+      timeTemplate: tpl(S, P.timeTemplate, d.timeTemplate, `${p}.timeTemplate`, TEMPLATE_KEYS.PROGRESS_BAR), timeAlign: S.oneOf(P.timeAlign, ALIGNS, d.timeAlign, `${p}.timeAlign`) };
+  },
+} as const;
+export type { Align };

@@ -7,6 +7,9 @@ export interface Ctx2D {
   fillRect(x: number, y: number, w: number, h: number): void;
   beginPath(): void; moveTo(x: number, y: number): void; arcTo(x1: number, y1: number, x2: number, y2: number, r: number): void;
   closePath(): void; fill(): void; stroke(): void;
+  // Chữ (T-69): đặt phông/lề/baseline rồi fillText; maxWidth làm chữ không tràn khung.
+  font: string; textAlign: string; textBaseline: string; fontKerning: string; textRendering: string;
+  fillText(text: string, x: number, y: number, maxWidth?: number): void;
 }
 function roundedPath(ctx: Ctx2D, x: number, y: number, w: number, h: number, r: number) {
   ctx.beginPath(); ctx.moveTo(x + r, y);

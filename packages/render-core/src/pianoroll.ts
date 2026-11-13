@@ -3,7 +3,7 @@ import { notesInRange, type TimelineIndex } from './notes.ts';
 import { trackBrightness, DEFAULT_BRIGHTNESS, type BrightnessConfig } from './brightness.ts';
 import type { TempoPoint } from './types.ts';
 import { glowAmount } from './glow.ts';
-import { resolveNoteStyle, noteColor, shade, DEFAULT_KEYBOARD_STYLE, type StyleConfig, type KeyboardStyle } from './style.ts';
+import { resolveNoteStyle, noteColor, noteState, stateColor, shade, DEFAULT_KEYBOARD_STYLE, type StyleConfig, type KeyboardStyle } from './style.ts';
 
 export interface PianoRollOptions {
   width: number; height: number;
@@ -30,7 +30,7 @@ export function layoutPianoRoll(index: TimelineIndex, tempoMap: TempoPoint[], t:
       const st = resolveNoteStyle(o.style, ti.track.id);
       const x = left + (n.startTimeSeconds - t0) * pxPerSec, h = Math.max(1, rowH * st.heightScale);
       const active = n.startTimeSeconds <= t && t < n.endTimeSeconds;
-      const color = noteColor(st, ti.track.color, n.pitch, n.velocity), w = Math.max(1, (n.endTimeSeconds - n.startTimeSeconds) * pxPerSec);
+      const color = stateColor(st, noteState(n.startTimeSeconds, n.endTimeSeconds, t), noteColor(st, ti.track.color, n.pitch, n.velocity)), w = Math.max(1, (n.endTimeSeconds - n.startTimeSeconds) * pxPerSec);
       rects.push({
         id: n.id, trackId: ti.track.id, x, w, y: (o.pitchMax - n.pitch) * rowH + (rowH - h) / 2, h, color,
         brightness: trackBrightness(ti.track, tempoMap, Math.max(0, n.startTimeSeconds), cfg),

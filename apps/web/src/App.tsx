@@ -4,7 +4,7 @@
 // nên thành phần này không vẽ lại mỗi khung hình. Không có logic vẽ ở đây: khung hình = renderFrame của Render Core.
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { LayoutGroup, MotionConfig } from 'framer-motion';
-import { DEFAULT_BRIGHTNESS, DEFAULT_KEYBOARD_STYLE, defaultStyleConfig, sanitizeBrightness, buildIndex, defaultScene, type Derived, type PianoRollProps, type SceneDocument, type WidgetSpec, type BrightnessConfig, type NoteStyle, type StyleConfig, type KeyboardStyle, type UnifiedProjectAST } from '@dawviz/render-core';
+import { DEFAULT_BRIGHTNESS, DEFAULT_KEYBOARD_STYLE, sanitizeBrightness, buildIndex, buildSceneHud, type Derived, type SceneDocument, type BrightnessConfig, type NoteStyle, type StyleConfig, type KeyboardStyle, type UnifiedProjectAST } from '@dawviz/render-core';
 import type { ParseWarning } from '@dawviz/parser';
 import { useI18n } from './i18n/I18nProvider.tsx';
 import { LanguageSelect } from './components/LanguageSelect.tsx';
@@ -16,12 +16,15 @@ import { Stage } from './components/Stage.tsx';
 import { Transport } from './components/Transport.tsx';
 import { TrackPanel, TrackLayoutBar, DEFAULT_TRACK_LAYOUT, isShown, type TrackLayout } from './components/TrackPanel.tsx';
 import { ADVANCED_STYLE_KEYS, StylePanel } from './components/StylePanel.tsx';
-import { VideoStyles, isEdited, videoStyleBase } from './components/VideoStyles.tsx';
+import { VideoStyles, isEdited } from './components/VideoStyles.tsx';
+import { NOTE_PRESETS, VIDEO_STYLES, noteStylePreset, sceneForStyle, videoStyleBase, videoStyleKeyboard } from './lib/videoScenes.ts';
+import { useFontsStatus } from './lib/fonts.ts';
+import { projectKey, styleThumbnail } from './lib/thumbnails.ts';
 import { Facts, InspectorSection } from './components/Inspector.tsx';
 import { Mark } from './components/Icons.tsx';
 import { mergeExtras, missingMidiLevel, type ExternalMidiInfo } from './lib/externalMidi.ts';
 import { loadPref, savePref } from './lib/prefs.ts';
-import { usePref, DEFAULT_UI, sanitizeUi, type UiMode } from './lib/usePref.ts';
+import { usePref, DEFAULT_UI, sanitizeUi, type UiMode, type UiPrefs } from './lib/usePref.ts';
 import { createPlayback } from './lib/playback.ts';
 import { radioKeys, radioTab } from './lib/a11y.ts';
 import { bindTransportKeys } from './lib/transportKeys.ts';
@@ -44,8 +47,10 @@ export function App() {
   const [source, setSource] = useState<Picked | null>(null);
   const [midi, setMidi] = useState<ExternalMidiInfo | undefined>(undefined);
   const [brightness, setBrightness] = useState<Record<string, BrightnessConfig>>({});
-  const [style, setStyle] = useState<StyleConfig>(() => { const s = loadPref<Partial<StyleConfig>>('style', {}); return { base: { ...defaultStyleConfig().base, ...(s.base ?? {}) }, tracks: s.tracks ?? {} }; });
-  const [keyboard, setKeyboard] = useState<KeyboardStyle>(() => ({ ...DEFAULT_KEYBOARD_STYLE, ...loadPref<Partial<KeyboardStyle>>('keyboard', {}) }));
+  // Lần đầu (chưa có tuỳ chọn lưu) kiểu nốt và bàn phím lấy theo phong cách mặc định "Paper" (D-51), không phải mặc định cũ.
+  const firstStyle = sanitizeUi(loadPref<Partial<UiPrefs>>('ui', {})).videoStyle;
+  const [style, setStyle] = useState<StyleConfig>(() => { const s = loadPref<Partial<StyleConfig>>('style', {}); return { base: { ...videoStyleBase(firstStyle), ...(s.base ?? {}) }, tracks: s.tracks ?? {} }; });
+  const [keyboard, setKeyboard] = useState<KeyboardStyle>(() => ({ ...DEFAULT_KEYBOARD_STYLE, enabled: videoStyleKeyboard(firstStyle), ...loadPref<Partial<KeyboardStyle>>('keyboard', {}) }));
   useEffect(() => savePref('style', style), [style]);
   useEffect(() => savePref('keyboard', keyboard), [keyboard]);
   // REQ-UI-14: kiểu trình bày danh sách track là tuỳ chọn giao diện (không vào preset video).
@@ -85,14 +90,27 @@ export function App() {
 
   // T-05: khung hình = renderFrame(scene, derived, ast, t). Kiểu nốt và bàn phím ghép vào Piano Roll của scene mặc định;
   // T-07 sẽ đưa scene vào store có hoàn tác và Preset.
-  const scene: SceneDocument = useMemo(() => {
-    const s = defaultScene();
-    const w = s.widgets[0] as WidgetSpec<PianoRollProps>;
-    w.properties = { ...w.properties, noteStyle: style, keyboard: { ...w.properties.keyboard, enabled: keyboard.enabled } };
-    return s;
-  }, [style, keyboard]);
+  const scene: SceneDocument = useMemo(() => sceneForStyle(ui.videoStyle, style, keyboard), [ui.videoStyle, style, keyboard]);
+  const fonts = useFontsStatus(scene); // chưa nạp xong phông thì không vẽ khung có chữ (TECHNICAL-DESIGN 5.7)
   const index = useMemo(() => (renderAst ? buildIndex(renderAst.tracks, renderAst.meta.totalDurationSeconds) : null), [renderAst]);
-  const derived: Derived | null = useMemo(() => (index ? { index, brightness } : null), [index, brightness]);
+  // Dò hợp âm là việc nặng của bước derived: dựng lại chỉ khi đổi dự án/track hiển thị/widget Chord (không phải mỗi lần kéo thanh trượt kiểu nốt).
+  const chordSig = JSON.stringify(scene.widgets.filter((w) => w.type === 'CHORD_DETECTION').map((w) => [w.trackMappingMode, w.assignedTrackIndices]));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const hud = useMemo(() => (renderAst && index ? buildSceneHud(scene, renderAst, index) : undefined), [renderAst, index, chordSig]);
+  const derived: Derived | null = useMemo(() => (index ? { index, brightness, hud, fontsReady: fonts === 'ready' } : null), [index, brightness, hud, fonts]);
+
+  // Ảnh thu nhỏ cột "Video styles": mỗi phong cách một khung nhỏ của dự án đang mở (Render Core, có bộ đệm). Cần phông xong cho scene có chữ.
+  const pkey = loaded ? projectKey(loaded.name, loaded.ast) : '';
+  const thumbs = useMemo(() => {
+    const out: Record<string, string> = {};
+    if (!loaded || fonts !== 'ready') return out;
+    for (const id of VIDEO_STYLES) {
+      const sc = sceneForStyle(id, { base: videoStyleBase(id), tracks: {} }, { enabled: videoStyleKeyboard(id) });
+      const url = styleThumbnail(id, sc, loaded.ast, pkey, 240);
+      if (url) out[id] = url;
+    }
+    return out;
+  }, [loaded, pkey, fonts]);
 
   // T-02: chọn tệp mới khi tệp cũ đang parse -> chỉ kết quả của lần chọn mới nhất được áp dụng; busy chỉ tắt khi lần mới nhất xong.
   const gate = useRef(createLatestGate()).current;
@@ -150,8 +168,9 @@ export function App() {
   const pickVideoStyle = (id: string) => {
     const applied = videoStyleBase(id);
     setStyleUndo(isEdited(ui.videoStyle, style.base) ? { base: style.base, id: ui.videoStyle, applied } : null);
-    setStyle((s) => ({ ...s, base: applied })); setUi((u) => ({ ...u, videoStyle: id }));
+    setStyle((s) => ({ ...s, base: applied })); setKeyboard((k) => ({ ...k, enabled: videoStyleKeyboard(id) })); setUi((u) => ({ ...u, videoStyle: id }));
   };
+  const pickNotePreset = (id: string) => setStyle((s) => ({ ...s, base: noteStylePreset(id) }));
   const undoStyle = styleUndo && styleUndo.applied === style.base ? () => {
     setStyle((s) => ({ ...s, base: styleUndo.base })); setUi((u) => ({ ...u, videoStyle: styleUndo.id })); setStyleUndo(null);
   } : undefined;
@@ -211,7 +230,7 @@ export function App() {
     ),
     look: (n) => (
       <InspectorSection key="look" n={n} id="look" title={i18n.t('web.section.look')} more={more('look', lookEdited)}>
-        <StylePanel style={style} keyboard={keyboard} onStyle={setStyle} onKeyboard={setKeyboard} lanes={lanes} advanced={showAdv('look')} />
+        <StylePanel style={style} keyboard={keyboard} onStyle={setStyle} onKeyboard={setKeyboard} lanes={lanes} advanced={showAdv('look')} notePresets={NOTE_PRESETS} onNotePreset={pickNotePreset} />
       </InspectorSection>
     ),
     tracks: (n) => (
@@ -229,7 +248,7 @@ export function App() {
     <div className={`grid h-full min-h-0 ${loaded ? 'lg:grid-cols-[10.5rem_minmax(0,1fr)_20rem] min-[1440px]:grid-cols-[10.5rem_minmax(0,1fr)_22rem]' : ''}`}>
       {loaded && (
         <aside className="relative min-h-0 overflow-y-auto border-b border-line bg-surface lg:border-b-0 lg:border-r">
-          <VideoStyles value={ui.videoStyle} edited={isEdited(ui.videoStyle, style.base)} onPick={pickVideoStyle} onUndo={undoStyle} />
+          <VideoStyles value={ui.videoStyle} edited={isEdited(ui.videoStyle, style.base)} onPick={pickVideoStyle} onUndo={undoStyle} thumb={(id) => thumbs[id]} />
         </aside>
       )}
       <div ref={scrollerRef} className="relative min-h-0 min-w-0 overflow-y-auto bg-page p-6">
@@ -240,8 +259,8 @@ export function App() {
         </div>
         {loaded && derived && renderAst && (
           <div ref={stageRef} className={aboveStage ? 'mt-4' : ''}>
-            <Stage scene={scene} derived={derived} ast={renderAst} playback={playback} proof={ui.proofFrame} width={stageWidth}
-              styleName={`${i18n.t(`web.style.preset.${ui.videoStyle}`)}${isEdited(ui.videoStyle, style.base) ? ` (${i18n.t('web.styles.edited')})` : ''}`}>
+            <Stage scene={scene} derived={derived} ast={renderAst} playback={playback} proof={ui.proofFrame} width={stageWidth} fonts={fonts}
+              styleName={`${i18n.t(`web.style.video.${ui.videoStyle}`)}${isEdited(ui.videoStyle, style.base) ? ` (${i18n.t('web.styles.edited')})` : ''}`}>
               <Transport playback={playback} duration={duration} />
             </Stage>
           </div>
@@ -316,7 +335,7 @@ function TopBar({ tab, onTab, fileName, mode, onMode, file, theme }: { tab: Tab;
           {file}
           {/* Xuất video chưa có (M3): nút vẫn ở đúng chỗ để bố cục ổn định, nhưng nói rõ vì sao chưa bấm được. */}
           <button type="button" aria-disabled="true" aria-describedby="export-why" title={i18n.t('web.export.unavailable')}
-            className="cursor-not-allowed rounded border border-control px-3 py-1.5 text-[13px] font-medium text-muted" data-testid="export">
+            className="cursor-not-allowed rounded border border-accent px-3 py-1.5 text-[13px] font-medium text-accent" data-testid="export">
             {i18n.t('web.export')}
           </button>
           <span id="export-why" className="sr-only">{i18n.t('web.export.unavailable')}</span>

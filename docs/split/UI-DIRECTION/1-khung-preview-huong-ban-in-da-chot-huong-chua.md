@@ -5,7 +5,7 @@ section: "1. Khung preview: hướng \"Bản in\" 🟡 đã chốt hướng, ch�
 path: "1. Khung preview: hướng \"Bản in\" 🟡 đã chốt hướng, chưa làm (D-51)"
 chunk: 1-khung-preview-huong-ban-in-da-chot-huong-chua.md
 source_lines: 21-57
-source_sha1: a66e3a3c8c
+source_sha1: 17129663d4
 ids: [D-51, REQ-GRAPHICS-00, REQ-GRAPHICS-04, REQ-GRAPHICS-07, REQ-GRAPHICS-10, REQ-GRAPHICS-16, REQ-WIDGET-01, REQ-WIDGET-02, REQ-WIDGET-03, REQ-WIDGET-04, REQ-WIDGET-05, REQ-WIDGET-06, REQ-WIDGET-08]
 ---
 ## 1. Khung preview: hướng "Bản in" 🟡 đã chốt hướng, chưa làm (D-51)
@@ -41,6 +41,6 @@ Preset "Bản in" cần cả 16:9 và 9:16 (REQ-GRAPHICS-04). Nguyên tắc gi�
 3. Track Info, Event Counter, Chord Detection, Progress Bar, Time & Bar Counter, Live Note Trigger.
 4. Preset "Bản in" 1:1, rồi 16:9 và 9:16.
 
-Các mục "Còn thiếu" ở bảng 1.2 cần đưa vào SRS (REQ-WIDGET-03…06, REQ-GRAPHICS-07) khi bắt đầu làm; chưa sửa SRS trong phiên bản này.
+Các mục "Còn thiếu" ở bảng 1.2 đã đưa vào SRS v1.4 (REQ-WIDGET-02…06, REQ-GRAPHICS-07) ngày 2026-11-13 (T-69, bước 0). Thiết kế primitive chữ và nạp phông: TECHNICAL-DESIGN 5.7; dữ liệu dấu nhịp cho Bar.Beat: 5.8.
 
 ---

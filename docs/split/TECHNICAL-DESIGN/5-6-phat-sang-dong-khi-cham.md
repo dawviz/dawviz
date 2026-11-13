@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "5.6 Phát sáng động khi chạm 🟢"
 path: "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.6 Phát sáng động khi chạm 🟢"
 chunk: 5-6-phat-sang-dong-khi-cham.md
-source_lines: 153-163
-source_sha1: cda0d46b82
+source_lines: 155-165
+source_sha1: 7d1c483e31
 ids: [D-50, REQ-GRAPHICS-06, REQ-GRAPHICS-17]
 ---
 ### 5.6 Phát sáng động khi chạm 🟢

@@ -5,7 +5,7 @@ section: "5.1 Quyết định"
 path: "5. Theme giao diện chỉ đổi màu (D-52) > 5.1 Quyết định"
 chunk: 5-1-quyet-dinh.md
 source_lines: 307-315
-source_sha1: a66e3a3c8c
+source_sha1: 17129663d4
 ids: [NFR-SEC-05, REQ-UI-10]
 ---
 ### 5.1 Quyết định

@@ -2,11 +2,13 @@
 // chỉ khác `target` và `scale` (SRS REQ-GRAPHICS-05). Không đọc đồng hồ, không trạng thái tăng dần: khung hình là hàm của t.
 import type { Ctx2D } from './draw.ts';
 import type { TimelineIndex, TrackIndex } from './notes.ts';
-import type { BrightnessConfig } from './brightness.ts';
 import type { UnifiedProjectAST } from './types.ts';
 import { layoutPianoRoll, layoutKeyboard } from './pianoroll.ts';
 import { DEFAULT_KEYBOARD_STYLE } from './style.ts';
-import type { PianoRollProps, SceneDocument, WidgetSpec, WidgetType } from './scene.ts';
+import type { PianoRollProps, SceneDocument, WidgetSpec } from './scene.ts';
+import type { Derived, Primitive, RectPrim, TextPrim, WidgetRenderer } from './prims.ts';
+import { HUD_RENDERERS, buildHud, type HudData } from './hud.ts';
+import { measureText } from './text.ts';
 
 /** Ngữ cảnh vẽ đủ cho renderFrame (Canvas 2D và OffscreenCanvas đều có). */
 export interface RenderCtx extends Ctx2D {
@@ -19,27 +21,7 @@ export interface RenderCtx extends Ctx2D {
 /** `width`/`height` theo điểm ảnh thật của đích vẽ. */
 export interface RenderTarget { ctx: RenderCtx; width: number; height: number }
 
-/** Dữ liệu dẫn xuất: tính một lần ngoài vòng vẽ (Technical Design §4). */
-export interface Derived { index: TimelineIndex; brightness: Record<string, BrightnessConfig> }
-
-/** Hình học thuần, đơn vị pt trong toạ độ widget. Đủ cho Piano Roll; widget sau thêm kiểu mới (text, path…). */
-export type Primitive = RectPrim;
-export interface RectPrim {
-  kind: 'rect';
-  x: number; y: number; w: number; h: number;
-  fill: string; alpha: number;      // alpha đã gộp độ sáng × độ đục, 0..1
-  radius: number;                   // 0 = góc vuông
-  glowColor: string; glowBlur: number; // glowBlur 0 = không phát sáng
-  stroke: string; strokeWidth: number; // strokeWidth 0 = không viền
-}
-
-export interface LayoutCtx { ast: UnifiedProjectAST; derived: Derived; tracks: TrackIndex[] }
-
-export interface WidgetRenderer<P = unknown> {
-  type: WidgetType;
-  /** Thuần: cùng (ctx, spec, t) → cùng danh sách. Toạ độ pt, gốc ở góc trên trái widget. */
-  layout(ctx: LayoutCtx, spec: WidgetSpec<P>, t: number): Primitive[];
-}
+export type { Derived, RectPrim, TextPrim, Primitive, LayoutCtx, WidgetRenderer } from './prims.ts';
 
 /** Chọn track cho widget theo trackMappingMode (SRS REQ-STORAGE-02). */
 export function tracksFor(spec: WidgetSpec<unknown>, index: TimelineIndex): TrackIndex[] {
@@ -100,13 +82,26 @@ export const pianoRollRenderer: WidgetRenderer<PianoRollProps> = {
 const rect = (x: number, y: number, w: number, h: number, fill: string): RectPrim => ({ kind: 'rect', x, y, w, h, fill, alpha: 1, radius: 0, glowColor: '', glowBlur: 0, stroke: '', strokeWidth: 0 });
 
 /** Bảng renderer theo loại. Widget chưa có renderer được bỏ qua khi vẽ (vẫn giữ trong Scene). */
-export const WIDGET_RENDERERS: Partial<Record<WidgetType, WidgetRenderer<any>>> = { PIANO_ROLL: pianoRollRenderer };
+export const WIDGET_RENDERERS: Partial<Record<WidgetSpec['type'], WidgetRenderer<any>>> = { PIANO_ROLL: pianoRollRenderer, ...HUD_RENDERERS };
 
 /** Bố cục toàn khung (thuần): danh sách widget đã sắp theo zIndex kèm primitive của từng widget. Dùng để test tất định. */
-export function layoutFrame(scene: SceneDocument, derived: Derived, ast: UnifiedProjectAST, t: number, renderers = WIDGET_RENDERERS) {
+/** HudData cho một scene: số đếm, lưới ô nhịp và hợp âm của mọi widget Chord Detection. Gọi ở bước derived (một lần cho mỗi dự án × scene). */
+export const buildSceneHud = (scene: SceneDocument, ast: UnifiedProjectAST, index: TimelineIndex): HudData =>
+  buildHud(ast, index, scene.widgets.filter((w) => w.type === 'CHORD_DETECTION').map((w) => tracksFor(w, index)));
+const hudMemo = new WeakMap<Derived, WeakMap<SceneDocument, HudData>>();
+/** Derived có hud: dùng cái đã dựng; thiếu (gọi trực tiếp, kiểm thử) thì dựng một lần cho (derived, scene) rồi đệm. */
+function withHud(scene: SceneDocument, derived: Derived, ast: UnifiedProjectAST): Derived {
+  if (derived.hud) return derived;
+  let m = hudMemo.get(derived); if (!m) hudMemo.set(derived, m = new WeakMap());
+  let h = m.get(scene); if (!h) m.set(scene, h = buildSceneHud(scene, ast, derived.index));
+  return { ...derived, hud: h };
+}
+export function layoutFrame(scene: SceneDocument, derived0: Derived, ast: UnifiedProjectAST, t: number, renderers = WIDGET_RENDERERS) {
+  const derived = withHud(scene, derived0, ast);
   const order = scene.widgets.map((w, i) => ({ w, i })).filter(({ w }) => w.visible && renderers[w.type])
     .sort((a, b) => a.w.zIndex - b.w.zIndex || a.i - b.i); // cùng zIndex: giữ thứ tự trong tài liệu
-  return order.map(({ w }) => ({ widget: w, prims: renderers[w.type]!.layout({ ast, derived, tracks: tracksFor(w, derived.index) }, w, t) }));
+  const measure = derived.measure ?? measureText;
+  return order.map(({ w }) => ({ widget: w, prims: renderers[w.type]!.layout({ ast, derived, tracks: tracksFor(w, derived.index), measure }, w, t) }));
 }
 
 /**
@@ -125,7 +120,7 @@ export function renderFrame(scene: SceneDocument, derived: Derived, ast: Unified
     g.save();
     g.translate(L.x, L.y);
     g.beginPath(); g.rect(0, 0, L.width, L.height); g.clip();
-    drawPrimitives(g, prims);
+    drawPrimitives(g, derived.fontsReady === false ? prims.filter((p) => p.kind !== 'text') : prims); // phông chưa nạp: không vẽ chữ (TECHNICAL-DESIGN 5.7)
     g.restore();
   }
 }
@@ -139,6 +134,7 @@ function roundedPath(g: Ctx2D, x: number, y: number, w: number, h: number, r: nu
 /** Chỉ vẽ, không tính nghiệp vụ. Mọi trạng thái ctx bị đổi (alpha, shadow) được trả về mặc định sau mỗi hình. */
 export function drawPrimitives(g: Ctx2D, prims: Primitive[]): void {
   for (const p of prims) {
+    if (p.kind === 'text') { drawText(g, p); continue; }
     g.globalAlpha = p.alpha; g.fillStyle = p.fill;
     if (p.glowBlur > 0) { g.shadowColor = p.glowColor; g.shadowBlur = p.glowBlur; }
     if (p.radius > 0) { roundedPath(g, p.x, p.y, p.w, p.h, p.radius); g.fill(); } else g.fillRect(p.x, p.y, p.w, p.h);
@@ -146,4 +142,12 @@ export function drawPrimitives(g: Ctx2D, prims: Primitive[]): void {
     if (p.strokeWidth > 0) { g.strokeStyle = p.stroke; g.lineWidth = p.strokeWidth; roundedPath(g, p.x, p.y, p.w, p.h, p.radius); g.stroke(); }
   }
   g.globalAlpha = 1;
+}
+
+/** Chữ: baseline chữ cái, không kerning, textRendering geometricPrecision (đo bằng FONT_METRICS không có cặp kerning). maxWidth truyền cho fillText để không bao giờ tràn khung. */
+function drawText(g: Ctx2D, p: TextPrim): void {
+  g.globalAlpha = p.alpha; g.fillStyle = p.color; g.shadowBlur = 0;
+  g.font = `${p.weight} ${p.size}px "${p.font}", sans-serif`;
+  g.textAlign = p.align; g.textBaseline = 'alphabetic'; g.fontKerning = 'none'; g.textRendering = 'geometricPrecision'; // không kerning, không làm tròn advance: khớp bảng đo
+  if (p.maxWidth !== undefined) g.fillText(p.text, p.x, p.y, p.maxWidth); else g.fillText(p.text, p.x, p.y);
 }

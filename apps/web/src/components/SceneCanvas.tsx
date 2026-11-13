@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { renderFrame, type Derived, type RenderCtx, type SceneDocument, type UnifiedProjectAST } from '@dawviz/render-core';
 
-export function SceneCanvas({ scene, derived, ast, t }: { scene: SceneDocument; derived: Derived; ast: UnifiedProjectAST; t: number }) {
+/** `blocked`: phông chưa nạp xong nên không vẽ khung (không vẽ khung có chữ bằng phông dự phòng). */
+export function SceneCanvas({ scene, derived, ast, t, blocked = false }: { scene: SceneDocument; derived: Derived; ast: UnifiedProjectAST; t: number; blocked?: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const [cssWidth, setCssWidth] = useState(0);
   useEffect(() => {
@@ -15,13 +16,13 @@ export function SceneCanvas({ scene, derived, ast, t }: { scene: SceneDocument; 
 
   const { designWidth: W, designHeight: H } = scene.canvas;
   useEffect(() => {
-    const c = ref.current; if (!c) return;
+    const c = ref.current; if (!c || blocked) return;
     const dpr = window.devicePixelRatio || 1;
     const pw = Math.max(1, Math.round(c.clientWidth * dpr)), ph = Math.max(1, Math.round(pw * H / W));
     if (c.width !== pw || c.height !== ph) { c.width = pw; c.height = ph; }
     const ctx = c.getContext('2d'); if (!ctx) return;
     renderFrame(scene, derived, ast, t, { ctx: ctx as unknown as RenderCtx, width: pw, height: ph }, pw / W);
-  }, [scene, derived, ast, t, cssWidth, W, H]);
+  }, [scene, derived, ast, t, cssWidth, W, H, blocked]);
 
   return <canvas ref={ref} data-testid="scene-canvas" className="block w-full" style={{ aspectRatio: `${W} / ${H}` }} />;
 }

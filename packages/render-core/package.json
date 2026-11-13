@@ -13,7 +13,8 @@
     "test": "node --test test/*.test.ts"
   },
   "dependencies": {
-    "@dawviz/parser-core": "0.1.0"
+    "@dawviz/parser-core": "0.1.0",
+    "@tonaljs/chord-detect": "4.9.3"
   },
   "license": "Apache-2.0"
 }

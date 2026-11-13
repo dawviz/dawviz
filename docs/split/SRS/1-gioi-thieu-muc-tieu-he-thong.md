@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG"
 path: "1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG"
 chunk: 1-gioi-thieu-muc-tieu-he-thong.md
-source_lines: 42-105
-source_sha1: c62aee35b6
+source_lines: 43-106
+source_sha1: ae88fa5f8b
 ids: [ARC-01, BR-01, BR-02, BR-03, BR-04, BR-05, BR-06, BR-07, BR-08, D-01, D-04, D-06, D-07, D-08, D-10, D-12, D-13, D-14, D-16, D-19, D-23, D-24, D-28, D-29, D-54, NFR-SEC-01, OI-08, REQ-EXPORT-00, REQ-GRAPHICS-03, REQ-GRAPHICS-15, REQ-PARSER-05, REQ-PARSER-06, REQ-UI-01, REQ-WIDGET-05]
 ---
 ## 1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG

@@ -5,7 +5,7 @@ section: "4. Nhật ký thử và hướng được chọn"
 path: "4. Nhật ký thử và hướng được chọn"
 chunk: 4-nhat-ky-thu-va-huong-duoc-chon.md
 source_lines: 285-304
-source_sha1: a66e3a3c8c
+source_sha1: 17129663d4
 ids: [D-51, D-53]
 ---
 ## 4. Nhật ký thử và hướng được chọn

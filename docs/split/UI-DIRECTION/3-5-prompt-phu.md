@@ -5,7 +5,7 @@ section: "3.5 Prompt phụ"
 path: "3. Bộ prompt sinh ảnh giao diện web > 3.5 Prompt phụ"
 chunk: 3-5-prompt-phu.md
 source_lines: 138-149
-source_sha1: a66e3a3c8c
+source_sha1: 17129663d4
 ids: [REQ-UI-10]
 ---
 ### 3.5 Prompt phụ

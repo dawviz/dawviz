@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-GRAPHICS-12: Storyboard, hiệu ứng và chữ động"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) > REQ-GRAPHICS-12: Storyboard, hiệu ứng và chữ động"
 chunk: req-graphics-12-storyboard-hieu-ung-va-chu-dong.md
-source_lines: 828-830
-source_sha1: c62aee35b6
+source_lines: 840-842
+source_sha1: ae88fa5f8b
 ids: [REQ-GRAPHICS-12]
 ---
 #### REQ-GRAPHICS-12: Storyboard, hiệu ứng và chữ động

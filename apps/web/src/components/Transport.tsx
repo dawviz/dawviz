@@ -20,7 +20,7 @@ export function Transport({ playback, duration }: { playback: Playback; duration
       <button type="button" className={iconBtn} onClick={() => playback.seek(0)} aria-label={i18n.t('web.toStart')} aria-keyshortcuts="Home" title={hint(i18n.t('web.toStart'), 'web.key.home')}><ToStart /></button>
       <button type="button" className={iconBtn} onClick={() => playback.nudge(-STEP)} aria-label={i18n.t('web.back')} title={i18n.t('web.back')}><Back /></button>
       <button type="button" onClick={() => playback.toggle()} aria-label={label} aria-keyshortcuts="Space" title={hint(label, 'web.key.space')}
-        className="grid h-9 w-9 shrink-0 place-items-center rounded bg-accent text-on-accent transition hover:ring-1 hover:ring-line-strong hover:ring-offset-2 hover:ring-offset-surface active:scale-95">
+        className="grid h-9 w-9 shrink-0 place-items-center rounded bg-fg text-page transition hover:ring-1 hover:ring-line-strong hover:ring-offset-2 hover:ring-offset-surface active:scale-95">
         {playing ? <Pause /> : <Play />}
       </button>
       <button type="button" className={iconBtn} onClick={() => playback.nudge(STEP)} aria-label={i18n.t('web.forward')} title={i18n.t('web.forward')}><Forward /></button>

@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "5.2 Hợp đồng widget 🟢"
 path: "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.2 Hợp đồng widget 🟢"
 chunk: 5-2-hop-dong-widget.md
-source_lines: 128-139
-source_sha1: cda0d46b82
+source_lines: 130-141
+source_sha1: 7d1c483e31
 ids: []
 ---
 ### 5.2 Hợp đồng widget 🟢

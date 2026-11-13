@@ -47,7 +47,7 @@ Mỗi bảng màu dựng sẵn chỉ đổi nhóm nhấn. `accent-text` là ch�
 | **Đồng** | `#85642E` | `#C9A467` |
 | **Riso hồng** | `#BE2C7B` | `#FF5CB8` |
 
-Vai trò của màu nhấn, và chỉ những vai trò này: nút chính "Export video", gạch chân thẻ đang mở, dấu preset đang chọn, trạng thái bật của công tắc/nút chọn, thời gian kiểu nhạc khi đang phát, `focus`.
+Vai trò của màu nhấn, và chỉ những vai trò này: nút chính "Export video", gạch chân thẻ đang mở, dấu preset đang chọn, trạng thái bật của công tắc/nút chọn, thời gian kiểu nhạc khi đang phát, `focus`. Màu nhấn đặc (nền) chỉ dành cho nút "Export video"; nút Phát dùng nền `text` với biểu tượng màu `bg`.
 
 ### Neutral
 | Token | Sáng | Tối | Vai trò |
@@ -108,8 +108,8 @@ Bố cục desktop, bản 1.0 chỉ desktop. Thanh trên hai hàng; dưới đó
 | :--- | :--- |
 | Thanh trên, hàng 1 | Biểu tượng + "DAW Visualizer", tên file đang mở; bên phải: `Basic | Advanced`, "Open file", nút chính "Export video" (màu nhấn), nút sáng/tối, ngôn ngữ |
 | Thanh trên, hàng 2 | Thẻ **Preview / Editor / Settings**, thẻ đang mở gạch chân màu nhấn |
-| Cột trái | "Video styles" (phong cách video, không gọi là theme); về sau có ảnh thu nhỏ do Render Core vẽ từ dự án đang mở |
-| Sân khấu | Preview luôn trắng theo preset, kể cả theme tối. Khung "bản in thử": dấu cắt ở góc, thông số kỹ thuật dọc mép (kích thước, fps, thời điểm, tên phong cách), dải xám bên cạnh; mặc định bật, tắt được trong Settings |
+| Cột trái | "Video styles" (phong cách video, không gọi là theme): chỉ chứa preset scene (Paper, Mặc định), mỗi mục có ảnh thu nhỏ do Render Core vẽ, cắt quanh vạch phát và phóng ~2 lần. Bộ kiểu nốt dựng sẵn là chọn ở mục `02 Look`, không ở cột này |
+| Sân khấu | Preview luôn trắng theo preset, kể cả theme tối. Khung "bản in thử": dấu cắt ở góc, thông số kỹ thuật dọc mép (kích thước, tỉ lệ, tên phong cách; không có thời gian, vì thời gian đã ở thanh phát), dải xám bên cạnh; mặc định bật, tắt được trong Settings |
 | Thanh phát | Lùi / phát / tới (biểu tượng, không chữ), thanh tua có sóng âm mờ của file âm thanh nếu có, thời gian kiểu nhạc tô màu nhấn khi đang phát |
 | Inspector | Mục đánh số `01 Song`, `02 Look`, `03 Tracks`…; "More options" ở đầu mục (REQ-UI-13); mọi thanh trượt có ô số căn phải (REQ-UI-15); dòng Nâng cao có nhãn nhỏ `ADV` |
 | Dòng track | Tay nắm kéo đổi thứ tự, ô màu, mắt (ẩn/hiện), `S` (solo), số nốt căn phải. **Không** có khoá ở Preview; khoá chỉ ở danh sách lớp của Editor |
@@ -127,7 +127,7 @@ Bề rộng cột, khoảng cách, nhịp: **[to be resolved during implementati
 
 Phẳng. Chiều sâu chỉ đến từ bậc tông nền (`bg` → `surface` → `surface-raised`) và đường kẻ 1 px. Không bóng đổ, không kính mờ, không ánh sáng nền, không phát sáng.
 
-Sân khấu có chiều sâu riêng theo kiểu bản in thử (E): khung trắng đặt trên `bg`, **dấu cắt mảnh ở bốn góc**, **thông số kỹ thuật chạy dọc mép** (kích thước, fps, thời điểm, tên phong cách), **dải xám** bên cạnh. Lớp đóng khung này mặc định bật, tắt được trong Settings, và nằm ngoài canvas (không bao giờ vào video xuất).
+Sân khấu có chiều sâu riêng theo kiểu bản in thử (E): khung trắng đặt trên `bg`, **dấu cắt mảnh ở bốn góc**, **thông số kỹ thuật chạy dọc mép** (kích thước, tỉ lệ, tên phong cách; không có thời gian, vì thời gian đã ở thanh phát), **dải xám** bên cạnh. Lớp đóng khung này mặc định bật, tắt được trong Settings, và nằm ngoài canvas (không bao giờ vào video xuất).
 
 ### Named Rules
 **The No-Shadow-Card Rule.** Không có thẻ nổi có bóng. Vùng tách nhau bằng đường kẻ `line`, không bằng hộp.

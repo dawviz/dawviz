@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "Mục lục"
 path: "DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) > Mục lục"
 chunk: muc-luc.md
-source_lines: 28-41
-source_sha1: c62aee35b6
+source_lines: 29-42
+source_sha1: ae88fa5f8b
 ids: []
 ---
 ### Mục lục

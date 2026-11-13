@@ -27,6 +27,10 @@ export interface NoteStyle {
   glowRelease: number;      // giây, phát sáng tắt dần sau khi nốt kết thúc (0 = tắt ngay)
   borderWidth: number;      // px; 0 = không viền
   borderColor: string;      // '' = tự lấy màu nốt sáng hơn
+  // Màu theo trạng thái nốt (REQ-GRAPHICS-07, T-69). null = giữ hành vi cũ (màu theo colorMode, trạng thái chỉ đổi độ đục).
+  playedColor: string | null;   // nốt đã phát: end ≤ t
+  activeColor: string | null;   // nốt đang phát: start ≤ t < end
+  upcomingColor: string | null; // nốt sắp tới: start > t
 }
 export interface StyleConfig { base: NoteStyle; tracks: Record<string, Partial<NoteStyle>> }
 export interface KeyboardStyle { enabled: boolean; width: number; whiteColor: string; blackColor: string; useTrackColor: boolean }
@@ -35,6 +39,7 @@ export const DEFAULT_NOTE_STYLE: Readonly<NoteStyle> = Object.freeze({
   colorMode: 'track', customColor: '#7cc4ff', opacity: 1, inactiveOpacity: 0.85, cornerRadius: 3, heightScale: 0.8,
   glow: 0.5, glowRadius: 12, glowActiveOnly: true, borderWidth: 0, borderColor: '',
   glowMode: 'uniform', glowSource: 'velocity', glowPanMode: 'lr', glowLane: 'volume', glowMin: 0.15, glowMax: 1, glowInvert: false, glowRelease: 0,
+  playedColor: null, activeColor: null, upcomingColor: null,
 });
 export const DEFAULT_KEYBOARD_STYLE: Readonly<KeyboardStyle> = Object.freeze({
   enabled: true, width: 64, whiteColor: '#e8eaf2', blackColor: '#14161f', useTrackColor: true,
@@ -51,6 +56,7 @@ export const STYLE_PRESETS: Readonly<Record<string, Partial<NoteStyle>>> = Objec
 
 const num = (v: unknown, d: number) => (typeof v === 'number' && Number.isFinite(v) ? v : d); // trường mới có thể vắng trong preset/tuỳ chọn cũ
 const clamp = (v: number, lo: number, hi: number) => (Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : lo);
+const optHex = (c: unknown): string | null => (typeof c === 'string' && /^#[0-9a-f]{6}$/i.test(c) ? c : null); // vắng hoặc sai định dạng → null
 /** Chuẩn hoá về miền hợp lệ (giá trị lạ từ UI/preset không làm sập vẽ). */
 export function sanitizeStyle(s: NoteStyle): NoteStyle {
   const hex = (c: string, d: string) => (/^#[0-9a-f]{6}$/i.test(c) ? c : d);
@@ -67,6 +73,7 @@ export function sanitizeStyle(s: NoteStyle): NoteStyle {
     glowLane: typeof s.glowLane === 'string' && /^[\w.:-]{1,64}$/.test(s.glowLane) ? s.glowLane : DEFAULT_NOTE_STYLE.glowLane,
     glowMin: clamp(num(s.glowMin, DEFAULT_NOTE_STYLE.glowMin), 0, 1), glowMax: clamp(num(s.glowMax, DEFAULT_NOTE_STYLE.glowMax), 0, 1),
     glowInvert: !!s.glowInvert, glowRelease: clamp(num(s.glowRelease, 0), 0, 4),
+    playedColor: optHex(s.playedColor), activeColor: optHex(s.activeColor), upcomingColor: optHex(s.upcomingColor),
   };
 }
 export const resolveNoteStyle = (cfg: StyleConfig | undefined, trackId: string): NoteStyle =>
@@ -95,4 +102,12 @@ export function noteColor(style: NoteStyle, trackColor: string, pitch: number, v
     case 'velocity': return shade(trackColor, (clamp(velocity, 0, 127) / 127 - 0.6) * 0.9);
     default: return trackColor;
   }
+}
+
+export type NoteState = 'played' | 'active' | 'upcoming';
+/** Trạng thái nốt tại t. Biên: start = t là đang phát; end = t là đã phát. */
+export const noteState = (start: number, end: number, t: number): NoteState => (t >= end ? 'played' : t >= start ? 'active' : 'upcoming');
+/** Màu theo trạng thái nếu đã đặt; không thì màu theo chế độ màu (hành vi cũ). */
+export function stateColor(style: NoteStyle, state: NoteState, fallback: string): string {
+  return (state === 'played' ? style.playedColor : state === 'active' ? style.activeColor : style.upcomingColor) ?? fallback;
 }

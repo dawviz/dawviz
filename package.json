@@ -29,5 +29,9 @@
   "engines": {
     "node": ">=22.18"
   },
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@fontsource/space-grotesk": "^5.3.0",
+    "fontkit": "^3.0.0"
+  }
 }

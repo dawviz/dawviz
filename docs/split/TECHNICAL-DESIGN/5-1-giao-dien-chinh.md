@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "5.1 Giao diện chính 🟢"
 path: "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.1 Giao diện chính 🟢"
 chunk: 5-1-giao-dien-chinh.md
-source_lines: 108-127
-source_sha1: cda0d46b82
+source_lines: 110-129
+source_sha1: 7d1c483e31
 ids: [D-54, ERR_PRESET_INVALID, REQ-STORAGE-02, WARN_PRESET_UNSUPPORTED, WARN_PRESET_VALUE, WARN_PRESET_VERSION, WARN_PRESET_WIDGET_UNKNOWN]
 ---
 ### 5.1 Giao diện chính 🟢

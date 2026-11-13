@@ -12,6 +12,15 @@ dawviz/
 │  │  └─ parser-worker.js
 │  └─ web/   # ứng dụng React (Vite, Tailwind, Framer Motion)
 │     ├─ public/
+│     │  ├─ fonts/
+│     │  │  ├─ OFL-Inter.txt
+│     │  │  ├─ OFL-SpaceGrotesk.txt
+│     │  │  ├─ space-grotesk-latin-400-normal.woff2
+│     │  │  ├─ space-grotesk-latin-700-normal.woff2
+│     │  │  ├─ space-grotesk-latin-ext-400-normal.woff2
+│     │  │  ├─ space-grotesk-latin-ext-700-normal.woff2
+│     │  │  ├─ space-grotesk-vietnamese-400-normal.woff2
+│     │  │  └─ space-grotesk-vietnamese-700-normal.woff2
 │     │  └─ theme-boot.js
 │     ├─ src/
 │     │  ├─ components/
@@ -42,6 +51,7 @@ dawviz/
 │     │  │  ├─ csp.ts
 │     │  │  ├─ externalMidi.test.ts
 │     │  │  ├─ externalMidi.ts
+│     │  │  ├─ fonts.ts
 │     │  │  ├─ numberInput.test.ts
 │     │  │  ├─ numberInput.ts
 │     │  │  ├─ parseInWorker.ts
@@ -55,11 +65,13 @@ dawviz/
 │     │  │  ├─ problems.ts
 │     │  │  ├─ theme.test.ts
 │     │  │  ├─ theme.ts
+│     │  │  ├─ thumbnails.ts
 │     │  │  ├─ timeFormat.ts
 │     │  │  ├─ transportKeys.ts
 │     │  │  ├─ trustedTypes.ts
 │     │  │  ├─ usePref.ts
-│     │  │  └─ useStageWidth.ts
+│     │  │  ├─ useStageWidth.ts
+│     │  │  └─ videoScenes.ts
 │     │  ├─ types/
 │     │  │  └─ dawviz.d.ts
 │     │  ├─ workers/
@@ -136,18 +148,31 @@ dawviz/
 │  │  ├─ src/
 │  │  │  ├─ brightness.ts
 │  │  │  ├─ draw.ts
+│  │  │  ├─ fontMetrics.generated.ts
+│  │  │  ├─ fonts.ts
 │  │  │  ├─ glow.ts
+│  │  │  ├─ hud.ts
 │  │  │  ├─ index.ts
 │  │  │  ├─ music.ts
 │  │  │  ├─ notes.ts
 │  │  │  ├─ parser-core.d.ts
 │  │  │  ├─ pianoroll.ts
+│  │  │  ├─ prims.ts
 │  │  │  ├─ render.ts
 │  │  │  ├─ scene.ts
 │  │  │  ├─ style.ts
+│  │  │  ├─ text.ts
+│  │  │  ├─ thumbnail.ts
 │  │  │  └─ types.ts
 │  │  ├─ test/
+│  │  │  ├─ golden/
+│  │  │  │  └─ paper-1x1.json
+│  │  │  ├─ fonts.test.ts
 │  │  │  ├─ glow.test.ts
+│  │  │  ├─ helpers.ts
+│  │  │  ├─ hud.test.ts
+│  │  │  ├─ legacy.test.ts
+│  │  │  ├─ paper.test.ts
 │  │  │  ├─ presets.test.ts
 │  │  │  ├─ render-core.test.ts
 │  │  │  └─ scene.test.ts
@@ -166,6 +191,9 @@ dawviz/
 │  │  ├─ outline.json
 │  │  ├─ rainbow-pitch.json
 │  │  └─ soft-bars.json
+│  ├─ scene/
+│  │  ├─ paper-16x9.json
+│  │  └─ paper-1x1.json
 │  ├─ schema/
 │  │  └─ note-style.schema.json
 │  └─ README.md
@@ -182,6 +210,7 @@ dawviz/
 │  │  └─ slug.mjs
 │  ├─ bundle.mjs
 │  ├─ check-i18n.mjs
+│  ├─ gen-font-metrics.mjs
 │  ├─ rewrite-imports.mjs
 │  ├─ split_doc.py
 │  └─ sync-docs.mjs
@@ -486,6 +515,30 @@ function drawPianoRoll(ctx: Ctx2D, rects: NoteRect[], size: { width: number; hei
 function drawKeyboard(ctx: Ctx2D, keys: KeyRect[], o: { width: number; height: number; whiteColor: string; separator?: string }): void   // Vẽ bàn phím lên vùng bên trái (gọi SAU drawPianoRoll nên che phần nốt đã trôi qua).
 ```
 
+#### `packages/render-core/src/fontMetrics.generated.ts`
+
+TỆP SINH TỰ ĐỘNG bởi scripts/gen-font-metrics.mjs — không sửa tay. Sinh lại khi đổi tệp phông (test so mã băm).
+
+```text
+const FONT_METRICS_DATA   // TỆP SINH TỰ ĐỘNG bởi scripts/gen-font-metrics.mjs — không sửa tay. Sinh lại khi đổi tệp phông (test so mã băm…
+```
+
+#### `packages/render-core/src/fonts.ts`
+
+Danh sách phông Render Core cần và cách nạp trước khung đầu (TECHNICAL-DESIGN 5.7). Render Core không tự tải:
+
+```text
+interface FontFaceSpec
+const DEFAULT_FONT
+const BUNDLED_FONTS   // Phông đóng gói cùng ứng dụng (OFL, tự host; CSP font-src 'self'). `file` tính từ thư mục phông của ứng dụng.
+function fontFamiliesOf(scene: SceneDocument): string[]   // Họ phông mà scene dùng (widget chữ ẩn cũng tính để không giật khi bật). Thứ tự ổn định.
+function requiredFonts(scene: SceneDocument): FontFaceSpec[]   // Mặt phông cần nạp cho scene (chỉ họ đóng gói; họ khác là phông hệ thống/người dùng nạp riêng).
+const needsFonts = (scene: SceneDocument) =>   // Scene có vẽ chữ không (để biết có cần chờ phông).
+class FontLoadError extends Error
+type FontLoader   // Nạp một mặt phông; ném khi thất bại. Preview/Worker tự cài (FontFace + fonts.add).
+async function ensureFonts(specs: readonly FontFaceSpec[], loader: FontLoader): Promise<void>   // Nạp tất cả; xong mới trả về. Một mặt lỗi thì ném FontLoadError (Export không bắt đầu, không xuất bằng phông d…
+```
+
 #### `packages/render-core/src/glow.ts`
 
 Phát sáng động khi thanh phát chạm nốt (SRS REQ-GRAPHICS-17). Hàm thuần của (kiểu, track, nốt, t): tất định.
@@ -496,6 +549,47 @@ function laneUnit(track: ProjectTrack, name: string, tempoMap: TempoPoint[], t: 
 function glowSourceValue(st: NoteStyle, c: GlowCtx): number | undefined   // Giá trị nguồn 0..1 cho nốt tại t; undefined = không có dữ liệu (khi đó coi như 1: sáng như chế độ đều nhau).
 function glowAmount(st: NoteStyle, c: GlowCtx): number   // Hệ số nhân 0..1 cho `glow` của nốt tại t (đã gồm bao thời gian: đang phát / tắt dần sau nốt / luôn sáng).
 function panUnit(u: number, st: Pick<NoteStyle, 'glowPanMode'>): number   // u = pan đã chuẩn hoá 0..1 (0 trái, 0,5 giữa, 1 phải). 'lr' giữ nguyên; 'spread' = độ lệch khỏi giữa |2u − 1|.
+```
+
+#### `packages/render-core/src/hud.ts`
+
+Sáu widget chữ của T-69 (SRS REQ-WIDGET-02…06, 08): Track Info, Event Counter, Live Note Trigger, Time & Bar Counter,
+
+```text
+type Align   // ───────────────────────────── thuộc tính ─────────────────────────────
+interface TextStyle
+interface LineCfg
+interface TrackInfoProps
+interface EventCounterProps
+interface LiveTriggerProps
+interface ClockCfg
+interface TimeBarProps
+interface ChordProps
+interface ProgressBarProps
+const DEFAULT_TRACK_INFO
+const DEFAULT_EVENT_COUNTER
+const DEFAULT_LIVE_TRIGGER
+const DEFAULT_TIME_BAR
+const DEFAULT_CHORD
+const DEFAULT_PROGRESS_BAR
+const TEMPLATE_KEYS   // Chỗ giữ được phép dùng trong mẫu chữ theo widget (preset dùng chỗ giữ lạ → cảnh báo, chữ giữ nguyên).
+interface BarGrid
+interface HudData
+interface ChordSeg
+interface BarPos
+function buildBarGrid(tempoMap: TempoPoint[], ppq = 960): BarGrid
+function barPosAt(g: BarGrid, t: number): BarPos   // Vị trí nhạc tại t (giây). Bar, Beat đếm từ 1; Sub là tick lẻ trong beat. Một beat dài ppq×4/den tick.
+function buildHud(ast: UnifiedProjectAST, index: TimelineIndex, chordGroups: TrackIndex[][] = []): HudData   // `chordGroups`: các nhóm track mà widget Chord Detection sẽ đọc; dò hợp âm (
+function hudOf(derived: Derived, ast: UnifiedProjectAST): HudData   // HudData của derived. `layoutFrame` bảo đảm `derived.hud` có sẵn (dựng ở bước derived); thiếu thì chỉ còn số đ…
+const isDrumTrack = (name: string) =>
+function chordTimeline(hud: HudData, tracks: TrackIndex[]): ChordSeg[]   // Danh sách đoạn hợp âm (Sustained, SRS REQ-WIDGET-06) của một nhóm track; đệm theo (derived, nhóm track).
+const trackInfoRenderer   // ───────────────────────────── widget ─────────────────────────────
+const eventCounterRenderer
+const liveTriggerRenderer
+const timeBarRenderer
+const chordRenderer
+const progressBarRenderer
+const HUD_RENDERERS
 ```
 
 #### `packages/render-core/src/index.ts`
@@ -513,6 +607,11 @@ re-export * from './music.ts'
 re-export * from './glow.ts'
 re-export * from './scene.ts'
 re-export * from './render.ts'
+re-export * from './prims.ts'
+re-export * from './text.ts'
+re-export * from './fonts.ts'
+re-export * from './hud.ts'
+re-export * from './thumbnail.ts'
 ```
 
 #### `packages/render-core/src/music.ts`
@@ -547,6 +646,19 @@ interface KeyRect
 function layoutKeyboard(index: TimelineIndex, t: number, o: { height: number; pitchMin: number; pitchMax: number; style?: Partial<KeyboardStyle>; noteStyle?: StyleConfig }): KeyRect[]
 ```
 
+#### `packages/render-core/src/prims.ts`
+
+Kiểu primitive và hợp đồng widget (tách khỏi render.ts để widget và renderFrame không import vòng).
+
+```text
+interface Derived   // Dữ liệu dẫn xuất: tính một lần ngoài vòng vẽ (Technical Design §4).
+interface RectPrim
+interface TextPrim   // Chữ một dòng. `y` là đường baseline; `x` là điểm neo theo `align`.
+type Primitive   // Hình học thuần, đơn vị pt trong toạ độ widget.
+interface LayoutCtx
+interface WidgetRenderer
+```
+
 #### `packages/render-core/src/render.ts`
 
 T-05: renderFrame + hợp đồng WidgetRenderer (Technical Design §5.1–5.2). Preview và Export gọi cùng hàm này,
@@ -554,16 +666,12 @@ T-05: renderFrame + hợp đồng WidgetRenderer (Technical Design §5.1–5.2).
 ```text
 interface RenderCtx   // Ngữ cảnh vẽ đủ cho renderFrame (Canvas 2D và OffscreenCanvas đều có).
 interface RenderTarget   // `width`/`height` theo điểm ảnh thật của đích vẽ.
-interface Derived   // Dữ liệu dẫn xuất: tính một lần ngoài vòng vẽ (Technical Design §4).
-type Primitive   // Hình học thuần, đơn vị pt trong toạ độ widget. Đủ cho Piano Roll; widget sau thêm kiểu mới (text, path…).
-interface RectPrim
-interface LayoutCtx
-interface WidgetRenderer
 function tracksFor(spec: WidgetSpec<unknown>, index: TimelineIndex): TrackIndex[]   // Chọn track cho widget theo trackMappingMode (SRS REQ-STORAGE-02).
 function pianoRollPitchRange(p: PianoRollProps, tracks: TrackIndex[]): [number, number]   // Tầm cao độ của Piano Roll: FIT_CONTENT lấy min/max của track được gán (±1), rỗng thì C3–C6.
 const pianoRollRenderer
 const WIDGET_RENDERERS   // Bảng renderer theo loại. Widget chưa có renderer được bỏ qua khi vẽ (vẫn giữ trong Scene).
-function layoutFrame(scene: SceneDocument, derived: Derived, ast: UnifiedProjectAST, t: number, renderers = WIDGET_RENDERERS)   // Bố cục toàn khung (thuần): danh sách widget đã sắp theo zIndex kèm primitive của từng widget. Dùng để test tấ…
+const buildSceneHud = (scene: SceneDocument, ast: UnifiedProjectAST, index: TimelineIndex) =>   // HudData cho một scene: số đếm, lưới ô nhịp và hợp âm của mọi widget Chord Detection. Gọi ở bước derived (một …
+function layoutFrame(scene: SceneDocument, derived0: Derived, ast: UnifiedProjectAST, t: number, renderers = WIDGET_RENDERERS)
 function renderFrame(scene: SceneDocument, derived: Derived, ast: UnifiedProjectAST, t: number, target: RenderTarget, scale: number, renderers = WIDGET_RENDERERS): void   // Vẽ một khung hình. `scale` = điểm ảnh đích / pt (Preview: bề rộng canvas × DPR / designWidth; Export: W_expor…
 function drawPrimitives(g: Ctx2D, prims: Primitive[]): void   // Chỉ vẽ, không tính nghiệp vụ. Mọi trạng thái ctx bị đổi (alpha, shadow) được trả về mặc định sau mỗi hình.
 ```
@@ -590,6 +698,7 @@ interface SceneWarning
 class SceneError extends Error
   constructor(message: string, path: string)
 function sanitizeScene(raw: unknown):    // Đọc một preset/scene từ JSON thô. Trả scene hợp lệ + cảnh báo.
+interface Sanitizer   // Bộ kiểm giá trị dùng chung (đóng gói từ sanitizeScene để mỗi widget kiểm theo đường dẫn riêng).
 ```
 
 #### `packages/render-core/src/style.ts`
@@ -615,6 +724,38 @@ function parseHex(c: string): [number, number, number]   // ---- màu
 const toHex = (r: number, g: number, b: number) =>
 function shade(c: string, k: number): string   // Trộn `c` về phía trắng (k>0) hoặc đen (k<0), |k| ≤ 1.
 function noteColor(style: NoteStyle, trackColor: string, pitch: number, velocity: number): string   // Màu nốt theo chế độ màu. 'pitch': mỗi lớp cao độ (C..B) một sắc; 'velocity': nốt mạnh sáng hơn.
+type NoteState
+const noteState = (start: number, end: number, t: number) =>   // Trạng thái nốt tại t. Biên: start = t là đang phát; end = t là đã phát.
+function stateColor(style: NoteStyle, state: NoteState, fallback: string): string   // Màu theo trạng thái nếu đã đặt; không thì màu theo chế độ màu (hành vi cũ).
+```
+
+#### `packages/render-core/src/text.ts`
+
+Chữ trong Render Core (TECHNICAL-DESIGN 5.7): đo bằng bảng FONT_METRICS (thuần, chạy ở Node), mẫu chữ, chia nhóm số.
+
+```text
+type Measure   // Hàm đo truyền vào layout (điều kiện 4): độ rộng của `text` tính bằng pt. Phông người dùng nạp thay hàm này bằ…
+function fallbackEm(cp: number): number   // Độ rộng dự phòng (em) cho ký tự ngoài bảng: chữ CJK/emoji rộng 1 em, còn lại 0,6 em. Chỉ là ước lượng; bước v…
+const measureText = (text, _font, size, weight) =>   // Đo bằng FONT_METRICS (Space Grotesk, chưa kerning). Họ phông khác dùng cùng bảng như ước lượng.
+function fitText(text: string, maxWidth: number, font: string, size: number, weight: number, measure: Measure = measureText): string   // Cắt chữ cho vừa `maxWidth`, thêm "…" nếu cắt. Thuần theo `measure`.
+function formatTemplate(template: string, values: Readonly<Record<string, string | number>>): string   // Thay `{tên}` bằng giá trị; chỗ giữ lạ được giữ nguyên chữ.
+function unknownPlaceholders(template: string, known: readonly string[]): string[]   // Các tên chỗ giữ trong mẫu mà `known` không có (để cảnh báo khi đọc preset).
+const pad = (n: number, width: number) =>   // Số nguyên không âm, đệm 0 đến `width` chữ số (số lớn hơn thì giữ đủ chữ số).
+function groupDigits(parts: readonly number[], widths: readonly number[]): string   // Chia nhóm có số 0 đứng đầu: groupDigits([1, 35, 83], [3, 2, 3]) = "001 35 083".
+const fixed = (v: number, d: number) =>   // Số thập phân với `d` chữ số, dấu chấm (chữ trong video không theo ngôn ngữ ứng dụng).
+function clockMs(sec: number): string   // m:ss (phút không đệm 0).
+```
+
+#### `packages/render-core/src/thumbnail.ts`
+
+Ảnh thu nhỏ cho cột "Video styles" (T-69): vẽ một khung nhỏ của dự án đang mở tại một mốc cố định, dùng chung renderFrame.
+
+```text
+const THUMBNAIL_FRACTION   // Mốc vẽ ảnh thu nhỏ: 40% thời lượng, làm tròn mili giây (giữa bài thường đã có nhiều nốt).
+const thumbnailTime = (duration: number) =>
+function renderThumbnail(scene: SceneDocument, derived: Derived, ast: UnifiedProjectAST, target: Omit<RenderTarget, 'width' | 'height'>, widthPx: number):    // Vẽ ảnh thu nhỏ bề rộng `widthPx` điểm ảnh; cao theo tỉ lệ khung của scene.
+const thumbnailKey = (styleId: string, projectKey: string, width: number) =>   // Khoá bộ đệm: đổi phong cách, dự án hoặc kích thước thì vẽ lại. `projectKey` do nơi gọi tính (tên tệp, thời lư…
+function createThumbnailCache<T>(max = 48)   // Bộ đệm có trần (bỏ mục cũ nhất). Không chứa trạng thái vẽ, chỉ chứa kết quả đã có.
 ```
 
 #### `packages/render-core/src/types.ts`
@@ -741,7 +882,7 @@ function NumberField({ id, label, value, onChange, spec, className = '' }: { id?
 Canvas xem trước: chỉ lo kích thước điểm ảnh/DPR và gọi renderFrame (T-05). Mọi bố cục và vẽ nằm ở Render Core,
 
 ```text
-function SceneCanvas({ scene, derived, ast, t }: { scene: SceneDocument; derived: Derived; ast: UnifiedProjectAST; t: number })
+function SceneCanvas({ scene, derived, ast, t, blocked = false }: { scene: SceneDocument; derived: Derived; ast: UnifiedProjectAST; t: number; blocked?: boolean })   // `blocked`: phông chưa nạp xong nên không vẽ khung (không vẽ khung có chữ bằng phông dự phòng).
 ```
 
 #### `apps/web/src/components/Select.tsx`
@@ -766,7 +907,7 @@ Sân khấu (UI-DIRECTION 5.3, hướng E): khung video do Render Core vẽ, đ�
 
 ```text
 const Crop = ({ className }: { className: string }) =>
-function Stage({ scene, derived, ast, playback, styleName, proof, width, children }: Props)
+function Stage({ scene, derived, ast, playback, styleName, proof, width, fonts, children }: Props)
 ```
 
 #### `apps/web/src/components/StatusIcon.tsx`
@@ -783,7 +924,7 @@ Mục "Hình thức" của inspector: kiểu dáng nốt (toàn cục) và bàn 
 
 ```text
 const ADVANCED_STYLE_KEYS   // Trường chỉ có ở Nâng cao (REQ-UI-13). Dùng để biết phần nâng cao đang khác mặc định hay không.
-function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true }: { style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean })   // `lanes`: tên lane automation có trong dự án đang mở (cho nguồn phát sáng "automation"). `advanced`: hiện cả d…
+function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset }: { notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean })   // `lanes`: tên lane automation có trong dự án đang mở (cho nguồn phát sáng "automation"). `advanced`: hiện cả d…
 ```
 
 #### `apps/web/src/components/ThemeSelect.tsx`
@@ -825,10 +966,9 @@ function Transport({ playback, duration }: { playback: Playback; duration: numbe
 Cột "Video styles" / "Phong cách video" (UI-DIRECTION 5.3): chọn phong cách của KHUNG VIDEO, không phải theme app (D-52).
 
 ```text
-const VIDEO_STYLES
-function videoStyleBase(id: string): NoteStyle
+re-export { VIDEO_STYLES, videoStyleBase }
 function isEdited(id: string, base: NoteStyle): boolean   // Kiểu nốt hiện tại còn đúng như phong cách đã chọn không (để hiện "đã chỉnh").
-function VideoStyles({ value, edited, onPick, onUndo }: { value: string; edited: boolean; onPick(id: string): void; onUndo?(): void })
+function VideoStyles({ value, edited, onPick, onUndo, thumb }: { value: string; edited: boolean; onPick(id: string): void; onUndo?(): void; thumb?(id: string): string | undefined })
 ```
 
 #### `apps/web/src/i18n/I18nProvider.tsx`
@@ -882,6 +1022,16 @@ interface ExternalMidiInfo
 function summarizeExternalMidi(referenced: string[], provided: string[], missing: string[], key: (n: string) => string): ExternalMidiInfo
 function mergeExtras<T extends { name: string }>(old: T[], added: T[]): T[]   // Gộp tệp phụ mới vào tệp phụ cũ; trùng tên thì tệp mới thay tệp cũ.
 function missingMidiLevel(info: ExternalMidiInfo | undefined, failed: boolean): 'error' | 'warning' | null   // Có cần hiện bảng "thiếu file .mid" không, và mức độ (lỗi: không có nốt nào; cảnh báo: chỉ vài track trống).
+```
+
+#### `apps/web/src/lib/fonts.ts`
+
+Nạp phông cho khung video ở Preview (TECHNICAL-DESIGN 5.7): FontFace + document.fonts, tự host cùng origin (CSP font-src 'self').
+
+```text
+const loadBundledFont = (spec: FontFaceSpec) =>   // Nạp một mặt phông (một lần cho mỗi tệp, kể cả khi gọi lại). Lỗi được quên để lần sau thử lại.
+type FontsStatus
+function useFontsStatus(scene: SceneDocument, loader: FontLoader = loadBundledFont): FontsStatus   // Trạng thái phông của scene: scene không có chữ thì luôn sẵn sàng.
 ```
 
 #### `apps/web/src/lib/numberInput.ts`
@@ -972,6 +1122,17 @@ function mix(tint: string, ground: string, alpha: number): string
 function checkTheme(colors: Record<string, string>): ContrastFailure[]   // Trả về mọi cặp trượt; mảng rỗng là theme đạt. Theme thiếu token hoặc có token lạ thì ném lỗi (không áp một ph…
 ```
 
+#### `apps/web/src/lib/thumbnails.ts`
+
+Ảnh thu nhỏ cho cột "Video styles": Render Core vẽ một khung nhỏ của dự án đang mở tại mốc cố định (thumbnailTime), có bộ đệm.
+
+```text
+const projectKey = (name: string, ast: UnifiedProjectAST) =>   // Khoá dự án cho bộ đệm: đổi tệp hoặc nội dung thì ảnh vẽ lại.
+const THUMB_ZOOM   // Phóng 2 lần quanh vạch phát: ảnh nhỏ thấy nốt và chữ rõ thay vì cả khung thu nhỏ.
+function playheadCenter(scene: SceneDocument): Pt   // Tâm cắt (đơn vị thiết kế) = vạch phát của Piano Roll đầu tiên; không có Piano Roll thì giữa khung.
+function styleThumbnail(styleId: string, scene: SceneDocument, ast: UnifiedProjectAST, pkey: string, width: number): string | undefined
+```
+
 #### `apps/web/src/lib/timeFormat.ts`
 
 Định dạng thời gian kiểu đồng hồ DAW cho thanh phát và sân khấu (hàm thuần).
@@ -1022,6 +1183,22 @@ function fitStageWidth(o: { availW: number; availH: number; aspect: number; chro
 function useStageWidth(scroller: RefObject<HTMLElement>, stage: RefObject<HTMLElement>, o: { aspect: number; chrome: number; extra: number; active: boolean; fallback?: number }): number   // `stage` là phần tử bọc khối sân khấu; chỗ còn lại theo chiều dọc = phần vùng cuộn dưới mép trên của nó (tự tí…
 ```
 
+#### `apps/web/src/lib/videoScenes.ts`
+
+Phong cách video = một scene hoàn chỉnh (D-51): "Paper" là preset đọc từ presets/scene/paper-1x1.json (phong cách mặc định khi mở tệp);
+
+```text
+const PAPER_SCENE
+const DEFAULT_VIDEO_STYLE
+const VIDEO_STYLES   // Phong cách video = scene hoàn chỉnh (cột "Video styles"). Bộ kiểu nốt dựng sẵn KHÔNG nằm ở đây mà ở mục 02 Hì…
+const NOTE_PRESETS   // Kiểu nốt dựng sẵn của Render Core: chỉ đổi NoteStyle của Piano Roll trong scene hiện tại, không đổi scene.
+const noteStylePreset = (id: string) =>
+function matchNotePreset(base: NoteStyle): string   // Bộ kiểu nốt dựng sẵn khớp đúng NoteStyle hiện tại (so toàn bộ trường), hoặc 'custom'.
+function videoStyleBase(id: string): NoteStyle   // Kiểu nốt gốc của một phong cách (để biết "đã chỉnh").
+const videoStyleKeyboard = (id: string) =>   // Bàn phím piano có bật sẵn không (Paper không có bàn phím).
+function sceneForStyle(id: string, style: StyleConfig, keyboard: Pick<KeyboardStyle, 'enabled'>): SceneDocument   // Scene của phong cách `id` với kiểu nốt và bàn phím hiện tại. Trả bản sao mới, không đụng PAPER_SCENE.
+```
+
 #### `apps/web/src/main.tsx`
 
 Điểm vào của ứng dụng web: dựng React root với I18nProvider.
@@ -1045,6 +1222,7 @@ type ParseResponse
 - `scripts/docs-site/markdown.mjs` — Bộ chuyển Markdown → HTML tối giản, không phụ thuộc thư viện. Hỗ trợ đúng phần tài liệu của dự án dùng:
 - `scripts/docs-site/markdown.test.mjs` — Test của bộ chuyển Markdown → HTML (tiêu đề/id, inline, bảng, danh sách lồng nhau, khối code, trích dẫn, văn bản tìm kiếm).
 - `scripts/docs-site/slug.mjs` — Quy tắc tạo anchor (id) cho heading, giống GitHub: chữ thường, bỏ ký tự đặc biệt/emoji, khoảng trắng → '-'. Dùng chung cho sync-docs và docs site.
+- `scripts/gen-font-metrics.mjs` — Sinh bảng độ rộng ký tự (FONT_METRICS) từ CHÍNH các tệp phông đã đóng gói trong apps/web/public/fonts
 - `scripts/rewrite-imports.mjs` — Công cụ một lần: viết lại import tương đối giữa các package khi tách monorepo.
 - `scripts/split_doc.py` — Tách tài liệu Markdown (SRS/SDD/TDD...) thành các mảnh nhỏ để đưa cho AI tham chiếu.
 - `scripts/sync-docs.mjs` — Đồng bộ "hệ thống ngữ cảnh AI" của repo và kiểm tra liên kết. Không phụ thuộc thư viện ngoài (Node >= 18; split dùng python3).
@@ -1061,7 +1239,11 @@ type ParseResponse
 - `apps/web/src/lib/problems.test.ts`
 - `apps/web/src/lib/theme.test.ts`
 - `apps/web/test/components.test.tsx`
+- `packages/render-core/test/fonts.test.ts`
 - `packages/render-core/test/glow.test.ts`
+- `packages/render-core/test/hud.test.ts`
+- `packages/render-core/test/legacy.test.ts`
+- `packages/render-core/test/paper.test.ts`
 - `packages/render-core/test/presets.test.ts`
 - `packages/render-core/test/render-core.test.ts`
 - `packages/render-core/test/scene.test.ts`
@@ -1073,4 +1255,4 @@ type ParseResponse
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 313 ký hiệu công khai -->
+<!-- 10 thư mục src, 398 ký hiệu công khai -->

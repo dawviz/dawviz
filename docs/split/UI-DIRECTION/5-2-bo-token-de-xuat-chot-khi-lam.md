@@ -5,7 +5,7 @@ section: "5.2 Bộ token (đề xuất, chốt khi làm)"
 path: "5. Theme giao diện chỉ đổi màu (D-52) > 5.2 Bộ token (đề xuất, chốt khi làm)"
 chunk: 5-2-bo-token-de-xuat-chot-khi-lam.md
 source_lines: 316-328
-source_sha1: a66e3a3c8c
+source_sha1: 17129663d4
 ids: [REQ-GRAPHICS-02]
 ---
 ### 5.2 Bộ token (đề xuất, chốt khi làm)

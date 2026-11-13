@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { parseProject } from '@dawviz/parser';
-import { buildIndex, defaultScene, sanitizeScene, renderFrame, layoutFrame, pianoRollWidget, tracksFor, pianoRollPitchRange,
+import { DEFAULT_CHORD, buildIndex, defaultScene, sanitizeScene, renderFrame, layoutFrame, pianoRollWidget, tracksFor, pianoRollPitchRange,
   DEFAULT_BRIGHTNESS, SCENE_SCHEMA_VERSION, type Derived } from '../src/index.ts';
 
 const fixtures = new URL('../../../test/fixtures/', import.meta.url);
@@ -53,7 +53,7 @@ test('layoutFrame: sắp theo zIndex, widget ẩn và widget chưa có renderer 
     pianoRollWidget({ x: 0, y: 0, width: 960, height: 540, rotation: 0 }, {}, 'a'),
     { ...pianoRollWidget({ x: 960, y: 0, width: 960, height: 540, rotation: 0 }, {}, 'b'), zIndex: 5 },
     { ...pianoRollWidget({ x: 0, y: 540, width: 960, height: 540, rotation: 0 }, {}, 'c'), visible: false },
-    { id: 'chord', type: 'CHORD_DETECTION', zIndex: 99, visible: true, layout: { x: 0, y: 0, width: 10, height: 10, rotation: 0 }, trackMappingMode: 'ALL', assignedTrackIndices: [], properties: {} },
+    { id: 'spectrum', type: 'AUDIO_SPECTRUM', zIndex: 99, visible: true, layout: { x: 0, y: 0, width: 10, height: 10, rotation: 0 }, trackMappingMode: 'ALL', assignedTrackIndices: [], properties: {} },
   ];
   assert.deepEqual(layoutFrame(s, derived, ast, 3).map((x) => x.widget.id), ['b', 'a']);
   const { ctx, log } = recCtx();
@@ -96,7 +96,10 @@ test('sanitizeScene: preset mẫu trong SRS đọc được; trường lạ bị
   assert.equal(scene.widgets.length, 2);
   const pr: any = scene.widgets[0].properties;
   assert.equal(pr.lookaheadSeconds, 3.5); assert.equal(pr.noteStyle.base.cornerRadius, 4);
-  assert.deepEqual(scene.widgets[1].properties, srsExample.widgets[1].properties); // widget chưa có renderer: giữ nguyên dữ liệu
+  // Chord Detection nay có renderer (T-69): khoá cũ của ví dụ SRS không còn nghĩa nên bị bỏ (không cảnh báo), thuộc tính mới lấy mặc định.
+  const ch: any = scene.widgets[1].properties; assert.deepEqual(ch, DEFAULT_CHORD); assert.ok(!('detectionMode' in ch));
+  const spec = sanitizeScene({ schemaVersion: '0.3.0', canvas: {}, widgets: [{ type: 'AUDIO_SPECTRUM', properties: { bars: 64 } }] }); // widget chưa có renderer: giữ nguyên dữ liệu
+  assert.deepEqual(spec.scene.widgets[0].properties, { bars: 64 });
 
   const bad = sanitizeScene({ schemaVersion: '0.3.1', junk: 1, canvas: { designWidth: 99999, backgroundColor: 'red' },
     widgets: [{ type: 'NOPE' }, { type: 'PIANO_ROLL', id: 'x', properties: { lookaheadSeconds: 'fast', orientation: 'VERTICAL', pitchMin: 90, pitchMax: 40 }, layout: { rotation: 15 } }, { type: 'PIANO_ROLL', id: 'x' }] });

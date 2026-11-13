@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-GRAPHICS-15: Không gian 2.5D: xoay X/Y/Z và camera phối cảnh (D-47), bản 1.1"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) > REQ-GRAPHICS-15: Không gian 2.5D: xoay X/Y/Z và camera phối cảnh (D-47), bản 1.1"
 chunk: req-graphics-15-khong-gian-2-5d-xoay-x-y-z-va-ca.md
-source_lines: 839-847
-source_sha1: c62aee35b6
+source_lines: 851-859
+source_sha1: ae88fa5f8b
 ids: [D-47, REQ-GRAPHICS-05, REQ-GRAPHICS-09, REQ-GRAPHICS-15]
 ---
 #### REQ-GRAPHICS-15: Không gian 2.5D: xoay X/Y/Z và camera phối cảnh (D-47), bản 1.1

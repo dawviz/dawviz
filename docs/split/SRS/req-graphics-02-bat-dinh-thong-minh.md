@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-GRAPHICS-02: Bắt dính thông minh"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-02: Bắt dính thông minh"
 chunk: req-graphics-02-bat-dinh-thong-minh.md
-source_lines: 415-420
-source_sha1: c62aee35b6
+source_lines: 416-421
+source_sha1: ae88fa5f8b
 ids: [REQ-GRAPHICS-02]
 ---
 #### REQ-GRAPHICS-02: Bắt dính thông minh

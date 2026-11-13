@@ -5,7 +5,7 @@ section: "3.8 Prompt vòng 2 (dùng kèm tệp đính kèm)"
 path: "3. Bộ prompt sinh ảnh giao diện web > 3.8 Prompt vòng 2 (dùng kèm tệp đính kèm)"
 chunk: 3-8-prompt-vong-2-dung-kem-tep-dinh-kem.md
 source_lines: 178-284
-source_sha1: a66e3a3c8c
+source_sha1: 17129663d4
 ids: []
 ---
 ### 3.8 Prompt vòng 2 (dùng kèm tệp đính kèm)

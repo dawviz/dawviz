@@ -5,7 +5,7 @@ section: "3.7 Khung bố cục chung (từ vòng 1, dùng cho vòng 2)"
 path: "3. Bộ prompt sinh ảnh giao diện web > 3.7 Khung bố cục chung (từ vòng 1, dùng cho vòng 2)"
 chunk: 3-7-khung-bo-cuc-chung-tu-vong-1-dung-cho-vong-2.md
 source_lines: 160-177
-source_sha1: a66e3a3c8c
+source_sha1: 17129663d4
 ids: [REQ-UI-13]
 ---
 ### 3.7 Khung bố cục chung (từ vòng 1, dùng cho vòng 2)

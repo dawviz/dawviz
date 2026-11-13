@@ -95,6 +95,8 @@ parseProject(name, buffer, options)
 |---|---|---|
 | `TimelineIndex` (nốt theo track sắp theo thời gian + `maxDur`) 🟢 | Khi nạp AST hoặc đổi track hiển thị | Piano Roll, Live Trigger, Keyboard |
 | Lane đã lấy mẫu (bảng độ sáng theo bước 1/30 s) ⚪ | Khi đổi cấu hình độ sáng | Tối ưu nếu `sampleLane` mỗi khung quá chậm (hiện O(log n), có thể không cần) |
+| `HudData.starts` 🟢 (T-69): mỗi track một `Float64Array` thời điểm bắt đầu nốt đã sắp (`buildHud`, hoặc `hudOf` dựng một lần rồi đệm theo `derived`) | Khi nạp AST hoặc đổi track hiển thị | Event Counter (`Played` = tìm nhị phân `starts ≤ t`, `Total` = độ dài mảng) |
+| `HudData.bars` (`BarGrid`) 🟢 (T-69): ranh giới ô nhịp theo tick từ `tempoMap` (`timeSigNumerator/Denominator`), kèm giây | Khi nạp AST | Time & Bar Counter (tìm nhị phân tick → Bar, Beat, Sub, phần beat, phần bar) |
 | `ChordTimeline` ⚪ | Khi nạp AST, tính trong Worker bằng `@tonaljs/chord-detect` (OI-05) | Widget hợp âm; lưu trong AST là `chordTimeline: []` |
 | Đỉnh sóng audio (peaks) ⚪ | Khi nạp audio | Widget sóng âm |
 
@@ -160,6 +162,35 @@ SRS REQ-GRAPHICS-17, D-50; `packages/render-core/src/glow.ts`, test `test/glow.t
   - `s' = glowInvert ? 1 − s : s`; nguồn không có dữ liệu → `s = 1` (sáng như đều nhau).
 - **Ranh giới:** chỉ đổi cường độ phát sáng (`glow`), không đổi độ đục; độ đục do độ sáng nền (REQ-GRAPHICS-06) và `opacity/inactiveOpacity`. Pha `hit` của template nốt (T-18) sẽ gọi cùng `glowSourceValue` để dùng chung bộ tiêu chí.
 - **Thêm tiêu chí mới:** thêm giá trị vào `GLOW_SOURCES` + một nhánh trong `glowSourceValue` trả 0..1 + chuỗi `web.glow.source.<x>` và `web.glow.hint.<x>`; không đụng `glowAmount`, `layoutPianoRoll` hay giao diện khác.
+
+### 5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)
+**Primitive.** Thêm vào `Primitive` một kiểu `text`; `layout` của widget trả về, `drawPrimitives` vẽ, giống `rect` (không widget nào tự gọi `fillText`):
+
+```ts
+interface TextPrim {
+  kind: 'text'; text: string;
+  x: number; y: number;                       // pt logic; y là đường baseline
+  font: string;                               // họ phông trong bảng FONTS của preset, ví dụ "Space Grotesk"
+  size: number; weight: number;               // pt logic, 100–900
+  align: 'left' | 'center' | 'right';
+  color: string; alpha: number;
+  maxWidth?: number;                          // layout đã cắt bằng bảng đo; bước vẽ truyền tiếp cho fillText để không bao giờ tràn
+}
+```
+- Vẽ: `ctx.font = `${weight} ${size}px "${font}", sans-serif``, `textAlign = align`, `textBaseline = 'alphabetic'`, `fillStyle`, `globalAlpha`. Kích thước nhân `scale` bởi `setTransform` như mọi primitive, nên không tự nhân lại. `fontKerning = 'none'` và `textRendering = 'geometricPrecision'` (không có dòng sau thì Chromium làm tròn độ rộng ký tự, lệch bảng đo ~1%) đặt cùng chỗ cho Canvas và OffscreenCanvas. Chữ số của đồng hồ chưa dùng `tabular-nums`; nhãn đặt cạnh số dùng bề rộng chữ số rộng nhất nên không nhảy.
+- **Đo chữ.** Phần `layout` là hàm thuần chạy ở Node nên không có `measureText`. Mọi quyết định phụ thuộc bề rộng (căn phải, `maxWidth`, kiểu một dòng ngang của Live Trigger) dùng **căn lề của canvas** (`textAlign`) và việc cắt chữ nằm ở bước vẽ; riêng chỗ cần biết bề rộng để xếp nhiều đoạn trên một dòng thì layout dùng bảng bề rộng ký tự của phông (`FONT_METRICS`, sinh bằng `scripts/gen-font-metrics.mjs` từ tệp phông đóng gói, `packages/render-core/src/fontMetrics.generated.ts`) chứ không gọi `measureText`. Nhờ đó cùng `(scene, t)` ra cùng chuỗi lệnh vẽ ở mọi môi trường.
+- **Quyết định đo chữ (chủ dự án duyệt 2026-11-13).** Dùng bảng `FONT_METRICS` với năm điều kiện: (1) bảng **sinh tự động** bằng script đọc chính tệp phông đã đóng gói (thư viện đọc phông chỉ là phụ thuộc lúc phát triển), kèm mã băm tệp phông; test so mã băm, đổi phông mà quên sinh lại bảng thì đỏ. (2) **Bỏ kerning khi vẽ** (`ctx.fontKerning = 'none'`) để đo khớp vẽ, nên bảng không cần cặp kerning. (3) Bảng phủ Latin cơ bản và Latin mở rộng (gồm tiếng Việt); ký tự ngoài bảng ước lượng bằng một độ rộng dự phòng, và bước vẽ vẫn cắt chữ/thêm "…" theo khung widget để không bao giờ tràn. (4) `layout` nhận hàm đo truyền vào `measure(text, font, size)`, mặc định dựa trên `FONT_METRICS`; phông người dùng nạp (REQ-STORAGE-05) chỉ cần sinh bảng lúc nạp. (5) Test đối chiếu trên trình duyệt thật: `FONT_METRICS` so với `measureText` trên vài chuỗi (Latin, tiếng Việt, chữ số), lệch ≤ 1 pt; chỉ chạy khi có Chromium. Thêm test: preset cũ thiếu tuỳ chọn "luôn hiện danh sách nốt" vẽ y như trước.
+- **Nguồn chữ.** Chuỗi trong primitive đến từ mẫu chữ của preset (`properties.template`…) và dữ liệu dự án, không từ `locales/` (The Two Worlds Rule). Hàm định dạng (`formatTemplate`, `groupDigits`) là hàm thuần trong `packages/render-core/src/text.ts`.
+
+**Nạp phông.**
+- Phông gói theo ứng dụng: `apps/web/public/fonts/SpaceGrotesk-*.woff2` (OFL, kèm `OFL-SpaceGrotesk.txt`; phông giao diện Inter đi qua `@fontsource-variable/inter` vào `dist/assets`, giấy phép kèm `OFL-Inter.txt` ở cùng thư mục `fonts/`; cả hai chép vào `dist/fonts/`), phục vụ cùng origin nên khớp CSP `font-src 'self'` (NFR-SEC-03); không `@font-face` từ CDN, không `data:` cho phông chính.
+- Render Core không tự tải. Cung cấp `FontRegistry` (`packages/render-core/src/fonts.ts`): `ensureFonts(specs, loader): Promise<void>` nhận danh sách `{family, weight, url}` mà scene cần (`requiredFonts(scene)` thuần, sắp ổn định), gọi `new FontFace(family, `url(...)`, {weight})`, `await face.load()`, rồi thêm vào `document.fonts` (Preview) hoặc `self.fonts` (Worker). `loader` được truyền vào để cùng một mã dùng cho cả hai nơi và để test bằng loader giả.
+- **Cổng khung đầu.** `renderFrame` nhận `derived.fontsReady?: boolean`. Khi `fontsReady = false`, `renderFrame` **bỏ qua mọi primitive `text`**; ứng dụng (`useFontsStatus`, `SceneCanvas blocked`) còn **không vẽ cả khung** và hiện trạng thái chờ/lỗi (`needsFonts(scene)` cho biết có cần chờ); **Export không bắt đầu** khi `ensureFonts` chưa xong hoặc bị lỗi (báo `ERR_FONT_LOAD`, không xuất bằng phông dự phòng). Preview vẽ lại khi `ensureFonts` kết thúc.
+- **Export Worker (M3).** Worker nhận `requiredFonts(scene)` cùng thông điệp `start`, tự gọi `ensureFonts` với `self.fonts` (Spike 1: `FontFace` trong Worker hoạt động) và chỉ gửi `ready` về UI khi xong; khung 0 chỉ được vẽ sau `ready`. Phông người dùng nạp (REQ-STORAGE-05) dùng cùng đường, tệp truyền bằng `ArrayBuffer`.
+- **Ảnh thu nhỏ phong cách.** Cùng `renderFrame` với `scale` nhỏ, `t` cố định theo preset (`thumbnail.t`), chờ `ensureFonts`; kết quả đệm theo khoá `(presetId, projectKey, width, height)`; vẽ lên `OffscreenCanvas` rồi `convertToBlob`, nên không phụ thuộc giao diện.
+
+### 5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp 🟢 (đã dùng ở T-69)
+Đã kiểm (2026-11-13): `makeTempoMap` (`packages/core/src/tempo.js`) sinh `tempoMap[i] = { tick, timeSeconds, bpm, timeSigNumerator, timeSigDenominator }`, mặc định 4/4; `mergeTempoAndSig` gộp điểm tempo và điểm nhịp độc lập; `buildAST` đưa `tempoMap` vào AST. Vậy Time & Bar Counter lấy **dấu nhịp từ `ast.tempoMap`**, không cần trường mới và không cần sửa parser. Chỗ thiếu duy nhất là **kiểu TypeScript**: `TempoPoint` ở `packages/render-core/src/types.ts` mới khai báo `{tick, timeSeconds, bpm}`; T-69 thêm `timeSigNumerator?` và `timeSigDenominator?` (tuỳ chọn, mặc định 4/4 khi vắng) để không phá mã cũ. Một beat dài `960 × 4 / denominator` tick; Bar bắt đầu tại điểm đổi nhịp (SRS REQ-WIDGET-05). Nguồn `.mid` không có sự kiện nhịp thì parser đã cho 4/4. Nguồn nào chưa đọc dấu nhịp (nếu có) cũng rơi về 4/4, không cần xử lý riêng ở widget.
 
 ## 6. Ứng dụng web và phát lại 🟡
 

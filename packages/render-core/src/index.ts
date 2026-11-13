@@ -9,3 +9,8 @@ export * from './music.ts';
 export * from './glow.ts';
 export * from './scene.ts';
 export * from './render.ts';
+export * from './prims.ts';
+export * from './text.ts';
+export * from './fonts.ts';
+export * from './hud.ts';
+export * from './thumbnail.ts';

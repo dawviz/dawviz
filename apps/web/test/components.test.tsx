@@ -7,6 +7,7 @@ import { Notices } from '../src/components/Notices.tsx';
 import { LanguageSelect } from '../src/components/LanguageSelect.tsx';
 import { AppearanceSettings, ThemeToggle, useTheme } from '../src/components/ThemeSelect.tsx';
 import { VideoStyles } from '../src/components/VideoStyles.tsx';
+import { NOTE_PRESETS } from '../src/lib/videoScenes.ts';
 import { createPlayback } from '../src/lib/playback.ts';
 import { NumberField } from '../src/components/NumberField.tsx';
 import { StylePanel } from '../src/components/StylePanel.tsx';
@@ -63,14 +64,39 @@ describe('StylePanel', () => {
   });
 });
 describe('VideoStyles', () => {
-  it('chọn phong cách video; phong cách đang chọn hiện "đã chỉnh" khi khác bản gốc', () => {
+  it('cột chỉ chứa phong cách video (scene): Paper và Mặc định, không có kiểu nốt; "đã chỉnh" hiện ở mục đang chọn', () => {
     let picked = '';
-    const v = wrap(<VideoStyles value="default" edited={false} onPick={(id) => (picked = id)} />);
-    fireEvent.click(screen.getByRole('radio', { name: /Neon/ })); expect(picked).toBe('neon');
-    expect(screen.getByRole('radio', { name: /Default|Mặc định/ })).toHaveAttribute('aria-checked', 'true');
-    v.rerender(<I18nProvider><VideoStyles value="neon" edited onPick={() => {}} /></I18nProvider>);
-    expect(screen.getByRole('radio', { name: /Neon/ }).textContent).toMatch(/edited|đã chỉnh/);
+    const v = wrap(<VideoStyles value="paper" edited={false} onPick={(id) => (picked = id)} />);
+    expect(screen.getAllByRole('radio').length).toBe(2);
+    expect(screen.queryByRole('radio', { name: /Neon|Flat|Outline/ })).toBeNull();
+    fireEvent.click(screen.getByRole('radio', { name: /Dark|Tối/ })); expect(picked).toBe('default');
+    v.rerender(<I18nProvider><VideoStyles value="default" edited onPick={() => {}} /></I18nProvider>);
+    expect(screen.getByRole('radio', { name: /Dark|Tối/ }).textContent).toMatch(/edited|đã chỉnh/);
+  });
+});
+
+describe('StylePanel: kiểu nốt dựng sẵn thuộc mục Hình thức', () => {
+  it('chọn Neon đổi NoteStyle; kiểu đã chỉnh tay hiện "Tuỳ chỉnh"', () => {
+    let picked = '';
+    const props = { style: defaultStyleConfig(), keyboard: { ...DEFAULT_KEYBOARD_STYLE }, onStyle: () => {}, onKeyboard: () => {}, notePresets: NOTE_PRESETS, onNotePreset: (id: string) => (picked = id) };
+    const v = wrap(<StylePanel {...props} />);
+    fireEvent.change(screen.getByTestId('note-preset'), { target: { value: 'neon' } }); expect(picked).toBe('neon');
+    expect((screen.getByTestId('note-preset') as HTMLSelectElement).value).toBe('default');
+    const st = { ...defaultStyleConfig(), base: { ...defaultStyleConfig().base, opacity: 0.123 } };
+    v.rerender(<I18nProvider><StylePanel {...props} style={st} /></I18nProvider>);
+    expect((screen.getByTestId('note-preset') as HTMLSelectElement).value).toBe('custom');
     expect(STYLE_PRESETS.neon).toBeTruthy();
+  });
+});
+
+describe('VideoStyles: ảnh thu nhỏ (T-69)', () => {
+  it('có ảnh thu nhỏ thì hiện trong từng mục, ảnh trang trí (alt rỗng) và không đổi tên truy cập; không có thì chỉ chữ', () => {
+    const thumbs: Record<string, string> = { paper: 'data:image/png;base64,AAAA' };
+    wrap(<VideoStyles value="paper" edited={false} onPick={() => {}} thumb={(id) => thumbs[id]} />);
+    expect(screen.getByTestId('style-thumb-paper')).toHaveAttribute('src', thumbs.paper);
+    expect(screen.getByTestId('style-thumb-paper')).toHaveAttribute('alt', '');
+    expect(screen.queryByTestId('style-thumb-default')).toBeNull();
+    expect(screen.getByRole('radio', { name: /^(Paper|Bản in)$/ })).toBeInTheDocument();
   });
 });
 
@@ -281,14 +307,15 @@ import { bindTransportKeys } from '../src/lib/transportKeys.ts';
 import { useEffect, useRef, useState } from 'react';
 describe('Sau critique T-70', () => {
   it('nhóm radio: một điểm Tab, phím mũi tên chuyển và chọn (WAI-ARIA)', () => {
-    let picked = 'default';
+    let picked = 'paper';
     const v = wrap(<VideoStyles value={picked} edited={false} onPick={(id) => (picked = id)} />);
     const radios = screen.getAllByRole('radio');
     expect(radios.filter((r) => r.tabIndex === 0)).toHaveLength(1);
+    expect(radios[0]).toHaveAttribute('aria-checked', 'true'); // Paper là phong cách đầu và mặc định (D-51)
     fireEvent.keyDown(radios[0], { key: 'ArrowDown' });
-    expect(picked).toBe('neon');
+    expect(picked).toBe('default');
     fireEvent.keyDown(radios[0], { key: 'End' });
-    expect(picked).toBe('outline');
+    expect(picked).toBe('default');
     v.unmount();
   });
   it('thay phong cách khi đang chỉnh: hiện "Hoàn tác"', () => {

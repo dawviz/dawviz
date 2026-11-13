@@ -3,6 +3,7 @@
 import { GLOW_SOURCES, type StyleConfig, type NoteStyle, type ColorMode, type KeyboardStyle, type GlowSource, type GlowPanMode } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { radioKeys, radioTab } from '../lib/a11y.ts';
+import { matchNotePreset } from '../lib/videoScenes.ts';
 import { Select } from './Select.tsx';
 import { AdvTag } from './Inspector.tsx';
 import { SliderField as Slider } from './SliderField.tsx';
@@ -14,13 +15,22 @@ const row = 'grid grid-cols-[minmax(0,7.5rem)_minmax(0,1fr)] items-center gap-2 
 
 /** `lanes`: tên lane automation có trong dự án đang mở (cho nguồn phát sáng "automation").
  *  `advanced`: hiện cả dòng nâng cao (chế độ Nâng cao, hoặc "Thêm tuỳ chọn" của mục đang mở). */
-export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true }: { style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean }) {
+export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset }: { notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean }) {
   const { i18n } = useI18n();
   const b = style.base;
   const set = (patch: Partial<NoteStyle>) => onStyle({ ...style, base: { ...b, ...patch } });
   return (
     <div className="space-y-2.5" data-testid="style-panel">
       <h3 className="pt-1 text-xs font-medium text-fg">{i18n.t('web.look.notes')}</h3>
+      {notePresets && onNotePreset && (
+        <label className={row}>
+          <span>{i18n.t('web.style.presets')}</span>
+          <Select value={notePresets.includes(matchNotePreset(b)) ? matchNotePreset(b) : 'custom'} onChange={(e) => e.target.value !== 'custom' && onNotePreset(e.target.value)} className="py-1 pl-2" wrapClassName="min-w-0" data-testid="note-preset">
+            {matchNotePreset(b) === 'custom' && <option value="custom">{i18n.t('web.style.preset.custom')}</option>}
+            {notePresets.map((id) => <option key={id} value={id}>{i18n.t(`web.style.preset.${id}`)}</option>)}
+          </Select>
+        </label>
+      )}
       <label className={row}>
         <span>{i18n.t('web.style.colorMode')}</span>
         <span className="flex min-w-0 items-center gap-2">

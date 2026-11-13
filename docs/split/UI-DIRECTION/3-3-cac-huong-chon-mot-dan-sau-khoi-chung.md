@@ -5,7 +5,7 @@ section: "3.3 Các hướng (chọn một, dán sau khối chung)"
 path: "3. Bộ prompt sinh ảnh giao diện web > 3.3 Các hướng (chọn một, dán sau khối chung)"
 chunk: 3-3-cac-huong-chon-mot-dan-sau-khoi-chung.md
 source_lines: 101-132
-source_sha1: a66e3a3c8c
+source_sha1: 17129663d4
 ids: []
 ---
 ### 3.3 Các hướng (chọn một, dán sau khối chung)

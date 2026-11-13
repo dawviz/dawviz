@@ -5,7 +5,7 @@ section: "6. Việc tiếp theo đề xuất"
 path: "6. Việc tiếp theo đề xuất"
 chunk: 6-viec-tiep-theo-de-xuat.md
 source_lines: 413-419
-source_sha1: a66e3a3c8c
+source_sha1: 17129663d4
 ids: [REQ-EXPORT-00, REQ-UI-06, REQ-UI-07, REQ-UI-13, REQ-UI-15]
 ---
 ## 6. Việc tiếp theo đề xuất

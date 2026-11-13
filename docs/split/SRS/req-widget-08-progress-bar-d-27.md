@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-WIDGET-08: Progress Bar (D-27)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-08: Progress Bar (D-27)"
 chunk: req-widget-08-progress-bar-d-27.md
-source_lines: 590-595
-source_sha1: c62aee35b6
+source_lines: 602-607
+source_sha1: ae88fa5f8b
 ids: [D-27, REQ-EXPORT-00, REQ-GRAPHICS-05, REQ-WIDGET-08]
 ---
 #### REQ-WIDGET-08: Progress Bar (D-27)

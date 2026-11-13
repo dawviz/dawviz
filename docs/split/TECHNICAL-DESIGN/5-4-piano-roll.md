@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "5.4 Piano Roll 🟢"
 path: "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.4 Piano Roll 🟢"
 chunk: 5-4-piano-roll.md
-source_lines: 143-149
-source_sha1: cda0d46b82
+source_lines: 145-151
+source_sha1: 7d1c483e31
 ids: [D-50]
 ---
 ### 5.4 Piano Roll 🟢

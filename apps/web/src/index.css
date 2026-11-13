@@ -125,12 +125,12 @@
   .btn-ghost { @apply rounded px-1.5 py-0.5 text-xs text-muted transition hover:bg-raised hover:text-fg; }
   .field { @apply rounded border border-control bg-raised text-fg; }
   /* Nút chọn chia đoạn và nút bật/tắt: ô đang chọn dùng màu TRUNG TÍNH (nền nổi + vòng line-strong + chữ đậm).
-     Màu nhấn đặc chỉ dành cho nút Phát, nút Xuất video và gạch chân thẻ (DESIGN.md, Colors). */
+     Màu nhấn đặc chỉ dành cho nút Xuất video (DESIGN.md, Colors); nút Phát dùng nền text + biểu tượng màu bg. */
   .seg { @apply flex gap-0.5 rounded border border-control bg-page p-0.5; }
   .seg-btn { @apply min-w-0 rounded-sm px-2.5 py-1 text-xs text-muted transition hover:text-fg; }
   .tog { @apply grid h-6 w-6 shrink-0 place-items-center rounded-sm text-muted transition hover:bg-raised hover:text-fg; }
   .seg-btn[aria-checked='true'], .tog[aria-pressed='true'] { @apply bg-raised font-semibold text-fg ring-1 ring-line-strong; }
-  .disclosure { @apply flex cursor-pointer select-none items-center gap-1 text-muted transition hover:text-fg; }
+  .disclosure { @apply flex min-h-[var(--hit)] cursor-pointer select-none items-center gap-1 text-muted transition hover:text-fg; }
   .disclosure::before {
     content: ''; width: 0.75rem; height: 0.75rem; flex-shrink: 0; transition: transform 150ms;
     background: currentColor;

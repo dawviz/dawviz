@@ -5,7 +5,7 @@ section: "Định hướng hình ảnh: khung preview và giao diện web (mở 
 path: "Định hướng hình ảnh: khung preview và giao diện web (mở đầu)"
 chunk: dinh-huong-hinh-anh-khung-preview-va-giao-dien-w.md
 source_lines: 1-20
-source_sha1: a66e3a3c8c
+source_sha1: 17129663d4
 ids: [D-51, D-52, D-53, D-54, D-55, REQ-GRAPHICS-02, REQ-UI-10, REQ-UI-13]
 ---
 # Định hướng hình ảnh: khung preview và giao diện web

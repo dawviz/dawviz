@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "2.6. Ngăn xếp giao diện, Render Core và cấu trúc kho mã (D-34, D-35, D-36)"
 path: "2. KIẾN TRÚC KỸ THUẬT, LUỒNG DỮ LIỆU & ĐÁNH GIÁ KIẾN TRÚC > 2.6. Ngăn xếp giao diện, Render Core và cấu trúc kho mã (D-34, D-35, D-36)"
 chunk: 2-6-ngan-xep-giao-dien-render-core-va-cau-truc-k.md
-source_lines: 241-251
-source_sha1: c62aee35b6
+source_lines: 242-252
+source_sha1: ae88fa5f8b
 ids: [AT-05, D-34, D-35, D-36]
 ---
 ### 2.6. Ngăn xếp giao diện, Render Core và cấu trúc kho mã (D-34, D-35, D-36)

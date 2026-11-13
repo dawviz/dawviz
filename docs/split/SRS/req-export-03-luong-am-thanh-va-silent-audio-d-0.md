@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-EXPORT-03: Luồng âm thanh và Silent Audio (D-01 sửa, R-08)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-EXPORT-03: Luồng âm thanh và Silent Audio (D-01 sửa, R-08)"
 chunk: req-export-03-luong-am-thanh-va-silent-audio-d-0.md
-source_lines: 727-732
-source_sha1: c62aee35b6
+source_lines: 739-744
+source_sha1: ae88fa5f8b
 ids: [AT-03, D-01, KPI-02, NFR-ACC-01, REQ-EXPORT-03]
 ---
 #### REQ-EXPORT-03: Luồng âm thanh và Silent Audio (D-01 sửa, R-08)
