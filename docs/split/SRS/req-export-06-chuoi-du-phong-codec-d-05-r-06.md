@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-EXPORT-06: Chuỗi dự phòng codec (D-05, R-06)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-EXPORT-06: Chuỗi dự phòng codec (D-05, R-06)"
 chunk: req-export-06-chuoi-du-phong-codec-d-05-r-06.md
-source_lines: 740-776
-source_sha1: f0e666678e
+source_lines: 741-777
+source_sha1: c62aee35b6
 ids: [D-05, D-17, ERR_NO_SUPPORTED_ENCODER, KPI-03, REQ-EXPORT-06]
 ---
 #### REQ-EXPORT-06: Chuỗi dự phòng codec (D-05, R-06)

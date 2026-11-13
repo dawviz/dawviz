@@ -4,8 +4,8 @@ doc_title: "Định hướng hình ảnh: khung preview và giao diện web"
 section: "3.3 Các hướng (chọn một, dán sau khối chung)"
 path: "3. Bộ prompt sinh ảnh giao diện web > 3.3 Các hướng (chọn một, dán sau khối chung)"
 chunk: 3-3-cac-huong-chon-mot-dan-sau-khoi-chung.md
-source_lines: 99-130
-source_sha1: eb55f9ce9a
+source_lines: 100-131
+source_sha1: cae014d43d
 ids: []
 ---
 ### 3.3 Các hướng (chọn một, dán sau khối chung)

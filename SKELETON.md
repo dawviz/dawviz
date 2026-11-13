@@ -52,6 +52,7 @@ dawviz/
 │     ├─ test/
 │     │  ├─ components.test.tsx
 │     │  └─ setup.ts
+│     ├─ DESIGN.md
 │     ├─ index.html
 │     ├─ package.json
 │     ├─ postcss.config.js

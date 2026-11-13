@@ -35,17 +35,17 @@ Trang trí phải mang thông tin: số mục, thông số khung, số liệu c�
 
 ## Colors
 
-Chiến lược Restrained: trung tính xám ấm, cộng đúng một màu nhấn có vai trò. Giá trị dưới đây là **giá trị khởi đầu** của UI-DIRECTION 5.4; chốt khi làm token (T-48) sau khi chạy kiểm AA tự động và chỉnh những chỗ trượt.
+Chiến lược Restrained: trung tính xám ấm, cộng đúng một màu nhấn có vai trò. Giá trị dưới đây theo UI-DIRECTION 5.4 v0.5, **đã kiểm AA** (số đo ở đó); T-48 vẫn chạy kiểm tự động khi dựng token.
 
 ### Primary
 Mỗi bảng màu dựng sẵn chỉ đổi nhóm nhấn. `accent-text` là chữ trên nền nhấn: trắng ở theme sáng, `bg` tối ở theme tối.
 
 | Bảng màu | `accent` sáng | `accent` tối |
 | :--- | :--- | :--- |
-| **Studio cam** (mặc định) | `#C2410C` | `#FF6A2B` |
+| **Studio cam** (mặc định) | `#BE3D04` | `#FF6A2B` |
 | **Bản in đỏ** | `#C8261E` | `#FF5A4F` |
-| **Đồng** | `#8C6A35` | `#C9A467` |
-| **Riso hồng** | `#C2307E` | `#FF5CB8` |
+| **Đồng** | `#85642E` | `#C9A467` |
+| **Riso hồng** | `#BE2C7B` | `#FF5CB8` |
 
 Vai trò của màu nhấn, và chỉ những vai trò này: nút chính "Export video", gạch chân thẻ đang mở, dấu preset đang chọn, trạng thái bật của công tắc/nút chọn, thời gian kiểu nhạc khi đang phát, `focus`.
 
@@ -55,25 +55,26 @@ Vai trò của màu nhấn, và chỉ những vai trò này: nút chính "Export
 | `bg` | `#EDECE8` | `#151617` | Nền trang, vùng quanh sân khấu |
 | `surface` | `#F6F5F2` | `#1E1F21` | Thanh trên, cột trái, inspector, thanh phát |
 | `surface-raised` | `#FFFFFF` | `#26282B` | Ô nhập, menu, hộp thoại |
-| `line` | `#D6D4CE` | `#33363A` | Đường kẻ phân vùng 1 px |
-| `line-strong` | `#1C1C1A` | `#E6E6E3` | Đường kẻ nhấn mạnh, viền điều khiển cần nhìn thấy |
+| `line` | `#D6D4CE` | `#33363A` | Đường kẻ phân vùng 1 px; không bao giờ là viền duy nhất của điều khiển |
+| `line-control` | `#878580` | `#707378` | Viền ô nhập, ô chọn, ô đánh dấu, rãnh thanh trượt, nút phụ (3:1) |
+| `line-strong` | `#1C1C1A` | `#E6E6E3` | Đường kẻ nhấn mạnh |
 | `text` | `#1C1C1A` | `#E6E6E3` | Chữ chính |
 | `text-muted` | `#5E5C57` | `#A3A3A0` | Nhãn, chú thích, đơn vị |
-| `text-faint` | `#8D8A84` | `#6E6F70` | Chỉ cho chi tiết không cần đọc (xem rule bên dưới) |
+| `text-faint` | `#6C6963` | `#8E9091` | Bậc chữ phụ thứ ba (vẫn đạt 4,5:1) |
 
 ### Trạng thái và thanh phát
-Token đã định danh nhưng chưa có giá trị: `focus`, `selection`, `danger`, `warning`, `success`, `scrub-played`, `scrub-rest`, `waveform` **[to be resolved during implementation]**. `guide` (đường gióng ở Editor) mặc định `#FF5500` theo REQ-GRAPHICS-02.
+Token đã định danh nhưng chưa có giá trị: `focus`, `selection`, `danger`, `warning`, `success`, `scrub-played`, `scrub-rest`, `waveform` **[to be resolved during implementation]**. `guide` (đường gióng ở Edit Mode, REQ-GRAPHICS-02) là `#008C9E` ở cả hai theme: xanh mòng két khác tông mọi màu nhấn, vẽ trên khung video nên không đổi theo theme.
 
 ### Named Rules
 **The One Signal Rule.** Mỗi màn hình chỉ có một màu nhấn, dùng cho đúng các vai trò kể trên. Không có màu nhấn thứ hai, không gradient, không phát sáng.
 
 **The Danger-Is-Not-Accent Rule.** `danger` phải khác rõ `accent`; với bảng Bản in đỏ, `danger` dùng đỏ thẫm hơn và luôn đi kèm biểu tượng cảnh báo, để nút xuất không bị đọc như lỗi.
 
-**The Faint-Is-Not-Text Rule.** Tương phản đo được của `text-faint` là 2,91:1 trên `bg` sáng và 3,6:1 trên `bg` tối, trượt AA cho chữ. Không dùng `text-faint` cho chữ người dùng cần đọc (nhãn, giá trị, cảnh báo). Nếu cần một bậc chữ phụ thứ ba thì chỉnh giá trị cho đạt 4,5:1 trước.
+**The Faint-Is-Still-Text Rule.** `text-faint` là chữ, nên đạt 4,5:1 trên `bg`, `surface` và `surface-raised` như mọi chữ khác. Chi tiết nhạt hơn mức đó không phải chữ (đường kẻ, dấu cắt, vạch chia) và dùng token kẻ.
 
-**The Visible-Edge Rule.** `line` chỉ đạt 1,25:1 (sáng) và 1,49:1 (tối): đủ cho đường phân vùng, không đủ làm viền nhận diện điều khiển (WCAG 1.4.11 cần 3:1). Ô nhập, thanh trượt, ô đánh dấu phải nhận ra được nhờ `line-strong`, nền `surface-raised` có tương phản đủ, hoặc chỉnh lại `line`.
+**The Visible-Edge Rule.** Điều khiển nhận ra được nhờ `line-control` (3:1 trên cả ba nền, WCAG 1.4.11). `line` chỉ để phân vùng, không bao giờ là dấu hiệu duy nhất của một điều khiển.
 
-**The Accent-on-Surface Rule.** Ở theme sáng, chữ màu nhấn đặt trực tiếp trên `bg` trượt AA với Studio cam (4,38:1), Đồng (4,2:1) và Riso hồng (4,42:1); trên `surface` thì đạt. Chữ màu nhấn chỉ đặt trên `surface`/`surface-raised`, hoặc chỉnh giá trị nhấn khi kiểm AA ở T-48.
+**The Accent-Anywhere Rule.** `accent` đạt 4,5:1 trên cả `bg`, `surface` và `surface-raised`, và `accent-text` đạt 4,5:1 trên `accent`. Khi chỉnh hoặc thêm bảng màu, giữ tông và độ rực (OKLCH H, C), chỉ dịch độ sáng L.
 
 ## Typography
 
@@ -141,8 +142,8 @@ Thanh trượt luôn đi kèm ô số căn phải (REQ-UI-15, D-49): không thu�
 
 ### Do:
 - **Do** để khung preview luôn hiển thị đúng preset video (mặc định "Bản in" nền trắng) ở cả theme sáng lẫn tối.
-- **Do** khai báo theme chỉ bằng các token màu `bg`, `surface`, `surface-raised`, `line`, `line-strong`, `text`, `text-muted`, `text-faint`, `accent`, `accent-text`, `focus`, `selection`, `danger`, `warning`, `success`, `scrub-played`, `scrub-rest`, `waveform`, `guide`; thiếu token nào thì lấy của theme mặc định.
-- **Do** kiểm AA tự động khi nạp theme (`text`/`bg`, `text-muted`/`surface`, `accent-text`/`accent`) và từ chối cả theme nếu trượt.
+- **Do** khai báo theme chỉ bằng các token màu `bg`, `surface`, `surface-raised`, `line`, `line-control`, `line-strong`, `text`, `text-muted`, `text-faint`, `accent`, `accent-text`, `focus`, `selection`, `danger`, `warning`, `success`, `scrub-played`, `scrub-rest`, `waveform`, `guide`; thiếu token nào thì lấy của theme mặc định.
+- **Do** kiểm AA tự động khi nạp theme (chữ và `accent` 4,5:1 trên ba nền, `accent-text`/`accent` 4,5:1, `line-control` và `guide` 3:1) và từ chối cả theme nếu trượt.
 - **Do** phân vùng bằng đường kẻ 1 px và đánh số mục `01`, `02`, `03` ở inspector.
 - **Do** đặt mọi số liệu bằng chữ số đều, căn phải; mọi thanh trượt có ô số.
 - **Do** tự host mọi phông và đưa mọi chữ qua `locales/`.
@@ -156,6 +157,6 @@ Thanh trượt luôn đi kèm ô số căn phải (REQ-UI-15, D-49): không thu�
 - **Don't** dùng phông mono cho nhãn (hướng B) hoặc chữ khổng lồ làm trang trí (hướng F).
 - **Don't** dùng nhãn bọc trong ngoặc kiểu `[IN HOA]`.
 - **Don't** nhận CSS tuỳ ý trong theme, hoặc cho theme đổi phông, cỡ, khoảng cách, bố cục.
-- **Don't** dùng `text-faint` cho chữ cần đọc, hoặc dùng `line` làm viền duy nhất của điều khiển.
+- **Don't** dùng `line` làm viền duy nhất của điều khiển, hoặc dùng màu cam của màu nhấn cho đường gióng.
 - **Don't** dùng tên, bài hát hay nhận diện của kênh tham chiếu trong preset "Bản in".
 - **Don't** dùng ảnh thử AI trong UI-DIRECTION mục 4 như ảnh chụp sản phẩm hay như bản vẽ chi tiết phải chép theo.

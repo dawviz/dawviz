@@ -4,7 +4,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 
 ## BRD.md — TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)
 
-- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 3886 ký tự
+- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 4145 ký tự
 - [1. THÔNG TIN CHUNG & BỐI CẢNH DỰ ÁN](BRD/1-thong-tin-chung-boi-canh-du-an.md) · 1753 ký tự
 - [2. MỤC TIÊU KINH DOANH, CHỈ SỐ ĐO LƯỜNG & YÊU CẦU NGHIỆP VỤ](BRD/2-muc-tieu-kinh-doanh-chi-so-do-luong-yeu-cau-ng.md) · 4778 ký tự
 - [3. CHÂN DUNG NGƯỜI DÙNG MỤC TIÊU (USER PERSONAS)](BRD/3-chan-dung-nguoi-dung-muc-tieu-user-personas.md) · 1342 ký tự
@@ -14,13 +14,13 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1215 ký tự
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4347 ký tự
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](BRD/6-gia-dinh-assumptions.md) · 554 ký tự
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 19383 ký tự
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 20737 ký tự
 - [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](BRD/8-cac-van-de-con-mo-open-issues.md) · 4634 ký tự
 
 ## SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
 - [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 422 ký tự
-- [Lịch sử phiên bản](SRS/lich-su-phien-ban.md) · 5492 ký tự
+- [Lịch sử phiên bản](SRS/lich-su-phien-ban.md) · 5747 ký tự
 - [Quy ước trong tài liệu](SRS/quy-uoc-trong-tai-lieu.md) · 818 ký tự
 - [Mục lục](SRS/muc-luc.md) · 365 ký tự
 - [1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG](SRS/1-gioi-thieu-muc-tieu-he-thong.md) · 4720 ký tự
@@ -41,7 +41,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [3.2. Cấu trúc dữ liệu chuẩn hóa (Unified AST, D-08, D-09)](SRS/3-2-cau-truc-du-lieu-chuan-hoa-unified-ast-d-08.md) · 3457 ký tự
 - [REQ-GRAPHICS-00: Độ phân giải thiết kế logic (D-06)](SRS/req-graphics-00-do-phan-giai-thiet-ke-logic-d-06.md) · 421 ký tự
 - [REQ-GRAPHICS-01: Phân lớp đồ họa (D-07)](SRS/req-graphics-01-phan-lop-do-hoa-d-07.md) · 445 ký tự
-- [REQ-GRAPHICS-02: Bắt dính thông minh](SRS/req-graphics-02-bat-dinh-thong-minh.md) · 607 ký tự
+- [REQ-GRAPHICS-02: Bắt dính thông minh](SRS/req-graphics-02-bat-dinh-thong-minh.md) · 790 ký tự
 - [REQ-GRAPHICS-16: Thanh phát (playhead) tuỳ chỉnh](SRS/req-graphics-16-thanh-phat-playhead-tuy-chinh.md) · 1143 ký tự
 - [REQ-GRAPHICS-03: Xoay widget tự do (D-54, thay D-15)](SRS/req-graphics-03-xoay-widget-tu-do-d-54-thay-d-15.md) · 1304 ký tự
 - [REQ-GRAPHICS-04: Preset dựng sẵn và đổi tỉ lệ khung](SRS/req-graphics-04-preset-dung-san-va-doi-ti-le-khu.md) · 673 ký tự
@@ -86,7 +86,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [REQ-STORAGE-06: Preset mới và chia sẻ](SRS/req-storage-06-preset-moi-va-chia-se.md) · 444 ký tự
 - [4. YÊU CẦU PHI CHỨC NĂNG (NON-FUNCTIONAL REQUIREMENTS)](SRS/4-yeu-cau-phi-chuc-nang-non-functional-requireme.md) · 5167 ký tự
 - [5.1. Bố cục không gian làm việc](SRS/5-1-bo-cuc-khong-gian-lam-viec.md) · 3717 ký tự
-- [5.2. Chế độ tương tác](SRS/5-2-che-do-tuong-tac.md) · 358 ký tự
+- [5.2. Chế độ tương tác](SRS/5-2-che-do-tuong-tac.md) · 364 ký tự
 - [5.3. Yêu cầu giao diện](SRS/5-3-yeu-cau-giao-dien.md) · 14491 ký tự
 - [6. MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU](SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md) · 1419 ký tự
 - [7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO](SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md) · 6665 ký tự
@@ -208,7 +208,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 
 ## UI-DIRECTION.md — Định hướng hình ảnh: khung preview và giao diện web
 
-- [Định hướng hình ảnh: khung preview và giao diện web (mở đầu)](UI-DIRECTION/dinh-huong-hinh-anh-khung-preview-va-giao-dien-w.md) · 1586 ký tự
+- [Định hướng hình ảnh: khung preview và giao diện web (mở đầu)](UI-DIRECTION/dinh-huong-hinh-anh-khung-preview-va-giao-dien-w.md) · 1948 ký tự
 - [1. Khung preview: hướng "Bản in" 🟡 đã chốt hướng, chưa làm (D-51)](UI-DIRECTION/1-khung-preview-huong-ban-in-da-chot-huong-chua.md) · 4073 ký tự
 - [2. Giao diện web: vì sao đang trông "AI slop"](UI-DIRECTION/2-giao-dien-web-vi-sao-dang-trong-ai-slop.md) · 1523 ký tự
 - [3.1 Cách dùng](UI-DIRECTION/3-1-cach-dung.md) · 483 ký tự
@@ -220,7 +220,10 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [3.7 Khung bố cục chung (từ vòng 1, dùng cho vòng 2)](UI-DIRECTION/3-7-khung-bo-cuc-chung-tu-vong-1-dung-cho-vong-2.md) · 1529 ký tự
 - [3.8 Prompt vòng 2 (dùng kèm tệp đính kèm)](UI-DIRECTION/3-8-prompt-vong-2-dung-kem-tep-dinh-kem.md) · 9757 ký tự
 - [4. Nhật ký thử và hướng được chọn](UI-DIRECTION/4-nhat-ky-thu-va-huong-duoc-chon.md) · 3486 ký tự
-- [5. Theme giao diện chỉ đổi màu (D-52)](UI-DIRECTION/5-theme-giao-dien-chi-doi-mau-d-52.md) · 4842 ký tự
+- [5.1 Quyết định](UI-DIRECTION/5-1-quyet-dinh.md) · 779 ký tự
+- [5.2 Bộ token (đề xuất, chốt khi làm)](UI-DIRECTION/5-2-bo-token-de-xuat-chot-khi-lam.md) · 1000 ký tự
+- [5.3 Cấu trúc giao diện: D + A + E (D-53, đã chốt 2026-11-13)](UI-DIRECTION/5-3-cau-truc-giao-dien-d-a-e-d-53-da-chot-2026-1.md) · 2224 ký tự
+- [5.4 Bảng màu dựng sẵn (đã kiểm AA, v0.5)](UI-DIRECTION/5-4-bang-mau-dung-san-da-kiem-aa-v0-5.md) · 3265 ký tự
 - [6. Việc tiếp theo đề xuất](UI-DIRECTION/6-viec-tiep-theo-de-xuat.md) · 931 ký tự
 - [7. Nguyên tắc sản phẩm: trình dựng thật, mặc định đơn giản (D-54)](UI-DIRECTION/7-nguyen-tac-san-pham-trinh-dung-that-mac-dinh-d.md) · 1117 ký tự
 

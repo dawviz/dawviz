@@ -4,8 +4,8 @@ doc_title: "Định hướng hình ảnh: khung preview và giao diện web"
 section: "3.8 Prompt vòng 2 (dùng kèm tệp đính kèm)"
 path: "3. Bộ prompt sinh ảnh giao diện web > 3.8 Prompt vòng 2 (dùng kèm tệp đính kèm)"
 chunk: 3-8-prompt-vong-2-dung-kem-tep-dinh-kem.md
-source_lines: 176-282
-source_sha1: eb55f9ce9a
+source_lines: 177-283
+source_sha1: cae014d43d
 ids: []
 ---
 ### 3.8 Prompt vòng 2 (dùng kèm tệp đính kèm)

@@ -5,6 +5,7 @@
 | v0.1 | 2026-11-13 | Chốt hướng khung preview theo ảnh tham chiếu "usagin" (D-51). Chẩn đoán vì sao giao diện web hiện trông "AI slop". Bộ prompt sinh ảnh để thử các hướng giao diện web; **chưa chọn hướng web**. |
 | v0.2 | 2026-11-13 | Ghi kết quả vòng 1 (ChatGPT 4 khung, Gemini Swiss sáng). Chốt khung bố cục: ba thẻ Preview / Editor / Settings, cách sắp Cơ bản/Nâng cao theo REQ-UI-13 (mục 3.7). Bộ prompt vòng 2 cho 6 phong cách, dùng kèm tệp đính kèm, mỗi phong cách có cả theme sáng và tối (mục 3.8). |
 | v0.3 | 2026-11-13 | Ghi kết quả vòng 2 (6 phong cách × 4 khung, Gemini; bảng preset của ChatGPT). Chốt: theme giao diện **chỉ đổi màu** qua bộ token cố định (D-52, mục 5). Hệ quả: 6 phong cách gộp thành **một cấu trúc + nhiều bảng màu**; đề xuất cấu trúc và vòng 3 (mục 5.3, 6). |
+| v0.5 | 2026-11-13 | Kiểm tương phản AA bảng 5.4 và chỉnh chỗ trượt: `text-faint` đạt 4,5:1, thêm token `line-control` (viền điều khiển, 3:1), làm đậm `accent` sáng của Studio cam, Đồng, Riso hồng để đặt được trên `bg`. Ba quy tắc AA (mục 5.4). `guide` đổi sang xanh mòng két `#008C9E`, khác tông mọi màu nhấn (sửa SRS REQ-GRAPHICS-02). Quyết định: BRD D-55. |
 | v0.4 | 2026-11-13 | **Chốt cấu trúc giao diện web D + A + E** (D-53, mục 5.3) và bảng màu dựng sẵn (mục 5.4). Ghi nguyên tắc sản phẩm "sức mạnh của trình dựng thật, mặc định đơn giản" (D-54, mục 7): xoay tự do mọi widget từ 1.0, spectrum đổi hướng cột. |
 
 Tài liệu này có hai phần tách bạch:
@@ -316,13 +317,13 @@ Mỗi theme khai báo đủ token cho **cả sáng và tối**; thiếu token n�
 
 | Nhóm | Token |
 | :--- | :--- |
-| Nền và bề mặt | `bg`, `surface`, `surface-raised`, `line`, `line-strong` |
+| Nền và bề mặt | `bg`, `surface`, `surface-raised`, `line`, `line-control`, `line-strong` |
 | Chữ | `text`, `text-muted`, `text-faint` |
 | Nhấn | `accent`, `accent-text` (chữ trên nền nhấn), `focus`, `selection` |
 | Trạng thái | `danger`, `warning`, `success` |
-| Thanh phát và timeline | `scrub-played`, `scrub-rest`, `waveform`, `guide` (đường gióng, mặc định `#FF5500` theo REQ-GRAPHICS-02) |
+| Thanh phát và timeline | `scrub-played`, `scrub-rest`, `waveform`, `guide` (đường gióng ở Edit Mode, REQ-GRAPHICS-02; mặc định ở 5.4) |
 
-Kiểm khi nạp theme: đúng schema (chỉ các token trên, giá trị là màu); `text`/`bg`, `text-muted`/`surface`, `accent-text`/`accent` đạt AA; `accent` khác đủ xa `danger` để nút xuất không bị đọc như cảnh báo. Không đạt thì từ chối kèm lý do, không áp một phần.
+Kiểm khi nạp theme: đúng schema (chỉ các token trên, giá trị là màu); `text`, `text-muted`, `text-faint` và `accent` đạt 4,5:1 trên cả `bg`, `surface`, `surface-raised`; `accent-text`/`accent` đạt 4,5:1; `line-control` đạt 3:1 trên cả ba nền; `guide` đạt 3:1 trên `#FFFFFF` và `#0C0E16` (quy tắc AA ở 5.4); `accent` khác đủ xa `danger` để nút xuất không bị đọc như cảnh báo. Không đạt thì từ chối kèm lý do, không áp một phần.
 
 ### 5.3 Cấu trúc giao diện: D + A + E (D-53, đã chốt 2026-11-13)
 Vì theme chỉ đổi màu, 6 phong cách không phải 6 giao diện khác nhau mà là **một cấu trúc** (phông, khoảng cách, cách phân vùng, hình dạng điều khiển) **cộng nhiều bảng màu**. Cấu trúc đã chốt:
@@ -345,8 +346,8 @@ Vì theme chỉ đổi màu, 6 phong cách không phải 6 giao diện khác nha
 | Phân vùng | Kẻ mảnh 1 px (`line`), không thẻ có bóng; bo góc nhỏ đồng nhất cho ô nhập và nút |
 | Chữ | Một grotesk trung tính tự host cho mọi chữ; chữ số đều (tabular); nhãn mục cỡ lớn hơn chữ thường một bậc, không dùng chữ khổng lồ |
 
-### 5.4 Bảng màu dựng sẵn (giá trị khởi đầu)
-Nền, bề mặt, kẻ và chữ **dùng chung** cho mọi bảng; mỗi bảng chỉ đổi nhóm nhấn. Giá trị là điểm khởi đầu: phải chạy kiểm tương phản AA (5.2) khi làm T-48 và chỉnh nếu trượt.
+### 5.4 Bảng màu dựng sẵn (đã kiểm AA, v0.5)
+Nền, bề mặt, kẻ và chữ **dùng chung** cho mọi bảng; mỗi bảng chỉ đổi nhóm nhấn. Giá trị dưới đây **đã kiểm AA** (v0.5; quy tắc và số đo ở cuối mục này); T-48 vẫn chạy kiểm tự động (5.2) khi dựng token.
 
 | Token | Sáng | Tối |
 | :--- | :--- | :--- |
@@ -354,19 +355,47 @@ Nền, bề mặt, kẻ và chữ **dùng chung** cho mọi bảng; mỗi bảng
 | `surface` | `#F6F5F2` | `#1E1F21` |
 | `surface-raised` | `#FFFFFF` | `#26282B` |
 | `line` | `#D6D4CE` | `#33363A` |
+| `line-control` | `#878580` | `#707378` |
 | `line-strong` | `#1C1C1A` | `#E6E6E3` |
 | `text` | `#1C1C1A` | `#E6E6E3` |
 | `text-muted` | `#5E5C57` | `#A3A3A0` |
-| `text-faint` | `#8D8A84` | `#6E6F70` |
+| `text-faint` | `#6C6963` | `#8E9091` |
 
 | Bảng màu | `accent` sáng (`accent-text` trắng) | `accent` tối (`accent-text` = `bg` tối) |
 | :--- | :--- | :--- |
-| Studio cam (mặc định) | `#C2410C` | `#FF6A2B` |
+| Studio cam (mặc định) | `#BE3D04` | `#FF6A2B` |
 | Bản in đỏ | `#C8261E` | `#FF5A4F` |
-| Đồng | `#8C6A35` | `#C9A467` |
-| Riso hồng | `#C2307E` | `#FF5CB8` |
+| Đồng | `#85642E` | `#C9A467` |
+| Riso hồng | `#BE2C7B` | `#FF5CB8` |
 
 `danger` phải khác rõ `accent`: với bảng đỏ, `danger` dùng đỏ thẫm hơn kèm biểu tượng cảnh báo, để nút xuất không bị đọc như lỗi.
+
+| Token | Sáng và tối | Ghi chú |
+| :--- | :--- | :--- |
+| `guide` | `#008C9E` (cả hai theme) | Xanh mòng két, khác tông cả bốn màu nhấn (cam, đỏ, đồng, hồng) và `danger`. Đường gióng vẽ trên khung video chứ không trên nền app, nên dùng một giá trị cho cả hai theme. Thay `#FF5500` cũ vì cam trùng tông Studio cam (REQ-GRAPHICS-02 đã sửa). |
+
+#### Quy tắc tương phản (AA)
+Ba quy tắc dưới đây sinh ra từ lần kiểm v0.5: giá trị khởi đầu v0.4 trượt ở đúng ba chỗ này. Mọi bảng màu, kể cả theme cộng đồng ở 1.1, phải giữ chúng; bộ kiểm khi nạp theme (5.2) từ chối theme vi phạm.
+
+1. **Chữ phụ vẫn là chữ.** `text-faint` dùng cho chữ, nên đạt **4,5:1** trên `bg`, `surface` và `surface-raised` như mọi chữ khác. Muốn chi tiết nhạt hơn mức đó thì đó không còn là chữ (đường kẻ, dấu cắt, vạch chia), dùng token kẻ. Giá trị v0.4 (`#8D8A84` / `#6E6F70`) chỉ đạt 2,91:1 / 3,6:1.
+2. **Điều khiển nhìn thấy được viền.** Viền ô nhập, ô chọn, ô đánh dấu, rãnh thanh trượt và nút phụ dùng `line-control`, đạt **3:1** trên cả ba nền (WCAG 1.4.11). `line` chỉ để phân vùng (1,25:1 / 1,49:1), không bao giờ là dấu hiệu duy nhất nhận ra một điều khiển.
+3. **Màu nhấn đứng được trên mọi nền.** `accent` đạt **4,5:1** trên `bg`, `surface` và `surface-raised` (để làm chữ: thời gian kiểu nhạc, thẻ đang mở, liên kết), và `accent-text` đạt 4,5:1 trên `accent` (chữ nút chính). Ở v0.4, Studio cam, Đồng, Riso hồng sáng trượt trên `bg` (4,38 / 4,2 / 4,42:1).
+
+Cách chỉnh: giữ nguyên tông và độ rực (OKLCH H, C), chỉ dịch độ sáng L tới mức đạt ngưỡng cộng một chút dư, để bảng màu không đổi tính cách.
+
+Số đo sau chỉnh (tỉ lệ thấp nhất trên `bg`/`surface`/`surface-raised`):
+
+| Token | Sáng | Tối |
+| :--- | :--- | :--- |
+| `text` | 14,44:1 | 11,82:1 |
+| `text-muted` | 5,65:1 | 5,84:1 |
+| `text-faint` | 4,63:1 | 4,61:1 |
+| `line-control` | 3,12:1 | 3,11:1 |
+| `accent` Studio cam | 4,6:1 (chữ trắng trên nhấn 5,44:1) | 5,17:1 (`bg` trên nhấn 6,34:1) |
+| `accent` Bản in đỏ | 4,73:1 (5,6:1) | 4,81:1 (5,89:1) |
+| `accent` Đồng | 4,6:1 (5,44:1) | 6,33:1 (7,76:1) |
+| `accent` Riso hồng | 4,63:1 (5,47:1) | 5,26:1 (6,45:1) |
+| `guide` trên khung video | 4,0:1 trên `#FFFFFF` ("Bản in") | 4,81:1 trên `#0C0E16` (nền khung tối mặc định) |
 
 ## 6. Việc tiếp theo đề xuất
 

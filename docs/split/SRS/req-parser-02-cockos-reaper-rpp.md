@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-PARSER-02: Cockos Reaper (`.rpp`)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) > REQ-PARSER-02: Cockos Reaper (`.rpp`)"
 chunk: req-parser-02-cockos-reaper-rpp.md
-source_lines: 285-298
-source_sha1: f0e666678e
+source_lines: 286-299
+source_sha1: c62aee35b6
 ids: [ERR_NO_NOTES, REQ-PARSER-02, REQ-PARSER-04, REQ-UI-08, WARN_RPP_ENVELOPES_IGNORED, WARN_RPP_ENVELOPE_SHAPE_APPROX, WARN_RPP_EXTERNAL_MIDI, WARN_RPP_LOOPED_ITEMS, WARN_RPP_MUTED_ITEMS, WARN_RPP_SRC_UNIT, WARN_TEMPO_SHAPE]
 ---
 #### REQ-PARSER-02: Cockos Reaper (`.rpp`)

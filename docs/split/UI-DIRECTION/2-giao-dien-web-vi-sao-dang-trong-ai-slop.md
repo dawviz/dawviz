@@ -4,8 +4,8 @@ doc_title: "Định hướng hình ảnh: khung preview và giao diện web"
 section: "2. Giao diện web: vì sao đang trông \"AI slop\""
 path: "2. Giao diện web: vì sao đang trông \"AI slop\""
 chunk: 2-giao-dien-web-vi-sao-dang-trong-ai-slop.md
-source_lines: 56-75
-source_sha1: eb55f9ce9a
+source_lines: 57-76
+source_sha1: cae014d43d
 ids: []
 ---
 ## 2. Giao diện web: vì sao đang trông "AI slop"

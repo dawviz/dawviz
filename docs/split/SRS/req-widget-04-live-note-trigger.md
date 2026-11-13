@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-WIDGET-04: Live Note Trigger"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-04: Live Note Trigger"
 chunk: req-widget-04-live-note-trigger.md
-source_lines: 543-547
-source_sha1: f0e666678e
+source_lines: 544-548
+source_sha1: c62aee35b6
 ids: [REQ-WIDGET-04]
 ---
 #### REQ-WIDGET-04: Live Note Trigger

@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "2.3. Thành phần bên thứ ba"
 path: "2. KIẾN TRÚC KỸ THUẬT, LUỒNG DỮ LIỆU & ĐÁNH GIÁ KIẾN TRÚC > 2.3. Thành phần bên thứ ba"
 chunk: 2-3-thanh-phan-ben-thu-ba.md
-source_lines: 193-207
-source_sha1: f0e666678e
+source_lines: 194-208
+source_sha1: c62aee35b6
 ids: [ARC-01, D-04, D-23, D-34, D-36, OI-05, OI-07, REQ-STORAGE-01, REQ-WIDGET-06]
 ---
 ### 2.3. Thành phần bên thứ ba

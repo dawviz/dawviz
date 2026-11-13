@@ -4,7 +4,7 @@
  "docs": {
   "BRD.md": {
    "title": "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)",
-   "sha1": "5e75eac803",
+   "sha1": "3e8360d118",
    "chunks": [
     {
      "n": 0,
@@ -13,10 +13,10 @@
      "path": [
       "DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)"
      ],
-     "chars": 3886,
+     "chars": 4145,
      "lines": [
       2,
-      25
+      26
      ],
      "ids": [
       "BR-09",
@@ -45,6 +45,7 @@
       "D-52",
       "D-53",
       "D-54",
+      "D-55",
       "OI-09",
       "OI-10",
       "OI-11",
@@ -54,7 +55,8 @@
       "OI-16",
       "OI-17",
       "P-01",
-      "P-13"
+      "P-13",
+      "REQ-GRAPHICS-02"
      ]
     },
     {
@@ -66,8 +68,8 @@
      ],
      "chars": 1753,
      "lines": [
-      26,
-      40
+      27,
+      41
      ],
      "ids": [
       "D-54"
@@ -82,8 +84,8 @@
      ],
      "chars": 4778,
      "lines": [
-      41,
-      79
+      42,
+      80
      ],
      "ids": [
       "BR-01",
@@ -118,8 +120,8 @@
      ],
      "chars": 1342,
      "lines": [
-      80,
-      99
+      81,
+      100
      ],
      "ids": [
       "D-19"
@@ -135,8 +137,8 @@
      ],
      "chars": 3226,
      "lines": [
-      102,
-      128
+      103,
+      129
      ],
      "ids": [
       "BR-09",
@@ -165,8 +167,8 @@
      ],
      "chars": 892,
      "lines": [
-      129,
-      138
+      130,
+      139
      ],
      "ids": [
       "AT-05",
@@ -183,8 +185,8 @@
      ],
      "chars": 2931,
      "lines": [
-      139,
-      150
+      140,
+      151
      ],
      "ids": [
       "D-14",
@@ -219,8 +221,8 @@
      ],
      "chars": 1215,
      "lines": [
-      151,
-      165
+      152,
+      166
      ],
      "ids": [
       "D-12",
@@ -243,8 +245,8 @@
      ],
      "chars": 4347,
      "lines": [
-      166,
-      186
+      167,
+      187
      ],
      "ids": [
       "D-01",
@@ -269,8 +271,8 @@
      ],
      "chars": 554,
      "lines": [
-      187,
-      195
+      188,
+      196
      ],
      "ids": [
       "D-01"
@@ -283,10 +285,10 @@
      "path": [
       "7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)"
      ],
-     "chars": 19383,
+     "chars": 20737,
      "lines": [
-      196,
-      258
+      197,
+      260
      ],
      "ids": [
       "AD-08",
@@ -350,6 +352,7 @@
       "D-52",
       "D-53",
       "D-54",
+      "D-55",
       "KPI-04",
       "NFR-ACC-02",
       "NFR-SEC-01",
@@ -362,6 +365,7 @@
       "P-01",
       "P-13",
       "REQ-AST-02",
+      "REQ-GRAPHICS-02",
       "REQ-GRAPHICS-05",
       "REQ-GRAPHICS-17",
       "REQ-UI-10",
@@ -385,8 +389,8 @@
      ],
      "chars": 4634,
      "lines": [
-      259,
-      279
+      261,
+      281
      ],
      "ids": [
       "D-01",
@@ -425,7 +429,7 @@
   },
   "SRS.md": {
    "title": "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)",
-   "sha1": "f0e666678e",
+   "sha1": "c62aee35b6",
    "chunks": [
     {
      "n": 0,
@@ -449,10 +453,10 @@
       "DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)",
       "Lịch sử phiên bản"
      ],
-     "chars": 5492,
+     "chars": 5747,
      "lines": [
       7,
-      17
+      18
      ],
      "ids": [
       "AT-05",
@@ -486,6 +490,7 @@
       "D-51",
       "D-52",
       "D-54",
+      "D-55",
       "ERR_AUDIO_TOO_MANY",
       "NFR-COMP-03",
       "NFR-SEC-05",
@@ -496,6 +501,7 @@
       "REQ-EXPORT-03",
       "REQ-EXPORT-04",
       "REQ-EXPORT-08",
+      "REQ-GRAPHICS-02",
       "REQ-GRAPHICS-03",
       "REQ-GRAPHICS-04",
       "REQ-GRAPHICS-05",
@@ -546,8 +552,8 @@
      ],
      "chars": 818,
      "lines": [
-      18,
-      26
+      19,
+      27
      ],
      "ids": [
       "REQ-GRAPHICS-00"
@@ -563,8 +569,8 @@
      ],
      "chars": 365,
      "lines": [
-      27,
-      40
+      28,
+      41
      ],
      "ids": []
     },
@@ -577,8 +583,8 @@
      ],
      "chars": 4720,
      "lines": [
-      41,
-      104
+      42,
+      105
      ],
      "ids": [
       "ARC-01",
@@ -627,8 +633,8 @@
      ],
      "chars": 6588,
      "lines": [
-      107,
-      184
+      108,
+      185
      ],
      "ids": [
       "ARC-01",
@@ -655,8 +661,8 @@
      ],
      "chars": 641,
      "lines": [
-      185,
-      192
+      186,
+      193
      ],
      "ids": [
       "REQ-AST-01",
@@ -681,8 +687,8 @@
      ],
      "chars": 1063,
      "lines": [
-      193,
-      207
+      194,
+      208
      ],
      "ids": [
       "ARC-01",
@@ -706,8 +712,8 @@
      ],
      "chars": 2241,
      "lines": [
-      208,
-      223
+      209,
+      224
      ],
      "ids": [
       "ARC-01",
@@ -739,8 +745,8 @@
      ],
      "chars": 1119,
      "lines": [
-      224,
-      239
+      225,
+      240
      ],
      "ids": [
       "ARC-04",
@@ -757,8 +763,8 @@
      ],
      "chars": 1199,
      "lines": [
-      240,
-      250
+      241,
+      251
      ],
      "ids": [
       "AT-05",
@@ -778,8 +784,8 @@
      ],
      "chars": 1425,
      "lines": [
-      255,
-      263
+      256,
+      264
      ],
      "ids": [
       "ERR_ARCHIVE_INVALID",
@@ -801,8 +807,8 @@
      ],
      "chars": 2658,
      "lines": [
-      264,
-      284
+      265,
+      285
      ],
      "ids": [
       "ERR_NO_NOTES",
@@ -825,8 +831,8 @@
      ],
      "chars": 3655,
      "lines": [
-      285,
-      298
+      286,
+      299
      ],
      "ids": [
       "ERR_NO_NOTES",
@@ -853,8 +859,8 @@
      ],
      "chars": 1203,
      "lines": [
-      299,
-      309
+      300,
+      310
      ],
      "ids": [
       "D-03",
@@ -877,8 +883,8 @@
      ],
      "chars": 924,
      "lines": [
-      310,
-      318
+      311,
+      319
      ],
      "ids": [
       "ERR_UNSUPPORTED_FORMAT",
@@ -899,8 +905,8 @@
      ],
      "chars": 1509,
      "lines": [
-      319,
-      325
+      320,
+      326
      ],
      "ids": [
       "D-18",
@@ -924,8 +930,8 @@
      ],
      "chars": 1100,
      "lines": [
-      326,
-      333
+      327,
+      334
      ],
      "ids": [
       "ERR_ARCHIVE_INVALID",
@@ -946,8 +952,8 @@
      ],
      "chars": 1665,
      "lines": [
-      334,
-      339
+      335,
+      340
      ],
      "ids": [
       "D-24",
@@ -969,8 +975,8 @@
      ],
      "chars": 3457,
      "lines": [
-      340,
-      400
+      341,
+      401
      ],
      "ids": [
       "D-08",
@@ -996,8 +1002,8 @@
      ],
      "chars": 421,
      "lines": [
-      403,
-      407
+      404,
+      408
      ],
      "ids": [
       "D-06",
@@ -1015,8 +1021,8 @@
      ],
      "chars": 445,
      "lines": [
-      408,
-      413
+      409,
+      414
      ],
      "ids": [
       "D-07",
@@ -1032,10 +1038,10 @@
       "3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02)",
       "REQ-GRAPHICS-02: Bắt dính thông minh"
      ],
-     "chars": 607,
+     "chars": 790,
      "lines": [
-      414,
-      419
+      415,
+      420
      ],
      "ids": [
       "REQ-GRAPHICS-02"
@@ -1052,8 +1058,8 @@
      ],
      "chars": 1143,
      "lines": [
-      420,
-      429
+      421,
+      430
      ],
      "ids": [
       "REQ-GRAPHICS-09",
@@ -1075,8 +1081,8 @@
      ],
      "chars": 1304,
      "lines": [
-      430,
-      438
+      431,
+      439
      ],
      "ids": [
       "D-15",
@@ -1101,8 +1107,8 @@
      ],
      "chars": 673,
      "lines": [
-      439,
-      443
+      440,
+      444
      ],
      "ids": [
       "KPI-04",
@@ -1121,8 +1127,8 @@
      ],
      "chars": 2443,
      "lines": [
-      444,
-      455
+      445,
+      456
      ],
      "ids": [
       "D-33",
@@ -1149,8 +1155,8 @@
      ],
      "chars": 2601,
      "lines": [
-      456,
-      474
+      457,
+      475
      ],
      "ids": [
       "P-01",
@@ -1174,8 +1180,8 @@
      ],
      "chars": 442,
      "lines": [
-      475,
-      479
+      476,
+      480
      ],
      "ids": [
       "D-37",
@@ -1193,8 +1199,8 @@
      ],
      "chars": 1021,
      "lines": [
-      480,
-      487
+      481,
+      488
      ],
      "ids": [
       "ARC-01",
@@ -1213,8 +1219,8 @@
      ],
      "chars": 2766,
      "lines": [
-      488,
-      507
+      489,
+      508
      ],
      "ids": [
       "D-50",
@@ -1239,8 +1245,8 @@
      ],
      "chars": 2214,
      "lines": [
-      508,
-      520
+      509,
+      521
      ],
      "ids": [
       "D-50",
@@ -1262,8 +1268,8 @@
      ],
      "chars": 368,
      "lines": [
-      521,
-      524
+      522,
+      525
      ],
      "ids": [
       "BR-02",
@@ -1282,8 +1288,8 @@
      ],
      "chars": 1411,
      "lines": [
-      525,
-      533
+      526,
+      534
      ],
      "ids": [
       "D-15",
@@ -1304,8 +1310,8 @@
      ],
      "chars": 262,
      "lines": [
-      534,
-      537
+      535,
+      538
      ],
      "ids": [
       "REQ-WIDGET-02"
@@ -1322,8 +1328,8 @@
      ],
      "chars": 360,
      "lines": [
-      538,
-      542
+      539,
+      543
      ],
      "ids": [
       "REQ-WIDGET-03"
@@ -1340,8 +1346,8 @@
      ],
      "chars": 358,
      "lines": [
-      543,
-      547
+      544,
+      548
      ],
      "ids": [
       "REQ-WIDGET-04"
@@ -1358,8 +1364,8 @@
      ],
      "chars": 354,
      "lines": [
-      548,
-      553
+      549,
+      554
      ],
      "ids": [
       "REQ-WIDGET-05"
@@ -1376,8 +1382,8 @@
      ],
      "chars": 1158,
      "lines": [
-      554,
-      562
+      555,
+      563
      ],
      "ids": [
       "D-09",
@@ -1397,8 +1403,8 @@
      ],
      "chars": 2473,
      "lines": [
-      563,
-      575
+      564,
+      576
      ],
      "ids": [
       "ARC-03",
@@ -1423,8 +1429,8 @@
      ],
      "chars": 3254,
      "lines": [
-      576,
-      588
+      577,
+      589
      ],
      "ids": [
       "ERR_AUDIO_TOO_MANY",
@@ -1449,8 +1455,8 @@
      ],
      "chars": 822,
      "lines": [
-      589,
-      594
+      590,
+      595
      ],
      "ids": [
       "D-27",
@@ -1469,8 +1475,8 @@
      ],
      "chars": 2994,
      "lines": [
-      595,
-      618
+      596,
+      619
      ],
      "ids": [
       "D-32",
@@ -1505,8 +1511,8 @@
      ],
      "chars": 3208,
      "lines": [
-      619,
-      688
+      620,
+      689
      ],
      "ids": [
       "BR-05",
@@ -1531,8 +1537,8 @@
      ],
      "chars": 413,
      "lines": [
-      691,
-      693
+      692,
+      694
      ],
      "ids": [
       "D-05",
@@ -1551,8 +1557,8 @@
      ],
      "chars": 2606,
      "lines": [
-      694,
-      716
+      695,
+      717
      ],
      "ids": [
       "D-17",
@@ -1574,8 +1580,8 @@
      ],
      "chars": 502,
      "lines": [
-      717,
-      722
+      718,
+      723
      ],
      "ids": [
       "REQ-EXPORT-01",
@@ -1593,8 +1599,8 @@
      ],
      "chars": 192,
      "lines": [
-      723,
-      725
+      724,
+      726
      ],
      "ids": [
       "REQ-EXPORT-02"
@@ -1611,8 +1617,8 @@
      ],
      "chars": 1276,
      "lines": [
-      726,
-      731
+      727,
+      732
      ],
      "ids": [
       "AT-03",
@@ -1633,8 +1639,8 @@
      ],
      "chars": 845,
      "lines": [
-      732,
-      736
+      733,
+      737
      ],
      "ids": [
       "D-04",
@@ -1653,8 +1659,8 @@
      ],
      "chars": 466,
      "lines": [
-      737,
-      739
+      738,
+      740
      ],
      "ids": [
       "REQ-EXPORT-05"
@@ -1671,8 +1677,8 @@
      ],
      "chars": 2356,
      "lines": [
-      740,
-      776
+      741,
+      777
      ],
      "ids": [
       "D-05",
@@ -1693,8 +1699,8 @@
      ],
      "chars": 2121,
      "lines": [
-      777,
-      788
+      778,
+      789
      ],
      "ids": [
       "D-47",
@@ -1712,8 +1718,8 @@
      ],
      "chars": 516,
      "lines": [
-      789,
-      797
+      790,
+      798
      ],
      "ids": [
       "ARC-02",
@@ -1732,8 +1738,8 @@
      ],
      "chars": 2714,
      "lines": [
-      798,
-      812
+      799,
+      813
      ],
      "ids": [
       "BR-09",
@@ -1752,8 +1758,8 @@
      ],
      "chars": 328,
      "lines": [
-      813,
-      816
+      814,
+      817
      ],
      "ids": [
       "AD-08",
@@ -1778,8 +1784,8 @@
      ],
      "chars": 844,
      "lines": [
-      817,
-      820
+      818,
+      821
      ],
      "ids": [
       "REQ-GRAPHICS-09"
@@ -1796,8 +1802,8 @@
      ],
      "chars": 467,
      "lines": [
-      821,
-      823
+      822,
+      824
      ],
      "ids": [
       "AD-11",
@@ -1817,8 +1823,8 @@
      ],
      "chars": 327,
      "lines": [
-      824,
-      826
+      825,
+      827
      ],
      "ids": [
       "REQ-GRAPHICS-11"
@@ -1835,8 +1841,8 @@
      ],
      "chars": 529,
      "lines": [
-      827,
-      829
+      828,
+      830
      ],
      "ids": [
       "REQ-GRAPHICS-12"
@@ -1853,8 +1859,8 @@
      ],
      "chars": 339,
      "lines": [
-      830,
-      832
+      831,
+      833
      ],
      "ids": [
       "REQ-GRAPHICS-13"
@@ -1871,8 +1877,8 @@
      ],
      "chars": 759,
      "lines": [
-      833,
-      837
+      834,
+      838
      ],
      "ids": [
       "P-04",
@@ -1895,8 +1901,8 @@
      ],
      "chars": 1874,
      "lines": [
-      838,
-      846
+      839,
+      847
      ],
      "ids": [
       "D-47",
@@ -1916,8 +1922,8 @@
      ],
      "chars": 322,
      "lines": [
-      847,
-      849
+      848,
+      850
      ],
      "ids": [
       "ERR_ASSET_DECODE",
@@ -1936,8 +1942,8 @@
      ],
      "chars": 444,
      "lines": [
-      850,
-      852
+      851,
+      853
      ],
      "ids": [
       "D-14",
@@ -1955,8 +1961,8 @@
      ],
      "chars": 5167,
      "lines": [
-      853,
-      899
+      854,
+      900
      ],
      "ids": [
       "ARC-07",
@@ -2007,8 +2013,8 @@
      ],
      "chars": 3717,
      "lines": [
-      902,
-      934
+      903,
+      935
      ],
      "ids": []
     },
@@ -2020,10 +2026,10 @@
       "5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG",
       "5.2. Chế độ tương tác"
      ],
-     "chars": 358,
+     "chars": 364,
      "lines": [
-      935,
-      939
+      936,
+      940
      ],
      "ids": [
       "REQ-GRAPHICS-05"
@@ -2039,8 +2045,8 @@
      ],
      "chars": 14491,
      "lines": [
-      940,
-      1009
+      941,
+      1010
      ],
      "ids": [
       "ARC-05",
@@ -2100,8 +2106,8 @@
      ],
      "chars": 1419,
      "lines": [
-      1010,
-      1025
+      1011,
+      1026
      ],
      "ids": [
       "BR-01",
@@ -2161,8 +2167,8 @@
      ],
      "chars": 6665,
      "lines": [
-      1026,
-      1060
+      1027,
+      1061
      ],
      "ids": [
       "ARC-01",
@@ -2228,8 +2234,8 @@
      ],
      "chars": 4032,
      "lines": [
-      1061,
-      1087
+      1062,
+      1088
      ],
      "ids": [
       "D-20",
@@ -2283,8 +2289,8 @@
      ],
      "chars": 2039,
      "lines": [
-      1090,
-      1111
+      1091,
+      1112
      ],
      "ids": [
       "ERR_ARCHIVE_INVALID",
@@ -2317,8 +2323,8 @@
      ],
      "chars": 851,
      "lines": [
-      1112,
-      1122
+      1113,
+      1123
      ],
      "ids": [
       "REQ-STORAGE-02",
@@ -2338,8 +2344,8 @@
      ],
      "chars": 1066,
      "lines": [
-      1123,
-      1128
+      1124,
+      1129
      ],
      "ids": [
       "REQ-AUDIO-01",
@@ -2384,8 +2390,8 @@
      ],
      "chars": 2889,
      "lines": [
-      1129,
-      1160
+      1130,
+      1161
      ],
      "ids": [
       "D-20",
@@ -3945,23 +3951,25 @@
   },
   "UI-DIRECTION.md": {
    "title": "Định hướng hình ảnh: khung preview và giao diện web",
-   "sha1": "eb55f9ce9a",
+   "sha1": "cae014d43d",
    "chunks": [
     {
      "n": 0,
      "file": "UI-DIRECTION/dinh-huong-hinh-anh-khung-preview-va-giao-dien-w.md",
      "title": "Định hướng hình ảnh: khung preview và giao diện web (mở đầu)",
      "path": [],
-     "chars": 1586,
+     "chars": 1948,
      "lines": [
       1,
-      18
+      19
      ],
      "ids": [
       "D-51",
       "D-52",
       "D-53",
       "D-54",
+      "D-55",
+      "REQ-GRAPHICS-02",
       "REQ-UI-10",
       "REQ-UI-13"
      ]
@@ -3975,8 +3983,8 @@
      ],
      "chars": 4073,
      "lines": [
-      19,
-      55
+      20,
+      56
      ],
      "ids": [
       "D-51",
@@ -4003,8 +4011,8 @@
      ],
      "chars": 1523,
      "lines": [
-      56,
-      75
+      57,
+      76
      ],
      "ids": []
     },
@@ -4018,8 +4026,8 @@
      ],
      "chars": 483,
      "lines": [
-      78,
-      84
+      79,
+      85
      ],
      "ids": []
     },
@@ -4033,8 +4041,8 @@
      ],
      "chars": 1703,
      "lines": [
-      85,
-      98
+      86,
+      99
      ],
      "ids": []
     },
@@ -4048,8 +4056,8 @@
      ],
      "chars": 4292,
      "lines": [
-      99,
-      130
+      100,
+      131
      ],
      "ids": []
     },
@@ -4063,8 +4071,8 @@
      ],
      "chars": 441,
      "lines": [
-      131,
-      135
+      132,
+      136
      ],
      "ids": []
     },
@@ -4078,8 +4086,8 @@
      ],
      "chars": 1290,
      "lines": [
-      136,
-      147
+      137,
+      148
      ],
      "ids": [
       "REQ-UI-10"
@@ -4095,8 +4103,8 @@
      ],
      "chars": 559,
      "lines": [
-      148,
-      157
+      149,
+      158
      ],
      "ids": [
       "REQ-UI-10",
@@ -4114,8 +4122,8 @@
      ],
      "chars": 1529,
      "lines": [
-      158,
-      175
+      159,
+      176
      ],
      "ids": [
       "REQ-UI-13"
@@ -4131,8 +4139,8 @@
      ],
      "chars": 9757,
      "lines": [
-      176,
-      282
+      177,
+      283
      ],
      "ids": []
     },
@@ -4145,8 +4153,8 @@
      ],
      "chars": 3486,
      "lines": [
-      283,
-      302
+      284,
+      303
      ],
      "ids": [
       "D-51",
@@ -4155,28 +4163,77 @@
     },
     {
      "n": 12,
-     "file": "UI-DIRECTION/5-theme-giao-dien-chi-doi-mau-d-52.md",
-     "title": "5. Theme giao diện chỉ đổi màu (D-52)",
+     "file": "UI-DIRECTION/5-1-quyet-dinh.md",
+     "title": "5.1 Quyết định",
      "path": [
-      "5. Theme giao diện chỉ đổi màu (D-52)"
+      "5. Theme giao diện chỉ đổi màu (D-52)",
+      "5.1 Quyết định"
      ],
-     "chars": 4842,
+     "chars": 779,
      "lines": [
-      303,
-      370
+      306,
+      314
      ],
      "ids": [
-      "D-52",
-      "D-53",
       "NFR-SEC-05",
-      "REQ-GRAPHICS-02",
-      "REQ-UI-10",
+      "REQ-UI-10"
+     ]
+    },
+    {
+     "n": 13,
+     "file": "UI-DIRECTION/5-2-bo-token-de-xuat-chot-khi-lam.md",
+     "title": "5.2 Bộ token (đề xuất, chốt khi làm)",
+     "path": [
+      "5. Theme giao diện chỉ đổi màu (D-52)",
+      "5.2 Bộ token (đề xuất, chốt khi làm)"
+     ],
+     "chars": 1000,
+     "lines": [
+      315,
+      327
+     ],
+     "ids": [
+      "REQ-GRAPHICS-02"
+     ]
+    },
+    {
+     "n": 14,
+     "file": "UI-DIRECTION/5-3-cau-truc-giao-dien-d-a-e-d-53-da-chot-2026-1.md",
+     "title": "5.3 Cấu trúc giao diện: D + A + E (D-53, đã chốt 2026-11-13)",
+     "path": [
+      "5. Theme giao diện chỉ đổi màu (D-52)",
+      "5.3 Cấu trúc giao diện: D + A + E (D-53, đã chốt 2026-11-13)"
+     ],
+     "chars": 2224,
+     "lines": [
+      328,
+      348
+     ],
+     "ids": [
+      "D-53",
       "REQ-UI-13",
       "REQ-UI-15"
      ]
     },
     {
-     "n": 13,
+     "n": 15,
+     "file": "UI-DIRECTION/5-4-bang-mau-dung-san-da-kiem-aa-v0-5.md",
+     "title": "5.4 Bảng màu dựng sẵn (đã kiểm AA, v0.5)",
+     "path": [
+      "5. Theme giao diện chỉ đổi màu (D-52)",
+      "5.4 Bảng màu dựng sẵn (đã kiểm AA, v0.5)"
+     ],
+     "chars": 3265,
+     "lines": [
+      349,
+      399
+     ],
+     "ids": [
+      "REQ-GRAPHICS-02"
+     ]
+    },
+    {
+     "n": 16,
      "file": "UI-DIRECTION/6-viec-tiep-theo-de-xuat.md",
      "title": "6. Việc tiếp theo đề xuất",
      "path": [
@@ -4184,8 +4241,8 @@
      ],
      "chars": 931,
      "lines": [
-      371,
-      377
+      400,
+      406
      ],
      "ids": [
       "REQ-EXPORT-00",
@@ -4196,7 +4253,7 @@
      ]
     },
     {
-     "n": 14,
+     "n": 17,
      "file": "UI-DIRECTION/7-nguyen-tac-san-pham-trinh-dung-that-mac-dinh-d.md",
      "title": "7. Nguyên tắc sản phẩm: trình dựng thật, mặc định đơn giản (D-54)",
      "path": [
@@ -4204,8 +4261,8 @@
      ],
      "chars": 1117,
      "lines": [
-      378,
-      388
+      407,
+      417
      ],
      "ids": [
       "D-15",
@@ -5724,15 +5781,14 @@
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/lich-su-phien-ban.md",
    "SRS/5-3-yeu-cau-giao-dien.md",
-   "UI-DIRECTION/dinh-huong-hinh-anh-khung-preview-va-giao-dien-w.md",
-   "UI-DIRECTION/5-theme-giao-dien-chi-doi-mau-d-52.md"
+   "UI-DIRECTION/dinh-huong-hinh-anh-khung-preview-va-giao-dien-w.md"
   ],
   "D-53": [
    "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "UI-DIRECTION/dinh-huong-hinh-anh-khung-preview-va-giao-dien-w.md",
    "UI-DIRECTION/4-nhat-ky-thu-va-huong-duoc-chon.md",
-   "UI-DIRECTION/5-theme-giao-dien-chi-doi-mau-d-52.md"
+   "UI-DIRECTION/5-3-cau-truc-giao-dien-d-a-e-d-53-da-chot-2026-1.md"
   ],
   "D-54": [
    "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
@@ -5746,6 +5802,12 @@
    "TECHNICAL-DESIGN/5-1-giao-dien-chinh.md",
    "UI-DIRECTION/dinh-huong-hinh-anh-khung-preview-va-giao-dien-w.md",
    "UI-DIRECTION/7-nguyen-tac-san-pham-trinh-dung-that-mac-dinh-d.md"
+  ],
+  "D-55": [
+   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
+   "SRS/lich-su-phien-ban.md",
+   "UI-DIRECTION/dinh-huong-hinh-anh-khung-preview-va-giao-dien-w.md"
   ],
   "OI-09": [
    "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
@@ -5817,6 +5879,16 @@
    "SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md",
    "SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md",
    "SRS/8-cac-van-de-con-mo-cua-srs.md"
+  ],
+  "REQ-GRAPHICS-02": [
+   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
+   "SRS/lich-su-phien-ban.md",
+   "SRS/req-graphics-02-bat-dinh-thong-minh.md",
+   "SRS/req-graphics-03-xoay-widget-tu-do-d-54-thay-d-15.md",
+   "UI-DIRECTION/dinh-huong-hinh-anh-khung-preview-va-giao-dien-w.md",
+   "UI-DIRECTION/5-2-bo-token-de-xuat-chot-khi-lam.md",
+   "UI-DIRECTION/5-4-bang-mau-dung-san-da-kiem-aa-v0-5.md"
   ],
   "BR-01": [
    "BRD/2-muc-tieu-kinh-doanh-chi-so-do-luong-yeu-cau-ng.md",
@@ -6134,7 +6206,7 @@
    "UI-DIRECTION/dinh-huong-hinh-anh-khung-preview-va-giao-dien-w.md",
    "UI-DIRECTION/3-5-prompt-phu.md",
    "UI-DIRECTION/3-6-tieu-chi-chon.md",
-   "UI-DIRECTION/5-theme-giao-dien-chi-doi-mau-d-52.md"
+   "UI-DIRECTION/5-1-quyet-dinh.md"
   ],
   "REQ-UI-14": [
    "BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md",
@@ -6449,7 +6521,7 @@
    "UI-DIRECTION/dinh-huong-hinh-anh-khung-preview-va-giao-dien-w.md",
    "UI-DIRECTION/3-6-tieu-chi-chon.md",
    "UI-DIRECTION/3-7-khung-bo-cuc-chung-tu-vong-1-dung-cho-vong-2.md",
-   "UI-DIRECTION/5-theme-giao-dien-chi-doi-mau-d-52.md",
+   "UI-DIRECTION/5-3-cau-truc-giao-dien-d-a-e-d-53-da-chot-2026-1.md",
    "UI-DIRECTION/6-viec-tiep-theo-de-xuat.md",
    "UI-DIRECTION/7-nguyen-tac-san-pham-trinh-dung-that-mac-dinh-d.md"
   ],
@@ -6459,7 +6531,7 @@
    "SRS/req-graphics-03-xoay-widget-tu-do-d-54-thay-d-15.md",
    "SRS/5-3-yeu-cau-giao-dien.md",
    "TDD/5-danh-sach-kiem-thu-cong-cho-at-18-chrome.md",
-   "UI-DIRECTION/5-theme-giao-dien-chi-doi-mau-d-52.md",
+   "UI-DIRECTION/5-3-cau-truc-giao-dien-d-a-e-d-53-da-chot-2026-1.md",
    "UI-DIRECTION/6-viec-tiep-theo-de-xuat.md"
   ],
   "SOI-04": [
@@ -6574,7 +6646,7 @@
    "SRS/5-3-yeu-cau-giao-dien.md",
    "EXPRESSIONS/bieu-thuc-nguoi-dung-mo-hinh-bao-mat-va-kiem-duy.md",
    "EXPRESSIONS/7-yeu-cau-tuong-ung-da-dua-vao-srs-v1-1.md",
-   "UI-DIRECTION/5-theme-giao-dien-chi-doi-mau-d-52.md"
+   "UI-DIRECTION/5-1-quyet-dinh.md"
   ],
   "REQ-AST-01": [
    "SRS/lich-su-phien-ban.md",
@@ -7049,11 +7121,6 @@
   ],
   "REQ-GRAPHICS-01": [
    "SRS/req-graphics-01-phan-lop-do-hoa-d-07.md"
-  ],
-  "REQ-GRAPHICS-02": [
-   "SRS/req-graphics-02-bat-dinh-thong-minh.md",
-   "SRS/req-graphics-03-xoay-widget-tu-do-d-54-thay-d-15.md",
-   "UI-DIRECTION/5-theme-giao-dien-chi-doi-mau-d-52.md"
   ],
   "REQ-GRAPHICS-11": [
    "SRS/req-graphics-16-thanh-phat-playhead-tuy-chinh.md",

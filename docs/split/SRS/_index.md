@@ -1,11 +1,11 @@
 # Chỉ mục SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
-nguồn: `SRS.md` (sha1 f0e666678e)
+nguồn: `SRS.md` (sha1 c62aee35b6)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
 | 0 | DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) | [du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md](du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) | 422 |  |
-| 1 | DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) > Lịch sử phiên bản | [lich-su-phien-ban.md](lich-su-phien-ban.md) | 5492 | AT-05, AT-13, AT-16, AT-17, AT-18, AT-19… |
+| 1 | DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) > Lịch sử phiên bản | [lich-su-phien-ban.md](lich-su-phien-ban.md) | 5747 | AT-05, AT-13, AT-16, AT-17, AT-18, AT-19… |
 | 2 | DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) > Quy ước trong tài liệu | [quy-uoc-trong-tai-lieu.md](quy-uoc-trong-tai-lieu.md) | 818 | REQ-GRAPHICS-00 |
 | 3 | DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) > Mục lục | [muc-luc.md](muc-luc.md) | 365 |  |
 | 4 | 1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG | [1-gioi-thieu-muc-tieu-he-thong.md](1-gioi-thieu-muc-tieu-he-thong.md) | 4720 | ARC-01, BR-01, BR-02, BR-03, BR-04, BR-05… |
@@ -26,7 +26,7 @@ nguồn: `SRS.md` (sha1 f0e666678e)
 | 19 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.2. Cấu trúc dữ liệu chuẩn hóa (Unified AST, D-08, D-09) | [3-2-cau-truc-du-lieu-chuan-hoa-unified-ast-d-08.md](3-2-cau-truc-du-lieu-chuan-hoa-unified-ast-d-08.md) | 3457 | D-08, D-09, D-24, ERR_AST_INVALID, ERR_AST_TOO_LARGE, ERR_NO_NOTES… |
 | 20 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-00: Độ phân giải thiết kế logic (D-06) | [req-graphics-00-do-phan-giai-thiet-ke-logic-d-06.md](req-graphics-00-do-phan-giai-thiet-ke-logic-d-06.md) | 421 | D-06, REQ-GRAPHICS-00 |
 | 21 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-01: Phân lớp đồ họa (D-07) | [req-graphics-01-phan-lop-do-hoa-d-07.md](req-graphics-01-phan-lop-do-hoa-d-07.md) | 445 | D-07, REQ-GRAPHICS-01 |
-| 22 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-02: Bắt dính thông minh | [req-graphics-02-bat-dinh-thong-minh.md](req-graphics-02-bat-dinh-thong-minh.md) | 607 | REQ-GRAPHICS-02 |
+| 22 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-02: Bắt dính thông minh | [req-graphics-02-bat-dinh-thong-minh.md](req-graphics-02-bat-dinh-thong-minh.md) | 790 | REQ-GRAPHICS-02 |
 | 23 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-16: Thanh phát (playhead) tuỳ chỉnh | [req-graphics-16-thanh-phat-playhead-tuy-chinh.md](req-graphics-16-thanh-phat-playhead-tuy-chinh.md) | 1143 | REQ-GRAPHICS-09, REQ-GRAPHICS-11, REQ-GRAPHICS-16, REQ-STORAGE-05, REQ-UI-11, REQ-WIDGET-01 |
 | 24 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-03: Xoay widget tự do (D-54, thay D-15) | [req-graphics-03-xoay-widget-tu-do-d-54-thay-d-15.md](req-graphics-03-xoay-widget-tu-do-d-54-thay-d-15.md) | 1304 | D-15, D-47, D-54, REQ-GRAPHICS-02, REQ-GRAPHICS-03, REQ-GRAPHICS-05… |
 | 25 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-04: Preset dựng sẵn và đổi tỉ lệ khung | [req-graphics-04-preset-dung-san-va-doi-ti-le-khu.md](req-graphics-04-preset-dung-san-va-doi-ti-le-khu.md) | 673 | KPI-04, REQ-GRAPHICS-04, REQ-UI-02 |
@@ -71,7 +71,7 @@ nguồn: `SRS.md` (sha1 f0e666678e)
 | 64 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) > REQ-STORAGE-06: Preset mới và chia sẻ | [req-storage-06-preset-moi-va-chia-se.md](req-storage-06-preset-moi-va-chia-se.md) | 444 | D-14, D-43, REQ-STORAGE-04, REQ-STORAGE-06 |
 | 65 | 4. YÊU CẦU PHI CHỨC NĂNG (NON-FUNCTIONAL REQUIREMENTS) | [4-yeu-cau-phi-chuc-nang-non-functional-requireme.md](4-yeu-cau-phi-chuc-nang-non-functional-requireme.md) | 5167 | ARC-07, BR-08, D-05, D-12, D-16, D-30… |
 | 66 | 5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.1. Bố cục không gian làm việc | [5-1-bo-cuc-khong-gian-lam-viec.md](5-1-bo-cuc-khong-gian-lam-viec.md) | 3717 |  |
-| 67 | 5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.2. Chế độ tương tác | [5-2-che-do-tuong-tac.md](5-2-che-do-tuong-tac.md) | 358 | REQ-GRAPHICS-05 |
+| 67 | 5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.2. Chế độ tương tác | [5-2-che-do-tuong-tac.md](5-2-che-do-tuong-tac.md) | 364 | REQ-GRAPHICS-05 |
 | 68 | 5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.3. Yêu cầu giao diện | [5-3-yeu-cau-giao-dien.md](5-3-yeu-cau-giao-dien.md) | 14491 | ARC-05, BR-07, BR-09, D-19, D-25, D-29… |
 | 69 | 6. MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU | [6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md](6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md) | 1419 | BR-01, BR-02, BR-03, BR-04, BR-05, BR-06… |
 | 70 | 7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO | [7-dieu-kien-nghiem-thu-va-ban-giao.md](7-dieu-kien-nghiem-thu-va-ban-giao.md) | 6665 | ARC-01, AT-01, AT-02, AT-03, AT-04, AT-05… |
