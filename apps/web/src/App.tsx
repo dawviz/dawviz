@@ -22,6 +22,10 @@ import { PresetSettings } from './components/PresetSettings.tsx';
 import { NOTE_PRESETS, VIDEO_STYLES, noteStylePreset, sceneForStyle, videoStyleBase, videoStyleKeyboard } from './lib/videoScenes.ts';
 import { createStore, type History } from './lib/store.ts';
 import * as Cmds from './lib/commands.ts';
+import { AudioPanel } from './components/AudioPanel.tsx';
+import { AudioLoadError, browserDeps, loadAudioAsset, type AudioAsset } from './lib/audioAsset.ts';
+import { audioLengthCheck } from './lib/audioLength.ts';
+import { peaksInWorker } from './lib/audioWorkers.ts';
 import { CUSTOM_STYLE, initialDoc, pianoOf, type Doc } from './lib/commands.ts';
 import { GestureContext, useStoreState } from './lib/storeReact.ts';
 import { bindUndoKeys, shortcutLabels } from './lib/undoKeys.ts';
@@ -85,6 +89,34 @@ export function App() {
   useEffect(() => () => playback.dispose(), [playback]);
   const duration = loaded?.ast.meta.totalDurationSeconds ?? 0;
 
+  // T-08: tệp âm thanh mix là tài nguyên của phiên (không nằm trong Doc/lịch sử); offset thì thuộc dự án (Doc.audioOffsetMs, hoàn tác được).
+  const [audio, setAudio] = useState<AudioAsset | null>(null);
+  const [peaks, setPeaks] = useState<Float32Array | null>(null);
+  const [audioBusy, setAudioBusy] = useState(false);
+  const [audioError, setAudioError] = useState<{ code: string; message: string; details?: Record<string, unknown> } | null>(null);
+  const audioGate = useRef(createLatestGate()).current;
+  const offsetMs = doc.audioOffsetMs;
+  // Độ dài phát = max(dự án, offset + âm thanh) để âm thanh dài hơn không bị cắt (TECHNICAL-DESIGN 6.2.4).
+  const playDuration = Math.max(duration, audio ? Math.max(0, offsetMs / 1000 + audio.durationSec) : 0);
+  useEffect(() => { playback.setDuration(playDuration); }, [playback, playDuration]);
+  useEffect(() => { playback.setAudioOffset(offsetMs); }, [playback, offsetMs]);
+  const dropAudio = useCallback(() => { audioGate.begin(); playback.attachAudio(null); setAudio(null); setPeaks(null); setAudioBusy(false); }, [audioGate, playback]);
+  const onLoadAudio = useCallback(async (file: File) => {
+    const ticket = audioGate.begin();
+    // Bỏ buffer cũ TRƯỚC khi giải mã tệp mới (đỉnh bộ nhớ, §6.2.1).
+    playback.attachAudio(null); setAudio(null); setPeaks(null); setAudioError(null); setAudioBusy(true);
+    try {
+      const asset = await loadAudioAsset(file, browserDeps);
+      if (!audioGate.isLatest(ticket)) return;
+      setAudio(asset); playback.attachAudio(asset.buffer);
+      void peaksInWorker(asset.id, asset.buffer).then((p) => { if (audioGate.isLatest(ticket)) setPeaks(p); }).catch(() => {}); // không có sóng âm vẫn phát được
+    } catch (e) {
+      if (!audioGate.isLatest(ticket)) return;
+      const f = e as AudioLoadError;
+      setAudioError({ code: f.code ?? 'ERR_AUDIO_DECODE', message: f.message, details: f.details });
+    } finally { if (audioGate.isLatest(ticket)) setAudioBusy(false); }
+  }, [audioGate, playback]);
+
   // REQ-UI-12: ẩn/hiện, solo và thứ tự track (thứ tự chỉ đổi ở Nâng cao). Lọc ở đây, Render Core không đổi.
   const view = useMemo(() => ({ hidden: new Set(doc.hidden) as ReadonlySet<string>, solo: new Set(doc.solo) as ReadonlySet<string> }), [doc.hidden, doc.solo]);
   const ordered = useMemo(() => {
@@ -134,7 +166,8 @@ export function App() {
       if (!gate.isLatest(ticket)) return;
       setLoaded({ name: main.name, ast: r.ast, warnings: r.warnings, format: r.format, ms: r.ms }); setMidi(r.midi);
       // Nạp dự án mới: lịch sử hoàn tác bắt đầu trống (id track đổi nên lệnh cũ hết nghĩa). Scene và thiết lập đã lưu giữ nguyên trong store.
-      store.reset({ ...store.get(), brightness: Object.fromEntries(r.ast.tracks.map((t) => [t.id, { ...DEFAULT_BRIGHTNESS } as BrightnessConfig])), order: r.ast.tracks.map((t) => t.id), hidden: [], solo: [] });
+      dropAudio();
+      store.reset({ ...store.get(), audioOffsetMs: 0, brightness: Object.fromEntries(r.ast.tracks.map((t) => [t.id, { ...DEFAULT_BRIGHTNESS } as BrightnessConfig])), order: r.ast.tracks.map((t) => t.id), hidden: [], solo: [] });
       setNotice(null);
       playback.reset(r.ast.meta.totalDurationSeconds);
       setTab('preview');
@@ -145,7 +178,7 @@ export function App() {
       setFailure({ code: f.code ?? 'ERR_UNKNOWN', message: f.message, details: f.details });
       setLoaded((prev) => { if (!prev) playback.reset(0); return prev; });
     } finally { if (gate.isLatest(ticket)) setBusy(false); }
-  }, [gate, playback, store]);
+  }, [gate, playback, store, dropAudio]);
 
   const midiLevel = missingMidiLevel(midi, !!failure);
   const addMidi = useCallback((files: File[]) => { if (source) void onPick({ main: source.main, extras: mergeExtras(source.extras, files) }); }, [source, onPick]);
@@ -161,9 +194,17 @@ export function App() {
       out.push(loaded ? { ...p, text: `${i18n.t('web.failedKeep')} ${p.text}` } : p);
     }
     out.push(...presetProblems);
+    if (audioError) out.push(describeProblem(i18n, 'error', audioError.code, audioError.message, audioError.details));
+    if (audio && loaded) {
+      const c = audioLengthCheck(audio.durationSec, duration, offsetMs / 1000);
+      if (c.kind !== 'ok') out.push(describeProblem(i18n, 'warning', 'WARN_AUDIO_LENGTH', undefined, {
+        audio: formatClock(audio.durationSec), project: formatClock(duration), ratio: i18n.number(c.ratio, { maximumFractionDigits: 3 }),
+        hint: i18n.t(`web.audio.lenHint.${c.kind}`),
+      }));
+    }
     for (const w of loaded?.warnings ?? []) if (!covered(w.code)) out.push(describeProblem(i18n, 'warning', w.code, w.message, w.details));
     return out;
-  }, [failure, loaded, i18n, midi, presetProblems]);
+  }, [failure, loaded, i18n, midi, presetProblems, audioError, audio, duration, offsetMs]);
 
   const patchBrightness = useCallback((id: string, patch: Partial<BrightnessConfig>) => run((d) => {
     // Một trường được sửa thì giữ trường đó, đẩy trường đối diện (sàn/trần dB, min/max độ sáng).
@@ -253,7 +294,7 @@ export function App() {
   // Nâng cao: Bài, Hình thức, Track. Số mục đánh theo vị trí.
   const sections: Record<'song' | 'look' | 'tracks', (n: number) => React.ReactNode> = loaded && trackProps ? {
     song: (n) => (
-      <InspectorSection key="song" n={n} id="song" title={i18n.t('web.section.song')}>
+      <InspectorSection key="song" n={n} id="song" title={i18n.t('web.section.song')} more={more('song', offsetMs !== 0)}>
         <Facts rows={[
           [i18n.t('web.song.file'), <span title={loaded.name}>{loaded.name}</span>],
           ...(advanced ? [[i18n.t('web.song.format'), loaded.format] as [string, React.ReactNode]] : []),
@@ -263,6 +304,8 @@ export function App() {
           [i18n.t('web.song.notes'), i18n.number(loaded.ast.tracks.reduce((n2, t) => n2 + t.notes.length, 0))],
           ...(advanced ? [[i18n.t('web.song.read'), i18n.t('web.song.readValue', { ms: Math.round(loaded.ms) })] as [string, React.ReactNode]] : []),
         ]} />
+        <AudioPanel audio={audio ? { name: audio.name, durationSec: audio.durationSec } : null} busy={audioBusy} offsetMs={offsetMs} showOffset={showAdv('song')}
+          onLoad={onLoadAudio} onRemove={dropAudio} onOffset={(ms) => run((d) => Cmds.setAudioOffset(d, ms))} />
       </InspectorSection>
     ),
     look: (n) => (
@@ -300,7 +343,7 @@ export function App() {
           <div ref={stageRef} className={aboveStage ? 'mt-4' : ''}>
             <Stage scene={scene} derived={derived} ast={renderAst} playback={playback} proof={ui.proofFrame} width={stageWidth} fonts={fonts}
               styleName={doc.videoStyle === CUSTOM_STYLE ? scene.presetName : `${i18n.t(`web.style.video.${doc.videoStyle}`)}${styleEdited ? ` (${i18n.t('web.styles.edited')})` : ''}`}>
-              <Transport playback={playback} duration={duration} />
+              <Transport playback={playback} duration={playDuration} offsetMs={offsetMs} wave={audio && peaks ? { peaks, durationSec: audio.durationSec } : null} />
             </Stage>
           </div>
         )}

@@ -8,7 +8,7 @@ import { sceneForStyle, videoStyleBase, noteStylePreset } from './videoScenes.ts
 
 const initial = (): C.Doc => ({
   videoStyle: 'paper', scene: sceneForStyle('paper', { base: videoStyleBase('paper'), tracks: {} }, {}),
-  brightness: { a: { ...DEFAULT_BRIGHTNESS }, b: { ...DEFAULT_BRIGHTNESS } }, order: ['a', 'b', 'c'], hidden: [], solo: [],
+  brightness: { a: { ...DEFAULT_BRIGHTNESS }, b: { ...DEFAULT_BRIGHTNESS } }, order: ['a', 'b', 'c'], hidden: [], solo: [], audioOffsetMs: 0,
 });
 const mk = (now = () => 0) => createStore<C.Doc>(initial(), { now });
 const run = (s: Store<C.Doc>, f: (d: C.Doc) => C.Cmd | null) => s.dispatch(f(s.get()));
@@ -242,4 +242,15 @@ test('lịch sử một nhánh: làm thao tác mới sau khi lùi thì bỏ các
   assert.equal(h.timeline.length, 3); assert.equal(h.position, 3); assert.equal(h.canRedo, false);
   assert.deepEqual(h.timeline.map((c) => c.type), ['toggleHidden', 'toggleHidden', 'toggleSolo']);
   s.jumpTo(99); assert.equal(s.state().history.position, 3);
+});
+
+test('offset âm thanh: hoàn tác/làm lại, gộp ± liên tiếp, kẹp ±10 s, nhãn lịch sử', () => {
+  let t = 0; const s = mk(() => t);
+  run(s, (d) => C.setAudioOffset(d, 1)); t += 100; run(s, (d) => C.setAudioOffset(d, 2)); t += 100; run(s, (d) => C.setAudioOffset(d, 3));
+  assert.equal(s.get().audioOffsetMs, 3); assert.equal(s.state().history.undoCount, 1, 'gộp thành một bước');
+  s.undo(); assert.equal(s.get().audioOffsetMs, 0); s.redo(); assert.equal(s.get().audioOffsetMs, 3);
+  run(s, (d) => C.setAudioOffset(d, 99999)); assert.equal(s.get().audioOffsetMs, 10000);
+  run(s, (d) => C.setAudioOffset(d, -99999)); assert.equal(s.get().audioOffsetMs, -10000);
+  assert.equal(C.setAudioOffset(s.get(), -10000), null, 'không đổi thì không có mục lịch sử');
+  s.undo(); s.undo(); assert.ok(s.get().audioOffsetMs !== -10000);
 });

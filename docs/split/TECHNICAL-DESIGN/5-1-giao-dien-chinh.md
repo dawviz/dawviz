@@ -5,7 +5,7 @@ section: "5.1 Giao diện chính 🟢"
 path: "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.1 Giao diện chính 🟢"
 chunk: 5-1-giao-dien-chinh.md
 source_lines: 110-129
-source_sha1: c8028d766d
+source_sha1: f25d58c0f2
 ids: [D-54, ERR_PRESET_INVALID, REQ-STORAGE-02, WARN_PRESET_UNSUPPORTED, WARN_PRESET_VALUE, WARN_PRESET_VERSION, WARN_PRESET_WIDGET_UNKNOWN]
 ---
 ### 5.1 Giao diện chính 🟢

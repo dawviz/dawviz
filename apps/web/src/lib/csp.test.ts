@@ -41,3 +41,7 @@ test('csp: theme-boot.js là script ngoài cùng origin (được script-src \'s
   const code = readFileSync(new URL('../../public/theme-boot.js', import.meta.url), 'utf8');
   assert.ok(!/\beval\s*\(|new\s+Function|innerHTML|outerHTML|document\.write|insertAdjacentHTML|\.style\s*=|setAttribute\(\s*['"]style/.test(code));
 });
+test('csp: media-src cho phép blob: (dò thời lượng tệp âm thanh, T-08) và không có nguồn ngoài', () => {
+  const m = new Map(CSP_DIRECTIVES).get('media-src')!;
+  assert.match(m, /(^|\s)blob:/); assert.match(m, /'self'/); assert.ok(!/https?:|\*/.test(m));
+});

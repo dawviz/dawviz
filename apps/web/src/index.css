@@ -129,7 +129,18 @@
   .seg { @apply flex gap-0.5 rounded border border-control bg-page p-0.5; }
   .seg-btn { @apply min-w-0 rounded-sm px-2.5 py-1 text-xs text-muted transition hover:text-fg; }
   .tog { @apply grid h-6 w-6 shrink-0 place-items-center rounded-sm text-muted transition hover:bg-raised hover:text-fg; }
-  .seg-btn[aria-checked='true'], .tog[aria-pressed='true'] { @apply bg-raised font-semibold text-fg ring-1 ring-line-strong; }
+  .seg-btn[aria-checked='true'] { @apply bg-raised font-semibold text-fg ring-1 ring-line-strong; }
+  /* Nút bật/tắt nhỏ (S, mắt): đang bật dùng nền selection để khác hẳn trạng thái chỉ-hover (nền nổi). */
+  .tog[aria-pressed='true'] { @apply bg-selection font-semibold text-fg ring-1 ring-line-strong; }
+  /* Hover KHÔNG được ghi đè trạng thái đang chọn: ô đang chọn giữ nguyên diện mạo khi trỏ chuột vào (độ ưu tiên cao hơn :hover của tiện ích). */
+  .seg-btn[aria-checked='true']:hover { @apply bg-raised font-semibold text-fg ring-1 ring-line-strong; }
+  .tog[aria-pressed='true']:hover { @apply bg-selection font-semibold text-fg ring-1 ring-line-strong; }
+  /* Nút bật/tắt dạng biểu tượng (nút Lặp): bật = biểu tượng màu nhấn + nền selection + chấm nhỏ dưới biểu tượng (không chỉ dựa vào màu). */
+  .btn-toggle { position: relative; }
+  .btn-toggle[aria-pressed='true'], .btn-toggle[aria-pressed='true']:hover { @apply bg-selection text-accent; }
+  .btn-toggle[aria-pressed='true']::before {
+    content: ''; position: absolute; left: 50%; bottom: 3px; width: 4px; height: 4px; margin-left: -2px; border-radius: 9999px; background: currentColor;
+  }
   .disclosure { @apply flex min-h-[var(--hit)] cursor-pointer select-none items-center gap-1 text-muted transition hover:text-fg; }
   .disclosure::before {
     content: ''; width: 0.75rem; height: 0.75rem; flex-shrink: 0; transition: transform 150ms;

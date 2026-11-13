@@ -5,7 +5,7 @@ section: "5.0 Kiểu dáng nốt và bàn phím 🟢 (REQ-GRAPHICS-07)"
 path: "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.0 Kiểu dáng nốt và bàn phím 🟢 (REQ-GRAPHICS-07)"
 chunk: 5-0-kieu-dang-not-va-ban-phim-req-graphics-07.md
 source_lines: 107-109
-source_sha1: c8028d766d
+source_sha1: f25d58c0f2
 ids: [REQ-GRAPHICS-07]
 ---
 ### 5.0 Kiểu dáng nốt và bàn phím 🟢 (REQ-GRAPHICS-07)

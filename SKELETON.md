@@ -24,6 +24,7 @@ dawviz/
 │     │  └─ theme-boot.js
 │     ├─ src/
 │     │  ├─ components/
+│     │  │  ├─ AudioPanel.tsx
 │     │  │  ├─ FileDrop.tsx
 │     │  │  ├─ HistoryMenu.tsx
 │     │  │  ├─ Icons.tsx
@@ -47,6 +48,18 @@ dawviz/
 │     │  │  └─ I18nProvider.tsx
 │     │  ├─ lib/
 │     │  │  ├─ a11y.ts
+│     │  │  ├─ audioAsset.test.ts
+│     │  │  ├─ audioAsset.ts
+│     │  │  ├─ audioEngine.test.ts
+│     │  │  ├─ audioEngine.ts
+│     │  │  ├─ audioLength.test.ts
+│     │  │  ├─ audioLength.ts
+│     │  │  ├─ audioLimits.ts
+│     │  │  ├─ audioMap.test.ts
+│     │  │  ├─ audioMap.ts
+│     │  │  ├─ audioPeaks.test.ts
+│     │  │  ├─ audioPeaks.ts
+│     │  │  ├─ audioWorkers.ts
 │     │  │  ├─ clock.test.ts
 │     │  │  ├─ clock.ts
 │     │  │  ├─ commands.ts
@@ -57,11 +70,14 @@ dawviz/
 │     │  │  ├─ fonts.ts
 │     │  │  ├─ historyLabels.test.ts
 │     │  │  ├─ historyLabels.ts
+│     │  │  ├─ masterClock.test.ts
+│     │  │  ├─ masterClock.ts
 │     │  │  ├─ numberInput.test.ts
 │     │  │  ├─ numberInput.ts
 │     │  │  ├─ parseInWorker.ts
 │     │  │  ├─ parserClient.test.ts
 │     │  │  ├─ parserClient.ts
+│     │  │  ├─ peaksClient.ts
 │     │  │  ├─ playback.test.ts
 │     │  │  ├─ playback.ts
 │     │  │  ├─ prefs.test.ts
@@ -87,6 +103,7 @@ dawviz/
 │     │  ├─ types/
 │     │  │  └─ dawviz.d.ts
 │     │  ├─ workers/
+│     │  │  ├─ audioPeaks.worker.ts
 │     │  │  └─ parser.worker.ts
 │     │  ├─ App.tsx
 │     │  ├─ index.css
@@ -845,6 +862,16 @@ Thành phần gốc (T-70, UI-DIRECTION 5.3 cấu trúc D + A + E): thanh trên 
 function App()
 ```
 
+#### `apps/web/src/components/AudioPanel.tsx`
+
+Âm thanh trong mục 01 Bài (T-08, TECHNICAL-DESIGN §6.2.3, D-53). Cơ bản: chỉ nạp tệp + tên tệp; offset ở "Thêm tuỳ chọn".
+
+```text
+interface AudioInfo
+function offsetSummary(i18n: { t(k: string, p?: Record<string, unknown>): string; number(n: number, o?: Intl.NumberFormatOptions): string }, ms: number):    // Dòng giải thích offset bằng lời (locales web.audio.offset.*).
+function AudioPanel({ audio, busy, offsetMs, showOffset, onLoad, onRemove, onOffset }: { audio: AudioInfo | null; busy: boolean; offsetMs: number; showOffset: boolean; onLoad(file: File): void; onRemove(): void; onOffset(ms: number): void; })
+```
+
 #### `apps/web/src/components/FileDrop.tsx`
 
 Khung thả/chọn tệp dự án (kèm .mid ngoài); hiệu ứng Framer Motion.
@@ -878,6 +905,9 @@ const Back = (p: P) =>
 const Forward = (p: P) =>
 const Play = ({ className = 'h-4 w-4' }: P) =>
 const Pause = ({ className = 'h-4 w-4' }: P) =>
+const Repeat = (p: P) =>
+const Minus = (p: P) =>
+const Plus = (p: P) =>
 const Undo = (p: P) =>
 const Redo = (p: P) =>
 const Sun = (p: P) =>
@@ -1017,7 +1047,8 @@ function TrackLayoutBar({ value, onChange, count }: { value: TrackLayout; onChan
 Thanh phát (UI-DIRECTION 5.3): lùi / phát / tới bằng biểu tượng, thanh tua, thời gian m:ss.mmm tô màu nhấn khi đang phát.
 
 ```text
-function Transport({ playback, duration }: { playback: Playback; duration: number })
+interface WaveData
+function Transport({ playback, duration, wave, offsetMs = 0 }: { playback: Playback; duration: number; wave?: WaveData | null; offsetMs?: number })
 ```
 
 #### `apps/web/src/components/VideoStyles.tsx`
@@ -1052,6 +1083,101 @@ function isTextEntry(t: EventTarget | null): boolean   // Đang gõ chữ/số (
 function isTypingTarget(t: EventTarget | null): boolean   // Phím tắt khác (Home…): không nuốt khi đang gõ hoặc ở một điều khiển tự xử lý phím đó.
 ```
 
+#### `apps/web/src/lib/audioAsset.ts`
+
+Nạp tệp âm thanh mix (T-08, §6.2.1). Thứ tự kiểm: kích thước → thời lượng từ metadata → giải mã → thời lượng thật.
+
+```text
+type AudioErrorCode
+class AudioLoadError extends Error
+  constructor(code: AudioErrorCode, message: string, details: Record<string, unknown> = {})
+interface PcmBuffer   // Phần của AudioBuffer mà ứng dụng cần.
+interface AudioAsset
+interface LoadDeps
+async function loadAudioAsset(file: File, deps: LoadDeps): Promise<AudioAsset>
+const browserDeps
+```
+
+#### `apps/web/src/lib/audioEngine.ts`
+
+Điều khiển AudioContext cho đồng hồ chủ (T-08, §6.2.2). Toán thời gian nằm ở masterClock.ts/audioMap.ts; ở đây chỉ lên lịch nút nguồn
+
+```text
+interface ParamLike
+interface GainLike
+interface SourceLike
+interface AudioContextLike
+interface EngineDeps
+interface BufferLike
+const START_LEAD
+const LOOKAHEAD
+const PUMP_MS
+const FADE
+interface AudioEngine
+function createAudioEngine(deps: EngineDeps): AudioEngine
+const browserEngineDeps   // Phụ thuộc thật: AudioContext 48 kHz (không hỗ trợ thì mặc định, trình duyệt tự đổi tần số), timer của cửa sổ,…
+```
+
+#### `apps/web/src/lib/audioLength.ts`
+
+Cảnh báo lệch độ dài giữa tệp âm thanh và dự án (T-08, §6.2.6). Hàm thuần; ngưỡng là [PROVISIONAL] và không đối xứng:
+
+```text
+const SHORT_ABS   // Cảnh báo lệch độ dài giữa tệp âm thanh và dự án (T-08, §6.2.6). Hàm thuần; ngưỡng là [PROVISIONAL] và không đ…
+interface LengthCheck
+function audioLengthCheck(audioSec: number, projectSec: number, offsetSec = 0): LengthCheck
+```
+
+#### `apps/web/src/lib/audioLimits.ts`
+
+Giới hạn nạp tệp âm thanh (T-08, §6.2.1; REQ-PARSER-00 / NFR-SEC-04, REQ-WIDGET-07). Các số là [PROVISIONAL].
+
+```text
+const AUDIO_SAMPLE_RATE   // Giới hạn nạp tệp âm thanh (T-08, §6.2.1; REQ-PARSER-00 / NFR-SEC-04, REQ-WIDGET-07). Các số là [PROVISIONAL].
+const MAX_AUDIO_BYTES
+const MAX_AUDIO_SECONDS
+const MAX_UNKNOWN_DURATION_BYTES   // Nhánh không đọc được metadata (MP3 VBR…): 48 MB = 20 phút ở 320 kbps; lớn hơn thì không giải mã mù.
+const AUDIO_EXTENSIONS
+const AUDIO_ACCEPT
+const hasAudioExtension = (name: string) =>
+```
+
+#### `apps/web/src/lib/audioMap.ts`
+
+Ánh xạ thời gian dự án ↔ vị trí trong tệp âm thanh (T-08, Technical Design §6.2.3). Hàm thuần.
+
+```text
+const OFFSET_LIMIT_MS   // Giới hạn offset (REQ-WIDGET-07): ±10 s, bước 1 ms.
+const clampOffsetMs = (ms: number) =>
+const mapToBuffer = (t: number, offsetMs: number) =>   // Vị trí trong buffer (giây) ứng với thời gian dự án `t`. `offsetMs > 0`: âm thanh trễ (đầu tệp rơi vào t = off…
+interface Segment
+function planSegment(t0: number, tEnd: number, offsetMs: number, bufferDuration: number): Segment | null   // Đoạn phát từ thời gian dự án `t0` tới `tEnd`. Trả null nếu trong khoảng đó không có âm thanh (trước đầu hoặc …
+type ExportSegment
+function exportSegments(rangeStart: number, rangeEnd: number, offsetMs: number, bufferDuration: number): ExportSegment[]   // Kế hoạch cắt âm thanh cho một khoảng xuất [rangeStart, rangeEnd] (REQ-EXPORT-03): im lặng ở phần thiếu, âm th…
+```
+
+#### `apps/web/src/lib/audioPeaks.ts`
+
+Sóng âm cho thanh tua (T-08, §6.2.5). Hàm thuần, tất định: ô cơ sở cố định 512 mẫu theo vị trí tuyệt đối trong tệp,
+
+```text
+const PEAK_BUCKET
+function downmixMono(channels: readonly Float32Array[], start: number, end: number): Float32Array   // Trộn mono (L+R)/2 ở độ chính xác Float32, thứ tự cố định. Một kênh thì trả nguyên.
+interface PeaksAccumulator
+function createPeaksAccumulator(): PeaksAccumulator   // Cộng dồn (min, max) theo ô 512 mẫu. Không giữ PCM. `finish` trả [min0, max0, min1, max1, …] (ô cuối có thể ng…
+function reducePeaks(base: Float32Array, columns: number):    // Rút gọn mức cơ sở về `columns` cột: min/max theo nhóm ô, không nội suy. Trả cả đỉnh tuyệt đối để chuẩn hoá kh…
+function peaksPath(p: { data: Float32Array; peak: number }, height: number): string   // Đường SVG (các vạch dọc) cho viewBox rộng `cols`, cao `height`, tâm ở giữa. Chuẩn hoá theo đỉnh; im lặng hoàn…
+function placePeaks(base: Float32Array, audioDur: number, offsetSec: number, duration: number, cols: number):    // Sóng âm đặt lên trục thời gian của dự án: tệp dài `audioDur` giây, bắt đầu ở `offsetSec` (âm thì phần trước m…
+```
+
+#### `apps/web/src/lib/audioWorkers.ts`
+
+Tạo Worker sóng âm qua chính sách Trusted Types (NFR-SEC-06), như parseInWorker.ts.
+
+```text
+const peaksInWorker = (id: string, buf: PcmBuffer) =>
+```
+
 #### `apps/web/src/lib/clock.ts`
 
 Đồng hồ phát: hàm thuần, kiểm thử được không cần DOM. Thời gian chỉ là số `t` (giây); khung hình là hàm của t (ARC-01).
@@ -1059,7 +1185,7 @@ function isTypingTarget(t: EventTarget | null): boolean   // Phím tắt khác (
 ```text
 interface ClockState   // Đồng hồ phát: hàm thuần, kiểm thử được không cần DOM. Thời gian chỉ là số `t` (giây); khung hình là hàm của t…
 const initialClock
-function advance(s: ClockState, dtSeconds: number, duration: number, loop = false): ClockState
+function advance(s: ClockState, dtSeconds: number, duration: number, loop: boolean | { start: number; end: number } = false): ClockState   // `loop`: true = lặp cả bài; { start, end } = lặp một đoạn (T-08, qua `validLoop`).
 const seek = (s: ClockState, t: number, duration: number) =>
 const togglePlay = (s: ClockState, duration: number) =>
 ```
@@ -1086,6 +1212,7 @@ const toggleHidden = (d: Doc, id: TrackId) =>
 const toggleSolo = (d: Doc, id: TrackId) =>
 const setAllHidden = (d: Doc, hidden: boolean) =>
 const moveTrack = (d: Doc, id: TrackId, to: number) =>
+const setAudioOffset = (d: Doc, ms: number) =>   // Đặt offset âm thanh (ms). Gõ/bấm ± liên tiếp gộp thành một bước. Kẹp ±10 s, làm tròn 1 ms.
 const patchLayout = (d: Doc, widgetId: string, patch: Partial<WidgetLayout>) =>   // Đổi layout widget (x, y, width, height, rotation, anchor). Gộp theo widget: kéo/đổi cỡ/xoay trong một cử chỉ …
 const patchWidgetProps = (d: Doc, widgetId: string, patch: Record<string, unknown>) =>   // Đổi một số thuộc tính (`properties`) của widget.
 const setWidgetVisible = (d: Doc, widgetId: string, visible: boolean) =>
@@ -1136,6 +1263,27 @@ interface HistoryItem
 function historyItems(h: Pick<History<unknown>, 'timeline' | 'position'>, label: (i: number) => string, origin: string): HistoryItem[]   // Dòng danh sách từ dòng thời gian: mới nhất trước, mốc đầu ở cuối.
 ```
 
+#### `apps/web/src/lib/masterClock.ts`
+
+Toán đồng hồ chủ (T-08, Technical Design §6.2.2). Hàm thuần, không biết Web Audio, không đọc đồng hồ thật.
+
+```text
+interface Anchor
+interface LoopRange
+interface Reading
+const MIN_LOOP_SECONDS   // Vòng lặp chỉ có nghĩa khi đủ dài (tránh vòng lặp vô hạn / lên lịch dày đặc).
+const validLoop = (l: LoopRange | null | undefined, duration: number) =>
+const normalizeStart = (t0: number, duration: number, loop: LoopRange | null) =>   // Điểm bắt đầu hợp lệ: ở/sau cuối vòng lặp thì vào từ đầu vòng.
+function readClock(a: Anchor, s: number, duration: number, loop: LoopRange | null): Reading   // Thời gian dự án tại giờ nguồn `s`. Có vòng lặp thì quay lại đầu vòng khi qua cuối; không thì dừng ở `duration…
+const rebase = (a: Anchor, sNow: number, duration: number, loop: LoopRange | null, sNew: number) =>   // Neo lại tại đúng t đang đọc: hình không nhảy; `sNew` là giờ nguồn của mốc neo mới.
+interface OutputStamp   // ── giờ nghe được trên trục AudioContext ──
+interface CtxSample
+const MAX_LATENCY
+function deviceLatency(c: Pick<CtxSample, 'baseLatency' | 'outputLatency'>): number   // Độ trễ ước lượng (giây): baseLatency + outputLatency; thiếu thì coi là 0; kẹp [0; 0,5]. Chỉ lấy mẫu khi neo, …
+const validStamp = (s: OutputStamp | null | undefined) =>
+function heardContextTime(c: CtxSample, frameMs: number, latency: number): number   // Giờ (trên trục AudioContext) của mẫu đang được NGHE tại khung vẽ `frameMs` (performance.now, mili giây). Có g…
+```
+
 #### `apps/web/src/lib/numberInput.ts`
 
 Đọc và bước giá trị cho ô nhập số dùng chung (REQ-UI-15). Hàm thuần, không phụ thuộc DOM; không dùng eval/Function.
@@ -1168,14 +1316,27 @@ function createParserClient(spawn: () => WorkerLike)
 function createLatestGate()   // Chỉ nhận kết quả của yêu cầu mới nhất (T-02): mỗi lần bắt đầu lấy một vé; kết quả về muộn của vé cũ bị bỏ qua…
 ```
 
+#### `apps/web/src/lib/peaksClient.ts`
+
+Client sóng âm (T-08, §6.2.5): gửi PCM mono sang Worker theo khối, mỗi lần một khối (chờ ack) nên bộ nhớ tạm chỉ ~4 MB.
+
+```text
+const CHUNK_SAMPLES
+interface PeaksWorkerLike
+function computePeaksViaWorker(buf: PcmBuffer, makeWorker: () => PeaksWorkerLike, chunk = CHUNK_SAMPLES): Promise<Float32Array>
+function computePeaksSync(buf: PcmBuffer, chunk = CHUNK_SAMPLES): Float32Array   // Cùng kết quả, chạy ngay trên luồng gọi (test và so sánh bit).
+async function peaksFor(id: string, buf: PcmBuffer, makeWorker: () => PeaksWorkerLike): Promise<Float32Array>   // Bộ đệm ≤ 1 tệp (≈ 0,9 MB cho 20 phút).
+```
+
 #### `apps/web/src/lib/playback.ts`
 
 Kho đồng hồ phát nằm ngoài state của React (T-70): vòng requestAnimationFrame chỉ cập nhật kho này, và chỉ các phần
 
 ```text
 interface Playback
-function createPlayback(frame: Frame = browserFrame): Playback
+function createPlayback(frame: Frame = browserFrame, engine: AudioEngine = createAudioEngine(browserEngineDeps)): Playback   // Không có âm thanh: t tiến theo dt giữa các khung (performance.now). Có âm thanh: t đọc từ đồng hồ chủ AudioCo…
 function usePlayback<T>(p: Playback, select: (s: ClockState) => T): T   // Theo dõi một phần của đồng hồ; chọn giá trị nguyên thuỷ (số, boolean) để chỉ vẽ lại khi nó đổi.
+function usePlaybackLoop(p: Playback): boolean   // Có đang lặp không (cho nút Lặp trên thanh phát).
 ```
 
 #### `apps/web/src/lib/prefs.ts`
@@ -1354,6 +1515,15 @@ function sceneForStyle(id: string, style: StyleConfig, keyboard: Partial<Pick<Ke
 
 Điểm vào của ứng dụng web: dựng React root với I18nProvider.
 
+#### `apps/web/src/workers/audioPeaks.worker.ts`
+
+Worker tính đỉnh sóng âm (T-08, §6.2.5): nhận PCM mono theo khối, chỉ cộng dồn (min, max) theo ô 512 mẫu, không giữ PCM.
+
+```text
+type PeaksIn
+type PeaksOut
+```
+
 #### `apps/web/src/workers/parser.worker.ts`
 
 Worker: toàn bộ việc parse chạy ở đây để không chặn giao diện (NFR-PERF). Không có logic parser trong app.
@@ -1380,10 +1550,16 @@ type ParseResponse
 
 ## 4. Tệp test
 
+- `apps/web/src/lib/audioAsset.test.ts`
+- `apps/web/src/lib/audioEngine.test.ts`
+- `apps/web/src/lib/audioLength.test.ts`
+- `apps/web/src/lib/audioMap.test.ts`
+- `apps/web/src/lib/audioPeaks.test.ts`
 - `apps/web/src/lib/clock.test.ts`
 - `apps/web/src/lib/csp.test.ts`
 - `apps/web/src/lib/externalMidi.test.ts`
 - `apps/web/src/lib/historyLabels.test.ts`
+- `apps/web/src/lib/masterClock.test.ts`
 - `apps/web/src/lib/numberInput.test.ts`
 - `apps/web/src/lib/parserClient.test.ts`
 - `apps/web/src/lib/playback.test.ts`
@@ -1413,4 +1589,4 @@ type ParseResponse
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 468 ký hiệu công khai -->
+<!-- 10 thư mục src, 544 ký hiệu công khai -->

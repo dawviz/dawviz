@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-GRAPHICS-14: Khoảng hiển thị theo thời gian và theo track"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) > REQ-GRAPHICS-14: Khoảng hiển thị theo thời gian và theo track"
 chunk: req-graphics-14-khoang-hien-thi-theo-thoi-gian-v.md
-source_lines: 847-851
-source_sha1: e94e9bc79b
+source_lines: 848-852
+source_sha1: 3d043a49c8
 ids: [P-04, P-09, P-10, REQ-GRAPHICS-09, REQ-GRAPHICS-14, REQ-UI-03, REQ-WIDGET-07]
 ---
 #### REQ-GRAPHICS-14: Khoảng hiển thị theo thời gian và theo track

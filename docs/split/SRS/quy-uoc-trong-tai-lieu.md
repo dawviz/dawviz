@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "Quy ước trong tài liệu"
 path: "DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) > Quy ước trong tài liệu"
 chunk: quy-uoc-trong-tai-lieu.md
-source_lines: 21-29
-source_sha1: e94e9bc79b
+source_lines: 22-30
+source_sha1: 3d043a49c8
 ids: [REQ-GRAPHICS-00]
 ---
 ### Quy ước trong tài liệu

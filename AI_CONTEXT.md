@@ -71,7 +71,7 @@ node scripts/sync-docs.mjs --find "độ sáng"   # lấy liên kết mảnh#hea
 <!-- sync:begin docs-index -->
 <!-- Khối này do scripts/sync-docs.mjs sinh ra; đừng sửa tay. -->
 
-Có 18 tài liệu, 272 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
+Có 18 tài liệu, 281 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
 
 ### BRD.md — TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)
 
@@ -95,7 +95,7 @@ Nguồn: `docs/product/BRD.md` · [thứ tự đọc](docs/split/BRD/_index.md)
 Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 
 - [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](docs/split/SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 0.4k
-- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) › Lịch sử phiên bản](docs/split/SRS/lich-su-phien-ban.md) · 6.9k
+- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) › Lịch sử phiên bản](docs/split/SRS/lich-su-phien-ban.md) · 7.2k
 - [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) › Quy ước trong tài liệu](docs/split/SRS/quy-uoc-trong-tai-lieu.md) · 0.8k
 - [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) › Mục lục](docs/split/SRS/muc-luc.md) · 0.4k
 - [1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG](docs/split/SRS/1-gioi-thieu-muc-tieu-he-thong.md) · 4.7k
@@ -168,7 +168,7 @@ Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 - [8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS](docs/split/SRS/8-cac-van-de-con-mo-cua-srs.md) · 4.0k
 - [9. PHỤ LỤC › Phụ lục A: Mã lỗi](docs/split/SRS/phu-luc-a-ma-loi.md) · 2.4k
 - [9. PHỤ LỤC › Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)](docs/split/SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md) · 1.2k
-- [9. PHỤ LỤC › Phụ lục A2: Mã cảnh báo của Parser Library](docs/split/SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md) · 1.1k
+- [9. PHỤ LỤC › Phụ lục A2: Mã cảnh báo của Parser Library](docs/split/SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md) · 1.3k
 - [9. PHỤ LỤC › Phụ lục B: Ghi chú rà soát](docs/split/SRS/phu-luc-b-ghi-chu-ra-soat.md) · 2.9k
 
 ### SDD.md — TÀI LIỆU THIẾT KẾ PHẦN MỀM (SDD) — ỨNG DỤNG DAW VISUALIZER
@@ -204,14 +204,23 @@ Nguồn: `docs/design/TECHNICAL-DESIGN.md` · [thứ tự đọc](docs/split/TEC
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)](docs/split/TECHNICAL-DESIGN/5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md) · 5.0k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp 🟢 (đã dùng ở T-69)](docs/split/TECHNICAL-DESIGN/5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md) · 0.9k
 - [6. Ứng dụng web và phát lại 🟡 › 6.1 Trạng thái](docs/split/TECHNICAL-DESIGN/6-1-trang-thai.md) · 1.3k
-- [6. Ứng dụng web và phát lại 🟡 › 6.2 Phát lại và âm thanh ⚪](docs/split/TECHNICAL-DESIGN/6-2-phat-lai-va-am-thanh.md) · 0.6k
+- [6. Ứng dụng web và phát lại 🟡 › 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh)](docs/split/TECHNICAL-DESIGN/6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md) · 0.2k
+- [6. Ứng dụng web và phát lại 🟡 › 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) › 6.2.1 Nạp tệp âm thanh (mix)](docs/split/TECHNICAL-DESIGN/6-2-1-nap-tep-am-thanh-mix.md) · 3.3k
+- [6. Ứng dụng web và phát lại 🟡 › 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) › 6.2.2 Đồng hồ chủ](docs/split/TECHNICAL-DESIGN/6-2-2-dong-ho-chu.md) · 4.6k
+- [6. Ứng dụng web và phát lại 🟡 › 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) › 6.2.3 Offset âm thanh so với dự án](docs/split/TECHNICAL-DESIGN/6-2-3-offset-am-thanh-so-voi-du-an.md) · 2.0k
+- [6. Ứng dụng web và phát lại 🟡 › 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) › 6.2.4 Phát / dừng / tua / lặp / về đầu](docs/split/TECHNICAL-DESIGN/6-2-4-phat-dung-tua-lap-ve-dau.md) · 1.4k
+- [6. Ứng dụng web và phát lại 🟡 › 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) › 6.2.5 Sóng âm cho thanh tua (việc để dành từ T-70)](docs/split/TECHNICAL-DESIGN/6-2-5-song-am-cho-thanh-tua-viec-de-danh-tu-t-70.md) · 1.2k
+- [6. Ứng dụng web và phát lại 🟡 › 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) › 6.2.6 Cảnh báo lệch độ dài](docs/split/TECHNICAL-DESIGN/6-2-6-canh-bao-lech-do-dai.md) · 0.8k
+- [6. Ứng dụng web và phát lại 🟡 › 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) › 6.2.7 Dữ liệu giữ lại cho T-09 (xuất video, §7)](docs/split/TECHNICAL-DESIGN/6-2-7-du-lieu-giu-lai-cho-t-09-xuat-video-7.md) · 1.0k
+- [6. Ứng dụng web và phát lại 🟡 › 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) › 6.2.8 Kiểm thử (thuần, không cần trình duyệt)](docs/split/TECHNICAL-DESIGN/6-2-8-kiem-thu-thuan-khong-can-trinh-duyet.md) · 1.0k
+- [6. Ứng dụng web và phát lại 🟡 › 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) › 6.2.9 Quyết định đã duyệt](docs/split/TECHNICAL-DESIGN/6-2-9-quyet-dinh-da-duyet.md) · 0.7k
 - [6. Ứng dụng web và phát lại 🟡 › 6.3 Danh sách track 🟢](docs/split/TECHNICAL-DESIGN/6-3-danh-sach-track.md) · 1.9k
 - [6. Ứng dụng web và phát lại 🟡 › 6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)](docs/split/TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) · 12.2k
 - [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở)](docs/split/TECHNICAL-DESIGN/7-duong-ong-xuat-video-m3-spike-1-la-co-so.md) · 2.0k
 - [8. Lưu trữ ⚪ (M4)](docs/split/TECHNICAL-DESIGN/8-luu-tru-m4.md) · 1.0k
 - [9. Đa ngôn ngữ 🟢](docs/split/TECHNICAL-DESIGN/9-da-ngon-ngu.md) · 0.5k
 - [10. Lỗi, ghi nhật ký, quan sát](docs/split/TECHNICAL-DESIGN/10-loi-ghi-nhat-ky-quan-sat.md) · 0.5k
-- [11. Hiệu năng và bộ nhớ (ngân sách)](docs/split/TECHNICAL-DESIGN/11-hieu-nang-va-bo-nho-ngan-sach.md) · 0.6k
+- [11. Hiệu năng và bộ nhớ (ngân sách)](docs/split/TECHNICAL-DESIGN/11-hieu-nang-va-bo-nho-ngan-sach.md) · 0.9k
 - [12. Bảo mật và quyền riêng tư](docs/split/TECHNICAL-DESIGN/12-bao-mat-va-quyen-rieng-tu.md) · 0.7k
 - [13. Xây dựng, kiểm thử, phát hành](docs/split/TECHNICAL-DESIGN/13-xay-dung-kiem-thu-phat-hanh.md) · 0.9k
 - [14. Việc cần làm theo mốc (từ thiết kế này)](docs/split/TECHNICAL-DESIGN/14-viec-can-lam-theo-moc-tu-thiet-ke-nay.md) · 0.8k

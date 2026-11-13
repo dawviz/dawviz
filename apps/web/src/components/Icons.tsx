@@ -21,6 +21,9 @@ export const Back = (p: P) => <S {...p}><path d="M8 4 4 8l4 4M12.5 4l-4 4 4 4" /
 export const Forward = (p: P) => <S {...p}><path d="m8 4 4 4-4 4M3.5 4l4 4-4 4" /></S>;
 export const Play = ({ className = 'h-4 w-4' }: P) => <svg viewBox="0 0 16 16" className={className} aria-hidden><path fill="currentColor" d="M5 3.4v9.2c0 .6.7 1 1.2.6l7-4.6a.75.75 0 0 0 0-1.2l-7-4.6c-.5-.4-1.2 0-1.2.6Z" /></svg>;
 export const Pause = ({ className = 'h-4 w-4' }: P) => <svg viewBox="0 0 16 16" className={className} aria-hidden><rect x="3.5" y="3" width="3" height="10" rx="1" fill="currentColor" /><rect x="9.5" y="3" width="3" height="10" rx="1" fill="currentColor" /></svg>;
+export const Repeat = (p: P) => <S {...p}><path d="M3 7V6a2 2 0 0 1 2-2h8M10.5 1.5 13 4l-2.5 2.5" /><path d="M13 9v1a2 2 0 0 1-2 2H3M5.5 14.5 3 12l2.5-2.5" /></S>;
+export const Minus = (p: P) => <S {...p}><path d="M3.5 8h9" /></S>;
+export const Plus = (p: P) => <S {...p}><path d="M3.5 8h9M8 3.5v9" /></S>;
 export const Undo = (p: P) => <S {...p}><path d="M5.5 3 2.5 6l3 3" /><path d="M3 6h6.5a3.5 3.5 0 0 1 0 7H6" /></S>;
 export const Redo = (p: P) => <S {...p}><path d="m10.5 3 3 3-3 3" /><path d="M13 6H6.5a3.5 3.5 0 0 0 0 7H10" /></S>;
 export const Sun = (p: P) => <S {...p}><circle cx="8" cy="8" r="2.75" /><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1" /></S>;

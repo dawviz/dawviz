@@ -1,6 +1,6 @@
 # Chỉ mục TECHNICAL-DESIGN.md — THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER
 
-nguồn: `TECHNICAL-DESIGN.md` (sha1 c8028d766d)
+nguồn: `TECHNICAL-DESIGN.md` (sha1 f25d58c0f2)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -19,14 +19,23 @@ nguồn: `TECHNICAL-DESIGN.md` (sha1 c8028d766d)
 | 12 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02) | [5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md](5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md) | 4996 | ERR_FONT_LOAD, NFR-SEC-03, REQ-STORAGE-05, REQ-WIDGET-02 |
 | 13 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp 🟢 (đã dùng ở T-69) | [5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md](5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md) | 925 | REQ-WIDGET-05 |
 | 14 | 6. Ứng dụng web và phát lại 🟡 > 6.1 Trạng thái | [6-1-trang-thai.md](6-1-trang-thai.md) | 1256 | REQ-UI-14 |
-| 15 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh ⚪ | [6-2-phat-lai-va-am-thanh.md](6-2-phat-lai-va-am-thanh.md) | 550 |  |
-| 16 | 6. Ứng dụng web và phát lại 🟡 > 6.3 Danh sách track 🟢 | [6-3-danh-sach-track.md](6-3-danh-sach-track.md) | 1860 | D-50, REQ-UI-14 |
-| 17 | 6. Ứng dụng web và phát lại 🟡 > 6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68) | [6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md](6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) | 12222 | ARC-05, D-55, ERR_PRESET_, ERR_PRESET_INVALID, ERR_PRESET_TOO_LARGE, ERR_SCHEMA_NEWER… |
-| 18 | 7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) | [7-duong-ong-xuat-video-m3-spike-1-la-co-so.md](7-duong-ong-xuat-video-m3-spike-1-la-co-so.md) | 2020 | AT-03, D-01, ERR_EXPORT_FAILED, ERR_NO_SUPPORTED_ENCODER, REQ-EXPORT-00, REQ-EXPORT-02… |
-| 19 | 8. Lưu trữ ⚪ (M4) | [8-luu-tru-m4.md](8-luu-tru-m4.md) | 1005 | ERR_PRESET_INVALID, ERR_SCHEMA_NEWER, WARN_PRESET_MIGRATED |
-| 20 | 9. Đa ngôn ngữ 🟢 | [9-da-ngon-ngu.md](9-da-ngon-ngu.md) | 492 |  |
-| 21 | 10. Lỗi, ghi nhật ký, quan sát | [10-loi-ghi-nhat-ky-quan-sat.md](10-loi-ghi-nhat-ky-quan-sat.md) | 470 | D-13 |
-| 22 | 11. Hiệu năng và bộ nhớ (ngân sách) | [11-hieu-nang-va-bo-nho-ngan-sach.md](11-hieu-nang-va-bo-nho-ngan-sach.md) | 589 | NFR-PERF-05 |
-| 23 | 12. Bảo mật và quyền riêng tư | [12-bao-mat-va-quyen-rieng-tu.md](12-bao-mat-va-quyen-rieng-tu.md) | 728 | OI-07 |
-| 24 | 13. Xây dựng, kiểm thử, phát hành | [13-xay-dung-kiem-thu-phat-hanh.md](13-xay-dung-kiem-thu-phat-hanh.md) | 906 | D-12, D-35, REQ-CAP-01 |
-| 25 | 14. Việc cần làm theo mốc (từ thiết kế này) | [14-viec-can-lam-theo-moc-tu-thiet-ke-nay.md](14-viec-can-lam-theo-moc-tu-thiet-ke-nay.md) | 760 |  |
+| 15 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) | [6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md](6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md) | 233 | NFR-SEC-04, REQ-EXPORT-03, REQ-PARSER-00, REQ-STORAGE-05, REQ-UI-03, REQ-WIDGET-07 |
+| 16 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.1 Nạp tệp âm thanh (mix) | [6-2-1-nap-tep-am-thanh-mix.md](6-2-1-nap-tep-am-thanh-mix.md) | 3263 | ARC-03, ERR_AUDIO_DECODE, ERR_AUDIO_TOO_LONG, ERR_FILE_TOO_LARGE, NFR-PERF-04, REQ-AUDIO-01… |
+| 17 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.2 Đồng hồ chủ | [6-2-2-dong-ho-chu.md](6-2-2-dong-ho-chu.md) | 4556 |  |
+| 18 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.3 Offset âm thanh so với dự án | [6-2-3-offset-am-thanh-so-voi-du-an.md](6-2-3-offset-am-thanh-so-voi-du-an.md) | 1992 | REQ-UI-15, REQ-WIDGET-07 |
+| 19 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.4 Phát / dừng / tua / lặp / về đầu | [6-2-4-phat-dung-tua-lap-ve-dau.md](6-2-4-phat-dung-tua-lap-ve-dau.md) | 1439 | REQ-UI-03 |
+| 20 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.5 Sóng âm cho thanh tua (việc để dành từ T-70) | [6-2-5-song-am-cho-thanh-tua-viec-de-danh-tu-t-70.md](6-2-5-song-am-cho-thanh-tua-viec-de-danh-tu-t-70.md) | 1211 | REQ-WIDGET-07 |
+| 21 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.6 Cảnh báo lệch độ dài | [6-2-6-canh-bao-lech-do-dai.md](6-2-6-canh-bao-lech-do-dai.md) | 826 | REQ-PARSER-07, WARN_AUDIO_LENGTH |
+| 22 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.7 Dữ liệu giữ lại cho T-09 (xuất video, §7) | [6-2-7-du-lieu-giu-lai-cho-t-09-xuat-video-7.md](6-2-7-du-lieu-giu-lai-cho-t-09-xuat-video-7.md) | 1023 | AT-03, REQ-EXPORT-03 |
+| 23 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.8 Kiểm thử (thuần, không cần trình duyệt) | [6-2-8-kiem-thu-thuan-khong-can-trinh-duyet.md](6-2-8-kiem-thu-thuan-khong-can-trinh-duyet.md) | 1014 | ERR_AUDIO_DECODE, ERR_AUDIO_TOO_LONG, ERR_FILE_TOO_LARGE |
+| 24 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.9 Quyết định đã duyệt | [6-2-9-quyet-dinh-da-duyet.md](6-2-9-quyet-dinh-da-duyet.md) | 672 |  |
+| 25 | 6. Ứng dụng web và phát lại 🟡 > 6.3 Danh sách track 🟢 | [6-3-danh-sach-track.md](6-3-danh-sach-track.md) | 1860 | D-50, REQ-UI-14 |
+| 26 | 6. Ứng dụng web và phát lại 🟡 > 6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68) | [6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md](6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) | 12222 | ARC-05, D-55, ERR_PRESET_, ERR_PRESET_INVALID, ERR_PRESET_TOO_LARGE, ERR_SCHEMA_NEWER… |
+| 27 | 7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) | [7-duong-ong-xuat-video-m3-spike-1-la-co-so.md](7-duong-ong-xuat-video-m3-spike-1-la-co-so.md) | 2020 | AT-03, D-01, ERR_EXPORT_FAILED, ERR_NO_SUPPORTED_ENCODER, REQ-EXPORT-00, REQ-EXPORT-02… |
+| 28 | 8. Lưu trữ ⚪ (M4) | [8-luu-tru-m4.md](8-luu-tru-m4.md) | 1005 | ERR_PRESET_INVALID, ERR_SCHEMA_NEWER, WARN_PRESET_MIGRATED |
+| 29 | 9. Đa ngôn ngữ 🟢 | [9-da-ngon-ngu.md](9-da-ngon-ngu.md) | 492 |  |
+| 30 | 10. Lỗi, ghi nhật ký, quan sát | [10-loi-ghi-nhat-ky-quan-sat.md](10-loi-ghi-nhat-ky-quan-sat.md) | 470 | D-13 |
+| 31 | 11. Hiệu năng và bộ nhớ (ngân sách) | [11-hieu-nang-va-bo-nho-ngan-sach.md](11-hieu-nang-va-bo-nho-ngan-sach.md) | 885 | NFR-PERF-04, NFR-PERF-05 |
+| 32 | 12. Bảo mật và quyền riêng tư | [12-bao-mat-va-quyen-rieng-tu.md](12-bao-mat-va-quyen-rieng-tu.md) | 728 | OI-07 |
+| 33 | 13. Xây dựng, kiểm thử, phát hành | [13-xay-dung-kiem-thu-phat-hanh.md](13-xay-dung-kiem-thu-phat-hanh.md) | 906 | D-12, D-35, REQ-CAP-01 |
+| 34 | 14. Việc cần làm theo mốc (từ thiết kế này) | [14-viec-can-lam-theo-moc-tu-thiet-ke-nay.md](14-viec-can-lam-theo-moc-tu-thiet-ke-nay.md) | 760 |  |

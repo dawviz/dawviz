@@ -20,7 +20,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 ## SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
 - [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 422 ký tự
-- [Lịch sử phiên bản](SRS/lich-su-phien-ban.md) · 6860 ký tự
+- [Lịch sử phiên bản](SRS/lich-su-phien-ban.md) · 7156 ký tự
 - [Quy ước trong tài liệu](SRS/quy-uoc-trong-tai-lieu.md) · 818 ký tự
 - [Mục lục](SRS/muc-luc.md) · 365 ký tự
 - [1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG](SRS/1-gioi-thieu-muc-tieu-he-thong.md) · 4720 ký tự
@@ -93,7 +93,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS](SRS/8-cac-van-de-con-mo-cua-srs.md) · 4032 ký tự
 - [Phụ lục A: Mã lỗi](SRS/phu-luc-a-ma-loi.md) · 2383 ký tự
 - [Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)](SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md) · 1227 ký tự
-- [Phụ lục A2: Mã cảnh báo của Parser Library](SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md) · 1066 ký tự
+- [Phụ lục A2: Mã cảnh báo của Parser Library](SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md) · 1331 ký tự
 - [Phụ lục B: Ghi chú rà soát](SRS/phu-luc-b-ghi-chu-ra-soat.md) · 2889 ký tự
 
 ## SDD.md — TÀI LIỆU THIẾT KẾ PHẦN MỀM (SDD) — ỨNG DỤNG DAW VISUALIZER
@@ -125,14 +125,23 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)](TECHNICAL-DESIGN/5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md) · 4996 ký tự
 - [5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp 🟢 (đã dùng ở T-69)](TECHNICAL-DESIGN/5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md) · 925 ký tự
 - [6.1 Trạng thái](TECHNICAL-DESIGN/6-1-trang-thai.md) · 1256 ký tự
-- [6.2 Phát lại và âm thanh ⚪](TECHNICAL-DESIGN/6-2-phat-lai-va-am-thanh.md) · 550 ký tự
+- [6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh)](TECHNICAL-DESIGN/6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md) · 233 ký tự
+- [6.2.1 Nạp tệp âm thanh (mix)](TECHNICAL-DESIGN/6-2-1-nap-tep-am-thanh-mix.md) · 3263 ký tự
+- [6.2.2 Đồng hồ chủ](TECHNICAL-DESIGN/6-2-2-dong-ho-chu.md) · 4556 ký tự
+- [6.2.3 Offset âm thanh so với dự án](TECHNICAL-DESIGN/6-2-3-offset-am-thanh-so-voi-du-an.md) · 1992 ký tự
+- [6.2.4 Phát / dừng / tua / lặp / về đầu](TECHNICAL-DESIGN/6-2-4-phat-dung-tua-lap-ve-dau.md) · 1439 ký tự
+- [6.2.5 Sóng âm cho thanh tua (việc để dành từ T-70)](TECHNICAL-DESIGN/6-2-5-song-am-cho-thanh-tua-viec-de-danh-tu-t-70.md) · 1211 ký tự
+- [6.2.6 Cảnh báo lệch độ dài](TECHNICAL-DESIGN/6-2-6-canh-bao-lech-do-dai.md) · 826 ký tự
+- [6.2.7 Dữ liệu giữ lại cho T-09 (xuất video, §7)](TECHNICAL-DESIGN/6-2-7-du-lieu-giu-lai-cho-t-09-xuat-video-7.md) · 1023 ký tự
+- [6.2.8 Kiểm thử (thuần, không cần trình duyệt)](TECHNICAL-DESIGN/6-2-8-kiem-thu-thuan-khong-can-trinh-duyet.md) · 1014 ký tự
+- [6.2.9 Quyết định đã duyệt](TECHNICAL-DESIGN/6-2-9-quyet-dinh-da-duyet.md) · 672 ký tự
 - [6.3 Danh sách track 🟢](TECHNICAL-DESIGN/6-3-danh-sach-track.md) · 1860 ký tự
 - [6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)](TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) · 12222 ký tự
 - [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở)](TECHNICAL-DESIGN/7-duong-ong-xuat-video-m3-spike-1-la-co-so.md) · 2020 ký tự
 - [8. Lưu trữ ⚪ (M4)](TECHNICAL-DESIGN/8-luu-tru-m4.md) · 1005 ký tự
 - [9. Đa ngôn ngữ 🟢](TECHNICAL-DESIGN/9-da-ngon-ngu.md) · 492 ký tự
 - [10. Lỗi, ghi nhật ký, quan sát](TECHNICAL-DESIGN/10-loi-ghi-nhat-ky-quan-sat.md) · 470 ký tự
-- [11. Hiệu năng và bộ nhớ (ngân sách)](TECHNICAL-DESIGN/11-hieu-nang-va-bo-nho-ngan-sach.md) · 589 ký tự
+- [11. Hiệu năng và bộ nhớ (ngân sách)](TECHNICAL-DESIGN/11-hieu-nang-va-bo-nho-ngan-sach.md) · 885 ký tự
 - [12. Bảo mật và quyền riêng tư](TECHNICAL-DESIGN/12-bao-mat-va-quyen-rieng-tu.md) · 728 ký tự
 - [13. Xây dựng, kiểm thử, phát hành](TECHNICAL-DESIGN/13-xay-dung-kiem-thu-phat-hanh.md) · 906 ký tự
 - [14. Việc cần làm theo mốc (từ thiết kế này)](TECHNICAL-DESIGN/14-viec-can-lam-theo-moc-tu-thiet-ke-nay.md) · 760 ký tự

@@ -205,10 +205,94 @@ interface TextPrim {
 | Ngôn ngữ | `I18nProvider` | `localStorage` có try/catch |
 | Scene, phong cách video, kiểu nốt, độ sáng, ẩn/solo/thứ tự, undo/redo 🟡 | Store riêng `lib/store.ts` (T-07) | Xem 6.4; đồng hồ phát vẫn ở `lib/playback.ts` |
 
-### 6.2 Phát lại và âm thanh ⚪
-- **Không có audio:** `t` tiến theo `performance.now()` (chỉ trong lớp UI, không trong Render Core).
-- **Có audio (M2/M3):** `AudioContext` là đồng hồ chủ: `t = audioCtx.currentTime − startedAt + offset`; UI đọc `t` mỗi khung. Tua = dừng source, tạo `AudioBufferSourceNode` mới từ vị trí mới. Offset audio người dùng chỉnh được (SRS). Trình duyệt chặn autoplay → chỉ tạo/resume `AudioContext` trong sự kiện bấm.
-- Khi tab ẩn, `requestAnimationFrame` dừng; khi quay lại `t` được tính lại từ đồng hồ chủ, không cộng dồn.
+### 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh)
+SRS: REQ-WIDGET-07 (phần dữ liệu âm thanh), REQ-EXPORT-03, REQ-STORAGE-05, REQ-UI-03, REQ-PARSER-00 / NFR-SEC-04 (giới hạn tệp). Render Core **không đổi**: nó chỉ nhận `t`.
+
+#### 6.2.1 Nạp tệp âm thanh (mix)
+- **Định dạng:** `.wav .mp3 .ogg .flac .m4a` (REQ-WIDGET-07); khả năng giải mã do trình duyệt quyết định. Nhận qua nút "Nạp âm thanh" (inspector, mục 01 Bài) và kéo thả. Chỉ **một** tệp mix ở T-08 (stem theo track là REQ-AUDIO-01, 1.2).
+- **Kiểm theo thứ tự, rẻ trước đắt sau, mỗi bước thất bại là một lỗi có mã và phiên vẫn chạy được không âm thanh:**
+  1. Kích thước `File.size` ≤ **300 MB** [PROVISIONAL], kiểm **trước khi đọc** → `ERR_FILE_TOO_LARGE`. Tệp rỗng → `ERR_AUDIO_DECODE`.
+  2. Dò thời lượng bằng metadata (`HTMLAudioElement`, `preload="metadata"`, blob URL, không giải mã) ≤ **20 phút** [PROVISIONAL] → `ERR_AUDIO_TOO_LONG`. Bước này chặn trước khi tốn RAM (ARC-03). **CSP không cần đổi:** `media-src 'self' blob:` đã có sẵn (`lib/csp.ts`); `csp.test.ts` thêm một ca khoá chỉ thị này (có `blob:`, không có nguồn ngoài) để không ai vô tình bỏ.
+  3. **Metadata không đọc được** (MP3 VBR không có tiêu đề Xing/VBRI cho `duration = Infinity` hoặc `NaN`, hoặc lỗi/quá 5 s chờ): **giải mã rồi mới kiểm giới hạn** (`buffer.duration` > 20 phút → bỏ buffer, `ERR_AUDIO_TOO_LONG`). Vì khi đó chưa biết độ dài thật, để khỏi giải mã nhầm tệp rất dài, đặt trần kích thước riêng cho nhánh này: tệp nén > **48 MB** (= 20 phút ở 320 kbps, bitrate cao nhất của MP3) thì không giải mã mà báo `ERR_AUDIO_TOO_LONG` kèm lý do "không xác định được độ dài" [PROVISIONAL].
+  4. Giải mã → lỗi bất kỳ → `ERR_AUDIO_DECODE` (kèm chi tiết kỹ thuật gập lại, không stack trace).
+- **Giải mã ở đâu:** luồng chính bằng `OfflineAudioContext(2, 1, 48000).decodeAudioData(...)`. `decodeAudioData` không có trong Worker, còn WebCodecs `AudioDecoder` cần tự tách container nên không đáng cho T-08. Việc giải mã thực chạy ngoài luồng JS, nên không chặn giao diện; dùng `OfflineAudioContext` nên **không dính chính sách autoplay**. Kết quả đã **ở 48 kHz** (khớp REQ-EXPORT-03, T-09 không phải resample); mono giữ 1 kênh, upmix lúc xuất.
+- **Bộ nhớ (đối chiếu mục 11, chỉnh 5):** 20 phút × 60 × 48 000 mẫu × 2 kênh × 4 byte = **460,8 MB** PCM. Sau khi giải mã xong **không giữ byte tệp nén**, chỉ giữ tham chiếu `File` (Blob trỏ tới đĩa, không tốn RAM) để Project Pack sau này đọc lại. Tệp mới thay tệp cũ: bỏ tham chiếu `AudioBuffer` cũ **trước** khi giải mã tệp mới.
+  - *Trạng thái ổn định:* 460,8 MB = 22,5 % trần 2,0 GB của NFR-PERF-04. Cộng phần xuất 4K ước tính ≈ 0,7 GB (canvas ngoài màn hình 4K ≈ 33 MB, hàng đợi ≤ 8 `VideoFrame` ≈ 265 MB, bộ mã hoá, AST) thì ≈ 1,2 GB, **còn dư ≈ 0,8 GB**.
+  - *Đỉnh tạm khi giải mã:* tệp nén (≤ 300 MB, thực tế WAV 20 phút ≈ 230 MB; MP3/FLAC nhỏ hơn) + PCM 460,8 MB, và một số trình duyệt giữ thêm một bản trung gian khi giải mã (ước ≤ 2× PCM) ⇒ đỉnh ≲ 1,2 GB; giải mã **không chạy cùng lúc với xuất** (nút nạp bị khoá khi đang xuất, T-09).
+  - **Kết luận: không vượt ngân sách, giữ nguyên 20 phút**; mục 11 thêm một dòng ngân sách cho âm thanh. Số đo thật trên trình duyệt ghi lại sau khi kiểm tay; nếu đỉnh tạm đo được > 1,5 GB thì hạ trần thời lượng (đề xuất 12 phút ≈ 276 MB PCM) và báo chủ dự án.
+- **Định danh (REQ-STORAGE-05):** SHA-256 của byte tệp (`crypto.subtle.digest`) làm `assetId`; dùng làm khoá bộ đệm sóng âm. Lưu IndexedDB và đóng gói Project Pack thuộc T-xx lưu trữ (M4), ngoài phạm vi T-08.
+
+#### 6.2.2 Đồng hồ chủ
+Một mô hình duy nhất cho cả hai chế độ: **neo + thời gian trôi qua**, `t = t0 + rate · max(0, s − s0)`, với `s` là giờ của *nguồn* tại khung đang vẽ và `s0` là giờ nguồn lúc neo (`t = t0`). Hai chế độ chỉ khác `s`:
+| Chế độ | `s` tại khung vẽ | Độ trễ thiết bị |
+|---|---|---|
+| Không âm thanh (như nay) | `performance.now()/1000` | 0 |
+| Có âm thanh | **giờ nghe được** trên trục `AudioContext` (bên dưới) | đã nằm trong `s` |
+
+- **Độ trễ thiết bị tách hẳn khỏi offset (chỉnh 1).** Độ trễ chỉ có ở *đồng hồ xem trước*, ở một chỗ duy nhất: `heardContextTime` trong `lib/masterClock.ts`. `audioOffsetMs` là lựa chọn của người dùng, lưu trong dự án. `mapToBuffer` và đường xuất (§7) **không nhận và không import** độ trễ: xuất là offline, không có thiết bị. Test bắt buộc: (a) `lib/audioMap.ts` không chứa chữ `latency` và không import `masterClock`; (b) kế hoạch cắt âm thanh để xuất (`exportSegments`) cho cùng kết quả từng bit với mọi cấu hình độ trễ dựng ra trong test.
+- **Giờ nghe được `heardContextTime(sample, frameMs)`, mỗi khung (chỉnh 3):**
+  1. *Có `getOutputTimestamp()`* và cho cặp hợp lệ (`performanceTime > 0`, hữu hạn, `contextTime ≥ 0`, ngữ cảnh đang `running`): `heard = ts.contextTime + (frameMs − ts.performanceTime)/1000`. Quy đổi `performance.now` ↔ trục `AudioContext` này nội suy mượt **từng khung** (không bị bậc thang ≈ 2,7 ms của `currentTime`). Theo đặc tả, `contextTime` của hàm này là mẫu *đang phát ra loa*, nên độ trễ đầu ra **đã nằm trong đó**, không trừ thêm (trừ lần nữa là đếm đôi).
+  2. *Dự phòng* (không có hàm, cặp không hợp lệ, hoặc ngữ cảnh chưa chạy): `heard = currentTime − L`, `L = clamp(baseLatency + outputLatency, 0, 0,5)` (`undefined` coi là 0). `L` lấy mẫu **một lần mỗi lần neo**, không đọc mỗi khung vì ước lượng dao động làm `t` rung.
+  3. Trong cả hai nhánh, trong một đoạn phát liên tục `t` không bao giờ giảm (kẹp đơn điệu) để nhiễu của cặp mốc thời gian không làm hình giật lùi; chỉ tua và vòng lặp mới làm `t` lùi.
+- **Neo lại và lấy mẫu lại độ trễ (chỉnh 2).** `rearm` = đọc `t*` bằng cách tính hiện tại → dừng các đoạn (hạ gain 5 ms) → lấy mẫu lại `L` → mở đoạn mới tại `t*` → neo mới. **Hình không nhảy** (cùng `t*`), tiếng và hình khớp theo độ trễ *mới*. `rearm` chạy khi: `sinkchange` của `AudioContext`, `devicechange` của `navigator.mediaDevices`, `statechange` về `running` (sau `suspended`/`interrupted`) khi đang ở trạng thái phát, đổi offset, và đổi tệp âm thanh. Đang dừng thì chỉ lấy lại `L` cho lần phát sau.
+- **Phát một đoạn:** mỗi đoạn là một `AudioBufferSourceNode` qua một `GainNode`, lên lịch `start(when, offsetTrongBuffer, độDài)` với `when = currentTime + 0,03 s` (đệm khởi động), neo `s0 = when` (cùng trục giờ nghe được, nên `t` đứng ở `t0` đến lúc âm thanh thực sự tới tai). Mọi thời điểm tính trên **trục `AudioContext`** nên chính xác theo mẫu, không phụ thuộc `setTimeout`. `AudioContext` đang `suspended` thì `currentTime` đứng yên và `t` đứng yên theo, tự khớp khi `resume()` xong.
+- **Offset (§6.2.3):** vị trí trong buffer `b = t − offset`; `planSegment` cho biết trễ bao lâu mới có tiếng, bắt đầu từ đâu trong buffer, dài bao nhiêu.
+- **Chuyển chế độ không nhảy:** việc duy nhất khi nạp/gỡ âm thanh là **neo lại tại `t` đang đọc từ nguồn cũ**: `t* = đọc(cũ)`, `t0 = t*`, `s0 = nguồn mới tại thời điểm đó`. Đang phát thì khởi động đoạn mới từ `t*` (`t` đứng yên ≈ 30 ms đệm rồi chạy tiếp, không nhảy); đang dừng thì chỉ đổi nguồn. Gỡ âm thanh khi đang phát: `t* = đọc(âm thanh)` rồi quay về `performance.now()` với `last = now`.
+- **Tab ẩn:** ở chế độ có âm thanh không cộng dồn `dt`; mỗi khung đọc lại từ `AudioContext` nên quay lại tab là đúng ngay. Âm thanh vẫn chạy khi tab ẩn; bộ lên lịch lặp chạy bằng `setInterval` 250 ms và đặt trước 2 s (trình duyệt bóp timer nền nên vòng lặp quá ngắn trong tab ẩn có thể vấp; chấp nhận, ghi chú).
+- **`AudioContext` bị hệ thống treo** (`suspended`/`interrupted` sau khi đã chạy, ví dụ rút tai nghe): `currentTime` đứng nên `t` tự đứng; chuyển `playing = false` giữ nguyên `t`, người dùng bấm Phát để tiếp.
+- **Tốc độ:** `rate` là 1 khi có âm thanh. Công thức đã có `rate` để sau này nối `playbackRate` mà không đổi mô hình.
+- **Cấu trúc mã:** `lib/masterClock.ts` (toán đồng hồ thuần, không biết Web Audio), `lib/audioMap.ts` (`mapToBuffer`, `planSegment`, `exportSegments`, **không** biết độ trễ), `lib/audioEngine.ts` (điều khiển `AudioContext` qua giao diện `AudioContextLike`, test bằng bản giả), `lib/playback.ts` chọn nguồn. API `Playback` giữ nguyên và thêm `setDuration`, `setLoop`, `audio`.
+
+#### 6.2.3 Offset âm thanh so với dự án
+- **Quy ước dấu:** `offsetMs > 0` = âm thanh **trễ** so với dự án (đầu tệp rơi vào `t = offset`; từ `0` đến `offset` im lặng). `offsetMs < 0` = âm thanh **sớm**: **phần âm thanh nằm trước mốc `t = 0` bị cắt bỏ** (không nghe, không xuất), `t = 0` ứng với giây `−offset` của tệp. Ví dụ `−80 ms` cắt 80 ms đầu tệp. Vị trí buffer `b = t − offset/1000`; `b < 0` nghĩa là chưa tới đầu tệp. Cùng một hàm `mapToBuffer(t, offsetMs)` dùng cho Preview và cho xuất (§7), để hai nơi không thể lệch nhau.
+- **Phạm vi và nhập:** ±10 000 ms, bước 1 ms (REQ-WIDGET-07). Ô số (`NumberField`, đơn vị `ms`, hỗ trợ phép tính và `+=` theo REQ-UI-15) cộng nút **− / +** (bước 1 ms; giữ Shift = 10 ms; giữ Alt = 100 ms [PROVISIONAL]). Ngoài phạm vi thì kẹp và hiện thông báo, không từ chối im lặng.
+- **Lưu và hoàn tác:** `Doc.audioOffsetMs: number` (mặc định 0) trong store; lệnh `setAudioOffset` với `mergeKey: 'audio.offset'` (gõ/bấm ± liên tiếp gộp thành một mục), nhãn `web.cmd.audioOffset`, có trong danh sách lịch sử. Offset là thuộc tính của **dự án, không của tệp**: đổi tệp hay gỡ tệp không đặt lại offset, nên các mục hoàn tác luôn hợp lệ.
+- **Tệp âm thanh không nằm trong `Doc`/lịch sử** (quá lớn, không JSON-hoá được): nó sống ở `lib/audioAsset.ts` như tài nguyên của phiên. Nạp/gỡ tệp là thao tác phiên, **không hoàn tác được** (có thể nạp lại). Đổi offset khi đang phát: neo lại tại `t` hiện tại với offset mới (nghe thấy ngay).
+- **Chữ giải thích theo giá trị (chỉnh 7, qua `locales/`):** dưới ô offset luôn có một dòng nói bằng lời: `> 0` → "Âm thanh trễ 120 ms"; `< 0` → "Âm thanh sớm 80 ms" kèm "Cắt 80 ms đầu tệp âm thanh (trước mốc 0)"; `= 0` → "Âm thanh khớp với dự án". Khoá `web.audio.offset.late/early/cut/zero`, tham số `{ms}` định dạng theo ngôn ngữ.
+- **Hiển thị:** chế độ **Cơ bản** chỉ có nút "Nạp âm thanh" + tên tệp (+ thời lượng, nút gỡ); **offset** nằm sau "Thêm tuỳ chọn" (dòng ADV). Nút "Nạp âm thanh" và vùng thả tệp nằm trong mục 01 Bài.
+
+#### 6.2.4 Phát / dừng / tua / lặp / về đầu
+- **Phát:** lần đầu trong sự kiện bấm: tạo `AudioContext({ sampleRate: 48000, latencyHint: 'interactive' })` (không hỗ trợ 48k thì để mặc định, trình duyệt tự resample) rồi `resume()`. **Không tạo/resume ngoài sự kiện người dùng.** Nếu `resume()` chưa xong, đồng hồ không chạy, nên hình không chạy trước tiếng.
+- **Dừng:** `stop()` các nguồn, hạ gain 5 ms trước để không bị tiếng "tách"; `t` đứng đúng tại vị trí nghe được.
+- **Tua (kéo thanh, ←/→, nhảy đầu/cuối):** đang dừng chỉ đổi `t`; đang phát thì hạ gain đoạn cũ 3 ms, tạo đoạn mới tại vị trí mới và neo lại. Mỗi lần neo tăng `generation`; sự kiện `ended` của đoạn cũ bị bỏ qua nếu `generation` đã đổi. Giới hạn một lần tạo nguồn mỗi khung hình khi kéo liên tục.
+- **Lặp (Loop Range / cả bài, REQ-UI-03):** không dùng `loop` của nút nguồn (không xử lý được phần im lặng do offset). Trình lên lịch **đặt trước đoạn kế** trên trục `AudioContext` khoảng 100–150 ms trước điểm kết thúc đoạn hiện tại (nên chính xác theo mẫu). Toán thuần `positionWithLoop(t0, trôi, [a,b])`: `t0 + trôi < b` thì tiến thẳng, ngược lại `a + ((t0 + trôi − b) mod (b − a))`.
+- **Về đầu:** `seek(0)`. **Hết bài:** dừng tại `duration`, bấm Phát lại thì về 0 (như `togglePlay` hiện nay).
+- **Độ dài phát** = `max(độ dài dự án, offset + độ dài âm thanh)` để âm thanh dài hơn không bị cắt, đúng công thức `Duration` ở §7 (chưa cộng 2 s đệm cuối, phần đó chỉ của xuất).
+
+#### 6.2.5 Sóng âm cho thanh tua (việc để dành từ T-70)
+- **Tính trong Worker** `workers/audioPeaks.worker.ts`. Luồng chính gửi PCM **theo khối** 2²⁰ mẫu đã trộn mono `(L+R)/2` (chuyển quyền sở hữu bản sao; không gửi cả 460 MB một lần); Worker chỉ cộng dồn đỉnh, **không giữ PCM**.
+- **Tất định:** mức cơ sở cố định **512 mẫu mỗi ô**, ô theo vị trí tuyệt đối trong tệp, mỗi ô lưu `(min, max)` Float32. Nên kết quả **không phụ thuộc cách chia khối** và không phụ thuộc kích thước thanh tua. Mọi mức hiển thị lấy bằng hàm thuần `reducePeaks(base, cột)` (min/max theo nhóm ô, không nội suy, không số ngẫu nhiên). Test: cùng PCM chia khối khác nhau cho `Float32Array` giống từng bit.
+- **Bộ đệm:** `Map<assetId, PeaksBase>` trong bộ nhớ, ≤ 1 tệp (≈ 0,9 MB cho 20 phút). Đổi kích thước thanh tua chỉ chạy lại `reducePeaks` (rẻ), không đụng Worker. Bộ đệm bền qua phiên là việc của M4.
+- **Vẽ:** lớp canvas dưới vạch phát của `Transport`; có offset thì dịch sóng đi `offset` (hình thấy được lệch nhịp trực tiếp). Trong lúc chưa tính xong hiện đường phẳng, không chặn phát.
+- Cùng bộ đệm đỉnh này sẽ là đầu vào cho Waveform tổng quan của REQ-WIDGET-07 sau này; FFT/RMS theo khung là việc của widget, không thuộc T-08.
+
+#### 6.2.6 Cảnh báo lệch độ dài
+- Hàm thuần `audioLengthCheck(audioSec, projectSec, offsetSec)` so `audioEnd = offset + audioSec` với `projectSec` (độ dài dự án = kết thúc nốt cuối + đuôi theo parser). Mix thường **dài hơn** vài giây vì đuôi vang, nên ngưỡng không đối xứng [PROVISIONAL]:
+  - **Ngắn hơn** dự án quá `max(1 s; 2 %)`, hoặc **dài hơn** quá `max(10 s; 10 %)` → cảnh báo `WARN_AUDIO_LENGTH` (mã mới, sẽ thêm vào Phụ lục A SRS và `locales/`).
+  - Thông báo hiện **tỉ lệ** `audio / dự án` và gợi ý: tỉ lệ gần hằng số (ví dụ 0,94) thường do **tempo sai** (kiểm ghi đè tempo ở REQ-PARSER-07); chênh lớn bất kỳ thì **có thể chọn nhầm tệp**; chênh nhỏ cố định thì thử offset.
+- Không chặn gì; vào mục cảnh báo hiện có (`Notices`), tự biến mất khi đổi offset/tệp làm hết lệch. Dài hơn trần 20 phút là lỗi riêng (§6.2.1).
+
+#### 6.2.7 Dữ liệu giữ lại cho T-09 (xuất video, §7)
+`lib/audioAsset.ts` giữ cho cả phiên, và T-09 chỉ đọc:
+| Giữ | Dùng để |
+|---|---|
+| `AudioBuffer` 48 kHz (1–2 kênh, Float32) | phát; xuất đọc theo **khối 1 s** bằng `getChannelData(c).slice(...)` rồi chuyển sang Export Worker (mỗi khối một bản sao, không chuyển nguyên buffer vì Preview còn dùng) |
+| `assetId` (SHA-256), `name`, `File` | pre-flight, tên mặc định của tệp xuất, Project Pack (M4) |
+| `durationSec`, `sampleRate`, số kênh | `Duration` (§7.1), kiểm đồng bộ |
+| `Doc.audioOffsetMs` | `mapToBuffer` / `exportSegments` dùng chung: đoạn thiếu thì chêm im lặng, đoạn thừa (kể cả phần trước mốc 0 khi offset âm) thì cắt (REQ-EXPORT-03) |
+| Đỉnh cơ sở 512 mẫu | không dùng ở xuất |
+Cắt theo Export Range, chêm im lặng, mã hoá AAC, bù priming (AT-03) và độ trễ khởi tạo là việc của T-09; T-08 chỉ bảo đảm **`mapToBuffer` đã được kiểm test và dùng chung**. Xuất là offline nên **không bao giờ** áp độ trễ thiết bị (chỉnh 1); điều này được khoá bằng test (§6.2.2).
+
+#### 6.2.8 Kiểm thử (thuần, không cần trình duyệt)
+`AudioContextLike` giả có `currentTime` tự đặt, `baseLatency`, `outputLatency`, ghi lại các lệnh `start/stop`. Test: phát; dừng; tua khi dừng/đang phát; lặp (qua biên, `t0` trước/sau `a`); offset âm/dương (`b < 0`, `b` vượt buffer); bù độ trễ (nhánh dự phòng: đứng yên đúng bằng độ trễ rồi chạy; `outputLatency` thiếu; kẹp 0,5 s) và nhánh `getOutputTimestamp` (nội suy theo khung, không trừ độ trễ lần hai, cặp không hợp lệ thì rơi về dự phòng); `rearm` khi `sinkchange`/`devicechange`/`statechange` (hình không nhảy, độ trễ lấy lại); **xuất không phụ thuộc độ trễ**; chuyển chế độ khi dừng/đang phát (không nhảy: `|t_sau − t_trước| = 0`); tab ẩn (nhảy `currentTime` mà không có khung); `suspended`; offset hoàn tác/gộp/làm lại trong store; `ERR_FILE_TOO_LARGE`/`ERR_AUDIO_TOO_LONG`/`ERR_AUDIO_DECODE` có mã; sóng âm bit-giống nhau khi đổi cách chia khối; `audioLengthCheck`. Kiểm tay trên trình duyệt thật: phát bài có tiếng, tua nhiều lần, hình–tiếng vẫn khớp.
+
+#### 6.2.9 Quyết định đã duyệt
+1. Dấu offset: dương = âm thanh *trễ*; âm = âm thanh *sớm*, cắt phần trước mốc 0.
+2. Offset thuộc dự án, không thuộc tệp; nạp/gỡ tệp không hoàn tác được; nạp dự án mới thì gỡ âm thanh và đặt offset về 0.
+3. Ngưỡng cảnh báo lệch độ dài (1 s/2 % ngắn; 10 s/10 % dài) và các số [PROVISIONAL] khác.
+4. Độ dài phát = `max(dự án, offset + âm thanh)`.
+5. Giải mã trên luồng chính bằng `OfflineAudioContext`.
+6. Chỉnh sau duyệt: độ trễ tách khỏi offset và xuất (1), `rearm` (2), `getOutputTimestamp` (3), MP3 VBR giải mã rồi mới kiểm (4), đối chiếu ngân sách bộ nhớ (5), offset âm cắt trước mốc 0 (6), chữ giải thích offset (7), CSP giữ nguyên (8).
 
 ### 6.3 Danh sách track 🟢
 SRS REQ-UI-14 (sửa theo D-50); `apps/web/src/components/TrackPanel.tsx`.
@@ -319,6 +403,7 @@ Danh mục phẳng `locales/<mã>.json` (`{tham_số}`, `{n, plural, one {#…} 
 | Parse tệp điển hình | không chặn UI | Worker; trần 500.000 nốt |
 | Preview | ≥ 30 fps ở 1080p trên máy desktop điển hình **[PROVISIONAL]** | Chỉ vẽ nốt trong cửa sổ; không cấp phát trong vòng vẽ (tái dùng mảng) ⚪ |
 | Xuất | ≥ 1× thời gian thực ở 1080p30 **[PROVISIONAL]** | `encodeQueueSize` kiểm soát dòng chảy; render trong Worker |
+| Âm thanh (T-08) | PCM 48 kHz stereo ≤ 20 phút = 460,8 MB ≤ 25 % trần 2,0 GB của NFR-PERF-04; đỉnh tạm khi giải mã ≲ 1,2 GB, không chạy cùng lúc với xuất **[PROVISIONAL]** | Dò thời lượng trước khi giải mã, bỏ buffer cũ trước khi nạp mới, không giữ byte tệp nén, sóng âm tính theo khối (§6.2) |
 Cần đo thật ở M2–M3; số liệu thực ghi vào TDD mục khoảng trống.
 
 ## 12. Bảo mật và quyền riêng tư

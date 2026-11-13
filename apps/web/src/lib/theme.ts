@@ -77,6 +77,8 @@ const RULES: ReadonlyArray<{ fg: ThemeToken; on: readonly ThemeToken[]; need: nu
     .map((fg) => ({ fg, on: ['bg', 'surface', 'surface-raised'] as const, need: 4.5 })),
   { fg: 'accent-text', on: ['accent'], need: 4.5 },
   { fg: 'text', on: ['selection'], need: 4.5 },
+  // Nút bật/tắt đang bật (nút Lặp): biểu tượng màu nhấn trên nền selection (biểu tượng nên cần 3:1).
+  { fg: 'accent', on: ['selection'], need: 3 },
   // `line-strong` là vòng hover của nút chính (vẽ cách nút 2 px, nằm trên nền).
   ...(['line-control', 'line-strong', 'focus', 'scrub-played', 'scrub-rest'] as const)
     .map((fg) => ({ fg, on: ['bg', 'surface', 'surface-raised'] as const, need: 3 })),

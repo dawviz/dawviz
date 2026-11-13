@@ -2,6 +2,7 @@
 // trả null khi không có gì đổi (không ghi mục lịch sử rỗng). `redo`/`undo` là hàm thuần trên Doc bất biến.
 import type { BrightnessConfig, NoteStyle, KeyboardStyle, PianoRollProps, SceneDocument, WidgetLayout, WidgetSpec } from '@dawviz/render-core';
 import type { Command } from './store.ts';
+import { clampOffsetMs } from './audioMap.ts';
 import { sceneForStyle, videoStyleBase, videoStyleKeyboard } from './videoScenes.ts';
 
 export type TrackId = string;
@@ -13,6 +14,8 @@ export interface Doc {
   order: TrackId[];
   hidden: TrackId[];
   solo: TrackId[];
+  /** Offset âm thanh so với dự án (ms; dương = âm thanh trễ, âm = sớm và cắt phần trước mốc 0). Thuộc dự án, không thuộc tệp (T-08). */
+  audioOffsetMs: number;
 }
 export type Cmd = Command<Doc>;
 export const CUSTOM_STYLE = 'custom';
@@ -106,6 +109,11 @@ export const moveTrack = (d: Doc, id: TrackId, to: number): Cmd | null => {
   return slice(d, 'moveTrack', 'web.cmd.moveTrack', (x) => x.order, (x, v) => ({ ...x, order: v }), next, undefined, { track: id, from: from + 1, to: dest + 1 });
 };
 
+// ── âm thanh (T-08) ──
+/** Đặt offset âm thanh (ms). Gõ/bấm ± liên tiếp gộp thành một bước. Kẹp ±10 s, làm tròn 1 ms. */
+export const setAudioOffset = (d: Doc, ms: number): Cmd | null =>
+  slice(d, 'setAudioOffset', 'web.cmd.audioOffset', (x) => x.audioOffsetMs, (x, v) => ({ ...x, audioOffsetMs: v }), clampOffsetMs(ms), 'audio.offset');
+
 // ── bố cục widget (giao diện kéo thả ở T-68; lệnh làm ở đây để hoàn tác dùng chung) ──
 /** Đổi layout widget (x, y, width, height, rotation, anchor). Gộp theo widget: kéo/đổi cỡ/xoay trong một cử chỉ là một bước. */
 export const patchLayout = (d: Doc, widgetId: string, patch: Partial<WidgetLayout>): Cmd | null => {
@@ -151,5 +159,5 @@ export function handEdited(d: Doc): boolean {
 export function initialDoc(videoStyle: string, saved: { style?: Partial<{ base: Partial<NoteStyle>; tracks: Record<string, Partial<NoteStyle>> }>; keyboard?: Partial<KeyboardStyle> } = {}): Doc {
   const kbOn = typeof saved.keyboard?.enabled === 'boolean' ? saved.keyboard.enabled : videoStyleKeyboard(videoStyle);
   const scene = sceneForStyle(videoStyle, { base: { ...videoStyleBase(videoStyle), ...(saved.style?.base ?? {}) }, tracks: saved.style?.tracks ?? {} }, { enabled: kbOn });
-  return { videoStyle, scene, brightness: {}, order: [], hidden: [], solo: [] };
+  return { videoStyle, scene, brightness: {}, order: [], hidden: [], solo: [], audioOffsetMs: 0 };
 }
