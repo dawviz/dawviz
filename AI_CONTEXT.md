@@ -195,7 +195,7 @@ Nguồn: `docs/design/TECHNICAL-DESIGN.md` · [thứ tự đọc](docs/split/TEC
 - [3. Đường ống phân tích (parser) 🟢](docs/split/TECHNICAL-DESIGN/3-duong-ong-phan-tich-parser.md) · 1.9k
 - [4. Dữ liệu dẫn xuất (derived) 🟢/⚪](docs/split/TECHNICAL-DESIGN/4-du-lieu-dan-xuat-derived.md) · 1.5k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.0 Kiểu dáng nốt và bàn phím 🟢 (REQ-GRAPHICS-07)](docs/split/TECHNICAL-DESIGN/5-0-kieu-dang-not-va-ban-phim-req-graphics-07.md) · 0.6k
-- [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.1 Giao diện chính 🟢](docs/split/TECHNICAL-DESIGN/5-1-giao-dien-chinh.md) · 5.3k
+- [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.1 Giao diện chính 🟢](docs/split/TECHNICAL-DESIGN/5-1-giao-dien-chinh.md) · 5.7k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.2 Hợp đồng widget 🟢](docs/split/TECHNICAL-DESIGN/5-2-hop-dong-widget.md) · 0.5k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.3 Hệ toạ độ và tỉ lệ 🟡](docs/split/TECHNICAL-DESIGN/5-3-he-toa-do-va-ti-le.md) · 0.4k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.4 Piano Roll 🟢](docs/split/TECHNICAL-DESIGN/5-4-piano-roll.md) · 0.7k
@@ -215,7 +215,7 @@ Nguồn: `docs/design/TECHNICAL-DESIGN.md` · [thứ tự đọc](docs/split/TEC
 - [6. Ứng dụng web và phát lại 🟡 › 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) › 6.2.8 Kiểm thử (thuần, không cần trình duyệt)](docs/split/TECHNICAL-DESIGN/6-2-8-kiem-thu-thuan-khong-can-trinh-duyet.md) · 1.0k
 - [6. Ứng dụng web và phát lại 🟡 › 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) › 6.2.9 Quyết định đã duyệt](docs/split/TECHNICAL-DESIGN/6-2-9-quyet-dinh-da-duyet.md) · 0.7k
 - [6. Ứng dụng web và phát lại 🟡 › 6.3 Danh sách track 🟢](docs/split/TECHNICAL-DESIGN/6-3-danh-sach-track.md) · 1.9k
-- [6. Ứng dụng web và phát lại 🟡 › 6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)](docs/split/TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) · 12.2k
+- [6. Ứng dụng web và phát lại 🟡 › 6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)](docs/split/TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) · 12.7k
 - [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở)](docs/split/TECHNICAL-DESIGN/7-duong-ong-xuat-video-m3-spike-1-la-co-so.md) · 2.0k
 - [8. Lưu trữ ⚪ (M4)](docs/split/TECHNICAL-DESIGN/8-luu-tru-m4.md) · 1.0k
 - [9. Đa ngôn ngữ 🟢](docs/split/TECHNICAL-DESIGN/9-da-ngon-ngu.md) · 0.5k

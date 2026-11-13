@@ -92,7 +92,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO](SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md) · 6665 ký tự
 - [8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS](SRS/8-cac-van-de-con-mo-cua-srs.md) · 4032 ký tự
 - [Phụ lục A: Mã lỗi](SRS/phu-luc-a-ma-loi.md) · 2383 ký tự
-- [Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)](SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md) · 1227 ký tự
+- [Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)](SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md) · 1151 ký tự
 - [Phụ lục A2: Mã cảnh báo của Parser Library](SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md) · 1331 ký tự
 - [Phụ lục B: Ghi chú rà soát](SRS/phu-luc-b-ghi-chu-ra-soat.md) · 2889 ký tự
 
@@ -116,7 +116,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [3. Đường ống phân tích (parser) 🟢](TECHNICAL-DESIGN/3-duong-ong-phan-tich-parser.md) · 1875 ký tự
 - [4. Dữ liệu dẫn xuất (derived) 🟢/⚪](TECHNICAL-DESIGN/4-du-lieu-dan-xuat-derived.md) · 1495 ký tự
 - [5.0 Kiểu dáng nốt và bàn phím 🟢 (REQ-GRAPHICS-07)](TECHNICAL-DESIGN/5-0-kieu-dang-not-va-ban-phim-req-graphics-07.md) · 624 ký tự
-- [5.1 Giao diện chính 🟢](TECHNICAL-DESIGN/5-1-giao-dien-chinh.md) · 5301 ký tự
+- [5.1 Giao diện chính 🟢](TECHNICAL-DESIGN/5-1-giao-dien-chinh.md) · 5650 ký tự
 - [5.2 Hợp đồng widget 🟢](TECHNICAL-DESIGN/5-2-hop-dong-widget.md) · 459 ký tự
 - [5.3 Hệ toạ độ và tỉ lệ 🟡](TECHNICAL-DESIGN/5-3-he-toa-do-va-ti-le.md) · 364 ký tự
 - [5.4 Piano Roll 🟢](TECHNICAL-DESIGN/5-4-piano-roll.md) · 714 ký tự
@@ -136,7 +136,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [6.2.8 Kiểm thử (thuần, không cần trình duyệt)](TECHNICAL-DESIGN/6-2-8-kiem-thu-thuan-khong-can-trinh-duyet.md) · 1014 ký tự
 - [6.2.9 Quyết định đã duyệt](TECHNICAL-DESIGN/6-2-9-quyet-dinh-da-duyet.md) · 672 ký tự
 - [6.3 Danh sách track 🟢](TECHNICAL-DESIGN/6-3-danh-sach-track.md) · 1860 ký tự
-- [6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)](TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) · 12222 ký tự
+- [6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)](TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) · 12684 ký tự
 - [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở)](TECHNICAL-DESIGN/7-duong-ong-xuat-video-m3-spike-1-la-co-so.md) · 2020 ký tự
 - [8. Lưu trữ ⚪ (M4)](TECHNICAL-DESIGN/8-luu-tru-m4.md) · 1005 ký tự
 - [9. Đa ngôn ngữ 🟢](TECHNICAL-DESIGN/9-da-ngon-ngu.md) · 492 ký tự

@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "5.5 Quy tắc tất định (kiểm bằng test)"
 path: "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.5 Quy tắc tất định (kiểm bằng test)"
 chunk: 5-5-quy-tac-tat-dinh-kiem-bang-test.md
-source_lines: 152-154
-source_sha1: a5669eb68f
+source_lines: 153-155
+source_sha1: e5d905cf74
 ids: [REQ-GRAPHICS-05]
 ---
 ### 5.5 Quy tắc tất định (kiểm bằng test)

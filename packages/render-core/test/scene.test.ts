@@ -156,12 +156,13 @@ test('sanitizeScene: preset mẫu trong SRS đọc được; trường lạ bị
     widgets: [{ type: 'NOPE' }, { type: 'PIANO_ROLL', id: 'x', properties: { lookaheadSeconds: 'fast', orientation: 'VERTICAL', pitchMin: 90, pitchMax: 40 }, layout: { rotation: 15 } }, { type: 'PIANO_ROLL', id: 'x' }] });
   const codes = bad.warnings.map((w) => `${w.code}@${w.details.path}`);
   for (const c of ['WARN_PRESET_VERSION@$.schemaVersion', 'WARN_PRESET_VALUE@$.canvas.designWidth', 'WARN_PRESET_VALUE@$.canvas.backgroundColor', 'WARN_PRESET_WIDGET_UNKNOWN@$.widgets[0].type',
-    'WARN_PRESET_VALUE@$.widgets[1].properties.lookaheadSeconds', 'WARN_PRESET_UNSUPPORTED@$.widgets[1].properties.orientation', 'WARN_PRESET_UNSUPPORTED@$.widgets[1].layout.rotation',
+    'WARN_PRESET_VALUE@$.widgets[1].properties.lookaheadSeconds', 'WARN_PRESET_UNSUPPORTED@$.widgets[1].properties.orientation',
     'WARN_PRESET_VALUE@$.widgets[1].properties.pitchMin', 'WARN_PRESET_VALUE@$.widgets[2].id']) assert.ok(codes.includes(c), c);
   assert.equal(bad.scene.canvas.designWidth, 4096);
   assert.equal(bad.scene.schemaVersion, SCENE_SCHEMA_VERSION);
   assert.deepEqual(bad.scene.widgets.map((w) => w.id), ['x', 'x-2']);
   assert.ok(!('junk' in bad.scene));
+  assert.ok(!codes.some((c) => c.endsWith('.layout.rotation'))); assert.equal(bad.scene.widgets[0].layout.rotation, 15); // T-68: xoay vẽ được, không còn đặt về 0
   const p1: any = bad.scene.widgets[0].properties; assert.deepEqual([p1.pitchMin, p1.pitchMax, p1.lookaheadSeconds], [40, 90, 3]);
 
   for (const raw of [null, [], {}, { schemaVersion: 'abc', canvas: {} }, { schemaVersion: '0.2.0', canvas: {} }, { schemaVersion: '0.3.0' }])

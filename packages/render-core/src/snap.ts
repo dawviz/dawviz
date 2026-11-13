@@ -41,6 +41,38 @@ export function rotatedBounds(l: SnapLayout): Rect {
   return { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
 }
 
+/** Góc khi kéo tay nắm xoay: bắt dính bội số `step` (mặc định 15°); giữ Shift thì tự do. Kết quả chuẩn hoá về (−180, 180]. */
+export function snapAngle(deg: number, opts: { shift?: boolean; step?: number } = {}): number {
+  const step = opts.step ?? 15;
+  return normalizeAngle(opts.shift || !(step > 0) ? deg : Math.round(deg / step) * step);
+}
+
+/** Xoay cả nhóm widget thêm `delta` độ quanh tâm khung bao chung (REQ-GRAPHICS-03): điểm neo của từng widget quay quanh tâm nhóm, góc riêng cộng thêm `delta`. */
+export function rotateGroup<L extends SnapLayout>(group: readonly L[], delta: number): L[] {
+  if (!group.length) return [];
+  const bs = group.map(rotatedBounds);
+  const x0 = Math.min(...bs.map((b) => b.x)), y0 = Math.min(...bs.map((b) => b.y));
+  const cx = (x0 + Math.max(...bs.map((b) => b.x + b.width))) / 2, cy = (y0 + Math.max(...bs.map((b) => b.y + b.height))) / 2;
+  const [c, s] = cosSin(delta);
+  return group.map((l) => {
+    const ax = (l.anchor?.x ?? 0.5) * l.width, ay = (l.anchor?.y ?? 0.5) * l.height;
+    const px = l.x + ax - cx, py = l.y + ay - cy;
+    return { ...l, x: cx + px * c - py * s - ax, y: cy + px * s + py * c - ay, rotation: normalizeAngle(l.rotation + delta) };
+  });
+}
+
+/** Đổi điểm trên canvas về toạ độ trong widget (gốc ở góc trên trái khung chưa xoay). Dùng cho nhấp chọn widget đã xoay. */
+export function toWidgetLocal(l: SnapLayout, px: number, py: number): { x: number; y: number } {
+  const ax = (l.anchor?.x ?? 0.5) * l.width, ay = (l.anchor?.y ?? 0.5) * l.height;
+  const [c, s] = cosSin(l.rotation), dx = px - l.x - ax, dy = py - l.y - ay;
+  return { x: ax + dx * c + dy * s, y: ay - dx * s + dy * c };
+}
+/** Điểm (toạ độ canvas) có nằm trong hình đã xoay của widget không (tính cả cạnh). */
+export function pointInWidget(l: SnapLayout, px: number, py: number): boolean {
+  const q = toWidgetLocal(l, px, py);
+  return q.x >= -EPS && q.y >= -EPS && q.x <= l.width + EPS && q.y <= l.height + EPS;
+}
+
 export interface Guide {
   /** `x`: đường dọc tại `pos` (hoành độ), kéo dài theo y từ `from` tới `to`. `y`: đường ngang tại `pos`, kéo dài theo x. */
   axis: 'x' | 'y';
@@ -71,12 +103,16 @@ export interface SnapInput {
   from?: { x: number; y: number };
 }
 
+/** Khoảng cách đều (Equal Spacing): ba khung bao thẳng hàng theo `axis`, hai khoảng hở `gaps` (từng cặp [đầu, cuối] trên trục) bằng nhau. */
+export interface Spacing { axis: 'x' | 'y'; gap: number; gaps: [[number, number], [number, number]]; /** Vị trí trên trục kia để vẽ dấu đo. */ at: number; with: [number, number] }
+
 export interface SnapResult {
   /** `layout.x, layout.y` đã bắt dính (không phải toạ độ khung bao). */
   x: number; y: number;
   /** Khung bao thẳng trục của widget ở vị trí đã bắt dính. */
   bounds: Rect;
   guides: Guide[];
+  spacings: Spacing[];
 }
 
 const EPS = 1e-6;
@@ -96,7 +132,7 @@ export function snap(i: SnapInput): SnapResult {
   }
   const at = (px: number, py: number): Rect => rotatedBounds({ ...i.moving, x: px, y: py });
   let b = at(x, y);
-  if (i.alt) return { x, y, bounds: b, guides: [] };
+  if (i.alt) return { x, y, bounds: b, guides: [], spacings: [] };
 
   const lockedX = !!(i.shift && i.from && x === i.from.x && y !== i.from.y);
   const lockedY = !!(i.shift && i.from && y === i.from.y && x !== i.from.x);
@@ -114,6 +150,10 @@ export function snap(i: SnapInput): SnapResult {
       const mine = lines(b, axis);
       for (const t of targets) for (const tl of lines(t.r, axis)) for (const ml of mine) {
         const d = tl - ml;
+        if (Math.abs(d) <= threshold && (best === null || Math.abs(d) < Math.abs(best) - EPS)) best = d;
+      }
+      for (const e of equalSpacing(b, otherBounds, axis)) {
+        const d = e.low - (axis === 'x' ? b.x : b.y);
         if (Math.abs(d) <= threshold && (best === null || Math.abs(d) < Math.abs(best) - EPS)) best = d;
       }
     }
@@ -143,5 +183,40 @@ export function snap(i: SnapInput): SnapResult {
       });
     }
   }
-  return { x, y, bounds: b, guides };
+  const spacings: Spacing[] = [];
+  if (i.guides) for (const axis of axes) {
+    if ((axis === 'x' && lockedX) || (axis === 'y' && lockedY)) continue;
+    for (const e of equalSpacing(b, otherBounds, axis)) if (Math.abs(e.low - (axis === 'x' ? b.x : b.y)) <= EPS) spacings.push(e.spacing);
+  }
+  return { x, y, bounds: b, guides, spacings };
+}
+
+/** Khoảng chồng nhau trên trục kia (để coi là "thẳng hàng"). */
+const overlap = (a: Rect, b: Rect, axis: 'x' | 'y') => {
+  const [a0, , a1] = lines(a, axis === 'x' ? 'y' : 'x'), [b0, , b1] = lines(b, axis === 'x' ? 'y' : 'x');
+  return Math.min(a1, b1) - Math.max(a0, b0);
+};
+/**
+ * Vị trí cạnh thấp của `m` trên `axis` để ba khung (m và hai widget khác A < B, cùng hàng với m) cách đều:
+ * m giữa A và B, m sau B (khoảng m–B = khoảng A–B), hoặc m trước A. Chỉ xét cặp không chồng nhau trên trục.
+ */
+function equalSpacing(m: Rect, others: Rect[], axis: 'x' | 'y'): { low: number; spacing: Spacing }[] {
+  const out: { low: number; spacing: Spacing }[] = [];
+  const size = axis === 'x' ? m.width : m.height;
+  const row = others.map((r, k) => ({ r, k })).filter(({ r }) => overlap(m, r, axis) > EPS);
+  for (const A of row) for (const B of row) {
+    const [a0, , a1] = lines(A.r, axis), [b0, , b1] = lines(B.r, axis);
+    if (A.k === B.k || a1 > b0 + EPS) continue; // A phải nằm trước B, không chồng
+    const at = (rs: Rect[]) => { const o = axis === 'x' ? 'y' : 'x'; const lo = Math.max(...rs.map((r) => lines(r, o)[0])), hi = Math.min(...rs.map((r) => lines(r, o)[2])); return (lo + hi) / 2; };
+    const mk = (low: number, g1: [number, number], g2: [number, number], first: number, second: number) => {
+      const moved = axis === 'x' ? { ...m, x: low } : { ...m, y: low };
+      out.push({ low, spacing: { axis, gap: g1[1] - g1[0], gaps: [g1, g2], at: at([moved, A.r, B.r]), with: [first, second] } });
+    };
+    const mid = (a1 + b0 - size) / 2;                     // A | m | B
+    if (mid >= a1 - EPS) mk(mid, [a1, mid], [mid + size, b0], A.k, B.k);
+    const gap = b0 - a1;
+    mk(b1 + gap, [a1, b0], [b1, b1 + gap], A.k, B.k);     // A | B | m
+    mk(a0 - gap - size, [a0 - gap, a0], [a1, b0], A.k, B.k); // m | A | B
+  }
+  return out;
 }

@@ -5,7 +5,7 @@ section: "REQ-PARSER-06: Ableton Live Pack (`.alp`)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) > REQ-PARSER-06: Ableton Live Pack (`.alp`)"
 chunk: req-parser-06-ableton-live-pack-alp.md
 source_lines: 330-337
-source_sha1: 7ab053e2fc
+source_sha1: 0b10d2a1a5
 ids: [ERR_ARCHIVE_INVALID, REQ-PARSER-00, REQ-PARSER-06, REQ-UI-07, WARN_ALP_MULTIPLE_ALS]
 ---
 #### REQ-PARSER-06: Ableton Live Pack (`.alp`)

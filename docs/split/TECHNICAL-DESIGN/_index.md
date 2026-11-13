@@ -1,6 +1,6 @@
 # Chỉ mục TECHNICAL-DESIGN.md — THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER
 
-nguồn: `TECHNICAL-DESIGN.md` (sha1 a5669eb68f)
+nguồn: `TECHNICAL-DESIGN.md` (sha1 e5d905cf74)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -10,7 +10,7 @@ nguồn: `TECHNICAL-DESIGN.md` (sha1 a5669eb68f)
 | 3 | 3. Đường ống phân tích (parser) 🟢 | [3-duong-ong-phan-tich-parser.md](3-duong-ong-phan-tich-parser.md) | 1875 | ERR_FILE_TOO_LARGE, ERR_UNSUPPORTED_FORMAT, WARN_RPP_ENVELOPES_IGNORED, WARN_RPP_EXTERNAL_MIDI, WARN_RPP_SRC_UNIT |
 | 4 | 4. Dữ liệu dẫn xuất (derived) 🟢/⚪ | [4-du-lieu-dan-xuat-derived.md](4-du-lieu-dan-xuat-derived.md) | 1495 | OI-05 |
 | 5 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.0 Kiểu dáng nốt và bàn phím 🟢 (REQ-GRAPHICS-07) | [5-0-kieu-dang-not-va-ban-phim-req-graphics-07.md](5-0-kieu-dang-not-va-ban-phim-req-graphics-07.md) | 624 | REQ-GRAPHICS-07 |
-| 6 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.1 Giao diện chính 🟢 | [5-1-giao-dien-chinh.md](5-1-giao-dien-chinh.md) | 5301 | D-54, D-56, ERR_PRESET_INVALID, REQ-STORAGE-02, WARN_PRESET_UNSUPPORTED, WARN_PRESET_VALUE… |
+| 6 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.1 Giao diện chính 🟢 | [5-1-giao-dien-chinh.md](5-1-giao-dien-chinh.md) | 5650 | D-54, D-56, ERR_PRESET_INVALID, REQ-STORAGE-02, WARN_PRESET_UNSUPPORTED, WARN_PRESET_VALUE… |
 | 7 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.2 Hợp đồng widget 🟢 | [5-2-hop-dong-widget.md](5-2-hop-dong-widget.md) | 459 |  |
 | 8 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.3 Hệ toạ độ và tỉ lệ 🟡 | [5-3-he-toa-do-va-ti-le.md](5-3-he-toa-do-va-ti-le.md) | 364 |  |
 | 9 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.4 Piano Roll 🟢 | [5-4-piano-roll.md](5-4-piano-roll.md) | 714 | D-50 |
@@ -30,7 +30,7 @@ nguồn: `TECHNICAL-DESIGN.md` (sha1 a5669eb68f)
 | 23 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.8 Kiểm thử (thuần, không cần trình duyệt) | [6-2-8-kiem-thu-thuan-khong-can-trinh-duyet.md](6-2-8-kiem-thu-thuan-khong-can-trinh-duyet.md) | 1014 | ERR_AUDIO_DECODE, ERR_AUDIO_TOO_LONG, ERR_FILE_TOO_LARGE |
 | 24 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.9 Quyết định đã duyệt | [6-2-9-quyet-dinh-da-duyet.md](6-2-9-quyet-dinh-da-duyet.md) | 672 |  |
 | 25 | 6. Ứng dụng web và phát lại 🟡 > 6.3 Danh sách track 🟢 | [6-3-danh-sach-track.md](6-3-danh-sach-track.md) | 1860 | D-50, REQ-UI-14 |
-| 26 | 6. Ứng dụng web và phát lại 🟡 > 6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68) | [6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md](6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) | 12222 | ARC-05, D-55, ERR_PRESET_, ERR_PRESET_INVALID, ERR_PRESET_TOO_LARGE, ERR_SCHEMA_NEWER… |
+| 26 | 6. Ứng dụng web và phát lại 🟡 > 6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68) | [6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md](6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) | 12684 | ARC-05, D-55, ERR_PRESET_, ERR_PRESET_INVALID, ERR_PRESET_TOO_LARGE, ERR_SCHEMA_NEWER… |
 | 27 | 7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) | [7-duong-ong-xuat-video-m3-spike-1-la-co-so.md](7-duong-ong-xuat-video-m3-spike-1-la-co-so.md) | 2020 | AT-03, D-01, ERR_EXPORT_FAILED, ERR_NO_SUPPORTED_ENCODER, REQ-EXPORT-00, REQ-EXPORT-02… |
 | 28 | 8. Lưu trữ ⚪ (M4) | [8-luu-tru-m4.md](8-luu-tru-m4.md) | 1005 | ERR_PRESET_INVALID, ERR_SCHEMA_NEWER, WARN_PRESET_MIGRATED |
 | 29 | 9. Đa ngôn ngữ 🟢 | [9-da-ngon-ngu.md](9-da-ngon-ngu.md) | 492 |  |

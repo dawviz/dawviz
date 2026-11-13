@@ -1,7 +1,7 @@
 // T-07: snap() thuần: lưới, Smart Guides (cạnh, tâm, mép canvas), widget xoay 0°/15°/37°/90° dùng khung bao thẳng trục.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { snap, rotatedBounds, normalizeAngle, type SnapLayout } from '../src/index.ts';
+import { snap, rotatedBounds, normalizeAngle, snapAngle, rotateGroup, type SnapLayout } from '../src/index.ts';
 
 const near = (a: number, b: number, m = '') => assert.ok(Math.abs(a - b) < 1e-9, `${m} ${a} ≠ ${b}`);
 const canvas = { width: 1920, height: 1080 };
@@ -125,4 +125,41 @@ test('tất định: cùng đầu vào cho cùng kết quả; đầu vào không
   const inp = { ...base, guides: true, grid: { enabled: true, size: 8 }, others: [W(500, 300, 200, 100, 15)], moving: W(0, 0, 120, 60, 37), to: { x: 421, y: 333 } };
   const frozen = JSON.stringify(inp);
   assert.deepEqual(snap(inp), snap(inp)); assert.equal(JSON.stringify(inp), frozen);
+});
+
+test('snapAngle: bội 15°, Shift tự do, chuẩn hoá (−180, 180]', () => {
+  assert.equal(snapAngle(22), 15); assert.equal(snapAngle(23), 30); assert.equal(snapAngle(-7), 0);
+  assert.equal(snapAngle(37, { shift: true }), 37); assert.equal(snapAngle(186), 180); assert.equal(snapAngle(-186), 180);
+  assert.equal(snapAngle(352), -15); assert.equal(snapAngle(200, { shift: true }), -160);
+  assert.equal(snapAngle(44, { step: 45 }), 45);
+});
+
+test('rotateGroup: xoay 90° quanh tâm nhóm; góc riêng cộng thêm; xoay lại −90° về như cũ', () => {
+  const g = [W(0, 0, 100, 20), W(200, 80, 40, 40, 15)];
+  const r = rotateGroup(g, 90);
+  // tâm khung bao nhóm
+  const bs = g.map(rotatedBounds), cx = (Math.min(...bs.map((b) => b.x)) + Math.max(...bs.map((b) => b.x + b.width))) / 2, cy = (Math.min(...bs.map((b) => b.y)) + Math.max(...bs.map((b) => b.y + b.height))) / 2;
+  assert.deepEqual(r.map((l) => l.rotation), [90, 105]);
+  // tâm widget 0 là (50, 10): quay 90° quanh (cx, cy) → (cx − (10 − cy), cy + (50 − cx))
+  near(r[0].x + 50, cx - (10 - cy), 'cx0'); near(r[0].y + 10, cy + (50 - cx), 'cy0');
+  const back = rotateGroup(r, -90);
+  back.forEach((l, k) => { near(l.x, g[k].x, 'x'); near(l.y, g[k].y, 'y'); assert.equal(l.rotation, g[k].rotation); });
+  assert.deepEqual(rotateGroup([], 30), []);
+});
+
+test('Equal Spacing: kéo widget vào giữa hai widget cùng hàng thì hút về chỗ cách đều; cũng hút khi đứng sau/trước cặp', () => {
+  const A = W(100, 100, 100, 50), B = W(500, 100, 100, 50), m = W(0, 110, 60, 30);
+  const on = { ...base, guides: true, others: [A, B] };
+  const mid = snap({ ...on, moving: m, to: { x: 323, y: 110 } });   // chỗ đều: (200 + 500 − 60)/2 = 320
+  assert.equal(mid.x, 320);
+  assert.ok(mid.spacings.some((s) => s.axis === 'x' && s.gap === 120 && s.gaps[0][0] === 200 && s.gaps[1][1] === 500));
+  const after = snap({ ...on, moving: m, to: { x: 897, y: 110 } }); // khoảng A–B = 300 → m ở 600 + 300
+  assert.equal(after.x, 900);
+  const before = snap({ ...on, moving: m, to: { x: -258, y: 110 } }); // m.cuối = 100 − 300 = −200 → m.x = −260
+  assert.equal(before.x, -260);
+  // không cùng hàng (trục y không chồng) thì không hút cách đều
+  const off = snap({ ...on, moving: m, to: { x: 323, y: 400 } });
+  assert.equal(off.x, 323); assert.deepEqual(off.spacings, []);
+  // Alt tắt mọi bắt dính
+  assert.equal(snap({ ...on, moving: m, to: { x: 323, y: 110 }, alt: true }).x, 323);
 });

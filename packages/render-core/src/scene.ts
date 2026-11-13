@@ -235,8 +235,6 @@ export function sanitizeScene(input: unknown): { scene: SceneDocument; warnings:
     };
     const A = isObj(L.anchor) ? L.anchor : {};
     layout.anchor = { x: num(A.x, DEFAULT_ANCHOR.x, 0, 1, `${p}.layout.anchor.x`), y: num(A.y, DEFAULT_ANCHOR.y, 0, 1, `${p}.layout.anchor.y`) };
-    // Tới T-68 (xoay trong renderFrame) dữ liệu xoay bị đưa về 0 để Preview không hiện hình sai.
-    if (layout.rotation !== 0) { w('WARN_PRESET_UNSUPPORTED', `${p}.layout.rotation`, layout.rotation, 'xoay widget chưa vẽ được (T-68); đặt về 0°'); layout.rotation = 0; }
     const mode = oneOf(rw.trackMappingMode, ['ALL', 'MANUAL', 'AUTO_ASSIGN_FIRST_MELODIC'] as const, 'ALL', `${p}.trackMappingMode`);
     const idx = Array.isArray(rw.assignedTrackIndices) ? rw.assignedTrackIndices.filter((n): n is number => Number.isInteger(n) && (n as number) >= 0) : [];
     const base: Omit<WidgetSpec, 'properties'> = {

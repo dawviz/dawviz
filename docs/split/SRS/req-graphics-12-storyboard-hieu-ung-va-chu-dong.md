@@ -5,7 +5,7 @@ section: "REQ-GRAPHICS-12: Storyboard, hiệu ứng và chữ động"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) > REQ-GRAPHICS-12: Storyboard, hiệu ứng và chữ động"
 chunk: req-graphics-12-storyboard-hieu-ung-va-chu-dong.md
 source_lines: 842-844
-source_sha1: 7ab053e2fc
+source_sha1: 0b10d2a1a5
 ids: [REQ-GRAPHICS-12]
 ---
 #### REQ-GRAPHICS-12: Storyboard, hiệu ứng và chữ động

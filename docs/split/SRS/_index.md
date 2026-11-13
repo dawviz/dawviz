@@ -1,6 +1,6 @@
 # Chỉ mục SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
-nguồn: `SRS.md` (sha1 7ab053e2fc)
+nguồn: `SRS.md` (sha1 0b10d2a1a5)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -77,6 +77,6 @@ nguồn: `SRS.md` (sha1 7ab053e2fc)
 | 70 | 7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO | [7-dieu-kien-nghiem-thu-va-ban-giao.md](7-dieu-kien-nghiem-thu-va-ban-giao.md) | 6665 | ARC-01, AT-01, AT-02, AT-03, AT-04, AT-05… |
 | 71 | 8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS | [8-cac-van-de-con-mo-cua-srs.md](8-cac-van-de-con-mo-cua-srs.md) | 4032 | D-20, D-21, D-22, D-31, D-44, D-45… |
 | 72 | 9. PHỤ LỤC > Phụ lục A: Mã lỗi | [phu-luc-a-ma-loi.md](phu-luc-a-ma-loi.md) | 2383 | ERR_ARCHIVE_INVALID, ERR_ARCHIVE_TOO_LARGE, ERR_AST_INVALID, ERR_AST_TOO_LARGE, ERR_AUDIO_DECODE, ERR_AUDIO_TOO_LONG… |
-| 73 | 9. PHỤ LỤC > Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02) | [phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md](phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md) | 1227 | NFR-SEC-04, REQ-STORAGE-02, WARN_PRESET_MIGRATED, WARN_PRESET_UNSAFE_KEY, WARN_PRESET_UNSUPPORTED, WARN_PRESET_VALUE… |
+| 73 | 9. PHỤ LỤC > Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02) | [phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md](phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md) | 1151 | NFR-SEC-04, REQ-STORAGE-02, WARN_PRESET_MIGRATED, WARN_PRESET_UNSAFE_KEY, WARN_PRESET_UNSUPPORTED, WARN_PRESET_VALUE… |
 | 74 | 9. PHỤ LỤC > Phụ lục A2: Mã cảnh báo của Parser Library | [phu-luc-a2-ma-canh-bao-cua-parser-library.md](phu-luc-a2-ma-canh-bao-cua-parser-library.md) | 1331 | REQ-AUDIO-01, REQ-WIDGET-07, WARN_ALP_MULTIPLE_ALS, WARN_AUDIO_LENGTH, WARN_CLIP_SKIPPED, WARN_DAWPROJECT_NO_ARRANGEMENT… |
 | 75 | 9. PHỤ LỤC > Phụ lục B: Ghi chú rà soát | [phu-luc-b-ghi-chu-ra-soat.md](phu-luc-b-ghi-chu-ra-soat.md) | 2889 | D-20, D-22, KPI-01, NFR-ACC-02, NFR-COMP-01, OI-02… |

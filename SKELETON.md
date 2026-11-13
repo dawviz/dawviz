@@ -208,6 +208,7 @@ dawviz/
 │  │  │  ├─ preset.test.ts
 │  │  │  ├─ presets.test.ts
 │  │  │  ├─ render-core.test.ts
+│  │  │  ├─ rotate.test.ts
 │  │  │  ├─ scene.test.ts
 │  │  │  └─ snap.test.ts
 │  │  ├─ package.json
@@ -756,8 +757,13 @@ interface Rect
 type SnapLayout   // Khung của một widget: `anchor` vắng thì lấy tâm. `rotation` độ, chiều kim đồng hồ (cùng chiều `ctx.rotate`, t…
 function normalizeAngle(deg: number): number   // Đưa góc về (−180, 180].
 function rotatedBounds(l: SnapLayout): Rect   // Khung bao thẳng trục của widget sau khi xoay quanh điểm neo. Góc 0 trả đúng `x, y, width, height`.
+function snapAngle(deg: number, opts: { shift?: boolean; step?: number } = {}): number   // Góc khi kéo tay nắm xoay: bắt dính bội số `step` (mặc định 15°); giữ Shift thì tự do. Kết quả chuẩn hoá về (−…
+function rotateGroup<L extends SnapLayout>(group: readonly L[], delta: number): L[]   // Xoay cả nhóm widget thêm `delta` độ quanh tâm khung bao chung (REQ-GRAPHICS-03): điểm neo của từng widget qua…
+function toWidgetLocal(l: SnapLayout, px: number, py: number):    // Đổi điểm trên canvas về toạ độ trong widget (gốc ở góc trên trái khung chưa xoay). Dùng cho nhấp chọn widget …
+function pointInWidget(l: SnapLayout, px: number, py: number): boolean   // Điểm (toạ độ canvas) có nằm trong hình đã xoay của widget không (tính cả cạnh).
 interface Guide
 interface SnapInput
+interface Spacing   // Khoảng cách đều (Equal Spacing): ba khung bao thẳng hàng theo `axis`, hai khoảng hở `gaps` (từng cặp [đầu, cu…
 interface SnapResult
 function snap(i: SnapInput): SnapResult   // Thứ tự (mỗi trục độc lập): Smart Guides trước (cạnh/tâm của khung bao so với mép/tâm canvas và khung bao các …
 ```
@@ -1585,6 +1591,7 @@ type ParseResponse
 - `packages/render-core/test/preset.test.ts`
 - `packages/render-core/test/presets.test.ts`
 - `packages/render-core/test/render-core.test.ts`
+- `packages/render-core/test/rotate.test.ts`
 - `packages/render-core/test/scene.test.ts`
 - `packages/render-core/test/snap.test.ts`
 - `test/als.test.js`
@@ -1595,4 +1602,4 @@ type ParseResponse
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 550 ký hiệu công khai -->
+<!-- 10 thư mục src, 555 ký hiệu công khai -->

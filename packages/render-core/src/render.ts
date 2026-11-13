@@ -9,12 +9,14 @@ import type { PianoRollProps, SceneDocument, WidgetSpec } from './scene.ts';
 import type { Derived, Primitive, RectPrim, TextPrim, WidgetRenderer } from './prims.ts';
 import { HUD_RENDERERS, buildHud, type ChordProps, type HudData } from './hud.ts';
 import { measureText } from './text.ts';
+import { normalizeAngle } from './snap.ts';
 
 /** Ngữ cảnh vẽ đủ cho renderFrame (Canvas 2D và OffscreenCanvas đều có). */
 export interface RenderCtx extends Ctx2D {
   save(): void; restore(): void;
   setTransform(a: number, b: number, c: number, d: number, e: number, f: number): void;
   translate(x: number, y: number): void;
+  rotate(rad: number): void;
   rect(x: number, y: number, w: number, h: number): void;
   clip(): void;
 }
@@ -118,7 +120,7 @@ export function layoutFrame(scene: SceneDocument, derived0: Derived, ast: Unifie
 
 /**
  * Vẽ một khung hình. `scale` = điểm ảnh đích / pt (Preview: bề rộng canvas × DPR / designWidth; Export: W_export / designWidth).
- * (1) nền; (2) widget theo zIndex, mỗi widget cắt theo khung của nó; (3) primitive.
+ * (1) nền; (2) widget theo zIndex, mỗi widget cắt theo khung của nó (đã xoay quanh điểm neo, REQ-GRAPHICS-03); (3) primitive.
  */
 export function renderFrame(scene: SceneDocument, derived: Derived, ast: UnifiedProjectAST, t: number, target: RenderTarget, scale: number, renderers = WIDGET_RENDERERS): void {
   const g = target.ctx, { designWidth: W, designHeight: H } = scene.canvas;
@@ -130,7 +132,12 @@ export function renderFrame(scene: SceneDocument, derived: Derived, ast: Unified
   for (const { widget, prims } of layoutFrame(scene, derived, ast, t, renderers)) {
     const L = widget.layout;
     g.save();
-    g.translate(L.x, L.y);
+    const rot = normalizeAngle(L.rotation);
+    if (rot === 0) g.translate(L.x, L.y); // góc 0: đúng chuỗi lệnh trước T-68
+    else { // dời tới điểm neo, xoay (chiều kim đồng hồ, trục y xuống), dời ngược: toạ độ trong widget giữ nguyên, không co nội dung
+      const ax = L.anchor.x * L.width, ay = L.anchor.y * L.height;
+      g.translate(L.x + ax, L.y + ay); g.rotate(rot * Math.PI / 180); g.translate(-ax, -ay);
+    }
     g.beginPath(); g.rect(0, 0, L.width, L.height); g.clip();
     drawPrimitives(g, derived.fontsReady === false ? prims.filter((p) => p.kind !== 'text') : prims); // phông chưa nạp: không vẽ chữ (TECHNICAL-DESIGN 5.7)
     g.restore();

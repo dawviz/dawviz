@@ -5,7 +5,7 @@ section: "REQ-PARSER-05: Parser JSON khai báo (D-18, D-28, R-05)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) > REQ-PARSER-05: Parser JSON khai báo (D-18, D-28, R-05)"
 chunk: req-parser-05-parser-json-khai-bao-d-18-d-28-r-0.md
 source_lines: 323-329
-source_sha1: 7ab053e2fc
+source_sha1: 0b10d2a1a5
 ids: [D-18, D-28, ERR_SCHEMA_INVALID, ERR_UNSUPPORTED_FORMAT, OI-08, REQ-AST-01, REQ-PARSER-05, SOI-12]
 ---
 #### REQ-PARSER-05: Parser JSON khai báo (D-18, D-28, R-05)

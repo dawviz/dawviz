@@ -1133,7 +1133,7 @@ Mọi cảnh báo có `details.path` (đường dẫn JSON, ví dụ `$.widgets[
 | :--- | :--- | :--- |
 | `WARN_PRESET_VALUE` | Giá trị sai kiểu, ngoài khoảng, id trùng hoặc `pitchMin > pitchMax` | Dùng mặc định / kẹp / đổi id / đổi chỗ; preset vẫn nạp |
 | `WARN_PRESET_WIDGET_UNKNOWN` | `type` không thuộc 8 loại hợp lệ | Bỏ widget đó |
-| `WARN_PRESET_UNSUPPORTED` | Tính năng chưa có ở bản này (ví dụ ảnh nền khi chưa có tài nguyên phiên, biến đổi 3D trước 1.1). Trong mã hiện tại còn gồm hướng dọc/góc tự do của Piano Roll (T-59) và xoay widget (`layout.rotation ≠ 0`, đưa về 0°) cho tới khi T-68 làm xong | Bỏ qua tính năng, vẽ như mặc định |
+| `WARN_PRESET_UNSUPPORTED` | Tính năng chưa có ở bản này (ví dụ ảnh nền khi chưa có tài nguyên phiên, biến đổi 3D trước 1.1). Trong mã hiện tại còn gồm hướng dọc/góc tự do của Piano Roll (T-59) | Bỏ qua tính năng, vẽ như mặc định |
 | `WARN_PRESET_VERSION` | Phiên bản hiện tại (0.4) nhưng khác bản vá | Đọc theo phiên bản hiện tại |
 | `WARN_PRESET_MIGRATED` | Preset 0.3.x được di trú lên 0.4.0 (thêm `layout.anchor` = tâm); `details.from`, `details.to` | Dùng bản đã di trú; lưu lại để giữ. Preset dựng sẵn đã ở 0.4.0 nên không báo |
 | `WARN_PRESET_UNSAFE_KEY` | Có khoá `__proto__`, `constructor` hoặc `prototype` ở bất kỳ độ sâu nào (NFR-SEC-04) | Bỏ khoá đó, giữ phần còn lại |

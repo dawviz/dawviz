@@ -430,7 +430,7 @@
   },
   "SRS.md": {
    "title": "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)",
-   "sha1": "7ab053e2fc",
+   "sha1": "0b10d2a1a5",
    "chunks": [
     {
      "n": 0,
@@ -2344,7 +2344,7 @@
       "9. PHỤ LỤC",
       "Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)"
      ],
-     "chars": 1227,
+     "chars": 1151,
      "lines": [
       1128,
       1140
@@ -2602,7 +2602,7 @@
   },
   "TECHNICAL-DESIGN.md": {
    "title": "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER",
-   "sha1": "a5669eb68f",
+   "sha1": "e5d905cf74",
    "chunks": [
     {
      "n": 0,
@@ -2712,10 +2712,10 @@
       "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại",
       "5.1 Giao diện chính 🟢"
      ],
-     "chars": 5301,
+     "chars": 5650,
      "lines": [
       110,
-      129
+      130
      ],
      "ids": [
       "D-54",
@@ -2738,8 +2738,8 @@
      ],
      "chars": 459,
      "lines": [
-      130,
-      141
+      131,
+      142
      ],
      "ids": []
     },
@@ -2753,8 +2753,8 @@
      ],
      "chars": 364,
      "lines": [
-      142,
-      144
+      143,
+      145
      ],
      "ids": []
     },
@@ -2768,8 +2768,8 @@
      ],
      "chars": 714,
      "lines": [
-      145,
-      151
+      146,
+      152
      ],
      "ids": [
       "D-50"
@@ -2785,8 +2785,8 @@
      ],
      "chars": 640,
      "lines": [
-      152,
-      154
+      153,
+      155
      ],
      "ids": [
       "REQ-GRAPHICS-05"
@@ -2802,8 +2802,8 @@
      ],
      "chars": 1776,
      "lines": [
-      155,
-      165
+      156,
+      166
      ],
      "ids": [
       "D-50",
@@ -2821,8 +2821,8 @@
      ],
      "chars": 4996,
      "lines": [
-      166,
-      191
+      167,
+      192
      ],
      "ids": [
       "ERR_FONT_LOAD",
@@ -2841,8 +2841,8 @@
      ],
      "chars": 925,
      "lines": [
-      192,
-      194
+      193,
+      195
      ],
      "ids": [
       "REQ-WIDGET-05"
@@ -2858,8 +2858,8 @@
      ],
      "chars": 1256,
      "lines": [
-      197,
-      207
+      198,
+      208
      ],
      "ids": [
       "REQ-UI-14"
@@ -2875,8 +2875,8 @@
      ],
      "chars": 233,
      "lines": [
-      208,
-      210
+      209,
+      211
      ],
      "ids": [
       "NFR-SEC-04",
@@ -2898,8 +2898,8 @@
      ],
      "chars": 3263,
      "lines": [
-      211,
-      224
+      212,
+      225
      ],
      "ids": [
       "ARC-03",
@@ -2924,8 +2924,8 @@
      ],
      "chars": 4556,
      "lines": [
-      225,
-      245
+      226,
+      246
      ],
      "ids": []
     },
@@ -2940,8 +2940,8 @@
      ],
      "chars": 1992,
      "lines": [
-      246,
-      253
+      247,
+      254
      ],
      "ids": [
       "REQ-UI-15",
@@ -2959,8 +2959,8 @@
      ],
      "chars": 1439,
      "lines": [
-      254,
-      261
+      255,
+      262
      ],
      "ids": [
       "REQ-UI-03"
@@ -2977,8 +2977,8 @@
      ],
      "chars": 1211,
      "lines": [
-      262,
-      268
+      263,
+      269
      ],
      "ids": [
       "REQ-WIDGET-07"
@@ -2995,8 +2995,8 @@
      ],
      "chars": 826,
      "lines": [
-      269,
-      274
+      270,
+      275
      ],
      "ids": [
       "REQ-PARSER-07",
@@ -3014,8 +3014,8 @@
      ],
      "chars": 1023,
      "lines": [
-      275,
-      285
+      276,
+      286
      ],
      "ids": [
       "AT-03",
@@ -3033,8 +3033,8 @@
      ],
      "chars": 1014,
      "lines": [
-      286,
-      288
+      287,
+      289
      ],
      "ids": [
       "ERR_AUDIO_DECODE",
@@ -3053,8 +3053,8 @@
      ],
      "chars": 672,
      "lines": [
-      289,
-      296
+      290,
+      297
      ],
      "ids": []
     },
@@ -3068,8 +3068,8 @@
      ],
      "chars": 1860,
      "lines": [
-      297,
-      306
+      298,
+      307
      ],
      "ids": [
       "D-50",
@@ -3084,10 +3084,10 @@
       "6. Ứng dụng web và phát lại 🟡",
       "6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)"
      ],
-     "chars": 12222,
+     "chars": 12684,
      "lines": [
-      307,
-      358
+      308,
+      359
      ],
      "ids": [
       "ARC-05",
@@ -3098,7 +3098,6 @@
       "ERR_SCHEMA_NEWER",
       "NFR-SEC-04",
       "NFR-SEC-06",
-      "REQ-GRAPHICS-02",
       "REQ-GRAPHICS-03",
       "REQ-STORAGE-04",
       "REQ-UI-02",
@@ -3106,7 +3105,6 @@
       "WARN_PRESET_",
       "WARN_PRESET_MIGRATED",
       "WARN_PRESET_UNSAFE_KEY",
-      "WARN_PRESET_UNSUPPORTED",
       "WARN_PRESET_VERSION"
      ]
     },
@@ -3119,8 +3117,8 @@
      ],
      "chars": 2020,
      "lines": [
-      359,
-      384
+      360,
+      385
      ],
      "ids": [
       "AT-03",
@@ -3142,8 +3140,8 @@
      ],
      "chars": 1005,
      "lines": [
-      385,
-      390
+      386,
+      391
      ],
      "ids": [
       "ERR_PRESET_INVALID",
@@ -3160,8 +3158,8 @@
      ],
      "chars": 492,
      "lines": [
-      391,
-      393
+      392,
+      394
      ],
      "ids": []
     },
@@ -3174,8 +3172,8 @@
      ],
      "chars": 470,
      "lines": [
-      394,
-      398
+      395,
+      399
      ],
      "ids": [
       "D-13"
@@ -3190,8 +3188,8 @@
      ],
      "chars": 885,
      "lines": [
-      399,
-      408
+      400,
+      409
      ],
      "ids": [
       "NFR-PERF-04",
@@ -3207,8 +3205,8 @@
      ],
      "chars": 728,
      "lines": [
-      409,
-      411
+      410,
+      412
      ],
      "ids": [
       "OI-07"
@@ -3223,8 +3221,8 @@
      ],
      "chars": 906,
      "lines": [
-      412,
-      418
+      413,
+      419
      ],
      "ids": [
       "D-12",
@@ -3241,8 +3239,8 @@
      ],
      "chars": 760,
      "lines": [
-      419,
-      426
+      420,
+      427
      ],
      "ids": []
     }
@@ -6200,7 +6198,6 @@
    "SRS/lich-su-phien-ban.md",
    "SRS/req-graphics-02-bat-dinh-thong-minh.md",
    "SRS/req-graphics-03-xoay-widget-tu-do-d-54-thay-d-15.md",
-   "TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md",
    "UI-DIRECTION/dinh-huong-hinh-anh-khung-preview-va-giao-dien-w.md",
    "UI-DIRECTION/5-2-bo-token-de-xuat-chot-khi-lam.md",
    "UI-DIRECTION/5-4-bang-mau-dung-san-da-kiem-aa-v0-5.md"
@@ -7270,8 +7267,7 @@
   "WARN_PRESET_UNSUPPORTED": [
    "SRS/lich-su-phien-ban.md",
    "SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md",
-   "TECHNICAL-DESIGN/5-1-giao-dien-chinh.md",
-   "TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md"
+   "TECHNICAL-DESIGN/5-1-giao-dien-chinh.md"
   ],
   "WARN_PRESET_VERSION": [
    "SRS/lich-su-phien-ban.md",

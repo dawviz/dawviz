@@ -5,7 +5,7 @@ section: "REQ-GRAPHICS-01: Phân lớp đồ họa (D-07)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-01: Phân lớp đồ họa (D-07)"
 chunk: req-graphics-01-phan-lop-do-hoa-d-07.md
 source_lines: 412-417
-source_sha1: 7ab053e2fc
+source_sha1: 0b10d2a1a5
 ids: [D-07, REQ-GRAPHICS-01]
 ---
 #### REQ-GRAPHICS-01: Phân lớp đồ họa (D-07)

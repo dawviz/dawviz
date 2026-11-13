@@ -5,7 +5,7 @@ section: "3. Đường ống phân tích (parser) 🟢"
 path: "3. Đường ống phân tích (parser) 🟢"
 chunk: 3-duong-ong-phan-tich-parser.md
 source_lines: 65-91
-source_sha1: a5669eb68f
+source_sha1: e5d905cf74
 ids: [ERR_FILE_TOO_LARGE, ERR_UNSUPPORTED_FORMAT, WARN_RPP_ENVELOPES_IGNORED, WARN_RPP_EXTERNAL_MIDI, WARN_RPP_SRC_UNIT]
 ---
 ## 3. Đường ống phân tích (parser) 🟢

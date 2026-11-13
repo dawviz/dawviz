@@ -66,12 +66,12 @@ test('preset hỏng: không phải đối tượng, thiếu trường, kiểu sa
   assert.equal(r.scene.widgets[0].visible, true);
 });
 
-test('rotation: chuẩn hoá về (−180, 180] rồi đưa về 0 kèm WARN_PRESET_UNSUPPORTED cho tới T-68; anchor ngoài 0..1 bị kẹp', () => {
-  for (const rot of [15, 37, 90, 190, -270, 360]) {
+test('rotation: chuẩn hoá về (−180, 180], giữ nguyên và không cảnh báo (T-68 vẽ được xoay)', () => {
+  for (const [rot, want] of [[15, 15], [37, 37], [90, 90], [190, -170], [-270, 90], [360, 0], [-180, 180]]) {
     const s = defaultScene() as any; s.widgets[0].layout.rotation = rot;
     const r = sanitizeScene(JSON.parse(JSON.stringify(s)));
-    assert.equal(r.scene.widgets[0].layout.rotation, 0, `rotation ${rot}`);
-    assert.equal(r.warnings.some((w) => w.code === 'WARN_PRESET_UNSUPPORTED' && w.details.path === '$.widgets[0].layout.rotation'), rot % 360 !== 0, `rotation ${rot}`);
+    assert.equal(r.scene.widgets[0].layout.rotation, want, `rotation ${rot}`);
+    assert.deepEqual(r.warnings, [], `rotation ${rot}`);
   }
 });
 

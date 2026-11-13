@@ -5,7 +5,7 @@ section: "REQ-GRAPHICS-11: Hạt không trạng thái"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) > REQ-GRAPHICS-11: Hạt không trạng thái"
 chunk: req-graphics-11-hat-khong-trang-thai.md
 source_lines: 839-841
-source_sha1: 7ab053e2fc
+source_sha1: 0b10d2a1a5
 ids: [REQ-GRAPHICS-11]
 ---
 #### REQ-GRAPHICS-11: Hạt không trạng thái
