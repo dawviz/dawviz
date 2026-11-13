@@ -5,7 +5,7 @@ section: "8. Lưu trữ ⚪ (M4)"
 path: "8. Lưu trữ ⚪ (M4)"
 chunk: 8-luu-tru-m4.md
 source_lines: 385-390
-source_sha1: f25d58c0f2
+source_sha1: 185dbf38d8
 ids: [ERR_PRESET_INVALID, ERR_SCHEMA_NEWER, WARN_PRESET_MIGRATED]
 ---
 ## 8. Lưu trữ ⚪ (M4)

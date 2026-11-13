@@ -5,7 +5,7 @@ section: "REQ-WIDGET-01: Piano Roll"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-01: Piano Roll"
 chunk: req-widget-01-piano-roll.md
 source_lines: 530-538
-source_sha1: 3d043a49c8
+source_sha1: f91921e0ca
 ids: [D-15, NFR-PERF-02, REQ-GRAPHICS-09, REQ-GRAPHICS-15, REQ-WIDGET-01]
 ---
 #### REQ-WIDGET-01: Piano Roll

@@ -1,6 +1,6 @@
 // Ảnh thu nhỏ cho cột "Video styles": Render Core vẽ một khung nhỏ của dự án đang mở tại mốc cố định (thumbnailTime), có bộ đệm.
 // Cùng renderFrame với khung xem trước, nên thấy gì ở ảnh thu nhỏ thì khung video ra thế đó. Không vẽ được (không có canvas) thì trả undefined.
-import { buildSceneHud, buildIndex, createThumbnailCache, DEFAULT_BRIGHTNESS, renderThumbnail, thumbnailKey, type Derived, type RenderCtx, type SceneDocument, type UnifiedProjectAST } from '@dawviz/render-core';
+import { buildSceneHud, buildIndex, pianoRollGeometry, createThumbnailCache, DEFAULT_BRIGHTNESS, renderThumbnail, thumbnailKey, type Derived, type PianoRollProps, type RenderCtx, type SceneDocument, type UnifiedProjectAST } from '@dawviz/render-core';
 
 const cache = createThumbnailCache<string>();
 /** Khoá dự án cho bộ đệm: đổi tệp hoặc nội dung thì ảnh vẽ lại. */
@@ -13,9 +13,8 @@ type Pt = { x: number; y: number };
 export function playheadCenter(scene: SceneDocument): Pt {
   const w = scene.widgets.find((x) => x.type === 'PIANO_ROLL' && x.visible);
   if (!w) return { x: scene.canvas.designWidth / 2, y: scene.canvas.designHeight / 2 };
-  const pr = w.properties as { playheadPositionRatio?: number; keyboard?: { enabled?: boolean; width?: number } };
-  const kb = pr.keyboard?.enabled ? pr.keyboard.width ?? 0 : 0, ratio = pr.playheadPositionRatio ?? 0.3;
-  return { x: w.layout.x + kb + (w.layout.width - kb) * ratio, y: w.layout.y + w.layout.height / 2 };
+  const { playX } = pianoRollGeometry(w.properties as PianoRollProps, w.layout.width);
+  return { x: w.layout.x + playX, y: w.layout.y + w.layout.height / 2 };
 }
 
 export function styleThumbnail(styleId: string, scene: SceneDocument, ast: UnifiedProjectAST, pkey: string, width: number): string | undefined {

@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { parseProject } from '@dawviz/parser';
 import { DEFAULT_CHORD, buildIndex, defaultScene, sanitizeScene, renderFrame, layoutFrame, pianoRollWidget, tracksFor, pianoRollPitchRange,
-  DEFAULT_BRIGHTNESS, SCENE_SCHEMA_VERSION, type Derived } from '../src/index.ts';
+  DEFAULT_BRIGHTNESS, SCENE_SCHEMA_VERSION, pianoRollGeometry, layoutPianoRoll, type Derived, type Primitive, type RectPrim } from '../src/index.ts';
 
 const fixtures = new URL('../../../test/fixtures/', import.meta.url);
 const load = async () => {
@@ -61,14 +61,48 @@ test('layoutFrame: sắp theo zIndex, widget ẩn và widget chưa có renderer 
   assert.ok(log.includes('translate(960,0)') && log.includes('rect(0,0,960,540)') && log.filter((l) => l === 'clip()').length === 2);
 });
 
-test('Piano Roll: lookahead 3 s sau playhead ở 30% → cửa sổ 3/0.7 s; playhead và bàn phím nằm trong khung widget', async () => {
+test('Piano Roll: tỉ lệ thời gian cố định (width / visibleSeconds), không đổi theo vị trí vạch phát hay bàn phím; bàn phím bật → vạch ở mép bàn phím (T-71)', async () => {
   const { ast, derived } = await load();
   const w = pianoRollWidget({ x: 0, y: 0, width: 1000, height: 500, rotation: 0 });
-  const [{ prims }] = layoutFrame({ ...defaultScene(), widgets: [w] }, derived, ast, 10);
+  const playOf = (prims: Primitive[]) => prims.find((p) => p.kind === 'rect' && p.fill === '#ffffff' && p.h === 500 && p.w === 2) as RectPrim | undefined;
+  const props = (kbOn: boolean, ratio: number, extra = {}) => ({ ...w, properties: { ...w.properties, ...extra, playheadPositionRatio: ratio, keyboard: { ...w.properties.keyboard, enabled: kbOn } } });
+  const noteW = (spec: typeof w) => (layoutFrame({ ...defaultScene(), widgets: [spec] }, derived, ast, 10)[0].prims as RectPrim[]).filter((p) => p.h < 500 && p.w > 2).map((p) => Math.round(p.w * 1e6) / 1e6).sort((a, b) => a - b);
+  const pxPerSec = 1000 / w.properties.visibleSeconds;
   const kb = w.properties.keyboard.width;
-  const play = prims.find((p) => p.fill === '#ffffff' && p.h === 500 && p.w === 2)!;
-  assert.ok(Math.abs(play.x + 1 - (kb + (1000 - kb) * 0.3)) < 1e-9);
-  for (const p of prims) { assert.ok(p.y >= -1e-9 && p.y + p.h <= 500 + 1e-9); assert.ok(p.alpha > 0 && p.alpha <= 1); }
+  for (const [kbOn, ratio] of [[false, 0.3], [false, 0.8], [true, 0.3], [true, 0.9]] as const) {
+    const g = pianoRollGeometry(props(kbOn, ratio).properties, 1000);
+    assert.equal(g.pxPerSec, pxPerSec, `kb ${kbOn} ratio ${ratio}`);
+    assert.equal(g.playX, kbOn ? kb : 1000 * ratio);
+    const [{ prims }] = layoutFrame({ ...defaultScene(), widgets: [props(kbOn, ratio)] }, derived, ast, 10);
+    assert.ok(Math.abs(playOf(prims)!.x + 1 - g.playX) < 1e-9);
+    for (const p of prims) { assert.ok(p.y >= -1e-9 && p.y + p.h <= 500 + 1e-9); assert.ok(p.alpha > 0 && p.alpha <= 1); }
+  }
+  // cùng một nốt có cùng bề rộng dù dời vạch phát (lấy nốt chung bằng cửa sổ rộng để cả hai vị trí đều thấy đủ)
+  const wide = { visibleSeconds: 60 };
+  const a = noteW(props(false, 0.3, wide)), b = noteW(props(false, 0.7, wide));
+  assert.ok(a.length > 0 && Math.max(...a) === Math.max(...b));
+  // ẩn vạch phát: không còn nét vạch, nốt giữ nguyên
+  const hidden = props(false, 0.3, { playheadVisible: false });
+  assert.equal(playOf(layoutFrame({ ...defaultScene(), widgets: [hidden] }, derived, ast, 10)[0].prims), undefined);
+  assert.deepEqual(noteW(hidden), noteW(props(false, 0.3)));
+});
+
+test('sanitizeScene: thiếu visibleSeconds → lấy lookahead / (1 − ratio) như cách tính cũ; có thì kẹp 0,5–60; playheadVisible mặc định true', () => {
+  const mk = (props: object) => sanitizeScene({ ...defaultScene(), widgets: [{ ...pianoRollWidget({ x: 0, y: 0, width: 100, height: 100, rotation: 0 }), properties: props }] }).scene.widgets[0].properties as any;
+  assert.equal(mk({ lookaheadSeconds: 1, playheadPositionRatio: 0.84 }).visibleSeconds, 6.25); // làm tròn 1e-6
+  assert.equal(mk({ visibleSeconds: 100 }).visibleSeconds, 60);
+  assert.equal(mk({}).playheadVisible, true);
+  assert.equal(mk({ playheadVisible: false }).playheadVisible, false);
+});
+
+test('layoutPianoRoll: nốt đang phát nằm sau cùng (vẽ đè lên nốt chưa phát và đã phát), thứ tự trong mỗi nhóm giữ nguyên (T-71)', () => {
+  const mk = (id: string, start: number, end: number, pitch = 60) => ({ id, pitch, velocity: 100, startTick: 0, durationTick: 0, startTimeSeconds: start, endTimeSeconds: end });
+  // nốt dài A đang phát; B chưa phát nằm trùng hàng, xếp TRƯỚC A trong track sau; C đã phát
+  const track = (id: string, notes: ReturnType<typeof mk>[]) => ({ id, name: id, color: '#ff0000', isVisible: true, isMuted: false, pitchRange: { min: 60, max: 60 }, notes, automation: [] }) as any;
+  const tracks = [track('t1', [mk('C', 0, 1), mk('A', 1, 9)]), track('t2', [mk('B', 6, 8)])];
+  const index = buildIndex(tracks, 10);
+  const rects = layoutPianoRoll(index, [{ tick: 0, bpm: 120 } as any], 5, { width: 1000, height: 100, windowSeconds: 10, playheadRatio: 0.5, pitchMin: 59, pitchMax: 61 });
+  assert.deepEqual(rects.map((r) => [r.id, r.active]), [['C', false], ['B', false], ['A', true]]);
 });
 
 test('tracksFor + tầm cao độ: MANUAL theo chỉ số track; FIT_CONTENT ±1; CUSTOM giữ nguyên; rỗng → C3–C6', async () => {

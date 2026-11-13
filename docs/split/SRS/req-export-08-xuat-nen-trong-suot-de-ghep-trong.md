@@ -5,7 +5,7 @@ section: "REQ-EXPORT-08: Xuất nền trong suốt để ghép trong phần mề
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-EXPORT-08: Xuất nền trong suốt để ghép trong phần mềm dựng (D-47), bản 1.0"
 chunk: req-export-08-xuat-nen-trong-suot-de-ghep-trong.md
 source_lines: 792-803
-source_sha1: 3d043a49c8
+source_sha1: f91921e0ca
 ids: [D-47, REQ-EXPORT-08]
 ---
 #### REQ-EXPORT-08: Xuất nền trong suốt để ghép trong phần mềm dựng (D-47), bản 1.0

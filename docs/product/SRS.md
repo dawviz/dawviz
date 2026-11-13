@@ -412,7 +412,7 @@ Quy tắc xác thực (vi phạm thì báo `ERR_AST_INVALID`, kèm vị trí l�
 #### REQ-GRAPHICS-01: Phân lớp đồ họa (D-07)
 1. **Nền cố định**: màu nền hoặc ảnh nền (phủ kín, chế độ cover).
 2. **Widget tự do (1..N)**: mỗi widget có `zIndex` nguyên riêng; có Bring to Front / Send to Back.
-3. **Playhead**: thuộc Piano Roll, vẽ đè lên thanh nốt nhưng nằm dưới widget có `zIndex` cao hơn Piano Roll.
+3. **Playhead**: thuộc Piano Roll, vẽ đè lên thanh nốt nhưng nằm dưới widget có `zIndex` cao hơn Piano Roll. Giữa các thanh nốt: nốt đang phát luôn vẽ trên nốt chưa phát và đã phát (T-71).
 4. **Lớp tương tác cố định**: khung chọn, điểm neo, đường gióng. Chỉ có ở Edit Mode; ẩn hoàn toàn ở Preview Mode và khi xuất.
 
 #### REQ-GRAPHICS-02: Bắt dính thông minh
@@ -424,7 +424,7 @@ Quy tắc xác thực (vi phạm thì báo `ERR_AST_INVALID`, kèm vị trí l�
 #### REQ-GRAPHICS-16: Thanh phát (playhead) tuỳ chỉnh
 Vạch đánh dấu thời điểm đang phát trên Piano Roll (và các widget có trục thời gian). Mặc định giữ như hiện tại: một vạch dọc mảnh.
 * **1.0:**
-  * Hiện/ẩn; **vị trí** dọc theo trục chảy (0–100%, mặc định 25–30%) và lệch thêm theo px.
+  * Hiện/ẩn; **vị trí** dọc theo trục chảy (0–100%, mặc định 25–30%) và lệch thêm theo px. Khi bàn phím của Piano Roll đang bật, vạch phát cố định ở mép bàn phím (nốt phát khi chạm phím); ô vị trí bị khoá kèm chú thích giải thích lý do, giá trị cũ được giữ để dùng lại khi tắt bàn phím (T-71). Đổi vị trí vạch phát **không** đổi tỉ lệ thời gian của nốt (pt/giây cố định theo `visibleSeconds` của Piano Roll); ẩn vạch phát chỉ bỏ nét vẽ.
   * **Kiểu:** vạch liền, nét đứt, chấm; vạch đôi; **dải** (vùng sáng có độ rộng); dải mờ dần hai bên (gradient); có hoặc không có **đầu mũi tên/tam giác** ở hai đầu.
   * **Độ dày** 0,5–40 px; **độ dài** cả khung hoặc một phần (%) căn giữa/đầu/cuối; **màu** qua bộ chọn màu chung (REQ-UI-11, có alpha) hoặc theo màu track của nốt đang chạm; **phát sáng** (cường độ, bán kính); bo đầu.
   * **Phản ứng khi nốt chạm vạch:** nhấp sáng hoặc phình độ dày trong một khoảng ngắn (ms), mức theo velocity; có thể tắt.

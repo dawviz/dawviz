@@ -10,7 +10,8 @@ import { GestureContext } from '../lib/storeReact.ts';
 
 type ErrorReason = 'syntax' | 'unit' | 'nan' | 'expr';
 
-export function NumberField({ id, label, value, onChange, spec, className = '' }: { id?: string; label: string; value: number; onChange(v: number): void; spec: NumberSpec; className?: string }) {
+/** `disabled`: ô bị khoá (vd. vạch phát khi bật bàn phím, T-71); `describedBy`: id đoạn chú thích giải thích lý do. */
+export function NumberField({ id, label, value, onChange, spec, className = '', disabled, describedBy }: { id?: string; label: string; value: number; onChange(v: number): void; spec: NumberSpec; className?: string; disabled?: boolean; describedBy?: string }) {
   const { i18n } = useI18n();
   const msgId = useId();
   const gesture = useContext(GestureContext);
@@ -33,7 +34,7 @@ export function NumberField({ id, label, value, onChange, spec, className = '' }
   return (
     <span className="relative block w-full min-w-0">
       <input id={id} type="text" inputMode="decimal" spellCheck={false} autoComplete="off" aria-label={label}
-        aria-invalid={error ? true : undefined} aria-describedby={error ? msgId : undefined}
+        aria-invalid={error ? true : undefined} aria-describedby={[error ? msgId : '', describedBy ?? ''].filter(Boolean).join(' ') || undefined} disabled={disabled}
         value={text}
         onFocus={(e) => { setEditing(true); e.currentTarget.select(); }}
         onChange={(e) => { setText(e.target.value); setError(null); }}
@@ -51,7 +52,7 @@ export function NumberField({ id, label, value, onChange, spec, className = '' }
             setError(null); onChange(v); setText(formatNumber(v, spec.step));
           }
         }}
-        className={`min-h-[var(--hit)] w-full min-w-0 rounded border bg-raised px-1 py-0.5 text-right tabular-nums text-fg focus:outline-none focus:ring-1 focus:ring-focus ${error ? 'border-danger' : 'border-control'} ${className}`} />
+        className={`min-h-[var(--hit)] w-full min-w-0 rounded border bg-raised px-1 py-0.5 text-right tabular-nums text-fg focus:outline-none focus:ring-1 focus:ring-focus disabled:cursor-not-allowed disabled:opacity-60 ${error ? 'border-danger' : 'border-control'} ${className}`} />
       <span id={msgId} role="status" aria-live="polite"
         className={error ? 'absolute right-0 top-full z-30 mt-1 flex w-max max-w-[16rem] gap-1.5 rounded border border-danger/60 bg-raised px-2 py-1 text-left text-xs leading-snug text-fg' : 'sr-only'}
         data-testid="number-error">

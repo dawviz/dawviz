@@ -5,7 +5,7 @@ section: "6.1 Trạng thái"
 path: "6. Ứng dụng web và phát lại 🟡 > 6.1 Trạng thái"
 chunk: 6-1-trang-thai.md
 source_lines: 197-207
-source_sha1: f25d58c0f2
+source_sha1: 185dbf38d8
 ids: [REQ-UI-14]
 ---
 ### 6.1 Trạng thái

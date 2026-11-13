@@ -429,7 +429,7 @@
   },
   "SRS.md": {
    "title": "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)",
-   "sha1": "3d043a49c8",
+   "sha1": "f91921e0ca",
    "chunks": [
     {
      "n": 0,
@@ -1032,7 +1032,7 @@
       "3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02)",
       "REQ-GRAPHICS-01: Phân lớp đồ họa (D-07)"
      ],
-     "chars": 445,
+     "chars": 525,
      "lines": [
       412,
       417
@@ -1069,7 +1069,7 @@
       "3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02)",
       "REQ-GRAPHICS-16: Thanh phát (playhead) tuỳ chỉnh"
      ],
-     "chars": 1143,
+     "chars": 1489,
      "lines": [
       424,
       433
@@ -2599,7 +2599,7 @@
   },
   "TECHNICAL-DESIGN.md": {
    "title": "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER",
-   "sha1": "f25d58c0f2",
+   "sha1": "185dbf38d8",
    "chunks": [
     {
      "n": 0,
@@ -2709,7 +2709,7 @@
       "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại",
       "5.1 Giao diện chính 🟢"
      ],
-     "chars": 3893,
+     "chars": 5065,
      "lines": [
       110,
       129

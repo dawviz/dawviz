@@ -41,7 +41,8 @@ export function layoutPianoRoll(index: TimelineIndex, tempoMap: TempoPoint[], t:
       });
     }
   }
-  return rects;
+  // T-71: nốt đang phát vẽ sau cùng (nằm trên nốt đã phát và nốt chưa phát chồng lên nó); giữ thứ tự ổn định trong mỗi nhóm.
+  return [...rects.filter((r) => !r.active), ...rects.filter((r) => r.active)];
 }
 
 // ---- Bàn phím piano (widget): cùng trục cao độ với Piano Roll, phím sáng màu track khi có nốt đang phát.

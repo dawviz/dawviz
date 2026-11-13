@@ -704,6 +704,7 @@ interface RenderCtx   // Ngữ cảnh vẽ đủ cho renderFrame (Canvas 2D và 
 interface RenderTarget   // `width`/`height` theo điểm ảnh thật của đích vẽ.
 function tracksFor(spec: WidgetSpec<unknown>, index: TimelineIndex): TrackIndex[]   // Chọn track cho widget theo trackMappingMode (SRS REQ-STORAGE-02).
 function pianoRollPitchRange(p: PianoRollProps, tracks: TrackIndex[]): [number, number]   // Tầm cao độ của Piano Roll: FIT_CONTENT lấy min/max của track được gán (±1), rỗng thì C3–C6.
+function pianoRollGeometry(p: Pick<PianoRollProps, 'keyboard' | 'playheadPositionRatio' | 'visibleSeconds'>, width: number)   // Hình học trục thời gian của Piano Roll (T-71). Tỉ lệ thời gian cố định: pt/giây = width / visibleSeconds, KHÔ…
 const pianoRollRenderer
 const WIDGET_RENDERERS   // Bảng renderer theo loại. Widget chưa có renderer được bỏ qua khi vẽ (vẫn giữ trong Scene).
 const buildSceneHud = (scene: SceneDocument, ast: UnifiedProjectAST, index: TimelineIndex) =>   // HudData cho một scene: số đếm, lưới ô nhịp và hợp âm của mọi widget Chord Detection. Gọi ở bước derived (một …
@@ -955,7 +956,7 @@ function Notices({ problems, basic = false }: { problems: Problem[]; basic?: boo
 Ô nhập số dùng chung (REQ-UI-15): gõ giá trị, phép tính, đơn vị, `+=`; ↑/↓ (Shift ×10, Alt ×0,1); Enter/rời ô để áp, Esc huỷ.
 
 ```text
-function NumberField({ id, label, value, onChange, spec, className = '' }: { id?: string; label: string; value: number; onChange(v: number): void; spec: NumberSpec; className?: string })
+function NumberField({ id, label, value, onChange, spec, className = '', disabled, describedBy }: { id?: string; label: string; value: number; onChange(v: number): void; spec: NumberSpec; className?: string; disabled?: boolean; describedBy?: string })   // `disabled`: ô bị khoá (vd. vạch phát khi bật bàn phím, T-71); `describedBy`: id đoạn chú thích giải thích lý …
 ```
 
 #### `apps/web/src/components/PresetSettings.tsx`
@@ -987,7 +988,7 @@ function Select({ wrapClassName = '', className = '', ...props }: SelectHTMLAttr
 Thanh trượt + ô nhập số (REQ-UI-15) dùng chung cho mọi bảng. Lưới dùng minmax(0,1fr) để không tràn khung hẹp (T-61).
 
 ```text
-function SliderField({ id, label, value, min, max, step, hardMin, hardMax, adv, onChange }: { id: string; label: string; value: number; min: number; max: number; step: number; hardMin?: number; hardMax?: number; adv?: boolean; onChange(v: number): void })   // `min`/`max` là phạm vi thanh trượt (phạm vi mềm); `hardMin`/`hardMax` cho phép gõ vượt phạm vi đó (mặc định b…
+function SliderField({ id, label, value, min, max, step, hardMin, hardMax, adv, disabled, describedBy, onChange }: { id: string; label: string; value: number; min: number; max: number; step: number; hardMin?: number; hardMax?: number; adv?: boolean; disabled?: boolean; describedBy?: string; onChange(v: number): void })   // `min`/`max` là phạm vi thanh trượt (phạm vi mềm); `hardMin`/`hardMax` cho phép gõ vượt phạm vi đó (mặc định b…
 ```
 
 #### `apps/web/src/components/Stage.tsx`
@@ -1013,7 +1014,7 @@ Mục "Hình thức" của inspector: kiểu dáng nốt (toàn cục) và bàn 
 
 ```text
 const ADVANCED_STYLE_KEYS   // Trường chỉ có ở Nâng cao (REQ-UI-13). Dùng để biết phần nâng cao đang khác mặc định hay không.
-function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset }: { notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean })   // `lanes`: tên lane automation có trong dự án đang mở (cho nguồn phát sáng "automation"). `advanced`: hiện cả d…
+function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset, playhead }: { playhead?: { ratio: number; visible: boolean; onChange(ratio: number): void; onVisible(visible: boolean): void }; notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean })   // `lanes`: tên lane automation có trong dự án đang mở (cho nguồn phát sáng "automation"). `playhead`: vị trí vạ…
 ```
 
 #### `apps/web/src/components/ThemeSelect.tsx`
@@ -1204,6 +1205,8 @@ const pianoOf = (s: SceneDocument) =>
 const patchNoteStyle = (d: Doc, next: NoteStyle) =>   // Đổi kiểu nốt toàn cục. Gộp theo trường đổi (kéo một thanh trượt = một bước).
 const applyNotePreset = (d: Doc, base: NoteStyle, presetId?: string) =>   // Chọn bộ kiểu nốt dựng sẵn: thay cả `base`; hoàn tác trả lại đủ các chỉnh tay trước đó. Không gộp.
 const patchKeyboard = (d: Doc, next: KeyboardStyle) =>
+const setPlayheadRatio = (d: Doc, ratio: number) =>   // Vị trí vạch phát của Piano Roll (0,05–0,95 bề rộng, REQ-GRAPHICS-16). Kéo/gõ liên tiếp gộp thành một bước. Kh…
+const setPlayheadVisible = (d: Doc, visible: boolean) =>   // Hiện/ẩn vạch phát (REQ-GRAPHICS-16). Ẩn chỉ bỏ nét vẽ; nốt vẫn phát tại vị trí vạch.
 const patchTrackStyle = (d: Doc, id: TrackId, patch: Partial<NoteStyle> | null) =>   // Ghi đè kiểu nốt của một track (`patch` = null: bỏ ghi đè).
 const setVideoStyle = (d: Doc, id: string) =>   // Thay cả scene bằng scene của phong cách `id`, giữ ghi đè theo track (hành vi cũ). Kiểu nốt tay chỉnh và bố cụ…
 const loadPreset = (d: Doc, scene: SceneDocument) =>   // Mở preset: thay scene (và đánh dấu phong cách 'custom'). Một bước hoàn tác.
@@ -1589,4 +1592,4 @@ type ParseResponse
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 544 ký hiệu công khai -->
+<!-- 10 thư mục src, 547 ký hiệu công khai -->

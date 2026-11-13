@@ -35,12 +35,17 @@ export interface PianoRollProps {
   orientation: 'HORIZONTAL';          // VERTICAL và góc tự do: T-59
   pitchRangeMode: 'FIT_CONTENT' | 'CUSTOM';
   pitchMin: number; pitchMax: number; // dùng khi CUSTOM
-  lookaheadSeconds: number;           // 1–8 (REQ-WIDGET-01)
+  lookaheadSeconds: number;           // 1–8 (REQ-WIDGET-01). Chỉ dùng để suy ra visibleSeconds khi preset cũ thiếu trường đó.
   playheadPositionRatio: number;      // 0.05–0.95
+  /** Số giây trải trên toàn bề rộng widget = tỉ lệ thời gian (pt/giây = width / visibleSeconds). Không đổi theo vị trí vạch phát hay bàn phím. 0,5–60.
+   *  Preset thiếu trường này: lấy lookahead / (1 − playheadPositionRatio), đúng cách tính cũ, nên preset cũ vẽ như trước. */
+  visibleSeconds: number;
   noteStyle: StyleConfig;
   keyboard: KeyboardStyle;
   playheadColor: string;
   playheadWidth: number;              // pt
+  /** Hiện vạch phát (REQ-GRAPHICS-16). Ẩn thì nốt vẫn phát tại vị trí vạch, chỉ không vẽ vạch. */
+  playheadVisible: boolean;
 }
 
 export interface CanvasSpec {
@@ -62,9 +67,9 @@ export interface SceneDocument {
 
 export const DEFAULT_PIANO_ROLL: Readonly<PianoRollProps> = Object.freeze({
   orientation: 'HORIZONTAL', pitchRangeMode: 'FIT_CONTENT', pitchMin: 48, pitchMax: 84,
-  lookaheadSeconds: 3, playheadPositionRatio: 0.3,
+  lookaheadSeconds: 3, playheadPositionRatio: 0.3, visibleSeconds: 3 / 0.7,
   noteStyle: { base: { ...DEFAULT_NOTE_STYLE }, tracks: {} }, keyboard: { ...DEFAULT_KEYBOARD_STYLE, width: 96 }, // 96 pt ≈ 5% bề rộng 1920
-  playheadColor: '#ffffff', playheadWidth: 2,
+  playheadColor: '#ffffff', playheadWidth: 2, playheadVisible: true,
 });
 
 export const ASPECTS: Readonly<Record<string, [number, number]>> = Object.freeze({ '16:9': [1920, 1080], '9:16': [1080, 1920], '1:1': [1080, 1080] });
@@ -251,12 +256,14 @@ export function sanitizeScene(input: unknown): { scene: SceneDocument; warnings:
       let pMin = Math.round(num(P.pitchMin, d.pitchMin, 0, 127, `${p}.properties.pitchMin`));
       let pMax = Math.round(num(P.pitchMax, d.pitchMax, 0, 127, `${p}.properties.pitchMax`));
       if (pMin > pMax) { w('WARN_PRESET_VALUE', `${p}.properties.pitchMin`, pMin, 'pitchMin > pitchMax; đổi chỗ'); [pMin, pMax] = [pMax, pMin]; }
+      const look = num(P.lookaheadSeconds, d.lookaheadSeconds, 1, 8, `${p}.properties.lookaheadSeconds`);
+      const ratio = num(P.playheadPositionRatio, d.playheadPositionRatio, 0.05, 0.95, `${p}.properties.playheadPositionRatio`);
       const props: PianoRollProps = {
         orientation: 'HORIZONTAL',
         pitchRangeMode: oneOf(P.pitchRangeMode, ['FIT_CONTENT', 'CUSTOM'] as const, d.pitchRangeMode, `${p}.properties.pitchRangeMode`),
         pitchMin: pMin, pitchMax: pMax,
-        lookaheadSeconds: num(P.lookaheadSeconds, d.lookaheadSeconds, 1, 8, `${p}.properties.lookaheadSeconds`),
-        playheadPositionRatio: num(P.playheadPositionRatio, d.playheadPositionRatio, 0.05, 0.95, `${p}.properties.playheadPositionRatio`),
+        lookaheadSeconds: look, playheadPositionRatio: ratio,
+        visibleSeconds: num(P.visibleSeconds, Math.min(60, Math.max(0.5, Math.round(look / (1 - ratio) * 1e6) / 1e6)), 0.5, 60, `${p}.properties.visibleSeconds`),
         noteStyle: { base: sanitizeStyle(nsBase), tracks },
         keyboard: {
           enabled: bool(kb.enabled, d.keyboard.enabled, `${p}.properties.keyboard.enabled`),
@@ -267,6 +274,7 @@ export function sanitizeScene(input: unknown): { scene: SceneDocument; warnings:
         },
         playheadColor: str(P.playheadColor, d.playheadColor, `${p}.properties.playheadColor`, (s) => HEX.test(s)),
         playheadWidth: num(P.playheadWidth, d.playheadWidth, 0, 40, `${p}.properties.playheadWidth`),
+        playheadVisible: bool(P.playheadVisible, d.playheadVisible, `${p}.properties.playheadVisible`),
       };
       widgets.push({ ...base, properties: props });
     } else if (base.type in HUD_SANITIZERS) {

@@ -5,7 +5,7 @@ section: "5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp �
 path: "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp 🟢 (đã dùng ở T-69)"
 chunk: 5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md
 source_lines: 192-194
-source_sha1: f25d58c0f2
+source_sha1: 185dbf38d8
 ids: [REQ-WIDGET-05]
 ---
 ### 5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp 🟢 (đã dùng ở T-69)

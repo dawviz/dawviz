@@ -1,4 +1,4 @@
-// T-69: preset và kiểu nốt cũ không đổi kết quả vẽ. Mã băm lấy từ mã TRƯỚC T-69 (commit 29f5d0e) trên cùng tệp mẫu.
+// T-69: preset và kiểu nốt cũ không đổi kết quả vẽ. Mã băm gốc lấy từ mã TRƯỚC T-69 (commit 29f5d0e) trên cùng tệp mẫu; lấy lại ở T-71 (xem dưới).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
@@ -14,19 +14,22 @@ function rec() { // cùng định dạng với lúc lấy mã băm cũ
   return { ctx, log };
 }
 const hash = (s: string) => crypto.createHash('sha256').update(s).digest('hex').slice(0, 16);
+// T-71 đổi chủ ý ba điều nên mã băm lấy lại: (1) bàn phím bật (mặc định) → vạch phát ở mép bàn phím; (2) nốt đang phát vẽ sau cùng;
+// (3) tỉ lệ thời gian = bề rộng widget / visibleSeconds, không trừ bề rộng bàn phím.
+// Đã kiểm khi tắt bàn phím: mã trước và sau T-71 vẽ cùng tập lệnh, chỉ khác thứ tự. In mã băm mới: PRINT_HASH=1.
 const GOLDEN: Record<string, string> = {
-  'default@0': 'bc13453459eafe8b', 'default@3.3': '7252c7c0fad34a20', 'default@10': 'd0e8ed5f373ad5f7', 'default@25': '4c799086cf8f1cf2',
-  'style:neon@10': '07b89e59d64d97cf', 'style:soft@10': '95c823f911b54fdd', 'style:flat@10': 'adf9b4d478597977', 'style:outline@10': 'fd740f3970c58aff',
+  'default@0': '029e1707a2958a2b', 'default@3.3': '8dd6ab8cc67542ee', 'default@10': 'cd3c97b628b38349', 'default@25': 'a382c07956646c48',
+  'style:neon@10': 'd5d6f082c08f26e9', 'style:soft@10': '7a74e9471d825802', 'style:flat@10': 'ccb573f6e204ceeb', 'style:outline@10': '083b13140edaf24c',
 };
 
 test('preset cũ và bốn kiểu dựng sẵn vẽ ra đúng chuỗi lệnh như trước T-69 (màu theo trạng thái = null)', async () => {
   const { ast } = await parseProject('BigProject4b.rpp', fs.readFileSync(new URL('BigProject4b.rpp', fixtures)), {});
   const derived = { index: buildIndex(ast.tracks, ast.meta.totalDurationSeconds), brightness: Object.fromEntries(ast.tracks.map((t: any) => [t.id, { ...DEFAULT_BRIGHTNESS }])) };
-  for (const t of [0, 3.3, 10, 25]) { const { ctx, log } = rec(); renderFrame(defaultScene(), derived, ast, t, { ctx, width: 1920, height: 1080 }, 1); assert.equal(hash(log.join('\n')), GOLDEN[`default@${t}`], `default@${t}`); }
+  for (const t of [0, 3.3, 10, 25]) { const { ctx, log } = rec(); renderFrame(defaultScene(), derived, ast, t, { ctx, width: 1920, height: 1080 }, 1); { const h = hash(log.join('\n')); if (process.env.PRINT_HASH) console.log(`default@${t}`, h); else assert.equal(h, GOLDEN[`default@${t}`], `default@${t}`); } }
   for (const [name, patch] of Object.entries(STYLE_PRESETS)) {
     const s = defaultScene(); const w: any = s.widgets[0];
     w.properties.noteStyle = { base: { ...w.properties.noteStyle.base, ...(patch as object) }, tracks: {} };
-    const { ctx, log } = rec(); renderFrame(s, derived, ast, 10, { ctx, width: 1920, height: 1080 }, 1); assert.equal(hash(log.join('\n')), GOLDEN[`style:${name}@10`], name);
+    const { ctx, log } = rec(); renderFrame(s, derived, ast, 10, { ctx, width: 1920, height: 1080 }, 1); const h = hash(log.join('\n')); if (process.env.PRINT_HASH) console.log(`style:${name}@10`, h); else assert.equal(h, GOLDEN[`style:${name}@10`], name);
   }
 });
 

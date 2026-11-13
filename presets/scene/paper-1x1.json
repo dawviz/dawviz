@@ -17,7 +17,7 @@
       "trackMappingMode": "ALL", "assignedTrackIndices": [],
       "properties": {
         "orientation": "HORIZONTAL", "pitchRangeMode": "FIT_CONTENT", "pitchMin": 48, "pitchMax": 84,
-        "lookaheadSeconds": 1, "playheadPositionRatio": 0.84,
+        "lookaheadSeconds": 1, "playheadPositionRatio": 0.84, "visibleSeconds": 6.25,
         "noteStyle": {
           "base": {
             "colorMode": "custom", "customColor": "#383838", "opacity": 1, "inactiveOpacity": 1,

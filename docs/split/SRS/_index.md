@@ -1,6 +1,6 @@
 # Chỉ mục SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
-nguồn: `SRS.md` (sha1 3d043a49c8)
+nguồn: `SRS.md` (sha1 f91921e0ca)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -25,9 +25,9 @@ nguồn: `SRS.md` (sha1 3d043a49c8)
 | 18 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) > REQ-PARSER-07: Tempo không đoán ngầm và ghi đè (D-24, D-29) | [req-parser-07-tempo-khong-doan-ngam-va-ghi-de-d.md](req-parser-07-tempo-khong-doan-ngam-va-ghi-de-d.md) | 1665 | D-24, D-29, ERR_AST_INVALID, OI-12, REQ-PARSER-07, WARN_TEMPO_FALLBACK… |
 | 19 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.2. Cấu trúc dữ liệu chuẩn hóa (Unified AST, D-08, D-09) | [3-2-cau-truc-du-lieu-chuan-hoa-unified-ast-d-08.md](3-2-cau-truc-du-lieu-chuan-hoa-unified-ast-d-08.md) | 3457 | D-08, D-09, D-24, ERR_AST_INVALID, ERR_AST_TOO_LARGE, ERR_NO_NOTES… |
 | 20 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-00: Độ phân giải thiết kế logic (D-06) | [req-graphics-00-do-phan-giai-thiet-ke-logic-d-06.md](req-graphics-00-do-phan-giai-thiet-ke-logic-d-06.md) | 421 | D-06, REQ-GRAPHICS-00 |
-| 21 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-01: Phân lớp đồ họa (D-07) | [req-graphics-01-phan-lop-do-hoa-d-07.md](req-graphics-01-phan-lop-do-hoa-d-07.md) | 445 | D-07, REQ-GRAPHICS-01 |
+| 21 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-01: Phân lớp đồ họa (D-07) | [req-graphics-01-phan-lop-do-hoa-d-07.md](req-graphics-01-phan-lop-do-hoa-d-07.md) | 525 | D-07, REQ-GRAPHICS-01 |
 | 22 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-02: Bắt dính thông minh | [req-graphics-02-bat-dinh-thong-minh.md](req-graphics-02-bat-dinh-thong-minh.md) | 790 | REQ-GRAPHICS-02 |
-| 23 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-16: Thanh phát (playhead) tuỳ chỉnh | [req-graphics-16-thanh-phat-playhead-tuy-chinh.md](req-graphics-16-thanh-phat-playhead-tuy-chinh.md) | 1143 | REQ-GRAPHICS-09, REQ-GRAPHICS-11, REQ-GRAPHICS-16, REQ-STORAGE-05, REQ-UI-11, REQ-WIDGET-01 |
+| 23 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-16: Thanh phát (playhead) tuỳ chỉnh | [req-graphics-16-thanh-phat-playhead-tuy-chinh.md](req-graphics-16-thanh-phat-playhead-tuy-chinh.md) | 1489 | REQ-GRAPHICS-09, REQ-GRAPHICS-11, REQ-GRAPHICS-16, REQ-STORAGE-05, REQ-UI-11, REQ-WIDGET-01 |
 | 24 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-03: Xoay widget tự do (D-54, thay D-15) | [req-graphics-03-xoay-widget-tu-do-d-54-thay-d-15.md](req-graphics-03-xoay-widget-tu-do-d-54-thay-d-15.md) | 1304 | D-15, D-47, D-54, REQ-GRAPHICS-02, REQ-GRAPHICS-03, REQ-GRAPHICS-05… |
 | 25 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-04: Preset dựng sẵn và đổi tỉ lệ khung | [req-graphics-04-preset-dung-san-va-doi-ti-le-khu.md](req-graphics-04-preset-dung-san-va-doi-ti-le-khu.md) | 673 | KPI-04, REQ-GRAPHICS-04, REQ-UI-02 |
 | 26 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-06: Độ sáng track theo automation (D-33) | [req-graphics-06-do-sang-track-theo-automation-d.md](req-graphics-06-do-sang-track-theo-automation-d.md) | 2443 | D-33, D-50, P-01, P-09, REQ-GRAPHICS-06, REQ-GRAPHICS-07… |

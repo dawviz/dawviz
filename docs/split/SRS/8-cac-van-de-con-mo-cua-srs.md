@@ -5,7 +5,7 @@ section: "8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS"
 path: "8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS"
 chunk: 8-cac-van-de-con-mo-cua-srs.md
 source_lines: 1076-1102
-source_sha1: 3d043a49c8
+source_sha1: f91921e0ca
 ids: [D-20, D-21, D-22, D-31, D-44, D-45, KPI-03, OI-01, OI-02, OI-05, OI-08, OI-09, OI-10, OI-12, OI-13, P-13, REQ-GRAPHICS-06, REQ-PARSER-05, REQ-STORAGE-05, SOI-01, SOI-02, SOI-03, SOI-04, SOI-05, SOI-06, SOI-07, SOI-08, SOI-09, SOI-10, SOI-11, SOI-12, SOI-13, SOI-14, SOI-15, SOI-16, SOI-17, SOI-18, SOI-19, SOI-20]
 ---
 ## 8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS

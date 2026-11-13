@@ -63,6 +63,17 @@ export const patchKeyboard = (d: Doc, next: KeyboardStyle): Cmd | null => {
   if (!cur) return null;
   return slice(d, 'patchKeyboard', 'web.cmd.keyboard', (x) => pianoOf(x.scene)!.properties.keyboard, (x, v) => withPiano(x, (p) => ({ ...p, keyboard: v })), next, `kbd:${keysChanged(cur, next).join(',')}`);
 };
+/** Vị trí vạch phát của Piano Roll (0,05–0,95 bề rộng, REQ-GRAPHICS-16). Kéo/gõ liên tiếp gộp thành một bước. Khi bàn phím bật, Render Core bỏ qua giá trị này (T-71). */
+export const setPlayheadRatio = (d: Doc, ratio: number): Cmd | null => {
+  if (!pianoOf(d.scene)) return null;
+  const v = Math.round(Math.min(0.95, Math.max(0.05, ratio)) * 100) / 100;
+  return slice(d, 'setPlayheadRatio', 'web.cmd.playhead', (x) => pianoOf(x.scene)!.properties.playheadPositionRatio, (x, r) => withPiano(x, (p) => ({ ...p, playheadPositionRatio: r })), v, 'playhead.ratio');
+};
+/** Hiện/ẩn vạch phát (REQ-GRAPHICS-16). Ẩn chỉ bỏ nét vẽ; nốt vẫn phát tại vị trí vạch. */
+export const setPlayheadVisible = (d: Doc, visible: boolean): Cmd | null => {
+  if (!pianoOf(d.scene)) return null;
+  return slice(d, 'setPlayheadVisible', 'web.cmd.playheadVisible', (x) => pianoOf(x.scene)!.properties.playheadVisible, (x, v) => withPiano(x, (p) => ({ ...p, playheadVisible: v })), visible);
+};
 /** Ghi đè kiểu nốt của một track (`patch` = null: bỏ ghi đè). */
 export const patchTrackStyle = (d: Doc, id: TrackId, patch: Partial<NoteStyle> | null): Cmd | null => {
   const cur = pianoOf(d.scene)?.properties.noteStyle.tracks[id];

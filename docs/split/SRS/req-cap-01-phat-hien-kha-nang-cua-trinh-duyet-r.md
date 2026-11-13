@@ -5,7 +5,7 @@ section: "REQ-CAP-01: Phát hiện khả năng của trình duyệt (R-06, D-05)
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-CAP-01: Phát hiện khả năng của trình duyệt (R-06, D-05)"
 chunk: req-cap-01-phat-hien-kha-nang-cua-trinh-duyet-r.md
 source_lines: 706-708
-source_sha1: 3d043a49c8
+source_sha1: f91921e0ca
 ids: [D-05, REQ-CAP-01, REQ-EXPORT-06]
 ---
 #### REQ-CAP-01: Phát hiện khả năng của trình duyệt (R-06, D-05)

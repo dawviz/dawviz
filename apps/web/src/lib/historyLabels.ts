@@ -73,6 +73,11 @@ export function describeCommand(cmd: Cmd, c: LabelCtx): string {
     case 'patchWidgetProps': return changeLabel(c, i18n.t('web.hist.what.widgetProps'), {}, cmd, widget);
     case 'setWidgetVisible': return i18n.t(cmd.after ? 'web.hist.widgetShow' : 'web.hist.widgetHide', { widget });
     case 'reorderZ': return i18n.t('web.hist.reorderZ', { widget });
+    case 'setPlayheadRatio': {
+      const pct = (v: unknown) => i18n.number(Math.round(Number(v) * 100));
+      return i18n.t('web.hist.change', { name: i18n.t('web.playhead.position'), from: `${pct(cmd.before)}%`, to: `${pct(cmd.after)}%` });
+    }
+    case 'setPlayheadVisible': return i18n.t('web.hist.change', { name: i18n.t('web.playhead.show'), from: fmt(c, '', cmd.before), to: fmt(c, '', cmd.after) });
     case 'setAudioOffset': return i18n.t('web.hist.audioOffset', { from: fmt(c, 'ms', cmd.before), to: fmt(c, 'ms', cmd.after) });
     case 'patchSnapping': return changeLabel(c, i18n.t('web.hist.what.snapping'), {}, cmd);
     default: return i18n.has(cmd.label) ? i18n.t(cmd.label) : cmd.type;

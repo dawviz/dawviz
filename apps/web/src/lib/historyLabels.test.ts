@@ -74,3 +74,29 @@ test('danh sách: mới nhất ở trên, mốc đầu "Mở dự án" ở cuố
   assert.equal(historyItems(h, (i) => describeCommand(h.timeline[i], ctx), i18n.t('web.hist.origin')).at(-1)!.label, 'Mở dự án');
   i18n.setLocale('en');
 });
+
+test('vạch phát (T-71): kẹp 0,05–0,95, kéo liên tiếp gộp một bước, nhãn theo phần trăm', () => {
+  let t = 0; const s = createStore<C.Doc>(doc(), { now: () => (t += 100) }); // cách nhau < 600 ms: gộp
+  s.dispatch(C.setPlayheadRatio(s.get(), 0.4));
+  s.dispatch(C.setPlayheadRatio(s.get(), 2));
+  assert.equal(C.pianoOf(s.get().scene)!.properties.playheadPositionRatio, 0.95);
+  assert.equal(C.setPlayheadRatio(s.get(), 0.95), null); // không đổi → không ghi lịch sử
+  const items = s.state().history.timeline;
+  assert.equal(items.length, 1);
+  const before = Math.round(C.pianoOf(doc().scene)!.properties.playheadPositionRatio * 100);
+  i18n.setLocale('en'); assert.equal(describeCommand(items[0], ctx), `Playhead position (%) ${before}% → 95%`);
+  i18n.setLocale('vi'); assert.equal(describeCommand(items[0], ctx), `Vị trí vạch phát (%) ${before}% → 95%`);
+  i18n.setLocale('en');
+  s.undo(); assert.equal(C.pianoOf(s.get().scene)!.properties.playheadPositionRatio, before / 100);
+});
+
+test('ẩn/hiện vạch phát: một bước hoàn tác, nhãn bật/tắt theo ngôn ngữ', () => {
+  const s = createStore<C.Doc>(doc());
+  assert.equal(C.setPlayheadVisible(s.get(), true), null); // mặc định đang hiện
+  s.dispatch(C.setPlayheadVisible(s.get(), false));
+  assert.equal(C.pianoOf(s.get().scene)!.properties.playheadVisible, false);
+  const [item] = s.state().history.timeline;
+  i18n.setLocale('vi'); assert.match(describeCommand(item, ctx), /^Hiện vạch phát .+ → .+$/);
+  i18n.setLocale('en'); assert.match(describeCommand(item, ctx), /^Show playhead .+ → .+$/);
+  s.undo(); assert.equal(C.pianoOf(s.get().scene)!.properties.playheadVisible, true);
+});

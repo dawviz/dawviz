@@ -5,7 +5,7 @@ section: "REQ-GRAPHICS-17: Phát sáng động khi chạm (D-50, 1.0)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-17: Phát sáng động khi chạm (D-50, 1.0)"
 chunk: req-graphics-17-phat-sang-dong-khi-cham-d-50-1-0.md
 source_lines: 493-512
-source_sha1: 3d043a49c8
+source_sha1: f91921e0ca
 ids: [D-50, REQ-AST-02, REQ-AUDIO-01, REQ-GRAPHICS-06, REQ-GRAPHICS-07, REQ-GRAPHICS-10, REQ-GRAPHICS-13, REQ-GRAPHICS-17, SOI-19]
 ---
 #### REQ-GRAPHICS-17: Phát sáng động khi chạm (D-50, 1.0)

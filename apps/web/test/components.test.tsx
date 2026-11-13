@@ -63,6 +63,28 @@ describe('StylePanel', () => {
     expect(screen.getAllByTitle(/Advanced setting|Thiết lập nâng cao/).length).toBeGreaterThan(0);
   });
 });
+describe('StylePanel: vị trí vạch phát khoá khi bật bàn phím (T-71)', () => {
+  it('bàn phím tắt: chỉnh được, gửi tỉ lệ 0..1; bàn phím bật: thanh trượt và ô số bị khoá, có chú thích nối bằng aria-describedby', () => {
+    let ratio = 0.3, visible = true;
+    const props = { style: defaultStyleConfig(), onStyle: () => {}, onKeyboard: () => {}, playhead: { ratio, visible, onChange: (r: number) => (ratio = r), onVisible: (v: boolean) => (visible = v) } };
+    const v = wrap(<StylePanel {...props} keyboard={{ ...DEFAULT_KEYBOARD_STYLE, enabled: false }} />);
+    const slider = () => document.getElementById('st-playhead') as HTMLInputElement;
+    expect(slider().disabled).toBe(false);
+    expect(screen.queryByTestId('playhead-locked')).toBeNull();
+    fireEvent.change(slider(), { target: { value: '45' } });
+    expect(ratio).toBe(0.45);
+    fireEvent.click(screen.getByTestId('playhead-visible'));
+    expect(visible).toBe(false);
+    v.rerender(<I18nProvider><StylePanel {...props} keyboard={{ ...DEFAULT_KEYBOARD_STYLE, enabled: true }} /></I18nProvider>);
+    const note = screen.getByTestId('playhead-locked');
+    expect(slider().disabled).toBe(true);
+    expect(slider().getAttribute('aria-describedby')).toBe(note.id);
+    const box = screen.getByRole('textbox', { name: /Playhead position|Vị trí vạch phát/ }) as HTMLInputElement;
+    expect(box.disabled).toBe(true);
+    expect(box.getAttribute('aria-describedby')).toContain(note.id);
+  });
+});
+
 describe('VideoStyles', () => {
   it('cột chỉ chứa phong cách video (scene): Paper và Mặc định, không có kiểu nốt; "đã chỉnh" hiện ở mục đang chọn', () => {
     let picked = '';

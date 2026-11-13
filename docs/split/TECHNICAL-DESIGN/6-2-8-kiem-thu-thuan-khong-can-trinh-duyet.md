@@ -5,7 +5,7 @@ section: "6.2.8 Kiểm thử (thuần, không cần trình duyệt)"
 path: "6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.8 Kiểm thử (thuần, không cần trình duyệt)"
 chunk: 6-2-8-kiem-thu-thuan-khong-can-trinh-duyet.md
 source_lines: 286-288
-source_sha1: f25d58c0f2
+source_sha1: 185dbf38d8
 ids: [ERR_AUDIO_DECODE, ERR_AUDIO_TOO_LONG, ERR_FILE_TOO_LARGE]
 ---
 #### 6.2.8 Kiểm thử (thuần, không cần trình duyệt)

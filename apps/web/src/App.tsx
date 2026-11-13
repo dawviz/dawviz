@@ -311,7 +311,8 @@ export function App() {
     look: (n) => (
       <InspectorSection key="look" n={n} id="look" title={i18n.t('web.section.look')} more={more('look', lookEdited)}>
         {piano
-          ? <StylePanel style={style} keyboard={keyboard} onStyle={(n) => run((d) => Cmds.patchNoteStyle(d, n.base))} onKeyboard={(n) => run((d) => Cmds.patchKeyboard(d, n))} lanes={lanes} advanced={showAdv('look')} notePresets={NOTE_PRESETS} onNotePreset={pickNotePreset} />
+          ? <StylePanel style={style} keyboard={keyboard} onStyle={(n) => run((d) => Cmds.patchNoteStyle(d, n.base))} onKeyboard={(n) => run((d) => Cmds.patchKeyboard(d, n))} lanes={lanes} advanced={showAdv('look')} notePresets={NOTE_PRESETS} onNotePreset={pickNotePreset}
+              playhead={{ ratio: piano.properties.playheadPositionRatio, visible: piano.properties.playheadVisible, onChange: (r) => run((d) => Cmds.setPlayheadRatio(d, r)), onVisible: (v) => run((d) => Cmds.setPlayheadVisible(d, v)) }} />
           : <p className="text-xs text-muted">{i18n.t('web.look.noPiano')}</p>}
       </InspectorSection>
     ),

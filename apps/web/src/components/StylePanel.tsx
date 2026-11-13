@@ -1,6 +1,7 @@
 // Mục "Hình thức" của inspector: kiểu dáng nốt (toàn cục) và bàn phím. Chỉ sửa dữ liệu StyleConfig; việc vẽ nằm ở Render Core.
 // Phân bổ Cơ bản / Nâng cao theo SRS REQ-UI-13 (dòng "Kiểu nốt", "Bàn phím"). Phong cách dựng sẵn chọn ở cột Video styles.
 import { GLOW_SOURCES, type StyleConfig, type NoteStyle, type ColorMode, type KeyboardStyle, type GlowSource, type GlowPanMode } from '@dawviz/render-core';
+import { useId } from 'react';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { radioKeys, radioTab } from '../lib/a11y.ts';
 import { matchNotePreset } from '../lib/videoScenes.ts';
@@ -14,11 +15,13 @@ export const ADVANCED_STYLE_KEYS: readonly (keyof NoteStyle)[] = ['inactiveOpaci
 const row = 'grid grid-cols-[minmax(0,7.5rem)_minmax(0,1fr)] items-center gap-2 text-xs text-muted';
 
 /** `lanes`: tên lane automation có trong dự án đang mở (cho nguồn phát sáng "automation").
+ *  `playhead`: vị trí vạch phát (0..1) và hàm đổi; bàn phím bật thì ô bị khoá kèm chú thích (T-71).
  *  `advanced`: hiện cả dòng nâng cao (chế độ Nâng cao, hoặc "Thêm tuỳ chọn" của mục đang mở). */
-export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset }: { notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean }) {
+export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset, playhead }: { playhead?: { ratio: number; visible: boolean; onChange(ratio: number): void; onVisible(visible: boolean): void }; notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean }) {
   const { i18n } = useI18n();
   const b = style.base;
   const set = (patch: Partial<NoteStyle>) => onStyle({ ...style, base: { ...b, ...patch } });
+  const lockId = useId();
   return (
     <div className="space-y-2.5" data-testid="style-panel">
       <h3 className="pt-1 text-xs font-medium text-fg">{i18n.t('web.look.notes')}</h3>
@@ -57,6 +60,15 @@ export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], a
         <label className="flex items-center gap-2 text-xs text-muted">
           <input type="checkbox" checked={keyboard.enabled} onChange={(e) => onKeyboard({ ...keyboard, enabled: e.target.checked })} />{i18n.t('web.keyboard.show')}
         </label>
+        {playhead && <>
+          <label className="flex items-center gap-2 text-xs text-muted">
+            <input type="checkbox" checked={playhead.visible} onChange={(e) => playhead.onVisible(e.target.checked)} data-testid="playhead-visible" />{i18n.t('web.playhead.show')}
+          </label>
+          {/* Bàn phím bật: vạch phát ghim ở mép bàn phím (Render Core bỏ qua tỉ lệ), nên khoá ô và nói lý do ngay bên dưới. Giá trị vẫn giữ để dùng lại khi tắt bàn phím. */}
+          <Slider id="st-playhead" label={i18n.t('web.playhead.position')} value={Math.round(playhead.ratio * 100)} min={5} max={95} step={1}
+            disabled={keyboard.enabled} describedBy={keyboard.enabled ? lockId : undefined} onChange={(v) => playhead.onChange(v / 100)} />
+          {keyboard.enabled && <p id={lockId} className="text-xs leading-snug text-muted" data-testid="playhead-locked">{i18n.t('web.playhead.locked')}</p>}
+        </>}
       </div>
     </div>
   );

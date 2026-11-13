@@ -47,16 +47,28 @@ export function pianoRollPitchRange(p: PianoRollProps, tracks: TrackIndex[]): [n
 
 const a01 = (v: number) => Math.min(1, Math.max(0, v));
 
+/**
+ * Hình học trục thời gian của Piano Roll (T-71). Tỉ lệ thời gian cố định: pt/giây = width / visibleSeconds, KHÔNG đổi theo
+ * vị trí vạch phát hay bàn phím (đổi vị trí vạch chỉ dời mốc "bây giờ", nốt giữ nguyên độ dài). Bật bàn phím: vạch phát ở
+ * mép phải bàn phím, `playheadPositionRatio` không có tác dụng (giao diện khoá ô đó); nốt đã phát trượt xuống dưới bàn phím.
+ * Trả `windowSeconds`/`ratio` theo vùng cuộn nốt [kb, width] để đưa thẳng vào layoutPianoRoll.
+ */
+export function pianoRollGeometry(p: Pick<PianoRollProps, 'keyboard' | 'playheadPositionRatio' | 'visibleSeconds'>, width: number) {
+  const kb = p.keyboard.enabled ? Math.min(p.keyboard.width, width * 0.4) : 0;
+  const pxPerSec = width / p.visibleSeconds;
+  const playX = kb > 0 ? kb : width * p.playheadPositionRatio;
+  const area = width - kb;
+  return { kb, playX, pxPerSec, ratio: area > 0 ? (playX - kb) / area : 0, windowSeconds: area / pxPerSec };
+}
+
 export const pianoRollRenderer: WidgetRenderer<PianoRollProps> = {
   type: 'PIANO_ROLL',
   layout({ ast, derived, tracks }, spec, t) {
     const p = spec.properties, { width, height } = spec.layout;
     const [pitchMin, pitchMax] = pianoRollPitchRange(p, tracks);
-    const kb = p.keyboard.enabled ? Math.min(p.keyboard.width, width * 0.4) : 0;
-    // cửa sổ nhìn: lookahead là phần nằm SAU playhead → window = lookahead / (1 − ratio)
-    const windowSeconds = p.lookaheadSeconds / (1 - p.playheadPositionRatio);
+    const { kb, ratio, playX, windowSeconds } = pianoRollGeometry(p, width);
     const rects = layoutPianoRoll({ tracks, duration: derived.index.duration }, ast.tempoMap, t,
-      { width, height, windowSeconds, playheadRatio: p.playheadPositionRatio, pitchMin, pitchMax, brightness: derived.brightness, style: p.noteStyle, left: kb });
+      { width, height, windowSeconds, playheadRatio: ratio, pitchMin, pitchMax, brightness: derived.brightness, style: p.noteStyle, left: kb });
     const out: Primitive[] = [];
     for (const r of rects) {
       const alpha = a01(r.brightness * r.opacity);
@@ -65,8 +77,7 @@ export const pianoRollRenderer: WidgetRenderer<PianoRollProps> = {
         glowColor: r.color, glowBlur: r.glow > 0 && r.glowRadius > 0 ? r.glowRadius * r.glow * (0.4 + 0.6 * r.brightness) : 0,
         stroke: r.borderColor, strokeWidth: r.borderWidth });
     }
-    const playX = kb + (width - kb) * p.playheadPositionRatio;
-    if (p.playheadWidth > 0) out.push(rect(playX - p.playheadWidth / 2, 0, p.playheadWidth, height, p.playheadColor));
+    if (p.playheadVisible && p.playheadWidth > 0) out.push(rect(playX - p.playheadWidth / 2, 0, p.playheadWidth, height, p.playheadColor));
     if (kb > 0) {
       const ks = { ...DEFAULT_KEYBOARD_STYLE, ...p.keyboard, width: kb };
       const keys = layoutKeyboard({ tracks, duration: derived.index.duration }, t, { height, pitchMin, pitchMax, style: ks, noteStyle: p.noteStyle });

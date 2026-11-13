@@ -40,6 +40,7 @@
         "pitchMax": 84,
         "lookaheadSeconds": 1,
         "playheadPositionRatio": 0.84,
+        "visibleSeconds": 6.25,
         "noteStyle": {
           "base": {
             "colorMode": "custom",
