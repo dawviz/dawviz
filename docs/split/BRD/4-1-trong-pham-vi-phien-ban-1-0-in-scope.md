@@ -4,8 +4,8 @@ doc_title: "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT
 section: "4.1. Trong phạm vi phiên bản 1.0 (In-Scope)"
 path: "4. PHẠM VI DỰ ÁN (PROJECT SCOPE) > 4.1. Trong phạm vi phiên bản 1.0 (In-Scope)"
 chunk: 4-1-trong-pham-vi-phien-ban-1-0-in-scope.md
-source_lines: 101-127
-source_sha1: bb7de0c18a
+source_lines: 102-128
+source_sha1: 5e75eac803
 ids: [BR-09, D-01, D-03, D-04, D-05, D-24, D-26, D-27, D-28, D-29, D-30, D-31, D-33, SOI-12]
 ---
 ### 4.1. Trong phạm vi phiên bản 1.0 (In-Scope)

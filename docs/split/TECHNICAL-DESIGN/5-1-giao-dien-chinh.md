@@ -5,8 +5,8 @@ section: "5.1 Giao diện chính 🟢"
 path: "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.1 Giao diện chính 🟢"
 chunk: 5-1-giao-dien-chinh.md
 source_lines: 108-127
-source_sha1: a953f6ccd4
-ids: [ERR_PRESET_INVALID, REQ-STORAGE-02, WARN_PRESET_UNSUPPORTED, WARN_PRESET_VALUE, WARN_PRESET_VERSION, WARN_PRESET_WIDGET_UNKNOWN]
+source_sha1: cda0d46b82
+ids: [D-54, ERR_PRESET_INVALID, REQ-STORAGE-02, WARN_PRESET_UNSUPPORTED, WARN_PRESET_VALUE, WARN_PRESET_VERSION, WARN_PRESET_WIDGET_UNKNOWN]
 ---
 ### 5.1 Giao diện chính 🟢
 Làm ở T-05 (2026-11-12): `packages/render-core/src/scene.ts`, `render.ts`.
@@ -26,4 +26,4 @@ function renderFrame(scene: SceneDocument, derived: Derived, ast: UnifiedProject
 - **Lệch so với phác thảo:** `WidgetRenderer` chỉ có `layout`; việc vẽ dùng chung `drawPrimitives` cho mọi widget (primitive hiện có `rect`: toạ độ pt, `alpha` đã gộp độ sáng × độ đục, `radius`, `glowBlur`, `stroke`). Widget mới thêm kiểu primitive (text, path…) vào `drawPrimitives` thay vì tự vẽ, để Preview/Export không thể lệch nhau theo widget. `RenderCtx` = `Ctx2D` + `save/restore/setTransform/translate/rect/clip`.
 - `layoutPianoRoll`/`layoutKeyboard` giữ nguyên làm hàm cấp thấp; `drawPianoRoll`/`drawKeyboard` cũ còn cho test cũ nhưng giao diện không dùng nữa.
 - Giao diện: `SceneCanvas` (thay `PianoRollCanvas`) giữ tỉ lệ khung thiết kế, `scale = bề rộng điểm ảnh / designWidth`. Kiểu nốt và bàn phím vẫn chỉnh ở bảng phải rồi ghép vào scene mặc định; scene vào store + hoàn tác + Preset ở T-07.
-- Chưa làm: làm tròn toạ độ theo `scale` ở bước cuối (5.5), ảnh nền, xoay widget (1.1), hướng dọc/góc tự do (T-59), mô hình lớp/phần tử storyboard (T-22, sẽ là `schemaVersion` mới có hàm di trú từ 0.3.0).
+- Chưa làm: làm tròn toạ độ theo `scale` ở bước cuối (5.5), ảnh nền, xoay widget 2D (1.0 theo D-54, T-68: `layout.anchor`, ma trận xoay quanh điểm neo trong `renderFrame`, khung bao thẳng trục cho bắt dính; `sanitizeScene` hiện vẫn đưa `rotation` về 0 kèm `WARN_PRESET_UNSUPPORTED` cho tới khi làm), hướng dọc/góc tự do (T-59), mô hình lớp/phần tử storyboard (T-22, sẽ là `schemaVersion` mới có hàm di trú từ 0.3.0).

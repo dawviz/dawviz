@@ -181,6 +181,7 @@ dawviz/
 ├─ CONTRIBUTING.md
 ├─ LICENSE
 ├─ package.json
+├─ PRODUCT.md
 ├─ PROGRESS.md
 ├─ README.md
 └─ SKELETON.md
@@ -650,7 +651,7 @@ Khung thả/chọn tệp dự án (kèm .mid ngoài); hiệu ứng Framer Motion
 
 ```text
 interface Picked
-function FileDrop({ onPick, busy }: { onPick(p: Picked): void; busy: boolean })
+function FileDrop({ onPick, busy, compact = false }: { onPick(p: Picked): void; busy: boolean; compact?: boolean })
 ```
 
 #### `apps/web/src/components/LanguageSelect.tsx`

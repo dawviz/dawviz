@@ -5,7 +5,7 @@ section: "6. Ứng dụng web và phát lại 🟡"
 path: "6. Ứng dụng web và phát lại 🟡"
 chunk: 6-ung-dung-web-va-phat-lai.md
 source_lines: 164-197
-source_sha1: a953f6ccd4
+source_sha1: cda0d46b82
 ids: [D-50, REQ-UI-02, REQ-UI-14]
 ---
 ## 6. Ứng dụng web và phát lại 🟡

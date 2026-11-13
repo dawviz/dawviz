@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "2.5. Thư viện parser độc lập (D-23)"
 path: "2. KIẾN TRÚC KỸ THUẬT, LUỒNG DỮ LIỆU & ĐÁNH GIÁ KIẾN TRÚC > 2.5. Thư viện parser độc lập (D-23)"
 chunk: 2-5-thu-vien-parser-doc-lap-d-23.md
-source_lines: 223-238
-source_sha1: d7467a1f28
+source_lines: 224-239
+source_sha1: f0e666678e
 ids: [ARC-04, D-23]
 ---
 ### 2.5. Thư viện parser độc lập (D-23)

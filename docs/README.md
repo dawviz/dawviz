@@ -11,6 +11,7 @@
 | `design/CUSTOMIZATION.md` | **[Đề xuất]** Tùy biến tối đa: storyboard trực quan dễ dùng, template chuyển cảnh nốt, easing, hạt, tài nguyên của phiên, preset cộng đồng; đánh giá khả thi (AD-08…AD-12, D-38) |
 | `design/ANIMATION-CATALOG.md` | **[Đề xuất]** Danh mục đầy đủ hiệu ứng và kiểu nội suy, đồ thị tốc độ của các trình dựng hiện đại, kèm ưu tiên v1.0/v1.1 |
 | `design/EXPRESSIONS.md` | **[Đề xuất]** Ngôn ngữ biểu thức, mô hình mối đe doạ, trình thông dịch an toàn, phòng thủ nhiều lớp, kiểm duyệt cộng đồng (AD-13…AD-15, D-39) |
+| `design/UI-DIRECTION.md` | Định hướng hình ảnh: khung preview "Bản in" đã chốt (D-51) và phân rã widget; chẩn đoán giao diện web; bộ prompt sinh ảnh để thử hướng giao diện web; nhật ký thử |
 | `COMMUNITY-CONTENT.md` | Thư mục `presets/` và `assets/`, định dạng preset, quy tắc giấy phép, kế hoạch tách repo cộng đồng |
 | `parser/PARSER-SRS.md`, `PARSER-SDD.md`, `PARSER-TDD.md` | Thư viện parser: yêu cầu (`REQ-ALS-…`, `REQ-RPP-…`, `REQ-AUTO-…`), thiết kế (quyết định `PD-xx`), 66 test |
 | `spikes/SPIKE-1-EXPORT.md`, `spikes/SPIKE-2-PARSER.md` | Báo cáo hai spike kỹ thuật (xuất video; parser và AST) kèm bảng đối chiếu từng phát hiện với tài liệu hiện hành |

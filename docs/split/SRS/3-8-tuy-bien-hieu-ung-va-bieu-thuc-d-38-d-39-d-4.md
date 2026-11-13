@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)"
 chunk: 3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md
-source_lines: 805-808
-source_sha1: d7467a1f28
+source_lines: 813-816
+source_sha1: f0e666678e
 ids: [AD-08, AD-12, AD-13, AD-15, D-37, D-38, D-39, D-40, REQ-GRAPHICS-05]
 ---
 ### 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)

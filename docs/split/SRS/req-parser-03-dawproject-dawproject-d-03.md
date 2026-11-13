@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-PARSER-03: DAWproject (`.dawproject`, D-03)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) > REQ-PARSER-03: DAWproject (`.dawproject`, D-03)"
 chunk: req-parser-03-dawproject-dawproject-d-03.md
-source_lines: 298-308
-source_sha1: d7467a1f28
+source_lines: 299-309
+source_sha1: f0e666678e
 ids: [D-03, ERR_ARCHIVE_INVALID, OI-01, REQ-PARSER-03, SOI-04, SOI-06, WARN_TIME_UNIT_MIXED]
 ---
 #### REQ-PARSER-03: DAWproject (`.dawproject`, D-03)

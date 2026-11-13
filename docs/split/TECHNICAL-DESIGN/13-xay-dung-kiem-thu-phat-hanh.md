@@ -5,7 +5,7 @@ section: "13. Xây dựng, kiểm thử, phát hành"
 path: "13. Xây dựng, kiểm thử, phát hành"
 chunk: 13-xay-dung-kiem-thu-phat-hanh.md
 source_lines: 250-256
-source_sha1: a953f6ccd4
+source_sha1: cda0d46b82
 ids: [D-12, D-35, REQ-CAP-01]
 ---
 ## 13. Xây dựng, kiểm thử, phát hành

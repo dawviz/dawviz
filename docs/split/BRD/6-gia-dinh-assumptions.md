@@ -4,8 +4,8 @@ doc_title: "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT
 section: "6. GIẢ ĐỊNH (ASSUMPTIONS)"
 path: "6. GIẢ ĐỊNH (ASSUMPTIONS)"
 chunk: 6-gia-dinh-assumptions.md
-source_lines: 186-194
-source_sha1: bb7de0c18a
+source_lines: 187-195
+source_sha1: 5e75eac803
 ids: [D-01]
 ---
 ## 6. GIẢ ĐỊNH (ASSUMPTIONS)

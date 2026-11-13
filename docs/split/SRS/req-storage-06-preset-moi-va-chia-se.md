@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-STORAGE-06: Preset mới và chia sẻ"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) > REQ-STORAGE-06: Preset mới và chia sẻ"
 chunk: req-storage-06-preset-moi-va-chia-se.md
-source_lines: 842-844
-source_sha1: d7467a1f28
+source_lines: 850-852
+source_sha1: f0e666678e
 ids: [D-14, D-43, REQ-STORAGE-04, REQ-STORAGE-06]
 ---
 #### REQ-STORAGE-06: Preset mới và chia sẻ

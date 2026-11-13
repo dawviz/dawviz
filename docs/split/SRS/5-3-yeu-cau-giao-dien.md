@@ -4,9 +4,9 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "5.3. Yêu cầu giao diện"
 path: "5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.3. Yêu cầu giao diện"
 chunk: 5-3-yeu-cau-giao-dien.md
-source_lines: 932-1001
-source_sha1: d7467a1f28
-ids: [ARC-05, BR-07, BR-09, D-19, D-25, D-29, D-30, D-48, D-49, D-50, ERR_UNSUPPORTED_FORMAT, KPI-04, NFR-SEC-05, REQ-EXPORT-00, REQ-GRAPHICS-06, REQ-GRAPHICS-07, REQ-GRAPHICS-09, REQ-GRAPHICS-10, REQ-GRAPHICS-11, REQ-GRAPHICS-13, REQ-GRAPHICS-14, REQ-GRAPHICS-15, REQ-GRAPHICS-16, REQ-GRAPHICS-17, REQ-PARSER-05, REQ-PARSER-07, REQ-STORAGE-05, REQ-STORAGE-06, REQ-UI-01, REQ-UI-02, REQ-UI-03, REQ-UI-04, REQ-UI-05, REQ-UI-06, REQ-UI-07, REQ-UI-08, REQ-UI-09, REQ-UI-10, REQ-UI-11, REQ-UI-12, REQ-UI-13, REQ-UI-14, REQ-UI-15, REQ-WIDGET-07]
+source_lines: 940-1009
+source_sha1: f0e666678e
+ids: [ARC-05, BR-07, BR-09, D-19, D-25, D-29, D-30, D-48, D-49, D-50, D-52, ERR_UNSUPPORTED_FORMAT, KPI-04, NFR-SEC-05, REQ-EXPORT-00, REQ-GRAPHICS-03, REQ-GRAPHICS-06, REQ-GRAPHICS-07, REQ-GRAPHICS-09, REQ-GRAPHICS-10, REQ-GRAPHICS-11, REQ-GRAPHICS-13, REQ-GRAPHICS-14, REQ-GRAPHICS-15, REQ-GRAPHICS-16, REQ-GRAPHICS-17, REQ-PARSER-05, REQ-PARSER-07, REQ-STORAGE-05, REQ-STORAGE-06, REQ-UI-01, REQ-UI-02, REQ-UI-03, REQ-UI-04, REQ-UI-05, REQ-UI-06, REQ-UI-07, REQ-UI-08, REQ-UI-09, REQ-UI-10, REQ-UI-11, REQ-UI-12, REQ-UI-13, REQ-UI-14, REQ-UI-15, REQ-WIDGET-07]
 ---
 ### 5.3. Yêu cầu giao diện
 
@@ -19,7 +19,7 @@ ids: [ARC-05, BR-07, BR-09, D-19, D-25, D-29, D-30, D-48, D-49, D-50, ERR_UNSUPP
 * **REQ-UI-08 (Đầu vào bổ sung theo ngữ cảnh):** giao diện chỉ hiện ô nạp thêm khi file vừa chọn thật sự cần: (a) `.rpp` tham chiếu `.mid` ngoài → hiện ô nạp `.mid` kèm tên các file cần; (b) định dạng nhị phân chưa hỗ trợ trực tiếp (`.bwproject`, `.flp`, đuôi lạ) → hiện ô nạp schema JSON (REQ-PARSER-05). Không cần thì ẩn. Nếu người dùng chưa nạp file cần thiết, **phải** hiển thị thông báo nêu rõ thiếu gì và hậu quả (không có nốt/chưa phân tích được); tempo không đọc được từ file cũng phải được báo kèm gợi ý nhập BPM (REQ-UI-06). Thư viện cung cấp `probeProject`.
 * **REQ-UI-09 (Chọn ngôn ngữ, BR-09, D-30):** bộ chọn ngôn ngữ luôn thấy được, liệt kê theo tên ngôn ngữ viết bằng chính ngôn ngữ đó (lấy từ `locales/index.json`). Mặc định: lựa chọn đã lưu, nếu chưa có thì ngôn ngữ trình duyệt khớp theo chuỗi `vi-VN → vi`, cuối cùng là tiếng Anh. Đổi ngôn ngữ có hiệu lực ngay (kể cả kết quả đang hiển thị) và cập nhật `lang`/`dir` của trang.
 * **REQ-UI-05 (Người dùng mới, BR-07, KPI-04):** sau khi nạp file hợp lệ, hệ thống tự áp preset mặc định, gán track và hiển thị sẵn nút Export nổi bật; đường đi tối thiểu "nạp → (chọn đoạn) → Export" không cần mở Inspector.
-* **REQ-UI-10 (Theme sáng/tối cho giao diện, 1.0):** ba lựa chọn **Sáng**, **Tối** (mặc định hiện nay) và **Theo hệ thống** (`prefers-color-scheme`); lưu theo trình duyệt; đổi tức thì không tải lại trang. Theme chỉ đổi **giao diện ứng dụng**; màu khung hình video do cảnh và preset quyết định, không bị ảnh hưởng. Cả hai theme đạt tương phản WCAG AA cho chữ và điều khiển. Bảng màu theme khai báo bằng biến CSS để cộng đồng thêm theme giao diện về sau (1.1).
+* **REQ-UI-10 (Theme sáng/tối cho giao diện, 1.0):** ba lựa chọn **Sáng**, **Tối** (mặc định hiện nay) và **Theo hệ thống** (`prefers-color-scheme`); lưu theo trình duyệt; đổi tức thì không tải lại trang. Theme chỉ đổi **giao diện ứng dụng**; màu khung hình video do cảnh và preset quyết định, không bị ảnh hưởng. Cả hai theme đạt tương phản WCAG AA cho chữ và điều khiển. Bảng màu theme khai báo bằng biến CSS để cộng đồng thêm theme giao diện về sau (1.1). **Theme chỉ đổi màu** (D-52): bộ token màu cố định (`docs/design/UI-DIRECTION.md` mục 5.2), không đổi phông, cỡ chữ, khoảng cách, bố cục, không nhận CSS tuỳ ý; theme cộng đồng được kiểm schema và tương phản AA trước khi áp, không đạt thì từ chối. Trong giao diện gọi là "Giao diện ứng dụng", phân biệt với "Phong cách video" (preset).
 * **REQ-UI-11 (Bộ chọn màu và bảng màu, 1.0):**
   * Mọi ô chọn màu (màu track, nốt, nền, phím, chữ, gradient) dùng chung một bộ chọn: ô vuông màu + thanh hue + thanh alpha, và **ô nhập văn bản** nhận các dạng `#rgb`, `#rgba`, `#rrggbb`, `#rrggbbaa`, `rgb(255 0 0)` / `rgb(255, 0, 0)`, `rgba(…)`, số thập phân `255, 0, 0` hoặc `1.0, 0, 0`, `hsl(…)` / `hsla(…)`, **HSV/HSB** (`hsv(0 100% 100%)`), `oklch(…)`, và tên màu CSS. Có công tắc đổi cách hiển thị giữa HEX / RGB / HSL / HSV.
   * **Alpha (RGBA):** màu lưu dạng `#rrggbbaa`; alpha nhân với độ đục của đối tượng (REQ-GRAPHICS-07).
@@ -43,7 +43,7 @@ ids: [ARC-05, BR-07, BR-09, D-19, D-25, D-29, D-30, D-48, D-49, D-50, ERR_UNSUPP
 | Hướng và chuyển cảnh nốt | 4 hướng; chọn template nốt (rơi, nảy, phóng…); tốc độ cuộn | Góc tự do; chỉnh từng pha `enter/hit/sustain/exit`, easing, morph (REQ-GRAPHICS-10) |
 | Thanh phát | Hiện/ẩn, màu, độ dày, kiểu nét dựng sẵn, vị trí | Dải và gradient, mũi tên, phát sáng, phản ứng khi chạm, độ dài; 1.1: sprite, keyframe (REQ-GRAPHICS-16) |
 | Bàn phím | Hiện/ẩn; tên nốt bật/tắt và cách ghi tên; số phím tự động | Phạm vi tuỳ chọn, hình dạng phím, màu phím nhấn, độ lún, thang âm, quy ước C3/C4, phông (REQ-GRAPHICS-07) |
-| Widget và bố cục | Thêm/xoá/kéo thả widget; preset bố cục; chọn track cho widget | Khoảng hiển thị theo thời gian/marker; đổi track theo đoạn (REQ-GRAPHICS-14); tham số chi tiết từng widget |
+| Widget và bố cục | Thêm/xoá/kéo thả widget; kéo, co giãn, **xoay** trên khung bằng tay nắm (REQ-GRAPHICS-03); preset bố cục; chọn track cho widget | Khoảng hiển thị theo thời gian/marker; đổi track theo đoạn (REQ-GRAPHICS-14); tham số chi tiết từng widget |
 | Spectrum/waveform | Chọn kiểu; màu; số cột | Dải tần, thang tần số, làm mượt, đỉnh rơi, gradient; 1.1 dạng tròn (REQ-WIDGET-07) |
 | Hạt | Chọn preset hạt, bật/tắt, mật độ | Mọi tham số nguồn phát, lực, tuổi thọ, hình hạt (REQ-GRAPHICS-11) |
 | Hiệu ứng và storyboard | Áp preset hiệu ứng/theme bằng một lần bấm | Keyframe, Graph Editor, timeline, binding, biểu thức, text animator chi tiết (REQ-GRAPHICS-09, 12, 13) |
