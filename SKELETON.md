@@ -25,12 +25,14 @@ dawviz/
 │     ├─ src/
 │     │  ├─ components/
 │     │  │  ├─ FileDrop.tsx
+│     │  │  ├─ HistoryMenu.tsx
 │     │  │  ├─ Icons.tsx
 │     │  │  ├─ Inspector.tsx
 │     │  │  ├─ LanguageSelect.tsx
 │     │  │  ├─ MissingMidiPanel.tsx
 │     │  │  ├─ Notices.tsx
 │     │  │  ├─ NumberField.tsx
+│     │  │  ├─ PresetSettings.tsx
 │     │  │  ├─ SceneCanvas.tsx
 │     │  │  ├─ Select.tsx
 │     │  │  ├─ SliderField.tsx
@@ -47,11 +49,14 @@ dawviz/
 │     │  │  ├─ a11y.ts
 │     │  │  ├─ clock.test.ts
 │     │  │  ├─ clock.ts
+│     │  │  ├─ commands.ts
 │     │  │  ├─ csp.test.ts
 │     │  │  ├─ csp.ts
 │     │  │  ├─ externalMidi.test.ts
 │     │  │  ├─ externalMidi.ts
 │     │  │  ├─ fonts.ts
+│     │  │  ├─ historyLabels.test.ts
+│     │  │  ├─ historyLabels.ts
 │     │  │  ├─ numberInput.test.ts
 │     │  │  ├─ numberInput.ts
 │     │  │  ├─ parseInWorker.ts
@@ -61,14 +66,21 @@ dawviz/
 │     │  │  ├─ playback.ts
 │     │  │  ├─ prefs.test.ts
 │     │  │  ├─ prefs.ts
+│     │  │  ├─ presetFile.test.ts
+│     │  │  ├─ presetFile.ts
 │     │  │  ├─ problems.test.ts
 │     │  │  ├─ problems.ts
+│     │  │  ├─ store.test.ts
+│     │  │  ├─ store.ts
+│     │  │  ├─ storeReact.ts
 │     │  │  ├─ theme.test.ts
 │     │  │  ├─ theme.ts
 │     │  │  ├─ thumbnails.ts
 │     │  │  ├─ timeFormat.ts
 │     │  │  ├─ transportKeys.ts
 │     │  │  ├─ trustedTypes.ts
+│     │  │  ├─ undoKeys.test.ts
+│     │  │  ├─ undoKeys.ts
 │     │  │  ├─ usePref.ts
 │     │  │  ├─ useStageWidth.ts
 │     │  │  └─ videoScenes.ts
@@ -80,6 +92,7 @@ dawviz/
 │     │  ├─ index.css
 │     │  └─ main.tsx
 │     ├─ test/
+│     │  ├─ app.test.tsx
 │     │  ├─ components.test.tsx
 │     │  └─ setup.ts
 │     ├─ DESIGN.md
@@ -160,11 +173,13 @@ dawviz/
 │  │  │  ├─ prims.ts
 │  │  │  ├─ render.ts
 │  │  │  ├─ scene.ts
+│  │  │  ├─ snap.ts
 │  │  │  ├─ style.ts
 │  │  │  ├─ text.ts
 │  │  │  ├─ thumbnail.ts
 │  │  │  └─ types.ts
 │  │  ├─ test/
+│  │  │  ├─ fixtures/   # tệp mẫu
 │  │  │  ├─ golden/
 │  │  │  │  └─ paper-1x1.json
 │  │  │  ├─ fonts.test.ts
@@ -173,9 +188,11 @@ dawviz/
 │  │  │  ├─ hud.test.ts
 │  │  │  ├─ legacy.test.ts
 │  │  │  ├─ paper.test.ts
+│  │  │  ├─ preset.test.ts
 │  │  │  ├─ presets.test.ts
 │  │  │  ├─ render-core.test.ts
-│  │  │  └─ scene.test.ts
+│  │  │  ├─ scene.test.ts
+│  │  │  └─ snap.test.ts
 │  │  ├─ package.json
 │  │  └─ tsconfig.json
 │  ├─ rpp/   # @dawviz/parser-rpp: Reaper .rpp
@@ -195,7 +212,8 @@ dawviz/
 │  │  ├─ paper-16x9.json
 │  │  └─ paper-1x1.json
 │  ├─ schema/
-│  │  └─ note-style.schema.json
+│  │  ├─ note-style.schema.json
+│  │  └─ scene.schema.json
 │  └─ README.md
 ├─ schemas/
 ├─ scripts/
@@ -606,6 +624,7 @@ re-export * from './style.ts'
 re-export * from './music.ts'
 re-export * from './glow.ts'
 re-export * from './scene.ts'
+re-export * from './snap.ts'
 re-export * from './render.ts'
 re-export * from './prims.ts'
 re-export * from './text.ts'
@@ -684,7 +703,8 @@ T-05: SceneDocument (= Preset, SRS REQ-STORAGE-02) + kiểm/sửa lược đồ.
 const SCENE_SCHEMA_VERSION
 const WIDGET_TYPES
 type WidgetType
-interface WidgetLayout
+interface WidgetLayout   // `rotation`: độ, (−180, 180]. `anchor`: điểm neo xoay theo tỉ lệ khung widget (0..1), mặc định tâm (REQ-GRAPHI…
+const DEFAULT_ANCHOR
 type TrackMappingMode
 interface WidgetSpec
 interface PianoRollProps
@@ -693,12 +713,32 @@ interface SceneDocument
 const DEFAULT_PIANO_ROLL
 const ASPECTS
 function defaultScene(aspect: keyof typeof ASPECTS = '16:9'): SceneDocument   // Scene mặc định: một Piano Roll phủ kín khung. Bố cục mặc định theo nền tảng (9:16 cho người mới, KPI-04) chốt…
-function pianoRollWidget(layout: WidgetLayout, props: Partial<PianoRollProps> = {}, id = 'piano-roll-main'): WidgetSpec<PianoRollProps>
+function pianoRollWidget(layout: Omit<WidgetLayout, 'anchor'> & { anchor?: WidgetLayout['anchor'] }, props: Partial<PianoRollProps> = {}, id = 'piano-roll-main'): WidgetSpec<PianoRollProps>
+type SceneWarningCode
 interface SceneWarning
+type SceneErrorCode
 class SceneError extends Error
-  constructor(message: string, path: string)
-function sanitizeScene(raw: unknown):    // Đọc một preset/scene từ JSON thô. Trả scene hợp lệ + cảnh báo.
+  constructor(message: string, path: string, code: SceneErrorCode = 'ERR_PRESET_INVALID', extra: Record<string, unknown> = {})
+const PRESET_LIMITS   // Giới hạn khi đọc preset (NFR-SEC-04). Vượt thì `ERR_PRESET_INVALID` (kích thước tệp: `ERR_PRESET_TOO_LARGE`).
+const UNSAFE_KEYS   // Khoá có thể làm bẩn nguyên mẫu đối tượng: bị bỏ ở mọi độ sâu.
+function migrateScene(raw: unknown):    // Di trú theo từng bậc phiên bản, trên một bản sao (đối tượng vào không bị sửa). Trả bản đã lên `SCENE_SCHEMA_V…
+function sanitizeScene(input: unknown):    // Đọc một preset/scene từ JSON thô. Trả scene hợp lệ + cảnh báo.
 interface Sanitizer   // Bộ kiểm giá trị dùng chung (đóng gói từ sanitizeScene để mỗi widget kiểm theo đường dẫn riêng).
+```
+
+#### `packages/render-core/src/snap.ts`
+
+Bắt dính khi kéo widget (SRS REQ-GRAPHICS-02, REQ-GRAPHICS-03). Hàm thuần: không DOM, không đồng hồ, tất định.
+
+```text
+interface Rect
+type SnapLayout   // Khung của một widget: `anchor` vắng thì lấy tâm. `rotation` độ, chiều kim đồng hồ (cùng chiều `ctx.rotate`, t…
+function normalizeAngle(deg: number): number   // Đưa góc về (−180, 180].
+function rotatedBounds(l: SnapLayout): Rect   // Khung bao thẳng trục của widget sau khi xoay quanh điểm neo. Góc 0 trả đúng `x, y, width, height`.
+interface Guide
+interface SnapInput
+interface SnapResult
+function snap(i: SnapInput): SnapResult   // Thứ tự (mỗi trục độc lập): Smart Guides trước (cạnh/tâm của khung bao so với mép/tâm canvas và khung bao các …
 ```
 
 #### `packages/render-core/src/style.ts`
@@ -814,12 +854,21 @@ interface Picked
 function FileDrop({ onPick, busy, compact = false, slim = false }: { onPick(p: Picked): void; busy: boolean; compact?: boolean; slim?: boolean })   // `compact`: nút nhỏ ở thanh trên. `slim`: ô thả thu gọn một dòng, dùng khi bảng thiếu .mid đang hiện (hành độn…
 ```
 
+#### `apps/web/src/components/HistoryMenu.tsx`
+
+Cụm Hoàn tác / Làm lại và nút riêng "Lịch sử chỉnh sửa" (đồng hồ quay ngược, bên phải cả cụm) mở danh sách lịch sử thả xuống (T-07 bước 2b, SRS REQ-UI-02).
+
+```text
+function HistoryMenu({ history, items, undoName, undoTitle, redoName, redoTitle, onUndo, onRedo, onJump }: { history: History<any>; items: HistoryItem[]; undoName: string; undoTitle: string; redoName: string; redoTitle: string; onUndo(): void; onRedo(): void; onJump(position: number): void; })
+```
+
 #### `apps/web/src/components/Icons.tsx`
 
 Biểu tượng vẽ tay bằng SVG, một nét 1,5 trên lưới 16 (không dùng ký tự Unicode hay phông biểu tượng).
 
 ```text
 const ChevronRight = (p: P) =>
+const HistoryIcon = (p: P) =>   // Đồng hồ có mũi tên quay ngược: lịch sử chỉnh sửa.
 const Info = (p: P) =>
 const Eye = (p: P) =>
 const EyeOff = (p: P) =>
@@ -829,6 +878,8 @@ const Back = (p: P) =>
 const Forward = (p: P) =>
 const Play = ({ className = 'h-4 w-4' }: P) =>
 const Pause = ({ className = 'h-4 w-4' }: P) =>
+const Undo = (p: P) =>
+const Redo = (p: P) =>
 const Sun = (p: P) =>
 const Moon = (p: P) =>
 const Upload = (p: P) =>
@@ -875,6 +926,14 @@ function Notices({ problems, basic = false }: { problems: Problem[]; basic?: boo
 
 ```text
 function NumberField({ id, label, value, onChange, spec, className = '' }: { id?: string; label: string; value: number; onChange(v: number): void; spec: NumberSpec; className?: string })
+```
+
+#### `apps/web/src/components/PresetSettings.tsx`
+
+Mục "Preset" ở thẻ Settings (T-07, REQ-STORAGE-02): mở và lưu preset .json. Cảnh báo WARN_PRESET_* và lỗi hiện ngay tại đây.
+
+```text
+function PresetSettings({ onOpen, onSave, problems, opened }: { onOpen(file: File): void; onSave(): void; problems: Problem[]; opened: string | null })
 ```
 
 #### `apps/web/src/components/SceneCanvas.tsx`
@@ -968,7 +1027,7 @@ Cột "Video styles" / "Phong cách video" (UI-DIRECTION 5.3): chọn phong các
 ```text
 re-export { VIDEO_STYLES, videoStyleBase }
 function isEdited(id: string, base: NoteStyle): boolean   // Kiểu nốt hiện tại còn đúng như phong cách đã chọn không (để hiện "đã chỉnh").
-function VideoStyles({ value, edited, onPick, onUndo, thumb }: { value: string; edited: boolean; onPick(id: string): void; onUndo?(): void; thumb?(id: string): string | undefined })
+function VideoStyles({ value, edited, onPick, notice, thumb }: { value: string; edited: boolean; onPick(id: string): void; notice?: string; thumb?(id: string): string | undefined })   // `notice`: thông báo nhỏ không chặn sau khi đổi phong cách làm mất chỉnh tay (hoàn tác bằng Ctrl+Z hoặc nút ở …
 ```
 
 #### `apps/web/src/i18n/I18nProvider.tsx`
@@ -989,6 +1048,7 @@ function radioKeys(e: KeyboardEvent<HTMLElement>): void
 const radioTab = (checked: boolean, first = false, anyChecked = true) =>   // tabIndex cho một ô radio: ô đang chọn nhận Tab; nếu chưa ô nào chọn thì ô đầu tiên nhận.
 function isKeyboardFocused(el: Element): boolean   // Phần tử đang focus theo kiểu bàn phím? Dùng đúng bộ chọn `:focus-visible` của trình duyệt (chuột → không khớp…
 function spaceBelongsToTransport(t: EventTarget | null, focusedByKeyboard: (el: Element) => boolean = isKeyboardFocused): boolean   // Space có thuộc về thanh phát không (phím tắt kiểu DAW)? • Ô gõ chữ/số, select, contentEditable: không, giữ ng…
+function isTextEntry(t: EventTarget | null): boolean   // Đang gõ chữ/số (ô nhập, contentEditable)? Ctrl+Z toàn cục phải để nguyên cho trình duyệt hoàn tác chữ. Hẹp hơ…
 function isTypingTarget(t: EventTarget | null): boolean   // Phím tắt khác (Home…): không nuốt khi đang gõ hoặc ở một điều khiển tự xử lý phím đó.
 ```
 
@@ -1002,6 +1062,37 @@ const initialClock
 function advance(s: ClockState, dtSeconds: number, duration: number, loop = false): ClockState
 const seek = (s: ClockState, t: number, duration: number) =>
 const togglePlay = (s: ClockState, duration: number) =>
+```
+
+#### `apps/web/src/lib/commands.ts`
+
+Tài liệu có hoàn tác và các lệnh (T-07, Technical Design §6.4). Hàm dựng lệnh nhận `doc` hiện tại để lấy giá trị "trước";
+
+```text
+type TrackId
+interface Doc
+type Cmd
+const CUSTOM_STYLE
+const pianoIndex = (s: SceneDocument) =>   // Piano Roll đầu tiên của scene (hiện scene chỉ có một).
+const pianoOf = (s: SceneDocument) =>
+const patchNoteStyle = (d: Doc, next: NoteStyle) =>   // Đổi kiểu nốt toàn cục. Gộp theo trường đổi (kéo một thanh trượt = một bước).
+const applyNotePreset = (d: Doc, base: NoteStyle, presetId?: string) =>   // Chọn bộ kiểu nốt dựng sẵn: thay cả `base`; hoàn tác trả lại đủ các chỉnh tay trước đó. Không gộp.
+const patchKeyboard = (d: Doc, next: KeyboardStyle) =>
+const patchTrackStyle = (d: Doc, id: TrackId, patch: Partial<NoteStyle> | null) =>   // Ghi đè kiểu nốt của một track (`patch` = null: bỏ ghi đè).
+const setVideoStyle = (d: Doc, id: string) =>   // Thay cả scene bằng scene của phong cách `id`, giữ ghi đè theo track (hành vi cũ). Kiểu nốt tay chỉnh và bố cụ…
+const loadPreset = (d: Doc, scene: SceneDocument) =>   // Mở preset: thay scene (và đánh dấu phong cách 'custom'). Một bước hoàn tác.
+const patchBrightness = (d: Doc, id: TrackId, next: BrightnessConfig) =>   // ── độ sáng nền theo track ──
+const toggleHidden = (d: Doc, id: TrackId) =>
+const toggleSolo = (d: Doc, id: TrackId) =>
+const setAllHidden = (d: Doc, hidden: boolean) =>
+const moveTrack = (d: Doc, id: TrackId, to: number) =>
+const patchLayout = (d: Doc, widgetId: string, patch: Partial<WidgetLayout>) =>   // Đổi layout widget (x, y, width, height, rotation, anchor). Gộp theo widget: kéo/đổi cỡ/xoay trong một cử chỉ …
+const patchWidgetProps = (d: Doc, widgetId: string, patch: Record<string, unknown>) =>   // Đổi một số thuộc tính (`properties`) của widget.
+const setWidgetVisible = (d: Doc, widgetId: string, visible: boolean) =>
+const reorderZ = (d: Doc, widgetId: string, where: 'front' | 'back') =>   // Đưa widget lên trên cùng / xuống dưới cùng bằng cách đổi zIndex của nó.
+const patchSnapping = (d: Doc, patch: Partial<SceneDocument['canvas']['snapping']>) =>
+function handEdited(d: Doc): boolean   // Chỉnh tay (kiểu nốt hoặc bố cục) có bị mất nếu đổi sang phong cách khác không? Dùng để hiện thông báo nhỏ sau…
+function initialDoc(videoStyle: string, saved: { style?: Partial<{ base: Partial<NoteStyle>; tracks: Record<string, Partial<NoteStyle>> }>; keyboard?: Partial<KeyboardStyle> } = {}): Doc   // Tài liệu ban đầu từ thiết lập đã lưu (localStorage): phong cách video, kiểu nốt, ghi đè theo track, bàn phím …
 ```
 
 #### `apps/web/src/lib/csp.ts`
@@ -1032,6 +1123,17 @@ Nạp phông cho khung video ở Preview (TECHNICAL-DESIGN 5.7): FontFace + docu
 const loadBundledFont = (spec: FontFaceSpec) =>   // Nạp một mặt phông (một lần cho mỗi tệp, kể cả khi gọi lại). Lỗi được quên để lần sau thử lại.
 type FontsStatus
 function useFontsStatus(scene: SceneDocument, loader: FontLoader = loadBundledFont): FontsStatus   // Trạng thái phông của scene: scene không có chữ thì luôn sẵn sàng.
+```
+
+#### `apps/web/src/lib/historyLabels.ts`
+
+Nhãn danh sách lịch sử (T-07 bước 2b). Dựng LÚC HIỂN THỊ từ loại lệnh + tham số + giá trị trước/sau, qua locales/,
+
+```text
+interface LabelCtx
+function describeCommand(cmd: Cmd, c: LabelCtx): string
+interface HistoryItem
+function historyItems(h: Pick<History<unknown>, 'timeline' | 'position'>, label: (i: number) => string, origin: string): HistoryItem[]   // Dòng danh sách từ dòng thời gian: mới nhất trước, mốc đầu ở cuối.
 ```
 
 #### `apps/web/src/lib/numberInput.ts`
@@ -1085,6 +1187,19 @@ function loadPref<T extends object>(name: string, fallback: T): T
 function savePref(name: string, value: unknown): void
 ```
 
+#### `apps/web/src/lib/presetFile.ts`
+
+Mở/lưu preset .json (T-07, REQ-STORAGE-02, NFR-SEC-04). Phần kiểm lược đồ nằm ở Render Core (`sanitizeScene`);
+
+```text
+interface PresetResult
+async function readPresetFile(file: Pick<File, 'name' | 'size' | 'text'>): Promise<PresetResult>   // Đọc một tệp preset. Ném `SceneError` (ERR_PRESET_TOO_LARGE / ERR_PRESET_INVALID / ERR_SCHEMA_NEWER).
+function parsePresetText(text: string): 
+const serializePreset = (scene: SceneDocument) =>
+function presetFileName(name: string): string   // Tên tệp an toàn từ tên preset: chữ/số/gạch, tối đa 60 ký tự.
+function downloadPreset(scene: SceneDocument): void   // Tải xuống bằng Blob + liên kết (không cần quyền, chạy với CSP của ứng dụng).
+```
+
 #### `apps/web/src/lib/problems.ts`
 
 Lỗi/cảnh báo của thư viện → chuỗi đã dịch theo mã (REQ-I18N-04). Thông điệp gốc của thư viện chỉ là "chi tiết kỹ thuật".
@@ -1093,6 +1208,31 @@ Lỗi/cảnh báo của thư viện → chuỗi đã dịch theo mã (REQ-I18N-0
 interface Problem
 const COSMETIC_WARNINGS   // Cảnh báo KHÔNG làm đổi hình người dùng thấy: chỉ là xấp xỉ đường cong automation, automation chưa đọc (độ sán…
 function describeProblem(i18n: Pick<I18n, 'has' | 't'>, kind: 'error' | 'warning', code: string, message?: string, details?: Record<string, unknown>): Problem
+```
+
+#### `apps/web/src/lib/store.ts`
+
+Store có hoàn tác (T-07, Technical Design §6.4). TypeScript thuần, không React, không đọc đồng hồ thật (đồng hồ truyền vào để test).
+
+```text
+interface Command
+interface History
+interface StoreState
+const HISTORY_LIMIT
+const MERGE_WINDOW_MS
+interface Store
+function createStore<D>(initial: D, opts: { limit?: number; now?: () => number } = {}): Store<D>
+```
+
+#### `apps/web/src/lib/storeReact.ts`
+
+Cầu nối React cho store có hoàn tác: `useStoreState` (useSyncExternalStore) và ngữ cảnh cử chỉ cho thanh trượt (T-07).
+
+```text
+function useStoreState<D>(store: Store<D>): StoreState<D>
+interface Gesture   // Một cử chỉ kéo = một bước hoàn tác. Mặc định là no-op để thành phần dùng được ngoài App (test, storybook).
+const GestureContext
+function useGesturePointer():    // Cho thanh trượt: `onPointerDown` mở cử chỉ, đóng ở pointerup/pointercancel bất kể con trỏ thả ở đâu (cũng đón…
 ```
 
 #### `apps/web/src/lib/theme.ts`
@@ -1160,6 +1300,17 @@ function isSameOriginScript(u: string, base: string): boolean   // Hàm thuần:
 function trustedWorkerURL(u: string): unknown   // Trả TrustedScriptURL khi trình duyệt có Trusted Types, nếu không trả chuỗi đã kiểm. Ném lỗi nếu URL khác orig…
 ```
 
+#### `apps/web/src/lib/undoKeys.ts`
+
+Phím tắt hoàn tác (T-07, REQ-UI-02): Ctrl/Cmd+Z hoàn tác; Ctrl/Cmd+Shift+Z và Ctrl+Y làm lại.
+
+```text
+function undoAction(e: Pick<KeyboardEvent, 'key' | 'ctrlKey' | 'metaKey' | 'shiftKey' | 'altKey'>): 'undo' | 'redo' | null   // Hành động ứng với một phím, hoặc null nếu không phải phím hoàn tác. Tách ra để test không cần DOM.
+function bindUndoKeys(target: Pick<Window, 'addEventListener' | 'removeEventListener'>, store: Undoable): () => void
+const isMac = () =>   // macOS dùng Cmd, nơi khác dùng Ctrl (chỉ để hiển thị; phím thật chấp nhận cả hai).
+function shortcutLabels(mac = isMac()): 
+```
+
 #### `apps/web/src/lib/usePref.ts`
 
 Tuỳ chọn giao diện lưu theo trình duyệt (không vào preset video). Đọc một lần, ghi lại mỗi khi đổi.
@@ -1196,7 +1347,7 @@ const noteStylePreset = (id: string) =>
 function matchNotePreset(base: NoteStyle): string   // Bộ kiểu nốt dựng sẵn khớp đúng NoteStyle hiện tại (so toàn bộ trường), hoặc 'custom'.
 function videoStyleBase(id: string): NoteStyle   // Kiểu nốt gốc của một phong cách (để biết "đã chỉnh").
 const videoStyleKeyboard = (id: string) =>   // Bàn phím piano có bật sẵn không (Paper không có bàn phím).
-function sceneForStyle(id: string, style: StyleConfig, keyboard: Pick<KeyboardStyle, 'enabled'>): SceneDocument   // Scene của phong cách `id` với kiểu nốt và bàn phím hiện tại. Trả bản sao mới, không đụng PAPER_SCENE.
+function sceneForStyle(id: string, style: StyleConfig, keyboard: Partial<Pick<KeyboardStyle, 'enabled'>> = {}): SceneDocument   // Scene của phong cách `id` với kiểu nốt và bàn phím hiện tại. Trả bản sao mới, không đụng PAPER_SCENE.
 ```
 
 #### `apps/web/src/main.tsx`
@@ -1232,21 +1383,28 @@ type ParseResponse
 - `apps/web/src/lib/clock.test.ts`
 - `apps/web/src/lib/csp.test.ts`
 - `apps/web/src/lib/externalMidi.test.ts`
+- `apps/web/src/lib/historyLabels.test.ts`
 - `apps/web/src/lib/numberInput.test.ts`
 - `apps/web/src/lib/parserClient.test.ts`
 - `apps/web/src/lib/playback.test.ts`
 - `apps/web/src/lib/prefs.test.ts`
+- `apps/web/src/lib/presetFile.test.ts`
 - `apps/web/src/lib/problems.test.ts`
+- `apps/web/src/lib/store.test.ts`
 - `apps/web/src/lib/theme.test.ts`
+- `apps/web/src/lib/undoKeys.test.ts`
+- `apps/web/test/app.test.tsx`
 - `apps/web/test/components.test.tsx`
 - `packages/render-core/test/fonts.test.ts`
 - `packages/render-core/test/glow.test.ts`
 - `packages/render-core/test/hud.test.ts`
 - `packages/render-core/test/legacy.test.ts`
 - `packages/render-core/test/paper.test.ts`
+- `packages/render-core/test/preset.test.ts`
 - `packages/render-core/test/presets.test.ts`
 - `packages/render-core/test/render-core.test.ts`
 - `packages/render-core/test/scene.test.ts`
+- `packages/render-core/test/snap.test.ts`
 - `test/als.test.js`
 - `test/binary.test.js`
 - `test/dawproject.test.js`
@@ -1255,4 +1413,4 @@ type ParseResponse
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 398 ký hiệu công khai -->
+<!-- 10 thư mục src, 468 ký hiệu công khai -->

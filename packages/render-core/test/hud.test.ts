@@ -6,7 +6,7 @@ import { layoutFrame, sanitizeScene, formatTemplate, groupDigits, clockMs, fitTe
 import { synthAst, derivedOf } from './helpers.ts';
 
 const sceneWith = (type: string, properties: object, layout = { x: 0, y: 0, width: 600, height: 120 }): SceneDocument => {
-  const { scene, warnings } = sanitizeScene({ schemaVersion: '0.3.0', canvas: {}, widgets: [{ id: 'w', type, layout, properties }] });
+  const { scene, warnings } = sanitizeScene({ schemaVersion: '0.4.0', canvas: {}, widgets: [{ id: 'w', type, layout, properties }] });
   assert.deepEqual(warnings, []); return scene;
 };
 const prims = (scene: SceneDocument, t: number, ast = synthAst()) => layoutFrame(scene, derivedOf(ast), ast, t)[0].prims;
@@ -131,7 +131,7 @@ test('tất định cho từng widget: cùng (scene, t) → cùng danh sách, kh
 });
 
 test('sanitizeScene: chỗ giữ lạ → cảnh báo, chữ giữ nguyên; giá trị sai về mặc định', () => {
-  const r = sanitizeScene({ schemaVersion: '0.3.0', canvas: {}, widgets: [{ type: 'EVENT_COUNTER', id: 'e', properties: { decimals: 9, style: { size: 'big', color: 'red' }, lines: { played: { template: 'x {bogus}' } } } }] });
+  const r = sanitizeScene({ schemaVersion: '0.4.0', canvas: {}, widgets: [{ type: 'EVENT_COUNTER', id: 'e', properties: { decimals: 9, style: { size: 'big', color: 'red' }, lines: { played: { template: 'x {bogus}' } } } }] });
   const paths = r.warnings.map((w) => w.details.path);
   for (const p of ['$.widgets[0].properties.decimals', '$.widgets[0].properties.style.size', '$.widgets[0].properties.style.color', '$.widgets[0].properties.lines.played.template']) assert.ok(paths.includes(p), p);
   assert.equal((r.scene.widgets[0].properties as any).lines.played.template, 'x {bogus}');

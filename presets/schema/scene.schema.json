@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DAW Visualizer scene preset (schemaVersion 0.4.x)",
+  "description": "Mô tả lược đồ cho tài liệu và test. Việc kiểm lúc chạy là sanitizeScene (packages/render-core/src/scene.ts): trường lạ bị bỏ, giá trị sai về mặc định kèm WARN_PRESET_*.",
+  "type": "object",
+  "required": ["schemaVersion", "canvas", "widgets"],
+  "additionalProperties": true,
+  "properties": {
+    "schemaVersion": { "type": "string", "pattern": "^0\\.[34]\\.\\d+$" },
+    "presetName": { "type": "string", "maxLength": 200 },
+    "author": { "type": "string", "maxLength": 200 },
+    "canvas": {
+      "type": "object",
+      "properties": {
+        "aspectRatio": { "type": "string" },
+        "designWidth": { "type": "integer", "minimum": 256, "maximum": 4096 },
+        "designHeight": { "type": "integer", "minimum": 256, "maximum": 4096 },
+        "backgroundColor": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+        "backgroundImageData": { "type": "null" },
+        "snapping": {
+          "type": "object",
+          "properties": {
+            "gridEnabled": { "type": "boolean" },
+            "gridSize": { "type": "number", "minimum": 1, "maximum": 256 },
+            "smartGuidesEnabled": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "widgets": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1, "maxLength": 64 },
+          "type": { "enum": ["TRACK_INFO", "PIANO_ROLL", "EVENT_COUNTER", "LIVE_TRIGGER", "TIME_BAR", "CHORD_DETECTION", "AUDIO_SPECTRUM", "PROGRESS_BAR"] },
+          "zIndex": { "type": "integer", "minimum": -10000, "maximum": 10000 },
+          "visible": { "type": "boolean" },
+          "layout": {
+            "type": "object",
+            "properties": {
+              "x": { "type": "number" }, "y": { "type": "number" },
+              "width": { "type": "number", "exclusiveMinimum": 0 }, "height": { "type": "number", "exclusiveMinimum": 0 },
+              "rotation": { "type": "number", "minimum": -360, "maximum": 360 },
+              "anchor": {
+                "type": "object",
+                "description": "Điểm neo xoay theo tỉ lệ khung widget. Vắng (0.3.x) thì dùng tâm. Thêm ở 0.4.0 (REQ-GRAPHICS-03).",
+                "properties": { "x": { "type": "number", "minimum": 0, "maximum": 1 }, "y": { "type": "number", "minimum": 0, "maximum": 1 } }
+              }
+            }
+          },
+          "trackMappingMode": { "enum": ["ALL", "MANUAL", "AUTO_ASSIGN_FIRST_MELODIC"] },
+          "assignedTrackIndices": { "type": "array", "items": { "type": "integer", "minimum": 0 }, "maxItems": 1024 },
+          "properties": { "type": "object" }
+        }
+      }
+    }
+  }
+}

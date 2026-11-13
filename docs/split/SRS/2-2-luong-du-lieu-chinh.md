@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "2.2. Luồng dữ liệu chính"
 path: "2. KIẾN TRÚC KỸ THUẬT, LUỒNG DỮ LIỆU & ĐÁNH GIÁ KIẾN TRÚC > 2.2. Luồng dữ liệu chính"
 chunk: 2-2-luong-du-lieu-chinh.md
-source_lines: 187-194
-source_sha1: ae88fa5f8b
+source_lines: 188-195
+source_sha1: e94e9bc79b
 ids: [REQ-AST-01, REQ-EXPORT-00, REQ-EXPORT-01, REQ-EXPORT-04, REQ-GRAPHICS-04, REQ-PARSER-00, REQ-STORAGE-01, REQ-UI-01, REQ-WIDGET-06, REQ-WIDGET-07]
 ---
 ### 2.2. Luồng dữ liệu chính

@@ -4,6 +4,7 @@
 //   node scripts/check-i18n.mjs vi         chỉ một ngôn ngữ
 //   node scripts/check-i18n.mjs --quiet    chỉ in lỗi
 //   node scripts/check-i18n.mjs --dir đường_dẫn   kiểm thư mục locales khác
+//   node scripts/check-i18n.mjs --dir d --src mã   quét thêm thư mục mã nguồn `mã` (lặp được) khi kiểm thư mục locales khác (dùng trong test)
 // Thoát 1 nếu có lỗi. Ngôn ngữ có @meta.status = "partial" được phép thiếu khoá (chuỗi dự phòng tiếng Anh sẽ dùng).
 import fs from 'node:fs';
 import path from 'node:path';
@@ -13,6 +14,8 @@ const root = path.resolve(import.meta.dirname, '..');
 const args = process.argv.slice(2);
 const di = args.indexOf('--dir');
 const dir = di >= 0 ? path.resolve(args.splice(di, 2)[1]) : path.join(root, 'locales'); // --dir: kiểm thư mục khác (dùng trong test)
+const srcDirs = [];
+for (let si = args.indexOf('--src'); si >= 0; si = args.indexOf('--src')) srcDirs.push(path.resolve(args.splice(si, 2)[1]));
 const quiet = args.includes('--quiet');
 const only = args.filter((a) => !a.startsWith('--'));
 const errors = [], warns = [];
@@ -71,18 +74,32 @@ for (const { code } of manifest.locales) {
 }
 
 // khoá dùng trong mã nguồn phải có trong bản gốc
-const used = new Set(), dynamic = new Set(), literal = new Set();
+// Hai lớp kiểm: (1) gọi trực tiếp t('khoá') / has('khoá') / data-i18n; (2) MỌI chuỗi viết sẵn trông như khoá của danh mục
+// (đầu là một nhóm của bản gốc, vd web. errors. warn.) kể cả trong biểu thức điều kiện t(c ? 'web.a' : 'web.b') hay bảng tra, mà không có trong
+// bản gốc và cũng không phải tiền tố của khoá nào => LỖI. Trước đây lớp (2) chỉ dùng để bỏ cảnh báo "khoá không dùng", nên khoá viết sai
+// trong biểu thức điều kiện hiện thành chữ thô trên giao diện mà kiểm tra vẫn đạt.
+const used = new Set(), dynamic = new Set(), literal = new Map(); // literal: khoá → tệp đầu tiên dùng
+const namespaces = new Set(srcKeys.map((k) => k.split('.')[0]));
+const stripComments = (t) => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:\w'"`])\/\/.*$/gm, '$1');
 const scan = (file) => {
-  const s = fs.readFileSync(file, 'utf8');
+  const s = stripComments(fs.readFileSync(file, 'utf8'));
+  const rel = path.relative(root, file);
   for (const m of s.matchAll(/data-i18n(?:-[a-z]+)?="([\w.]+)"/g)) used.add(m[1]);
   for (const m of s.matchAll(/\b(?:t|has)\(\s*'([\w.]+)'/g)) { if (m[1].endsWith('.')) dynamic.add(m[1]); else used.add(m[1]); } // 'errors.' + code → tiền tố động
   for (const m of s.matchAll(/\bt\(\s*'([\w.]+)'\s*\+/g)) dynamic.add(m[1]);
-  for (const m of s.matchAll(/['"]([A-Za-z]\w*(?:\.\w+)+)['"]/g)) literal.add(m[1]); // khoá viết trực tiếp, vd t(c ? 'a.b' : 'a.c')
-  for (const m of s.matchAll(/\bt\(\s*`([\w.]+)\$\{/g)) dynamic.add(m[1]);
+  for (const m of s.matchAll(/['"`]([A-Za-z]\w*(?:\.\w+)+\.?)['"`]/g)) if (!literal.has(m[1])) literal.set(m[1], rel); // khoá viết trực tiếp, vd t(c ? 'a.b' : 'a.c')
+  for (const m of s.matchAll(/`([A-Za-z][\w.]*\.)\$\{/g)) dynamic.add(m[1]); // t(`web.x.${id}`) kể cả khi nằm trong biểu thức điều kiện: t(c ? `a.${x}` : `b.${y}`)
 };
-const walk = (d) => { for (const e of fs.readdirSync(d, { withFileTypes: true })) { if (e.name === 'node_modules' || e.name === 'dist') continue; const p = path.join(d, e.name); if (e.isDirectory()) walk(p); else if (/\.(html|js|mjs|ts|tsx)$/.test(e.name)) scan(p); } };
+const walk = (d) => { for (const e of fs.readdirSync(d, { withFileTypes: true })) { if (e.name === 'node_modules' || e.name === 'dist') continue; const p = path.join(d, e.name); if (e.isDirectory()) walk(p); else if (/\.(html|js|mjs|ts|tsx)$/.test(e.name) && !/\.test\.[jt]sx?$/.test(e.name)) scan(p); } };
 if (di < 0) walk(path.join(root, 'apps')); // chỉ đối chiếu mã nguồn khi kiểm thư mục locales của repo
-for (const k of used) if (!(k in (src || {}))) err(source, `khoá dùng trong mã nguồn nhưng chưa có: ${k}`);
+for (const d of srcDirs) walk(d);
+const srcSet = new Set(srcKeys);
+const isPrefix = (k) => srcKeys.some((x) => x.startsWith(k.endsWith('.') ? k : k + '.'));
+for (const k of used) if (!srcSet.has(k)) err(source, `khoá dùng trong mã nguồn nhưng chưa có: ${k}`);
+for (const [k, file] of literal) {
+  if (used.has(k) || srcSet.has(k) || !namespaces.has(k.split('.')[0]) || isPrefix(k)) continue;
+  err(source, `khoá dùng trong mã nguồn nhưng chưa có: ${k} (${file})`);
+}
 for (const k of srcKeys) if (!used.has(k) && !literal.has(k) && ![...dynamic].some((p) => k.startsWith(p))) warn(source, `khoá không còn được dùng: ${k}`);
 
 if (!quiet) { for (const w of warns) console.log('cảnh báo', w); for (const s of stats) console.log(`${s.code}: ${s.pct}% khoá${s.same ? `, ${s.same} chuỗi giống bản gốc` : ''}`); }

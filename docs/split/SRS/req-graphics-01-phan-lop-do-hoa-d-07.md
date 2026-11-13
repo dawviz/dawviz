@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-GRAPHICS-01: Phân lớp đồ họa (D-07)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-01: Phân lớp đồ họa (D-07)"
 chunk: req-graphics-01-phan-lop-do-hoa-d-07.md
-source_lines: 410-415
-source_sha1: ae88fa5f8b
+source_lines: 411-416
+source_sha1: e94e9bc79b
 ids: [D-07, REQ-GRAPHICS-01]
 ---
 #### REQ-GRAPHICS-01: Phân lớp đồ họa (D-07)

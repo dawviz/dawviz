@@ -4,9 +4,9 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "Phụ lục A: Mã lỗi"
 path: "9. PHỤ LỤC > Phụ lục A: Mã lỗi"
 chunk: phu-luc-a-ma-loi.md
-source_lines: 1103-1124
-source_sha1: ae88fa5f8b
-ids: [ERR_ARCHIVE_INVALID, ERR_ARCHIVE_TOO_LARGE, ERR_AST_INVALID, ERR_AST_TOO_LARGE, ERR_AUDIO_DECODE, ERR_AUDIO_TOO_LONG, ERR_AUDIO_TOO_MANY, ERR_EXPORT_FAILED, ERR_FILE_TOO_LARGE, ERR_NO_NOTES, ERR_NO_SUPPORTED_ENCODER, ERR_NO_SUPPORTED_ENV, ERR_PARSER_TIMEOUT, ERR_PRESET_INVALID, ERR_SCHEMA_INVALID, ERR_SCHEMA_NEWER, ERR_UNSUPPORTED_FORMAT, REQ-AUDIO-01]
+source_lines: 1104-1126
+source_sha1: e94e9bc79b
+ids: [ERR_ARCHIVE_INVALID, ERR_ARCHIVE_TOO_LARGE, ERR_AST_INVALID, ERR_AST_TOO_LARGE, ERR_AUDIO_DECODE, ERR_AUDIO_TOO_LONG, ERR_AUDIO_TOO_MANY, ERR_EXPORT_FAILED, ERR_FILE_TOO_LARGE, ERR_NO_NOTES, ERR_NO_SUPPORTED_ENCODER, ERR_NO_SUPPORTED_ENV, ERR_PARSER_TIMEOUT, ERR_PRESET_INVALID, ERR_PRESET_TOO_LARGE, ERR_SCHEMA_INVALID, ERR_SCHEMA_NEWER, ERR_UNSUPPORTED_FORMAT, NFR-SEC-04, REQ-AUDIO-01]
 ---
 ### Phụ lục A: Mã lỗi
 
@@ -25,7 +25,8 @@ ids: [ERR_ARCHIVE_INVALID, ERR_ARCHIVE_TOO_LARGE, ERR_AST_INVALID, ERR_AST_TOO_L
 | `ERR_AUDIO_DECODE` | Trình duyệt không giải mã được audio | Đổi sang `.wav`/`.mp3`; vẫn có thể tiếp tục không audio. |
 | `ERR_AUDIO_TOO_LONG` | Audio dài hơn giới hạn giải mã | Cắt ngắn audio. |
 | `ERR_AUDIO_TOO_MANY` | Số stem hoặc tổng thời lượng stem vượt giới hạn (REQ-AUDIO-01) | Gộp bớt stem (theo nhóm nhạc cụ) hoặc chỉ nạp stem của track cần hiện. |
-| `ERR_PRESET_INVALID` | Preset hỏng hoặc sai lược đồ | Dùng preset khác. |
-| `ERR_SCHEMA_NEWER` | Dữ liệu từ phiên bản mới hơn | Cập nhật ứng dụng. |
+| `ERR_PRESET_INVALID` | Preset hỏng hoặc sai lược đồ: không phải JSON, không phải đối tượng, thiếu `schemaVersion`/`canvas`, phiên bản quá cũ (< 0.3), vượt giới hạn độ sâu (12), số nút (20 000), widget (64), độ dài chuỗi (4096) hoặc mảng (1024) | Dùng preset khác. |
+| `ERR_PRESET_TOO_LARGE` | Tệp preset lớn hơn 1 MiB (kiểm trước khi đọc, NFR-SEC-04) | Dùng preset nhỏ hơn. |
+| `ERR_SCHEMA_NEWER` | Dữ liệu từ phiên bản mới hơn (preset: phiên bản chính.phụ lớn hơn 0.4) | Cập nhật ứng dụng. |
 | `ERR_NO_SUPPORTED_ENCODER` | Không có bộ mã hóa phù hợp (Tier 4) | Dùng Chrome/Edge bản mới trên Windows/macOS. |
 | `ERR_EXPORT_FAILED` | Export Worker lỗi bất ngờ | Thử lại; hạ độ phân giải hoặc dùng Export Range. |

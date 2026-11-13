@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "0.3.0",
+  "presetName": "Paper",
+  "author": "DAW Visualizer",
+  "canvas": {
+    "aspectRatio": "1:1",
+    "designWidth": 1080,
+    "designHeight": 1080,
+    "backgroundColor": "#FFFFFF",
+    "backgroundImageData": null,
+    "snapping": { "gridEnabled": true, "gridSize": 8, "smartGuidesEnabled": true }
+  },
+  "widgets": [
+    {
+      "id": "piano-roll", "type": "PIANO_ROLL", "zIndex": 10, "visible": true,
+      "layout": { "x": 80, "y": 150, "width": 690, "height": 770, "rotation": 0 },
+      "trackMappingMode": "ALL", "assignedTrackIndices": [],
+      "properties": {
+        "orientation": "HORIZONTAL", "pitchRangeMode": "FIT_CONTENT", "pitchMin": 48, "pitchMax": 84,
+        "lookaheadSeconds": 1, "playheadPositionRatio": 0.84,
+        "noteStyle": {
+          "base": {
+            "colorMode": "custom", "customColor": "#383838", "opacity": 1, "inactiveOpacity": 1,
+            "cornerRadius": 1, "heightScale": 0.8, "glow": 0, "glowRadius": 0, "borderWidth": 0,
+            "playedColor": "#383838", "activeColor": "#383838", "upcomingColor": "#C4C4C4"
+          },
+          "tracks": {}
+        },
+        "keyboard": { "enabled": false, "width": 96, "whiteColor": "#e8eaf2", "blackColor": "#14161f", "useTrackColor": true },
+        "playheadColor": "#E06666", "playheadWidth": 1.5
+      }
+    },
+    {
+      "id": "track-info", "type": "TRACK_INFO", "zIndex": 20, "visible": true,
+      "layout": { "x": 75, "y": 40, "width": 560, "height": 100, "rotation": 0 },
+      "trackMappingMode": "ALL", "assignedTrackIndices": [],
+      "properties": {
+        "align": "left", "titleText": "", "artistText": "",
+        "titleStyle": { "font": "Space Grotesk", "size": 72, "weight": 700, "color": "#111111" },
+        "artistStyle": { "font": "Space Grotesk", "size": 28, "weight": 400, "color": "#111111" }
+      }
+    },
+    {
+      "id": "event-counter", "type": "EVENT_COUNTER", "zIndex": 30, "visible": true,
+      "layout": { "x": 528, "y": 40, "width": 480, "height": 64, "rotation": 0 },
+      "trackMappingMode": "ALL", "assignedTrackIndices": [],
+      "properties": {
+        "align": "right", "decimals": 2, "lineHeight": 1.45,
+        "style": { "font": "Space Grotesk", "size": 22, "weight": 400, "color": "#777777" },
+        "lines": {
+          "played": { "enabled": true, "template": "Num played notes: {played}/{total} ({pct})" },
+          "total": { "enabled": true, "template": "Num events: {played}/{total}" },
+          "progress": { "enabled": false, "template": "Progress: {pct}" },
+          "tempo": { "enabled": false, "template": "Tempo: {tempo} BPM" }
+        }
+      }
+    },
+    {
+      "id": "live-trigger", "type": "LIVE_TRIGGER", "zIndex": 40, "visible": true,
+      "layout": { "x": 408, "y": 112, "width": 600, "height": 24, "rotation": 0 },
+      "trackMappingMode": "ALL", "assignedTrackIndices": [],
+      "properties": {
+        "mode": "inline", "align": "right", "tailMs": 300, "maxLines": 1, "lineHeight": 1.4, "separator": "   ",
+        "style": { "font": "Space Grotesk", "size": 15, "weight": 400, "color": "#888888" },
+        "template": "Note: {name} (Vel: {velocity})", "showTrack": true, "trackTemplate": "< {track}"
+      }
+    },
+    {
+      "id": "time-bar", "type": "TIME_BAR", "zIndex": 50, "visible": true,
+      "layout": { "x": 75, "y": 950, "width": 400, "height": 90, "rotation": 0 },
+      "trackMappingMode": "ALL", "assignedTrackIndices": [],
+      "properties": {
+        "style": { "font": "Space Grotesk", "size": 18, "weight": 400, "color": "#777777" },
+        "labelStyle": { "font": "Space Grotesk", "size": 11, "weight": 400, "color": "#999999" },
+        "rowGap": 1.9,
+        "time": { "enabled": true, "label": "time", "format": "grouped" },
+        "beat": { "enabled": true, "label": "beat", "format": "grouped" },
+        "timeGroups": [3, 2, 3], "beatGroups": [3, 2, 3],
+        "showBars": true, "barLength": 64, "barThickness": 3, "barColor": "#999999", "barTrackColor": "#E4E4E4"
+      }
+    },
+    {
+      "id": "chord", "type": "CHORD_DETECTION", "zIndex": 60, "visible": true,
+      "layout": { "x": 560, "y": 930, "width": 448, "height": 90, "rotation": 0 },
+      "trackMappingMode": "ALL", "assignedTrackIndices": [],
+      "properties": {
+        "align": "right", "alwaysShowNotes": true, "notesTemplate": "Notes: {notes}", "unrecognized": "nc", "noChordText": "N.C.",
+        "nameStyle": { "font": "Space Grotesk", "size": 34, "weight": 700, "color": "#111111" },
+        "notesStyle": { "font": "Space Grotesk", "size": 17, "weight": 400, "color": "#777777" }
+      }
+    },
+    {
+      "id": "progress", "type": "PROGRESS_BAR", "zIndex": 70, "visible": true,
+      "layout": { "x": 75, "y": 1030, "width": 933, "height": 32, "rotation": 0 },
+      "trackMappingMode": "ALL", "assignedTrackIndices": [],
+      "properties": {
+        "orientation": "HORIZONTAL", "thickness": 12, "progressColor": "#CCCCCC", "trackColor": "", "radius": 0,
+        "showTime": true, "timeTemplate": "{elapsed} / {total}", "timeAlign": "right",
+        "timeStyle": { "font": "Space Grotesk", "size": 7, "weight": 400, "color": "#BBBBBB" }
+      }
+    }
+  ]
+}

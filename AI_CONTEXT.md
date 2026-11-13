@@ -41,7 +41,7 @@ DAW Visualizer: trình duyệt đọc tệp dự án DAW (Ableton `.als/.alp`, R
 | AST, tick, tempo, ghi đè tempo | [SRS §3.2](docs/split/SRS/3-2-cau-truc-du-lieu-chuan-hoa-unified-ast-d-08.md#32-cấu-trúc-dữ-liệu-chuẩn-hóa-unified-ast-d-08-d-09) · [REQ-PARSER-07](docs/split/SRS/req-parser-07-tempo-khong-doan-ngam-va-ghi-de-d.md#req-parser-07-tempo-không-đoán-ngầm-và-ghi-đè-d-24-d-29) · [Technical Design §2](docs/split/TECHNICAL-DESIGN/2-mo-hinh-du-lieu-va-thoi-gian.md#2-mô-hình-dữ-liệu-và-thời-gian-) | `packages/core/src/ast.js`, `packages/core/src/tempo.js` |
 | Automation, độ sáng track | [Technical Design §2.3](docs/split/TECHNICAL-DESIGN/2-mo-hinh-du-lieu-va-thoi-gian.md#2-mô-hình-dữ-liệu-và-thời-gian-) · [SRS REQ-GRAPHICS-06](docs/split/SRS/req-graphics-06-do-sang-track-theo-automation-d.md#req-graphics-06-độ-sáng-track-theo-automation-d-33) | `packages/core/src/automation.js`, `packages/render-core/src/brightness.ts` |
 | Render Core, Piano Roll, widget | [Technical Design §5](docs/split/TECHNICAL-DESIGN/5-1-giao-dien-chinh.md#51-giao-diện-chính-) · [SRS §3.4 (8 widget)](docs/split/SRS/3-4-dac-ta-8-widget-hud-br-02-br-03-br-04.md#34-đặc-tả-8-widget-hud-br-02-br-03-br-04) · [SDD §3](docs/split/SDD/3-render-core-dawviz-render-core-d-36.md#3-render-core-dawvizrender-core-d-36) | `packages/render-core/src/` |
-| Giao diện, phát lại, chế độ chỉnh sửa | [Technical Design §6](docs/split/TECHNICAL-DESIGN/6-ung-dung-web-va-phat-lai.md#6-ứng-dụng-web-và-phát-lại-) · [SDD §4](docs/split/SDD/4-ung-dung-web-apps-web-d-34.md#4-ứng-dụng-web-appsweb-d-34) · [SRS §5.1](docs/split/SRS/5-1-bo-cuc-khong-gian-lam-viec.md#51-bố-cục-không-gian-làm-việc) | `apps/web/src/` |
+| Giao diện, phát lại, chế độ chỉnh sửa | [Technical Design §6](docs/split/TECHNICAL-DESIGN/6-1-trang-thai.md#61-trạng-thái) · [SDD §4](docs/split/SDD/4-ung-dung-web-apps-web-d-34.md#4-ứng-dụng-web-appsweb-d-34) · [SRS §5.1](docs/split/SRS/5-1-bo-cuc-khong-gian-lam-viec.md#51-bố-cục-không-gian-làm-việc) | `apps/web/src/` |
 | Tùy biến: storyboard, chuyển cảnh nốt, easing, hạt, tài nguyên phiên, preset cộng đồng | [CUSTOMIZATION](docs/design/CUSTOMIZATION.md) (đề xuất, AD-08…AD-12) · [ANIMATION](docs/design/ANIMATION.md) · [COMMUNITY-CONTENT](docs/COMMUNITY-CONTENT.md) | `packages/render-core/src/style.ts`, `presets/` (motion/particles: chưa có — T-17…T-20) |
 | Biểu thức người dùng, bảo mật, kiểm duyệt preset cộng đồng | [EXPRESSIONS](docs/design/EXPRESSIONS.md) (đề xuất, AD-13…AD-15) · [ANIMATION-CATALOG](docs/design/ANIMATION-CATALOG.md) · SRS NFR-SEC | (chưa có — T-29…T-31; package `@dawviz/expr` dự kiến) |
 | Xuất video | [Technical Design §7](docs/split/TECHNICAL-DESIGN/7-duong-ong-xuat-video-m3-spike-1-la-co-so.md#7-đường-ống-xuất-video--m3-spike-1-là-cơ-sở) · [REQ-EXPORT-00](docs/split/SRS/req-export-00-pre-flight-r-01-d-17.md#req-export-00-pre-flight-r-01-d-17)…[07](docs/split/SRS/req-export-07-thuc-thi-trong-worker-arc-02-d-21.md#req-export-07-thực-thi-trong-worker-arc-02-d-21) | (chưa có — M3) |
@@ -71,7 +71,7 @@ node scripts/sync-docs.mjs --find "độ sáng"   # lấy liên kết mảnh#hea
 <!-- sync:begin docs-index -->
 <!-- Khối này do scripts/sync-docs.mjs sinh ra; đừng sửa tay. -->
 
-Có 18 tài liệu, 269 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
+Có 18 tài liệu, 272 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
 
 ### BRD.md — TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)
 
@@ -95,7 +95,7 @@ Nguồn: `docs/product/BRD.md` · [thứ tự đọc](docs/split/BRD/_index.md)
 Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 
 - [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](docs/split/SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 0.4k
-- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) › Lịch sử phiên bản](docs/split/SRS/lich-su-phien-ban.md) · 6.4k
+- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) › Lịch sử phiên bản](docs/split/SRS/lich-su-phien-ban.md) · 6.9k
 - [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) › Quy ước trong tài liệu](docs/split/SRS/quy-uoc-trong-tai-lieu.md) · 0.8k
 - [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) › Mục lục](docs/split/SRS/muc-luc.md) · 0.4k
 - [1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG](docs/split/SRS/1-gioi-thieu-muc-tieu-he-thong.md) · 4.7k
@@ -162,12 +162,12 @@ Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 - [4. YÊU CẦU PHI CHỨC NĂNG (NON-FUNCTIONAL REQUIREMENTS)](docs/split/SRS/4-yeu-cau-phi-chuc-nang-non-functional-requireme.md) · 5.2k
 - [5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG › 5.1. Bố cục không gian làm việc](docs/split/SRS/5-1-bo-cuc-khong-gian-lam-viec.md) · 3.7k
 - [5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG › 5.2. Chế độ tương tác](docs/split/SRS/5-2-che-do-tuong-tac.md) · 0.4k
-- [5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG › 5.3. Yêu cầu giao diện](docs/split/SRS/5-3-yeu-cau-giao-dien.md) · 14.5k
+- [5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG › 5.3. Yêu cầu giao diện](docs/split/SRS/5-3-yeu-cau-giao-dien.md) · 15.9k
 - [6. MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU](docs/split/SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md) · 1.4k
 - [7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO](docs/split/SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md) · 6.7k
 - [8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS](docs/split/SRS/8-cac-van-de-con-mo-cua-srs.md) · 4.0k
-- [9. PHỤ LỤC › Phụ lục A: Mã lỗi](docs/split/SRS/phu-luc-a-ma-loi.md) · 2.0k
-- [9. PHỤ LỤC › Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)](docs/split/SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md) · 0.9k
+- [9. PHỤ LỤC › Phụ lục A: Mã lỗi](docs/split/SRS/phu-luc-a-ma-loi.md) · 2.4k
+- [9. PHỤ LỤC › Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)](docs/split/SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md) · 1.2k
 - [9. PHỤ LỤC › Phụ lục A2: Mã cảnh báo của Parser Library](docs/split/SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md) · 1.1k
 - [9. PHỤ LỤC › Phụ lục B: Ghi chú rà soát](docs/split/SRS/phu-luc-b-ghi-chu-ra-soat.md) · 2.9k
 
@@ -195,7 +195,7 @@ Nguồn: `docs/design/TECHNICAL-DESIGN.md` · [thứ tự đọc](docs/split/TEC
 - [3. Đường ống phân tích (parser) 🟢](docs/split/TECHNICAL-DESIGN/3-duong-ong-phan-tich-parser.md) · 1.9k
 - [4. Dữ liệu dẫn xuất (derived) 🟢/⚪](docs/split/TECHNICAL-DESIGN/4-du-lieu-dan-xuat-derived.md) · 1.3k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.0 Kiểu dáng nốt và bàn phím 🟢 (REQ-GRAPHICS-07)](docs/split/TECHNICAL-DESIGN/5-0-kieu-dang-not-va-ban-phim-req-graphics-07.md) · 0.6k
-- [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.1 Giao diện chính 🟢](docs/split/TECHNICAL-DESIGN/5-1-giao-dien-chinh.md) · 3.8k
+- [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.1 Giao diện chính 🟢](docs/split/TECHNICAL-DESIGN/5-1-giao-dien-chinh.md) · 3.9k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.2 Hợp đồng widget 🟢](docs/split/TECHNICAL-DESIGN/5-2-hop-dong-widget.md) · 0.5k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.3 Hệ toạ độ và tỉ lệ 🟡](docs/split/TECHNICAL-DESIGN/5-3-he-toa-do-va-ti-le.md) · 0.4k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.4 Piano Roll 🟢](docs/split/TECHNICAL-DESIGN/5-4-piano-roll.md) · 0.7k
@@ -203,9 +203,12 @@ Nguồn: `docs/design/TECHNICAL-DESIGN.md` · [thứ tự đọc](docs/split/TEC
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.6 Phát sáng động khi chạm 🟢](docs/split/TECHNICAL-DESIGN/5-6-phat-sang-dong-khi-cham.md) · 1.8k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)](docs/split/TECHNICAL-DESIGN/5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md) · 5.0k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp 🟢 (đã dùng ở T-69)](docs/split/TECHNICAL-DESIGN/5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md) · 0.9k
-- [6. Ứng dụng web và phát lại 🟡](docs/split/TECHNICAL-DESIGN/6-ung-dung-web-va-phat-lai.md) · 4.0k
+- [6. Ứng dụng web và phát lại 🟡 › 6.1 Trạng thái](docs/split/TECHNICAL-DESIGN/6-1-trang-thai.md) · 1.3k
+- [6. Ứng dụng web và phát lại 🟡 › 6.2 Phát lại và âm thanh ⚪](docs/split/TECHNICAL-DESIGN/6-2-phat-lai-va-am-thanh.md) · 0.6k
+- [6. Ứng dụng web và phát lại 🟡 › 6.3 Danh sách track 🟢](docs/split/TECHNICAL-DESIGN/6-3-danh-sach-track.md) · 1.9k
+- [6. Ứng dụng web và phát lại 🟡 › 6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)](docs/split/TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) · 12.2k
 - [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở)](docs/split/TECHNICAL-DESIGN/7-duong-ong-xuat-video-m3-spike-1-la-co-so.md) · 2.0k
-- [8. Lưu trữ ⚪ (M4)](docs/split/TECHNICAL-DESIGN/8-luu-tru-m4.md) · 0.8k
+- [8. Lưu trữ ⚪ (M4)](docs/split/TECHNICAL-DESIGN/8-luu-tru-m4.md) · 1.0k
 - [9. Đa ngôn ngữ 🟢](docs/split/TECHNICAL-DESIGN/9-da-ngon-ngu.md) · 0.5k
 - [10. Lỗi, ghi nhật ký, quan sát](docs/split/TECHNICAL-DESIGN/10-loi-ghi-nhat-ky-quan-sat.md) · 0.5k
 - [11. Hiệu năng và bộ nhớ (ngân sách)](docs/split/TECHNICAL-DESIGN/11-hieu-nang-va-bo-nho-ngan-sach.md) · 0.6k

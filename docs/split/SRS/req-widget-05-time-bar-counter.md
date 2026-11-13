@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-WIDGET-05: Time & Bar Counter"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-05: Time & Bar Counter"
 chunk: req-widget-05-time-bar-counter.md
-source_lines: 556-565
-source_sha1: ae88fa5f8b
+source_lines: 557-566
+source_sha1: e94e9bc79b
 ids: [REQ-AST-01, REQ-WIDGET-05]
 ---
 #### REQ-WIDGET-05: Time & Bar Counter

@@ -1,11 +1,11 @@
 # Chỉ mục SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
-nguồn: `SRS.md` (sha1 ae88fa5f8b)
+nguồn: `SRS.md` (sha1 e94e9bc79b)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
 | 0 | DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) | [du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md](du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) | 422 |  |
-| 1 | DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) > Lịch sử phiên bản | [lich-su-phien-ban.md](lich-su-phien-ban.md) | 6388 | AT-05, AT-13, AT-16, AT-17, AT-18, AT-19… |
+| 1 | DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) > Lịch sử phiên bản | [lich-su-phien-ban.md](lich-su-phien-ban.md) | 6860 | AT-05, AT-13, AT-16, AT-17, AT-18, AT-19… |
 | 2 | DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) > Quy ước trong tài liệu | [quy-uoc-trong-tai-lieu.md](quy-uoc-trong-tai-lieu.md) | 818 | REQ-GRAPHICS-00 |
 | 3 | DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) > Mục lục | [muc-luc.md](muc-luc.md) | 365 |  |
 | 4 | 1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG | [1-gioi-thieu-muc-tieu-he-thong.md](1-gioi-thieu-muc-tieu-he-thong.md) | 4720 | ARC-01, BR-01, BR-02, BR-03, BR-04, BR-05… |
@@ -72,11 +72,11 @@ nguồn: `SRS.md` (sha1 ae88fa5f8b)
 | 65 | 4. YÊU CẦU PHI CHỨC NĂNG (NON-FUNCTIONAL REQUIREMENTS) | [4-yeu-cau-phi-chuc-nang-non-functional-requireme.md](4-yeu-cau-phi-chuc-nang-non-functional-requireme.md) | 5167 | ARC-07, BR-08, D-05, D-12, D-16, D-30… |
 | 66 | 5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.1. Bố cục không gian làm việc | [5-1-bo-cuc-khong-gian-lam-viec.md](5-1-bo-cuc-khong-gian-lam-viec.md) | 3717 |  |
 | 67 | 5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.2. Chế độ tương tác | [5-2-che-do-tuong-tac.md](5-2-che-do-tuong-tac.md) | 364 | REQ-GRAPHICS-05 |
-| 68 | 5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.3. Yêu cầu giao diện | [5-3-yeu-cau-giao-dien.md](5-3-yeu-cau-giao-dien.md) | 14491 | ARC-05, BR-07, BR-09, D-19, D-25, D-29… |
+| 68 | 5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.3. Yêu cầu giao diện | [5-3-yeu-cau-giao-dien.md](5-3-yeu-cau-giao-dien.md) | 15926 | ARC-05, BR-07, BR-09, D-19, D-25, D-29… |
 | 69 | 6. MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU | [6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md](6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md) | 1419 | BR-01, BR-02, BR-03, BR-04, BR-05, BR-06… |
 | 70 | 7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO | [7-dieu-kien-nghiem-thu-va-ban-giao.md](7-dieu-kien-nghiem-thu-va-ban-giao.md) | 6665 | ARC-01, AT-01, AT-02, AT-03, AT-04, AT-05… |
 | 71 | 8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS | [8-cac-van-de-con-mo-cua-srs.md](8-cac-van-de-con-mo-cua-srs.md) | 4032 | D-20, D-21, D-22, D-31, D-44, D-45… |
-| 72 | 9. PHỤ LỤC > Phụ lục A: Mã lỗi | [phu-luc-a-ma-loi.md](phu-luc-a-ma-loi.md) | 2039 | ERR_ARCHIVE_INVALID, ERR_ARCHIVE_TOO_LARGE, ERR_AST_INVALID, ERR_AST_TOO_LARGE, ERR_AUDIO_DECODE, ERR_AUDIO_TOO_LONG… |
-| 73 | 9. PHỤ LỤC > Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02) | [phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md](phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md) | 851 | REQ-STORAGE-02, WARN_PRESET_UNSUPPORTED, WARN_PRESET_VALUE, WARN_PRESET_VERSION, WARN_PRESET_WIDGET_UNKNOWN |
+| 72 | 9. PHỤ LỤC > Phụ lục A: Mã lỗi | [phu-luc-a-ma-loi.md](phu-luc-a-ma-loi.md) | 2383 | ERR_ARCHIVE_INVALID, ERR_ARCHIVE_TOO_LARGE, ERR_AST_INVALID, ERR_AST_TOO_LARGE, ERR_AUDIO_DECODE, ERR_AUDIO_TOO_LONG… |
+| 73 | 9. PHỤ LỤC > Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02) | [phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md](phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md) | 1227 | NFR-SEC-04, REQ-STORAGE-02, WARN_PRESET_MIGRATED, WARN_PRESET_UNSAFE_KEY, WARN_PRESET_UNSUPPORTED, WARN_PRESET_VALUE… |
 | 74 | 9. PHỤ LỤC > Phụ lục A2: Mã cảnh báo của Parser Library | [phu-luc-a2-ma-canh-bao-cua-parser-library.md](phu-luc-a2-ma-canh-bao-cua-parser-library.md) | 1066 | REQ-AUDIO-01, WARN_ALP_MULTIPLE_ALS, WARN_CLIP_SKIPPED, WARN_DAWPROJECT_NO_ARRANGEMENT, WARN_DAWPROJECT_NO_METADATA, WARN_DAWPROJECT_NO_NOTE_TRACKS… |
 | 75 | 9. PHỤ LỤC > Phụ lục B: Ghi chú rà soát | [phu-luc-b-ghi-chu-ra-soat.md](phu-luc-b-ghi-chu-ra-soat.md) | 2889 | D-20, D-22, KPI-01, NFR-ACC-02, NFR-COMP-01, OI-02… |

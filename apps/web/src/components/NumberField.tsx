@@ -2,16 +2,18 @@
 // Mọi điều khiển kéo (thanh trượt, tay nắm…) phải đi kèm một ô này để không thuộc tính nào chỉ chỉnh được bằng chuột.
 // Giá trị không đọc được: báo bằng chữ + biểu tượng (không chỉ bằng màu viền, WCAG 1.4.1), nối với ô qua aria-describedby.
 // Rời ô khi còn lỗi thì giữ giá trị cũ và nói rõ điều đó, thông báo ở lại tới khi người dùng sửa, bấm Esc hoặc nhập đúng.
-import { useEffect, useId, useState } from 'react';
+import { useContext, useEffect, useId, useState } from 'react';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { formatNumber, nudge, parseNumberInput, type NumberSpec } from '../lib/numberInput.ts';
 import { StatusIcon } from './StatusIcon.tsx';
+import { GestureContext } from '../lib/storeReact.ts';
 
 type ErrorReason = 'syntax' | 'unit' | 'nan' | 'expr';
 
 export function NumberField({ id, label, value, onChange, spec, className = '' }: { id?: string; label: string; value: number; onChange(v: number): void; spec: NumberSpec; className?: string }) {
   const { i18n } = useI18n();
   const msgId = useId();
+  const gesture = useContext(GestureContext);
   const shown = formatNumber(value, spec.step);
   const [text, setText] = useState(shown);
   const [editing, setEditing] = useState(false);
@@ -21,7 +23,8 @@ export function NumberField({ id, label, value, onChange, spec, className = '' }
   /** Áp chuỗi đang gõ; trả lý do lỗi nếu không đọc được. */
   const commit = (): ErrorReason | null => {
     const r = parseNumberInput(text, value, spec);
-    if (r.ok) { setError(null); if (r.value !== value) onChange(r.value); setText(formatNumber(r.value, spec.step)); return null; }
+    // Chốt một giá trị gõ vào là MỘT bước hoàn tác (T-07): bọc trong cử chỉ riêng để không gộp với thanh trượt vừa chỉnh trước đó.
+    if (r.ok) { setError(null); if (r.value !== value) { gesture.begin(); onChange(r.value); gesture.end(); } setText(formatNumber(r.value, spec.step)); return null; }
     if (r.reason === 'empty') { setError(null); setText(shown); return null; }
     setError({ reason: r.reason, reverted: false });
     return r.reason;

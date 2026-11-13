@@ -2,7 +2,7 @@
 // các phong cách còn lại là scene mặc định (Piano Roll phủ kín khung) với bộ kiểu nốt dựng sẵn. Kiểu nốt và bàn phím người dùng chỉnh
 // ở inspector được ghép vào Piano Roll của scene (T-07 sẽ đưa scene vào store + hoàn tác + Preset).
 import { DEFAULT_NOTE_STYLE, STYLE_PRESETS, defaultScene, sanitizeScene, type KeyboardStyle, type NoteStyle, type PianoRollProps, type SceneDocument, type StyleConfig, type WidgetSpec } from '@dawviz/render-core';
-import paperJson from '../../../../presets/scene/paper-1x1.json';
+import paperJson from '../../../../presets/scene/paper-1x1.json' with { type: 'json' };
 
 export const PAPER_SCENE: SceneDocument = sanitizeScene(paperJson).scene;
 const pianoOf = (s: SceneDocument) => s.widgets.find((w) => w.type === 'PIANO_ROLL') as WidgetSpec<PianoRollProps>;
@@ -26,9 +26,9 @@ export function videoStyleBase(id: string): NoteStyle {
 export const videoStyleKeyboard = (id: string): boolean => id !== 'paper';
 
 /** Scene của phong cách `id` với kiểu nốt và bàn phím hiện tại. Trả bản sao mới, không đụng PAPER_SCENE. */
-export function sceneForStyle(id: string, style: StyleConfig, keyboard: Pick<KeyboardStyle, 'enabled'>): SceneDocument {
+export function sceneForStyle(id: string, style: StyleConfig, keyboard: Partial<Pick<KeyboardStyle, 'enabled'>> = {}): SceneDocument {
   const s: SceneDocument = id === 'paper' ? structuredClone(PAPER_SCENE) : defaultScene();
   const w = pianoOf(s);
-  w.properties = { ...w.properties, noteStyle: style, keyboard: { ...w.properties.keyboard, enabled: keyboard.enabled } };
+  w.properties = { ...w.properties, noteStyle: style, keyboard: { ...w.properties.keyboard, enabled: keyboard.enabled ?? videoStyleKeyboard(id) } };
   return s;
 }

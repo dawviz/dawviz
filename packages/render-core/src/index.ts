@@ -8,6 +8,7 @@ export * from './style.ts';
 export * from './music.ts';
 export * from './glow.ts';
 export * from './scene.ts';
+export * from './snap.ts';
 export * from './render.ts';
 export * from './prims.ts';
 export * from './text.ts';

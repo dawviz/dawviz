@@ -83,7 +83,7 @@ test('tracksFor + tầm cao độ: MANUAL theo chỉ số track; FIT_CONTENT ±1
 
 test('sanitizeScene: preset mẫu trong SRS đọc được; trường lạ bị bỏ, giá trị sai về mặc định kèm cảnh báo; hỏng → ERR_PRESET_INVALID', () => {
   const srsExample = {
-    schemaVersion: '0.3.0', presetName: 'Minimalist Cyberpunk Horizontal', author: 'System Default',
+    schemaVersion: '0.4.0', presetName: 'Minimalist Cyberpunk Horizontal', author: 'System Default',
     canvas: { aspectRatio: '16:9', designWidth: 1920, designHeight: 1080, backgroundColor: '#0d0f12', backgroundImageData: null, snapping: { gridEnabled: true, gridSize: 8, smartGuidesEnabled: true } },
     widgets: [
       { id: 'piano-roll-main', type: 'PIANO_ROLL', zIndex: 10, layout: { x: 120, y: 300, width: 1680, height: 450, rotation: 0 }, trackMappingMode: 'AUTO_ASSIGN_FIRST_MELODIC', assignedTrackIndices: [0],
@@ -98,10 +98,10 @@ test('sanitizeScene: preset mẫu trong SRS đọc được; trường lạ bị
   assert.equal(pr.lookaheadSeconds, 3.5); assert.equal(pr.noteStyle.base.cornerRadius, 4);
   // Chord Detection nay có renderer (T-69): khoá cũ của ví dụ SRS không còn nghĩa nên bị bỏ (không cảnh báo), thuộc tính mới lấy mặc định.
   const ch: any = scene.widgets[1].properties; assert.deepEqual(ch, DEFAULT_CHORD); assert.ok(!('detectionMode' in ch));
-  const spec = sanitizeScene({ schemaVersion: '0.3.0', canvas: {}, widgets: [{ type: 'AUDIO_SPECTRUM', properties: { bars: 64 } }] }); // widget chưa có renderer: giữ nguyên dữ liệu
+  const spec = sanitizeScene({ schemaVersion: '0.4.0', canvas: {}, widgets: [{ type: 'AUDIO_SPECTRUM', properties: { bars: 64 } }] }); // widget chưa có renderer: giữ nguyên dữ liệu
   assert.deepEqual(spec.scene.widgets[0].properties, { bars: 64 });
 
-  const bad = sanitizeScene({ schemaVersion: '0.3.1', junk: 1, canvas: { designWidth: 99999, backgroundColor: 'red' },
+  const bad = sanitizeScene({ schemaVersion: '0.4.1', junk: 1, canvas: { designWidth: 99999, backgroundColor: 'red' },
     widgets: [{ type: 'NOPE' }, { type: 'PIANO_ROLL', id: 'x', properties: { lookaheadSeconds: 'fast', orientation: 'VERTICAL', pitchMin: 90, pitchMax: 40 }, layout: { rotation: 15 } }, { type: 'PIANO_ROLL', id: 'x' }] });
   const codes = bad.warnings.map((w) => `${w.code}@${w.details.path}`);
   for (const c of ['WARN_PRESET_VERSION@$.schemaVersion', 'WARN_PRESET_VALUE@$.canvas.designWidth', 'WARN_PRESET_VALUE@$.canvas.backgroundColor', 'WARN_PRESET_WIDGET_UNKNOWN@$.widgets[0].type',
@@ -113,7 +113,7 @@ test('sanitizeScene: preset mẫu trong SRS đọc được; trường lạ bị
   assert.ok(!('junk' in bad.scene));
   const p1: any = bad.scene.widgets[0].properties; assert.deepEqual([p1.pitchMin, p1.pitchMax, p1.lookaheadSeconds], [40, 90, 3]);
 
-  for (const raw of [null, [], {}, { schemaVersion: '1.0.0', canvas: {} }, { schemaVersion: '0.3.0' }])
+  for (const raw of [null, [], {}, { schemaVersion: 'abc', canvas: {} }, { schemaVersion: '0.2.0', canvas: {} }, { schemaVersion: '0.3.0' }])
     assert.throws(() => sanitizeScene(raw), (e: any) => e.code === 'ERR_PRESET_INVALID');
   // vòng lặp lưu → đọc lại không đổi
   assert.deepEqual(sanitizeScene(JSON.parse(JSON.stringify(scene))).scene, scene);

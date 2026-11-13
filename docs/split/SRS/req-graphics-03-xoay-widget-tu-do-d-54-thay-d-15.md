@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-GRAPHICS-03: Xoay widget tự do (D-54, thay D-15)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-03: Xoay widget tự do (D-54, thay D-15)"
 chunk: req-graphics-03-xoay-widget-tu-do-d-54-thay-d-15.md
-source_lines: 432-440
-source_sha1: ae88fa5f8b
+source_lines: 433-441
+source_sha1: e94e9bc79b
 ids: [D-15, D-47, D-54, REQ-GRAPHICS-02, REQ-GRAPHICS-03, REQ-GRAPHICS-05, REQ-GRAPHICS-09, REQ-GRAPHICS-15, REQ-UI-15]
 ---
 #### REQ-GRAPHICS-03: Xoay widget tự do (D-54, thay D-15)

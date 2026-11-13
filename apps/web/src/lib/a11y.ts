@@ -42,7 +42,15 @@ export function spaceBelongsToTransport(t: EventTarget | null, focusedByKeyboard
   return true;
 }
 
+/** Ô gõ chữ/số thật sự: trình duyệt tự có hoàn tác chữ ở đó. Không gồm `select` (đóng lại thì không có gì để gõ). */
+const TYPED_TEXT = TEXT_ENTRY.replace('textarea, select, ', 'textarea, ');
+/** Đang gõ chữ/số (ô nhập, contentEditable)? Ctrl+Z toàn cục phải để nguyên cho trình duyệt hoàn tác chữ.
+ *  Hẹp hơn `isTypingTarget`: nút, thanh trượt và danh sách chọn KHÔNG tính, vì vừa chọn "Neon" ở danh sách xong vẫn phải hoàn tác được. */
+export function isTextEntry(t: EventTarget | null): boolean {
+  return t instanceof HTMLElement && (t.isContentEditable || t.matches(TYPED_TEXT));
+}
+
 /** Phím tắt khác (Home…): không nuốt khi đang gõ hoặc ở một điều khiển tự xử lý phím đó. */
 export function isTypingTarget(t: EventTarget | null): boolean {
-  return t instanceof HTMLElement && (t.isContentEditable || t.matches(TEXT_ENTRY) || t.matches(SPACE_ACTIVATES) || t.matches('[role="slider"], input[type="range"]'));
+  return isTextEntry(t) || (t instanceof HTMLElement && (t.matches(SPACE_ACTIVATES) || t.matches('[role="slider"], input[type="range"]')));
 }

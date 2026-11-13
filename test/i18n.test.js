@@ -72,3 +72,27 @@ test('check-i18n bắt lỗi thường gặp của cộng tác viên', () => {
   assert.match(run().stderr, /nhánh số nhiều "one" không tồn tại trong vi/);
   void execFileSync;
 });
+
+test('check-i18n: khoá đang dùng nhưng thiếu trong locales/ là LỖI, kể cả khi viết trong biểu thức điều kiện hay bảng tra (tái hiện lỗi T-07)', () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'loc-'));
+  const src = fs.mkdtempSync(path.join(os.tmpdir(), 'src-'));
+  const w = (n, o) => fs.writeFileSync(path.join(tmp, n), JSON.stringify(o));
+  const meta = (code, status) => ({ '@meta': { code, name: code, dir: 'ltr', status } });
+  w('index.json', { source: 'en', locales: [{ code: 'en', name: 'en' }, { code: 'vi', name: 'vi' }] });
+  const cat = { web: ['web.undo.label', 'web.redo.label', 'web.undo', 'web.redo', 'web.cmd.a', 'web.cmd.b'] };
+  const body = Object.fromEntries(cat.web.map((k) => [k, k]));
+  w('en.json', { ...meta('en', 'source'), ...body }); w('vi.json', { ...meta('vi', 'complete'), ...body });
+  const run = () => spawnSync('node', ['scripts/check-i18n.mjs', '--dir', tmp, '--src', src], { cwd: path.join(import.meta.dirname, '..'), encoding: 'utf8' });
+  // đúng hết, gồm khoá trong biểu thức điều kiện, bảng tra, tiền tố động, chuỗi trong chú thích: đạt
+  fs.writeFileSync(path.join(src, 'ok.tsx'), "const a = t(kind === 'undo' ? 'web.undo.label' : 'web.redo.label');\nconst m = { undo: 'web.undo', redo: 'web.redo' };\nt(`web.cmd.${x}`); // 'web.khong.ton.tai' chỉ nằm trong chú thích\nconst url = 'http://example.com/web.js';\n");
+  let r = run(); assert.equal(r.status, 0, r.stdout + r.stderr);
+  // viết sai tên khoá trong biểu thức điều kiện (đúng kiểu lỗi đã lọt): phải là LỖI, không chỉ cảnh báo
+  fs.writeFileSync(path.join(src, 'bad.tsx'), "const a = t(kind === 'undo' ? 'web.undo.label' : 'web.redo.lable');\n");
+  r = run(); assert.equal(r.status, 1); assert.match(r.stderr, /LỖI.*khoá dùng trong mã nguồn nhưng chưa có: web\.redo\.lable \(.*bad\.tsx\)/);
+  // khoá gọi trực tiếp t('...') thiếu: vẫn là lỗi
+  fs.writeFileSync(path.join(src, 'bad.tsx'), "t('web.preset.open');\n");
+  r = run(); assert.equal(r.status, 1); assert.match(r.stderr, /web\.preset\.open/);
+  // khoá trong bảng tra của một tệp khác nhóm (không bắt đầu bằng nhóm của danh mục) không bị coi là khoá
+  fs.writeFileSync(path.join(src, 'bad.tsx'), "const f = 'index.html'; const v = 'react.dom';\n");
+  r = run(); assert.equal(r.status, 0, r.stdout + r.stderr);
+});

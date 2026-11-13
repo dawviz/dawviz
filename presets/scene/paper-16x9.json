@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "0.3.0",
+  "schemaVersion": "0.4.0",
   "presetName": "Paper",
   "author": "DAW Visualizer",
   "canvas": {
@@ -25,7 +25,11 @@
         "y": 170,
         "width": 1250,
         "height": 730,
-        "rotation": 0
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
       },
       "trackMappingMode": "ALL",
       "assignedTrackIndices": [],
@@ -74,7 +78,11 @@
         "y": 50,
         "width": 820,
         "height": 110,
-        "rotation": 0
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
       },
       "trackMappingMode": "ALL",
       "assignedTrackIndices": [],
@@ -106,7 +114,11 @@
         "y": 50,
         "width": 480,
         "height": 64,
-        "rotation": 0
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
       },
       "trackMappingMode": "ALL",
       "assignedTrackIndices": [],
@@ -150,7 +162,11 @@
         "y": 118,
         "width": 700,
         "height": 24,
-        "rotation": 0
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
       },
       "trackMappingMode": "ALL",
       "assignedTrackIndices": [],
@@ -182,7 +198,11 @@
         "y": 930,
         "width": 400,
         "height": 90,
-        "rotation": 0
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
       },
       "trackMappingMode": "ALL",
       "assignedTrackIndices": [],
@@ -237,7 +257,11 @@
         "y": 920,
         "width": 448,
         "height": 90,
-        "rotation": 0
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
       },
       "trackMappingMode": "ALL",
       "assignedTrackIndices": [],
@@ -271,7 +295,11 @@
         "y": 1040,
         "width": 1680,
         "height": 32,
-        "rotation": 0
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
       },
       "trackMappingMode": "ALL",
       "assignedTrackIndices": [],

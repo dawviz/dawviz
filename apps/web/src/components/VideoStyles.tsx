@@ -14,7 +14,8 @@ export function isEdited(id: string, base: NoteStyle): boolean {
 
 /** `thumb(id)` trả ảnh thu nhỏ (data URL) do Render Core vẽ từ dự án đang mở; vắng thì chỉ hiện chữ. */
 const thumbW = 120;
-export function VideoStyles({ value, edited, onPick, onUndo, thumb }: { value: string; edited: boolean; onPick(id: string): void; onUndo?(): void; thumb?(id: string): string | undefined }) {
+/** `notice`: thông báo nhỏ không chặn sau khi đổi phong cách làm mất chỉnh tay (hoàn tác bằng Ctrl+Z hoặc nút ở thanh trên). */
+export function VideoStyles({ value, edited, onPick, notice, thumb }: { value: string; edited: boolean; onPick(id: string): void; notice?: string; thumb?(id: string): string | undefined }) {
   const { i18n } = useI18n();
   return (
     <nav aria-labelledby="styles-h" className="py-3">
@@ -37,12 +38,7 @@ export function VideoStyles({ value, edited, onPick, onUndo, thumb }: { value: s
           );
         })}
       </ul>
-      {onUndo && (
-        <p role="status" className="mx-4 mt-3 border-t border-line pt-2 text-xs text-muted" data-testid="style-undo">
-          {i18n.t('web.styles.replaced')}{' '}
-          <button type="button" className="font-medium text-fg underline decoration-line-strong/40 underline-offset-2 hover:decoration-line-strong" onClick={onUndo}>{i18n.t('web.styles.undo')}</button>
-        </p>
-      )}
+      {notice && <p role="status" className="mx-4 mt-3 border-t border-line pt-2 text-xs text-muted" data-testid="style-notice">{notice}</p>}
     </nav>
   );
 }

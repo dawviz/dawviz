@@ -318,11 +318,10 @@ describe('Sau critique T-70', () => {
     expect(picked).toBe('default');
     v.unmount();
   });
-  it('thay phong cách khi đang chỉnh: hiện "Hoàn tác"', () => {
-    let undone = false;
-    wrap(<VideoStyles value="neon" edited={false} onPick={() => {}} onUndo={() => (undone = true)} />);
-    fireEvent.click(screen.getByRole('button', { name: /Undo|Hoàn tác/ }));
-    expect(undone).toBe(true);
+  it('thông báo nhỏ sau khi đổi phong cách làm mất chỉnh tay: không chặn, không có nút hoàn tác riêng (hoàn tác thật nằm ở thanh trên)', () => {
+    wrap(<VideoStyles value="neon" edited={false} onPick={() => {}} notice="Style changed. Ctrl+Z to undo." />);
+    expect(screen.getByTestId('style-notice')).toHaveTextContent('Ctrl+Z');
+    expect(screen.queryByRole('button', { name: /Undo|Hoàn tác/ })).toBeNull();
   });
   it('màn đầu tiên hướng dẫn FL Studio xuất .mid (D-19), không dùng chữ mono', () => {
     wrap(<FileDrop onPick={() => {}} busy={false} />);

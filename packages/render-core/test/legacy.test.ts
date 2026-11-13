@@ -38,7 +38,7 @@ test('kiểu nốt cũ thiếu ba trường màu trạng thái: được điền
 });
 
 test('Chord: preset cũ thiếu "alwaysShowNotes" vẽ như trước (tắt); dòng nốt chỉ hiện khi bật', () => {
-  const raw = { schemaVersion: '0.3.0', canvas: {}, widgets: [{ type: 'CHORD_DETECTION', id: 'c', layout: { x: 0, y: 0, width: 400, height: 100 } }] };
+  const raw = { schemaVersion: '0.4.0', canvas: {}, widgets: [{ type: 'CHORD_DETECTION', id: 'c', layout: { x: 0, y: 0, width: 400, height: 100 } }] };
   const { scene, warnings } = sanitizeScene(raw);
   assert.deepEqual(warnings, []); assert.equal((scene.widgets[0].properties as any).alwaysShowNotes, false);
   assert.deepEqual(scene.widgets[0].properties, DEFAULT_CHORD);

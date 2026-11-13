@@ -1,19 +1,22 @@
 // T-05: SceneDocument (= Preset, SRS REQ-STORAGE-02) + kiểm/sửa lược đồ. Dữ liệu thuần, không DOM.
-// Mô hình hiện tại là "canvas + widgets" của preset 0.3.0. Lớp/phần tử storyboard (T-22) sẽ là schemaVersion mới,
-// có hàm di trú từ 0.3.0; vì vậy mọi trường ở đây giữ đúng tên trong SRS để không phải đổi tên khi di trú.
+// Mô hình hiện tại là "canvas + widgets" của preset 0.4.0 (thêm `layout.anchor` theo REQ-GRAPHICS-03, đọc được 0.3.x qua `migrateScene`).
+// Lớp/phần tử storyboard (T-22) sẽ là schemaVersion mới, có hàm di trú từ 0.4.0; vì vậy mọi trường ở đây giữ đúng tên trong SRS.
 import {
   DEFAULT_CHORD, DEFAULT_EVENT_COUNTER, DEFAULT_LIVE_TRIGGER, DEFAULT_PROGRESS_BAR, DEFAULT_TIME_BAR, DEFAULT_TRACK_INFO, TEMPLATE_KEYS,
   type Align, type ChordProps, type EventCounterProps, type LineCfg, type LiveTriggerProps, type ProgressBarProps, type TextStyle, type TimeBarProps, type TrackInfoProps,
 } from './hud.ts';
 import { unknownPlaceholders } from './text.ts';
+import { normalizeAngle } from './snap.ts';
 import { DEFAULT_KEYBOARD_STYLE, DEFAULT_NOTE_STYLE, sanitizeStyle, type KeyboardStyle, type NoteStyle, type StyleConfig } from './style.ts';
 
-export const SCENE_SCHEMA_VERSION = '0.3.0';
+export const SCENE_SCHEMA_VERSION = '0.4.0';
 
 export const WIDGET_TYPES = ['TRACK_INFO', 'PIANO_ROLL', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'AUDIO_SPECTRUM', 'PROGRESS_BAR'] as const;
 export type WidgetType = typeof WIDGET_TYPES[number];
 
-export interface WidgetLayout { x: number; y: number; width: number; height: number; rotation: number }
+/** `rotation`: độ, (−180, 180]. `anchor`: điểm neo xoay theo tỉ lệ khung widget (0..1), mặc định tâm (REQ-GRAPHICS-03). */
+export interface WidgetLayout { x: number; y: number; width: number; height: number; rotation: number; anchor: { x: number; y: number } }
+export const DEFAULT_ANCHOR: Readonly<{ x: number; y: number }> = Object.freeze({ x: 0.5, y: 0.5 });
 export type TrackMappingMode = 'ALL' | 'MANUAL' | 'AUTO_ASSIGN_FIRST_MELODIC';
 
 export interface WidgetSpec<P = unknown> {
@@ -77,8 +80,8 @@ export function defaultScene(aspect: keyof typeof ASPECTS = '16:9'): SceneDocume
   };
 }
 
-export function pianoRollWidget(layout: WidgetLayout, props: Partial<PianoRollProps> = {}, id = 'piano-roll-main'): WidgetSpec<PianoRollProps> {
-  return { id, type: 'PIANO_ROLL', zIndex: 10, visible: true, layout, trackMappingMode: 'ALL', assignedTrackIndices: [],
+export function pianoRollWidget(layout: Omit<WidgetLayout, 'anchor'> & { anchor?: WidgetLayout['anchor'] }, props: Partial<PianoRollProps> = {}, id = 'piano-roll-main'): WidgetSpec<PianoRollProps> {
+  return { id, type: 'PIANO_ROLL', zIndex: 10, visible: true, layout: { ...layout, anchor: { ...(layout.anchor ?? DEFAULT_ANCHOR) } }, trackMappingMode: 'ALL', assignedTrackIndices: [],
     properties: { ...clonePiano(DEFAULT_PIANO_ROLL), ...props } };
 }
 const clonePiano = (p: PianoRollProps): PianoRollProps => ({ ...p, noteStyle: { base: { ...p.noteStyle.base }, tracks: { ...p.noteStyle.tracks } }, keyboard: { ...p.keyboard } });
@@ -86,26 +89,86 @@ const clonePiano = (p: PianoRollProps): PianoRollProps => ({ ...p, noteStyle: { 
 // ───────────────────────────── kiểm và sửa lược đồ (REQ-STORAGE-02) ─────────────────────────────
 // Trường lạ bị bỏ; giá trị sai về mặc định kèm cảnh báo; không đọc được thì ném ERR_PRESET_INVALID.
 
-export interface SceneWarning { code: 'WARN_PRESET_VALUE' | 'WARN_PRESET_WIDGET_UNKNOWN' | 'WARN_PRESET_UNSUPPORTED' | 'WARN_PRESET_VERSION'; message: string; details: { path: string; value?: unknown } }
+export type SceneWarningCode = 'WARN_PRESET_VALUE' | 'WARN_PRESET_WIDGET_UNKNOWN' | 'WARN_PRESET_UNSUPPORTED' | 'WARN_PRESET_VERSION' | 'WARN_PRESET_MIGRATED' | 'WARN_PRESET_UNSAFE_KEY';
+export interface SceneWarning { code: SceneWarningCode; message: string; details: { path: string; value?: unknown; from?: string; to?: string } }
+export type SceneErrorCode = 'ERR_PRESET_INVALID' | 'ERR_PRESET_TOO_LARGE' | 'ERR_SCHEMA_NEWER';
 export class SceneError extends Error {
-  code = 'ERR_PRESET_INVALID';
-  details: { path: string };
-  constructor(message: string, path: string) { super(message); this.details = { path }; }
+  code: SceneErrorCode;
+  details: { path: string; [k: string]: unknown };
+  constructor(message: string, path: string, code: SceneErrorCode = 'ERR_PRESET_INVALID', extra: Record<string, unknown> = {}) { super(message); this.code = code; this.details = { path, ...extra }; }
 }
+
+/** Giới hạn khi đọc preset (NFR-SEC-04). Vượt thì `ERR_PRESET_INVALID` (kích thước tệp: `ERR_PRESET_TOO_LARGE`). */
+export const PRESET_LIMITS = Object.freeze({ maxBytes: 1024 * 1024, maxDepth: 12, maxNodes: 20000, maxWidgets: 64, maxString: 4096, maxArray: 1024 });
+/** Khoá có thể làm bẩn nguyên mẫu đối tượng: bị bỏ ở mọi độ sâu. */
+export const UNSAFE_KEYS: ReadonlySet<string> = new Set(['__proto__', 'constructor', 'prototype']);
 
 type Obj = Record<string, unknown>;
 const isObj = (v: unknown): v is Obj => typeof v === 'object' && v !== null && !Array.isArray(v);
 const HEX = /^#[0-9a-f]{6}$/i;
 
-/** Đọc một preset/scene từ JSON thô. Trả scene hợp lệ + cảnh báo. */
-export function sanitizeScene(raw: unknown): { scene: SceneDocument; warnings: SceneWarning[] } {
-  const warnings: SceneWarning[] = [];
-  const w = (code: SceneWarning['code'], path: string, value: unknown, message: string) => warnings.push({ code, message, details: { path, value } });
+/** Sao chép JSON thô thành cây an toàn: bỏ khoá nguy hiểm (kèm cảnh báo), kiểm giới hạn độ sâu/số nút/độ dài (NFR-SEC-04).
+ *  Đối tượng mới luôn dựng bằng `{}` + gán khoá đã lọc, nên `__proto__` không bao giờ thành nguyên mẫu. */
+function cleanJson(raw: unknown, warn: (path: string, key: string) => void): unknown {
+  const L = PRESET_LIMITS;
+  let nodes = 0;
+  const walk = (v: unknown, path: string, depth: number): unknown => {
+    if (++nodes > L.maxNodes) throw new SceneError(`preset có hơn ${L.maxNodes} nút`, path);
+    if (depth > L.maxDepth) throw new SceneError(`preset lồng sâu hơn ${L.maxDepth} cấp`, path);
+    if (typeof v === 'string') { if (v.length > L.maxString) throw new SceneError(`chuỗi dài hơn ${L.maxString} ký tự`, path); return v; }
+    if (Array.isArray(v)) {
+      if (v.length > L.maxArray) throw new SceneError(`mảng dài hơn ${L.maxArray} phần tử`, path);
+      return v.map((x, i) => walk(x, `${path}[${i}]`, depth + 1));
+    }
+    if (typeof v === 'object' && v !== null) {
+      const out: Obj = {};
+      for (const [k, x] of Object.entries(v)) {
+        if (UNSAFE_KEYS.has(k)) { warn(`${path}.${k}`, k); continue; }
+        out[k] = walk(x, `${path}.${k}`, depth + 1);
+      }
+      return out;
+    }
+    return typeof v === 'number' || typeof v === 'boolean' || v === null ? v : undefined;
+  };
+  return walk(raw, '$', 0);
+}
+
+const parseVersion = (v: unknown): [number, number, number] | null => {
+  const m = typeof v === 'string' ? /^(\d{1,4})\.(\d{1,4})\.(\d{1,4})$/.exec(v) : null;
+  return m ? [Number(m[1]), Number(m[2]), Number(m[3])] : null;
+};
+
+/** Di trú theo từng bậc phiên bản, trên một bản sao (đối tượng vào không bị sửa). Trả bản đã lên `SCENE_SCHEMA_VERSION`
+ *  và phiên bản gốc; ném `ERR_SCHEMA_NEWER` nếu mới hơn ứng dụng hiểu, `ERR_PRESET_INVALID` nếu quá cũ hoặc không đọc được.
+ *  0.3.x → 0.4.0: mỗi `widget.layout` thêm `anchor` = tâm (REQ-GRAPHICS-03). */
+export function migrateScene(raw: unknown): { raw: Obj; from: string } {
   if (!isObj(raw)) throw new SceneError('preset không phải đối tượng JSON', '$');
   if (typeof raw.schemaVersion !== 'string') throw new SceneError('thiếu schemaVersion', '$.schemaVersion');
-  if (raw.schemaVersion.split('.')[0] !== SCENE_SCHEMA_VERSION.split('.')[0]) throw new SceneError(`schemaVersion ${raw.schemaVersion} không đọc được (cần ${SCENE_SCHEMA_VERSION.split('.')[0]}.x)`, '$.schemaVersion');
-  if (raw.schemaVersion !== SCENE_SCHEMA_VERSION) w('WARN_PRESET_VERSION', '$.schemaVersion', raw.schemaVersion, `phiên bản ${raw.schemaVersion} khác ${SCENE_SCHEMA_VERSION}; đọc theo ${SCENE_SCHEMA_VERSION}`);
+  const v = parseVersion(raw.schemaVersion);
+  if (!v) throw new SceneError(`schemaVersion "${raw.schemaVersion.slice(0, 40)}" không đúng dạng chính.phụ.vá`, '$.schemaVersion');
+  const cur = parseVersion(SCENE_SCHEMA_VERSION)!;
+  if (v[0] > cur[0] || (v[0] === cur[0] && v[1] > cur[1]))
+    throw new SceneError(`preset phiên bản ${raw.schemaVersion} mới hơn ứng dụng (đọc được tới ${cur[0]}.${cur[1]}.x)`, '$.schemaVersion', 'ERR_SCHEMA_NEWER', { found: raw.schemaVersion, supported: SCENE_SCHEMA_VERSION });
+  if (v[0] !== 0 || v[1] < 3) throw new SceneError(`schemaVersion ${raw.schemaVersion} không đọc được (cần 0.3.x hoặc 0.4.x)`, '$.schemaVersion');
+  let out: Obj = structuredClone(raw);
+  if (v[1] === 3) {
+    if (Array.isArray(out.widgets)) for (const w of out.widgets) if (isObj(w) && isObj(w.layout) && w.layout.anchor === undefined) w.layout.anchor = { x: DEFAULT_ANCHOR.x, y: DEFAULT_ANCHOR.y };
+    out = { ...out, schemaVersion: '0.4.0' };
+  }
+  return { raw: out, from: raw.schemaVersion };
+}
+
+/** Đọc một preset/scene từ JSON thô. Trả scene hợp lệ + cảnh báo. */
+export function sanitizeScene(input: unknown): { scene: SceneDocument; warnings: SceneWarning[] } {
+  const warnings: SceneWarning[] = [];
+  const w = (code: SceneWarningCode, path: string, value: unknown, message: string) => warnings.push({ code, message, details: { path, value } });
+  if (!isObj(input)) throw new SceneError('preset không phải đối tượng JSON', '$');
+  const cleaned = cleanJson(input, (path, key) => w('WARN_PRESET_UNSAFE_KEY', path, key, `khoá "${key}" không được phép; bỏ qua`));
+  const { raw, from } = migrateScene(cleaned);
+  if (from !== raw.schemaVersion) warnings.push({ code: 'WARN_PRESET_MIGRATED', message: `di trú từ ${from} lên ${String(raw.schemaVersion)}`, details: { path: '$.schemaVersion', from, to: String(raw.schemaVersion) } });
+  else if (from !== SCENE_SCHEMA_VERSION) w('WARN_PRESET_VERSION', '$.schemaVersion', from, `phiên bản ${from} khác ${SCENE_SCHEMA_VERSION}; đọc theo ${SCENE_SCHEMA_VERSION}`);
   if (!isObj(raw.canvas)) throw new SceneError('thiếu canvas', '$.canvas');
+  if (Array.isArray(raw.widgets) && raw.widgets.length > PRESET_LIMITS.maxWidgets) throw new SceneError(`preset có hơn ${PRESET_LIMITS.maxWidgets} widget`, '$.widgets');
 
   const num = (v: unknown, d: number, lo: number, hi: number, path: string): number => {
     if (v === undefined) return d;
@@ -162,9 +225,13 @@ export function sanitizeScene(raw: unknown): { scene: SceneDocument; warnings: S
     const layout: WidgetLayout = {
       x: num(L.x, 0, -dw, 2 * dw, `${p}.layout.x`), y: num(L.y, 0, -dh, 2 * dh, `${p}.layout.y`),
       width: num(L.width, dw, 1, 4 * dw, `${p}.layout.width`), height: num(L.height, dh, 1, 4 * dh, `${p}.layout.height`),
-      rotation: num(L.rotation, 0, -360, 360, `${p}.layout.rotation`),
+      rotation: normalizeAngle(num(L.rotation, 0, -360, 360, `${p}.layout.rotation`)),
+      anchor: { x: DEFAULT_ANCHOR.x, y: DEFAULT_ANCHOR.y },
     };
-    if (layout.rotation !== 0) w('WARN_PRESET_UNSUPPORTED', `${p}.layout.rotation`, layout.rotation, 'xoay widget mở từ 1.1 (D-47); vẽ như 0°');
+    const A = isObj(L.anchor) ? L.anchor : {};
+    layout.anchor = { x: num(A.x, DEFAULT_ANCHOR.x, 0, 1, `${p}.layout.anchor.x`), y: num(A.y, DEFAULT_ANCHOR.y, 0, 1, `${p}.layout.anchor.y`) };
+    // Tới T-68 (xoay trong renderFrame) dữ liệu xoay bị đưa về 0 để Preview không hiện hình sai.
+    if (layout.rotation !== 0) { w('WARN_PRESET_UNSUPPORTED', `${p}.layout.rotation`, layout.rotation, 'xoay widget chưa vẽ được (T-68); đặt về 0°'); layout.rotation = 0; }
     const mode = oneOf(rw.trackMappingMode, ['ALL', 'MANUAL', 'AUTO_ASSIGN_FIRST_MELODIC'] as const, 'ALL', `${p}.trackMappingMode`);
     const idx = Array.isArray(rw.assignedTrackIndices) ? rw.assignedTrackIndices.filter((n): n is number => Number.isInteger(n) && (n as number) >= 0) : [];
     const base: Omit<WidgetSpec, 'properties'> = {
@@ -206,7 +273,7 @@ export function sanitizeScene(raw: unknown): { scene: SceneDocument; warnings: S
       widgets.push({ ...base, properties: HUD_SANITIZERS[base.type as keyof typeof HUD_SANITIZERS](P, `${p}.properties`, S) });
     } else {
       // Widget chưa có renderer (T-37…): giữ nguyên thuộc tính để không mất dữ liệu khi lưu lại; renderFrame bỏ qua.
-      widgets.push({ ...base, properties: JSON.parse(JSON.stringify(P)) as Record<string, unknown> });
+      widgets.push({ ...base, properties: P });
     }
   });
 
