@@ -4,7 +4,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 
 ## BRD.md — TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)
 
-- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 4409 ký tự
+- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 4599 ký tự
 - [1. THÔNG TIN CHUNG & BỐI CẢNH DỰ ÁN](BRD/1-thong-tin-chung-boi-canh-du-an.md) · 1753 ký tự
 - [2. MỤC TIÊU KINH DOANH, CHỈ SỐ ĐO LƯỜNG & YÊU CẦU NGHIỆP VỤ](BRD/2-muc-tieu-kinh-doanh-chi-so-do-luong-yeu-cau-ng.md) · 4778 ký tự
 - [3. CHÂN DUNG NGƯỜI DÙNG MỤC TIÊU (USER PERSONAS)](BRD/3-chan-dung-nguoi-dung-muc-tieu-user-personas.md) · 1342 ký tự
@@ -14,13 +14,13 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1215 ký tự
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4347 ký tự
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](BRD/6-gia-dinh-assumptions.md) · 554 ký tự
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 22906 ký tự
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 23600 ký tự
 - [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](BRD/8-cac-van-de-con-mo-open-issues.md) · 4634 ký tự
 
 ## SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
 - [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 422 ký tự
-- [Lịch sử phiên bản](SRS/lich-su-phien-ban.md) · 8202 ký tự
+- [Lịch sử phiên bản](SRS/lich-su-phien-ban.md) · 8709 ký tự
 - [Quy ước trong tài liệu](SRS/quy-uoc-trong-tai-lieu.md) · 818 ký tự
 - [Mục lục](SRS/muc-luc.md) · 365 ký tự
 - [1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG](SRS/1-gioi-thieu-muc-tieu-he-thong.md) · 4720 ký tự
@@ -50,10 +50,11 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [REQ-GRAPHICS-08: Hiệu ứng chuyển động tất định (D-37)](SRS/req-graphics-08-hieu-ung-chuyen-dong-tat-dinh-d.md) · 442 ký tự
 - [REQ-GRAPHICS-05: Render Core dùng chung (ARC-01, D-20)](SRS/req-graphics-05-render-core-dung-chung-arc-01-d.md) · 1021 ký tự
 - [REQ-GRAPHICS-17: Phát sáng động khi chạm (D-50, 1.0)](SRS/req-graphics-17-phat-sang-dong-khi-cham-d-50-1-0.md) · 2766 ký tự
+- [REQ-GRAPHICS-18: Kiểu chữ cho mọi chữ trong video (D-58)](SRS/req-graphics-18-kieu-chu-cho-moi-chu-trong-video.md) · 5095 ký tự
 - [REQ-AST-02: Automation tổng quát (D-50; 1.0 cho Reaper track + MIDI CC, các nguồn khác theo tệp mẫu)](SRS/req-ast-02-automation-tong-quat-d-50-1-0-cho-rea.md) · 2214 ký tự
 - [3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04)](SRS/3-4-dac-ta-8-widget-hud-br-02-br-03-br-04.md) · 368 ký tự
 - [REQ-WIDGET-01: Piano Roll](SRS/req-widget-01-piano-roll.md) · 1411 ký tự
-- [REQ-WIDGET-02: Track Info](SRS/req-widget-02-track-info.md) · 1030 ký tự
+- [REQ-WIDGET-02: Track Info](SRS/req-widget-02-track-info.md) · 1101 ký tự
 - [REQ-WIDGET-03: Event Counter](SRS/req-widget-03-event-counter.md) · 1126 ký tự
 - [REQ-WIDGET-04: Live Note Trigger](SRS/req-widget-04-live-note-trigger.md) · 935 ký tự
 - [REQ-WIDGET-05: Time & Bar Counter](SRS/req-widget-05-time-bar-counter.md) · 1520 ký tự
@@ -87,7 +88,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [4. YÊU CẦU PHI CHỨC NĂNG (NON-FUNCTIONAL REQUIREMENTS)](SRS/4-yeu-cau-phi-chuc-nang-non-functional-requireme.md) · 5167 ký tự
 - [5.1. Bố cục không gian làm việc](SRS/5-1-bo-cuc-khong-gian-lam-viec.md) · 4893 ký tự
 - [5.2. Chế độ tương tác](SRS/5-2-che-do-tuong-tac.md) · 364 ký tự
-- [5.3. Yêu cầu giao diện](SRS/5-3-yeu-cau-giao-dien.md) · 18355 ký tự
+- [5.3. Yêu cầu giao diện](SRS/5-3-yeu-cau-giao-dien.md) · 18674 ký tự
 - [6. MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU](SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md) · 1419 ký tự
 - [7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO](SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md) · 6665 ký tự
 - [8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS](SRS/8-cac-van-de-con-mo-cua-srs.md) · 4032 ký tự

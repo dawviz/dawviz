@@ -4,9 +4,9 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "5.3. Yêu cầu giao diện"
 path: "5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.3. Yêu cầu giao diện"
 chunk: 5-3-yeu-cau-giao-dien.md
-source_lines: 962-1034
-source_sha1: f4f69f9f7d
-ids: [ARC-05, BR-07, BR-09, D-19, D-25, D-29, D-30, D-48, D-49, D-50, D-52, D-56, D-57, ERR_UNSUPPORTED_FORMAT, KPI-04, NFR-SEC-05, REQ-EXPORT-00, REQ-GRAPHICS-03, REQ-GRAPHICS-06, REQ-GRAPHICS-07, REQ-GRAPHICS-09, REQ-GRAPHICS-10, REQ-GRAPHICS-11, REQ-GRAPHICS-13, REQ-GRAPHICS-14, REQ-GRAPHICS-15, REQ-GRAPHICS-16, REQ-GRAPHICS-17, REQ-PARSER-05, REQ-PARSER-07, REQ-STORAGE-05, REQ-STORAGE-06, REQ-UI-01, REQ-UI-02, REQ-UI-03, REQ-UI-04, REQ-UI-05, REQ-UI-06, REQ-UI-07, REQ-UI-08, REQ-UI-09, REQ-UI-10, REQ-UI-11, REQ-UI-12, REQ-UI-13, REQ-UI-14, REQ-UI-15, REQ-WIDGET-07]
+source_lines: 982-1055
+source_sha1: 45be2554f6
+ids: [ARC-05, BR-07, BR-09, D-19, D-25, D-29, D-30, D-48, D-49, D-50, D-52, D-56, D-57, ERR_UNSUPPORTED_FORMAT, KPI-04, NFR-SEC-05, REQ-EXPORT-00, REQ-GRAPHICS-03, REQ-GRAPHICS-06, REQ-GRAPHICS-07, REQ-GRAPHICS-09, REQ-GRAPHICS-10, REQ-GRAPHICS-11, REQ-GRAPHICS-13, REQ-GRAPHICS-14, REQ-GRAPHICS-15, REQ-GRAPHICS-16, REQ-GRAPHICS-17, REQ-GRAPHICS-18, REQ-PARSER-05, REQ-PARSER-07, REQ-STORAGE-05, REQ-STORAGE-06, REQ-UI-01, REQ-UI-02, REQ-UI-03, REQ-UI-04, REQ-UI-05, REQ-UI-06, REQ-UI-07, REQ-UI-08, REQ-UI-09, REQ-UI-10, REQ-UI-11, REQ-UI-12, REQ-UI-13, REQ-UI-14, REQ-UI-15, REQ-WIDGET-07]
 ---
 ### 5.3. Yêu cầu giao diện
 
@@ -43,6 +43,7 @@ ids: [ARC-05, BR-07, BR-09, D-19, D-25, D-29, D-30, D-48, D-49, D-50, D-52, D-56
 | Kiểu nốt | Theme/preset; chế độ màu; độ dày; bo góc; phát sáng bật/tắt và mức; phát sáng Đều nhau / Động khi chạm + chọn tiêu chí (REQ-GRAPHICS-17) | Độ đục khi chờ, bán kính phát sáng, viền, chỉ sáng khi phát, mức yếu/mạnh nhất, đảo chiều, tắt dần sau nốt, lane automation, gradient, biểu thức |
 | Hướng và chuyển cảnh nốt | 4 hướng; chọn template nốt (rơi, nảy, phóng…); tốc độ cuộn | Góc tự do; chỉnh từng pha `enter/hit/sustain/exit`, easing, morph (REQ-GRAPHICS-10) |
 | Thanh phát | Hiện/ẩn, màu, độ dày, kiểu nét dựng sẵn, vị trí | Dải và gradient, mũi tên, phát sáng, phản ứng khi chạm, độ dài; 1.1: sprite, keyframe (REQ-GRAPHICS-16) |
+| Chữ trong video | Chọn kiểu chữ dựng sẵn; phông, cỡ, màu, đậm/nghiêng, căn lề (REQ-GRAPHICS-18) | Kiểu trong họ phông, tỉ lệ ngang/dọc, gạch chân/ngang, chữ hoa, tracking, leading, tràn khung, gradient, viền, đổ bóng, nền chữ, OpenType, định dạng từng đoạn; 1.1 trục phông biến thiên, text animator, chữ theo đường |
 | Bàn phím | Hiện/ẩn; tên nốt bật/tắt và cách ghi tên; số phím tự động | Phạm vi tuỳ chọn, hình dạng phím, màu phím nhấn, độ lún, thang âm, quy ước C3/C4, phông (REQ-GRAPHICS-07) |
 | Widget và bố cục | Thêm/xoá/kéo thả widget; kéo, co giãn, **xoay** trên khung bằng tay nắm (REQ-GRAPHICS-03); preset bố cục; chọn track cho widget | Khoảng hiển thị theo thời gian/marker; đổi track theo đoạn (REQ-GRAPHICS-14); tham số chi tiết từng widget |
 | Spectrum/waveform | Chọn kiểu; màu; số cột | Dải tần, thang tần số, làm mượt, đỉnh rơi, gradient; 1.1 dạng tròn (REQ-WIDGET-07) |

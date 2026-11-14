@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-AUDIO-01: Âm thanh theo track (stem), bản 1.2"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-AUDIO-01: Âm thanh theo track (stem), bản 1.2"
 chunk: req-audio-01-am-thanh-theo-track-stem-ban-1-2.md
-source_lines: 593-605
-source_sha1: f4f69f9f7d
+source_lines: 613-625
+source_sha1: 45be2554f6
 ids: [ERR_AUDIO_TOO_MANY, P-02, P-13, REQ-AUDIO-01, REQ-EXPORT-00, REQ-GRAPHICS-12, REQ-WIDGET-07, WARN_STEM_LENGTH, WARN_STEM_UNMATCHED]
 ---
 #### REQ-AUDIO-01: Âm thanh theo track (stem), bản 1.2

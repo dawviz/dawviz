@@ -110,6 +110,8 @@
       - [REQ-GRAPHICS-05: Render Core dùng chung (ARC-01, D-20)](SRS/req-graphics-05-render-core-dung-chung-arc-01-d.md#req-graphics-05-render-core-dùng-chung-arc-01-d-20)
 - [REQ-GRAPHICS-17: Phát sáng động khi chạm (D-50, 1.0)](SRS/req-graphics-17-phat-sang-dong-khi-cham-d-50-1-0.md)
       - [REQ-GRAPHICS-17: Phát sáng động khi chạm (D-50, 1.0)](SRS/req-graphics-17-phat-sang-dong-khi-cham-d-50-1-0.md#req-graphics-17-phát-sáng-động-khi-chạm-d-50-10)
+- [REQ-GRAPHICS-18: Kiểu chữ cho mọi chữ trong video (D-58)](SRS/req-graphics-18-kieu-chu-cho-moi-chu-trong-video.md)
+      - [REQ-GRAPHICS-18: Kiểu chữ cho mọi chữ trong video (D-58)](SRS/req-graphics-18-kieu-chu-cho-moi-chu-trong-video.md#req-graphics-18-kiểu-chữ-cho-mọi-chữ-trong-video-d-58)
 - [REQ-AST-02: Automation tổng quát (D-50; 1.0 cho Reaper track + MIDI CC, các nguồn khác theo tệp mẫu)](SRS/req-ast-02-automation-tong-quat-d-50-1-0-cho-rea.md)
       - [REQ-AST-02: Automation tổng quát (D-50; 1.0 cho Reaper track + MIDI CC, các nguồn khác theo tệp mẫu)](SRS/req-ast-02-automation-tong-quat-d-50-1-0-cho-rea.md#req-ast-02-automation-tổng-quát-d-50-10-cho-reaper-track--midi-cc-các-nguồn-khác-theo-tệp-mẫu)
 - [3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04)](SRS/3-4-dac-ta-8-widget-hud-br-02-br-03-br-04.md)

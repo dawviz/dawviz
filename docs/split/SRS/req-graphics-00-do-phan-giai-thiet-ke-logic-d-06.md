@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-GRAPHICS-00: Độ phân giải thiết kế logic (D-06)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-00: Độ phân giải thiết kế logic (D-06)"
 chunk: req-graphics-00-do-phan-giai-thiet-ke-logic-d-06.md
-source_lines: 408-412
-source_sha1: f4f69f9f7d
+source_lines: 409-413
+source_sha1: 45be2554f6
 ids: [D-06, REQ-GRAPHICS-00]
 ---
 #### REQ-GRAPHICS-00: Độ phân giải thiết kế logic (D-06)

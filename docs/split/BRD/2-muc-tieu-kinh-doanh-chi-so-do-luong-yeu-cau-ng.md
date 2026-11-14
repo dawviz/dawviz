@@ -4,8 +4,8 @@ doc_title: "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT
 section: "2. MỤC TIÊU KINH DOANH, CHỈ SỐ ĐO LƯỜNG & YÊU CẦU NGHIỆP VỤ"
 path: "2. MỤC TIÊU KINH DOANH, CHỈ SỐ ĐO LƯỜNG & YÊU CẦU NGHIỆP VỤ"
 chunk: 2-muc-tieu-kinh-doanh-chi-so-do-luong-yeu-cau-ng.md
-source_lines: 43-81
-source_sha1: 60738ffb3a
+source_lines: 44-82
+source_sha1: 8acfa46306
 ids: [BR-01, BR-02, BR-03, BR-04, BR-05, BR-06, BR-07, BR-08, BR-09, D-02, D-12, D-14, KPI-01, KPI-02, KPI-03, KPI-04, KPI-05, KPI-06, KPI-07, KPI-08, REQ-EXPORT-06]
 ---
 ## 2. MỤC TIÊU KINH DOANH, CHỈ SỐ ĐO LƯỜNG & YÊU CẦU NGHIỆP VỤ

@@ -71,13 +71,13 @@ node scripts/sync-docs.mjs --find "độ sáng"   # lấy liên kết mảnh#hea
 <!-- sync:begin docs-index -->
 <!-- Khối này do scripts/sync-docs.mjs sinh ra; đừng sửa tay. -->
 
-Có 18 tài liệu, 281 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
+Có 18 tài liệu, 282 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
 
 ### BRD.md — TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)
 
 Nguồn: `docs/product/BRD.md` · [thứ tự đọc](docs/split/BRD/_index.md)
 
-- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](docs/split/BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 4.4k
+- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](docs/split/BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 4.6k
 - [1. THÔNG TIN CHUNG & BỐI CẢNH DỰ ÁN](docs/split/BRD/1-thong-tin-chung-boi-canh-du-an.md) · 1.8k
 - [2. MỤC TIÊU KINH DOANH, CHỈ SỐ ĐO LƯỜNG & YÊU CẦU NGHIỆP VỤ](docs/split/BRD/2-muc-tieu-kinh-doanh-chi-so-do-luong-yeu-cau-ng.md) · 4.8k
 - [3. CHÂN DUNG NGƯỜI DÙNG MỤC TIÊU (USER PERSONAS)](docs/split/BRD/3-chan-dung-nguoi-dung-muc-tieu-user-personas.md) · 1.3k
@@ -87,7 +87,7 @@ Nguồn: `docs/product/BRD.md` · [thứ tự đọc](docs/split/BRD/_index.md)
 - [4. PHẠM VI DỰ ÁN (PROJECT SCOPE) › 4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](docs/split/BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1.2k
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](docs/split/BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4.3k
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](docs/split/BRD/6-gia-dinh-assumptions.md) · 0.6k
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 22.9k
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 23.6k
 - [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](docs/split/BRD/8-cac-van-de-con-mo-open-issues.md) · 4.6k
 
 ### SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
@@ -95,7 +95,7 @@ Nguồn: `docs/product/BRD.md` · [thứ tự đọc](docs/split/BRD/_index.md)
 Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 
 - [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](docs/split/SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 0.4k
-- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) › Lịch sử phiên bản](docs/split/SRS/lich-su-phien-ban.md) · 8.2k
+- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) › Lịch sử phiên bản](docs/split/SRS/lich-su-phien-ban.md) · 8.7k
 - [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) › Quy ước trong tài liệu](docs/split/SRS/quy-uoc-trong-tai-lieu.md) · 0.8k
 - [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) › Mục lục](docs/split/SRS/muc-luc.md) · 0.4k
 - [1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG](docs/split/SRS/1-gioi-thieu-muc-tieu-he-thong.md) · 4.7k
@@ -125,10 +125,11 @@ Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-08: Hiệu ứng chuyển động tất định (D-37)](docs/split/SRS/req-graphics-08-hieu-ung-chuyen-dong-tat-dinh-d.md) · 0.4k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-05: Render Core dùng chung (ARC-01, D-20)](docs/split/SRS/req-graphics-05-render-core-dung-chung-arc-01-d.md) · 1.0k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-17: Phát sáng động khi chạm (D-50, 1.0)](docs/split/SRS/req-graphics-17-phat-sang-dong-khi-cham-d-50-1-0.md) · 2.8k
+- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-18: Kiểu chữ cho mọi chữ trong video (D-58)](docs/split/SRS/req-graphics-18-kieu-chu-cho-moi-chu-trong-video.md) · 5.1k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-AST-02: Automation tổng quát (D-50; 1.0 cho Reaper track + MIDI CC, các nguồn khác theo tệp mẫu)](docs/split/SRS/req-ast-02-automation-tong-quat-d-50-1-0-cho-rea.md) · 2.2k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04)](docs/split/SRS/3-4-dac-ta-8-widget-hud-br-02-br-03-br-04.md) · 0.4k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-WIDGET-01: Piano Roll](docs/split/SRS/req-widget-01-piano-roll.md) · 1.4k
-- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-WIDGET-02: Track Info](docs/split/SRS/req-widget-02-track-info.md) · 1.0k
+- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-WIDGET-02: Track Info](docs/split/SRS/req-widget-02-track-info.md) · 1.1k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-WIDGET-03: Event Counter](docs/split/SRS/req-widget-03-event-counter.md) · 1.1k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-WIDGET-04: Live Note Trigger](docs/split/SRS/req-widget-04-live-note-trigger.md) · 0.9k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-WIDGET-05: Time & Bar Counter](docs/split/SRS/req-widget-05-time-bar-counter.md) · 1.5k
@@ -162,7 +163,7 @@ Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 - [4. YÊU CẦU PHI CHỨC NĂNG (NON-FUNCTIONAL REQUIREMENTS)](docs/split/SRS/4-yeu-cau-phi-chuc-nang-non-functional-requireme.md) · 5.2k
 - [5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG › 5.1. Bố cục không gian làm việc](docs/split/SRS/5-1-bo-cuc-khong-gian-lam-viec.md) · 4.9k
 - [5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG › 5.2. Chế độ tương tác](docs/split/SRS/5-2-che-do-tuong-tac.md) · 0.4k
-- [5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG › 5.3. Yêu cầu giao diện](docs/split/SRS/5-3-yeu-cau-giao-dien.md) · 18.4k
+- [5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG › 5.3. Yêu cầu giao diện](docs/split/SRS/5-3-yeu-cau-giao-dien.md) · 18.7k
 - [6. MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU](docs/split/SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md) · 1.4k
 - [7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO](docs/split/SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md) · 6.7k
 - [8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS](docs/split/SRS/8-cac-van-de-con-mo-cua-srs.md) · 4.0k

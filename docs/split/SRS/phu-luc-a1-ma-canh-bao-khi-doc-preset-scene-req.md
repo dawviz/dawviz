@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)"
 path: "9. PHỤ LỤC > Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)"
 chunk: phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md
-source_lines: 1138-1150
-source_sha1: f4f69f9f7d
+source_lines: 1159-1171
+source_sha1: 45be2554f6
 ids: [NFR-SEC-04, REQ-STORAGE-02, WARN_PRESET_MIGRATED, WARN_PRESET_UNSAFE_KEY, WARN_PRESET_UNSUPPORTED, WARN_PRESET_VALUE, WARN_PRESET_VERSION, WARN_PRESET_WIDGET_UNKNOWN]
 ---
 ### Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)
