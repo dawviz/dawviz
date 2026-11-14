@@ -10,7 +10,16 @@ Màn hình chia ba phần: danh sách **Lớp** bên trái, khung video ở gi�
 
 - Bấm vào widget trên khung, hoặc bấm tên nó trong danh sách Lớp.
 - Giữ Shift khi bấm để chọn thêm widget khác.
+- Kéo chuột trên chỗ trống của khung để vẽ một khung chọn: mọi widget chạm khung đó đều được chọn. Giữ Shift để cộng thêm vào những widget đang chọn.
 - Bấm Esc để bỏ chọn.
+
+## Thêm, nhân bản, xoá
+
+- **Thêm:** bấm **Thêm** ở đầu danh sách Lớp rồi chọn loại widget. Widget mới nằm giữa khung, trên cùng các lớp, và được chọn sẵn.
+- **Nhân bản:** nút nhân bản ở mục **Sắp xếp**, hoặc Ctrl+D (⌘D trên Mac). Bản sao dời xuống một chút để bạn thấy nó.
+- **Xoá:** nút thùng rác, hoặc phím Delete. Widget đang khoá không xoá được.
+
+Cả ba việc đều hoàn tác được bằng Ctrl+Z.
 
 ## Di chuyển, đổi cỡ, xoay
 
@@ -22,6 +31,16 @@ Màn hình chia ba phần: danh sách **Lớp** bên trái, khung video ở gi�
 Khi chọn nhiều widget, bạn di chuyển và xoay cả nhóm cùng lúc; ô **Xoay cả nhóm thêm** xoay nhóm quanh tâm của nó.
 
 Nếu widget bị kéo ra hẳn ngoài khung, ứng dụng báo **Ngoài khung** vì nó sẽ không có trong video. Bấm **Đưa vào khung** để kéo nó về.
+
+## Căn chỉnh
+
+Mục **Căn chỉnh** có sáu nút: căn mép trái, giữa, phải và mép trên, giữa, dưới.
+
+- Chọn một widget: căn theo khung video, ví dụ đưa widget vào chính giữa khung.
+- Chọn nhiều widget: căn theo nhau, ví dụ cho mọi widget thẳng mép trái.
+- Chọn từ ba widget trở lên: có thêm hai nút **chia đều** để khoảng trống giữa các widget bằng nhau, theo chiều ngang hoặc chiều dọc. Hai widget ngoài cùng đứng yên.
+
+Widget xoay được căn theo khung bao quanh nó. Widget đang khoá đứng yên.
 
 ## Điểm neo (Nâng cao)
 
@@ -50,6 +69,19 @@ Danh sách **Lớp** cho biết widget nào nằm trên widget nào: dòng trên
 - **Mắt:** ẩn hoặc hiện widget trong video (giống ô **Hiện trong video**).
 - **Ổ khoá:** khoá widget để không lỡ tay kéo nó. Widget đã khoá vẫn chọn được trong danh sách Lớp để xem số liệu hoặc mở khoá.
 - Hàng trên cùng ẩn/hiện hoặc khoá/mở khoá mọi lớp cùng lúc.
+
+## Thiết lập
+
+Widget chữ có mục **Thiết lập** cho những gì riêng của nó:
+
+- **Tên bài và nghệ sĩ:** gõ tên bài, tên nghệ sĩ. Để trống thì lấy từ dự án.
+- **Bộ đếm nốt:** bật hoặc tắt từng dòng (số nốt đã phát, tổng số nốt, tiến độ, tempo). Nâng cao: sửa chữ của từng dòng, số chữ số thập phân, khoảng cách dòng.
+- **Nốt đang phát:** mỗi nốt một dòng hoặc tất cả trên một dòng, số dòng tối đa, hiện tên track. Nâng cao: sửa chữ, thời gian mờ dần sau khi nhả nốt.
+- **Thời gian và ô nhịp:** bật hoặc tắt từng hàng, kiểu hiện số (nhóm số hay đồng hồ, ô nhịp.phách.tick), vạch tiến độ dưới số. Nâng cao: nhãn, khoảng cách hàng, độ dài, độ dày và màu vạch.
+- **Hợp âm:** đọc hợp âm theo nốt đang giữ hay khi dập, luôn hiện danh sách nốt, khi không nhận ra hợp âm thì hiện chữ "không hợp âm" hay hiện các nốt.
+- **Thanh tiến độ:** ngang hoặc dọc, độ dày, màu, hiện thời gian. Nâng cao: nền thanh, bo góc, chữ thời gian.
+
+Khi sửa chữ của một dòng, những chỗ trong ngoặc nhọn như `{played}` hay `{tempo}` sẽ được thay bằng số thật. Rê chuột lên ô chữ để xem widget đó dùng được những chỗ nào. Gõ xong bấm Enter, hoặc bấm ra ngoài ô; bấm Esc để bỏ.
 
 ## Chữ
 

@@ -4,8 +4,8 @@ doc_title: "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT
 section: "4.3. Lộ trình phát hành (Milestones)"
 path: "4. PHẠM VI DỰ ÁN (PROJECT SCOPE) > 4.3. Lộ trình phát hành (Milestones)"
 chunk: 4-3-lo-trinh-phat-hanh-milestones.md
-source_lines: 132-141
-source_sha1: 3a2d7bb414
+source_lines: 133-142
+source_sha1: a19d8dcb70
 ids: [AT-05, AT-06]
 ---
 ### 4.3. Lộ trình phát hành (Milestones)

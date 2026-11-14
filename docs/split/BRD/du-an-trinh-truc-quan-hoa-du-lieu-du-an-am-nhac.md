@@ -4,9 +4,9 @@ doc_title: "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT
 section: "DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)"
 path: "DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)"
 chunk: du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md
-source_lines: 2-28
-source_sha1: 3a2d7bb414
-ids: [BR-09, D-01, D-15, D-20, D-22, D-23, D-24, D-25, D-26, D-27, D-28, D-29, D-30, D-31, D-32, D-33, D-34, D-36, D-38, D-39, D-40, D-45, D-51, D-52, D-53, D-54, D-55, D-57, D-58, OI-09, OI-10, OI-11, OI-13, OI-14, OI-15, OI-16, OI-17, P-01, P-13, REQ-GRAPHICS-02, REQ-GRAPHICS-18]
+source_lines: 2-29
+source_sha1: a19d8dcb70
+ids: [BR-09, D-01, D-15, D-20, D-22, D-23, D-24, D-25, D-26, D-27, D-28, D-29, D-30, D-31, D-32, D-33, D-34, D-36, D-38, D-39, D-40, D-45, D-51, D-52, D-53, D-54, D-55, D-57, D-58, D-59, D-60, OI-09, OI-10, OI-11, OI-13, OI-14, OI-15, OI-16, OI-17, OI-18, P-01, P-13, REQ-GRAPHICS-02, REQ-GRAPHICS-18]
 ---
 ## DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)
 
@@ -20,6 +20,7 @@ ids: [BR-09, D-01, D-15, D-20, D-22, D-23, D-24, D-25, D-26, D-27, D-28, D-29, D
 | v0.2 | Thêm mã BR-xx và KPI-xx để khớp ma trận truy xuất SRS; chuyển Bitwig sang `.dawproject`; thay `mp4-muxer` (đã deprecated) bằng Mediabunny; định nghĩa lại KPI A/V sync và KPI thời gian; hạ R-04 xuống thành giả định thiết kế; bổ sung rủi ro R-06 đến R-10; thêm Nhật ký quyết định (mục 7) và Open Issues (mục 8). |
 | v1.0 | **Chốt đường cơ sở:** Spike 1 (đường ống xuất) và Spike 2 (thư viện parser, 66 test) đủ bằng chứng nên nâng lên 1.0. "1.0" nghĩa là yêu cầu được đóng băng để xây dựng, các mục còn **[VERIFY]** không bị giấu mà chuyển thành Open Issues có chủ (OI-10 đến OI-14) và được xử lý theo lộ trình. Thêm D-33 (độ sáng theo automation), D-34 đến D-36 (ngăn xếp giao diện, monorepo, TypeScript cho mã mới), mục 4.3 lộ trình M1 đến M5. |
 | v0.3 | **Bổ sung sau cùng:** đa ngôn ngữ ngay từ đầu (tiếng Anh và tiếng Việt, cộng đồng đóng góp bản dịch; BR-09, D-30); ghi đè tempo có thêm **dấu nhịp** (4/4, 3/4, 12/8...) và nhập mốc theo kiểu đồng hồ DAW (D-31); đề xuất widget và dữ liệu hiển thị bổ sung (D-32, OI-11); trạng thái Spike 1 và Spike 2: hoàn thành. **Theo Spike 1:** Silent AAC chuyển sang mặc định TẮT (video-only khi không có audio, D-01 sửa); cho nhập tuỳ ý rộng × cao và tỉ lệ khung (D-26); tên file chốt trước khi render; ghi nhận lệch A/V trên di động (R-11). **Theo Spike 2:** tách parser thành thư viện độc lập (D-23); không còn fallback 120 BPM ngầm, người dùng ghi đè tempo theo mốc (D-24, D-29); thêm widget Progress Bar (D-27, nay 8 widget). **Theo thư viện parser:** thêm `.alp` thật (gói `pl-a`, chọn `.als` trong gói, D-25); `.als` nhận cả XML thuần và Gzip; parser nhị phân theo JSON schema (D-28); `.flp` và `.bwproject` ghi là *chưa hỗ trợ* (không phải "không hỗ trợ"); chốt D-20 đến D-22; cập nhật KPI/rủi ro/Open Issues bằng số đo thật. |
+| v1.6 | **2026-11-14, ô chữ và chỗ giữ dùng chung (đã chốt hướng, chưa làm):** người dùng thêm ô chữ; một bộ chỗ giữ `{bpm}`, `{title}`… dùng được ở mọi chữ (D-60, OI-18). Kèm D-59 (hướng dẫn sử dụng thay chữ trên giao diện). |
 | v1.5 | **2026-11-14, kiểu chữ:** mọi chữ trong video dùng kiểu dựng sẵn làm mặc định, người dùng chỉnh được mọi thứ các trình dựng phổ biến làm với chữ (D-58; SRS v1.8 REQ-GRAPHICS-18). |
 | v1.4 | **2026-11-14, Preview và Editor:** hai thẻ là hai cách bày bảng trên cùng dữ liệu (D-57); kèm theo: bỏ thanh trượt, ô số kéo được, nút ↺ về giá trị bộ dựng sẵn, bỏ hẳn nhãn NC, Hình thức chỉ ở Editor, kéo thả thứ tự lớp, bắt dính khi đổi cỡ (SRS v1.7). |
 | v1.3 | **2026-11-13, tương phản và đường gióng:** bảng màu giao diện ứng dụng đã kiểm WCAG AA, thêm token `line-control`, đường gióng đổi sang token `guide` `#008C9E` (D-55; SRS v1.3 REQ-GRAPHICS-02). Chi tiết: `docs/design/UI-DIRECTION.md` v0.5 mục 5.4. |

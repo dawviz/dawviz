@@ -10,7 +10,16 @@ The screen has three parts: **Layers** on the left, the frame in the middle, and
 
 - Click a widget on the frame, or its name in Layers.
 - Shift-click to add more widgets to the selection.
+- Drag on an empty part of the frame to draw a selection box: every widget it touches is selected. Hold Shift to add to the current selection.
 - Press Esc to clear the selection.
+
+## Add, duplicate, delete
+
+- **Add:** click **Add** at the top of Layers and pick a widget type. The new widget sits in the middle of the frame, on top of the other layers, and is selected.
+- **Duplicate:** the duplicate button in **Arrange**, or Ctrl+D (⌘D on Mac). The copy is moved down a little so you can see it.
+- **Delete:** the bin button, or the Delete key. Locked widgets can't be deleted.
+
+All three can be undone with Ctrl+Z.
 
 ## Move, resize, rotate
 
@@ -22,6 +31,16 @@ The screen has three parts: **Layers** on the left, the frame in the middle, and
 With several widgets selected, you move and rotate them as a group; **Rotate group by** turns the group around its own centre.
 
 If a widget ends up completely outside the frame, the app shows **Outside the frame** because it won't be in the video. Click **Bring into frame** to pull it back.
+
+## Align
+
+The **Align** section has six buttons: align left, centre or right edges, and top, middle or bottom edges.
+
+- One widget selected: it lines up with the video frame, for example to sit exactly in the middle.
+- Several widgets selected: they line up with each other, for example all on the same left edge.
+- Three or more widgets: two more buttons **space them evenly**, left to right or top to bottom. The two outer widgets stay put.
+
+Rotated widgets line up by the box around them. Locked widgets stay put.
 
 ## Anchor (Advanced)
 
@@ -50,6 +69,19 @@ The **Layers** list shows which widget sits on top: the top row is drawn on top.
 - **Eye:** hide or show the widget in the video (same as **Show in video**).
 - **Lock:** stops the widget from being dragged by accident. A locked widget can still be selected in Layers to see its numbers or unlock it.
 - The top row hides/shows or locks/unlocks every layer at once.
+
+## Settings
+
+Text widgets have a **Settings** section for what is special about them:
+
+- **Title & artist:** type the title and artist. Leave them empty to use the project's.
+- **Note counter:** turn each line on or off (played notes, note count, progress, tempo). Advanced: edit the text of each line, decimal places, line spacing.
+- **Live notes:** one note per line or all on one line, most lines, show the track name. Advanced: edit the text, how long notes fade after release.
+- **Time & bar:** turn each row on or off, number style (grouped digits or clock, bar.beat.tick), progress bars under the numbers. Advanced: labels, row spacing, bar length, thickness and colours.
+- **Chord:** read chords from held notes or when struck, always show the note list, and what to show for an unknown chord ("no chord" text or the notes).
+- **Progress bar:** horizontal or vertical, thickness, colour, show the time. Advanced: bar background, corner radius, time text.
+
+When you edit the text of a line, words in curly brackets such as `{played}` or `{tempo}` are replaced with the real numbers. Hover over the text box to see which ones that widget understands. Press Enter or click outside the box to apply; Esc cancels.
 
 ## Text
 

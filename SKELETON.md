@@ -46,7 +46,8 @@ dawviz/
 │     │  │  ├─ ThemeSelect.tsx
 │     │  │  ├─ TrackPanel.tsx
 │     │  │  ├─ Transport.tsx
-│     │  │  └─ VideoStyles.tsx
+│     │  │  ├─ VideoStyles.tsx
+│     │  │  └─ WidgetSettings.tsx
 │     │  ├─ i18n/
 │     │  │  └─ I18nProvider.tsx
 │     │  ├─ lib/
@@ -752,6 +753,10 @@ const DEFAULT_PIANO_ROLL
 const ASPECTS
 function defaultScene(aspect: keyof typeof ASPECTS = '16:9'): SceneDocument   // Scene mặc định: một Piano Roll phủ kín khung. Bố cục mặc định theo nền tảng (9:16 cho người mới, KPI-04) chốt…
 function pianoRollWidget(layout: Omit<WidgetLayout, 'anchor'> & { anchor?: WidgetLayout['anchor'] }, props: Partial<PianoRollProps> = {}, id = 'piano-roll-main'): WidgetSpec<PianoRollProps>
+const ADDABLE_WIDGETS   // Loại widget người dùng thêm được từ Editor (có renderer). AUDIO_SPECTRUM chờ T-53.
+function newWidgetId(scene: SceneDocument, type: WidgetType): string   // Id mới không trùng trong scene: `<loại>-<n>`.
+function createWidget(scene: SceneDocument, type: WidgetType, center?: { x: number; y: number }): WidgetSpec   // Widget mới với thuộc tính mặc định, đặt giữa khung (hoặc quanh `center`), nằm trên cùng (T-68: thêm widget từ…
+function duplicateWidget(scene: SceneDocument, w: WidgetSpec, offset = 16): WidgetSpec   // Bản sao của widget (nhân bản): id mới, dời `offset` pt, nằm ngay trên bản gốc.
 const cloneTextStyles = (set: TextStyleSet) =>   // Bản sao sâu của bộ kiểu chữ (sửa kiểu trong một scene không đụng bộ mặc định đã đóng băng).
 type SceneWarningCode
 interface SceneWarning
@@ -1011,6 +1016,16 @@ const ToFront = (p: P) =>
 const LayerUp = (p: P) =>
 const LayerDown = (p: P) =>
 const ToBack = (p: P) =>
+const AlignLeft = (p: P) =>   // Căn chỉnh và chia đều (T-68): vạch căn + hai khối.
+const AlignHCenter = (p: P) =>
+const AlignRight = (p: P) =>
+const AlignTop = (p: P) =>
+const AlignVCenter = (p: P) =>
+const AlignBottom = (p: P) =>
+const DistributeH = (p: P) =>
+const DistributeV = (p: P) =>
+const Duplicate = (p: P) =>
+const Trash = (p: P) =>
 ```
 
 #### `apps/web/src/components/Inspector.tsx`
@@ -1167,6 +1182,16 @@ Cột "Video styles" / "Phong cách video" (UI-DIRECTION 5.3): chọn phong các
 re-export { VIDEO_STYLES, videoStyleBase }
 function isEdited(id: string, base: NoteStyle): boolean   // Kiểu nốt hiện tại còn đúng như phong cách đã chọn không (để hiện "đã chỉnh").
 function VideoStyles({ value, edited, onPick, notice, thumb }: { value: string; edited: boolean; onPick(id: string): void; notice?: string; thumb?(id: string): string | undefined })   // `notice`: thông báo nhỏ không chặn sau khi đổi phong cách làm mất chỉnh tay (hoàn tác bằng Ctrl+Z hoặc nút ở …
+```
+
+#### `apps/web/src/components/WidgetSettings.tsx`
+
+Mục "Thiết lập" của bảng Thuộc tính (T-68/T-06): thuộc tính riêng của từng loại widget chữ (SRS REQ-WIDGET-02…08).
+
+```text
+const hasWidgetSettings = (type: string) =>   // Widget nào có mục Thiết lập.
+const ADVANCED_WIDGET_KEYS   // Thuộc tính chỉ có ở Nâng cao (để biết phần nâng cao đang khác mặc định).
+function WidgetSettings({ widget, advanced, disabled, onProps }: { widget: WidgetSpec; advanced: boolean; disabled?: boolean; onProps(patch: Obj): void })
 ```
 
 #### `apps/web/src/i18n/I18nProvider.tsx`
@@ -1330,6 +1355,9 @@ const patchLayouts = (d: Doc, patches: Record<string, Partial<WidgetLayout>>) =>
 const patchWidgetProps = (d: Doc, widgetId: string, patch: Record<string, unknown>) =>   // Đổi một số thuộc tính (`properties`) của widget.
 const patchTextRef = (d: Doc, widgetId: string, field: string, next: TextRef, path: string) =>   // Đổi ghi đè kiểu chữ của một chỗ chữ (T-72). `path` là thuộc tính vừa đổi: kéo/gõ liên tiếp cùng thuộc tính gộ…
 const setTextStyles = (d: Doc, styles: TextStyleSet, widgetId: string, field: string, ref: TextRef, kind: 'save' | 'update') =>   // Đổi bộ kiểu chữ của scene ("Lưu thành kiểu mới", "Cập nhật kiểu"), kèm ghi đè mới của chỗ chữ vừa dùng. Một b…
+const addWidget = (d: Doc, w: WidgetSpec) =>   // Thêm widget (T-68). Một bước hoàn tác.
+const addWidgets = (d: Doc, ws: WidgetSpec[]) =>   // Thêm nhiều widget một lúc (nhân bản vùng chọn).
+const removeWidgets = (d: Doc, ids: readonly string[]) =>   // Xoá widget (T-68). Hoàn tác trả widget về đúng chỗ trong tài liệu (giữ thứ tự và zIndex).
 const setWidgetVisible = (d: Doc, widgetId: string, visible: boolean) =>
 const toggleAllWidgetsVisible = (d: Doc) =>   // Ô mắt ở hàng đầu danh sách Lớp: còn lớp ẩn thì hiện hết trước, đã hiện hết thì ẩn hết. Một bước hoàn tác.
 const reorderZ = (d: Doc, widgetId: string, where: 'front' | 'back') =>   // Đưa widget lên trên cùng / xuống dưới cùng bằng cách đổi zIndex của nó.
@@ -1367,6 +1395,10 @@ function hitTest<W extends { id: string; zIndex: number; visible: boolean; layou
 const round = (l: L) =>
 function outsideFrame(l: WidgetLayout, W: number, H: number): boolean   // Widget nằm hẳn ngoài khung (khung bao đã xoay không giao với khung): video sẽ không thấy nó.
 function intoFrame(l: WidgetLayout, W: number, H: number):    // Dời widget ít nhất có thể để khung bao của nó nằm trong khung (lớn hơn khung thì canh mép trái/trên).
+type AlignMode   // ── căn chỉnh và chia đều (T-68) ──
+function alignLayouts(items: { id: string; layout: WidgetLayout }[], mode: AlignMode, frame: { width: number; height: number }): Record<string,   // Căn theo khung bao (đã xoay) của từng widget. Nhiều widget: căn theo khung bao chung của vùng chọn; một widge…
+function distributeLayouts(items: { id: string; layout: WidgetLayout }[], axis: 'x' | 'y'): Record<string,   // Chia đều khoảng trống giữa các widget theo trục (cần ≥ 3): hai widget ngoài cùng đứng yên, các widget giữa dờ…
+function marqueeHits(widgets: readonly { id: string; visible: boolean; layout: WidgetLayout }[], r: { x: number; y: number; width: number; height: number }, locked: ReadonlySet<string>): string[]   // Widget hiện, không khoá, có khung bao (đã xoay) giao với khung chọn.
 ```
 
 #### `apps/web/src/lib/externalMidi.ts`
@@ -1751,4 +1783,4 @@ type ParseResponse
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 647 ký hiệu công khai -->
+<!-- 10 thư mục src, 671 ký hiệu công khai -->

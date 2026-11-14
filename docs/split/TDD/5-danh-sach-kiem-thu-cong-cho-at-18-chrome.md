@@ -4,8 +4,8 @@ doc_title: "TÀI LIỆU THIẾT KẾ KIỂM THỬ (TDD = Test Design Document) �
 section: "5. Danh sách kiểm thủ công cho AT-18 (Chrome)"
 path: "5. Danh sách kiểm thủ công cho AT-18 (Chrome)"
 chunk: 5-danh-sach-kiem-thu-cong-cho-at-18-chrome.md
-source_lines: 69-83
-source_sha1: 8d240985ec
+source_lines: 72-86
+source_sha1: 6d93c905f0
 ids: [AT-18, AT-26, REQ-GRAPHICS-17, REQ-UI-08, REQ-UI-14, REQ-UI-15]
 ---
 ## 5. Danh sách kiểm thủ công cho AT-18 (Chrome)

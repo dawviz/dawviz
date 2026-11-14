@@ -4,8 +4,8 @@ doc_title: "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT
 section: "1. THÔNG TIN CHUNG & BỐI CẢNH DỰ ÁN"
 path: "1. THÔNG TIN CHUNG & BỐI CẢNH DỰ ÁN"
 chunk: 1-thong-tin-chung-boi-canh-du-an.md
-source_lines: 29-43
-source_sha1: 3a2d7bb414
+source_lines: 30-44
+source_sha1: a19d8dcb70
 ids: [D-54]
 ---
 ## 1. THÔNG TIN CHUNG & BỐI CẢNH DỰ ÁN

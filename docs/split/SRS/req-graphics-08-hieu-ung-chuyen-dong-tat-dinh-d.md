@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-GRAPHICS-08: Hiệu ứng chuyển động tất định (D-37)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-08: Hiệu ứng chuyển động tất định (D-37)"
 chunk: req-graphics-08-hieu-ung-chuyen-dong-tat-dinh-d.md
-source_lines: 483-487
-source_sha1: 45be2554f6
+source_lines: 484-488
+source_sha1: 46410b6da3
 ids: [D-37, REQ-GRAPHICS-08]
 ---
 #### REQ-GRAPHICS-08: Hiệu ứng chuyển động tất định (D-37)

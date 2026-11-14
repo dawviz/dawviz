@@ -48,6 +48,9 @@ Bộ kiểu dựng sẵn (phông gốc trùng `DEFAULT_FONT`, số đếm/đồn
 ### 2.5 Mục "Chữ" của Editor (T-72)
 `apps/web/src/lib/textRef.test.ts` (5): đặt/bỏ ghi đè theo đường dẫn, chỗ chữ theo widget, kiểu tham chiếu của dòng và đoạn, lệnh gộp bước theo thuộc tính + hoàn tác + lưu kiểu, id kiểu từ tên tiếng Việt. Vitest `components.test.tsx` › TextPanel (2): đổi cỡ, ↺, căn lề, chọn đoạn; bật đổ bóng, Lưu thành kiểu mới.
 
+### 2.6 Editor bổ sung (T-68, 2026-11-14)
+`render-core/test/scene.test.ts`: `createWidget` cho mọi loại thêm được (id không trùng, trong khung, trên cùng, qua lược đồ không cảnh báo) và `duplicateWidget`. `apps/web/src/lib/editorGeometry.test.ts` (3): căn chỉnh theo khung bao (kể cả widget xoay) và theo khung video, chia đều, khung chọn. `textRef.test.ts`: lệnh thêm/nhân bản/xoá + hoàn tác giữ thứ tự. Vitest `app.test.tsx` (2): thêm từ menu (chọn ngay, mục Thiết lập và Chữ sau Vị trí), Ctrl+D, Delete, hoàn tác; chọn nhiều → Căn chỉnh, chia đều cần ≥ 3.
+
 ## 3. Ma trận truy vết
 
 | Yêu cầu | Test |

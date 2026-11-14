@@ -106,6 +106,9 @@ export function describeCommand(cmd: Cmd, c: LabelCtx): string {
     case 'setPlayheadVisible': return i18n.t('web.hist.change', { name: i18n.t('web.playhead.show'), from: fmt(c, '', cmd.before), to: fmt(c, '', cmd.after) });
     case 'setAudioOffset': return i18n.t('web.hist.audioOffset', { from: fmt(c, 'ms', cmd.before), to: fmt(c, 'ms', cmd.after) });
     case 'patchSnapping': return changeLabel(c, i18n.t('web.hist.what.snapping'), {}, cmd);
+    case 'addWidget': return i18n.t('web.hist.addWidget', { widget: i18n.has(`web.widget.${String(p.type)}`) ? i18n.t(`web.widget.${String(p.type)}`) : String(p.type) });
+    case 'duplicateWidgets': return i18n.t('web.hist.duplicate', { n: Number(p.n) });
+    case 'removeWidgets': return i18n.t('web.hist.removeWidget', { n: Number(p.n) });
     case 'patchTextRef': return i18n.t('web.hist.text', { widget });
     case 'setTextStyles': return i18n.t(p.kind === 'save' ? 'web.hist.textStyleSave' : 'web.hist.textStyleUpdate', { widget });
     default: return i18n.has(cmd.label) ? i18n.t(cmd.label) : cmd.type;

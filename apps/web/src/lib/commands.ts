@@ -188,6 +188,28 @@ export const setTextStyles = (d: Doc, styles: TextStyleSet, widgetId: string, fi
   };
   return slice(d, 'setTextStyles', kind === 'save' ? 'web.cmd.textStyleSave' : 'web.cmd.textStyleUpdate', get, set, { styles, ref }, undefined, { widget: widgetId, field, kind });
 };
+/** Thêm widget (T-68). Một bước hoàn tác. */
+export const addWidget = (d: Doc, w: WidgetSpec): Cmd | null => {
+  if (d.scene.widgets.some((x) => x.id === w.id)) return null;
+  const get = (x: Doc) => x.scene.widgets;
+  const set = (x: Doc, v: WidgetSpec[]) => ({ ...x, scene: { ...x.scene, widgets: v } });
+  return slice(d, 'addWidget', 'web.cmd.addWidget', get, set, [...d.scene.widgets, w], undefined, { widget: w.id, type: w.type });
+};
+/** Thêm nhiều widget một lúc (nhân bản vùng chọn). */
+export const addWidgets = (d: Doc, ws: WidgetSpec[]): Cmd | null => {
+  if (!ws.length) return null;
+  const get = (x: Doc) => x.scene.widgets;
+  const set = (x: Doc, v: WidgetSpec[]) => ({ ...x, scene: { ...x.scene, widgets: v } });
+  return slice(d, 'duplicateWidgets', 'web.cmd.duplicate', get, set, [...d.scene.widgets, ...ws], undefined, { n: ws.length, ...(ws.length === 1 ? { widget: ws[0].id } : {}) });
+};
+/** Xoá widget (T-68). Hoàn tác trả widget về đúng chỗ trong tài liệu (giữ thứ tự và zIndex). */
+export const removeWidgets = (d: Doc, ids: readonly string[]): Cmd | null => {
+  const del = new Set(ids.filter((id) => d.scene.widgets.some((w) => w.id === id)));
+  if (!del.size) return null;
+  const get = (x: Doc) => x.scene.widgets;
+  const set = (x: Doc, v: WidgetSpec[]) => ({ ...x, scene: { ...x.scene, widgets: v } });
+  return slice(d, 'removeWidgets', 'web.cmd.removeWidget', get, set, d.scene.widgets.filter((w) => !del.has(w.id)), undefined, { n: del.size, names: [...del] });
+};
 export const setWidgetVisible = (d: Doc, widgetId: string, visible: boolean): Cmd | null => {
   const w = d.scene.widgets.find((x) => x.id === widgetId);
   return w ? slice(d, 'setWidgetVisible', 'web.cmd.widgetVisible', (x) => x.scene.widgets.find((q) => q.id === widgetId)!.visible, (x, v) => withWidget(x, widgetId, (q) => ({ ...q, visible: v })), visible, undefined, { widget: widgetId }) : null;

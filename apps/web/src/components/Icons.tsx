@@ -41,3 +41,14 @@ export const ToFront = (p: P) => <S {...p}><rect x="5.5" y="5.5" width="8" heigh
 export const LayerUp = (p: P) => <S {...p}><path d="M8 13V3.5M4 7.5l4-4 4 4" /></S>;
 export const LayerDown = (p: P) => <S {...p}><path d="M8 3v9.5M4 8.5l4 4 4-4" /></S>;
 export const ToBack = (p: P) => <S {...p}><rect x="2.5" y="2.5" width="8" height="8" rx="1" /><path d="M13.5 6.5v6a1 1 0 0 1-1 1h-6" strokeDasharray="1.6 1.8" /></S>;
+// Căn chỉnh và chia đều (T-68): vạch căn + hai khối.
+export const AlignLeft = (p: P) => <S {...p}><path d="M2.5 2v12" /><rect x="4.5" y="3.5" width="8" height="3" rx=".5" /><rect x="4.5" y="9.5" width="5" height="3" rx=".5" /></S>;
+export const AlignHCenter = (p: P) => <S {...p}><path d="M8 2v12" /><rect x="3.5" y="3.5" width="9" height="3" rx=".5" /><rect x="5" y="9.5" width="6" height="3" rx=".5" /></S>;
+export const AlignRight = (p: P) => <S {...p}><path d="M13.5 2v12" /><rect x="3.5" y="3.5" width="8" height="3" rx=".5" /><rect x="6.5" y="9.5" width="5" height="3" rx=".5" /></S>;
+export const AlignTop = (p: P) => <S {...p}><path d="M2 2.5h12" /><rect x="3.5" y="4.5" width="3" height="8" rx=".5" /><rect x="9.5" y="4.5" width="3" height="5" rx=".5" /></S>;
+export const AlignVCenter = (p: P) => <S {...p}><path d="M2 8h12" /><rect x="3.5" y="3.5" width="3" height="9" rx=".5" /><rect x="9.5" y="5" width="3" height="6" rx=".5" /></S>;
+export const AlignBottom = (p: P) => <S {...p}><path d="M2 13.5h12" /><rect x="3.5" y="3.5" width="3" height="8" rx=".5" /><rect x="9.5" y="6.5" width="3" height="5" rx=".5" /></S>;
+export const DistributeH = (p: P) => <S {...p}><path d="M2 2v12M14 2v12" /><rect x="6.5" y="4.5" width="3" height="7" rx=".5" /></S>;
+export const DistributeV = (p: P) => <S {...p}><path d="M2 2h12M2 14h12" /><rect x="4.5" y="6.5" width="7" height="3" rx=".5" /></S>;
+export const Duplicate = (p: P) => <S {...p}><rect x="5.5" y="5.5" width="8" height="8" rx="1" /><path d="M10.5 3.5v-1a.5.5 0 0 0-.5-.5H3a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .5.5h1" /></S>;
+export const Trash = (p: P) => <S {...p}><path d="M2.5 4h11M6 4V2.5h4V4M4 4l.7 9.5h6.6L12 4M6.75 6.5v4.5M9.25 6.5v4.5" /></S>;

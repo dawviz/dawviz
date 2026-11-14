@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-GRAPHICS-13: Biểu thức thuộc tính"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) > REQ-GRAPHICS-13: Biểu thức thuộc tính"
 chunk: req-graphics-13-bieu-thuc-thuoc-tinh.md
-source_lines: 867-869
-source_sha1: 45be2554f6
+source_lines: 877-879
+source_sha1: 46410b6da3
 ids: [REQ-GRAPHICS-13]
 ---
 #### REQ-GRAPHICS-13: Biểu thức thuộc tính

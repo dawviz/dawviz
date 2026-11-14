@@ -93,22 +93,26 @@
         "locales/en.json#web.keyboard.",
         "locales/en.json#web.playhead.",
         "apps/web/src/components/TextPanel.tsx",
-        "locales/en.json#web.text."
+        "locales/en.json#web.text.",
+        "apps/web/src/components/WidgetSettings.tsx",
+        "locales/en.json#web.ws."
       ],
-      "uiHash": "bb19b78ab541",
-      "viHash": "ef5486ffd8af",
-      "enHash": "321ec0b3eeec",
+      "uiHash": "36ec1bf9a6b8",
+      "viHash": "d03e31a51f2d",
+      "enHash": "0ccdc3305bc5",
       "coverHashes": {
-        "apps/web/src/components/Editor.tsx": "4cdba73981d0",
-        "apps/web/src/components/EditorOverlay.tsx": "44ab29a22a38",
+        "apps/web/src/components/Editor.tsx": "39355031b2ac",
+        "apps/web/src/components/EditorOverlay.tsx": "3f83719e6d7e",
         "apps/web/src/components/StylePanel.tsx": "739c0fb27805",
-        "locales/en.json#web.editor.": "9b9ac9ff358c",
+        "locales/en.json#web.editor.": "156fc45645ea",
         "locales/en.json#web.style.": "3f579d231537",
         "locales/en.json#web.glow.": "a02382b4889a",
         "locales/en.json#web.keyboard.": "e1b6968f1e6b",
         "locales/en.json#web.playhead.": "326a6b222302",
         "apps/web/src/components/TextPanel.tsx": "f5eec83fb1fe",
-        "locales/en.json#web.text.": "9409aadac6ce"
+        "locales/en.json#web.text.": "9409aadac6ce",
+        "apps/web/src/components/WidgetSettings.tsx": "b6442567f71b",
+        "locales/en.json#web.ws.": "5f5407c3d23a"
       }
     },
     "04-cai-dat": {
@@ -139,16 +143,18 @@
         "apps/web/src/lib/transportKeys.ts",
         "apps/web/src/lib/undoKeys.ts",
         "apps/web/src/components/EditorOverlay.tsx",
-        "apps/web/src/lib/numberInput.ts"
+        "apps/web/src/lib/numberInput.ts",
+        "apps/web/src/components/Editor.tsx"
       ],
-      "uiHash": "3dd229249e0f",
-      "viHash": "f2b4edb614d1",
-      "enHash": "223749f8cecb",
+      "uiHash": "7048a44959dd",
+      "viHash": "62c4e1b5e95b",
+      "enHash": "eccee6bbbaf1",
       "coverHashes": {
         "apps/web/src/lib/transportKeys.ts": "3c74099d457e",
         "apps/web/src/lib/undoKeys.ts": "07c2c99f5cf4",
-        "apps/web/src/components/EditorOverlay.tsx": "44ab29a22a38",
-        "apps/web/src/lib/numberInput.ts": "8e27c53523c3"
+        "apps/web/src/components/EditorOverlay.tsx": "3f83719e6d7e",
+        "apps/web/src/lib/numberInput.ts": "8e27c53523c3",
+        "apps/web/src/components/Editor.tsx": "39355031b2ac"
       }
     }
   }

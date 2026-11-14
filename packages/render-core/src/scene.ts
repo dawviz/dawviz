@@ -94,6 +94,41 @@ export function pianoRollWidget(layout: Omit<WidgetLayout, 'anchor'> & { anchor?
   return { id, type: 'PIANO_ROLL', zIndex: 10, visible: true, layout: { ...layout, anchor: { ...(layout.anchor ?? DEFAULT_ANCHOR) } }, trackMappingMode: 'ALL', assignedTrackIndices: [],
     properties: { ...clonePiano(DEFAULT_PIANO_ROLL), ...props } };
 }
+/** Loại widget người dùng thêm được từ Editor (có renderer). AUDIO_SPECTRUM chờ T-53. */
+export const ADDABLE_WIDGETS = ['PIANO_ROLL', 'TRACK_INFO', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'PROGRESS_BAR'] as const satisfies readonly WidgetType[];
+const HUD_DEFAULTS: Record<string, unknown> = {
+  TRACK_INFO: DEFAULT_TRACK_INFO, EVENT_COUNTER: DEFAULT_EVENT_COUNTER, LIVE_TRIGGER: DEFAULT_LIVE_TRIGGER,
+  TIME_BAR: DEFAULT_TIME_BAR, CHORD_DETECTION: DEFAULT_CHORD, PROGRESS_BAR: DEFAULT_PROGRESS_BAR,
+};
+/** Cỡ mặc định khi thêm (tỉ lệ theo khung, hoặc pt cố định), kẹp trong khung. */
+const NEW_SIZE: Record<string, (W: number, H: number) => [number, number]> = {
+  PIANO_ROLL: (W, H) => [W * 0.6, H * 0.4], TRACK_INFO: (W) => [W * 0.5, 130], EVENT_COUNTER: () => [480, 120], LIVE_TRIGGER: () => [480, 60],
+  TIME_BAR: () => [320, 100], CHORD_DETECTION: () => [400, 100], PROGRESS_BAR: (W) => [W * 0.8, 24],
+};
+/** Id mới không trùng trong scene: `<loại>-<n>`. */
+export function newWidgetId(scene: SceneDocument, type: WidgetType): string {
+  const base = type.toLowerCase().replace(/_/g, '-'), ids = new Set(scene.widgets.map((w) => w.id));
+  let n = 1; while (ids.has(`${base}-${n}`)) n++;
+  return `${base}-${n}`;
+}
+/** Widget mới với thuộc tính mặc định, đặt giữa khung (hoặc quanh `center`), nằm trên cùng (T-68: thêm widget từ Editor). */
+export function createWidget(scene: SceneDocument, type: WidgetType, center?: { x: number; y: number }): WidgetSpec {
+  const { designWidth: W, designHeight: H } = scene.canvas;
+  const [w0, h0] = (NEW_SIZE[type] ?? (() => [400, 120]))(W, H);
+  const w = Math.round(Math.min(W, w0)), h = Math.round(Math.min(H, h0));
+  const cx = center?.x ?? W / 2, cy = center?.y ?? H / 2;
+  const layout = { x: Math.round(Math.min(W - w, Math.max(0, cx - w / 2))), y: Math.round(Math.min(H - h, Math.max(0, cy - h / 2))), width: w, height: h, rotation: 0 };
+  const id = newWidgetId(scene, type);
+  const zIndex = scene.widgets.reduce((m, x) => Math.max(m, x.zIndex), 0) + 1;
+  if (type === 'PIANO_ROLL') return { ...pianoRollWidget(layout, {}, id), zIndex };
+  return { id, type, zIndex, visible: true, layout: { ...layout, anchor: { ...DEFAULT_ANCHOR } }, trackMappingMode: 'ALL', assignedTrackIndices: [],
+    properties: JSON.parse(JSON.stringify(HUD_DEFAULTS[type] ?? {})) };
+}
+/** Bản sao của widget (nhân bản): id mới, dời `offset` pt, nằm ngay trên bản gốc. */
+export function duplicateWidget(scene: SceneDocument, w: WidgetSpec, offset = 16): WidgetSpec {
+  return { ...JSON.parse(JSON.stringify(w)), id: newWidgetId(scene, w.type), zIndex: scene.widgets.reduce((m, x) => Math.max(m, x.zIndex), 0) + 1,
+    layout: { ...w.layout, anchor: { ...w.layout.anchor }, x: w.layout.x + offset, y: w.layout.y + offset } };
+}
 /** Bản sao sâu của bộ kiểu chữ (sửa kiểu trong một scene không đụng bộ mặc định đã đóng băng). */
 export const cloneTextStyles = (set: TextStyleSet): Record<string, NamedTextStyle> => Object.fromEntries(Object.entries(set).map(([k, v]) => [k, cloneStyle(v)]));
 const clonePiano = (p: PianoRollProps): PianoRollProps => ({ ...p, noteStyle: { base: { ...p.noteStyle.base }, tracks: { ...p.noteStyle.tracks } }, keyboard: { ...p.keyboard } });

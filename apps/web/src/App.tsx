@@ -5,7 +5,7 @@
 // nên thành phần này không vẽ lại mỗi khung hình. Không có logic vẽ ở đây: khung hình = renderFrame của Render Core.
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { LayoutGroup, MotionConfig } from 'framer-motion';
-import { DEFAULT_BRIGHTNESS, DEFAULT_KEYBOARD_STYLE, defaultStyleConfig, sanitizeBrightness, buildIndex, buildSceneHud, type Derived, type SceneDocument, type BrightnessConfig, type NoteStyle, type StyleConfig, type KeyboardStyle, type UnifiedProjectAST, type WidgetSpec, DEFAULT_TEXT_STYLES } from '@dawviz/render-core';
+import { DEFAULT_BRIGHTNESS, DEFAULT_KEYBOARD_STYLE, defaultStyleConfig, sanitizeBrightness, buildIndex, buildSceneHud, type Derived, type SceneDocument, type BrightnessConfig, type NoteStyle, type StyleConfig, type KeyboardStyle, type UnifiedProjectAST, type WidgetSpec, DEFAULT_TEXT_STYLES, createWidget, duplicateWidget, DEFAULT_CHORD, DEFAULT_EVENT_COUNTER, DEFAULT_LIVE_TRIGGER, DEFAULT_PROGRESS_BAR, DEFAULT_TIME_BAR } from '@dawviz/render-core';
 import type { ParseWarning } from '@dawviz/parser';
 import { useI18n } from './i18n/I18nProvider.tsx';
 import { LanguageSelect } from './components/LanguageSelect.tsx';
@@ -18,6 +18,7 @@ import { Transport } from './components/Transport.tsx';
 import { TrackPanel, TrackLayoutBar, DEFAULT_TRACK_LAYOUT, isShown, type TrackLayout } from './components/TrackPanel.tsx';
 import { ADVANCED_STYLE_KEYS, StylePanel } from './components/StylePanel.tsx';
 import { TextPanel } from './components/TextPanel.tsx';
+import { ADVANCED_WIDGET_KEYS, WidgetSettings, hasWidgetSettings } from './components/WidgetSettings.tsx';
 import { textSlots } from './lib/textRef.ts';
 import { VideoStyles, isEdited } from './components/VideoStyles.tsx';
 import { PresetSettings } from './components/PresetSettings.tsx';
@@ -269,7 +270,14 @@ export function App() {
     z: (id, where) => run((d) => Cmds.reorderZ(d, id, where)),
     moveLayer: (id, to) => run((d) => Cmds.moveLayer(d, id, to)),
     snapping: (p) => run((d) => Cmds.patchSnapping(d, p)),
-  }), [run]);
+    add: (type) => { const w = createWidget(store.get().scene, type); run((d) => Cmds.addWidget(d, w)); return w.id; },
+    duplicate: (ids) => {
+      let sc = store.get().scene; const out: WidgetSpec[] = [];
+      for (const id of ids) { const w = sc.widgets.find((x) => x.id === id); if (!w) continue; const c = duplicateWidget(sc, w); out.push(c); sc = { ...sc, widgets: [...sc.widgets, c] }; }
+      run((d) => Cmds.addWidgets(d, out)); return out.map((w) => w.id);
+    },
+    remove: (ids) => run((d) => Cmds.removeWidgets(d, ids)),
+  }), [run, store]);
 
   // Lane automation có trong dự án (nguồn phát sáng "automation", REQ-GRAPHICS-17).
   const lanes = useMemo(() => [...new Set((loaded?.ast.tracks ?? []).flatMap((tr) => Object.entries(tr.automation ?? {}).filter(([, l]) => l?.points.length).map(([k]) => k)))], [loaded]);
@@ -330,6 +338,18 @@ export function App() {
           onRef={(field, next, path) => run((d) => Cmds.patchTextRef(d, w.id, field, next, path))}
           onStyles={(set, field, r, kind) => run((d) => Cmds.setTextStyles(d, set, w.id, field, r, kind))}
           onProps={(patch) => run((d) => Cmds.patchWidgetProps(d, w.id, patch))} />
+      </InspectorSection>
+    );
+  };
+  // Mục "Thiết lập" (T-68): thuộc tính riêng của widget chữ. "Đã chỉnh nâng cao" = thuộc tính chỉ có ở Nâng cao khác mặc định.
+  const WIDGET_DEFAULTS: Record<string, Record<string, unknown>> = { EVENT_COUNTER: DEFAULT_EVENT_COUNTER as never, LIVE_TRIGGER: DEFAULT_LIVE_TRIGGER as never, TIME_BAR: DEFAULT_TIME_BAR as never, CHORD_DETECTION: DEFAULT_CHORD as never, PROGRESS_BAR: DEFAULT_PROGRESS_BAR as never };
+  const settingsSection = (w: WidgetSpec, n: number, locked = false) => {
+    if (!hasWidgetSettings(w.type)) return null;
+    const P = w.properties as Record<string, unknown>, D = WIDGET_DEFAULTS[w.type] ?? {};
+    const edited = (ADVANCED_WIDGET_KEYS[w.type] ?? []).some((k) => JSON.stringify(P[k]) !== JSON.stringify(D[k]));
+    return (
+      <InspectorSection key="settings" n={n} id="settings" title={i18n.t('web.section.settings')} more={more('settings', edited)}>
+        <WidgetSettings widget={w} advanced={showAdv('settings')} disabled={locked} onProps={(patch) => run((d) => Cmds.patchWidgetProps(d, w.id, patch))} />
       </InspectorSection>
     );
   };
@@ -404,7 +424,7 @@ export function App() {
         <div role="tabpanel" id="panel-editor" aria-labelledby="tab-editor" hidden={tab !== 'editor'} className="h-full">
           <Editor scene={scene} derived={derived} ast={renderAst} playback={playback} fonts={fonts} advanced={advanced} actions={editorActions} active={tab === 'editor'}
             layoutRef={doc.layoutRef}
-            widgetSections={(w, n, lk) => (w.type === 'PIANO_ROLL' ? (w.id === piano?.id ? lookSection(n) : null) : textSection(w, n, lk))}
+            widgetSections={(w, n, lk) => (w.type === 'PIANO_ROLL' ? [w.id === piano?.id ? lookSection(n) : null] : hasWidgetSettings(w.type) ? [settingsSection(w, n, lk), textSection(w, n + 1, lk)] : [textSection(w, n, lk)])}
             transport={loaded ? <Transport playback={playback} duration={playDuration} offsetMs={offsetMs} wave={audio && peaks ? { peaks, durationSec: audio.durationSec } : null} /> : undefined} />
         </div>
         <div role="tabpanel" id="panel-settings" aria-labelledby="tab-settings" hidden={tab !== 'settings'} className="h-full overflow-y-auto bg-page">

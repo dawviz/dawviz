@@ -6,7 +6,7 @@ import { useContext, useMemo, useRef, useState, type KeyboardEvent, type Pointer
 import { rotateGroup, rotatedBounds, snap, snapAngle, toWidgetLocal, type Guide, type SceneDocument, type Spacing, type WidgetLayout } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { GestureContext } from '../lib/storeReact.ts';
-import { HANDLES, hitTest, pointerAngle, round, setAnchor, snapResize, toCanvas, type Handle } from '../lib/editorGeometry.ts';
+import { HANDLES, hitTest, marqueeHits, pointerAngle, round, setAnchor, snapResize, toCanvas, type Handle } from '../lib/editorGeometry.ts';
 
 type Patches = Record<string, Partial<WidgetLayout>>;
 interface Props {
@@ -27,7 +27,9 @@ type Drag =
   | { kind: 'move'; p0: Pt; primary: string; starts: Record<string, WidgetLayout>; moved: boolean }
   | { kind: 'resize'; handle: Handle; id: string; start: WidgetLayout }
   | { kind: 'rotate'; ids: string[]; starts: Record<string, WidgetLayout>; pivot: [number, number]; a0: number }
-  | { kind: 'anchor'; id: string; start: WidgetLayout };
+  | { kind: 'anchor'; id: string; start: WidgetLayout }
+  /** Khung chọn (T-68): kéo trên chỗ trống; Shift cộng thêm vào vùng chọn đang có. Chỉ đổi vùng chọn, không vào lịch sử. */
+  | { kind: 'marquee'; p0: Pt; base: string[] };
 type Pt = { x: number; y: number };
 
 /** Chip số đo nằm trên khung video (luôn theo preset, thường trắng) nên dùng màu cố định như đường gióng, không theo theme app:
@@ -49,6 +51,7 @@ export function EditorOverlay({ scene, cssWidth, selected, locked, onSelect, onL
   const [hover, setHover] = useState<string | null>(null);
   const [guides, setGuides] = useState<{ g: Guide[]; s: Spacing[] }>({ g: [], s: [] });
   const [active, setActive] = useState<Drag['kind'] | null>(null);
+  const [box, setBox] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
   const { designWidth: W, designHeight: H, snapping } = scene.canvas;
   const k = cssWidth > 0 ? W / cssWidth : 1; // pt trên mỗi px màn hình
   const byId = useMemo(() => new Map(scene.widgets.map((w) => [w.id, w])), [scene.widgets]);
@@ -79,7 +82,11 @@ export function EditorOverlay({ scene, cssWidth, selected, locked, onSelect, onL
     if (handle === 'anchor' && single && advanced) { begin({ kind: 'anchor', id: single.id, start: single.layout }, e); return; }
     if (handle && single) { begin({ kind: 'resize', handle: handle as Handle, id: single.id, start: single.layout }, e); return; }
     const hit = hitTest(scene.widgets, p, locked);
-    if (!hit) { if (!e.shiftKey) onSelect([]); return; }
+    if (!hit) {
+      if (!e.shiftKey) onSelect([]);
+      drag.current = { kind: 'marquee', p0: p, base: e.shiftKey ? [...selected] : [] }; setActive('marquee'); setBox(null);
+      svg.current?.setPointerCapture(e.pointerId); return;
+    }
     if (e.shiftKey) { onSelect(selected.includes(hit.id) ? selected.filter((x) => x !== hit.id) : [...selected, hit.id]); return; }
     const ids = selected.includes(hit.id) ? selected.filter((id) => !locked.has(id)) : [hit.id];
     if (!selected.includes(hit.id)) onSelect(ids);
@@ -89,6 +96,14 @@ export function EditorOverlay({ scene, cssWidth, selected, locked, onSelect, onL
   const onMove = (e: PointerEvent<SVGSVGElement>) => {
     const p = toPt(e), d = drag.current;
     if (!d) { const h = hitTest(scene.widgets, p, locked); setHover(h ? h.id : null); return; }
+    if (d.kind === 'marquee') {
+      const r = { x: Math.min(d.p0.x, p.x), y: Math.min(d.p0.y, p.y), width: Math.abs(p.x - d.p0.x), height: Math.abs(p.y - d.p0.y) };
+      if (r.width < 3 * k && r.height < 3 * k) return;
+      setBox(r);
+      const hits = marqueeHits(scene.widgets, r, locked);
+      onSelect([...new Set([...d.base, ...hits])]);
+      return;
+    }
     if (d.kind === 'move') {
       if (!d.moved && Math.hypot(p.x - d.p0.x, p.y - d.p0.y) < 3 * k) return; // nhấp không phải kéo
       d.moved = true;
@@ -129,8 +144,9 @@ export function EditorOverlay({ scene, cssWidth, selected, locked, onSelect, onL
 
   const end = () => {
     if (!drag.current) return;
-    drag.current = null; setActive(null); setGuides({ g: [], s: [] });
-    gesture.end();
+    const wasMarquee = drag.current.kind === 'marquee';
+    drag.current = null; setActive(null); setGuides({ g: [], s: [] }); setBox(null);
+    if (!wasMarquee) gesture.end();
   };
 
   // Bàn phím: mũi tên dịch 1 pt (Shift 10 pt), Esc bỏ chọn. Các lần bấm liên tiếp gộp thành một bước (MERGE_WINDOW_MS của store).
@@ -169,6 +185,7 @@ export function EditorOverlay({ scene, cssWidth, selected, locked, onSelect, onL
             return <rect key={w.id} transform={transform(w.layout)} width={w.layout.width} height={w.layout.height}
               strokeOpacity={hot ? 0.9 : lk ? 0.2 : 0.3} strokeWidth={hot ? 1.5 : 1} strokeDasharray={hot || lk ? undefined : '1 3'} strokeLinecap="round" vectorEffect="non-scaling-stroke" pointerEvents="none" />;
           })}
+          {box && <rect x={box.x} y={box.y} width={box.width} height={box.height} fill="rgb(var(--guide))" fillOpacity={0.08} strokeDasharray="3 3" vectorEffect="non-scaling-stroke" pointerEvents="none" data-testid="marquee" />}
           {groupBox && <rect x={groupBox.x} y={groupBox.y} width={groupBox.width} height={groupBox.height} strokeDasharray="4 3" vectorEffect="non-scaling-stroke" pointerEvents="none" />}
           {sel.map((w) => <rect key={w.id} transform={transform(w.layout)} width={w.layout.width} height={w.layout.height} strokeWidth={1.5} vectorEffect="non-scaling-stroke" pointerEvents="none" />)}
           {guides.g.map((g, i) => g.axis === 'x'

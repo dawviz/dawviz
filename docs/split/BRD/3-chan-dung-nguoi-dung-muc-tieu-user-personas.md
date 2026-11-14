@@ -4,8 +4,8 @@ doc_title: "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT
 section: "3. CHÂN DUNG NGƯỜI DÙNG MỤC TIÊU (USER PERSONAS)"
 path: "3. CHÂN DUNG NGƯỜI DÙNG MỤC TIÊU (USER PERSONAS)"
 chunk: 3-chan-dung-nguoi-dung-muc-tieu-user-personas.md
-source_lines: 83-102
-source_sha1: 3a2d7bb414
+source_lines: 84-103
+source_sha1: a19d8dcb70
 ids: [D-19]
 ---
 ## 3. CHÂN DUNG NGƯỜI DÙNG MỤC TIÊU (USER PERSONAS)

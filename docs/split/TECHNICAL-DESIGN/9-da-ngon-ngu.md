@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "9. Đa ngôn ngữ 🟢"
 path: "9. Đa ngôn ngữ 🟢"
 chunk: 9-da-ngon-ngu.md
-source_lines: 409-411
-source_sha1: ce30ea1fc1
+source_lines: 416-418
+source_sha1: ba7b039c7b
 ids: []
 ---
 ## 9. Đa ngôn ngữ 🟢

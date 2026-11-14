@@ -55,3 +55,21 @@ test('id kiểu mới từ tên: bỏ dấu, không trùng', () => {
   assert.equal(newStyleId(DEFAULT_TEXT_STYLES, 'Title'), 'title-2');
   assert.equal(newStyleId(DEFAULT_TEXT_STYLES, '123'), 'style');
 });
+
+test('T-68: thêm/nhân bản/xoá widget là lệnh hoàn tác; xoá rồi hoàn tác trả đúng thứ tự', async () => {
+  const { createWidget, duplicateWidget } = await import('@dawviz/render-core');
+  const { addWidget, addWidgets, removeWidgets } = await import('./commands.ts');
+  const d = initialDoc('paper');
+  const w = createWidget(d.scene, 'CHORD_DETECTION');
+  const d1 = addWidget(d, w)!.redo(d);
+  assert.equal(d1.scene.widgets.at(-1)!.id, w.id);
+  const c = duplicateWidget(d1.scene, w);
+  const d2 = addWidgets(d1, [c])!.redo(d1);
+  assert.equal(d2.scene.widgets.length, d.scene.widgets.length + 2);
+  const ids = d2.scene.widgets.map((x) => x.id);
+  const rm = removeWidgets(d2, [ids[1], c.id])!;
+  const d3 = rm.redo(d2);
+  assert.ok(!d3.scene.widgets.some((x) => x.id === ids[1] || x.id === c.id));
+  assert.deepEqual(rm.undo(d3).scene.widgets.map((x) => x.id), ids);
+  assert.equal(removeWidgets(d, ['nope']), null);
+});

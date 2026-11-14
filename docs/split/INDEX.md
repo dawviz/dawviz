@@ -4,7 +4,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 
 ## BRD.md — TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)
 
-- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 4599 ký tự
+- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 4828 ký tự
 - [1. THÔNG TIN CHUNG & BỐI CẢNH DỰ ÁN](BRD/1-thong-tin-chung-boi-canh-du-an.md) · 1753 ký tự
 - [2. MỤC TIÊU KINH DOANH, CHỈ SỐ ĐO LƯỜNG & YÊU CẦU NGHIỆP VỤ](BRD/2-muc-tieu-kinh-doanh-chi-so-do-luong-yeu-cau-ng.md) · 4778 ký tự
 - [3. CHÂN DUNG NGƯỜI DÙNG MỤC TIÊU (USER PERSONAS)](BRD/3-chan-dung-nguoi-dung-muc-tieu-user-personas.md) · 1342 ký tự
@@ -14,13 +14,13 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1215 ký tự
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4347 ký tự
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](BRD/6-gia-dinh-assumptions.md) · 554 ký tự
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 24311 ký tự
-- [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](BRD/8-cac-van-de-con-mo-open-issues.md) · 4634 ký tự
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 25016 ký tự
+- [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](BRD/8-cac-van-de-con-mo-open-issues.md) · 5029 ký tự
 
 ## SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
 - [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 422 ký tự
-- [Lịch sử phiên bản](SRS/lich-su-phien-ban.md) · 8709 ký tự
+- [Lịch sử phiên bản](SRS/lich-su-phien-ban.md) · 8906 ký tự
 - [Quy ước trong tài liệu](SRS/quy-uoc-trong-tai-lieu.md) · 818 ký tự
 - [Mục lục](SRS/muc-luc.md) · 365 ký tự
 - [1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG](SRS/1-gioi-thieu-muc-tieu-he-thong.md) · 4720 ký tự
@@ -51,11 +51,12 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [REQ-GRAPHICS-05: Render Core dùng chung (ARC-01, D-20)](SRS/req-graphics-05-render-core-dung-chung-arc-01-d.md) · 1021 ký tự
 - [REQ-GRAPHICS-17: Phát sáng động khi chạm (D-50, 1.0)](SRS/req-graphics-17-phat-sang-dong-khi-cham-d-50-1-0.md) · 2766 ký tự
 - [REQ-GRAPHICS-18: Kiểu chữ cho mọi chữ trong video (D-58)](SRS/req-graphics-18-kieu-chu-cho-moi-chu-trong-video.md) · 5095 ký tự
+- [REQ-GRAPHICS-19: Ô chữ người dùng thêm và chỗ giữ dùng chung (D-60; đã chốt hướng, chưa làm)](SRS/req-graphics-19-o-chu-nguoi-dung-them-va-cho-giu.md) · 1710 ký tự
 - [REQ-AST-02: Automation tổng quát (D-50; 1.0 cho Reaper track + MIDI CC, các nguồn khác theo tệp mẫu)](SRS/req-ast-02-automation-tong-quat-d-50-1-0-cho-rea.md) · 2214 ký tự
 - [3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04)](SRS/3-4-dac-ta-8-widget-hud-br-02-br-03-br-04.md) · 368 ký tự
 - [REQ-WIDGET-01: Piano Roll](SRS/req-widget-01-piano-roll.md) · 1411 ký tự
 - [REQ-WIDGET-02: Track Info](SRS/req-widget-02-track-info.md) · 1101 ký tự
-- [REQ-WIDGET-03: Event Counter](SRS/req-widget-03-event-counter.md) · 1126 ký tự
+- [REQ-WIDGET-03: Event Counter](SRS/req-widget-03-event-counter.md) · 1199 ký tự
 - [REQ-WIDGET-04: Live Note Trigger](SRS/req-widget-04-live-note-trigger.md) · 935 ký tự
 - [REQ-WIDGET-05: Time & Bar Counter](SRS/req-widget-05-time-bar-counter.md) · 1520 ký tự
 - [REQ-WIDGET-06: Chord Detection (D-09)](SRS/req-widget-06-chord-detection-d-09.md) · 2250 ký tự
@@ -138,7 +139,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [6.2.8 Kiểm thử (thuần, không cần trình duyệt)](TECHNICAL-DESIGN/6-2-8-kiem-thu-thuan-khong-can-trinh-duyet.md) · 1014 ký tự
 - [6.2.9 Quyết định đã duyệt](TECHNICAL-DESIGN/6-2-9-quyet-dinh-da-duyet.md) · 672 ký tự
 - [6.3 Danh sách track 🟢](TECHNICAL-DESIGN/6-3-danh-sach-track.md) · 1860 ký tự
-- [6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)](TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) · 16918 ký tự
+- [6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)](TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) · 18818 ký tự
 - [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở)](TECHNICAL-DESIGN/7-duong-ong-xuat-video-m3-spike-1-la-co-so.md) · 2020 ký tự
 - [8. Lưu trữ ⚪ (M4)](TECHNICAL-DESIGN/8-luu-tru-m4.md) · 1035 ký tự
 - [9. Đa ngôn ngữ 🟢](TECHNICAL-DESIGN/9-da-ngon-ngu.md) · 492 ký tự
@@ -152,7 +153,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 
 - [TÀI LIỆU THIẾT KẾ KIỂM THỬ (TDD = Test Design Document) — ỨNG DỤNG DAW VISUALIZER (mở đầu)](TDD/tai-lieu-thiet-ke-kiem-thu-tdd-test-design-docum.md) · 810 ký tự
 - [1. Chiến lược](TDD/1-chien-luoc.md) · 1005 ký tự
-- [2. Danh mục test mới](TDD/2-danh-muc-test-moi.md) · 2669 ký tự
+- [2. Danh mục test mới](TDD/2-danh-muc-test-moi.md) · 3229 ký tự
 - [3. Ma trận truy vết](TDD/3-ma-tran-truy-vet.md) · 542 ký tự
 - [4. Khoảng trống đã biết](TDD/4-khoang-trong-da-biet.md) · 442 ký tự
 - [5. Danh sách kiểm thủ công cho AT-18 (Chrome)](TDD/5-danh-sach-kiem-thu-cong-cho-at-18-chrome.md) · 4128 ký tự

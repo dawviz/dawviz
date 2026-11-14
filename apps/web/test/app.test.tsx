@@ -491,4 +491,32 @@ describe('thẻ Editor (T-68)', () => {
     fireEvent.click(layerBtn(/Title|Tên bài/));
     expect(props.querySelector('[data-testid="style-panel"]')).toBeNull();
   });
+  it('T-68: thêm widget từ menu (được chọn ngay), nhân bản Ctrl+D, xoá bằng Delete, hoàn tác trả lại; mục Thiết lập và Chữ đứng sau Vị trí', async () => {
+    await openProject();
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    const count = () => screen.getByTestId('layers').querySelectorAll('li').length;
+    const n0 = count();
+    fireEvent.click(screen.getByTestId('layers-add'));
+    fireEvent.click(screen.getByRole('menuitem', { name: /^(Chord|Hợp âm)$/ }));
+    expect(count()).toBe(n0 + 1);
+    expect(screen.getByTestId('editor-selected').textContent).toMatch(/(Chord|Hợp âm) 2/);
+    const ids = [...screen.getByTestId('editor-props').querySelectorAll('section')].map((x) => x.getAttribute('data-testid'));
+    expect(ids.slice(0, 3)).toEqual(['section-transform', 'section-settings', 'section-text']);
+    fireEvent.click(screen.getByTestId('ws-always-notes').querySelector('input')!);
+    expect(undoBtn()).toBeEnabled();
+    fireEvent.keyDown(screen.getByTestId('editor'), { key: 'd', code: 'KeyD', ctrlKey: true });
+    expect(count()).toBe(n0 + 2);
+    fireEvent.keyDown(screen.getByTestId('editor'), { key: 'Delete' });
+    expect(count()).toBe(n0 + 1);
+    ctrlZ(); await waitFor(() => expect(count()).toBe(n0 + 2));
+  });
+  it('T-68: chọn nhiều widget có mục Căn chỉnh; căn trái đưa mọi widget về cùng mép', async () => {
+    await openProject();
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    fireEvent.click(layerBtn(/Chord|Hợp âm/));
+    fireEvent.click(layerBtn(/Time|Thời gian/), { shiftKey: true });
+    fireEvent.click(screen.getByTestId('align-left'));
+    expect(undoBtn().title).toMatch(/Move 2|Dời 2|2/);
+    expect(screen.getByTestId('distribute-x')).toBeDisabled(); // cần ít nhất 3 widget
+  });
 });

@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "2.1. Kiến trúc phân tầng hệ thống"
 path: "2. KIẾN TRÚC KỸ THUẬT, LUỒNG DỮ LIỆU & ĐÁNH GIÁ KIẾN TRÚC > 2.1. Kiến trúc phân tầng hệ thống"
 chunk: 2-1-kien-truc-phan-tang-he-thong.md
-source_lines: 113-190
-source_sha1: 45be2554f6
+source_lines: 114-191
+source_sha1: 46410b6da3
 ids: [ARC-01, ARC-02, ARC-04, D-04, D-05, D-06, D-07, D-08, D-09, D-10, D-11, D-28]
 ---
 ### 2.1. Kiến trúc phân tầng hệ thống

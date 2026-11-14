@@ -105,3 +105,35 @@ test('snapResize: xoay 90° vẫn hút đúng trục khung; góc xiên thì khô
   const tilted = snapResize({ ...s, rotation: 30 }, 'e', { x: 700, y: 400 }, {}, SNAP);
   assert.equal(tilted.guides.length, 0);
 });
+
+// ── T-68: căn chỉnh, chia đều, khung chọn ──
+import { alignLayouts, distributeLayouts, marqueeHits } from './editorGeometry.ts';
+import { rotatedBounds } from '@dawviz/render-core';
+const box = (x: number, y: number, w: number, h: number, rotation = 0): WidgetLayout => ({ x, y, width: w, height: h, rotation, anchor: { x: 0.5, y: 0.5 } });
+
+test('căn chỉnh: nhiều widget theo khung bao chung (kể cả widget xoay, theo khung bao đã xoay); một widget theo khung video', () => {
+  const items = [{ id: 'a', layout: box(100, 100, 200, 50) }, { id: 'b', layout: box(400, 300, 100, 100) }, { id: 'c', layout: box(250, 500, 100, 40, 90) }];
+  const left = alignLayouts(items, 'left', { width: 1080, height: 1080 });
+  for (const it of items) near(rotatedBounds({ ...it.layout, ...left[it.id] }).x, 100, `left ${it.id}`, 0.5);
+  const right = alignLayouts(items, 'right', { width: 1080, height: 1080 });
+  for (const it of items) near(rotatedBounds({ ...it.layout, ...right[it.id] }).x + rotatedBounds(it.layout).width, 500, `right ${it.id}`, 0.5);
+  const mid = alignLayouts([items[0]], 'vcenter', { width: 1080, height: 1080 });
+  assert.deepEqual(mid.a, { x: 100, y: 515 });
+  assert.deepEqual(alignLayouts([items[0]], 'hcenter', { width: 1080, height: 1080 }).a, { x: 440, y: 100 });
+});
+
+test('chia đều: hai widget ngoài cùng đứng yên, khoảng trống giữa các widget bằng nhau; dưới 3 widget thì không làm gì', () => {
+  const items = [{ id: 'a', layout: box(0, 0, 100, 20) }, { id: 'b', layout: box(130, 0, 50, 20) }, { id: 'c', layout: box(500, 0, 100, 20) }, { id: 'd', layout: box(260, 0, 150, 20) }];
+  const out = distributeLayouts(items, 'x');
+  assert.deepEqual(Object.keys(out).sort(), ['b', 'd']);
+  const xs = items.map((it) => ({ ...it.layout, ...(out[it.id] ?? {}) })).sort((p, q) => p.x - q.x);
+  const gaps = xs.slice(1).map((l, i) => l.x - (xs[i].x + xs[i].width));
+  for (const g of gaps) near(g, gaps[0], 'gap', 1);
+  assert.deepEqual(distributeLayouts(items.slice(0, 2), 'x'), {});
+});
+
+test('khung chọn: chọn widget hiện, không khoá, có khung bao giao với khung kéo', () => {
+  const ws = [{ id: 'a', visible: true, layout: box(0, 0, 100, 100) }, { id: 'b', visible: false, layout: box(10, 10, 50, 50) }, { id: 'c', visible: true, layout: box(300, 300, 50, 50) }, { id: 'd', visible: true, layout: box(20, 20, 10, 10) }];
+  assert.deepEqual(marqueeHits(ws, { x: 50, y: 50, width: 10, height: 10 }, new Set()), ['a']);
+  assert.deepEqual(marqueeHits(ws, { x: 0, y: 0, width: 400, height: 400 }, new Set(['d'])), ['a', 'c']);
+});

@@ -5,7 +5,7 @@ section: "6.2.4 Phát / dừng / tua / lặp / về đầu"
 path: "6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.4 Phát / dừng / tua / lặp / về đầu"
 chunk: 6-2-4-phat-dung-tua-lap-ve-dau.md
 source_lines: 270-277
-source_sha1: ce30ea1fc1
+source_sha1: ba7b039c7b
 ids: [REQ-UI-03]
 ---
 #### 6.2.4 Phát / dừng / tua / lặp / về đầu

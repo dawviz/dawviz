@@ -159,3 +159,55 @@ export function intoFrame(l: WidgetLayout, W: number, H: number): { x: number; y
   const fit = (lo: number, size: number, max: number) => (size >= max ? -lo : lo < 0 ? -lo : lo + size > max ? max - size - lo : 0);
   return { x: Math.round(l.x + fit(b.x, b.width, W)), y: Math.round(l.y + fit(b.y, b.height, H)) };
 }
+
+// ── căn chỉnh và chia đều (T-68) ──
+export type AlignMode = 'left' | 'hcenter' | 'right' | 'top' | 'vcenter' | 'bottom';
+type Box = { x: number; y: number; width: number; height: number };
+const union = (bs: Box[]): Box => {
+  const x = Math.min(...bs.map((b) => b.x)), y = Math.min(...bs.map((b) => b.y));
+  return { x, y, width: Math.max(...bs.map((b) => b.x + b.width)) - x, height: Math.max(...bs.map((b) => b.y + b.height)) - y };
+};
+/**
+ * Căn theo khung bao (đã xoay) của từng widget. Nhiều widget: căn theo khung bao chung của vùng chọn; một widget: căn theo khung video
+ * (như Figma/Illustrator). Trả độ dời {x, y} mới cho từng id; không đổi cỡ, góc hay neo.
+ */
+export function alignLayouts(items: { id: string; layout: WidgetLayout }[], mode: AlignMode, frame: { width: number; height: number }): Record<string, { x: number; y: number }> {
+  if (!items.length) return {};
+  const bs = items.map((it) => rotatedBounds(it.layout));
+  const ref: Box = items.length === 1 ? { x: 0, y: 0, ...frame } : union(bs);
+  return Object.fromEntries(items.map((it, i) => {
+    const b = bs[i]; let dx = 0, dy = 0;
+    if (mode === 'left') dx = ref.x - b.x;
+    else if (mode === 'right') dx = ref.x + ref.width - (b.x + b.width);
+    else if (mode === 'hcenter') dx = ref.x + ref.width / 2 - (b.x + b.width / 2);
+    else if (mode === 'top') dy = ref.y - b.y;
+    else if (mode === 'bottom') dy = ref.y + ref.height - (b.y + b.height);
+    else dy = ref.y + ref.height / 2 - (b.y + b.height / 2);
+    return [it.id, { x: Math.round(it.layout.x + dx), y: Math.round(it.layout.y + dy) }];
+  }));
+}
+/** Chia đều khoảng trống giữa các widget theo trục (cần ≥ 3): hai widget ngoài cùng đứng yên, các widget giữa dời cho khoảng cách bằng nhau. */
+export function distributeLayouts(items: { id: string; layout: WidgetLayout }[], axis: 'x' | 'y'): Record<string, { x: number; y: number }> {
+  if (items.length < 3) return {};
+  const sz = axis === 'x' ? 'width' : 'height';
+  const rows = items.map((it) => ({ it, b: rotatedBounds(it.layout) })).sort((a, b) => a.b[axis] - b.b[axis] || a.it.id.localeCompare(b.it.id));
+  const first = rows[0].b, last = rows[rows.length - 1].b;
+  const span = last[axis] + last[sz] - first[axis], used = rows.reduce((s, r) => s + r.b[sz], 0);
+  const gap = (span - used) / (rows.length - 1);
+  let pos = first[axis] + first[sz] + gap;
+  const out: Record<string, { x: number; y: number }> = {};
+  for (const r of rows.slice(1, -1)) {
+    const d = pos - r.b[axis];
+    out[r.it.id] = { x: Math.round(r.it.layout.x + (axis === 'x' ? d : 0)), y: Math.round(r.it.layout.y + (axis === 'y' ? d : 0)) };
+    pos += r.b[sz] + gap;
+  }
+  return out;
+}
+
+/** Widget hiện, không khoá, có khung bao (đã xoay) giao với khung chọn. */
+export function marqueeHits(widgets: readonly { id: string; visible: boolean; layout: WidgetLayout }[], r: { x: number; y: number; width: number; height: number }, locked: ReadonlySet<string>): string[] {
+  return widgets.filter((w) => w.visible && !locked.has(w.id)).filter((w) => {
+    const b = rotatedBounds(w.layout);
+    return b.x < r.x + r.width && b.x + b.width > r.x && b.y < r.y + r.height && b.y + b.height > r.y;
+  }).map((w) => w.id);
+}

@@ -181,3 +181,21 @@ test('Render Core không dùng đồng hồ, số ngẫu nhiên hay vòng lặp 
     assert.equal(hit, -1, `${path.basename(f)}:${hit + 1} dùng API không tất định`);
   }
 });
+
+test('T-68: createWidget cho mọi loại thêm được: id không trùng, nằm trong khung, trên cùng, qua lược đồ không cảnh báo; duplicateWidget dời và nằm trên', async () => {
+  const { ADDABLE_WIDGETS, createWidget, duplicateWidget, sanitizeScene: sz, SCENE_SCHEMA_VERSION: V } = await import('../src/index.ts');
+  let sc = sz({ schemaVersion: V, canvas: { designWidth: 1080, designHeight: 1080 }, widgets: [] }).scene;
+  for (const t of ADDABLE_WIDGETS) {
+    const w = createWidget(sc, t);
+    assert.ok(!sc.widgets.some((x) => x.id === w.id), w.id);
+    assert.ok(w.layout.x >= 0 && w.layout.y >= 0 && w.layout.x + w.layout.width <= 1080 && w.layout.y + w.layout.height <= 1080, t);
+    assert.ok(sc.widgets.every((x) => x.zIndex < w.zIndex));
+    sc = { ...sc, widgets: [...sc.widgets, w] };
+  }
+  const again = sz(JSON.parse(JSON.stringify(sc)));
+  assert.deepEqual(again.warnings, []); assert.deepEqual(again.scene.widgets, sc.widgets);
+  assert.equal(createWidget(sc, 'CHORD_DETECTION').id, 'chord-detection-2');
+  const d = duplicateWidget(sc, sc.widgets[1]);
+  assert.deepEqual([d.layout.x - sc.widgets[1].layout.x, d.type, d.id === sc.widgets[1].id], [16, sc.widgets[1].type, false]);
+  d.properties = 'x'; assert.notEqual(sc.widgets[1].properties, 'x'); // bản sao sâu
+});

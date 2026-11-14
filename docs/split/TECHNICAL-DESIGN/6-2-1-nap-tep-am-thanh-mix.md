@@ -5,7 +5,7 @@ section: "6.2.1 Nạp tệp âm thanh (mix)"
 path: "6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.1 Nạp tệp âm thanh (mix)"
 chunk: 6-2-1-nap-tep-am-thanh-mix.md
 source_lines: 227-240
-source_sha1: ce30ea1fc1
+source_sha1: ba7b039c7b
 ids: [ARC-03, ERR_AUDIO_DECODE, ERR_AUDIO_TOO_LONG, ERR_FILE_TOO_LARGE, NFR-PERF-04, REQ-AUDIO-01, REQ-EXPORT-03, REQ-STORAGE-05, REQ-WIDGET-07]
 ---
 #### 6.2.1 Nạp tệp âm thanh (mix)

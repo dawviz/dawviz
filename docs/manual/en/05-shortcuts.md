@@ -27,6 +27,9 @@ While you're typing in a field, these keys go to the field.
 | Arrow keys | Move the selected widget 1 point |
 | Shift + arrow | Move 10 points |
 | Esc | Clear the selection |
+| Delete | Delete the selected widgets |
+| Ctrl+D | Duplicate the selected widgets |
+| Drag on an empty spot | Select with a box (hold Shift to add) |
 | Shift-click | Add a widget to the selection |
 | Ctrl+] / Ctrl+[ | Bring forward / send backward |
 | Ctrl+Shift+] / Ctrl+Shift+[ | Bring to front / send to back |

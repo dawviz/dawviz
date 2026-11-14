@@ -4,8 +4,8 @@ doc_title: "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT
 section: "5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)"
 path: "5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)"
 chunk: 5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md
-source_lines: 169-189
-source_sha1: 3a2d7bb414
+source_lines: 170-190
+source_sha1: a19d8dcb70
 ids: [D-01, D-12, D-24, D-25, D-29, KPI-02, REQ-CAP-01, REQ-EXPORT-00, REQ-EXPORT-03, REQ-EXPORT-06, REQ-PARSER-00]
 ---
 ## 5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)

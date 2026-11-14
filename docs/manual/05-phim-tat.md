@@ -27,6 +27,9 @@ Khi đang gõ trong một ô nhập, các phím này dùng cho ô đó.
 | Mũi tên | Dịch widget đang chọn 1 điểm |
 | Shift + mũi tên | Dịch 10 điểm |
 | Esc | Bỏ chọn |
+| Delete | Xoá widget đang chọn |
+| Ctrl+D | Nhân bản widget đang chọn |
+| Kéo trên chỗ trống | Chọn bằng khung (giữ Shift để cộng thêm) |
 | Shift + bấm | Chọn thêm widget |
 | Ctrl+] / Ctrl+[ | Lên một bậc / xuống một bậc |
 | Ctrl+Shift+] / Ctrl+Shift+[ | Lên trên cùng / xuống dưới cùng |

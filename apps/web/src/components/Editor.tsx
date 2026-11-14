@@ -5,17 +5,17 @@
 // Khoá là trạng thái của phiên chỉnh sửa (không vào preset video, không vào lịch sử); ẩn/hiện, vị trí, cỡ, góc, neo, thứ tự lớp
 // và bắt dính đều là lệnh hoàn tác được (lib/commands.ts).
 import { useMemo, useRef, useState, type DragEvent, type KeyboardEvent, type ReactNode } from 'react';
-import { normalizeAngle, rotateGroup, type Derived, type SceneDocument, type UnifiedProjectAST, type WidgetLayout, type WidgetSpec } from '@dawviz/render-core';
+import { ADDABLE_WIDGETS, normalizeAngle, rotateGroup, type Derived, type SceneDocument, type UnifiedProjectAST, type WidgetLayout, type WidgetSpec, type WidgetType } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import type { Playback } from '../lib/playback.ts';
 import type { FontsStatus } from '../lib/fonts.ts';
 import { STAGE_CHROME, useStageWidth } from '../lib/useStageWidth.ts';
-import { intoFrame, outsideFrame, round, setAnchor } from '../lib/editorGeometry.ts';
+import { alignLayouts, distributeLayouts, intoFrame, outsideFrame, round, setAnchor, type AlignMode } from '../lib/editorGeometry.ts';
 import { LiveCanvas } from './Stage.tsx';
 import { EditorOverlay } from './EditorOverlay.tsx';
 import { InspectorSection, ResetButton } from './Inspector.tsx';
 import { NumberField } from './NumberField.tsx';
-import { Eye, EyeOff, Grip, LayerDown, LayerUp, Lock, ToBack, ToFront, Unlock } from './Icons.tsx';
+import { AlignBottom, AlignHCenter, AlignLeft, AlignRight, AlignTop, AlignVCenter, DistributeH, DistributeV, Duplicate, Eye, EyeOff, Grip, LayerDown, LayerUp, Lock, Plus, ToBack, ToFront, Trash, Unlock } from './Icons.tsx';
 import { isTextEntry } from '../lib/a11y.ts';
 import { layerOrder } from '../lib/commands.ts';
 import { StatusIcon } from './StatusIcon.tsx';
@@ -34,6 +34,11 @@ export interface EditorActions {
   /** Đưa lớp tới vị trí `to` của danh sách Lớp (0 = trên cùng). */
   moveLayer(id: string, to: number): void;
   snapping(p: Partial<SceneDocument['canvas']['snapping']>): void;
+  /** Thêm widget loại `type` (T-68); trả id mới để chọn ngay. */
+  add(type: WidgetType): string;
+  /** Nhân bản; trả id các bản sao. */
+  duplicate(ids: string[]): string[];
+  remove(ids: string[]): void;
 }
 interface Props {
   scene: SceneDocument; derived: Derived | null; ast: UnifiedProjectAST | null; playback: Playback; fonts: FontsStatus;
@@ -43,7 +48,7 @@ interface Props {
   /** Thẻ đang mở (để đo lại bề rộng khi hiện). */
   active: boolean;
   /** Mục thêm của bảng Thuộc tính cho widget đang chọn (vd. Hình thức của Piano Roll), đánh số tiếp từ `n`. */
-  widgetSections?(w: WidgetSpec, n: number, locked: boolean): ReactNode;
+  widgetSections?(w: WidgetSpec, n: number, locked: boolean): ReactNode[];
   /** Bố cục của phong cách/preset áp gần nhất (đích của nút ↺ ở X, Y, W, H). */
   layoutRef?: Record<string, WidgetLayout>;
 }
@@ -114,8 +119,15 @@ export function Editor({ scene, derived, ast, playback, fonts, advanced, actions
     },
   });
   // Ctrl/⌘ + ] / [ : lên/xuống một bậc; thêm Shift: lên trên cùng / xuống dưới cùng (chỉ khi chọn đúng một lớp).
+  // Delete/Backspace: xoá; Ctrl/⌘+D: nhân bản (lớp khoá không bị xoá/nhân bản).
+  const removeSel = () => { const ids = live.filter((id) => !locked.has(id)); if (ids.length) { actions.remove(ids); setSelected(live.filter((id) => locked.has(id))); setSay(i18n.t('web.editor.removed', { n: ids.length })); } };
+  const duplicateSel = () => { const ids = live.filter((id) => !locked.has(id)); if (ids.length) setSelected(actions.duplicate(ids)); };
+  const addWidget = (type: WidgetType) => { setSelected([actions.add(type)]); setSay(i18n.t('web.editor.added', { name: i18n.t(`web.widget.${type}`) })); };
   const onKeys = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (!(e.ctrlKey || e.metaKey) || e.altKey || isTextEntry(e.target) || live.length !== 1) return;
+    if (isTextEntry(e.target) || e.altKey) return;
+    if ((e.key === 'Delete' || e.key === 'Backspace') && !e.ctrlKey && !e.metaKey && live.length) { e.preventDefault(); removeSel(); return; }
+    if ((e.ctrlKey || e.metaKey) && e.code === 'KeyD' && live.length) { e.preventDefault(); duplicateSel(); return; }
+    if (!(e.ctrlKey || e.metaKey) || live.length !== 1) return;
     const k = e.code === 'BracketRight' ? 1 : e.code === 'BracketLeft' ? -1 : 0;
     if (!k) return;
     e.preventDefault();
@@ -127,7 +139,7 @@ export function Editor({ scene, derived, ast, playback, fonts, advanced, actions
     <div className="grid h-full min-h-0 lg:grid-cols-[13rem_minmax(0,1fr)_20rem] min-[1440px]:grid-cols-[14rem_minmax(0,1fr)_22rem]" data-testid="editor" onKeyDown={onKeys}>
       <aside aria-labelledby="layers-h" className="relative min-h-0 overflow-y-auto border-b border-line bg-surface py-3 lg:border-b-0 lg:border-r">
         <h2 id="layers-h" className="px-4 pb-2 text-[15px] font-semibold text-fg">{i18n.t('web.editor.layers')}</h2>
-        <LayersHead widgets={scene.widgets} locked={locked} onAllVisible={actions.allVisible} onLockAll={lockAll} />
+        <LayersHead widgets={scene.widgets} locked={locked} onAllVisible={actions.allVisible} onLockAll={lockAll} onAdd={addWidget} />
         <ul aria-labelledby="layers-h" data-testid="layers">
           {layers.map((w, i) => {
             const on = live.includes(w.id), lk = locked.has(w.id), out = w.visible && outsideFrame(w.layout, W, H);
@@ -192,14 +204,15 @@ export function Editor({ scene, derived, ast, playback, fonts, advanced, actions
       </div>
 
       <aside aria-label={i18n.t('web.editor.properties')} className="relative min-h-0 overflow-y-auto border-t border-line bg-surface lg:border-l lg:border-t-0" data-testid="editor-props">
-        <Properties scene={scene} selected={live} locked={locked} name={name} advanced={advanced} actions={actions} onLock={toggleLock} order={order} move={move} widgetSections={widgetSections} onPick={(id) => setSelected([id])} layoutRef={layoutRef} />
+        <Properties scene={scene} selected={live} locked={locked} name={name} advanced={advanced} actions={actions} onLock={toggleLock} order={order} move={move} widgetSections={widgetSections} onPick={(id) => setSelected([id])} layoutRef={layoutRef}
+          onDuplicate={duplicateSel} onRemove={removeSel} />
       </aside>
     </div>
   );
 }
 
 /** Hàng đầu danh sách Lớp: mắt và khoá tổng, đúng cột với dòng bên dưới; chỉ biểu tượng, chú thích khi rê (như hàng đầu danh sách track). */
-function LayersHead({ widgets, locked, onAllVisible, onLockAll }: { widgets: readonly WidgetSpec[]; locked: ReadonlySet<string>; onAllVisible(): void; onLockAll(): void }) {
+function LayersHead({ widgets, locked, onAllVisible, onLockAll, onAdd }: { widgets: readonly WidgetSpec[]; locked: ReadonlySet<string>; onAllVisible(): void; onLockAll(): void; onAdd(type: WidgetType): void }) {
   const { i18n } = useI18n();
   const hiddenN = widgets.filter((w) => !w.visible).length, lockedN = widgets.filter((w) => locked.has(w.id)).length;
   const eyeLabel = i18n.t(hiddenN ? 'web.editor.allShow' : 'web.editor.allHide');
@@ -207,7 +220,7 @@ function LayersHead({ widgets, locked, onAllVisible, onLockAll }: { widgets: rea
   const allLocked = lockedN === widgets.length && widgets.length > 0;
   return (
     <div role="group" aria-label={i18n.t('web.editor.layersHead')} className="flex items-center gap-1 pb-1 pl-2 pr-2" data-testid="layers-head">
-      <span className="min-w-0 flex-1" />
+      <span className="min-w-0 flex-1"><AddMenu onAdd={onAdd} /></span>
       <button type="button" className="tog" aria-pressed={hiddenN === widgets.length && hiddenN > 0 ? true : hiddenN ? 'mixed' : false} aria-label={eyeLabel} title={eyeLabel} onClick={onAllVisible} data-testid="layers-all-visible">
         {hiddenN === widgets.length && hiddenN > 0 ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className={`h-3.5 w-3.5 ${hiddenN ? 'opacity-50' : ''}`} />}
       </button>
@@ -218,9 +231,60 @@ function LayersHead({ widgets, locked, onAllVisible, onLockAll }: { widgets: rea
   );
 }
 
+/** Nút "Thêm" ở đầu danh sách Lớp: mở danh sách loại widget (T-68). Phím: Enter/Space mở, ↑/↓ chọn, Esc đóng. */
+function AddMenu({ onAdd }: { onAdd(type: WidgetType): void }) {
+  const { i18n } = useI18n();
+  const [open, setOpen] = useState(false);
+  const box = useRef<HTMLDivElement>(null);
+  const items = () => [...(box.current?.querySelectorAll<HTMLButtonElement>('[role=menuitem]') ?? [])];
+  const pick = (t: WidgetType) => { setOpen(false); onAdd(t); };
+  return (
+    <div ref={box} className="relative inline-block" onBlur={(e) => { if (!box.current?.contains(e.relatedTarget as Node)) setOpen(false); }}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape' && open) { e.stopPropagation(); setOpen(false); box.current?.querySelector<HTMLButtonElement>('button')?.focus(); }
+        if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && open) { e.preventDefault(); const l = items(), i = l.indexOf(document.activeElement as HTMLButtonElement); l[(i + (e.key === 'ArrowDown' ? 1 : -1) + l.length) % l.length]?.focus(); }
+      }}>
+      <button type="button" className="tog flex items-center gap-1 px-1.5 text-xs" aria-haspopup="menu" aria-expanded={open} onClick={() => { setOpen((o) => !o); requestAnimationFrame(() => items()[0]?.focus()); }}
+        title={i18n.t('web.editor.add')} data-testid="layers-add"><Plus className="h-3.5 w-3.5" />{i18n.t('web.editor.add')}</button>
+      {open && (
+        <div role="menu" aria-label={i18n.t('web.editor.add')} className="absolute left-0 top-full z-20 mt-1 min-w-[11rem] border border-line bg-surface py-1 shadow-sm" data-testid="add-menu">
+          {ADDABLE_WIDGETS.map((t) => (
+            <button key={t} type="button" role="menuitem" className="block w-full px-3 py-1.5 text-left text-xs text-fg hover:bg-raised focus:bg-raised focus:outline-none" onClick={() => pick(t)}>
+              {i18n.t(`web.widget.${t}`)}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const ALIGN_ICONS: [AlignMode, (p: { className?: string }) => ReactNode][] = [['left', AlignLeft], ['hcenter', AlignHCenter], ['right', AlignRight], ['top', AlignTop], ['vcenter', AlignVCenter], ['bottom', AlignBottom]];
+/** Căn chỉnh (T-68): một widget căn theo khung video, nhiều widget căn theo khung bao chung; chia đều khi chọn từ 3 widget. */
+function AlignSection({ n, items, frame, onLayouts, locked }: { n: number; items: WidgetSpec[]; frame: { width: number; height: number }; onLayouts(p: Record<string, Partial<WidgetLayout>>): void; locked: ReadonlySet<string> }) {
+  const { i18n } = useI18n();
+  const free = items.filter((w) => !locked.has(w.id)).map((w) => ({ id: w.id, layout: w.layout }));
+  const ib = `${btn} w-8 justify-center px-0`;
+  return (
+    <InspectorSection n={n} id="align" title={i18n.t('web.editor.align')}>
+      <div className="flex gap-1" role="group" aria-label={i18n.t('web.editor.align')} data-testid="align">
+        {ALIGN_ICONS.map(([m, Icon]) => {
+          const label = i18n.t(`web.editor.align.${m}`) + (items.length === 1 ? ` (${i18n.t('web.editor.alignToFrame')})` : '');
+          return <button key={m} type="button" className={ib} disabled={!free.length} aria-label={label} title={label} onClick={() => onLayouts(alignLayouts(free, m, frame))} data-testid={`align-${m}`}><Icon className="h-3.5 w-3.5" /></button>;
+        })}
+        {items.length > 1 && <span className="mx-0.5 w-px self-stretch bg-line" aria-hidden />}
+        {items.length > 1 && (['x', 'y'] as const).map((ax) => {
+          const label = i18n.t(`web.editor.distribute.${ax}`), Icon = ax === 'x' ? DistributeH : DistributeV;
+          return <button key={ax} type="button" className={ib} disabled={free.length < 3} aria-label={label} title={label} onClick={() => onLayouts(distributeLayouts(free, ax))} data-testid={`distribute-${ax}`}><Icon className="h-3.5 w-3.5" /></button>;
+        })}
+      </div>
+    </InspectorSection>
+  );
+}
+
 const btn = 'flex min-h-[var(--hit)] items-center gap-1.5 rounded border border-control bg-raised px-2.5 text-xs font-medium text-fg transition hover:border-line-strong disabled:cursor-not-allowed disabled:opacity-50';
 
-function Properties({ scene, selected, locked, name, advanced, actions, onLock, order, move, widgetSections, onPick, layoutRef }: { layoutRef?: Record<string, WidgetLayout>; onPick(id: string): void; scene: SceneDocument; selected: string[]; locked: ReadonlySet<string>; name(id: string): string; advanced: boolean; actions: EditorActions; onLock(id: string): void; order: string[]; move(id: string, to: number): void; widgetSections?: Props['widgetSections'] }) {
+function Properties({ scene, selected, locked, name, advanced, actions, onLock, order, move, widgetSections, onPick, layoutRef, onDuplicate, onRemove }: { onDuplicate(): void; onRemove(): void; layoutRef?: Record<string, WidgetLayout>; onPick(id: string): void; scene: SceneDocument; selected: string[]; locked: ReadonlySet<string>; name(id: string): string; advanced: boolean; actions: EditorActions; onLock(id: string): void; order: string[]; move(id: string, to: number): void; widgetSections?: Props['widgetSections'] }) {
   const { i18n } = useI18n();
   const ws = selected.map((id) => scene.widgets.find((w) => w.id === id)!).filter(Boolean);
   const { designWidth: W, designHeight: H } = scene.canvas;
@@ -265,14 +329,19 @@ function Properties({ scene, selected, locked, name, advanced, actions, onLock, 
           <NumberField label={i18n.t('web.editor.rotateBy')} value={0} spec={{ min: -360, max: 360, step: 1 }}
             onChange={(d) => { const out = rotateGroup(ws.map((w) => w.layout), d); actions.layouts(Object.fromEntries(ws.map((w, i) => [w.id, round(out[i])]))); }} />
         </NumRow>
+        <div className="flex gap-1.5">
+          <button type="button" className={btn} onClick={onDuplicate} title={`${i18n.t('web.editor.duplicate')} (Ctrl+D)`} data-testid="duplicate"><Duplicate className="h-3.5 w-3.5" />{i18n.t('web.editor.duplicate')}</button>
+          <button type="button" className={btn} onClick={onRemove} disabled={ws.every((x) => locked.has(x.id))} title={`${i18n.t('web.editor.remove')} (Delete)`} data-testid="remove"><Trash className="h-3.5 w-3.5" />{i18n.t('web.editor.remove')}</button>
+        </div>
       </InspectorSection>
-      {snapping(2)}
+      <AlignSection n={2} items={ws} frame={{ width: W, height: H }} onLayouts={actions.layouts} locked={locked} />
+      {snapping(3)}
     </>
   );
 
   const w = ws[0], l = w.layout, lk = locked.has(w.id), zi = order.indexOf(w.id);
   // Mục riêng của widget (Hình thức của Piano Roll) đứng ngay sau Vị trí: là thứ hay chỉnh nhất; các mục sau đánh số tiếp.
-  const extra = widgetSections?.(w, 2, lk) ?? null, k = extra ? 1 : 0;
+  const extra = (widgetSections?.(w, 2, lk) ?? []).filter(Boolean), k = extra.length;
   const set = (p: Partial<WidgetLayout>) => actions.layouts({ [w.id]: p });
   const ref = layoutRef?.[w.id];
   const field = (k: 'x' | 'y' | 'width' | 'height', label: string, min: number, max: number) => {
@@ -353,6 +422,9 @@ function Properties({ scene, selected, locked, name, advanced, actions, onLock, 
               </button>
             );
           })}
+          <span className="mx-0.5 w-px self-stretch bg-line" aria-hidden />
+          <button type="button" className={`${btn} w-9 justify-center px-0`} aria-label={i18n.t('web.editor.duplicate')} title={`${i18n.t('web.editor.duplicate')} (Ctrl+D)`} onClick={onDuplicate} data-testid="duplicate"><Duplicate className="h-3.5 w-3.5" /></button>
+          <button type="button" className={`${btn} w-9 justify-center px-0`} disabled={lk} aria-label={i18n.t('web.editor.remove')} title={`${i18n.t('web.editor.remove')} (Delete)`} onClick={onRemove} data-testid="remove"><Trash className="h-3.5 w-3.5" /></button>
         </div>
         <label className="flex items-center gap-2 text-[13px] text-fg">
           <input type="checkbox" checked={w.visible} onChange={(e) => actions.visible(w.id, e.target.checked)} />{i18n.t('web.editor.visible')}
@@ -361,7 +433,8 @@ function Properties({ scene, selected, locked, name, advanced, actions, onLock, 
           <input type="checkbox" checked={lk} onChange={() => onLock(w.id)} />{i18n.t('web.editor.locked')}
         </label>
       </InspectorSection>
-      {snapping(4 + k)}
+      <AlignSection n={4 + k} items={[w]} frame={{ width: W, height: H }} onLayouts={actions.layouts} locked={locked} />
+      {snapping(5 + k)}
     </>
   );
 }
