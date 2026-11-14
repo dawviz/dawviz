@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  DEFAULT_TEXT_STYLES, BASE_TEXT_STYLE, TEXT_DEFAULT_FONT, DEFAULT_FONT, SCENE_SCHEMA_VERSION, TEXT_METRICS,
+  DEFAULT_TEXT_STYLES, BASE_TEXT_STYLE, TEXT_DEFAULT_FONT, DEFAULT_FONT, BUNDLED_FONTS, BUNDLED_TEXT_FAMILIES, SCENE_SCHEMA_VERSION, TEXT_METRICS,
   resolveTextStyle, applyOverride, overriddenKeys, resetOverride, saveAsTextStyle, updateTextStyleFromRef,
   textPrims, textWidth, templateSpans, chordSpans, clusters, measureText, sanitizeScene, layoutFrame, renderFrame, drawPrimitives, fontFamiliesOf, defaultScene,
   type TextStyle, type TextPrim, type SceneDocument,
@@ -233,4 +233,19 @@ test('renderFrame: chữ giàu trong widget xoay vẫn tất định; phông ch�
   assert.deepEqual(run(), run());
   assert.ok(run().some((l) => l.startsWith('shadowOffsetX=')));
   assert.ok(!run(false).some((l) => l.startsWith('fillText') || l.startsWith('strokeText')));
+});
+
+test('phông không có sẵn: cảnh báo một lần mỗi họ khi mở preset, tên giữ nguyên trong scene, vẽ bằng phông mặc định', () => {
+  assert.deepEqual([...BUNDLED_TEXT_FAMILIES], [...new Set(BUNDLED_FONTS.map((f) => f.family))]);
+  const r = sanitizeScene({ schemaVersion: SCENE_SCHEMA_VERSION, canvas: {}, textStyles: { brand: { font: 'Inter' } },
+    widgets: [{ id: 'w', type: 'TRACK_INFO', layout: { x: 0, y: 0, width: 600, height: 200 }, properties: { titleStyle: { styleId: 'brand' }, artistStyle: { font: 'Inter' } } }] });
+  const miss = r.warnings.filter((w) => w.code === 'WARN_PRESET_FONT_MISSING');
+  assert.deepEqual(miss.map((w) => [w.details.path, w.details.value, w.details.to]), [['$.textStyles.brand.font', 'Inter', TEXT_DEFAULT_FONT]]);
+  assert.equal(r.scene.textStyles!.brand.font, 'Inter');
+  assert.equal(sanitizeScene({ schemaVersion: SCENE_SCHEMA_VERSION, canvas: {}, textStyles: { brand: { font: 'Inter' } }, widgets: [] }, { fonts: ['Space Grotesk', 'Inter'] }).warnings.length, 0);
+  const ast = synthAst();
+  const prims = layoutFrame(r.scene, derivedOf(ast), ast, 0)[0].prims as TextPrim[];
+  assert.ok(prims.length === 2 && prims.every((p) => p.font === TEXT_DEFAULT_FONT));
+  const withInter = layoutFrame(r.scene, derivedOf(ast, { fonts: new Set(['Space Grotesk', 'Inter']) }), ast, 0)[0].prims as TextPrim[];
+  assert.deepEqual(withInter.map((p) => p.font), ['Inter', 'Inter']); // phông người dùng nạp (sau này): vẽ đúng phông đó
 });

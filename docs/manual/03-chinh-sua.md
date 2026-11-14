@@ -2,7 +2,7 @@
 
 [Mục lục](README.md) · [English](en/03-editor.md)
 
-Thẻ Chỉnh sửa dùng để sắp xếp các khối trên khung video và đổi hình thức của chúng. Mỗi khối (gọi là widget) làm một việc: piano roll, tên bài và nghệ sĩ, bộ đếm nốt, nốt đang phát, thời gian và ô nhịp, hợp âm, thanh tiến độ.
+Thẻ Chỉnh sửa dùng để sắp xếp các khối trên khung video, đổi hình thức nốt và chữ. Mỗi khối (gọi là widget) làm một việc: piano roll, tên bài và nghệ sĩ, bộ đếm nốt, nốt đang phát, thời gian và ô nhịp, hợp âm, thanh tiến độ.
 
 Màn hình chia ba phần: danh sách **Lớp** bên trái, khung video ở giữa, **Thuộc tính** của widget đang chọn bên phải.
 
@@ -50,6 +50,31 @@ Danh sách **Lớp** cho biết widget nào nằm trên widget nào: dòng trên
 - **Mắt:** ẩn hoặc hiện widget trong video (giống ô **Hiện trong video**).
 - **Ổ khoá:** khoá widget để không lỡ tay kéo nó. Widget đã khoá vẫn chọn được trong danh sách Lớp để xem số liệu hoặc mở khoá.
 - Hàng trên cùng ẩn/hiện hoặc khoá/mở khoá mọi lớp cùng lúc.
+
+## Chữ
+
+Chọn một widget có chữ (tên bài, bộ đếm nốt, nốt đang phát, thời gian, hợp âm, thanh tiến độ) để thấy mục **Chữ**.
+
+Mỗi chữ dùng một **kiểu chữ** có sẵn (Tiêu đề, Phụ đề, Số đếm, Đồng hồ…). Bạn đổi gì thì chỉ thứ đó khác kiểu, phần còn lại vẫn theo kiểu. Cạnh mỗi thứ đã đổi có nút ↺ để quay về giá trị của kiểu.
+
+- **Dòng chữ:** widget có nhiều chữ thì chọn chữ cần sửa ở đây, ví dụ Tên bài hay Nghệ sĩ. Một số mục là một phần của dòng, ví dụ **Con số trong dòng** của bộ đếm nốt hay **Nốt bass sau dấu /** của hợp âm: đổi ở đó thì chỉ phần ấy khác, phần còn lại của dòng giữ nguyên. Chữ đang có chỉnh sửa được đánh dấu • trong danh sách.
+- **Kiểu chữ**, **Phông**, **Cỡ**, **Màu**, **Đậm**, **Nghiêng**.
+- **Căn lề:** trái, giữa hoặc phải trong khung widget.
+
+Ở chế độ Nâng cao (hoặc bấm **Thêm tuỳ chọn**):
+
+- **Dáng chữ:** viết hoa hết, viết thường hết, hoa đầu mỗi từ, chữ hoa nhỏ; giãn chữ; bề ngang và chiều cao của chữ; nâng chữ lên hoặc hạ xuống; chỉ số trên/dưới; gạch chân, gạch ngang; độ đục; **Chữ số đều bề rộng** (các con số chiếm cùng một chỗ nên không xô chữ bên cạnh khi số đổi; số đếm và đồng hồ bật sẵn).
+- **Tô màu:** bật **Chuyển màu** để tô chữ bằng hai màu, chuyển thẳng theo một góc hoặc toả tròn.
+- **Viền chữ:** độ dày, màu, viền nằm giữa nét hay bên ngoài, viền trên hay dưới phần tô.
+- **Bóng:** màu, độ đục, khoảng cách, hướng, độ nhoè. Khoảng cách 0 cho chữ một quầng sáng đều quanh nét.
+- **Nền:** hộp màu sau chữ, có đệm và bo góc, giúp chữ dễ đọc trên nền nhiều chi tiết.
+- **Khi chữ quá dài:** cắt và thêm "…", thu nhỏ cho vừa (không nhỏ hơn **Cỡ nhỏ nhất**), hoặc để tràn. Bật **Xuống dòng** để chữ dài chia thành nhiều dòng, với số dòng tối đa và khoảng cách dòng.
+- **Kiểu chữ:**
+  - **Lưu thành kiểu mới…** lưu cách trình bày hiện tại thành một kiểu có tên, dùng lại được cho chữ khác.
+  - **Cập nhật kiểu** đưa các chỉnh sửa của chữ này vào kiểu nó đang dùng. Mọi chữ khác dùng kiểu đó đổi theo.
+  - **Bỏ mọi chỉnh** đưa chữ về đúng kiểu.
+
+Kiểu chữ được lưu trong preset.
 
 ## Hình thức nốt
 

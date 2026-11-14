@@ -60,6 +60,11 @@ export const NO_BACKGROUND: Readonly<TextBackground> = Object.freeze({ enabled: 
 
 /** Phông của kiểu gốc = `DEFAULT_FONT` trong fonts.ts (không import để tránh vòng fonts ↔ typography khi khởi tạo; test so hai giá trị). */
 export const TEXT_DEFAULT_FONT = 'Space Grotesk';
+/** Họ phông vẽ được mà không cần người dùng nạp (= họ trong BUNDLED_FONTS; test so hai danh sách). Phông người dùng nạp (REQ-STORAGE-05) sẽ cộng thêm qua `Derived.fonts`. */
+export const BUNDLED_TEXT_FAMILIES: readonly string[] = [TEXT_DEFAULT_FONT];
+/** Phông thật dùng để vẽ: họ không có sẵn thì dùng phông mặc định (đã báo WARN_PRESET_FONT_MISSING khi mở preset), để vẽ khớp bảng đo. */
+export const usableFont = (font: string, available: ReadonlySet<string> | readonly string[] = BUNDLED_TEXT_FAMILIES): string =>
+  ((available as ReadonlySet<string>).has ? (available as ReadonlySet<string>).has(font) : (available as readonly string[]).includes(font)) ? font : TEXT_DEFAULT_FONT;
 /** Kiểu gốc: mọi thuộc tính nâng cao ở trạng thái "không có hiệu ứng". */
 export const BASE_TEXT_STYLE: Readonly<TextStyle> = Object.freeze({
   font: TEXT_DEFAULT_FONT, weight: 400, italic: false, size: 18, scaleX: 1, scaleY: 1, baselineShift: 0, script: 'none',
@@ -215,8 +220,12 @@ export function typesetLine(spans: readonly { text: string; st: TextStyle }[], m
 }
 
 type Resolved = { text: string; st: TextStyle }[];
-const resolveSpans = (spans: readonly TextSpan[], base: TextStyle, set: TextStyleSet): Resolved =>
-  spans.filter((s) => s.text).map((s) => ({ text: s.text, st: s.style ? (s.style.styleId ? resolveTextStyle(s.style, set) : applyOverride(base, s.style)) : base }));
+const resolveSpans = (spans: readonly TextSpan[], base: TextStyle, set: TextStyleSet, fonts?: ReadonlySet<string>): Resolved =>
+  spans.filter((s) => s.text).map((s) => {
+    const st = s.style ? (s.style.styleId ? resolveTextStyle(s.style, set) : applyOverride(base, s.style)) : base;
+    const font = usableFont(st.font, fonts);
+    return { text: s.text, st: font === st.font ? st : { ...st, font } };
+  });
 /** Cắt còn `n` cụm ký tự đầu (bỏ khoảng trắng cuối) rồi thêm "…" theo kiểu của đoạn cuối còn lại. */
 function truncate(sp: Resolved, n: number): Resolved {
   const out: Resolved = []; let left = n;
@@ -279,9 +288,10 @@ const sameLook = (a: TextStyle, b: TextStyle) => a.font === b.font && a.size ===
  * widget. `x` là điểm neo theo `align`, `y` là baseline dòng đầu. Trả các dòng (nhiều dòng khi kiểu bật xuống dòng) và bước tiến dọc.
  */
 export function textPrims(content: string | readonly TextSpan[], style: TextStyle, x: number, y: number, align: Align, maxWidth: number,
-  measure: Measure, alpha = 1, set: TextStyleSet = DEFAULT_TEXT_STYLES): { prims: TextPrim[]; height: number } {
+  measure: Measure, alpha = 1, set: TextStyleSet = DEFAULT_TEXT_STYLES, fonts?: ReadonlySet<string>): { prims: TextPrim[]; height: number } {
   const spans = typeof content === 'string' ? [{ text: content }] : content;
-  const sp = resolveSpans(spans, style, set);
+  style = { ...style, font: usableFont(style.font, fonts) };
+  const sp = resolveSpans(spans, style, set, fonts);
   if (!sp.length) return { prims: [], height: 0 };
   const lineStep = style.size * style.leading;
   // Chữ thường: một đoạn (hoặc các đoạn cùng dáng), không hiệu ứng, không có chữ số cần căn ô → đúng đường vẽ trước T-72.
@@ -313,9 +323,9 @@ export function textPrims(content: string | readonly TextSpan[], style: TextStyl
   return { prims, height: Math.max(1, lines.length) * lineStep };
 }
 /** Bề rộng chữ khi dàn trên một dòng không cắt (để đặt các phần cạnh nhau). */
-export function textWidth(content: string | readonly TextSpan[], style: TextStyle, measure: Measure, set: TextStyleSet = DEFAULT_TEXT_STYLES): number {
+export function textWidth(content: string | readonly TextSpan[], style: TextStyle, measure: Measure, set: TextStyleSet = DEFAULT_TEXT_STYLES, fonts?: ReadonlySet<string>): number {
   const spans = typeof content === 'string' ? [{ text: content }] : content;
-  return typesetLine(resolveSpans(spans, style, set), measure).width;
+  return typesetLine(resolveSpans(spans, { ...style, font: usableFont(style.font, fonts) }, set, fonts), measure).width;
 }
 
 /** Mẫu chữ → các đoạn: chữ cố định theo kiểu dòng, giá trị của chỗ giữ theo `valueStyle` (vắng/rỗng = cùng kiểu). Chỗ giữ lạ giữ nguyên chữ. */

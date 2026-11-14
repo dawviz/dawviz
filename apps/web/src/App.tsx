@@ -5,7 +5,7 @@
 // nên thành phần này không vẽ lại mỗi khung hình. Không có logic vẽ ở đây: khung hình = renderFrame của Render Core.
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { LayoutGroup, MotionConfig } from 'framer-motion';
-import { DEFAULT_BRIGHTNESS, DEFAULT_KEYBOARD_STYLE, defaultStyleConfig, sanitizeBrightness, buildIndex, buildSceneHud, type Derived, type SceneDocument, type BrightnessConfig, type NoteStyle, type StyleConfig, type KeyboardStyle, type UnifiedProjectAST } from '@dawviz/render-core';
+import { DEFAULT_BRIGHTNESS, DEFAULT_KEYBOARD_STYLE, defaultStyleConfig, sanitizeBrightness, buildIndex, buildSceneHud, type Derived, type SceneDocument, type BrightnessConfig, type NoteStyle, type StyleConfig, type KeyboardStyle, type UnifiedProjectAST, type WidgetSpec, DEFAULT_TEXT_STYLES } from '@dawviz/render-core';
 import type { ParseWarning } from '@dawviz/parser';
 import { useI18n } from './i18n/I18nProvider.tsx';
 import { LanguageSelect } from './components/LanguageSelect.tsx';
@@ -17,6 +17,8 @@ import { Stage } from './components/Stage.tsx';
 import { Transport } from './components/Transport.tsx';
 import { TrackPanel, TrackLayoutBar, DEFAULT_TRACK_LAYOUT, isShown, type TrackLayout } from './components/TrackPanel.tsx';
 import { ADVANCED_STYLE_KEYS, StylePanel } from './components/StylePanel.tsx';
+import { TextPanel } from './components/TextPanel.tsx';
+import { textSlots } from './lib/textRef.ts';
 import { VideoStyles, isEdited } from './components/VideoStyles.tsx';
 import { PresetSettings } from './components/PresetSettings.tsx';
 import { NOTE_PRESETS, VIDEO_STYLES, noteStylePreset, sceneForStyle, videoStyleBase, videoStyleKeyboard } from './lib/videoScenes.ts';
@@ -315,6 +317,22 @@ export function App() {
         : <p className="text-xs text-muted">{i18n.t('web.look.noPiano')}</p>}
     </InspectorSection>
   );
+  // Mục "Chữ" (T-72): widget có chữ. Cơ bản/Nâng cao như mục Hình thức; "đã chỉnh nâng cao" = có ghi đè ngoài phần Cơ bản.
+  const BASIC_TEXT = new Set(['styleId', 'font', 'size', 'color', 'weight', 'italic']);
+  const textSection = (w: WidgetSpec, n: number, locked = false) => {
+    const slots = textSlots(w.type);
+    if (!slots.length) return null;
+    const P = w.properties as Record<string, Record<string, unknown> | undefined>;
+    const advEdited = slots.some((s) => Object.keys(P[s.field] ?? {}).some((k) => !BASIC_TEXT.has(k)));
+    return (
+      <InspectorSection key="text" n={n} id="text" title={i18n.t('web.section.text')} more={more('text', advEdited)}>
+        <TextPanel widget={w} styles={scene.textStyles ?? DEFAULT_TEXT_STYLES} advanced={showAdv('text')} disabled={locked}
+          onRef={(field, next, path) => run((d) => Cmds.patchTextRef(d, w.id, field, next, path))}
+          onStyles={(set, field, r, kind) => run((d) => Cmds.setTextStyles(d, set, w.id, field, r, kind))}
+          onProps={(patch) => run((d) => Cmds.patchWidgetProps(d, w.id, patch))} />
+      </InspectorSection>
+    );
+  };
   const sections: Record<'song' | 'tracks', (n: number) => React.ReactNode> = loaded && trackProps ? {
     song: (n) => (
       <InspectorSection key="song" n={n} id="song" title={i18n.t('web.section.song')} more={more('song', offsetMs !== 0)}>
@@ -386,7 +404,7 @@ export function App() {
         <div role="tabpanel" id="panel-editor" aria-labelledby="tab-editor" hidden={tab !== 'editor'} className="h-full">
           <Editor scene={scene} derived={derived} ast={renderAst} playback={playback} fonts={fonts} advanced={advanced} actions={editorActions} active={tab === 'editor'}
             layoutRef={doc.layoutRef}
-            widgetSections={(w, n) => (w.type === 'PIANO_ROLL' && w.id === piano?.id ? lookSection(n) : null)}
+            widgetSections={(w, n, lk) => (w.type === 'PIANO_ROLL' ? (w.id === piano?.id ? lookSection(n) : null) : textSection(w, n, lk))}
             transport={loaded ? <Transport playback={playback} duration={playDuration} offsetMs={offsetMs} wave={audio && peaks ? { peaks, durationSec: audio.durationSec } : null} /> : undefined} />
         </div>
         <div role="tabpanel" id="panel-settings" aria-labelledby="tab-settings" hidden={tab !== 'settings'} className="h-full overflow-y-auto bg-page">

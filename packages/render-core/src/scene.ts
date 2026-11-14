@@ -3,10 +3,10 @@
 // `textStyles` và chữ dạng TextRef theo REQ-GRAPHICS-18). Đọc được 0.3.x/0.4.x qua `migrateScene`.
 // Lớp/phần tử storyboard (T-22) sẽ là schemaVersion mới, có hàm di trú từ 0.4.0; vì vậy mọi trường ở đây giữ đúng tên trong SRS.
 import {
-  DEFAULT_CHORD, DEFAULT_EVENT_COUNTER, DEFAULT_LIVE_TRIGGER, DEFAULT_PROGRESS_BAR, DEFAULT_TIME_BAR, DEFAULT_TRACK_INFO, TEMPLATE_KEYS,
+  DEFAULT_CHORD, DEFAULT_EVENT_COUNTER, DEFAULT_LIVE_TRIGGER, DEFAULT_PROGRESS_BAR, DEFAULT_TIME_BAR, DEFAULT_TRACK_INFO, TEMPLATE_KEYS, TEXT_FIELDS,
   type Align, type ChordProps, type EventCounterProps, type LineCfg, type LiveTriggerProps, type ProgressBarProps, type TimeBarProps, type TrackInfoProps,
 } from './hud.ts';
-import { BASE_TEXT_STYLE, DEFAULT_TEXT_STYLES, applyOverride, cloneStyle, type NamedTextStyle, type TextRef, type TextStyle, type TextStyleSet } from './typography.ts';
+import { BASE_TEXT_STYLE, BUNDLED_TEXT_FAMILIES, DEFAULT_TEXT_STYLES, TEXT_DEFAULT_FONT, applyOverride, cloneStyle, type NamedTextStyle, type TextRef, type TextStyle, type TextStyleSet } from './typography.ts';
 import { unknownPlaceholders } from './text.ts';
 import { normalizeAngle } from './snap.ts';
 import { DEFAULT_KEYBOARD_STYLE, DEFAULT_NOTE_STYLE, sanitizeStyle, type KeyboardStyle, type NoteStyle, type StyleConfig } from './style.ts';
@@ -101,7 +101,7 @@ const clonePiano = (p: PianoRollProps): PianoRollProps => ({ ...p, noteStyle: { 
 // ───────────────────────────── kiểm và sửa lược đồ (REQ-STORAGE-02) ─────────────────────────────
 // Trường lạ bị bỏ; giá trị sai về mặc định kèm cảnh báo; không đọc được thì ném ERR_PRESET_INVALID.
 
-export type SceneWarningCode = 'WARN_PRESET_VALUE' | 'WARN_PRESET_WIDGET_UNKNOWN' | 'WARN_PRESET_UNSUPPORTED' | 'WARN_PRESET_VERSION' | 'WARN_PRESET_MIGRATED' | 'WARN_PRESET_UNSAFE_KEY';
+export type SceneWarningCode = 'WARN_PRESET_FONT_MISSING' | 'WARN_PRESET_VALUE' | 'WARN_PRESET_WIDGET_UNKNOWN' | 'WARN_PRESET_UNSUPPORTED' | 'WARN_PRESET_VERSION' | 'WARN_PRESET_MIGRATED' | 'WARN_PRESET_UNSAFE_KEY';
 export interface SceneWarning { code: SceneWarningCode; message: string; details: { path: string; value?: unknown; from?: string; to?: string } }
 export type SceneErrorCode = 'ERR_PRESET_INVALID' | 'ERR_PRESET_TOO_LARGE' | 'ERR_SCHEMA_NEWER';
 export class SceneError extends Error {
@@ -173,8 +173,10 @@ export function migrateScene(raw: unknown): { raw: Obj; from: string } {
   return { raw: out, from: raw.schemaVersion };
 }
 
-/** Đọc một preset/scene từ JSON thô. Trả scene hợp lệ + cảnh báo. */
-export function sanitizeScene(input: unknown): { scene: SceneDocument; warnings: SceneWarning[] } {
+/** Đọc một preset/scene từ JSON thô. Trả scene hợp lệ + cảnh báo.
+ *  `opts.fonts`: họ phông vẽ được (mặc định phông đóng gói). Chữ dùng họ khác → WARN_PRESET_FONT_MISSING; tên phông giữ nguyên trong
+ *  scene (lưu lại không mất), còn Render Core vẽ bằng phông mặc định (REQ-GRAPHICS-18: báo, không đổi âm thầm). */
+export function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] } = {}): { scene: SceneDocument; warnings: SceneWarning[] } {
   const warnings: SceneWarning[] = [];
   const w = (code: SceneWarningCode, path: string, value: unknown, message: string) => warnings.push({ code, message, details: { path, value } });
   if (!isObj(input)) throw new SceneError('preset không phải đối tượng JSON', '$');
@@ -293,6 +295,19 @@ export function sanitizeScene(input: unknown): { scene: SceneDocument; warnings:
       // Widget chưa có renderer (T-37…): giữ nguyên thuộc tính để không mất dữ liệu khi lưu lại; renderFrame bỏ qua.
       widgets.push({ ...base, properties: P });
     }
+  });
+
+  // Phông không có sẵn: một cảnh báo cho mỗi họ (đường dẫn chỗ đầu tiên dùng nó).
+  const fonts = opts.fonts ?? BUNDLED_TEXT_FAMILIES, seen = new Set<string>();
+  const missing = (font: unknown, path: string) => {
+    if (typeof font !== 'string' || fonts.includes(font) || seen.has(font)) return;
+    seen.add(font);
+    warnings.push({ code: 'WARN_PRESET_FONT_MISSING', message: `phông "${font}" không có sẵn; vẽ bằng ${TEXT_DEFAULT_FONT}`, details: { path, value: font, to: TEXT_DEFAULT_FONT } });
+  };
+  for (const [id, st] of Object.entries(textStyles)) missing(st.font, `$.textStyles.${id}.font`);
+  widgets.forEach((wd, i) => {
+    const P = wd.properties as Record<string, unknown>;
+    for (const f of Object.keys((TEXT_FIELDS as Record<string, object>)[wd.type] ?? {})) missing((P[f] as TextRef | undefined)?.font, `$.widgets[${i}].properties.${f}.font`);
   });
 
   return {

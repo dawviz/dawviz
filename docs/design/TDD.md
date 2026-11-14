@@ -43,7 +43,10 @@ Lệnh: `npm test` (parser + render + logic web), `npm run test:components` (Vit
 `Transport` (bấm, kéo thanh tua), `Notices` (văn bản + chi tiết kỹ thuật), `LanguageSelect` (đổi `lang` của `<html>`).
 
 ### 2.4 `packages/render-core/test/typography.test.ts` (20, T-72)
-Bộ kiểu dựng sẵn (phông gốc trùng `DEFAULT_FONT`, số đếm/đồng hồ bật chữ số đều); ghi đè từng thuộc tính, ↺, "Lưu thành kiểu mới"/"Cập nhật kiểu"; chữ thường giữ đường vẽ cũ; chữ số đều bề rộng ("111" = "888"); tracking và tỉ lệ ngang; căn lề; tràn khung (cắt "…" không vượt khung, tự thu nhỏ vừa khít, chạm cỡ tối thiểu thì cắt, để tràn); xuống dòng + số dòng tối đa; hoa/thường/chữ hoa nhỏ; chỉ số trên/dưới; cụm ký tự tiếng Việt; định dạng từng đoạn (valueStyle, bassStyle) qua preset; lược đồ `textStyles` + ghi đè sai bị bỏ có cảnh báo + vòng lưu/đọc; phông cần nạp theo kiểu đang dùng; lệnh vẽ: thứ tự viền/tô, viền ngoài, gạch, gradient, nghiêng, nền chữ, bóng quy theo scale và góc xoay; tất định trong widget xoay. Golden `paper-1x1` đổi có chủ ý ở chữ có số (chữ số đều bề rộng).
+Bộ kiểu dựng sẵn (phông gốc trùng `DEFAULT_FONT`, số đếm/đồng hồ bật chữ số đều); ghi đè từng thuộc tính, ↺, "Lưu thành kiểu mới"/"Cập nhật kiểu"; chữ thường giữ đường vẽ cũ; chữ số đều bề rộng ("111" = "888"); tracking và tỉ lệ ngang; căn lề; tràn khung (cắt "…" không vượt khung, tự thu nhỏ vừa khít, chạm cỡ tối thiểu thì cắt, để tràn); xuống dòng + số dòng tối đa; hoa/thường/chữ hoa nhỏ; chỉ số trên/dưới; cụm ký tự tiếng Việt; định dạng từng đoạn (valueStyle, bassStyle) qua preset; lược đồ `textStyles` + ghi đè sai bị bỏ có cảnh báo + vòng lưu/đọc; phông cần nạp theo kiểu đang dùng; lệnh vẽ: thứ tự viền/tô, viền ngoài, gạch, gradient, nghiêng, nền chữ, bóng quy theo scale và góc xoay; tất định trong widget xoay. Golden `paper-1x1` đổi có chủ ý ở chữ có số (chữ số đều bề rộng). Thêm: phông không có sẵn (cảnh báo một lần mỗi họ, giữ tên, vẽ bằng phông mặc định; có phông thì vẽ đúng phông).
+
+### 2.5 Mục "Chữ" của Editor (T-72)
+`apps/web/src/lib/textRef.test.ts` (5): đặt/bỏ ghi đè theo đường dẫn, chỗ chữ theo widget, kiểu tham chiếu của dòng và đoạn, lệnh gộp bước theo thuộc tính + hoàn tác + lưu kiểu, id kiểu từ tên tiếng Việt. Vitest `components.test.tsx` › TextPanel (2): đổi cỡ, ↺, căn lề, chọn đoạn; bật đổ bóng, Lưu thành kiểu mới.
 
 ## 3. Ma trận truy vết
 

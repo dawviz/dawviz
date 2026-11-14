@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "6.2.3 Offset âm thanh so với dự án"
 path: "6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.3 Offset âm thanh so với dự án"
 chunk: 6-2-3-offset-am-thanh-so-voi-du-an.md
-source_lines: 260-267
-source_sha1: 6f5f3c0f08
+source_lines: 262-269
+source_sha1: ce30ea1fc1
 ids: [REQ-UI-15, REQ-WIDGET-07]
 ---
 #### 6.2.3 Offset âm thanh so với dự án

@@ -42,6 +42,7 @@ dawviz/
 │     │  │  ├─ Stage.tsx
 │     │  │  ├─ StatusIcon.tsx
 │     │  │  ├─ StylePanel.tsx
+│     │  │  ├─ TextPanel.tsx
 │     │  │  ├─ ThemeSelect.tsx
 │     │  │  ├─ TrackPanel.tsx
 │     │  │  ├─ Transport.tsx
@@ -93,6 +94,8 @@ dawviz/
 │     │  │  ├─ store.test.ts
 │     │  │  ├─ store.ts
 │     │  │  ├─ storeReact.ts
+│     │  │  ├─ textRef.test.ts
+│     │  │  ├─ textRef.ts
 │     │  │  ├─ theme.test.ts
 │     │  │  ├─ theme.ts
 │     │  │  ├─ thumbnails.ts
@@ -611,6 +614,7 @@ type ChordMode
 interface ChordProps
 interface ProgressBarProps
 const TEXT_FIELDS   // Chỗ có chữ trong từng widget → kiểu dựng sẵn mặc định (REQ-GRAPHICS-18). Trường `…ValueStyle`/`bassStyle` là …
+const TEXT_SPAN_OF   // Ghi đè một đoạn → trường của dòng chứa nó (kiểu gốc của đoạn là kiểu thật của dòng đó).
 const DEFAULT_TRACK_INFO
 const DEFAULT_EVENT_COUNTER
 const DEFAULT_LIVE_TRIGGER
@@ -757,7 +761,7 @@ class SceneError extends Error
 const PRESET_LIMITS   // Giới hạn khi đọc preset (NFR-SEC-04). Vượt thì `ERR_PRESET_INVALID` (kích thước tệp: `ERR_PRESET_TOO_LARGE`).
 const UNSAFE_KEYS   // Khoá có thể làm bẩn nguyên mẫu đối tượng: bị bỏ ở mọi độ sâu.
 function migrateScene(raw: unknown):    // Di trú theo từng bậc phiên bản, trên một bản sao (đối tượng vào không bị sửa). Trả bản đã lên `SCENE_SCHEMA_V…
-function sanitizeScene(input: unknown):    // Đọc một preset/scene từ JSON thô. Trả scene hợp lệ + cảnh báo.
+function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] } = {}):    // Đọc một preset/scene từ JSON thô. Trả scene hợp lệ + cảnh báo. `opts.fonts`: họ phông vẽ được (mặc định phông…
 interface Sanitizer   // Bộ kiểm giá trị dùng chung (đóng gói từ sanitizeScene để mỗi widget kiểm theo đường dẫn riêng).
 ```
 
@@ -874,6 +878,8 @@ const NO_STROKE
 const NO_SHADOW
 const NO_BACKGROUND
 const TEXT_DEFAULT_FONT   // Phông của kiểu gốc = `DEFAULT_FONT` trong fonts.ts (không import để tránh vòng fonts ↔ typography khi khởi tạ…
+const BUNDLED_TEXT_FAMILIES   // Họ phông vẽ được mà không cần người dùng nạp (= họ trong BUNDLED_FONTS; test so hai danh sách). Phông người d…
+const usableFont = (font: string, available: ReadonlySet<string> | readonly string[] = BUNDLED_TEXT_FAMILIES) =>   // Phông thật dùng để vẽ: họ không có sẵn thì dùng phông mặc định (đã báo WARN_PRESET_FONT_MISSING khi mở preset…
 const BASE_TEXT_STYLE   // Kiểu gốc: mọi thuộc tính nâng cao ở trạng thái "không có hiệu ứng".
 const DEFAULT_TEXT_STYLES   // Bộ kiểu dựng sẵn (mặc định của mọi preset; preset thêm/sửa kiểu trong `scene.textStyles`). Giá trị trùng mặc …
 function cloneStyle<T extends TextStyle>(s: T): T
@@ -889,8 +895,8 @@ interface RichText   // Phần vẽ riêng của chữ "giàu": mọi thứ bư�
 function clusters(s: string): string[]   // Tách cụm ký tự (ký tự gốc + dấu kết hợp) sau khi chuẩn hoá NFC, để vẽ từng cụm mà dấu tiếng Việt không rời ch…
 function typesetLine(spans: readonly { text: string; st: TextStyle }[], measure: Measure, factor = 1):    // Dàn một dòng (không cắt). `factor` nhân mọi cỡ chữ (tự thu nhỏ). Trả run đặt từ x = 0 và bề rộng dòng (không …
 function fitLine(sp: Resolved, base: TextStyle, maxWidth: number, measure: Measure):    // Dàn một dòng vừa `maxWidth` theo `overflow` của kiểu dòng. null = không còn gì để vẽ.
-function textPrims(content: string | readonly TextSpan[], style: TextStyle, x: number, y: number, align: Align, maxWidth: number, measure: Measure, alpha = 1, set: TextStyleSet = DEFAULT_TEXT_STYLES):    // Chữ → primitive. `spans` là các đoạn (một chuỗi = một đoạn), `ref` là kiểu của cả chữ, `fallbackId` kiểu mặc …
-function textWidth(content: string | readonly TextSpan[], style: TextStyle, measure: Measure, set: TextStyleSet = DEFAULT_TEXT_STYLES): number   // Bề rộng chữ khi dàn trên một dòng không cắt (để đặt các phần cạnh nhau).
+function textPrims(content: string | readonly TextSpan[], style: TextStyle, x: number, y: number, align: Align, maxWidth: number, measure: Measure, alpha = 1, set: TextStyleSet = DEFAULT_TEXT_STYLES, fonts?: ReadonlySet<string>):    // Chữ → primitive. `spans` là các đoạn (một chuỗi = một đoạn), `ref` là kiểu của cả chữ, `fallbackId` kiểu mặc …
+function textWidth(content: string | readonly TextSpan[], style: TextStyle, measure: Measure, set: TextStyleSet = DEFAULT_TEXT_STYLES, fonts?: ReadonlySet<string>): number   // Bề rộng chữ khi dàn trên một dòng không cắt (để đặt các phần cạnh nhau).
 function templateSpans(template: string, values: Readonly<Record<string, string | number>>, valueStyle?: TextRef): TextSpan[]   // Mẫu chữ → các đoạn: chữ cố định theo kiểu dòng, giá trị của chỗ giữ theo `valueStyle` (vắng/rỗng = cùng kiểu)…
 ```
 
@@ -1108,6 +1114,15 @@ const ADVANCED_STYLE_KEYS   // Trường chỉ có ở Nâng cao (REQ-UI-13). D�
 function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset, playhead, reference }: { reference?: NoteStyle; playhead?: { ratio: number; visible: boolean; reference?: number; onChange(ratio: number): void; onVisible(visible: boolean): void }; notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean })   // `lanes`: tên lane automation có trong dự án đang mở (cho nguồn phát sáng "automation"). `playhead`: vị trí vạ…
 ```
 
+#### `apps/web/src/components/TextPanel.tsx`
+
+Mục "Chữ" của bảng Thuộc tính (T-72, SRS REQ-GRAPHICS-18, giao diện): sửa kiểu chữ của từng chỗ chữ trong widget.
+
+```text
+interface TextPanelProps
+function TextPanel({ widget, styles, advanced, disabled, onRef, onStyles, onProps }: TextPanelProps)
+```
+
 #### `apps/web/src/components/ThemeSelect.tsx`
 
 "Giao diện ứng dụng" (REQ-UI-10, D-52): Sáng / Tối / Theo hệ thống và bảng màu nhấn. Chỉ đổi màu giao diện app,
@@ -1313,6 +1328,8 @@ const setAudioOffset = (d: Doc, ms: number) =>   // Đặt offset âm thanh (ms)
 const patchLayout = (d: Doc, widgetId: string, patch: Partial<WidgetLayout>) =>   // Đổi layout widget (x, y, width, height, rotation, anchor). Gộp theo widget: kéo/đổi cỡ/xoay trong một cử chỉ …
 const patchLayouts = (d: Doc, patches: Record<string, Partial<WidgetLayout>>) =>   // Đổi layout của một hoặc nhiều widget trong MỘT lệnh (Editor: kéo, đổi cỡ, xoay, xoay nhóm). Gộp theo tập widg…
 const patchWidgetProps = (d: Doc, widgetId: string, patch: Record<string, unknown>) =>   // Đổi một số thuộc tính (`properties`) của widget.
+const patchTextRef = (d: Doc, widgetId: string, field: string, next: TextRef, path: string) =>   // Đổi ghi đè kiểu chữ của một chỗ chữ (T-72). `path` là thuộc tính vừa đổi: kéo/gõ liên tiếp cùng thuộc tính gộ…
+const setTextStyles = (d: Doc, styles: TextStyleSet, widgetId: string, field: string, ref: TextRef, kind: 'save' | 'update') =>   // Đổi bộ kiểu chữ của scene ("Lưu thành kiểu mới", "Cập nhật kiểu"), kèm ghi đè mới của chỗ chữ vừa dùng. Một b…
 const setWidgetVisible = (d: Doc, widgetId: string, visible: boolean) =>
 const toggleAllWidgetsVisible = (d: Doc) =>   // Ô mắt ở hàng đầu danh sách Lớp: còn lớp ẩn thì hiện hết trước, đã hiện hết thì ẩn hết. Một bước hoàn tác.
 const reorderZ = (d: Doc, widgetId: string, where: 'front' | 'back') =>   // Đưa widget lên trên cùng / xuống dưới cùng bằng cách đổi zIndex của nó.
@@ -1519,6 +1536,24 @@ const GestureContext
 function useGesturePointer():    // Cho thanh trượt: `onPointerDown` mở cử chỉ, đóng ở pointerup/pointercancel bất kể con trỏ thả ở đâu (cũng đón…
 ```
 
+#### `apps/web/src/lib/textRef.ts`
+
+Ghi đè kiểu chữ của một chỗ chữ trong widget (T-72, REQ-GRAPHICS-18): đọc/đặt/bỏ theo đường dẫn `size`, `stroke.width`…
+
+```text
+type TextPath
+function getOverride(ref: TextRef | undefined, path: TextPath): unknown   // Giá trị đang ghi đè ở `path` (undefined = theo kiểu).
+const isOverridden = (ref: TextRef | undefined, path: TextPath) =>
+function setOverride(ref: TextRef | undefined, path: TextPath, value: unknown): TextRef   // Đặt ghi đè; đối tượng con (stroke/shadow/background) chỉ giữ trường đã đặt.
+function clearOverride(ref: TextRef | undefined, path: TextPath): TextRef   // Bỏ ghi đè (↺); đối tượng con rỗng thì bỏ luôn.
+function valueAt(st: TextStyle, path: TextPath): unknown   // Giá trị thật ở `path` của một kiểu đã gộp.
+interface TextSlot
+function textSlots(type: WidgetType): TextSlot[]   // Các chỗ chữ của một loại widget, theo thứ tự hiển thị.
+function slotStyles(props: Obj, slot: TextSlot, set: TextStyleSet):    // Kiểu tham chiếu của chỗ chữ (đích của ↺) và kiểu thật đang vẽ. Dòng: tham chiếu = kiểu `styleId` (hoặc mặc đị…
+const overrideCount = (ref: TextRef | undefined) =>   // Số thuộc tính đang ghi đè (không tính `styleId`).
+function newStyleId(styles: TextStyleSet, name: string): string   // Id kiểu mới từ tên (chữ Latin, số, gạch), không trùng id có sẵn.
+```
+
 #### `apps/web/src/lib/theme.ts`
 
 Theme giao diện ứng dụng (REQ-UI-10, D-52): chỉ đổi màu qua bộ token cố định (UI-DIRECTION mục 5.2, 5.4).
@@ -1691,6 +1726,7 @@ type ParseResponse
 - `apps/web/src/lib/presetFile.test.ts`
 - `apps/web/src/lib/problems.test.ts`
 - `apps/web/src/lib/store.test.ts`
+- `apps/web/src/lib/textRef.test.ts`
 - `apps/web/src/lib/theme.test.ts`
 - `apps/web/src/lib/undoKeys.test.ts`
 - `apps/web/test/app.test.tsx`
@@ -1715,4 +1751,4 @@ type ParseResponse
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 629 ký hiệu công khai -->
+<!-- 10 thư mục src, 647 ký hiệu công khai -->

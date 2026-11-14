@@ -15,10 +15,11 @@ Hai mục này chỉ đổi giao diện của ứng dụng. Màu trong video do 
 
 ## Preset
 
-Preset là một tệp `.json` lưu cách bày video: phong cách, vị trí các widget, hình thức nốt. Preset không chứa dự án hay âm thanh của bạn, nên gửi cho người khác thoải mái.
+Preset là một tệp `.json` lưu cách bày video: phong cách, vị trí các widget, hình thức nốt, kiểu chữ. Preset không chứa dự án hay âm thanh của bạn, nên gửi cho người khác thoải mái.
 
 - **Lưu preset…** tải về tệp preset của video đang chỉnh.
 - **Mở preset…** áp một preset lên bài đang mở. Hoàn tác được nếu không ưng.
 - Preset từ bản cũ hơn vẫn mở được; ứng dụng báo đã nâng phiên bản. Lưu lại để giữ bản đã nâng.
 - Preset từ bản mới hơn thì cần cập nhật ứng dụng mới mở được.
+- Preset dùng phông không có sẵn trong ứng dụng thì ứng dụng báo và vẽ chữ bằng phông mặc định. Tên phông vẫn giữ trong preset.
 - Giá trị nào trong preset bị hỏng hoặc vượt giới hạn sẽ được thay bằng giá trị mặc định, và ứng dụng liệt kê những chỗ đó.

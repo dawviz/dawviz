@@ -125,7 +125,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [5.6 Phát sáng động khi chạm 🟢](TECHNICAL-DESIGN/5-6-phat-sang-dong-khi-cham.md) · 1776 ký tự
 - [5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)](TECHNICAL-DESIGN/5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md) · 4996 ký tự
 - [5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp 🟢 (đã dùng ở T-69)](TECHNICAL-DESIGN/5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md) · 925 ký tự
-- [5.9 Kiểu chữ cho mọi chữ trong video 🟢 Render Core / ⚪ Editor (T-72, SRS REQ-GRAPHICS-18, D-58)](TECHNICAL-DESIGN/5-9-kieu-chu-cho-moi-chu-trong-video-render-core.md) · 5294 ký tự
+- [5.9 Kiểu chữ cho mọi chữ trong video 🟢 (T-72, SRS REQ-GRAPHICS-18, D-58)](TECHNICAL-DESIGN/5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md) · 6552 ký tự
 - [6.1 Trạng thái](TECHNICAL-DESIGN/6-1-trang-thai.md) · 1256 ký tự
 - [6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh)](TECHNICAL-DESIGN/6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md) · 233 ký tự
 - [6.2.1 Nạp tệp âm thanh (mix)](TECHNICAL-DESIGN/6-2-1-nap-tep-am-thanh-mix.md) · 3263 ký tự
@@ -152,7 +152,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 
 - [TÀI LIỆU THIẾT KẾ KIỂM THỬ (TDD = Test Design Document) — ỨNG DỤNG DAW VISUALIZER (mở đầu)](TDD/tai-lieu-thiet-ke-kiem-thu-tdd-test-design-docum.md) · 810 ký tự
 - [1. Chiến lược](TDD/1-chien-luoc.md) · 1005 ký tự
-- [2. Danh mục test mới](TDD/2-danh-muc-test-moi.md) · 2205 ký tự
+- [2. Danh mục test mới](TDD/2-danh-muc-test-moi.md) · 2669 ký tự
 - [3. Ma trận truy vết](TDD/3-ma-tran-truy-vet.md) · 542 ký tự
 - [4. Khoảng trống đã biết](TDD/4-khoang-trong-da-biet.md) · 442 ký tự
 - [5. Danh sách kiểm thủ công cho AT-18 (Chrome)](TDD/5-danh-sach-kiem-thu-cong-cho-at-18-chrome.md) · 4128 ký tự

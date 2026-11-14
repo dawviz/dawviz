@@ -4,8 +4,8 @@ doc_title: "TÀI LIỆU THIẾT KẾ KIỂM THỬ (TDD = Test Design Document) �
 section: "4. Khoảng trống đã biết"
 path: "4. Khoảng trống đã biết"
 chunk: 4-khoang-trong-da-biet.md
-source_lines: 59-65
-source_sha1: dfc089d18c
+source_lines: 62-68
+source_sha1: 8d240985ec
 ids: []
 ---
 ## 4. Khoảng trống đã biết

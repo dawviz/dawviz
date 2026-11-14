@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)"
 path: "6. Ứng dụng web và phát lại 🟡 > 6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)"
 chunk: 6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md
-source_lines: 321-374
-source_sha1: 6f5f3c0f08
+source_lines: 323-376
+source_sha1: ce30ea1fc1
 ids: [ARC-05, D-55, D-57, ERR_PRESET_, ERR_PRESET_INVALID, ERR_PRESET_TOO_LARGE, ERR_SCHEMA_NEWER, NFR-SEC-04, NFR-SEC-06, REQ-GRAPHICS-03, REQ-STORAGE-04, REQ-UI-02, REQ-UI-14, WARN_PRESET_, WARN_PRESET_MIGRATED, WARN_PRESET_UNSAFE_KEY, WARN_PRESET_VERSION]
 ---
 ### 6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)

@@ -4,8 +4,8 @@ doc_title: "TÀI LIỆU THIẾT KẾ KIỂM THỬ (TDD = Test Design Document) �
 section: "3. Ma trận truy vết"
 path: "3. Ma trận truy vết"
 chunk: 3-ma-tran-truy-vet.md
-source_lines: 48-58
-source_sha1: dfc089d18c
+source_lines: 51-61
+source_sha1: 8d240985ec
 ids: [AT-18, NFR-PERF-05, REQ-GRAPHICS-05, REQ-GRAPHICS-06, REQ-GRAPHICS-18]
 ---
 ## 3. Ma trận truy vết

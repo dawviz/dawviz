@@ -1,6 +1,6 @@
 # Chỉ mục TECHNICAL-DESIGN.md — THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER
 
-nguồn: `TECHNICAL-DESIGN.md` (sha1 6f5f3c0f08)
+nguồn: `TECHNICAL-DESIGN.md` (sha1 ce30ea1fc1)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -18,7 +18,7 @@ nguồn: `TECHNICAL-DESIGN.md` (sha1 6f5f3c0f08)
 | 11 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.6 Phát sáng động khi chạm 🟢 | [5-6-phat-sang-dong-khi-cham.md](5-6-phat-sang-dong-khi-cham.md) | 1776 | D-50, REQ-GRAPHICS-06, REQ-GRAPHICS-17 |
 | 12 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02) | [5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md](5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md) | 4996 | ERR_FONT_LOAD, NFR-SEC-03, REQ-STORAGE-05, REQ-WIDGET-02 |
 | 13 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp 🟢 (đã dùng ở T-69) | [5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md](5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md) | 925 | REQ-WIDGET-05 |
-| 14 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.9 Kiểu chữ cho mọi chữ trong video 🟢 Render Core / ⚪ Editor (T-72, SRS REQ-GRAPHICS-18, D-58) | [5-9-kieu-chu-cho-moi-chu-trong-video-render-core.md](5-9-kieu-chu-cho-moi-chu-trong-video-render-core.md) | 5294 | D-58, REQ-GRAPHICS-18, REQ-STORAGE-05, WARN_PRESET_VALUE |
+| 14 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.9 Kiểu chữ cho mọi chữ trong video 🟢 (T-72, SRS REQ-GRAPHICS-18, D-58) | [5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md](5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md) | 6552 | D-58, REQ-GRAPHICS-18, REQ-STORAGE-05, WARN_PRESET_FONT_MISSING, WARN_PRESET_VALUE |
 | 15 | 6. Ứng dụng web và phát lại 🟡 > 6.1 Trạng thái | [6-1-trang-thai.md](6-1-trang-thai.md) | 1256 | REQ-UI-14 |
 | 16 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) | [6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md](6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md) | 233 | NFR-SEC-04, REQ-EXPORT-03, REQ-PARSER-00, REQ-STORAGE-05, REQ-UI-03, REQ-WIDGET-07 |
 | 17 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.1 Nạp tệp âm thanh (mix) | [6-2-1-nap-tep-am-thanh-mix.md](6-2-1-nap-tep-am-thanh-mix.md) | 3263 | ARC-03, ERR_AUDIO_DECODE, ERR_AUDIO_TOO_LONG, ERR_FILE_TOO_LARGE, NFR-PERF-04, REQ-AUDIO-01… |

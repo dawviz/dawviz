@@ -43,7 +43,7 @@ interface Props {
   /** Thẻ đang mở (để đo lại bề rộng khi hiện). */
   active: boolean;
   /** Mục thêm của bảng Thuộc tính cho widget đang chọn (vd. Hình thức của Piano Roll), đánh số tiếp từ `n`. */
-  widgetSections?(w: WidgetSpec, n: number): ReactNode;
+  widgetSections?(w: WidgetSpec, n: number, locked: boolean): ReactNode;
   /** Bố cục của phong cách/preset áp gần nhất (đích của nút ↺ ở X, Y, W, H). */
   layoutRef?: Record<string, WidgetLayout>;
 }
@@ -272,7 +272,7 @@ function Properties({ scene, selected, locked, name, advanced, actions, onLock, 
 
   const w = ws[0], l = w.layout, lk = locked.has(w.id), zi = order.indexOf(w.id);
   // Mục riêng của widget (Hình thức của Piano Roll) đứng ngay sau Vị trí: là thứ hay chỉnh nhất; các mục sau đánh số tiếp.
-  const extra = widgetSections?.(w, 2) ?? null, k = extra ? 1 : 0;
+  const extra = widgetSections?.(w, 2, lk) ?? null, k = extra ? 1 : 0;
   const set = (p: Partial<WidgetLayout>) => actions.layouts({ [w.id]: p });
   const ref = layoutRef?.[w.id];
   const field = (k: 'x' | 'y' | 'width' | 'height', label: string, min: number, max: number) => {

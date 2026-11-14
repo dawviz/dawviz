@@ -15,10 +15,11 @@ These change the app only. The colours in the video come from the video style.
 
 ## Preset
 
-A preset is a `.json` file that stores how the video is laid out: style, widget positions, note look. It never contains your project or audio, so it's safe to share.
+A preset is a `.json` file that stores how the video is laid out: style, widget positions, note look, text styles. It never contains your project or audio, so it's safe to share.
 
 - **Save preset…** downloads a preset of the video you're working on.
 - **Open preset…** applies a preset to the open song. You can undo it.
 - Presets from an older version still open; the app says it upgraded them. Save again to keep the upgrade.
 - Presets from a newer version need a newer app.
+- If a preset uses a font the app doesn't have, the app tells you and draws the text with the default font. The font name stays in the preset.
 - Values in a preset that are damaged or out of range are replaced with defaults, and the app lists where.

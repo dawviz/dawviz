@@ -91,20 +91,24 @@
         "locales/en.json#web.style.",
         "locales/en.json#web.glow.",
         "locales/en.json#web.keyboard.",
-        "locales/en.json#web.playhead."
+        "locales/en.json#web.playhead.",
+        "apps/web/src/components/TextPanel.tsx",
+        "locales/en.json#web.text."
       ],
-      "uiHash": "5c9d0ebd40d0",
-      "viHash": "7886fb3ce6e0",
-      "enHash": "c67ac6086dc0",
+      "uiHash": "bb19b78ab541",
+      "viHash": "ef5486ffd8af",
+      "enHash": "321ec0b3eeec",
       "coverHashes": {
-        "apps/web/src/components/Editor.tsx": "54eb793e2c78",
+        "apps/web/src/components/Editor.tsx": "4cdba73981d0",
         "apps/web/src/components/EditorOverlay.tsx": "44ab29a22a38",
         "apps/web/src/components/StylePanel.tsx": "739c0fb27805",
         "locales/en.json#web.editor.": "9b9ac9ff358c",
         "locales/en.json#web.style.": "3f579d231537",
         "locales/en.json#web.glow.": "a02382b4889a",
         "locales/en.json#web.keyboard.": "e1b6968f1e6b",
-        "locales/en.json#web.playhead.": "326a6b222302"
+        "locales/en.json#web.playhead.": "326a6b222302",
+        "apps/web/src/components/TextPanel.tsx": "f5eec83fb1fe",
+        "locales/en.json#web.text.": "9409aadac6ce"
       }
     },
     "04-cai-dat": {
@@ -118,8 +122,8 @@
         "locales/en.json#web.preset."
       ],
       "uiHash": "af7b2b242dbd",
-      "viHash": "82afdfa8daec",
-      "enHash": "0482ba278c11",
+      "viHash": "f2e807909438",
+      "enHash": "2d4759e06bf9",
       "coverHashes": {
         "apps/web/src/components/ThemeSelect.tsx": "f9b2c3746fbe",
         "apps/web/src/components/PresetSettings.tsx": "d88d3a829f7b",

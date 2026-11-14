@@ -206,7 +206,7 @@ Nguồn: `docs/design/TECHNICAL-DESIGN.md` · [thứ tự đọc](docs/split/TEC
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.6 Phát sáng động khi chạm 🟢](docs/split/TECHNICAL-DESIGN/5-6-phat-sang-dong-khi-cham.md) · 1.8k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)](docs/split/TECHNICAL-DESIGN/5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md) · 5.0k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp 🟢 (đã dùng ở T-69)](docs/split/TECHNICAL-DESIGN/5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md) · 0.9k
-- [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.9 Kiểu chữ cho mọi chữ trong video 🟢 Render Core / ⚪ Editor (T-72, SRS REQ-GRAPHICS-18, D-58)](docs/split/TECHNICAL-DESIGN/5-9-kieu-chu-cho-moi-chu-trong-video-render-core.md) · 5.3k
+- [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.9 Kiểu chữ cho mọi chữ trong video 🟢 (T-72, SRS REQ-GRAPHICS-18, D-58)](docs/split/TECHNICAL-DESIGN/5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md) · 6.6k
 - [6. Ứng dụng web và phát lại 🟡 › 6.1 Trạng thái](docs/split/TECHNICAL-DESIGN/6-1-trang-thai.md) · 1.3k
 - [6. Ứng dụng web và phát lại 🟡 › 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh)](docs/split/TECHNICAL-DESIGN/6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md) · 0.2k
 - [6. Ứng dụng web và phát lại 🟡 › 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) › 6.2.1 Nạp tệp âm thanh (mix)](docs/split/TECHNICAL-DESIGN/6-2-1-nap-tep-am-thanh-mix.md) · 3.3k
@@ -235,7 +235,7 @@ Nguồn: `docs/design/TDD.md` · [thứ tự đọc](docs/split/TDD/_index.md)
 
 - [TÀI LIỆU THIẾT KẾ KIỂM THỬ (TDD = Test Design Document) — ỨNG DỤNG DAW VISUALIZER (mở đầu)](docs/split/TDD/tai-lieu-thiet-ke-kiem-thu-tdd-test-design-docum.md) · 0.8k
 - [1. Chiến lược](docs/split/TDD/1-chien-luoc.md) · 1.0k
-- [2. Danh mục test mới](docs/split/TDD/2-danh-muc-test-moi.md) · 2.2k
+- [2. Danh mục test mới](docs/split/TDD/2-danh-muc-test-moi.md) · 2.7k
 - [3. Ma trận truy vết](docs/split/TDD/3-ma-tran-truy-vet.md) · 0.5k
 - [4. Khoảng trống đã biết](docs/split/TDD/4-khoang-trong-da-biet.md) · 0.4k
 - [5. Danh sách kiểm thủ công cho AT-18 (Chrome)](docs/split/TDD/5-danh-sach-kiem-thu-cong-cho-at-18-chrome.md) · 4.1k

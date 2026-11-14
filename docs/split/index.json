@@ -2655,7 +2655,7 @@
   },
   "TECHNICAL-DESIGN.md": {
    "title": "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER",
-   "sha1": "6f5f3c0f08",
+   "sha1": "ce30ea1fc1",
    "chunks": [
     {
      "n": 0,
@@ -2903,21 +2903,22 @@
     },
     {
      "n": 14,
-     "file": "TECHNICAL-DESIGN/5-9-kieu-chu-cho-moi-chu-trong-video-render-core.md",
-     "title": "5.9 Kiểu chữ cho mọi chữ trong video 🟢 Render Core / ⚪ Editor (T-72, SRS REQ-GRAPHICS-18, D-58)",
+     "file": "TECHNICAL-DESIGN/5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md",
+     "title": "5.9 Kiểu chữ cho mọi chữ trong video 🟢 (T-72, SRS REQ-GRAPHICS-18, D-58)",
      "path": [
       "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại",
-      "5.9 Kiểu chữ cho mọi chữ trong video 🟢 Render Core / ⚪ Editor (T-72, SRS REQ-GRAPHICS-18, D-58)"
+      "5.9 Kiểu chữ cho mọi chữ trong video 🟢 (T-72, SRS REQ-GRAPHICS-18, D-58)"
      ],
-     "chars": 5294,
+     "chars": 6552,
      "lines": [
       196,
-      208
+      210
      ],
      "ids": [
       "D-58",
       "REQ-GRAPHICS-18",
       "REQ-STORAGE-05",
+      "WARN_PRESET_FONT_MISSING",
       "WARN_PRESET_VALUE"
      ]
     },
@@ -2931,8 +2932,8 @@
      ],
      "chars": 1256,
      "lines": [
-      211,
-      221
+      213,
+      223
      ],
      "ids": [
       "REQ-UI-14"
@@ -2948,8 +2949,8 @@
      ],
      "chars": 233,
      "lines": [
-      222,
-      224
+      224,
+      226
      ],
      "ids": [
       "NFR-SEC-04",
@@ -2971,8 +2972,8 @@
      ],
      "chars": 3263,
      "lines": [
-      225,
-      238
+      227,
+      240
      ],
      "ids": [
       "ARC-03",
@@ -2997,8 +2998,8 @@
      ],
      "chars": 4556,
      "lines": [
-      239,
-      259
+      241,
+      261
      ],
      "ids": []
     },
@@ -3013,8 +3014,8 @@
      ],
      "chars": 1992,
      "lines": [
-      260,
-      267
+      262,
+      269
      ],
      "ids": [
       "REQ-UI-15",
@@ -3032,8 +3033,8 @@
      ],
      "chars": 1439,
      "lines": [
-      268,
-      275
+      270,
+      277
      ],
      "ids": [
       "REQ-UI-03"
@@ -3050,8 +3051,8 @@
      ],
      "chars": 1211,
      "lines": [
-      276,
-      282
+      278,
+      284
      ],
      "ids": [
       "REQ-WIDGET-07"
@@ -3068,8 +3069,8 @@
      ],
      "chars": 826,
      "lines": [
-      283,
-      288
+      285,
+      290
      ],
      "ids": [
       "REQ-PARSER-07",
@@ -3087,8 +3088,8 @@
      ],
      "chars": 1023,
      "lines": [
-      289,
-      299
+      291,
+      301
      ],
      "ids": [
       "AT-03",
@@ -3106,8 +3107,8 @@
      ],
      "chars": 1014,
      "lines": [
-      300,
-      302
+      302,
+      304
      ],
      "ids": [
       "ERR_AUDIO_DECODE",
@@ -3126,8 +3127,8 @@
      ],
      "chars": 672,
      "lines": [
-      303,
-      310
+      305,
+      312
      ],
      "ids": []
     },
@@ -3141,8 +3142,8 @@
      ],
      "chars": 1860,
      "lines": [
-      311,
-      320
+      313,
+      322
      ],
      "ids": [
       "D-50",
@@ -3159,8 +3160,8 @@
      ],
      "chars": 16918,
      "lines": [
-      321,
-      374
+      323,
+      376
      ],
      "ids": [
       "ARC-05",
@@ -3191,8 +3192,8 @@
      ],
      "chars": 2020,
      "lines": [
-      375,
-      400
+      377,
+      402
      ],
      "ids": [
       "AT-03",
@@ -3214,8 +3215,8 @@
      ],
      "chars": 1035,
      "lines": [
-      401,
-      406
+      403,
+      408
      ],
      "ids": [
       "ERR_PRESET_INVALID",
@@ -3232,8 +3233,8 @@
      ],
      "chars": 492,
      "lines": [
-      407,
-      409
+      409,
+      411
      ],
      "ids": []
     },
@@ -3246,8 +3247,8 @@
      ],
      "chars": 470,
      "lines": [
-      410,
-      414
+      412,
+      416
      ],
      "ids": [
       "D-13"
@@ -3262,8 +3263,8 @@
      ],
      "chars": 885,
      "lines": [
-      415,
-      424
+      417,
+      426
      ],
      "ids": [
       "NFR-PERF-04",
@@ -3279,8 +3280,8 @@
      ],
      "chars": 728,
      "lines": [
-      425,
-      427
+      427,
+      429
      ],
      "ids": [
       "OI-07"
@@ -3295,8 +3296,8 @@
      ],
      "chars": 906,
      "lines": [
-      428,
-      434
+      430,
+      436
      ],
      "ids": [
       "D-12",
@@ -3313,8 +3314,8 @@
      ],
      "chars": 760,
      "lines": [
-      435,
-      442
+      437,
+      444
      ],
      "ids": []
     }
@@ -3322,7 +3323,7 @@
   },
   "TDD.md": {
    "title": "TÀI LIỆU THIẾT KẾ KIỂM THỬ (TDD = Test Design Document) — ỨNG DỤNG DAW VISUALIZER",
-   "sha1": "dfc089d18c",
+   "sha1": "8d240985ec",
    "chunks": [
     {
      "n": 0,
@@ -3359,10 +3360,10 @@
      "path": [
       "2. Danh mục test mới"
      ],
-     "chars": 2205,
+     "chars": 2669,
      "lines": [
       23,
-      47
+      50
      ],
      "ids": [
       "ARC-01",
@@ -3382,8 +3383,8 @@
      ],
      "chars": 542,
      "lines": [
-      48,
-      58
+      51,
+      61
      ],
      "ids": [
       "AT-18",
@@ -3402,8 +3403,8 @@
      ],
      "chars": 442,
      "lines": [
-      59,
-      65
+      62,
+      68
      ],
      "ids": []
     },
@@ -3416,8 +3417,8 @@
      ],
      "chars": 4128,
      "lines": [
-      66,
-      80
+      69,
+      83
      ],
      "ids": [
       "AT-18",
@@ -6217,7 +6218,7 @@
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/lich-su-phien-ban.md",
    "SRS/req-graphics-18-kieu-chu-cho-moi-chu-trong-video.md",
-   "TECHNICAL-DESIGN/5-9-kieu-chu-cho-moi-chu-trong-video-render-core.md"
+   "TECHNICAL-DESIGN/5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md"
   ],
   "OI-09": [
    "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
@@ -6307,7 +6308,7 @@
    "SRS/req-graphics-18-kieu-chu-cho-moi-chu-trong-video.md",
    "SRS/req-widget-02-track-info.md",
    "SRS/5-3-yeu-cau-giao-dien.md",
-   "TECHNICAL-DESIGN/5-9-kieu-chu-cho-moi-chu-trong-video-render-core.md",
+   "TECHNICAL-DESIGN/5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md",
    "TDD/3-ma-tran-truy-vet.md"
   ],
   "BR-01": [
@@ -7251,7 +7252,7 @@
    "SRS/5-3-yeu-cau-giao-dien.md",
    "SRS/8-cac-van-de-con-mo-cua-srs.md",
    "TECHNICAL-DESIGN/5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md",
-   "TECHNICAL-DESIGN/5-9-kieu-chu-cho-moi-chu-trong-video-render-core.md",
+   "TECHNICAL-DESIGN/5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md",
    "TECHNICAL-DESIGN/6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md",
    "TECHNICAL-DESIGN/6-2-1-nap-tep-am-thanh-mix.md",
    "CUSTOMIZATION/tuy-bien-toi-da-storyboard-chuyen-canh-not-duong.md",
@@ -7723,7 +7724,7 @@
    "SRS/req-widget-03-event-counter.md",
    "SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md",
    "TECHNICAL-DESIGN/5-1-giao-dien-chinh.md",
-   "TECHNICAL-DESIGN/5-9-kieu-chu-cho-moi-chu-trong-video-render-core.md"
+   "TECHNICAL-DESIGN/5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md"
   ],
   "SOI-09": [
    "SRS/req-widget-06-chord-detection-d-09.md",
@@ -8050,6 +8051,9 @@
   ],
   "ERR_FONT_LOAD": [
    "TECHNICAL-DESIGN/5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md"
+  ],
+  "WARN_PRESET_FONT_MISSING": [
+   "TECHNICAL-DESIGN/5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md"
   ],
   "ERR_PRESET_": [
    "TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md"

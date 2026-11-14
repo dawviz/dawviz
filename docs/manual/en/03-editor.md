@@ -2,7 +2,7 @@
 
 [Contents](README.md) · [Tiếng Việt](../03-chinh-sua.md)
 
-The Editor tab is where you arrange the blocks on the video frame and change how they look. Each block (a widget) does one job: piano roll, title and artist, note counter, live notes, time and bar, chord, progress bar.
+The Editor tab is where you arrange the blocks on the video frame and change how notes and text look. Each block (a widget) does one job: piano roll, title and artist, note counter, live notes, time and bar, chord, progress bar.
 
 The screen has three parts: **Layers** on the left, the frame in the middle, and the **properties** of the selected widget on the right.
 
@@ -50,6 +50,31 @@ The **Layers** list shows which widget sits on top: the top row is drawn on top.
 - **Eye:** hide or show the widget in the video (same as **Show in video**).
 - **Lock:** stops the widget from being dragged by accident. A locked widget can still be selected in Layers to see its numbers or unlock it.
 - The top row hides/shows or locks/unlocks every layer at once.
+
+## Text
+
+Select a widget that has text (title, note counter, live notes, time, chord, progress bar) to see the **Text** section.
+
+Each piece of text uses a **text style** (Title, Subtitle, Counter, Clock…). Whatever you change differs from the style; everything else keeps following it. Next to each change there is a ↺ button that goes back to the style's value.
+
+- **Text:** when a widget has several pieces of text, pick the one to edit here, for example Title or Artist. Some entries are part of a line, such as **Numbers in the lines** of the note counter or **Bass note after /** of the chord: changes there apply only to that part, the rest of the line stays the same. Text you have changed is marked • in the list.
+- **Text style**, **Font**, **Size**, **Colour**, **Bold**, **Italic**.
+- **Align:** left, centre or right inside the widget box.
+
+In Advanced mode (or after **More options**):
+
+- **Letters:** all caps, all lowercase, Title Case, small caps; letter spacing; width and height of the letters; raise or lower; superscript/subscript; underline, strikethrough; opacity; **Fixed-width digits** (every digit takes the same space, so changing numbers don't push the text next to them; on by default for counters and clocks).
+- **Fill:** turn on **Gradient** to fill the text with two colours, in a straight line at an angle or radiating from the centre.
+- **Outline:** width, colour, centred on the edge or outside, over or under the fill.
+- **Shadow:** colour, opacity, distance, direction, softness. A distance of 0 gives an even glow around the letters.
+- **Background:** a coloured box behind the text, with padding and rounded corners, to keep text readable over busy pictures.
+- **When the text is too long:** cut with "…", shrink to fit (no smaller than **Smallest size**), or let it run over. Turn on **Wrap onto more lines** to split long text, with a maximum number of lines and line spacing.
+- **Text styles:**
+  - **Save as new style…** stores the current look as a named style you can use for other text.
+  - **Update style** pushes this text's changes into the style it uses. Every other text using that style changes too.
+  - **Clear changes** puts the text back to the plain style.
+
+Text styles are saved in the preset.
 
 ## Note look
 

@@ -38,6 +38,11 @@ export const TEXT_FIELDS = {
   CHORD_DETECTION: { nameStyle: 'heading', bassStyle: null, notesStyle: 'body', notesValueStyle: null },
   PROGRESS_BAR: { timeStyle: 'tiny', timeValueStyle: null },
 } as const satisfies Record<string, Record<string, keyof typeof DEFAULT_TEXT_STYLES | null>>;
+/** Ghi đè một đoạn → trường của dòng chứa nó (kiểu gốc của đoạn là kiểu thật của dòng đó). */
+export const TEXT_SPAN_OF = {
+  EVENT_COUNTER: { valueStyle: 'style' }, LIVE_TRIGGER: { valueStyle: 'style' },
+  CHORD_DETECTION: { bassStyle: 'nameStyle', notesValueStyle: 'notesStyle' }, PROGRESS_BAR: { timeValueStyle: 'timeStyle' },
+} as const;
 const ts = (styleId: string): TextRef => ({ styleId });
 export const DEFAULT_TRACK_INFO: Readonly<TrackInfoProps> = Object.freeze({ align: 'left', titleText: '', titleStyle: ts('title'), artistText: '', artistStyle: ts('subtitle') });
 export const DEFAULT_EVENT_COUNTER: Readonly<EventCounterProps> = Object.freeze({
@@ -201,16 +206,16 @@ function chordAt(segs: ChordSeg[], t: number): ChordSeg | null {
 // ───────────────────────────── trợ giúp vẽ chữ ─────────────────────────────
 const xFor = (align: Align, width: number) => (align === 'left' ? 0 : align === 'center' ? width / 2 : width);
 /** Bộ dựng chữ của một lần layout: kiểu của scene + hàm đo. `text` thêm primitive vào `out`, trả bước tiến dọc (chữ xuống dòng cao hơn một dòng). */
-function typo(set: TextStyleSet | undefined, measure: Measure) {
+function typo(set: TextStyleSet | undefined, measure: Measure, fonts?: ReadonlySet<string>) {
   const S = set ?? DEFAULT_TEXT_STYLES;
   return {
     style: (ref: TextRef | undefined, fallbackId: string): TextStyle => resolveTextStyle(ref, S, fallbackId),
     text(out: Primitive[], s: string | readonly TextSpan[], x: number, y: number, st: TextStyle, align: Align, maxWidth: number, alpha = 1): number {
-      const r = textPrims(s, st, x, y, align, maxWidth, measure, alpha, S);
+      const r = textPrims(s, st, x, y, align, maxWidth, measure, alpha, S, fonts);
       for (const p of r.prims) out.push(p);
       return r.height;
     },
-    width: (s: string | readonly TextSpan[], st: TextStyle) => textWidth(s, st, measure, S),
+    width: (s: string | readonly TextSpan[], st: TextStyle) => textWidth(s, st, measure, S, fonts),
   };
 }
 const base = (size: number) => size * 0.95; // baseline dòng đầu so với mép trên widget
@@ -223,8 +228,8 @@ const pct = (v: number) => Math.min(1, Math.max(0, Number.isFinite(v) ? v : 0));
 // ───────────────────────────── widget ─────────────────────────────
 export const trackInfoRenderer: WidgetRenderer<TrackInfoProps> = {
   type: 'TRACK_INFO',
-  layout({ ast, measure, textStyles }, spec) {
-    const p = spec.properties, W = spec.layout.width, x = xFor(p.align, W), out: Primitive[] = [], T = typo(textStyles, measure);
+  layout({ ast, measure, textStyles, fonts }, spec) {
+    const p = spec.properties, W = spec.layout.width, x = xFor(p.align, W), out: Primitive[] = [], T = typo(textStyles, measure, fonts);
     const ts1 = T.style(p.titleStyle, 'title'), ts2 = T.style(p.artistStyle, 'subtitle');
     const title = p.titleText || ast.meta.title || '', artist = p.artistText || (ast.meta as { artist?: string }).artist || '';
     const y1 = ts1.size * 0.8;
@@ -237,8 +242,8 @@ export const trackInfoRenderer: WidgetRenderer<TrackInfoProps> = {
 
 export const eventCounterRenderer: WidgetRenderer<EventCounterProps> = {
   type: 'EVENT_COUNTER',
-  layout({ ast, derived, tracks, measure, textStyles }, spec, t) {
-    const p = spec.properties, W = spec.layout.width, x = xFor(p.align, W), hud = hudOf(derived, ast), out: Primitive[] = [], T = typo(textStyles, measure);
+  layout({ ast, derived, tracks, measure, textStyles, fonts }, spec, t) {
+    const p = spec.properties, W = spec.layout.width, x = xFor(p.align, W), hud = hudOf(derived, ast), out: Primitive[] = [], T = typo(textStyles, measure, fonts);
     const st = T.style(p.style, 'counter');
     let played = 0, total = 0;
     for (const ti of shown(tracks)) { const s = hud.starts.get(ti.track.id); if (!s) continue; total += s.length; played += upperBound(s, t); }
@@ -255,8 +260,8 @@ export const eventCounterRenderer: WidgetRenderer<EventCounterProps> = {
 
 export const liveTriggerRenderer: WidgetRenderer<LiveTriggerProps> = {
   type: 'LIVE_TRIGGER',
-  layout({ tracks, measure, textStyles }, spec, t) {
-    const p = spec.properties, W = spec.layout.width, out: Primitive[] = [], tail = p.tailMs / 1000, T = typo(textStyles, measure);
+  layout({ tracks, measure, textStyles, fonts }, spec, t) {
+    const p = spec.properties, W = spec.layout.width, out: Primitive[] = [], tail = p.tailMs / 1000, T = typo(textStyles, measure, fonts);
     const st = T.style(p.style, 'caption');
     const items: { n: ASTNote; track: TrackIndex; alpha: number }[] = [];
     for (const ti of shown(tracks)) for (const n of notesInRange(ti, t - tail, t)) {
@@ -302,8 +307,8 @@ export const liveTriggerRenderer: WidgetRenderer<LiveTriggerProps> = {
 
 export const timeBarRenderer: WidgetRenderer<TimeBarProps> = {
   type: 'TIME_BAR',
-  layout({ ast, derived, measure, textStyles }, spec, t) {
-    const p = spec.properties, W = spec.layout.width, hud = hudOf(derived, ast), out: Primitive[] = [], T = typo(textStyles, measure);
+  layout({ ast, derived, measure, textStyles, fonts }, spec, t) {
+    const p = spec.properties, W = spec.layout.width, hud = hudOf(derived, ast), out: Primitive[] = [], T = typo(textStyles, measure, fonts);
     const st = T.style(p.style, 'clock'), lst = T.style(p.labelStyle, 'label');
     const pos = barPosAt(hud.bars, t), tt = Math.max(0, t);
     const totalMs = Math.floor(tt * 1000 + 1e-6), m = Math.floor(totalMs / 60000), s = Math.floor(totalMs / 1000) % 60, ms = totalMs % 1000; // số nguyên ms: không lệch do dấu phẩy động
@@ -334,8 +339,8 @@ export const timeBarRenderer: WidgetRenderer<TimeBarProps> = {
 
 export const chordRenderer: WidgetRenderer<ChordProps> = {
   type: 'CHORD_DETECTION',
-  layout({ ast, derived, tracks, measure, textStyles }, spec, t) {
-    const p = spec.properties, W = spec.layout.width, x = xFor(p.align, W), out: Primitive[] = [], T = typo(textStyles, measure);
+  layout({ ast, derived, tracks, measure, textStyles, fonts }, spec, t) {
+    const p = spec.properties, W = spec.layout.width, x = xFor(p.align, W), out: Primitive[] = [], T = typo(textStyles, measure, fonts);
     const nst = T.style(p.nameStyle, 'heading'), bst = T.style(p.notesStyle, 'body');
     const seg = chordAt(hudOf(derived, ast).chords.get(chordKey(shown(tracks), p.mode)) ?? [], t);
     const notes = seg ? seg.pitches.map((n) => pitchName(n)).join(' ') : '';
@@ -358,8 +363,8 @@ export const chordRenderer: WidgetRenderer<ChordProps> = {
 
 export const progressBarRenderer: WidgetRenderer<ProgressBarProps> = {
   type: 'PROGRESS_BAR',
-  layout({ derived, measure, textStyles }, spec, t) {
-    const p = spec.properties, { width: W, height: H } = spec.layout, out: Primitive[] = [], T = typo(textStyles, measure);
+  layout({ derived, measure, textStyles, fonts }, spec, t) {
+    const p = spec.properties, { width: W, height: H } = spec.layout, out: Primitive[] = [], T = typo(textStyles, measure, fonts);
     const dur = derived.index.duration, P = dur > 0 ? pct(t / dur) : 0, th = Math.min(p.thickness, p.orientation === 'HORIZONTAL' ? H : W);
     if (p.orientation === 'HORIZONTAL') {
       const y = H - th;

@@ -16,6 +16,8 @@ export interface Derived {
   fontsReady?: boolean;
   /** Hàm đo chữ cho layout; vắng thì dùng FONT_METRICS (TECHNICAL-DESIGN 5.7). */
   measure?: Measure;
+  /** Họ phông vẽ được (phông đóng gói + phông người dùng nạp, REQ-STORAGE-05). Vắng = phông đóng gói. */
+  fonts?: ReadonlySet<string>;
 }
 
 export interface RectPrim {
@@ -43,6 +45,8 @@ export interface LayoutCtx {
   ast: UnifiedProjectAST; derived: Derived; tracks: TrackIndex[]; measure: Measure;
   /** Bộ kiểu chữ của scene (REQ-GRAPHICS-18); vắng = DEFAULT_TEXT_STYLES. */
   textStyles?: TextStyleSet;
+  /** Họ phông vẽ được (Derived.fonts); vắng = phông đóng gói. Họ khác được thay bằng phông mặc định. */
+  fonts?: ReadonlySet<string>;
 }
 
 export interface WidgetRenderer<P = unknown> {

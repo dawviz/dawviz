@@ -1,14 +1,14 @@
 ---
 doc: TECHNICAL-DESIGN.md
 doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER"
-section: "5.9 Kiểu chữ cho mọi chữ trong video 🟢 Render Core / ⚪ Editor (T-72, SRS REQ-GRAPHICS-18, D-58)"
-path: "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.9 Kiểu chữ cho mọi chữ trong video 🟢 Render Core / ⚪ Editor (T-72, SRS REQ-GRAPHICS-18, D-58)"
-chunk: 5-9-kieu-chu-cho-moi-chu-trong-video-render-core.md
-source_lines: 196-208
-source_sha1: 6f5f3c0f08
-ids: [D-58, REQ-GRAPHICS-18, REQ-STORAGE-05, WARN_PRESET_VALUE]
+section: "5.9 Kiểu chữ cho mọi chữ trong video 🟢 (T-72, SRS REQ-GRAPHICS-18, D-58)"
+path: "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.9 Kiểu chữ cho mọi chữ trong video 🟢 (T-72, SRS REQ-GRAPHICS-18, D-58)"
+chunk: 5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md
+source_lines: 196-210
+source_sha1: ce30ea1fc1
+ids: [D-58, REQ-GRAPHICS-18, REQ-STORAGE-05, WARN_PRESET_FONT_MISSING, WARN_PRESET_VALUE]
 ---
-### 5.9 Kiểu chữ cho mọi chữ trong video 🟢 Render Core / ⚪ Editor (T-72, SRS REQ-GRAPHICS-18, D-58)
+### 5.9 Kiểu chữ cho mọi chữ trong video 🟢 (T-72, SRS REQ-GRAPHICS-18, D-58)
 Mã: `packages/render-core/src/typography.ts` (mô hình, dàn chữ, tràn khung), phần tự vẽ ở cuối `render.ts`, lược đồ trong `scene.ts`. Test: `packages/render-core/test/typography.test.ts`.
 
 - **Mô hình.** `TextStyle` chứa đủ thuộc tính phân kỳ 1.0: `font`, `weight`, `italic`, `size`, `scaleX/scaleY`, `baselineShift`, `script` (none/super/sub), `underline`, `strike`, `decoThickness` (0 = tự theo cỡ), `decoColor` ('' = theo màu chữ), `textCase` (none/upper/lower/title/smallCaps), `tracking` (‰ em), `leading`, `color`, `gradient` (linear theo góc / radial, 2–8 điểm màu, trải trên hộp cả dòng), `opacity`, `stroke {width, color, position center/outside, join, over}`, `shadow {enabled, color, opacity, distance, angle, blur}` (khoảng cách 0 = phát sáng ngoài), `background {enabled, color, opacity, padX, padY, radius}`, `tabularNums`, `overflow` (ellipsis/shrink/visible) + `minSize`, `wrap` + `maxLines`. `BASE_TEXT_STYLE` là trạng thái "không hiệu ứng".
@@ -19,4 +19,6 @@ Mã: `packages/render-core/src/typography.ts` (mô hình, dàn chữ, tràn khun
 - **Hai đường vẽ.** Chữ "thường" (một kiểu, không hiệu ứng, không chữ số cần căn ô, tràn kiểu ellipsis, không xuống dòng) vẫn là `TextPrim` một lệnh `fillText` như 5.7 (golden không đổi). Còn lại `TextPrim.rich` mang các run đã đặt (`left`, `width`, `ascent/descent`, `runs[]` với `dx`, `xs`, cỡ, dịch baseline, sơn, viền, gạch) và Render Core tự vẽ: (1) hộp nền bo góc; (2) bóng; (3) mỗi run: `save → translate(baseline) → scale(sx, sy) → transform(xiên 0,21)` nếu nghiêng → viền (`outside`: dày gấp đôi, luôn dưới phần tô; `center`: dưới hoặc trên theo `over`) → tô (màu hoặc gradient đổi sang toạ độ run) → `restore`; gạch chân/gạch ngang là `fillRect` dài đúng bề rộng run. Không dùng `letterSpacing`, `fontVariantNumeric`, nghiêng tổng hợp của trình duyệt.
 - **Bóng theo điểm ảnh thiết bị.** `shadowOffset`/`shadowBlur` của Canvas không theo transform, nên `drawPrimitives(g, prims, env)` nhận `env = {scale, rotation}` từ `renderFrame`; bản sao chữ vẽ dời `FAR = 10⁵` pt (ngoài vùng cắt của widget) và `shadowOffset = scale · R(rotation) · (dx − FAR, dy)`, `shadowBlur = blur · scale`. Nhờ đó bóng giống nhau ở Preview và Export mọi độ phân giải, kể cả widget xoay.
 - **Lược đồ (preset 0.5.0).** `textStyles` gộp lên bộ dựng sẵn (id `^[A-Za-z][\w-]{0,31}$`, tối đa 64, `name` ≤ 60). Mọi trường kiểm theo một bảng (`TEXT_SPEC` trong `scene.ts`): số ngoài khoảng bị kẹp; giá trị sai trong **ghi đè** thì bỏ trường đó kèm `WARN_PRESET_VALUE` (chữ theo kiểu, không bị ép về giá trị gốc); `styleId` không có trong bộ → cảnh báo, dùng kiểu mặc định của chỗ chữ. Chữ cũ `{font,size,weight,color}` đọc thành ghi đè. `fontFamiliesOf` tính cả phông của kiểu mà chữ thật sự dùng.
-- **Chưa làm (1.1 hoặc việc tiếp):** viền nằm trong nét và nhiều lớp viền, trục phông biến thiên, kerning tay, OpenType nâng cao, chữ dọc, text animator, chữ theo đường, phông máy; đậm giả; báo thiếu phông khi mở preset + phông thay thế (cần phông người dùng nạp, REQ-STORAGE-05); mục "Chữ" trong bảng Thuộc tính của Editor; màu chữ gắn dữ liệu nhạc.
+- **Phông không có sẵn.** `sanitizeScene(raw, { fonts })` (mặc định `BUNDLED_TEXT_FAMILIES`) báo `WARN_PRESET_FONT_MISSING {path, value, to}` một lần cho mỗi họ phông mà kiểu hoặc ghi đè dùng nhưng không vẽ được; tên phông **giữ nguyên** trong scene (lưu lại không mất). Khi dàn chữ, `usableFont` thay họ đó bằng `TEXT_DEFAULT_FONT` (vẽ khớp bảng đo). Họ vẽ được truyền qua `Derived.fonts` → `LayoutCtx.fonts`, để phông người dùng nạp (REQ-STORAGE-05) chỉ cần thêm tên vào tập này.
+- **Giao diện (Editor, mục "Chữ").** `apps/web/src/components/TextPanel.tsx` + hàm thuần `apps/web/src/lib/textRef.ts`. Mục có cho mọi widget có chữ (`textSlots(type)` từ `TEXT_FIELDS` + `TEXT_SPAN_OF`; đoạn như `valueStyle` là ghi đè trên kiểu thật của dòng cha). Ô "Dòng chữ" chọn chỗ chữ (đánh • nếu có ghi đè). Cơ bản: kiểu, phông, cỡ, màu, đậm (700/400), nghiêng, căn lề (`align`/`timeAlign` của widget). Nâng cao: dáng chữ, chuyển màu (2 điểm màu trong giao diện, lược đồ cho tới 8), viền, bóng, nền, tràn khung/xuống dòng, Lưu thành kiểu mới (id sinh từ tên, `newStyleId`) / Cập nhật kiểu / Bỏ mọi chỉnh. Mỗi thuộc tính có ↺ = bỏ ghi đè. Lệnh: `patchTextRef(d, widget, field, next, path)` gộp bước theo `path` (kéo/gõ liên tiếp cùng thuộc tính = một bước), `setTextStyles` đổi bộ kiểu + ghi đè trong một bước. Widget bị khoá thì mọi ô bị khoá.
+- **Chưa làm (1.1 hoặc việc tiếp):** viền nằm trong nét và nhiều lớp viền, trục phông biến thiên, kerning tay, OpenType nâng cao, chữ dọc, text animator, chữ theo đường, phông máy; đậm giả; nạp phông người dùng (REQ-STORAGE-05); đổi tên/xoá kiểu chữ; màu chữ gắn dữ liệu nhạc (màu track, velocity).

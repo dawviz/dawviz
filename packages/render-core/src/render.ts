@@ -126,7 +126,7 @@ export function layoutFrame(scene: SceneDocument, derived0: Derived, ast: Unifie
   const order = scene.widgets.map((w, i) => ({ w, i })).filter(({ w }) => w.visible && renderers[w.type])
     .sort((a, b) => a.w.zIndex - b.w.zIndex || a.i - b.i); // cùng zIndex: giữ thứ tự trong tài liệu
   const measure = derived.measure ?? measureText, textStyles = scene.textStyles ?? DEFAULT_TEXT_STYLES;
-  return order.map(({ w }) => ({ widget: w, prims: renderers[w.type]!.layout({ ast, derived, tracks: tracksFor(w, derived.index), measure, textStyles }, w, t) }));
+  return order.map(({ w }) => ({ widget: w, prims: renderers[w.type]!.layout({ ast, derived, tracks: tracksFor(w, derived.index), measure, textStyles, fonts: derived.fonts }, w, t) }));
 }
 
 /**

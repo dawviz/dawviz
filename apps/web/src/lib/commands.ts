@@ -1,6 +1,6 @@
 // Tài liệu có hoàn tác và các lệnh (T-07, Technical Design §6.4). Hàm dựng lệnh nhận `doc` hiện tại để lấy giá trị "trước";
 // trả null khi không có gì đổi (không ghi mục lịch sử rỗng). `redo`/`undo` là hàm thuần trên Doc bất biến.
-import type { BrightnessConfig, NoteStyle, KeyboardStyle, PianoRollProps, SceneDocument, WidgetLayout, WidgetSpec } from '@dawviz/render-core';
+import type { BrightnessConfig, NoteStyle, KeyboardStyle, PianoRollProps, SceneDocument, TextRef, TextStyleSet, WidgetLayout, WidgetSpec } from '@dawviz/render-core';
 import type { Command } from './store.ts';
 import { clampOffsetMs } from './audioMap.ts';
 import { sceneForStyle, videoStyleBase, videoStyleKeyboard } from './videoScenes.ts';
@@ -166,6 +166,27 @@ export const patchWidgetProps = (d: Doc, widgetId: string, patch: Record<string,
   if (!w) return null;
   const get = (x: Doc) => x.scene.widgets.find((q) => q.id === widgetId)!.properties;
   return slice(d, 'patchWidgetProps', 'web.cmd.widgetProps', get, (x, v) => withWidget(x, widgetId, (q) => ({ ...q, properties: v })), { ...(w.properties as object), ...patch }, `prop:${widgetId}:${Object.keys(patch).join(',')}`, { widget: widgetId });
+};
+/**
+ * Đổi ghi đè kiểu chữ của một chỗ chữ (T-72). `path` là thuộc tính vừa đổi: kéo/gõ liên tiếp cùng thuộc tính gộp một bước,
+ * đổi thuộc tính khác là bước mới.
+ */
+export const patchTextRef = (d: Doc, widgetId: string, field: string, next: TextRef, path: string): Cmd | null => {
+  const w = d.scene.widgets.find((x) => x.id === widgetId);
+  if (!w) return null;
+  const get = (x: Doc) => (x.scene.widgets.find((q) => q.id === widgetId)!.properties as Record<string, unknown>)[field] as TextRef;
+  const set = (x: Doc, v: TextRef) => withWidget(x, widgetId, (q) => ({ ...q, properties: { ...(q.properties as object), [field]: v } }));
+  return slice(d, 'patchTextRef', 'web.cmd.text', get, set, next, `text:${widgetId}:${field}:${path}`, { widget: widgetId, field });
+};
+/** Đổi bộ kiểu chữ của scene ("Lưu thành kiểu mới", "Cập nhật kiểu"), kèm ghi đè mới của chỗ chữ vừa dùng. Một bước, không gộp. */
+export const setTextStyles = (d: Doc, styles: TextStyleSet, widgetId: string, field: string, ref: TextRef, kind: 'save' | 'update'): Cmd | null => {
+  if (!d.scene.widgets.some((x) => x.id === widgetId)) return null;
+  const get = (x: Doc) => ({ styles: x.scene.textStyles, ref: (x.scene.widgets.find((q) => q.id === widgetId)!.properties as Record<string, unknown>)[field] as TextRef });
+  const set = (x: Doc, v: { styles: TextStyleSet | undefined; ref: TextRef }) => {
+    const y = withWidget(x, widgetId, (q) => ({ ...q, properties: { ...(q.properties as object), [field]: v.ref } }));
+    return { ...y, scene: { ...y.scene, textStyles: v.styles } };
+  };
+  return slice(d, 'setTextStyles', kind === 'save' ? 'web.cmd.textStyleSave' : 'web.cmd.textStyleUpdate', get, set, { styles, ref }, undefined, { widget: widgetId, field, kind });
 };
 export const setWidgetVisible = (d: Doc, widgetId: string, visible: boolean): Cmd | null => {
   const w = d.scene.widgets.find((x) => x.id === widgetId);

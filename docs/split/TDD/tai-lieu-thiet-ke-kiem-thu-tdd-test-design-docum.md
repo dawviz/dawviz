@@ -5,7 +5,7 @@ section: "TÀI LIỆU THIẾT KẾ KIỂM THỬ (TDD = Test Design Document) —
 path: "TÀI LIỆU THIẾT KẾ KIỂM THỬ (TDD = Test Design Document) — ỨNG DỤNG DAW VISUALIZER (mở đầu)"
 chunk: tai-lieu-thiet-ke-kiem-thu-tdd-test-design-docum.md
 source_lines: 1-6
-source_sha1: dfc089d18c
+source_sha1: 8d240985ec
 ids: []
 ---
 # TÀI LIỆU THIẾT KẾ KIỂM THỬ (TDD = Test Design Document) — ỨNG DỤNG DAW VISUALIZER

@@ -7,10 +7,11 @@ import { Notices } from '../src/components/Notices.tsx';
 import { LanguageSelect } from '../src/components/LanguageSelect.tsx';
 import { AppearanceSettings, ThemeToggle, useTheme } from '../src/components/ThemeSelect.tsx';
 import { VideoStyles } from '../src/components/VideoStyles.tsx';
-import { NOTE_PRESETS } from '../src/lib/videoScenes.ts';
+import { NOTE_PRESETS, PAPER_SCENE } from '../src/lib/videoScenes.ts';
 import { createPlayback } from '../src/lib/playback.ts';
 import { NumberField } from '../src/components/NumberField.tsx';
 import { StylePanel } from '../src/components/StylePanel.tsx';
+import { TextPanel } from '../src/components/TextPanel.tsx';
 import { defaultStyleConfig, DEFAULT_KEYBOARD_STYLE, STYLE_PRESETS } from '@dawviz/render-core';
 
 const wrap = (ui: React.ReactElement) => render(<I18nProvider>{ui}</I18nProvider>);
@@ -479,5 +480,40 @@ describe('Space làm phím phát/dừng (critique P1)', () => {
     for (const el of [sel, text]) { expect(spaceBelongsToTransport(el, () => false)).toBe(false); expect(spaceBelongsToTransport(el, () => true)).toBe(false); }
     expect(spaceBelongsToTransport(range, () => true)).toBe(true);   // Space không làm gì trên thanh trượt
     expect(spaceBelongsToTransport(null)).toBe(true);
+  });
+});
+
+describe('TextPanel (T-72)', () => {
+  const chord = () => PAPER_SCENE.widgets.find((w) => w.type === 'CHORD_DETECTION')!;
+  it('Cơ bản: đổi cỡ thành ghi đè; ↺ bỏ ghi đè; chọn dòng chữ khác; căn lề là thuộc tính widget', () => {
+    const calls: [string, unknown, string][] = []; const props: Record<string, unknown>[] = [];
+    let w = chord();
+    const ui = (adv = false) => <TextPanel widget={w} styles={PAPER_SCENE.textStyles!} advanced={adv} onRef={(f, r, p) => calls.push([f, r, p])} onStyles={() => {}} onProps={(p) => props.push(p)} />;
+    const v = wrap(ui());
+    typeIn(screen.getByRole('spinbutton', { name: /^(Size|Cỡ)$/ }), '48');
+    expect(calls.at(-1)).toEqual(['nameStyle', { styleId: 'heading', size: 48 }, 'size']);
+    expect(screen.queryByTestId('text-style-actions')).toBeNull(); // Cơ bản: không có phần nâng cao
+    w = { ...w, properties: { ...(w.properties as object), nameStyle: { styleId: 'heading', size: 48 } } };
+    v.rerender(<I18nProvider>{ui()}</I18nProvider>);
+    fireEvent.click(screen.getByTestId('text-size').querySelector('[data-testid="reset"]')!);
+    expect(calls.at(-1)).toEqual(['nameStyle', { styleId: 'heading' }, 'size']);
+    fireEvent.click(screen.getByRole('radio', { name: /^(Left|Trái)$/ }));
+    expect(props.at(-1)).toEqual({ align: 'left' });
+    fireEvent.change(screen.getByTestId('text-slot'), { target: { value: 'bassStyle' } });
+    expect(screen.queryByTestId('text-styleId')).toBeNull(); // đoạn: không chọn kiểu riêng, theo dòng
+    typeIn(screen.getByRole('spinbutton', { name: /^(Size|Cỡ)$/ }), '20');
+    expect(calls.at(-1)).toEqual(['bassStyle', { size: 20 }, 'size']);
+  });
+  it('Nâng cao: bật đổ bóng, Lưu thành kiểu mới gửi bộ kiểu có kiểu mới', () => {
+    const calls: unknown[][] = []; const saves: unknown[][] = [];
+    const w = { ...chord(), properties: { ...(chord().properties as object), nameStyle: { styleId: 'heading', italic: true } } };
+    wrap(<TextPanel widget={w} styles={PAPER_SCENE.textStyles!} advanced onRef={(...a) => calls.push(a)} onStyles={(...a) => saves.push(a)} onProps={() => {}} />);
+    fireEvent.click(screen.getByRole('checkbox', { name: /^(Drop shadow|Đổ bóng)$/ }));
+    expect(calls.at(-1)).toEqual(['nameStyle', { styleId: 'heading', italic: true, shadow: { enabled: true } }, 'shadow.enabled']);
+    fireEvent.click(screen.getByTestId('text-save-style'));
+    fireEvent.change(screen.getByTestId('text-new-name'), { target: { value: 'Hợp âm nghiêng' } });
+    fireEvent.keyDown(screen.getByTestId('text-new-name'), { key: 'Enter' });
+    const [set, field, ref, kind] = saves.at(-1) as [Record<string, { italic: boolean; name: string }>, string, unknown, string];
+    expect([field, ref, kind, set['hop-am-nghieng'].italic, set['hop-am-nghieng'].name]).toEqual(['nameStyle', { styleId: 'hop-am-nghieng' }, 'save', true, 'Hợp âm nghiêng']);
   });
 });
