@@ -166,7 +166,6 @@ export function Editor({ scene, derived, ast, playback, fonts, advanced, actions
             );
           })}
         </ul>
-        <p className="mx-4 mt-3 border-t border-line pt-2 text-xs leading-snug text-muted">{i18n.t('web.editor.layersHint')}</p>
         <span className="sr-only" role="status" aria-live="polite">{say}</span>
       </aside>
 
@@ -184,7 +183,8 @@ export function Editor({ scene, derived, ast, playback, fonts, advanced, actions
               </figure>
             </div>
             {transport && <div className="mx-7 border border-line bg-surface">{transport}</div>}
-            <p id="editor-keys" className="mx-7 text-xs leading-snug text-muted">{i18n.t(advanced ? 'web.editor.keysAdv' : 'web.editor.keys')}</p>
+            {/* Cách thao tác bằng chuột/bàn phím: chỉ cho trình đọc màn hình (khung có aria-describedby); người xem đọc trong hướng dẫn sử dụng. */}
+            <p id="editor-keys" className="sr-only">{i18n.t(advanced ? 'web.editor.keysAdv' : 'web.editor.keys')}</p>
           </div>
         ) : (
           <p className="mx-auto max-w-md pt-10 text-[13px] text-muted" data-testid="editor-empty">{i18n.t('web.editor.empty')}</p>
@@ -242,7 +242,6 @@ function Properties({ scene, selected, locked, name, advanced, actions, onLock, 
           ))}
         </div>
       </div>
-      <p className="text-xs leading-snug text-muted">{i18n.t('web.editor.snapHint')}</p>
     </InspectorSection>
   );
 
@@ -311,7 +310,6 @@ function Properties({ scene, selected, locked, name, advanced, actions, onLock, 
           {field('x', 'X', -W, 2 * W)}{field('y', 'Y', -H, 2 * H)}
           {field('width', 'W', 1, 4 * W)}{field('height', 'H', 1, 4 * H)}
         </div>
-        <p className="text-xs text-muted">{i18n.t('web.editor.unitHint', { w: i18n.number(W) })}</p>
       </InspectorSection>
       {extra}
       <InspectorSection n={2 + k} id="rotation" title={i18n.t('web.editor.rotation')}>
@@ -337,7 +335,6 @@ function Properties({ scene, selected, locked, name, advanced, actions, onLock, 
             </NumRow>
           ))}
         </>}
-        <p className="text-xs leading-snug text-muted">{i18n.t(advanced ? 'web.editor.rotateHint' : 'web.editor.rotateHintBasic')}</p>
       </InspectorSection>
       <InspectorSection n={3 + k} id="arrange" title={i18n.t('web.editor.arrange')}>
         {/* Bốn nút một hàng, chỉ biểu tượng + chú thích khi rê (tên đầy đủ cho trình đọc màn hình); ở đầu/cuối thì nút tương ứng mờ. */}
@@ -357,7 +354,6 @@ function Properties({ scene, selected, locked, name, advanced, actions, onLock, 
             );
           })}
         </div>
-        <p className="text-xs leading-snug text-muted">{i18n.t('web.editor.arrangeKeys')}</p>
         <label className="flex items-center gap-2 text-[13px] text-fg">
           <input type="checkbox" checked={w.visible} onChange={(e) => actions.visible(w.id, e.target.checked)} />{i18n.t('web.editor.visible')}
         </label>

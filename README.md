@@ -34,4 +34,4 @@ npm run docs:check     # chỉ kiểm (exit 1 nếu cũ/hỏng)
 - Chưa có: xuất video (M3), lưu phiên (M4), 8 widget HUD (M2). Lộ trình: BRD mục 4.3.
 
 ## Giấy phép
-Apache License 2.0 — xem [LICENSE](LICENSE). © 2026 các tác giả DAW Visualizer (DAW Visualizer contributors). Tệp mẫu bên thứ ba không được commit (`test/fixtures/third-party/`), xem [test/fixtures/README.md](test/fixtures/README.md). Bộ kiểu và tài nguyên cộng đồng: [`presets/`](presets/README.md), [`assets/`](assets/README.md) ([hướng dẫn](docs/COMMUNITY-CONTENT.md)). Hướng dẫn đưa dự án lên GitHub lần đầu: [docs/PUBLISHING.md](docs/PUBLISHING.md).
+Apache License 2.0 — xem [LICENSE](LICENSE). © 2026 các tác giả DAW Visualizer (DAW Visualizer contributors). Tác giả và ghi công (phong cách Paper theo kênh YouTube Usagin_P): [CREDITS.md](CREDITS.md). Tệp mẫu bên thứ ba không được commit (`test/fixtures/third-party/`), xem [test/fixtures/README.md](test/fixtures/README.md). Bộ kiểu và tài nguyên cộng đồng: [`presets/`](presets/README.md), [`assets/`](assets/README.md) ([hướng dẫn](docs/COMMUNITY-CONTENT.md)). Hướng dẫn đưa dự án lên GitHub lần đầu: [docs/PUBLISHING.md](docs/PUBLISHING.md).

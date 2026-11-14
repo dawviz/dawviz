@@ -9,6 +9,7 @@ import type { PianoRollProps, SceneDocument, WidgetSpec } from './scene.ts';
 import type { Derived, Primitive, RectPrim, TextPrim, WidgetRenderer } from './prims.ts';
 import { HUD_RENDERERS, buildHud, type ChordProps, type HudData } from './hud.ts';
 import { measureText } from './text.ts';
+import { DEFAULT_TEXT_STYLES, TEXT_METRICS, type PlacedRun, type RichText, type TextGradient } from './typography.ts';
 import { normalizeAngle } from './snap.ts';
 
 /** Ngữ cảnh vẽ đủ cho renderFrame (Canvas 2D và OffscreenCanvas đều có). */
@@ -19,7 +20,17 @@ export interface RenderCtx extends Ctx2D {
   rotate(rad: number): void;
   rect(x: number, y: number, w: number, h: number): void;
   clip(): void;
+  // Chữ tự vẽ (T-72): tỉ lệ/nghiêng run, viền, gradient, đổ bóng.
+  scale(x: number, y: number): void;
+  transform(a: number, b: number, c: number, d: number, e: number, f: number): void;
+  strokeText(text: string, x: number, y: number): void;
+  lineJoin: string; shadowOffsetX: number; shadowOffsetY: number;
+  createLinearGradient(x0: number, y0: number, x1: number, y1: number): CanvasGradientLike;
+  createRadialGradient(x0: number, y0: number, r0: number, x1: number, y1: number, r1: number): CanvasGradientLike;
 }
+export interface CanvasGradientLike { addColorStop(offset: number, color: string): void }
+/** Phép biến đổi đang áp khi vẽ một widget: cần cho đổ bóng chữ, vì shadowOffset/shadowBlur của Canvas tính theo điểm ảnh thiết bị, không theo transform. */
+export interface DrawEnv { scale: number; rotation: number }
 /** `width`/`height` theo điểm ảnh thật của đích vẽ. */
 export interface RenderTarget { ctx: RenderCtx; width: number; height: number }
 
@@ -114,8 +125,8 @@ export function layoutFrame(scene: SceneDocument, derived0: Derived, ast: Unifie
   const derived = withHud(scene, derived0, ast);
   const order = scene.widgets.map((w, i) => ({ w, i })).filter(({ w }) => w.visible && renderers[w.type])
     .sort((a, b) => a.w.zIndex - b.w.zIndex || a.i - b.i); // cùng zIndex: giữ thứ tự trong tài liệu
-  const measure = derived.measure ?? measureText;
-  return order.map(({ w }) => ({ widget: w, prims: renderers[w.type]!.layout({ ast, derived, tracks: tracksFor(w, derived.index), measure }, w, t) }));
+  const measure = derived.measure ?? measureText, textStyles = scene.textStyles ?? DEFAULT_TEXT_STYLES;
+  return order.map(({ w }) => ({ widget: w, prims: renderers[w.type]!.layout({ ast, derived, tracks: tracksFor(w, derived.index), measure, textStyles }, w, t) }));
 }
 
 /**
@@ -139,7 +150,7 @@ export function renderFrame(scene: SceneDocument, derived: Derived, ast: Unified
       g.translate(L.x + ax, L.y + ay); g.rotate(rot * Math.PI / 180); g.translate(-ax, -ay);
     }
     g.beginPath(); g.rect(0, 0, L.width, L.height); g.clip();
-    drawPrimitives(g, derived.fontsReady === false ? prims.filter((p) => p.kind !== 'text') : prims); // phông chưa nạp: không vẽ chữ (TECHNICAL-DESIGN 5.7)
+    drawPrimitives(g, derived.fontsReady === false ? prims.filter((p) => p.kind !== 'text') : prims, { scale, rotation: rot }); // phông chưa nạp: không vẽ chữ (TECHNICAL-DESIGN 5.7)
     g.restore();
   }
 }
@@ -151,9 +162,9 @@ function roundedPath(g: Ctx2D, x: number, y: number, w: number, h: number, r: nu
 }
 
 /** Chỉ vẽ, không tính nghiệp vụ. Mọi trạng thái ctx bị đổi (alpha, shadow) được trả về mặc định sau mỗi hình. */
-export function drawPrimitives(g: Ctx2D, prims: Primitive[]): void {
+export function drawPrimitives(g: RenderCtx, prims: Primitive[], env: DrawEnv = { scale: 1, rotation: 0 }): void {
   for (const p of prims) {
-    if (p.kind === 'text') { drawText(g, p); continue; }
+    if (p.kind === 'text') { if (p.rich) drawRichText(g, p, p.rich, env); else drawText(g, p); continue; }
     g.globalAlpha = p.alpha; g.fillStyle = p.fill;
     if (p.glowBlur > 0) { g.shadowColor = p.glowColor; g.shadowBlur = p.glowBlur; }
     if (p.radius > 0) { roundedPath(g, p.x, p.y, p.w, p.h, p.radius); g.fill(); } else g.fillRect(p.x, p.y, p.w, p.h);
@@ -169,4 +180,76 @@ function drawText(g: Ctx2D, p: TextPrim): void {
   g.font = `${p.weight} ${p.size}px "${p.font}", sans-serif`;
   g.textAlign = p.align; g.textBaseline = 'alphabetic'; g.fontKerning = 'none'; g.textRendering = 'geometricPrecision'; // không kerning, không làm tròn advance: khớp bảng đo
   if (p.maxWidth !== undefined) g.fillText(p.text, p.x, p.y, p.maxWidth); else g.fillText(p.text, p.x, p.y);
+}
+
+// ───────────────────────────── chữ tự vẽ (T-72, REQ-GRAPHICS-18) ─────────────────────────────
+// Vị trí từng run/cụm ký tự đã tính ở layout bằng bảng đo, nên mọi trình duyệt đặt chữ như nhau. Không dùng letterSpacing,
+// fontVariantNumeric hay italic tổng hợp của trình duyệt: tracking/chữ số đều bề rộng là vị trí đã dàn, nghiêng là phép xiên.
+const FAR = 1e5; // bản sao chữ cho bóng nằm ngoài vùng cắt của widget; chỉ bóng của nó rơi vào khung
+const rgba = (hex: string, a: number) => {
+  const n = parseInt(hex.slice(1), 16);
+  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${Math.min(1, Math.max(0, a))})`;
+};
+function drawRichText(g: RenderCtx, p: TextPrim, r: RichText, env: DrawEnv): void {
+  const alpha = p.alpha * r.opacity;
+  if (!(alpha > 0.004)) return;
+  const top = p.y - r.ascent, h = r.ascent + r.descent;
+  g.shadowBlur = 0;
+  const bg = r.background;
+  if (bg.enabled && bg.opacity > 0) {
+    const bx = r.left - bg.padX, by = top - bg.padY, bw = r.width + 2 * bg.padX, bh = h + 2 * bg.padY;
+    g.globalAlpha = alpha * bg.opacity; g.fillStyle = bg.color;
+    if (bg.radius > 0) { roundedPath(g, bx, by, bw, bh, Math.min(bg.radius, bw / 2, bh / 2)); g.fill(); } else g.fillRect(bx, by, bw, bh);
+  }
+  g.textAlign = 'left'; g.textBaseline = 'alphabetic'; g.fontKerning = 'none'; g.textRendering = 'geometricPrecision';
+  const sh = r.shadow;
+  if (sh.enabled && sh.opacity > 0) {
+    const rot = env.rotation * Math.PI / 180, a = sh.angle * Math.PI / 180;
+    const lx = Math.cos(a) * sh.distance - FAR, ly = Math.sin(a) * sh.distance; // dời bản sao về vị trí bóng, quy ra điểm ảnh thiết bị
+    g.globalAlpha = alpha; g.shadowColor = rgba(sh.color, sh.opacity); g.shadowBlur = sh.blur * env.scale;
+    g.shadowOffsetX = env.scale * (lx * Math.cos(rot) - ly * Math.sin(rot)); g.shadowOffsetY = env.scale * (lx * Math.sin(rot) + ly * Math.cos(rot));
+    for (const run of r.runs) paintRun(g, p, r, run, FAR, true);
+    g.shadowBlur = 0; g.shadowOffsetX = 0; g.shadowOffsetY = 0; g.shadowColor = 'rgba(0,0,0,0)';
+  }
+  g.globalAlpha = alpha;
+  for (const run of r.runs) paintRun(g, p, r, run, 0, false);
+}
+/** Gradient trên hộp cả dòng, đổi sang toạ độ riêng của run (đã dời tới baseline và co theo tỉ lệ ngang/dọc). */
+function runGradient(g: RenderCtx, r: RichText, baseY: number, grad: TextGradient, x0: number, y0: number, sx: number, sy: number) {
+  const L = (X: number) => (X - x0) / sx, T = (Y: number) => (Y - y0) / sy;
+  const top = baseY - r.ascent, w = r.width, h = r.ascent + r.descent, cx = r.left + w / 2, cy = top + h / 2;
+  let gr: CanvasGradientLike;
+  if (grad.kind === 'radial') gr = g.createRadialGradient(L(cx), T(cy), 0, L(cx), T(cy), Math.hypot(w, h) / 2 / Math.max(sx, sy));
+  else {
+    const a = grad.angle * Math.PI / 180, dx = Math.cos(a), dy = Math.sin(a), half = (Math.abs(w * dx) + Math.abs(h * dy)) / 2;
+    gr = g.createLinearGradient(L(cx - dx * half), T(cy - dy * half), L(cx + dx * half), T(cy + dy * half));
+  }
+  for (const s of grad.stops) gr.addColorStop(s.at, s.color);
+  return gr;
+}
+function paintRun(g: RenderCtx, p: TextPrim, r: RichText, run: PlacedRun, offX: number, shadow: boolean): void {
+  const M = TEXT_METRICS, x0 = r.left + run.dx + offX, y0 = p.y - run.shift;
+  const sx = run.scaleX, sy = run.scaleY;
+  const fill = shadow ? '#000000' : run.gradient ? runGradient(g, r, p.y, run.gradient, x0, y0, sx, sy) : run.color;
+  g.save(); g.translate(x0, y0);
+  if (sx !== 1 || sy !== 1) g.scale(sx, sy);
+  if (run.italic) g.transform(1, 0, -M.italicSkew, 1, 0, 0); // nghiêng giả, giống nhau mọi trình duyệt (phông đóng gói không có mặt nghiêng)
+  g.font = `${run.weight} ${run.size}px "${run.font}", sans-serif`;
+  const glyphs: [string, number][] = run.clusters && run.xs ? run.clusters.map((c, i) => [c, run.xs![i] / sx]) : [[run.text, 0]];
+  const st = run.stroke, outside = st.position === 'outside';
+  const stroke = () => {
+    g.lineWidth = outside ? 2 * st.width : st.width; g.lineJoin = st.join; g.strokeStyle = shadow ? '#000000' : st.color;
+    for (const [c, x] of glyphs) g.strokeText(c, x, 0);
+  };
+  const doFill = () => { g.fillStyle = fill; for (const [c, x] of glyphs) g.fillText(c, x, 0); };
+  if (st.width > 0 && (!st.over || outside)) { stroke(); doFill(); }
+  else { doFill(); if (st.width > 0) stroke(); }
+  g.restore();
+  if (run.underline || run.strike) { // gạch tự vẽ: không xiên theo chữ nghiêng, dài đúng bề rộng run
+    const th = run.decoThickness > 0 ? run.decoThickness : Math.max(0.5, run.size * M.decoThickness * sy);
+    g.fillStyle = shadow ? '#000000' : run.decoColor || fill as string;
+    if (!shadow && !run.decoColor && run.gradient) g.fillStyle = runGradient(g, r, p.y, run.gradient, 0, 0, 1, 1);
+    if (run.underline) g.fillRect(x0, y0 + run.size * M.underline * sy - th / 2, run.width, th);
+    if (run.strike) g.fillRect(x0, y0 - run.size * M.strike * sy - th / 2, run.width, th);
+  }
 }

@@ -5,6 +5,64 @@
   "branch": "main",
   "nav": [
     {
+      "group": "Hướng dẫn sử dụng",
+      "items": [
+        {
+          "src": "docs/manual/README.md",
+          "title": "Mục lục"
+        },
+        {
+          "src": "docs/manual/01-mo-du-an.md",
+          "title": "Mở dự án"
+        },
+        {
+          "src": "docs/manual/02-xem-truoc.md",
+          "title": "Thẻ Xem trước"
+        },
+        {
+          "src": "docs/manual/03-chinh-sua.md",
+          "title": "Thẻ Chỉnh sửa"
+        },
+        {
+          "src": "docs/manual/04-cai-dat.md",
+          "title": "Thẻ Cài đặt"
+        },
+        {
+          "src": "docs/manual/05-phim-tat.md",
+          "title": "Phím tắt"
+        }
+      ]
+    },
+    {
+      "group": "User guide (English)",
+      "items": [
+        {
+          "src": "docs/manual/en/README.md",
+          "title": "Contents"
+        },
+        {
+          "src": "docs/manual/en/01-open-a-project.md",
+          "title": "Opening a project"
+        },
+        {
+          "src": "docs/manual/en/02-preview.md",
+          "title": "The Preview tab"
+        },
+        {
+          "src": "docs/manual/en/03-editor.md",
+          "title": "The Editor tab"
+        },
+        {
+          "src": "docs/manual/en/04-settings.md",
+          "title": "The Settings tab"
+        },
+        {
+          "src": "docs/manual/en/05-shortcuts.md",
+          "title": "Keyboard shortcuts"
+        }
+      ]
+    },
+    {
       "group": "Bắt đầu",
       "items": [
         {
@@ -18,6 +76,10 @@
         {
           "src": "CONTRIBUTING.md",
           "title": "Đóng góp"
+        },
+        {
+          "src": "CREDITS.md",
+          "title": "Ghi công"
         },
         {
           "src": "docs/PUBLISHING.md",

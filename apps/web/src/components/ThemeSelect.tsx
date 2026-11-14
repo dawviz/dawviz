@@ -60,7 +60,6 @@ export function AppearanceSettings({ pref, onChange }: { pref: ThemePref; onChan
         <span>{i18n.t('web.theme.palette')}</span>
         <Segmented label={i18n.t('web.theme.palette')} value={pref.palette} options={PALETTES} name={(p) => i18n.t(`web.theme.palette.${p}`)} onChange={(palette: Palette) => onChange({ ...pref, palette })} />
       </div>
-      <p className="text-xs text-muted">{i18n.t('web.settings.appearanceHint')}</p>
     </div>
   );
 }

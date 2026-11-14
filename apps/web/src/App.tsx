@@ -397,7 +397,7 @@ export function App() {
             <InspectorSection n={2} id="stage" title={i18n.t('web.settings.stage')}>
               <label className="flex items-start gap-2 text-[13px] text-fg">
                 <input type="checkbox" className="mt-0.5" checked={ui.proofFrame} onChange={(e) => setUi((u) => ({ ...u, proofFrame: e.target.checked }))} data-testid="proof-toggle" />
-                <span>{i18n.t('web.settings.proof')}<span className="mt-0.5 block text-xs text-muted">{i18n.t('web.settings.proofHint')}</span></span>
+                <span>{i18n.t('web.settings.proof')}</span>
               </label>
             </InspectorSection>
             <InspectorSection n={3} id="preset" title={i18n.t('web.settings.preset')}>

@@ -1,12 +1,12 @@
 // T-69: sáu widget chữ. Tất định, số đếm khớp tính tay, định dạng đúng ví dụ trong SRS.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { layoutFrame, sanitizeScene, formatTemplate, groupDigits, clockMs, fitText, measureText, buildBarGrid, barPosAt, chordTimeline, buildHud, buildSceneHud,
+import { layoutFrame, sanitizeScene, SCENE_SCHEMA_VERSION, formatTemplate, groupDigits, clockMs, fitText, measureText, buildBarGrid, barPosAt, chordTimeline, buildHud, buildSceneHud,
   WIDGET_RENDERERS, type SceneDocument, type TextPrim, type Primitive } from '../src/index.ts';
 import { synthAst, derivedOf } from './helpers.ts';
 
 const sceneWith = (type: string, properties: object, layout = { x: 0, y: 0, width: 600, height: 120 }): SceneDocument => {
-  const { scene, warnings } = sanitizeScene({ schemaVersion: '0.4.0', canvas: {}, widgets: [{ id: 'w', type, layout, properties }] });
+  const { scene, warnings } = sanitizeScene({ schemaVersion: SCENE_SCHEMA_VERSION, canvas: {}, widgets: [{ id: 'w', type, layout, properties }] });
   assert.deepEqual(warnings, []); return scene;
 };
 const prims = (scene: SceneDocument, t: number, ast = synthAst()) => layoutFrame(scene, derivedOf(ast), ast, t)[0].prims;
@@ -131,7 +131,7 @@ test('tất định cho từng widget: cùng (scene, t) → cùng danh sách, kh
 });
 
 test('sanitizeScene: chỗ giữ lạ → cảnh báo, chữ giữ nguyên; giá trị sai về mặc định', () => {
-  const r = sanitizeScene({ schemaVersion: '0.4.0', canvas: {}, widgets: [{ type: 'EVENT_COUNTER', id: 'e', properties: { decimals: 9, style: { size: 'big', color: 'red' }, lines: { played: { template: 'x {bogus}' } } } }] });
+  const r = sanitizeScene({ schemaVersion: SCENE_SCHEMA_VERSION, canvas: {}, widgets: [{ type: 'EVENT_COUNTER', id: 'e', properties: { decimals: 9, style: { size: 'big', color: 'red' }, lines: { played: { template: 'x {bogus}' } } } }] });
   const paths = r.warnings.map((w) => w.details.path);
   for (const p of ['$.widgets[0].properties.decimals', '$.widgets[0].properties.style.size', '$.widgets[0].properties.style.color', '$.widgets[0].properties.lines.played.template']) assert.ok(paths.includes(p), p);
   assert.equal((r.scene.widgets[0].properties as any).lines.played.template, 'x {bogus}');
@@ -197,14 +197,14 @@ test('Chord Strike: gom nốt lệch ≤ 30 ms, giữ tên đến lần dập k�
   const li = derivedOf(late).index;
   assert.deepEqual(chordTimeline(buildHud(late, li), li.tracks, 'strike').map((s) => s.pitches), [[60, 64]]);
   // mode lạ → cảnh báo, về sustained
-  const r = sanitizeScene({ schemaVersion: '0.4.0', canvas: {}, widgets: [{ type: 'CHORD_DETECTION', id: 'c', properties: { mode: 'arp' } }] });
+  const r = sanitizeScene({ schemaVersion: SCENE_SCHEMA_VERSION, canvas: {}, widgets: [{ type: 'CHORD_DETECTION', id: 'c', properties: { mode: 'arp' } }] });
   assert.equal((r.scene.widgets[0].properties as any).mode, 'sustained');
   assert.ok(r.warnings.some((w) => w.details.path === '$.widgets[0].properties.mode'));
 });
 
 test('buildSceneHud dựng hợp âm theo chế độ của từng widget', () => {
   const ast = synthAst();
-  const { scene } = sanitizeScene({ schemaVersion: '0.4.0', canvas: {}, widgets: [{ id: 'a', type: 'CHORD_DETECTION', properties: { mode: 'strike' } }, { id: 'b', type: 'CHORD_DETECTION', properties: {} }] });
+  const { scene } = sanitizeScene({ schemaVersion: SCENE_SCHEMA_VERSION, canvas: {}, widgets: [{ id: 'a', type: 'CHORD_DETECTION', properties: { mode: 'strike' } }, { id: 'b', type: 'CHORD_DETECTION', properties: {} }] });
   const hud = buildSceneHud(scene, ast, derivedOf(ast).index);
   assert.deepEqual([...hud.chords.keys()].map((k) => k.split(':')[0]).sort(), ['strike', 'sustained']);
 });

@@ -5,7 +5,7 @@ section: "5.3 Hệ toạ độ và tỉ lệ 🟡"
 path: "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.3 Hệ toạ độ và tỉ lệ 🟡"
 chunk: 5-3-he-toa-do-va-ti-le.md
 source_lines: 143-145
-source_sha1: 49e19e4d81
+source_sha1: 6f5f3c0f08
 ids: []
 ---
 ### 5.3 Hệ toạ độ và tỉ lệ 🟡

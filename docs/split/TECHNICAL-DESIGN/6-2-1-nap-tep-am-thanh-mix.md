@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "6.2.1 Nạp tệp âm thanh (mix)"
 path: "6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.1 Nạp tệp âm thanh (mix)"
 chunk: 6-2-1-nap-tep-am-thanh-mix.md
-source_lines: 212-225
-source_sha1: 49e19e4d81
+source_lines: 225-238
+source_sha1: 6f5f3c0f08
 ids: [ARC-03, ERR_AUDIO_DECODE, ERR_AUDIO_TOO_LONG, ERR_FILE_TOO_LARGE, NFR-PERF-04, REQ-AUDIO-01, REQ-EXPORT-03, REQ-STORAGE-05, REQ-WIDGET-07]
 ---
 #### 6.2.1 Nạp tệp âm thanh (mix)

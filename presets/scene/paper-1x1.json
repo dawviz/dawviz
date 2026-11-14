@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "0.4.0",
+  "schemaVersion": "0.5.0",
   "presetName": "Paper",
   "author": "DAW Visualizer",
   "canvas": {
@@ -36,8 +36,8 @@
       "trackMappingMode": "ALL", "assignedTrackIndices": [],
       "properties": {
         "align": "left", "titleText": "", "artistText": "",
-        "titleStyle": { "font": "Space Grotesk", "size": 72, "weight": 700, "color": "#111111" },
-        "artistStyle": { "font": "Space Grotesk", "size": 28, "weight": 400, "color": "#111111" }
+        "titleStyle": { "styleId": "title" },
+        "artistStyle": { "styleId": "subtitle" }
       }
     },
     {
@@ -46,7 +46,7 @@
       "trackMappingMode": "ALL", "assignedTrackIndices": [],
       "properties": {
         "align": "right", "decimals": 2, "lineHeight": 1.45,
-        "style": { "font": "Space Grotesk", "size": 22, "weight": 400, "color": "#777777" },
+        "style": { "styleId": "counter" },
         "lines": {
           "played": { "enabled": true, "template": "Num played notes: {played}/{total} ({pct})" },
           "total": { "enabled": true, "template": "Num events: {played}/{total}" },
@@ -61,7 +61,7 @@
       "trackMappingMode": "ALL", "assignedTrackIndices": [],
       "properties": {
         "mode": "inline", "align": "right", "tailMs": 300, "maxLines": 1, "lineHeight": 1.4, "separator": "   ",
-        "style": { "font": "Space Grotesk", "size": 15, "weight": 400, "color": "#888888" },
+        "style": { "styleId": "caption" },
         "template": "Note: {name} (Vel: {velocity})", "showTrack": true, "trackTemplate": "< {track}"
       }
     },
@@ -70,8 +70,8 @@
       "layout": { "x": 75, "y": 950, "width": 400, "height": 90, "rotation": 0, "anchor": { "x": 0.5, "y": 0.5 } },
       "trackMappingMode": "ALL", "assignedTrackIndices": [],
       "properties": {
-        "style": { "font": "Space Grotesk", "size": 18, "weight": 400, "color": "#777777" },
-        "labelStyle": { "font": "Space Grotesk", "size": 11, "weight": 400, "color": "#999999" },
+        "style": { "styleId": "clock" },
+        "labelStyle": { "styleId": "label" },
         "rowGap": 1.9,
         "time": { "enabled": true, "label": "time", "format": "grouped" },
         "beat": { "enabled": true, "label": "beat", "format": "grouped" },
@@ -85,8 +85,8 @@
       "trackMappingMode": "ALL", "assignedTrackIndices": [],
       "properties": {
         "align": "right", "alwaysShowNotes": true, "notesTemplate": "Notes: {notes}", "unrecognized": "nc", "noChordText": "N.C.",
-        "nameStyle": { "font": "Space Grotesk", "size": 34, "weight": 700, "color": "#111111" },
-        "notesStyle": { "font": "Space Grotesk", "size": 17, "weight": 400, "color": "#777777" }
+        "nameStyle": { "styleId": "heading" },
+        "notesStyle": { "styleId": "body" }
       }
     },
     {
@@ -96,7 +96,7 @@
       "properties": {
         "orientation": "HORIZONTAL", "thickness": 12, "progressColor": "#CCCCCC", "trackColor": "", "radius": 0,
         "showTime": true, "timeTemplate": "{elapsed} / {total}", "timeAlign": "right",
-        "timeStyle": { "font": "Space Grotesk", "size": 7, "weight": 400, "color": "#BBBBBB" }
+        "timeStyle": { "styleId": "tiny" }
       }
     }
   ]

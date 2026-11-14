@@ -2,6 +2,7 @@
 // Ctx giả theo dõi ma trận biến đổi: kiểm hình vẽ ra (toạ độ thiết bị) khớp hình học của rotatedBounds/toWidgetLocal.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { SCENE_SCHEMA_VERSION } from '../src/index.ts';
 import { renderFrame, sanitizeScene, rotatedBounds, toWidgetLocal, pointInWidget, type SceneDocument } from '../src/index.ts';
 import { synthAst, derivedOf, recCtx } from './helpers.ts';
 
@@ -22,7 +23,7 @@ function matCtx() {
   return { ctx, fills, clips };
 }
 const sceneRot = (rotation: number, anchor = { x: 0.5, y: 0.5 }): SceneDocument => {
-  const { scene, warnings } = sanitizeScene({ schemaVersion: '0.4.0', canvas: { designWidth: 1920, designHeight: 1080, backgroundColor: '#000000' },
+  const { scene, warnings } = sanitizeScene({ schemaVersion: SCENE_SCHEMA_VERSION, canvas: { designWidth: 1920, designHeight: 1080, backgroundColor: '#000000' },
     widgets: [{ id: 'pb', type: 'PROGRESS_BAR', layout: { x: 600, y: 400, width: 500, height: 40, rotation, anchor }, properties: { thickness: 40, progressColor: '#ff0000', trackColor: '#00ff00', showTime: false } }] });
   assert.deepEqual(warnings, []); return scene;
 };

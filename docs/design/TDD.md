@@ -42,6 +42,9 @@ Lệnh: `npm test` (parser + render + logic web), `npm run test:components` (Vit
 ### 2.3 `apps/web/test/components.test.tsx` (3, chưa chạy)
 `Transport` (bấm, kéo thanh tua), `Notices` (văn bản + chi tiết kỹ thuật), `LanguageSelect` (đổi `lang` của `<html>`).
 
+### 2.4 `packages/render-core/test/typography.test.ts` (20, T-72)
+Bộ kiểu dựng sẵn (phông gốc trùng `DEFAULT_FONT`, số đếm/đồng hồ bật chữ số đều); ghi đè từng thuộc tính, ↺, "Lưu thành kiểu mới"/"Cập nhật kiểu"; chữ thường giữ đường vẽ cũ; chữ số đều bề rộng ("111" = "888"); tracking và tỉ lệ ngang; căn lề; tràn khung (cắt "…" không vượt khung, tự thu nhỏ vừa khít, chạm cỡ tối thiểu thì cắt, để tràn); xuống dòng + số dòng tối đa; hoa/thường/chữ hoa nhỏ; chỉ số trên/dưới; cụm ký tự tiếng Việt; định dạng từng đoạn (valueStyle, bassStyle) qua preset; lược đồ `textStyles` + ghi đè sai bị bỏ có cảnh báo + vòng lưu/đọc; phông cần nạp theo kiểu đang dùng; lệnh vẽ: thứ tự viền/tô, viền ngoài, gạch, gradient, nghiêng, nền chữ, bóng quy theo scale và góc xoay; tất định trong widget xoay. Golden `paper-1x1` đổi có chủ ý ở chữ có số (chữ số đều bề rộng).
+
 ## 3. Ma trận truy vết
 
 | Yêu cầu | Test |
@@ -50,6 +53,7 @@ Lệnh: `npm test` (parser + render + logic web), `npm run test:components` (Vit
 | REQ-GRAPHICS-06 (độ sáng) | `trackBrightness`, Reaper `BigProject4b` |
 | NFR-PERF-05 (tua ngẫu nhiên) | `activeNotes` (đo thời gian chưa có, xem 4) |
 | REQ-I18N-04 (dịch lỗi theo mã) | `problems` ×2, `i18n:check` |
+| REQ-GRAPHICS-18 (kiểu chữ, T-72) | `typography.test.ts`, golden `paper-1x1`, `preset.test.ts` (di trú 0.3/0.4 → 0.5 vẽ giống bản dựng sẵn) |
 | AT-18 (mốc M1) | Thủ công trên Chrome, danh sách ở mục 5 |
 
 ## 4. Khoảng trống đã biết

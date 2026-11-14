@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "DAW Visualizer scene preset (schemaVersion 0.4.x)",
+  "title": "DAW Visualizer scene preset (schemaVersion 0.5.x)",
   "description": "Mô tả lược đồ cho tài liệu và test. Việc kiểm lúc chạy là sanitizeScene (packages/render-core/src/scene.ts): trường lạ bị bỏ, giá trị sai về mặc định kèm WARN_PRESET_*.",
   "type": "object",
   "required": ["schemaVersion", "canvas", "widgets"],
   "additionalProperties": true,
   "properties": {
-    "schemaVersion": { "type": "string", "pattern": "^0\\.[34]\\.\\d+$" },
+    "schemaVersion": { "type": "string", "pattern": "^0\\.[345]\\.\\d+$" },
     "presetName": { "type": "string", "maxLength": 200 },
     "author": { "type": "string", "maxLength": 200 },
     "canvas": {
@@ -27,6 +27,13 @@
         }
       }
     },
+    "textStyles": {
+      "type": "object",
+      "description": "Bộ kiểu chữ dựng sẵn của preset (thêm ở 0.5.0). Vắng = bộ mặc định (title, subtitle, heading, body, caption, label, counter, clock, tiny); kiểu trùng id ghi đè kiểu mặc định. Tối đa 64.",
+      "propertyNames": { "pattern": "^[A-Za-z][\\w-]{0,31}$" },
+      "maxProperties": 64,
+      "additionalProperties": { "$ref": "#/$defs/textStyle" }
+    },
     "widgets": {
       "type": "array",
       "maxItems": 64,
@@ -41,8 +48,10 @@
           "layout": {
             "type": "object",
             "properties": {
-              "x": { "type": "number" }, "y": { "type": "number" },
-              "width": { "type": "number", "exclusiveMinimum": 0 }, "height": { "type": "number", "exclusiveMinimum": 0 },
+              "x": { "type": "number" },
+              "y": { "type": "number" },
+              "width": { "type": "number", "exclusiveMinimum": 0 },
+              "height": { "type": "number", "exclusiveMinimum": 0 },
               "rotation": { "type": "number", "minimum": -360, "maximum": 360 },
               "anchor": {
                 "type": "object",
@@ -55,6 +64,93 @@
           "assignedTrackIndices": { "type": "array", "items": { "type": "integer", "minimum": 0 }, "maxItems": 1024 },
           "properties": { "type": "object" }
         }
+      }
+    }
+  },
+  "$defs": {
+    "textStyle": {
+      "type": "object",
+      "description": "Thuộc tính chữ (REQ-GRAPHICS-18, T-72). Trong textStyles: kiểu đầy đủ (trường vắng lấy từ kiểu dựng sẵn cùng id hoặc kiểu gốc). Trong widget: ghi đè, chỉ trường có mặt thay kiểu.",
+      "properties": {
+        "styleId": { "type": "string", "pattern": "^[A-Za-z][\\w-]{0,31}$", "description": "Chỉ dùng trong widget: id kiểu trong textStyles." },
+        "name": { "type": "string", "minLength": 1, "maxLength": 60, "description": "Chỉ dùng trong textStyles: tên hiển thị." },
+        "font": { "type": "string", "pattern": "^[\\w][\\w \\-]{0,39}$" },
+        "weight": { "type": "number", "minimum": 100, "maximum": 900 },
+        "italic": { "type": "boolean" },
+        "size": { "type": "number", "minimum": 4, "maximum": 400 },
+        "scaleX": { "type": "number", "minimum": 0.1, "maximum": 10 },
+        "scaleY": { "type": "number", "minimum": 0.1, "maximum": 10 },
+        "baselineShift": { "type": "number", "minimum": -400, "maximum": 400 },
+        "script": { "enum": ["none", "super", "sub"] },
+        "underline": { "type": "boolean" },
+        "strike": { "type": "boolean" },
+        "decoThickness": { "type": "number", "minimum": 0, "maximum": 50 },
+        "decoColor": { "type": "string", "pattern": "^(#[0-9a-fA-F]{6})?$" },
+        "textCase": { "enum": ["none", "upper", "lower", "title", "smallCaps"] },
+        "tracking": { "type": "number", "minimum": -500, "maximum": 2000, "description": "phần nghìn em" },
+        "leading": { "type": "number", "minimum": 0.5, "maximum": 5 },
+        "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+        "gradient": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "required": ["stops"],
+              "properties": {
+                "kind": { "enum": ["linear", "radial"] },
+                "angle": { "type": "number", "minimum": -360, "maximum": 360 },
+                "stops": {
+                  "type": "array",
+                  "minItems": 2,
+                  "maxItems": 8,
+                  "items": {
+                    "type": "object",
+                    "required": ["at", "color"],
+                    "properties": { "at": { "type": "number", "minimum": 0, "maximum": 1 }, "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" } }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "opacity": { "type": "number", "minimum": 0, "maximum": 1 },
+        "stroke": {
+          "type": "object",
+          "properties": {
+            "width": { "type": "number", "minimum": 0, "maximum": 50 },
+            "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+            "position": { "enum": ["center", "outside"] },
+            "join": { "enum": ["miter", "round", "bevel"] },
+            "over": { "type": "boolean" }
+          }
+        },
+        "shadow": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+            "opacity": { "type": "number", "minimum": 0, "maximum": 1 },
+            "distance": { "type": "number", "minimum": 0, "maximum": 200 },
+            "angle": { "type": "number", "minimum": -360, "maximum": 360 },
+            "blur": { "type": "number", "minimum": 0, "maximum": 100 }
+          }
+        },
+        "background": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+            "opacity": { "type": "number", "minimum": 0, "maximum": 1 },
+            "padX": { "type": "number", "minimum": 0, "maximum": 200 },
+            "padY": { "type": "number", "minimum": 0, "maximum": 200 },
+            "radius": { "type": "number", "minimum": 0, "maximum": 200 }
+          }
+        },
+        "tabularNums": { "type": "boolean" },
+        "overflow": { "enum": ["ellipsis", "shrink", "visible"] },
+        "minSize": { "type": "number", "minimum": 4, "maximum": 400 },
+        "wrap": { "type": "boolean" },
+        "maxLines": { "type": "integer", "minimum": 1, "maximum": 20 }
       }
     }
   }

@@ -15,3 +15,4 @@ export * from './text.ts';
 export * from './fonts.ts';
 export * from './hud.ts';
 export * from './thumbnail.ts';
+export * from './typography.ts';

@@ -12,7 +12,6 @@ export function PresetSettings({ onOpen, onSave, problems, opened }: { onOpen(fi
   const input = useRef<HTMLInputElement>(null);
   return (
     <div className="space-y-3" data-testid="preset-settings">
-      <p className="text-xs leading-snug text-muted">{i18n.t('web.preset.hint')}</p>
       <div className="flex flex-wrap gap-2">
         <button type="button" className={btn} onClick={() => input.current?.click()} data-testid="preset-open">{i18n.t('web.preset.open')}</button>
         <button type="button" className={btn} onClick={onSave} data-testid="preset-save">{i18n.t('web.preset.save')}</button>

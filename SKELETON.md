@@ -198,7 +198,8 @@ dawviz/
 │  │  │  ├─ style.ts
 │  │  │  ├─ text.ts
 │  │  │  ├─ thumbnail.ts
-│  │  │  └─ types.ts
+│  │  │  ├─ types.ts
+│  │  │  └─ typography.ts
 │  │  ├─ test/
 │  │  │  ├─ fixtures/   # tệp mẫu
 │  │  │  ├─ golden/
@@ -214,7 +215,8 @@ dawviz/
 │  │  │  ├─ render-core.test.ts
 │  │  │  ├─ rotate.test.ts
 │  │  │  ├─ scene.test.ts
-│  │  │  └─ snap.test.ts
+│  │  │  ├─ snap.test.ts
+│  │  │  └─ typography.test.ts
 │  │  ├─ package.json
 │  │  └─ tsconfig.json
 │  ├─ rpp/   # @dawviz/parser-rpp: Reaper .rpp
@@ -224,6 +226,8 @@ dawviz/
 │  │  └─ package.json
 │  └─ README.md
 ├─ presets/
+│  ├─ examples/
+│  │  └─ text-styles-demo.json
 │  ├─ note-style/
 │  │  ├─ flat.json
 │  │  ├─ neon.json
@@ -267,6 +271,7 @@ dawviz/
 ├─ AI_CONTEXT.md
 ├─ ARCHITECTURE.md
 ├─ CONTRIBUTING.md
+├─ CREDITS.md
 ├─ LICENSE
 ├─ package.json
 ├─ PRODUCT.md
@@ -596,10 +601,8 @@ function panUnit(u: number, st: Pick<NoteStyle, 'glowPanMode'>): number   // u =
 Sáu widget chữ của T-69 (SRS REQ-WIDGET-02…06, 08): Track Info, Event Counter, Live Note Trigger, Time & Bar Counter,
 
 ```text
-type Align   // ───────────────────────────── thuộc tính ─────────────────────────────
-interface TextStyle
 interface LineCfg
-interface TrackInfoProps
+interface TrackInfoProps   // Mọi chữ là TextRef (T-72): kiểu dựng sẵn `styleId` + ghi đè. Thiếu `styleId` thì dùng kiểu mặc định của chỗ đ…
 interface EventCounterProps
 interface LiveTriggerProps
 interface ClockCfg
@@ -607,6 +610,7 @@ interface TimeBarProps
 type ChordMode
 interface ChordProps
 interface ProgressBarProps
+const TEXT_FIELDS   // Chỗ có chữ trong từng widget → kiểu dựng sẵn mặc định (REQ-GRAPHICS-18). Trường `…ValueStyle`/`bassStyle` là …
 const DEFAULT_TRACK_INFO
 const DEFAULT_EVENT_COUNTER
 const DEFAULT_LIVE_TRIGGER
@@ -632,6 +636,7 @@ const liveTriggerRenderer
 const timeBarRenderer
 const chordRenderer
 const progressBarRenderer
+function chordSpans(name: string, bassStyle?: TextRef): TextSpan[]   // Tên hợp âm → đoạn: phần bass sau "/" theo `bassStyle` (ví dụ nhạt hơn), phần gốc theo kiểu dòng.
 const HUD_RENDERERS
 ```
 
@@ -656,6 +661,7 @@ re-export * from './text.ts'
 re-export * from './fonts.ts'
 re-export * from './hud.ts'
 re-export * from './thumbnail.ts'
+re-export * from './typography.ts'
 ```
 
 #### `packages/render-core/src/music.ts`
@@ -709,6 +715,8 @@ T-05: renderFrame + hợp đồng WidgetRenderer (Technical Design §5.1–5.2).
 
 ```text
 interface RenderCtx   // Ngữ cảnh vẽ đủ cho renderFrame (Canvas 2D và OffscreenCanvas đều có).
+interface CanvasGradientLike
+interface DrawEnv   // Phép biến đổi đang áp khi vẽ một widget: cần cho đổ bóng chữ, vì shadowOffset/shadowBlur của Canvas tính theo…
 interface RenderTarget   // `width`/`height` theo điểm ảnh thật của đích vẽ.
 function tracksFor(spec: WidgetSpec<unknown>, index: TimelineIndex): TrackIndex[]   // Chọn track cho widget theo trackMappingMode (SRS REQ-STORAGE-02).
 function pianoRollPitchRange(p: PianoRollProps, tracks: TrackIndex[]): [number, number]   // Tầm cao độ của Piano Roll: FIT_CONTENT lấy min/max của track được gán (±1), rỗng thì C3–C6.
@@ -718,7 +726,7 @@ const WIDGET_RENDERERS   // Bảng renderer theo loại. Widget chưa có render
 const buildSceneHud = (scene: SceneDocument, ast: UnifiedProjectAST, index: TimelineIndex) =>   // HudData cho một scene: số đếm, lưới ô nhịp và hợp âm của mọi widget Chord Detection. Gọi ở bước derived (một …
 function layoutFrame(scene: SceneDocument, derived0: Derived, ast: UnifiedProjectAST, t: number, renderers = WIDGET_RENDERERS)
 function renderFrame(scene: SceneDocument, derived: Derived, ast: UnifiedProjectAST, t: number, target: RenderTarget, scale: number, renderers = WIDGET_RENDERERS): void   // Vẽ một khung hình. `scale` = điểm ảnh đích / pt (Preview: bề rộng canvas × DPR / designWidth; Export: W_expor…
-function drawPrimitives(g: Ctx2D, prims: Primitive[]): void   // Chỉ vẽ, không tính nghiệp vụ. Mọi trạng thái ctx bị đổi (alpha, shadow) được trả về mặc định sau mỗi hình.
+function drawPrimitives(g: RenderCtx, prims: Primitive[], env: DrawEnv = { scale: 1, rotation: 0 }): void   // Chỉ vẽ, không tính nghiệp vụ. Mọi trạng thái ctx bị đổi (alpha, shadow) được trả về mặc định sau mỗi hình.
 ```
 
 #### `packages/render-core/src/scene.ts`
@@ -740,6 +748,7 @@ const DEFAULT_PIANO_ROLL
 const ASPECTS
 function defaultScene(aspect: keyof typeof ASPECTS = '16:9'): SceneDocument   // Scene mặc định: một Piano Roll phủ kín khung. Bố cục mặc định theo nền tảng (9:16 cho người mới, KPI-04) chốt…
 function pianoRollWidget(layout: Omit<WidgetLayout, 'anchor'> & { anchor?: WidgetLayout['anchor'] }, props: Partial<PianoRollProps> = {}, id = 'piano-roll-main'): WidgetSpec<PianoRollProps>
+const cloneTextStyles = (set: TextStyleSet) =>   // Bản sao sâu của bộ kiểu chữ (sửa kiểu trong một scene không đụng bộ mặc định đã đóng băng).
 type SceneWarningCode
 interface SceneWarning
 type SceneErrorCode
@@ -840,6 +849,49 @@ interface AutomationLane   // REQ-AST-02: lane tuỳ ý (send, tham số plugin,
 interface ProjectTrack
 interface TempoPoint
 interface UnifiedProjectAST
+```
+
+#### `packages/render-core/src/typography.ts`
+
+T-72 (SRS REQ-GRAPHICS-18, D-58): kiểu chữ cho mọi chữ trong video. Thuần, không DOM: đo bằng `Measure` (bảng FONT_METRICS),
+
+```text
+type Align   // ───────────────────────────── mô hình ─────────────────────────────
+type TextCase
+type TextScript
+type TextOverflow
+interface GradientStop
+interface TextGradient   // Gradient trải trên hộp của cả dòng chữ. `angle` (độ): 0 = trái → phải, 90 = trên → dưới. Radial: tâm hộp, bán…
+interface TextStroke   // Viền chữ. `outside`: chỉ nửa ngoài nét (vẽ dày gấp đôi dưới phần tô). Nằm trong nét: 1.1 (cùng nhiều lớp viền…
+interface TextShadow   // Đổ bóng: `angle` là hướng bóng đổ (độ, 0 = sang phải, 90 = xuống dưới), `distance`/`blur` theo pt. Khoảng các…
+interface TextBackground   // Hộp nền sau từng dòng chữ (đọc rõ trên nền phức tạp).
+interface TextStyle   // Đầy đủ thuộc tính chữ của phân kỳ 1.0 (REQ-GRAPHICS-18). Đơn vị: pt theo khung thiết kế.
+interface NamedTextStyle
+type TextStyleSet
+type TextRef   // Ghi đè của một chữ: `styleId` chọn kiểu trong bộ; thuộc tính nào có mặt thì thay thuộc tính đó (đối tượng con…
+interface TextSpan   // Một đoạn chữ trong dòng; `style` ghi đè lên kiểu của cả dòng (định dạng từng đoạn).
+const NO_STROKE
+const NO_SHADOW
+const NO_BACKGROUND
+const TEXT_DEFAULT_FONT   // Phông của kiểu gốc = `DEFAULT_FONT` trong fonts.ts (không import để tránh vòng fonts ↔ typography khi khởi tạ…
+const BASE_TEXT_STYLE   // Kiểu gốc: mọi thuộc tính nâng cao ở trạng thái "không có hiệu ứng".
+const DEFAULT_TEXT_STYLES   // Bộ kiểu dựng sẵn (mặc định của mọi preset; preset thêm/sửa kiểu trong `scene.textStyles`). Giá trị trùng mặc …
+function cloneStyle<T extends TextStyle>(s: T): T
+function applyOverride(base: TextStyle, o: TextRef | undefined): TextStyle   // Gộp ghi đè lên kiểu (không sửa đầu vào).
+function resolveTextStyle(ref: TextRef | undefined, set: TextStyleSet = DEFAULT_TEXT_STYLES, fallbackId = 'body'): TextStyle   // Kiểu thật của một chữ: kiểu `ref.styleId` (vắng hoặc không có trong bộ → `fallbackId`) + ghi đè của chữ.
+const overriddenKeys = (ref: TextRef | undefined) =>   // Thuộc tính chữ đang ghi đè (không tính `styleId`). Dùng cho chấm "đã sửa" và nút ↺ (REQ-UI-15).
+function resetOverride(ref: TextRef | undefined, key?: keyof TextRef): TextRef   // Bỏ ghi đè của một thuộc tính (↺ về kiểu dựng sẵn); không đối số `key` thì bỏ hết, chỉ giữ `styleId`.
+function saveAsTextStyle(set: TextStyleSet, ref: TextRef | undefined, fallbackId: string, id: string, name: string):    // "Lưu thành kiểu mới": kiểu thật hiện tại của chữ thành kiểu `id` trong bộ; chữ trỏ về kiểu đó, hết ghi đè.
+function updateTextStyleFromRef(set: TextStyleSet, ref: TextRef | undefined, fallbackId: string):    // "Cập nhật kiểu": đẩy ghi đè của chữ vào kiểu nó đang dùng (mọi chữ dùng kiểu đó đổi theo); chữ hết ghi đè.
+const TEXT_METRICS   // Tỉ lệ so với cỡ chữ: phần trên/dưới baseline của hộp chữ (nền chữ, gradient), vị trí gạch chân/gạch ngang.
+interface PlacedRun   // Một run đã đặt: cùng kiểu, vị trí tính bằng pt. `dx` so với mép trái dòng; `xs` (nếu có) là vị trí từng cụm k…
+interface RichText   // Phần vẽ riêng của chữ "giàu": mọi thứ bước vẽ cần, không phải đo lại.
+function clusters(s: string): string[]   // Tách cụm ký tự (ký tự gốc + dấu kết hợp) sau khi chuẩn hoá NFC, để vẽ từng cụm mà dấu tiếng Việt không rời ch…
+function typesetLine(spans: readonly { text: string; st: TextStyle }[], measure: Measure, factor = 1):    // Dàn một dòng (không cắt). `factor` nhân mọi cỡ chữ (tự thu nhỏ). Trả run đặt từ x = 0 và bề rộng dòng (không …
+function fitLine(sp: Resolved, base: TextStyle, maxWidth: number, measure: Measure):    // Dàn một dòng vừa `maxWidth` theo `overflow` của kiểu dòng. null = không còn gì để vẽ.
+function textPrims(content: string | readonly TextSpan[], style: TextStyle, x: number, y: number, align: Align, maxWidth: number, measure: Measure, alpha = 1, set: TextStyleSet = DEFAULT_TEXT_STYLES):    // Chữ → primitive. `spans` là các đoạn (một chuỗi = một đoạn), `ref` là kiểu của cả chữ, `fallbackId` kiểu mặc …
+function textWidth(content: string | readonly TextSpan[], style: TextStyle, measure: Measure, set: TextStyleSet = DEFAULT_TEXT_STYLES): number   // Bề rộng chữ khi dàn trên một dòng không cắt (để đặt các phần cạnh nhau).
+function templateSpans(template: string, values: Readonly<Record<string, string | number>>, valueStyle?: TextRef): TextSpan[]   // Mẫu chữ → các đoạn: chữ cố định theo kiểu dòng, giá trị của chỗ giữ theo `valueStyle` (vắng/rỗng = cùng kiểu)…
 ```
 
 ### packages/rpp — @dawviz/parser-rpp: Reaper .rpp
@@ -1654,6 +1706,7 @@ type ParseResponse
 - `packages/render-core/test/rotate.test.ts`
 - `packages/render-core/test/scene.test.ts`
 - `packages/render-core/test/snap.test.ts`
+- `packages/render-core/test/typography.test.ts`
 - `test/als.test.js`
 - `test/binary.test.js`
 - `test/dawproject.test.js`
@@ -1662,4 +1715,4 @@ type ParseResponse
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 589 ký hiệu công khai -->
+<!-- 10 thư mục src, 629 ký hiệu công khai -->

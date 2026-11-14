@@ -1,6 +1,8 @@
 // Danh sách phông Render Core cần và cách nạp trước khung đầu (TECHNICAL-DESIGN 5.7). Render Core không tự tải:
 // `ensureFonts` nhận `loader`, nên cùng mã chạy ở Preview (document.fonts) và Export Worker (self.fonts).
 import type { SceneDocument } from './scene.ts';
+import { DEFAULT_TEXT_STYLES, type TextRef } from './typography.ts';
+import { TEXT_FIELDS } from './hud.ts';
 
 export interface FontFaceSpec { family: string; weight: number; file: string; unicodeRange: string }
 const LATIN = 'U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD';
@@ -16,6 +18,16 @@ export function fontFamiliesOf(scene: SceneDocument): string[] {
   const out = new Set<string>();
   const walk = (v: unknown) => { if (v && typeof v === 'object') for (const [k, x] of Object.entries(v)) { if (k === 'font' && typeof x === 'string') out.add(x); else walk(x); } };
   for (const w of scene.widgets) walk(w.properties);
+  // Chữ không ghi đè phông lấy phông từ kiểu nó trỏ tới (hoặc kiểu mặc định của chỗ chữ đó): chỉ tính kiểu thật sự được dùng.
+  const set = scene.textStyles ?? DEFAULT_TEXT_STYLES;
+  for (const w of scene.widgets) {
+    const fields = (TEXT_FIELDS as Record<string, Record<string, string | null>>)[w.type]; if (!fields) continue;
+    const P = (w.properties ?? {}) as Record<string, TextRef | undefined>;
+    for (const [k, fallback] of Object.entries(fields)) {
+      const ref = P[k], id = ref?.styleId && set[ref.styleId] ? ref.styleId : fallback;
+      if (id && !ref?.font && set[id]) out.add(set[id].font);
+    }
+  }
   return [...out].sort();
 }
 /** Mặt phông cần nạp cho scene (chỉ họ đóng gói; họ khác là phông hệ thống/người dùng nạp riêng). */

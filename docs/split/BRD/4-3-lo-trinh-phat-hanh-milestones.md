@@ -5,7 +5,7 @@ section: "4.3. Lộ trình phát hành (Milestones)"
 path: "4. PHẠM VI DỰ ÁN (PROJECT SCOPE) > 4.3. Lộ trình phát hành (Milestones)"
 chunk: 4-3-lo-trinh-phat-hanh-milestones.md
 source_lines: 132-141
-source_sha1: 8acfa46306
+source_sha1: 3a2d7bb414
 ids: [AT-05, AT-06]
 ---
 ### 4.3. Lộ trình phát hành (Milestones)

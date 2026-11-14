@@ -14,7 +14,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1215 ký tự
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4347 ký tự
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](BRD/6-gia-dinh-assumptions.md) · 554 ký tự
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 23600 ký tự
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 24311 ký tự
 - [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](BRD/8-cac-van-de-con-mo-open-issues.md) · 4634 ký tự
 
 ## SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
@@ -125,6 +125,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [5.6 Phát sáng động khi chạm 🟢](TECHNICAL-DESIGN/5-6-phat-sang-dong-khi-cham.md) · 1776 ký tự
 - [5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)](TECHNICAL-DESIGN/5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md) · 4996 ký tự
 - [5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp 🟢 (đã dùng ở T-69)](TECHNICAL-DESIGN/5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md) · 925 ký tự
+- [5.9 Kiểu chữ cho mọi chữ trong video 🟢 Render Core / ⚪ Editor (T-72, SRS REQ-GRAPHICS-18, D-58)](TECHNICAL-DESIGN/5-9-kieu-chu-cho-moi-chu-trong-video-render-core.md) · 5294 ký tự
 - [6.1 Trạng thái](TECHNICAL-DESIGN/6-1-trang-thai.md) · 1256 ký tự
 - [6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh)](TECHNICAL-DESIGN/6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md) · 233 ký tự
 - [6.2.1 Nạp tệp âm thanh (mix)](TECHNICAL-DESIGN/6-2-1-nap-tep-am-thanh-mix.md) · 3263 ký tự
@@ -137,9 +138,9 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [6.2.8 Kiểm thử (thuần, không cần trình duyệt)](TECHNICAL-DESIGN/6-2-8-kiem-thu-thuan-khong-can-trinh-duyet.md) · 1014 ký tự
 - [6.2.9 Quyết định đã duyệt](TECHNICAL-DESIGN/6-2-9-quyet-dinh-da-duyet.md) · 672 ký tự
 - [6.3 Danh sách track 🟢](TECHNICAL-DESIGN/6-3-danh-sach-track.md) · 1860 ký tự
-- [6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)](TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) · 16704 ký tự
+- [6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)](TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) · 16918 ký tự
 - [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở)](TECHNICAL-DESIGN/7-duong-ong-xuat-video-m3-spike-1-la-co-so.md) · 2020 ký tự
-- [8. Lưu trữ ⚪ (M4)](TECHNICAL-DESIGN/8-luu-tru-m4.md) · 1005 ký tự
+- [8. Lưu trữ ⚪ (M4)](TECHNICAL-DESIGN/8-luu-tru-m4.md) · 1035 ký tự
 - [9. Đa ngôn ngữ 🟢](TECHNICAL-DESIGN/9-da-ngon-ngu.md) · 492 ký tự
 - [10. Lỗi, ghi nhật ký, quan sát](TECHNICAL-DESIGN/10-loi-ghi-nhat-ky-quan-sat.md) · 470 ký tự
 - [11. Hiệu năng và bộ nhớ (ngân sách)](TECHNICAL-DESIGN/11-hieu-nang-va-bo-nho-ngan-sach.md) · 885 ký tự
@@ -151,8 +152,8 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 
 - [TÀI LIỆU THIẾT KẾ KIỂM THỬ (TDD = Test Design Document) — ỨNG DỤNG DAW VISUALIZER (mở đầu)](TDD/tai-lieu-thiet-ke-kiem-thu-tdd-test-design-docum.md) · 810 ký tự
 - [1. Chiến lược](TDD/1-chien-luoc.md) · 1005 ký tự
-- [2. Danh mục test mới](TDD/2-danh-muc-test-moi.md) · 1348 ký tự
-- [3. Ma trận truy vết](TDD/3-ma-tran-truy-vet.md) · 399 ký tự
+- [2. Danh mục test mới](TDD/2-danh-muc-test-moi.md) · 2205 ký tự
+- [3. Ma trận truy vết](TDD/3-ma-tran-truy-vet.md) · 542 ký tự
 - [4. Khoảng trống đã biết](TDD/4-khoang-trong-da-biet.md) · 442 ký tự
 - [5. Danh sách kiểm thủ công cho AT-18 (Chrome)](TDD/5-danh-sach-kiem-thu-cong-cho-at-18-chrome.md) · 4128 ký tự
 

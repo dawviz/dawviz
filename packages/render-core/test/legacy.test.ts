@@ -1,6 +1,7 @@
 // T-69: preset và kiểu nốt cũ không đổi kết quả vẽ. Mã băm gốc lấy từ mã TRƯỚC T-69 (commit 29f5d0e) trên cùng tệp mẫu; lấy lại ở T-71 (xem dưới).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { SCENE_SCHEMA_VERSION } from '../src/index.ts';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import { parseProject } from '@dawviz/parser';
@@ -41,7 +42,7 @@ test('kiểu nốt cũ thiếu ba trường màu trạng thái: được điền
 });
 
 test('Chord: preset cũ thiếu "alwaysShowNotes" vẽ như trước (tắt); dòng nốt chỉ hiện khi bật', () => {
-  const raw = { schemaVersion: '0.4.0', canvas: {}, widgets: [{ type: 'CHORD_DETECTION', id: 'c', layout: { x: 0, y: 0, width: 400, height: 100 } }] };
+  const raw = { schemaVersion: SCENE_SCHEMA_VERSION, canvas: {}, widgets: [{ type: 'CHORD_DETECTION', id: 'c', layout: { x: 0, y: 0, width: 400, height: 100 } }] };
   const { scene, warnings } = sanitizeScene(raw);
   assert.deepEqual(warnings, []); assert.equal((scene.widgets[0].properties as any).alwaysShowNotes, false);
   assert.deepEqual(scene.widgets[0].properties, DEFAULT_CHORD);

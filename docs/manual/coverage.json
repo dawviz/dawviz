@@ -1,0 +1,151 @@
+{
+  "_note": "Mỗi trang hướng dẫn và phần giao diện nó mô tả (D-59). Giao diện trong covers đổi mà trang (cả vi và en) chưa sửa thì npm run docs:check báo lỗi. Sửa trang rồi chạy npm run docs:sync; trang vẫn đúng thì node scripts/sync-docs.mjs --manual-ok <trang>. Các trường *Hash do script ghi, đừng sửa tay.",
+  "pages": {
+    "README": {
+      "vi": "docs/manual/README.md",
+      "en": "docs/manual/en/README.md",
+      "covers": [
+        "apps/web/src/lib/numberInput.ts",
+        "apps/web/src/components/NumberField.tsx",
+        "apps/web/src/components/HistoryMenu.tsx",
+        "locales/en.json#web.mode",
+        "locales/en.json#web.number.",
+        "locales/en.json#web.export"
+      ],
+      "uiHash": "740d4d0bc0c7",
+      "viHash": "76759c8e57a8",
+      "enHash": "d862e83576e4",
+      "coverHashes": {
+        "apps/web/src/lib/numberInput.ts": "8e27c53523c3",
+        "apps/web/src/components/NumberField.tsx": "f7668b64f388",
+        "apps/web/src/components/HistoryMenu.tsx": "7ddeee2941d7",
+        "locales/en.json#web.mode": "a81afde54c35",
+        "locales/en.json#web.number.": "5ca95d85a4e1",
+        "locales/en.json#web.export": "058448ce5f05"
+      }
+    },
+    "01-mo-du-an": {
+      "vi": "docs/manual/01-mo-du-an.md",
+      "en": "docs/manual/en/01-open-a-project.md",
+      "covers": [
+        "apps/web/src/components/FileDrop.tsx",
+        "apps/web/src/components/MissingMidiPanel.tsx",
+        "apps/web/src/components/Notices.tsx",
+        "locales/en.json#web.drop.",
+        "locales/en.json#web.missing.",
+        "locales/en.json#web.notices."
+      ],
+      "uiHash": "eec7cae67e82",
+      "viHash": "e5bc2bef26dd",
+      "enHash": "fac552052f88",
+      "coverHashes": {
+        "apps/web/src/components/FileDrop.tsx": "01fa7dac41df",
+        "apps/web/src/components/MissingMidiPanel.tsx": "e23f856f4d3c",
+        "apps/web/src/components/Notices.tsx": "dd254d41dc67",
+        "locales/en.json#web.drop.": "0281a3609725",
+        "locales/en.json#web.missing.": "1fb211bdffa6",
+        "locales/en.json#web.notices.": "7eea093650ff"
+      }
+    },
+    "02-xem-truoc": {
+      "vi": "docs/manual/02-xem-truoc.md",
+      "en": "docs/manual/en/02-preview.md",
+      "covers": [
+        "apps/web/src/components/Transport.tsx",
+        "apps/web/src/components/VideoStyles.tsx",
+        "apps/web/src/components/AudioPanel.tsx",
+        "apps/web/src/components/TrackPanel.tsx",
+        "apps/web/src/components/Stage.tsx",
+        "locales/en.json#web.audio.",
+        "locales/en.json#web.track",
+        "locales/en.json#web.brightness.",
+        "locales/en.json#web.styles.",
+        "locales/en.json#web.song.",
+        "locales/en.json#web.loop"
+      ],
+      "uiHash": "2060ed07609c",
+      "viHash": "b5e0f06304f7",
+      "enHash": "4b49c4b710da",
+      "coverHashes": {
+        "apps/web/src/components/Transport.tsx": "81e2194963a6",
+        "apps/web/src/components/VideoStyles.tsx": "4aa9c99f4358",
+        "apps/web/src/components/AudioPanel.tsx": "d10b6d8f2293",
+        "apps/web/src/components/TrackPanel.tsx": "d3b1030e3656",
+        "apps/web/src/components/Stage.tsx": "010dfe525aed",
+        "locales/en.json#web.audio.": "833abe622053",
+        "locales/en.json#web.track": "e06c4e497fcd",
+        "locales/en.json#web.brightness.": "0cf9c6022fb9",
+        "locales/en.json#web.styles.": "62927052e6df",
+        "locales/en.json#web.song.": "4df0603530e2",
+        "locales/en.json#web.loop": "8c94626e4227"
+      }
+    },
+    "03-chinh-sua": {
+      "vi": "docs/manual/03-chinh-sua.md",
+      "en": "docs/manual/en/03-editor.md",
+      "covers": [
+        "apps/web/src/components/Editor.tsx",
+        "apps/web/src/components/EditorOverlay.tsx",
+        "apps/web/src/components/StylePanel.tsx",
+        "locales/en.json#web.editor.",
+        "locales/en.json#web.style.",
+        "locales/en.json#web.glow.",
+        "locales/en.json#web.keyboard.",
+        "locales/en.json#web.playhead."
+      ],
+      "uiHash": "5c9d0ebd40d0",
+      "viHash": "7886fb3ce6e0",
+      "enHash": "c67ac6086dc0",
+      "coverHashes": {
+        "apps/web/src/components/Editor.tsx": "54eb793e2c78",
+        "apps/web/src/components/EditorOverlay.tsx": "44ab29a22a38",
+        "apps/web/src/components/StylePanel.tsx": "739c0fb27805",
+        "locales/en.json#web.editor.": "9b9ac9ff358c",
+        "locales/en.json#web.style.": "3f579d231537",
+        "locales/en.json#web.glow.": "a02382b4889a",
+        "locales/en.json#web.keyboard.": "e1b6968f1e6b",
+        "locales/en.json#web.playhead.": "326a6b222302"
+      }
+    },
+    "04-cai-dat": {
+      "vi": "docs/manual/04-cai-dat.md",
+      "en": "docs/manual/en/04-settings.md",
+      "covers": [
+        "apps/web/src/components/ThemeSelect.tsx",
+        "apps/web/src/components/PresetSettings.tsx",
+        "locales/en.json#web.settings.",
+        "locales/en.json#web.theme.",
+        "locales/en.json#web.preset."
+      ],
+      "uiHash": "af7b2b242dbd",
+      "viHash": "82afdfa8daec",
+      "enHash": "0482ba278c11",
+      "coverHashes": {
+        "apps/web/src/components/ThemeSelect.tsx": "f9b2c3746fbe",
+        "apps/web/src/components/PresetSettings.tsx": "d88d3a829f7b",
+        "locales/en.json#web.settings.": "41590aa5a512",
+        "locales/en.json#web.theme.": "05a823a18b7d",
+        "locales/en.json#web.preset.": "1f83f333908b"
+      }
+    },
+    "05-phim-tat": {
+      "vi": "docs/manual/05-phim-tat.md",
+      "en": "docs/manual/en/05-shortcuts.md",
+      "covers": [
+        "apps/web/src/lib/transportKeys.ts",
+        "apps/web/src/lib/undoKeys.ts",
+        "apps/web/src/components/EditorOverlay.tsx",
+        "apps/web/src/lib/numberInput.ts"
+      ],
+      "uiHash": "3dd229249e0f",
+      "viHash": "f2b4edb614d1",
+      "enHash": "223749f8cecb",
+      "coverHashes": {
+        "apps/web/src/lib/transportKeys.ts": "3c74099d457e",
+        "apps/web/src/lib/undoKeys.ts": "07c2c99f5cf4",
+        "apps/web/src/components/EditorOverlay.tsx": "44ab29a22a38",
+        "apps/web/src/lib/numberInput.ts": "8e27c53523c3"
+      }
+    }
+  }
+}

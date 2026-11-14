@@ -10,7 +10,7 @@ vi.mock('../src/lib/fonts.ts', () => ({ useFontsStatus: () => 'ready', loadBundl
 
 import { I18nProvider } from '../src/i18n/I18nProvider.tsx';
 import { App } from '../src/App.tsx';
-import { PRESET_LIMITS } from '@dawviz/render-core';
+import { PRESET_LIMITS, SCENE_SCHEMA_VERSION } from '@dawviz/render-core';
 
 const ctrlZ = (el: Element | Window = document.body, extra: object = {}) => fireEvent.keyDown(el, { key: 'z', ctrlKey: true, ...extra });
 const radios = () => [...screen.getByTestId('video-styles').querySelectorAll<HTMLElement>('[role="radio"]')];
@@ -304,7 +304,7 @@ describe('preset .json trong ứng dụng (T-07)', () => {
     const f = new File([text], 'p.json', { type: 'application/json' }); Object.defineProperty(f, 'size', { value: size });
     await act(async () => { fireEvent.change(screen.getByTestId('preset-input'), { target: { files: [f] } }); });
   };
-  const valid = (extra: object = {}) => JSON.stringify({ schemaVersion: '0.4.0', presetName: 'Test X', canvas: { designWidth: 1280, designHeight: 720 }, widgets: [], ...extra });
+  const valid = (extra: object = {}) => JSON.stringify({ schemaVersion: SCENE_SCHEMA_VERSION, presetName: 'Test X', canvas: { designWidth: 1280, designHeight: 720 }, widgets: [], ...extra });
 
   it('preset hợp lệ: nạp được, báo đã mở, hoàn tác được; lưu tạo tệp tải xuống', async () => {
     await openProject(); await openSettings();
@@ -323,7 +323,7 @@ describe('preset .json trong ứng dụng (T-07)', () => {
     click.mockRestore();
     expect(created).toHaveLength(1); expect(names).toEqual(['paper.json']) // đã hoàn tác về Paper;
     const saved = JSON.parse(await created[0].text());
-    expect(saved.schemaVersion).toBe('0.4.0'); expect(saved.widgets.length).toBeGreaterThan(0);
+    expect(saved.schemaVersion).toBe(SCENE_SCHEMA_VERSION); expect(saved.widgets.length).toBeGreaterThan(0);
   });
 
   it('preset cũ 0.3.0: nạp và hiện cảnh báo đã nâng phiên bản', async () => {
@@ -331,7 +331,7 @@ describe('preset .json trong ứng dụng (T-07)', () => {
     await feed(valid({ schemaVersion: '0.3.0' }));
     const box = await screen.findByTestId('preset-settings');
     await waitFor(() => expect(box.textContent).toMatch(/0\.3\.0/));
-    expect(box.textContent).toMatch(/0\.4\.0/);
+    expect(box.textContent).toMatch(new RegExp(SCENE_SCHEMA_VERSION.replace(/\./g, '\\.')));
   });
 
   it('preset hỏng, quá lớn, mới hơn: hiện lỗi đã dịch, không đổi scene, không thêm bước hoàn tác', async () => {
@@ -349,7 +349,7 @@ describe('preset .json trong ứng dụng (T-07)', () => {
 
   it('preset độc hại: khoá __proto__ bị bỏ và có cảnh báo; không làm bẩn Object.prototype', async () => {
     await openProject(); await openSettings();
-    await feed('{"schemaVersion":"0.4.0","__proto__":{"polluted":1},"canvas":{},"widgets":[]}');
+    await feed(`{"schemaVersion":"${SCENE_SCHEMA_VERSION}","__proto__":{"polluted":1},"canvas":{},"widgets":[]}`);
     await waitFor(() => expect(screen.getByTestId('preset-settings').textContent).toMatch(/(not allowed|không được phép)/));
     expect(({} as any).polluted).toBeUndefined();
   });

@@ -71,9 +71,12 @@ export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], a
             <input type="checkbox" checked={playhead.visible} onChange={(e) => playhead.onVisible(e.target.checked)} data-testid="playhead-visible" />{i18n.t('web.playhead.show')}
           </label>
           {/* Bàn phím bật: vạch phát ghim ở mép bàn phím (Render Core bỏ qua tỉ lệ), nên khoá ô và nói lý do ngay bên dưới. Giá trị vẫn giữ để dùng lại khi tắt bàn phím. */}
-          <Slider id="st-playhead" label={i18n.t('web.playhead.position')} value={Math.round(playhead.ratio * 100)} min={5} max={95} step={1} reset={playhead.reference === undefined ? undefined : Math.round(playhead.reference * 100)}
-            disabled={keyboard.enabled} describedBy={keyboard.enabled ? lockId : undefined} onChange={(v) => playhead.onChange(v / 100)} />
-          {keyboard.enabled && <p id={lockId} className="text-xs leading-snug text-muted" data-testid="playhead-locked">{i18n.t('web.playhead.locked')}</p>}
+          {/* Lý do khoá: chú thích khi rê chuột + chữ ẩn cho trình đọc màn hình (giải thích dài nằm trong hướng dẫn sử dụng). */}
+          <div title={keyboard.enabled ? i18n.t('web.playhead.locked') : undefined}>
+            <Slider id="st-playhead" label={i18n.t('web.playhead.position')} value={Math.round(playhead.ratio * 100)} min={5} max={95} step={1} reset={playhead.reference === undefined ? undefined : Math.round(playhead.reference * 100)}
+              disabled={keyboard.enabled} describedBy={keyboard.enabled ? lockId : undefined} onChange={(v) => playhead.onChange(v / 100)} />
+          </div>
+          {keyboard.enabled && <p id={lockId} className="sr-only" data-testid="playhead-locked">{i18n.t('web.playhead.locked')}</p>}
         </>}
       </div>
     </div>
@@ -103,7 +106,7 @@ function GlowSection({ b, set, lanes, advanced, reference }: { b: NoteStyle; set
       {dyn && <>
         <label className={row}>
           <span className="min-w-0 break-words leading-tight">{i18n.t('web.glow.source')}</span>
-          <Select value={b.glowSource} onChange={(e) => set({ glowSource: e.target.value as GlowSource })} className="py-1 pl-2" wrapClassName="min-w-0">
+          <Select value={b.glowSource} title={i18n.t(b.glowSource === 'pan' ? `web.glow.hint.pan.${b.glowPanMode}` : `web.glow.hint.${b.glowSource}`)} onChange={(e) => set({ glowSource: e.target.value as GlowSource })} className="py-1 pl-2" wrapClassName="min-w-0">
             {GLOW_SOURCES.map((s) => <option key={s} value={s}>{i18n.t(`web.glow.source.${s}`)}</option>)}
           </Select>
           <ResetButton label={i18n.t('web.glow.source')} changed={!!reference && reference.glowSource !== b.glowSource} onReset={() => set({ glowSource: reference!.glowSource })} />
@@ -124,7 +127,6 @@ function GlowSection({ b, set, lanes, advanced, reference }: { b: NoteStyle; set
             </Select>
           </label>
         )}
-        <p className="text-xs leading-snug text-muted">{i18n.t(b.glowSource === 'pan' ? `web.glow.hint.pan.${b.glowPanMode}` : `web.glow.hint.${b.glowSource}`)}</p>
         {advanced && <>
           <Slider id="st-gmin" label={i18n.t('web.glow.min')} value={b.glowMin} min={0} max={1} step={0.05} reset={ref('glowMin')} onChange={(v) => set({ glowMin: v })} />
           <Slider id="st-gmax" label={i18n.t('web.glow.max')} value={b.glowMax} min={0} max={1} step={0.05} reset={ref('glowMax')} onChange={(v) => set({ glowMax: v })} />

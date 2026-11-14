@@ -20,6 +20,7 @@ DAW Visualizer: trình duyệt đọc tệp dự án DAW (Ableton `.als/.alp`, R
 1. **Tiết kiệm ngữ cảnh.** Đọc theo thứ tự: `PROGRESS.md` → bảng định tuyến (mục 4) → *đúng mảnh* cần dùng trong `docs/split/`. Không nạp cả BRD/SRS (hàng trăm KB). Tra nhanh: `node scripts/sync-docs.mjs --find "từ khóa"` hoặc `python3 scripts/split_doc.py --find REQ-ID`.
 2. **Dẫn chiếu bằng ID** (`REQ-…`, `D-…`, `PD-…`, `AD-…`, `OI-…`, `SOI-…`, `AT-…`) thay vì chép lại nội dung. Không đổi số ID cũ; ID mới thêm ở cuối nhóm.
 3. **Mã và tài liệu đổi cùng lúc.** Đổi hành vi → cập nhật tài liệu gốc trong `docs/` (SRS → SDD/Technical Design → TDD; parser dùng bộ `PARSER-*`) → chạy `npm run docs:sync`. Không bao giờ sửa tay: `SKELETON.md`, khối mục lục bên dưới, `docs/split/**`.
+3a. **Hướng dẫn sử dụng đi cùng giao diện (D-59).** Thêm, bỏ, đổi tên hay đổi cách dùng một nút, ô, thẻ, phím tắt hoặc tính năng người dùng thấy → sửa trang tương ứng trong [docs/manual/](docs/manual/README.md) **và** bản tiếng Anh `docs/manual/en/` trong cùng lần sửa; tính năng mới chưa có trang thì thêm mục (và thêm vào menu `scripts/docs-site/config.json`). Gọi đúng tên nút như trên màn hình, câu ngắn, không từ kỹ thuật. Không đưa đoạn hướng dẫn lên giao diện (chỉ cảnh báo, thông báo theo tình huống, chú thích khi rê chuột). Ghi vào báo cáo cuối phiên trang nào đã sửa, hoặc vì sao không cần sửa. `npm run docs:check` tự báo trang có thể đã cũ theo `docs/manual/coverage.json` (tệp giao diện + nhóm chuỗi mà mỗi trang mô tả): sửa trang cả hai thứ tiếng rồi `npm run docs:sync` (tự ghi nhận); trang vẫn đúng thì `node scripts/sync-docs.mjs --manual-ok <trang>`. Thêm trang mới thì thêm mục vào `coverage.json`.
 4. **Không đoán điều chưa kiểm.** Mục `[VERIFY]`/`[PROVISIONAL]` giữ nguyên nhãn; muốn đổi cần dữ liệu thật hoặc quyết định của người dùng. Không "sửa" giới hạn đã chốt (ARCHITECTURE §6, PROGRESS §2) mà không xin ý kiến.
 5. **Tính tất định của Render Core.** Không `Date`, `performance`, `Math.random`, `requestAnimationFrame` trong `packages/render-core`; kết quả chỉ phụ thuộc `(scene, derived, ast, t, scale)`.
 6. **Parser ném lỗi có mã.** Chỉ `DawParseError{code}` và cảnh báo `{code, message, details?}`; không để mất dữ liệu thầm lặng (mọi thứ bỏ qua đều có `WARN_*`).
@@ -50,6 +51,7 @@ DAW Visualizer: trình duyệt đọc tệp dự án DAW (Ableton `.als/.alp`, R
 | Viết/chạy test | [TDD §1](docs/split/TDD/1-chien-luoc.md#1-chiến-lược) · [PARSER-TDD §1](docs/split/PARSER-TDD/1-chien-luoc.md#1-chiến-lược) · [§7](docs/split/PARSER-TDD/7-quy-uoc-viet-test-moi.md#7-quy-ước-viết-test-mới) | `test/`, `packages/render-core/test/`, `apps/web/src/lib/*.test.ts` |
 | Mã lỗi / cảnh báo | [SRS Phụ lục A](docs/split/SRS/phu-luc-a-ma-loi.md#phụ-lục-a-mã-lỗi) · [A2](docs/split/SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md#phụ-lục-a2-mã-cảnh-báo-của-parser-library) · [PARSER-SRS §4](docs/split/PARSER-SRS/4-ma-loi.md#4-mã-lỗi) | `locales/en.json` (`errors.*`, `warn.*`) |
 | Quyết định, vấn đề mở, rủi ro | [BRD §7](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md#7-nhật-ký-quyết-định-decision-log) · [BRD §8](docs/split/BRD/8-cac-van-de-con-mo-open-issues.md#8-các-vấn-đề-còn-mở-open-issues) · [SRS §8](docs/split/SRS/8-cac-van-de-con-mo-cua-srs.md#8-các-vấn-đề-còn-mở-của-srs) · [BRD §5](docs/split/BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md#5-phân-tích-rủi-ro--phương-án-giảm-thiểu-risk-management) | — |
+| Hướng dẫn sử dụng (người dùng cuối) | [docs/manual/README.md](docs/manual/README.md) (vi) · [docs/manual/en/README.md](docs/manual/en/README.md) (en). Giải thích cách dùng nằm ở đây, **không** viết thành đoạn chữ trên giao diện (chỉ giữ cảnh báo, thông báo theo tình huống và chú thích khi rê chuột). Đổi giao diện → sửa trang tương ứng cả hai thứ tiếng | `apps/web/src/components/` |
 | Nghiệm thu | [SRS §7 (AT-xx)](docs/split/SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md#7-điều-kiện-nghiệm-thu-và-bàn-giao) | — |
 
 ## 5. Lệnh thường dùng
@@ -71,7 +73,7 @@ node scripts/sync-docs.mjs --find "độ sáng"   # lấy liên kết mảnh#hea
 <!-- sync:begin docs-index -->
 <!-- Khối này do scripts/sync-docs.mjs sinh ra; đừng sửa tay. -->
 
-Có 18 tài liệu, 282 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
+Có 18 tài liệu, 283 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
 
 ### BRD.md — TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)
 
@@ -87,7 +89,7 @@ Nguồn: `docs/product/BRD.md` · [thứ tự đọc](docs/split/BRD/_index.md)
 - [4. PHẠM VI DỰ ÁN (PROJECT SCOPE) › 4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](docs/split/BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1.2k
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](docs/split/BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4.3k
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](docs/split/BRD/6-gia-dinh-assumptions.md) · 0.6k
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 23.6k
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 24.3k
 - [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](docs/split/BRD/8-cac-van-de-con-mo-open-issues.md) · 4.6k
 
 ### SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
@@ -204,6 +206,7 @@ Nguồn: `docs/design/TECHNICAL-DESIGN.md` · [thứ tự đọc](docs/split/TEC
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.6 Phát sáng động khi chạm 🟢](docs/split/TECHNICAL-DESIGN/5-6-phat-sang-dong-khi-cham.md) · 1.8k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)](docs/split/TECHNICAL-DESIGN/5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md) · 5.0k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp 🟢 (đã dùng ở T-69)](docs/split/TECHNICAL-DESIGN/5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md) · 0.9k
+- [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.9 Kiểu chữ cho mọi chữ trong video 🟢 Render Core / ⚪ Editor (T-72, SRS REQ-GRAPHICS-18, D-58)](docs/split/TECHNICAL-DESIGN/5-9-kieu-chu-cho-moi-chu-trong-video-render-core.md) · 5.3k
 - [6. Ứng dụng web và phát lại 🟡 › 6.1 Trạng thái](docs/split/TECHNICAL-DESIGN/6-1-trang-thai.md) · 1.3k
 - [6. Ứng dụng web và phát lại 🟡 › 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh)](docs/split/TECHNICAL-DESIGN/6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md) · 0.2k
 - [6. Ứng dụng web và phát lại 🟡 › 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) › 6.2.1 Nạp tệp âm thanh (mix)](docs/split/TECHNICAL-DESIGN/6-2-1-nap-tep-am-thanh-mix.md) · 3.3k
@@ -216,7 +219,7 @@ Nguồn: `docs/design/TECHNICAL-DESIGN.md` · [thứ tự đọc](docs/split/TEC
 - [6. Ứng dụng web và phát lại 🟡 › 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) › 6.2.8 Kiểm thử (thuần, không cần trình duyệt)](docs/split/TECHNICAL-DESIGN/6-2-8-kiem-thu-thuan-khong-can-trinh-duyet.md) · 1.0k
 - [6. Ứng dụng web và phát lại 🟡 › 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) › 6.2.9 Quyết định đã duyệt](docs/split/TECHNICAL-DESIGN/6-2-9-quyet-dinh-da-duyet.md) · 0.7k
 - [6. Ứng dụng web và phát lại 🟡 › 6.3 Danh sách track 🟢](docs/split/TECHNICAL-DESIGN/6-3-danh-sach-track.md) · 1.9k
-- [6. Ứng dụng web và phát lại 🟡 › 6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)](docs/split/TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) · 16.7k
+- [6. Ứng dụng web và phát lại 🟡 › 6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)](docs/split/TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) · 16.9k
 - [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở)](docs/split/TECHNICAL-DESIGN/7-duong-ong-xuat-video-m3-spike-1-la-co-so.md) · 2.0k
 - [8. Lưu trữ ⚪ (M4)](docs/split/TECHNICAL-DESIGN/8-luu-tru-m4.md) · 1.0k
 - [9. Đa ngôn ngữ 🟢](docs/split/TECHNICAL-DESIGN/9-da-ngon-ngu.md) · 0.5k
@@ -232,8 +235,8 @@ Nguồn: `docs/design/TDD.md` · [thứ tự đọc](docs/split/TDD/_index.md)
 
 - [TÀI LIỆU THIẾT KẾ KIỂM THỬ (TDD = Test Design Document) — ỨNG DỤNG DAW VISUALIZER (mở đầu)](docs/split/TDD/tai-lieu-thiet-ke-kiem-thu-tdd-test-design-docum.md) · 0.8k
 - [1. Chiến lược](docs/split/TDD/1-chien-luoc.md) · 1.0k
-- [2. Danh mục test mới](docs/split/TDD/2-danh-muc-test-moi.md) · 1.3k
-- [3. Ma trận truy vết](docs/split/TDD/3-ma-tran-truy-vet.md) · 0.4k
+- [2. Danh mục test mới](docs/split/TDD/2-danh-muc-test-moi.md) · 2.2k
+- [3. Ma trận truy vết](docs/split/TDD/3-ma-tran-truy-vet.md) · 0.5k
 - [4. Khoảng trống đã biết](docs/split/TDD/4-khoang-trong-da-biet.md) · 0.4k
 - [5. Danh sách kiểm thủ công cho AT-18 (Chrome)](docs/split/TDD/5-danh-sach-kiem-thu-cong-cho-at-18-chrome.md) · 4.1k
 

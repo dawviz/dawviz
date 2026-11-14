@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở)"
 path: "7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở)"
 chunk: 7-duong-ong-xuat-video-m3-spike-1-la-co-so.md
-source_lines: 362-387
-source_sha1: 49e19e4d81
+source_lines: 375-400
+source_sha1: 6f5f3c0f08
 ids: [AT-03, D-01, ERR_EXPORT_FAILED, ERR_NO_SUPPORTED_ENCODER, REQ-EXPORT-00, REQ-EXPORT-02, REQ-EXPORT-06, SOI-10]
 ---
 ## 7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở)

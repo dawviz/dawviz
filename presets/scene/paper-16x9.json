@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "0.4.0",
+  "schemaVersion": "0.5.0",
   "presetName": "Paper",
   "author": "DAW Visualizer",
   "canvas": {
@@ -91,18 +91,8 @@
         "align": "left",
         "titleText": "",
         "artistText": "",
-        "titleStyle": {
-          "font": "Space Grotesk",
-          "size": 72,
-          "weight": 700,
-          "color": "#111111"
-        },
-        "artistStyle": {
-          "font": "Space Grotesk",
-          "size": 28,
-          "weight": 400,
-          "color": "#111111"
-        }
+        "titleStyle": { "styleId": "title" },
+        "artistStyle": { "styleId": "subtitle" }
       }
     },
     {
@@ -127,12 +117,7 @@
         "align": "right",
         "decimals": 2,
         "lineHeight": 1.45,
-        "style": {
-          "font": "Space Grotesk",
-          "size": 22,
-          "weight": 400,
-          "color": "#777777"
-        },
+        "style": { "styleId": "counter" },
         "lines": {
           "played": {
             "enabled": true,
@@ -178,12 +163,7 @@
         "maxLines": 1,
         "lineHeight": 1.4,
         "separator": "   ",
-        "style": {
-          "font": "Space Grotesk",
-          "size": 15,
-          "weight": 400,
-          "color": "#888888"
-        },
+        "style": { "styleId": "caption" },
         "template": "Note: {name} (Vel: {velocity})",
         "showTrack": true,
         "trackTemplate": "< {track}"
@@ -208,18 +188,8 @@
       "trackMappingMode": "ALL",
       "assignedTrackIndices": [],
       "properties": {
-        "style": {
-          "font": "Space Grotesk",
-          "size": 18,
-          "weight": 400,
-          "color": "#777777"
-        },
-        "labelStyle": {
-          "font": "Space Grotesk",
-          "size": 11,
-          "weight": 400,
-          "color": "#999999"
-        },
+        "style": { "styleId": "clock" },
+        "labelStyle": { "styleId": "label" },
         "rowGap": 1.9,
         "time": {
           "enabled": true,
@@ -272,18 +242,8 @@
         "notesTemplate": "Notes: {notes}",
         "unrecognized": "nc",
         "noChordText": "N.C.",
-        "nameStyle": {
-          "font": "Space Grotesk",
-          "size": 34,
-          "weight": 700,
-          "color": "#111111"
-        },
-        "notesStyle": {
-          "font": "Space Grotesk",
-          "size": 17,
-          "weight": 400,
-          "color": "#777777"
-        }
+        "nameStyle": { "styleId": "heading" },
+        "notesStyle": { "styleId": "body" }
       }
     },
     {
@@ -313,12 +273,7 @@
         "showTime": true,
         "timeTemplate": "{elapsed} / {total}",
         "timeAlign": "right",
-        "timeStyle": {
-          "font": "Space Grotesk",
-          "size": 7,
-          "weight": 400,
-          "color": "#BBBBBB"
-        }
+        "timeStyle": { "styleId": "tiny" }
       }
     }
   ]

@@ -1,21 +1,22 @@
-// T-07: đọc preset .json an toàn (REQ-STORAGE-02, REQ-STORAGE-04, NFR-SEC-04): hợp lệ, hỏng, độc hại, di trú 0.3 → 0.4.
+// T-07: đọc preset .json an toàn (REQ-STORAGE-02, REQ-STORAGE-04, NFR-SEC-04): hợp lệ, hỏng, độc hại, di trú 0.3 → 0.4 → 0.5.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { sanitizeScene, migrateScene, SCENE_SCHEMA_VERSION, PRESET_LIMITS, defaultScene } from '../src/index.ts';
+import { sanitizeScene, migrateScene, layoutFrame, SCENE_SCHEMA_VERSION, PRESET_LIMITS, defaultScene } from '../src/index.ts';
+import { synthAst, derivedOf } from './helpers.ts';
 
 const dir = new URL('../../../presets/scene/', import.meta.url);
 const read = (u: URL) => JSON.parse(fs.readFileSync(u, 'utf8'));
 const V03 = () => read(new URL('./fixtures/paper-1x1.v0.3.0.json', import.meta.url));
 
-test('preset dựng sẵn (presets/scene/*.json) qua lược đồ: 0.4.0, không cảnh báo, mỗi layout có anchor, khớp scene.schema.json', () => {
+test('preset dựng sẵn (presets/scene/*.json) qua lược đồ: 0.5.0, không cảnh báo, mỗi layout có anchor, khớp scene.schema.json', () => {
   const files = fs.readdirSync(dir).filter((f) => f.endsWith('.json'));
   assert.ok(files.includes('paper-1x1.json') && files.includes('paper-16x9.json'));
   const schema = read(new URL('../../../presets/schema/scene.schema.json', import.meta.url));
   const layoutProps = schema.properties.widgets.items.properties.layout.properties;
   for (const f of files) {
     const raw = read(new URL(f, dir));
-    assert.equal(raw.schemaVersion, '0.4.0', f);
+    assert.equal(raw.schemaVersion, '0.5.0', f);
     assert.match(raw.schemaVersion, new RegExp(schema.properties.schemaVersion.pattern), f);
     assert.ok(fs.statSync(new URL(f, dir)).size < PRESET_LIMITS.maxBytes, f);
     const { scene, warnings } = sanitizeScene(raw);
@@ -26,17 +27,21 @@ test('preset dựng sẵn (presets/scene/*.json) qua lược đồ: 0.4.0, khôn
   }
 });
 
-test('di trú 0.3.0 → 0.4.0: thêm anchor = tâm, báo WARN_PRESET_MIGRATED, không sửa đối tượng vào; kết quả giống bản 0.4.0 dựng sẵn', () => {
+test('di trú 0.3.0 → 0.5.0: thêm anchor = tâm, báo WARN_PRESET_MIGRATED, không sửa đối tượng vào; vẽ giống bản 0.5.0 dựng sẵn', () => {
   const old = V03();
   const frozen = JSON.stringify(old);
   const m = migrateScene(old);
   assert.equal(JSON.stringify(old), frozen, 'migrateScene không được sửa đối tượng vào');
-  assert.equal(m.from, '0.3.0'); assert.equal(m.raw.schemaVersion, '0.4.0');
+  assert.equal(m.from, '0.3.0'); assert.equal(m.raw.schemaVersion, '0.5.0');
   assert.ok((m.raw.widgets as any[]).every((w) => w.layout.anchor.x === 0.5 && w.layout.anchor.y === 0.5));
   const { scene, warnings } = sanitizeScene(old);
   assert.equal(scene.schemaVersion, SCENE_SCHEMA_VERSION);
-  assert.deepEqual(warnings.map((w) => [w.code, w.details.from, w.details.to]), [['WARN_PRESET_MIGRATED', '0.3.0', '0.4.0']]);
-  assert.deepEqual(scene, sanitizeScene(read(new URL('paper-1x1.json', dir))).scene);
+  assert.deepEqual(warnings.map((w) => [w.code, w.details.from, w.details.to]), [['WARN_PRESET_MIGRATED', '0.3.0', '0.5.0']]);
+  // Bản cũ ghi chữ đầy đủ {font,size,weight,color} (thành ghi đè), bản 0.5.0 trỏ styleId cùng giá trị: cấu trúc khác, khung vẽ phải giống hệt.
+  const cur = sanitizeScene(read(new URL('paper-1x1.json', dir))).scene;
+  assert.deepEqual({ ...scene, widgets: scene.widgets.map((w) => w.layout) }, { ...cur, widgets: cur.widgets.map((w) => w.layout) });
+  const ast = synthAst(), d = derivedOf(ast);
+  for (const t of [0, 0.7, 1.9, 2.6]) assert.deepEqual(layoutFrame(scene, d, ast, t).map((x) => x.prims), layoutFrame(cur, d, ast, t).map((x) => x.prims), `t=${t}`);
   // bản vá 0.3.x cũng di trú; giữ anchor đã có
   const p = V03(); p.schemaVersion = '0.3.7'; p.widgets[0].layout.anchor = { x: 0, y: 1 };
   const r = sanitizeScene(p);
@@ -44,19 +49,19 @@ test('di trú 0.3.0 → 0.4.0: thêm anchor = tâm, báo WARN_PRESET_MIGRATED, k
   assert.equal(r.warnings[0].details.from, '0.3.7');
 });
 
-test('phiên bản: mới hơn → ERR_SCHEMA_NEWER; quá cũ/sai dạng → ERR_PRESET_INVALID; khác bản vá 0.4.x → WARN_PRESET_VERSION', () => {
+test('phiên bản: mới hơn → ERR_SCHEMA_NEWER; quá cũ/sai dạng → ERR_PRESET_INVALID; khác bản vá 0.5.x → WARN_PRESET_VERSION', () => {
   const base = { canvas: {}, widgets: [] };
-  for (const v of ['0.5.0', '1.0.0', '2.3.1']) assert.throws(() => sanitizeScene({ ...base, schemaVersion: v }), (e: any) => e.code === 'ERR_SCHEMA_NEWER' && e.details.found === v, v);
+  for (const v of ['0.6.0', '1.0.0', '2.3.1']) assert.throws(() => sanitizeScene({ ...base, schemaVersion: v }), (e: any) => e.code === 'ERR_SCHEMA_NEWER' && e.details.found === v, v);
   for (const v of ['0.2.9', '0.0.1', 'abc', '0.3', '0.4.0-beta', '']) assert.throws(() => sanitizeScene({ ...base, schemaVersion: v }), (e: any) => e.code === 'ERR_PRESET_INVALID', v);
   assert.throws(() => sanitizeScene({ ...base, schemaVersion: 4 }), (e: any) => e.code === 'ERR_PRESET_INVALID');
-  const r = sanitizeScene({ ...base, schemaVersion: '0.4.3' });
+  const r = sanitizeScene({ ...base, schemaVersion: '0.5.3' });
   assert.deepEqual(r.warnings.map((w) => w.code), ['WARN_PRESET_VERSION']);
 });
 
 test('preset hỏng: không phải đối tượng, thiếu trường, kiểu sai → ERR_PRESET_INVALID hoặc về mặc định kèm cảnh báo, không bao giờ văng lỗi lạ', () => {
-  for (const raw of [null, 1, 'x', [], {}, { schemaVersion: '0.4.0' }, { schemaVersion: '0.4.0', canvas: 5 }])
+  for (const raw of [null, 1, 'x', [], {}, { schemaVersion: SCENE_SCHEMA_VERSION }, { schemaVersion: SCENE_SCHEMA_VERSION, canvas: 5 }])
     assert.throws(() => sanitizeScene(raw), (e: any) => e.code === 'ERR_PRESET_INVALID', JSON.stringify(raw));
-  const r = sanitizeScene({ schemaVersion: '0.4.0', canvas: { designWidth: 'rộng', backgroundColor: 5 }, widgets: [
+  const r = sanitizeScene({ schemaVersion: SCENE_SCHEMA_VERSION, canvas: { designWidth: 'rộng', backgroundColor: 5 }, widgets: [
     { type: 'PIANO_ROLL', layout: { x: 'a', width: -5, anchor: { x: 7, y: 'b' } }, visible: 'yes' }, 42, { type: 'NOPE' }] });
   assert.equal(r.scene.canvas.designWidth, 1920);
   const l = r.scene.widgets[0].layout;
@@ -76,7 +81,7 @@ test('rotation: chuẩn hoá về (−180, 180], giữ nguyên và không cảnh
 });
 
 test('preset độc hại: __proto__, constructor, prototype bị bỏ ở mọi độ sâu kèm WARN_PRESET_UNSAFE_KEY; không làm bẩn Object.prototype', () => {
-  const text = `{"schemaVersion":"0.4.0","__proto__":{"polluted":1},"presetName":"x",
+  const text = `{"schemaVersion":"0.5.0","__proto__":{"polluted":1},"presetName":"x",
     "canvas":{"constructor":{"prototype":{"polluted":2}}},
     "widgets":[{"type":"PIANO_ROLL","id":"a","__proto__":{"polluted":3},
       "properties":{"noteStyle":{"base":{"__proto__":{"polluted":4}},"tracks":{"__proto__":{"opacity":0},"t1":{"opacity":0.5}}}}},
@@ -95,7 +100,7 @@ test('preset độc hại: __proto__, constructor, prototype bị bỏ ở mọi
 });
 
 test('giới hạn: lồng quá sâu, quá nhiều nút/widget, chuỗi/mảng quá dài → ERR_PRESET_INVALID kèm đường dẫn', () => {
-  const ok = { schemaVersion: '0.4.0', canvas: {}, widgets: [] as unknown[] };
+  const ok = { schemaVersion: SCENE_SCHEMA_VERSION, canvas: {}, widgets: [] as unknown[] };
   const deep: any = {}; let cur = deep; for (let i = 0; i < PRESET_LIMITS.maxDepth + 2; i++) { cur.n = {}; cur = cur.n; }
   const cases: [string, any][] = [
     ['sâu', { ...ok, widgets: [{ type: 'AUDIO_SPECTRUM', properties: deep }] }],

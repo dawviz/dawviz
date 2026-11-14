@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "6.1 Trạng thái"
 path: "6. Ứng dụng web và phát lại 🟡 > 6.1 Trạng thái"
 chunk: 6-1-trang-thai.md
-source_lines: 198-208
-source_sha1: 49e19e4d81
+source_lines: 211-221
+source_sha1: 6f5f3c0f08
 ids: [REQ-UI-14]
 ---
 ### 6.1 Trạng thái

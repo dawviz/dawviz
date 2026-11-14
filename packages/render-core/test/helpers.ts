@@ -24,7 +24,10 @@ export function recCtx() {
   const log: string[] = []; const st: Record<string, unknown> = { globalAlpha: 1, fillStyle: '', strokeStyle: '', lineWidth: 1, shadowColor: '', shadowBlur: 0 };
   const f = (n: unknown) => (typeof n === 'number' ? Number(n.toFixed(4)) : n);
   const ctx: any = new Proxy({}, {
-    get: (_, k: string) => (k in st ? st[k] : (...a: unknown[]) => { log.push(`${k}(${a.map(f).join(',')})`); }),
+    get: (_, k: string) => (k in st ? st[k] : (...a: unknown[]) => {
+      log.push(`${k}(${a.map(f).join(',')})`);
+      if (k.startsWith('create')) { const id = `grad#${log.length}`; return { addColorStop: (o: number, c: string) => log.push(`${id}.addColorStop(${f(o)},${c})`), toString: () => id }; }
+    }),
     set: (_, k: string, v) => { st[k] = v; log.push(`${k}=${f(v)}`); return true; },
   });
   return { ctx, log };

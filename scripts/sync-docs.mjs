@@ -6,6 +6,7 @@
 //   node scripts/sync-docs.mjs --find "từ khóa"  in liên kết (đường dẫn + #heading) tới mảnh/heading khớp, để dán vào tài liệu
 //   --strict   coi cảnh báo (thiếu mô tả đầu tệp, ID không có trong tài liệu) là lỗi
 //   --no-split không chạy lại scripts/split_doc.py (dùng docs/split sẵn có)
+//   --manual-ok <trang|all>  xác nhận trang hướng dẫn sử dụng vẫn đúng sau khi giao diện đổi (xem mục 5 bên dưới, D-59)
 //
 // Quy ước:
 //  * SKELETON.md: sinh hoàn toàn từ mã nguồn (packages/*/src, apps/*/src; bin/ và scripts/ chỉ liệt kê tóm tắt).
@@ -16,6 +17,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
+import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { slug, stripInline } from './docs-site/slug.mjs';
 
@@ -214,9 +216,11 @@ function loadIndex() {
   const f = path.join(SPLIT, 'index.json'); if (!exists(f)) return null;
   return JSON.parse(read(f));
 }
-function docSources() { // mọi .md dưới docs/, trừ split/ và README
+// Hướng dẫn sử dụng (docs/manual/) viết sẵn thành trang ngắn cho người dùng cuối: không chia mảnh, chỉ kiểm liên kết và đưa lên trang tài liệu.
+const MANUAL = path.join(ROOT, 'docs', 'manual');
+function docSources() { // mọi .md dưới docs/, trừ split/, manual/ và README
   const d = path.join(ROOT, 'docs'); if (!exists(d)) return [];
-  return walkFiles(d, (p) => p.endsWith('.md') && !p.startsWith(SPLIT + path.sep)).filter((p) => rel(p) !== 'docs/README.md');
+  return walkFiles(d, (p) => p.endsWith('.md') && !p.startsWith(SPLIT + path.sep) && !p.startsWith(MANUAL + path.sep)).filter((p) => rel(p) !== 'docs/README.md');
 }
 function buildDocsIndex(index) {
   const L = [];
@@ -352,11 +356,54 @@ const mdFiles = [...CORE.map((n) => path.join(ROOT, n)), path.join(ROOT, 'README
   .filter(exists);
 for (const f of mdFiles) checkLinks(f, { backticks: CORE.includes(rel(f)) });
 if (haveDocs) for (const f of docSources()) checkLinks(f, { backticks: false });
+if (exists(MANUAL)) for (const f of walkFiles(MANUAL, (p) => p.endsWith('.md'))) checkLinks(f, { backticks: false });
 for (const n of CORE) if (!exists(path.join(ROOT, n))) err(`thiếu tệp lõi ${n}`);
 // mọi tệp lõi phải được AI_CONTEXT nhắc tới
 if (exists(path.join(ROOT, 'AI_CONTEXT.md'))) {
   const ctx = read(path.join(ROOT, 'AI_CONTEXT.md'));
   for (const n of CORE.slice(1)) if (!ctx.includes(`](${n}`)) warn(`AI_CONTEXT.md chưa liên kết tới ${n}`);
+}
+
+// 5) hướng dẫn sử dụng có theo kịp giao diện không (D-59)
+// docs/manual/coverage.json: mỗi trang (vi + en) ghi các tệp giao diện nó mô tả (`covers`; `locales/en.json#tiền.tố.` = chỉ các khoá
+// có tiền tố đó) cùng mã băm lúc trang được xác nhận. Giao diện đổi mà trang chưa sửa → lỗi. docs:sync tự ghi nhận khi CẢ HAI bản
+// ngôn ngữ của trang đã đổi; trang không cần sửa thì xác nhận bằng --manual-ok <trang|all>. --check không ghi gì.
+if (exists(MANUAL)) checkManual();
+function checkManual() {
+  const covFile = path.join(MANUAL, 'coverage.json');
+  if (!exists(covFile)) { err('thiếu docs/manual/coverage.json'); return; }
+  const cov = JSON.parse(read(covFile));
+  const sha = (t) => crypto.createHash('sha1').update(t).digest('hex').slice(0, 12);
+  const fileHash = (r) => (exists(path.join(ROOT, r)) ? sha(read(path.join(ROOT, r))) : null);
+  const coverHash = (c) => {
+    const [f, prefix] = c.split('#'); const full = path.join(ROOT, f);
+    if (!exists(full)) return null;
+    if (!prefix) return sha(read(full));
+    const o = JSON.parse(read(full));
+    return sha(JSON.stringify(Object.keys(o).filter((k) => k.startsWith(prefix)).sort().map((k) => [k, o[k]])));
+  };
+  const okArg = argVal('--manual-ok');
+  const listed = new Set();
+  let changed = false;
+  for (const [id, pg] of Object.entries(cov.pages)) {
+    listed.add(pg.vi); listed.add(pg.en);
+    const bad = pg.covers.filter((c) => coverHash(c) === null);
+    if (bad.length) { err(`hướng dẫn ${id}: covers trỏ tới tệp không có: ${bad.join(', ')}`); continue; }
+    const now = Object.fromEntries(pg.covers.map((c) => [c, coverHash(c)]));
+    const ui = sha(pg.covers.map((c) => `${c}:${now[c]}`).join('\n')), vi = fileHash(pg.vi), en = fileHash(pg.en);
+    if (!vi || !en) { err(`hướng dẫn ${id}: thiếu tệp ${!vi ? pg.vi : pg.en}`); continue; }
+    if (ui === pg.uiHash) { if (!CHECK && (vi !== pg.viHash || en !== pg.enHash || !pg.coverHashes)) { Object.assign(pg, { viHash: vi, enHash: en, coverHashes: now }); changed = true; } continue; }
+    const bothEdited = pg.uiHash && vi !== pg.viHash && en !== pg.enHash;
+    const accept = !pg.uiHash || bothEdited || okArg === id || okArg === 'all';
+    if (accept && !CHECK) { Object.assign(pg, { uiHash: ui, viHash: vi, enHash: en, coverHashes: now }); changed = true; notes.push(`hướng dẫn ${id}: đã ghi nhận khớp giao diện hiện tại`); continue; }
+    if (accept) { err(`hướng dẫn ${id}: đã sửa nhưng chưa ghi nhận → chạy npm run docs:sync`); continue; }
+    const missing = vi === pg.viHash && en === pg.enHash ? 'cả hai bản' : vi === pg.viHash ? `bản tiếng Việt ${pg.vi}` : `bản tiếng Anh ${pg.en}`;
+    const diff = pg.covers.filter((c) => pg.coverHashes?.[c] !== now[c]);
+    err(`hướng dẫn ${id} có thể đã cũ: giao diện đã đổi (${diff.join(', ')}) nhưng chưa sửa ${missing}. Sửa trang rồi chạy npm run docs:sync; nếu trang vẫn đúng: node scripts/sync-docs.mjs --manual-ok ${id}`);
+  }
+  for (const f of walkFiles(MANUAL, (p) => p.endsWith('.md'))) if (!listed.has(rel(f))) err(`trang hướng dẫn chưa có trong docs/manual/coverage.json: ${rel(f)}`);
+  if (okArg && okArg !== 'all' && !cov.pages[okArg]) err(`--manual-ok: không có trang "${okArg}" (có: ${Object.keys(cov.pages).join(', ')}, all)`);
+  if (changed) fs.writeFileSync(covFile, JSON.stringify(cov, null, 2) + '\n');
 }
 
 // ───────────────────────────── báo cáo ─────────────────────────────

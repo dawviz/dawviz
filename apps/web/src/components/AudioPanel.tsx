@@ -38,6 +38,7 @@ export function AudioPanel({ audio, busy, offsetMs, showOffset, onLoad, onRemove
         {audio && <button type="button" className="btn-ghost" onClick={onRemove} data-testid="audio-remove">{i18n.t('web.audio.remove')}</button>}
         <input ref={input} type="file" accept={AUDIO_ACCEPT} hidden onChange={(e) => pick(e.target.files?.[0])} data-testid="audio-input" />
       </div>
+      {/* Ngoại lệ của D-59: dòng giải thích ngắn cạnh Nạp âm thanh giữ lại (chủ dự án, 2026-11-14). */}
       {audio
         ? <p className="truncate text-xs text-fg" title={audio.name}>{audio.name} <span className="tabular-nums text-muted">· {formatClock(audio.durationSec)}</span></p>
         : <p className="text-xs text-muted">{i18n.t('web.audio.hint')}</p>}

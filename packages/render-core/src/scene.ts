@@ -1,15 +1,17 @@
 // T-05: SceneDocument (= Preset, SRS REQ-STORAGE-02) + kiểm/sửa lược đồ. Dữ liệu thuần, không DOM.
-// Mô hình hiện tại là "canvas + widgets" của preset 0.4.0 (thêm `layout.anchor` theo REQ-GRAPHICS-03, đọc được 0.3.x qua `migrateScene`).
+// Mô hình hiện tại là "canvas + textStyles + widgets" của preset 0.5.0 (0.4.0 thêm `layout.anchor` theo REQ-GRAPHICS-03; 0.5.0 thêm bộ kiểu chữ
+// `textStyles` và chữ dạng TextRef theo REQ-GRAPHICS-18). Đọc được 0.3.x/0.4.x qua `migrateScene`.
 // Lớp/phần tử storyboard (T-22) sẽ là schemaVersion mới, có hàm di trú từ 0.4.0; vì vậy mọi trường ở đây giữ đúng tên trong SRS.
 import {
   DEFAULT_CHORD, DEFAULT_EVENT_COUNTER, DEFAULT_LIVE_TRIGGER, DEFAULT_PROGRESS_BAR, DEFAULT_TIME_BAR, DEFAULT_TRACK_INFO, TEMPLATE_KEYS,
-  type Align, type ChordProps, type EventCounterProps, type LineCfg, type LiveTriggerProps, type ProgressBarProps, type TextStyle, type TimeBarProps, type TrackInfoProps,
+  type Align, type ChordProps, type EventCounterProps, type LineCfg, type LiveTriggerProps, type ProgressBarProps, type TimeBarProps, type TrackInfoProps,
 } from './hud.ts';
+import { BASE_TEXT_STYLE, DEFAULT_TEXT_STYLES, applyOverride, cloneStyle, type NamedTextStyle, type TextRef, type TextStyle, type TextStyleSet } from './typography.ts';
 import { unknownPlaceholders } from './text.ts';
 import { normalizeAngle } from './snap.ts';
 import { DEFAULT_KEYBOARD_STYLE, DEFAULT_NOTE_STYLE, sanitizeStyle, type KeyboardStyle, type NoteStyle, type StyleConfig } from './style.ts';
 
-export const SCENE_SCHEMA_VERSION = '0.4.0';
+export const SCENE_SCHEMA_VERSION = '0.5.0';
 
 export const WIDGET_TYPES = ['TRACK_INFO', 'PIANO_ROLL', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'AUDIO_SPECTRUM', 'PROGRESS_BAR'] as const;
 export type WidgetType = typeof WIDGET_TYPES[number];
@@ -61,6 +63,8 @@ export interface SceneDocument {
   presetName: string;
   author: string;
   canvas: CanvasSpec;
+  /** Bộ kiểu chữ dựng sẵn của preset (REQ-GRAPHICS-18). `sanitizeScene` luôn điền đủ (DEFAULT_TEXT_STYLES + kiểu của preset); vắng = DEFAULT_TEXT_STYLES. */
+  textStyles?: TextStyleSet;
   /** Thuộc tính tuỳ loại: PIANO_ROLL → PianoRollProps; loại chưa có renderer → giữ nguyên JSON. */
   widgets: WidgetSpec[];
 }
@@ -81,6 +85,7 @@ export function defaultScene(aspect: keyof typeof ASPECTS = '16:9'): SceneDocume
     schemaVersion: SCENE_SCHEMA_VERSION, presetName: 'Default', author: 'DAW Visualizer',
     canvas: { aspectRatio: aspect, designWidth: w, designHeight: h, backgroundColor: '#0c0e16', backgroundImageData: null,
       snapping: { gridEnabled: true, gridSize: 8, smartGuidesEnabled: true } },
+    textStyles: cloneTextStyles(DEFAULT_TEXT_STYLES),
     widgets: [pianoRollWidget({ x: 0, y: 0, width: w, height: h, rotation: 0 })],
   };
 }
@@ -89,6 +94,8 @@ export function pianoRollWidget(layout: Omit<WidgetLayout, 'anchor'> & { anchor?
   return { id, type: 'PIANO_ROLL', zIndex: 10, visible: true, layout: { ...layout, anchor: { ...(layout.anchor ?? DEFAULT_ANCHOR) } }, trackMappingMode: 'ALL', assignedTrackIndices: [],
     properties: { ...clonePiano(DEFAULT_PIANO_ROLL), ...props } };
 }
+/** Bản sao sâu của bộ kiểu chữ (sửa kiểu trong một scene không đụng bộ mặc định đã đóng băng). */
+export const cloneTextStyles = (set: TextStyleSet): Record<string, NamedTextStyle> => Object.fromEntries(Object.entries(set).map(([k, v]) => [k, cloneStyle(v)]));
 const clonePiano = (p: PianoRollProps): PianoRollProps => ({ ...p, noteStyle: { base: { ...p.noteStyle.base }, tracks: { ...p.noteStyle.tracks } }, keyboard: { ...p.keyboard } });
 
 // ───────────────────────────── kiểm và sửa lược đồ (REQ-STORAGE-02) ─────────────────────────────
@@ -145,7 +152,9 @@ const parseVersion = (v: unknown): [number, number, number] | null => {
 
 /** Di trú theo từng bậc phiên bản, trên một bản sao (đối tượng vào không bị sửa). Trả bản đã lên `SCENE_SCHEMA_VERSION`
  *  và phiên bản gốc; ném `ERR_SCHEMA_NEWER` nếu mới hơn ứng dụng hiểu, `ERR_PRESET_INVALID` nếu quá cũ hoặc không đọc được.
- *  0.3.x → 0.4.0: mỗi `widget.layout` thêm `anchor` = tâm (REQ-GRAPHICS-03). */
+ *  0.3.x → 0.4.0: mỗi `widget.layout` thêm `anchor` = tâm (REQ-GRAPHICS-03).
+ *  0.4.x → 0.5.0: không đổi cấu trúc. Chữ cũ `{font,size,weight,color}` đọc thành ghi đè trên kiểu mặc định của chỗ đó nên vẽ như cũ;
+ *  `textStyles` vắng = bộ dựng sẵn (REQ-GRAPHICS-18). */
 export function migrateScene(raw: unknown): { raw: Obj; from: string } {
   if (!isObj(raw)) throw new SceneError('preset không phải đối tượng JSON', '$');
   if (typeof raw.schemaVersion !== 'string') throw new SceneError('thiếu schemaVersion', '$.schemaVersion');
@@ -154,12 +163,13 @@ export function migrateScene(raw: unknown): { raw: Obj; from: string } {
   const cur = parseVersion(SCENE_SCHEMA_VERSION)!;
   if (v[0] > cur[0] || (v[0] === cur[0] && v[1] > cur[1]))
     throw new SceneError(`preset phiên bản ${raw.schemaVersion} mới hơn ứng dụng (đọc được tới ${cur[0]}.${cur[1]}.x)`, '$.schemaVersion', 'ERR_SCHEMA_NEWER', { found: raw.schemaVersion, supported: SCENE_SCHEMA_VERSION });
-  if (v[0] !== 0 || v[1] < 3) throw new SceneError(`schemaVersion ${raw.schemaVersion} không đọc được (cần 0.3.x hoặc 0.4.x)`, '$.schemaVersion');
+  if (v[0] !== 0 || v[1] < 3) throw new SceneError(`schemaVersion ${raw.schemaVersion} không đọc được (cần 0.3.x đến 0.5.x)`, '$.schemaVersion');
   let out: Obj = structuredClone(raw);
   if (v[1] === 3) {
     if (Array.isArray(out.widgets)) for (const w of out.widgets) if (isObj(w) && isObj(w.layout) && w.layout.anchor === undefined) w.layout.anchor = { x: DEFAULT_ANCHOR.x, y: DEFAULT_ANCHOR.y };
     out = { ...out, schemaVersion: '0.4.0' };
   }
+  if (v[1] <= 4) out = { ...out, schemaVersion: '0.5.0' };
   return { raw: out, from: raw.schemaVersion };
 }
 
@@ -198,6 +208,8 @@ export function sanitizeScene(input: unknown): { scene: SceneDocument; warnings:
   };
 
   const S: Sanitizer = { num, str, bool, oneOf, warn: (path, value, message) => w('WARN_PRESET_VALUE', path, value, message) };
+  const textStyles = sanitizeTextStyles(S, raw.textStyles, '$.textStyles');
+  S.styleIds = new Set(Object.keys(textStyles));
 
   const c = raw.canvas;
   const dw = Math.round(num(c.designWidth, 1920, 256, 4096, '$.canvas.designWidth'));
@@ -284,7 +296,7 @@ export function sanitizeScene(input: unknown): { scene: SceneDocument; warnings:
   });
 
   return {
-    scene: { schemaVersion: SCENE_SCHEMA_VERSION, presetName: str(raw.presetName, 'Untitled', '$.presetName'), author: str(raw.author, '', '$.author'), canvas, widgets },
+    scene: { schemaVersion: SCENE_SCHEMA_VERSION, presetName: str(raw.presetName, 'Untitled', '$.presetName'), author: str(raw.author, '', '$.author'), canvas, textStyles, widgets },
     warnings,
   };
 }
@@ -297,6 +309,8 @@ export interface Sanitizer {
   bool(v: unknown, d: boolean, path: string): boolean;
   oneOf<T extends string>(v: unknown, list: readonly T[], d: T, path: string): T;
   warn(path: string, value: unknown, message: string): void;
+  /** Id kiểu chữ có trong scene (để kiểm `styleId` của chữ). */
+  styleIds?: ReadonlySet<string>;
 }
 const FONT_OK = (s: string) => /^[\w][\w \-]{0,39}$/.test(s);
 const tpl = (S: Sanitizer, v: unknown, d: string, path: string, keys: readonly string[]): string => {
@@ -305,14 +319,87 @@ const tpl = (S: Sanitizer, v: unknown, d: string, path: string, keys: readonly s
   if (bad.length) S.warn(path, t, `chỗ giữ lạ {${bad.join('}, {')}}; chữ được giữ nguyên`);
   return t;
 };
-const textStyle = (S: Sanitizer, v: unknown, d: TextStyle, path: string): TextStyle => {
-  const o = isObj(v) ? v : {};
-  return {
-    font: S.str(o.font, d.font, `${path}.font`, FONT_OK),
-    size: S.num(o.size, d.size, 4, 400, `${path}.size`),
-    weight: Math.round(S.num(o.weight, d.weight, 100, 900, `${path}.weight`) / 100) * 100,
-    color: S.str(o.color, d.color, `${path}.color`, (s) => HEX.test(s)),
-  };
+// ── kiểu chữ (T-72, REQ-GRAPHICS-18) ──
+// Một bảng mô tả mọi trường: dùng cho cả kiểu đầy đủ trong `textStyles` và ghi đè (TextRef) của từng chữ. Ghi đè chỉ giữ trường có mặt
+// và hợp lệ (trường sai: cảnh báo rồi bỏ, chữ theo kiểu); số ngoài khoảng được kẹp như mọi thuộc tính khác.
+type FieldSpec = readonly ['num', number, number] | readonly ['int', number, number] | readonly ['weight'] | readonly ['bool'] | readonly ['font'] | readonly ['color'] | readonly ['colorOrEmpty']
+  | readonly ['one', readonly string[]] | readonly ['gradient'] | readonly ['obj', Readonly<Record<string, FieldSpec>>];
+const COLOR: FieldSpec = ['color'];
+const TEXT_SPEC: Readonly<Record<string, FieldSpec>> = {
+  font: ['font'], weight: ['weight'], italic: ['bool'], size: ['num', 4, 400], scaleX: ['num', 0.1, 10], scaleY: ['num', 0.1, 10], baselineShift: ['num', -400, 400],
+  script: ['one', ['none', 'super', 'sub']], underline: ['bool'], strike: ['bool'], decoThickness: ['num', 0, 50], decoColor: ['colorOrEmpty'],
+  textCase: ['one', ['none', 'upper', 'lower', 'title', 'smallCaps']], tracking: ['num', -500, 2000], leading: ['num', 0.5, 5],
+  color: COLOR, gradient: ['gradient'], opacity: ['num', 0, 1],
+  stroke: ['obj', { width: ['num', 0, 50], color: COLOR, position: ['one', ['center', 'outside']], join: ['one', ['miter', 'round', 'bevel']], over: ['bool'] }],
+  shadow: ['obj', { enabled: ['bool'], color: COLOR, opacity: ['num', 0, 1], distance: ['num', 0, 200], angle: ['num', -360, 360], blur: ['num', 0, 100] }],
+  background: ['obj', { enabled: ['bool'], color: COLOR, opacity: ['num', 0, 1], padX: ['num', 0, 200], padY: ['num', 0, 200], radius: ['num', 0, 200] }],
+  tabularNums: ['bool'], overflow: ['one', ['ellipsis', 'shrink', 'visible']], minSize: ['num', 4, 400], wrap: ['bool'], maxLines: ['int', 1, 20],
+};
+const DROP = Symbol('drop');
+function field(S: Sanitizer, spec: FieldSpec, v: unknown, path: string): unknown {
+  const bad = (msg = 'giá trị không hợp lệ; bỏ ghi đè') => { S.warn(path, v, msg); return DROP; };
+  switch (spec[0]) {
+    case 'num': case 'int': {
+      const n = S.num(v, NaN, spec[1], spec[2], path);
+      return Number.isNaN(n) ? DROP : spec[0] === 'int' ? Math.round(n) : n;
+    }
+    case 'weight': { const n = S.num(v, NaN, 100, 900, path); return Number.isNaN(n) ? DROP : Math.round(n / 100) * 100; }
+    case 'bool': return typeof v === 'boolean' ? v : bad('không phải true/false; bỏ ghi đè');
+    case 'font': return typeof v === 'string' && FONT_OK(v) ? v : bad();
+    case 'color': return typeof v === 'string' && HEX.test(v) ? v : bad();
+    case 'colorOrEmpty': return typeof v === 'string' && (v === '' || HEX.test(v)) ? v : bad();
+    case 'one': return typeof v === 'string' && spec[1].includes(v) ? v : bad(`không thuộc ${spec[1].join('/')}; bỏ ghi đè`);
+    case 'gradient': {
+      if (v === null) return null;
+      if (!isObj(v) || !Array.isArray(v.stops)) return bad();
+      const stops = v.stops.slice(0, 8).filter((x): x is Obj => isObj(x) && typeof x.at === 'number' && Number.isFinite(x.at) && typeof x.color === 'string' && HEX.test(x.color))
+        .map((x) => ({ at: Math.min(1, Math.max(0, x.at as number)), color: x.color as string })).sort((a, b) => a.at - b.at);
+      if (stops.length < 2) return bad('gradient cần ít nhất 2 điểm màu hợp lệ; bỏ ghi đè');
+      const kind = v.kind === 'radial' ? 'radial' : 'linear';
+      const angle = S.num(v.angle, 0, -360, 360, `${path}.angle`);
+      return { kind, angle, stops };
+    }
+    case 'obj': {
+      if (!isObj(v)) return bad();
+      const out: Obj = {};
+      for (const [k, sp] of Object.entries(spec[1])) if (v[k] !== undefined) { const x = field(S, sp, v[k], `${path}.${k}`); if (x !== DROP) out[k] = x; }
+      return out;
+    }
+  }
+}
+/** Các trường kiểu chữ hợp lệ có mặt trong `o` (dạng ghi đè). */
+function textFields(S: Sanitizer, o: Obj, path: string): Partial<TextStyle> {
+  const out: Obj = {};
+  for (const [k, spec] of Object.entries(TEXT_SPEC)) if (o[k] !== undefined) { const x = field(S, spec, o[k], `${path}.${k}`); if (x !== DROP) out[k] = x; }
+  return out as Partial<TextStyle>;
+}
+const STYLE_ID = /^[A-Za-z][\w-]{0,31}$/;
+/** Bộ kiểu của scene: bộ dựng sẵn + kiểu preset thêm/sửa (kiểu trùng id dựng sẵn ghi đè lên nó, kiểu mới dựa trên kiểu gốc). */
+function sanitizeTextStyles(S: Sanitizer, v: unknown, path: string): Record<string, NamedTextStyle> {
+  const out = cloneTextStyles(DEFAULT_TEXT_STYLES);
+  if (v === undefined) return out;
+  if (!isObj(v)) { S.warn(path, v, 'không phải đối tượng; dùng bộ kiểu dựng sẵn'); return out; }
+  let n = 0;
+  for (const [id, raw] of Object.entries(v)) {
+    const p = `${path}.${id}`;
+    if (!STYLE_ID.test(id)) { S.warn(p, id, 'id kiểu chữ không hợp lệ; bỏ qua'); continue; }
+    if (!isObj(raw)) { S.warn(p, raw, 'kiểu chữ không phải đối tượng; bỏ qua'); continue; }
+    if (++n > 64) { S.warn(p, id, 'quá 64 kiểu chữ; bỏ qua'); continue; }
+    const base: NamedTextStyle = out[id] ?? { ...cloneStyle(BASE_TEXT_STYLE), name: id };
+    out[id] = { ...applyOverride(base, textFields(S, raw, p) as TextRef), name: S.str(raw.name, base.name, `${p}.name`, (s) => s.length > 0 && s.length <= 60) };
+  }
+  return out;
+}
+/** Chữ của widget: vắng → ghi đè mặc định của chỗ đó; có → `styleId` (phải có trong bộ) + các trường ghi đè hợp lệ. */
+const textRef = (S: Sanitizer, v: unknown, d: TextRef, path: string): TextRef => {
+  if (v === undefined) return { ...d };
+  if (!isObj(v)) { S.warn(path, v, 'không phải đối tượng; dùng mặc định'); return { ...d }; }
+  const out: TextRef = textFields(S, v, path) as TextRef;
+  if (v.styleId !== undefined) {
+    if (typeof v.styleId === 'string' && (S.styleIds?.has(v.styleId) ?? v.styleId in DEFAULT_TEXT_STYLES)) out.styleId = v.styleId;
+    else S.warn(`${path}.styleId`, v.styleId, 'không có kiểu chữ này; dùng kiểu mặc định của chỗ chữ');
+  }
+  return out;
 };
 const ALIGNS = ['left', 'center', 'right'] as const;
 const lineCfg = (S: Sanitizer, v: unknown, d: LineCfg, path: string, keys: readonly string[]): LineCfg => {
@@ -328,26 +415,26 @@ const HUD_SANITIZERS = {
   TRACK_INFO(P: Obj, p: string, S: Sanitizer): TrackInfoProps {
     const d = DEFAULT_TRACK_INFO;
     return { align: S.oneOf(P.align, ALIGNS, d.align, `${p}.align`), titleText: S.str(P.titleText, d.titleText, `${p}.titleText`, (s) => s.length <= 200),
-      titleStyle: textStyle(S, P.titleStyle, d.titleStyle, `${p}.titleStyle`), artistText: S.str(P.artistText, d.artistText, `${p}.artistText`, (s) => s.length <= 200),
-      artistStyle: textStyle(S, P.artistStyle, d.artistStyle, `${p}.artistStyle`) };
+      titleStyle: textRef(S, P.titleStyle, d.titleStyle, `${p}.titleStyle`), artistText: S.str(P.artistText, d.artistText, `${p}.artistText`, (s) => s.length <= 200),
+      artistStyle: textRef(S, P.artistStyle, d.artistStyle, `${p}.artistStyle`) };
   },
   EVENT_COUNTER(P: Obj, p: string, S: Sanitizer): EventCounterProps {
     const d = DEFAULT_EVENT_COUNTER, L = isObj(P.lines) ? P.lines : {}, K = TEMPLATE_KEYS.EVENT_COUNTER;
-    return { align: S.oneOf(P.align, ALIGNS, d.align, `${p}.align`), style: textStyle(S, P.style, d.style, `${p}.style`),
+    return { align: S.oneOf(P.align, ALIGNS, d.align, `${p}.align`), style: textRef(S, P.style, d.style, `${p}.style`), valueStyle: textRef(S, P.valueStyle, d.valueStyle, `${p}.valueStyle`),
       lineHeight: S.num(P.lineHeight, d.lineHeight, 1, 3, `${p}.lineHeight`), decimals: Math.round(S.num(P.decimals, d.decimals, 0, 4, `${p}.decimals`)),
       lines: { played: lineCfg(S, L.played, d.lines.played, `${p}.lines.played`, K), total: lineCfg(S, L.total, d.lines.total, `${p}.lines.total`, K),
         progress: lineCfg(S, L.progress, d.lines.progress, `${p}.lines.progress`, K), tempo: lineCfg(S, L.tempo, d.lines.tempo, `${p}.lines.tempo`, K) } };
   },
   LIVE_TRIGGER(P: Obj, p: string, S: Sanitizer): LiveTriggerProps {
     const d = DEFAULT_LIVE_TRIGGER, K = TEMPLATE_KEYS.LIVE_TRIGGER;
-    return { mode: S.oneOf(P.mode, ['list', 'inline'] as const, d.mode, `${p}.mode`), align: S.oneOf(P.align, ALIGNS, d.align, `${p}.align`), style: textStyle(S, P.style, d.style, `${p}.style`),
+    return { mode: S.oneOf(P.mode, ['list', 'inline'] as const, d.mode, `${p}.mode`), align: S.oneOf(P.align, ALIGNS, d.align, `${p}.align`), style: textRef(S, P.style, d.style, `${p}.style`), valueStyle: textRef(S, P.valueStyle, d.valueStyle, `${p}.valueStyle`),
       template: tpl(S, P.template, d.template, `${p}.template`, K), showTrack: S.bool(P.showTrack, d.showTrack, `${p}.showTrack`), trackTemplate: tpl(S, P.trackTemplate, d.trackTemplate, `${p}.trackTemplate`, K),
       tailMs: S.num(P.tailMs, d.tailMs, 0, 1000, `${p}.tailMs`), maxLines: Math.round(S.num(P.maxLines, d.maxLines, 1, 32, `${p}.maxLines`)),
       lineHeight: S.num(P.lineHeight, d.lineHeight, 1, 3, `${p}.lineHeight`), separator: S.str(P.separator, d.separator, `${p}.separator`, (s) => s.length <= 16) };
   },
   TIME_BAR(P: Obj, p: string, S: Sanitizer): TimeBarProps {
     const d = DEFAULT_TIME_BAR, tm = isObj(P.time) ? P.time : {}, bt = isObj(P.beat) ? P.beat : {};
-    return { style: textStyle(S, P.style, d.style, `${p}.style`), labelStyle: textStyle(S, P.labelStyle, d.labelStyle, `${p}.labelStyle`), rowGap: S.num(P.rowGap, d.rowGap, 1, 5, `${p}.rowGap`),
+    return { style: textRef(S, P.style, d.style, `${p}.style`), labelStyle: textRef(S, P.labelStyle, d.labelStyle, `${p}.labelStyle`), rowGap: S.num(P.rowGap, d.rowGap, 1, 5, `${p}.rowGap`),
       time: { enabled: S.bool(tm.enabled, d.time.enabled, `${p}.time.enabled`), label: S.str(tm.label, d.time.label, `${p}.time.label`, (s) => s.length <= 40), format: S.oneOf(tm.format, ['grouped', 'clock'] as const, d.time.format, `${p}.time.format`) },
       beat: { enabled: S.bool(bt.enabled, d.beat.enabled, `${p}.beat.enabled`), label: S.str(bt.label, d.beat.label, `${p}.beat.label`, (s) => s.length <= 40), format: S.oneOf(bt.format, ['grouped', 'bbs'] as const, d.beat.format, `${p}.beat.format`) },
       timeGroups: groups(S, P.timeGroups, d.timeGroups, `${p}.timeGroups`), beatGroups: groups(S, P.beatGroups, d.beatGroups, `${p}.beatGroups`),
@@ -356,7 +443,8 @@ const HUD_SANITIZERS = {
   },
   CHORD_DETECTION(P: Obj, p: string, S: Sanitizer): ChordProps {
     const d = DEFAULT_CHORD;
-    return { mode: S.oneOf(P.mode, ['sustained', 'strike'] as const, d.mode, `${p}.mode`), align: S.oneOf(P.align, ALIGNS, d.align, `${p}.align`), nameStyle: textStyle(S, P.nameStyle, d.nameStyle, `${p}.nameStyle`), notesStyle: textStyle(S, P.notesStyle, d.notesStyle, `${p}.notesStyle`),
+    return { mode: S.oneOf(P.mode, ['sustained', 'strike'] as const, d.mode, `${p}.mode`), align: S.oneOf(P.align, ALIGNS, d.align, `${p}.align`), nameStyle: textRef(S, P.nameStyle, d.nameStyle, `${p}.nameStyle`), bassStyle: textRef(S, P.bassStyle, d.bassStyle, `${p}.bassStyle`),
+      notesStyle: textRef(S, P.notesStyle, d.notesStyle, `${p}.notesStyle`), notesValueStyle: textRef(S, P.notesValueStyle, d.notesValueStyle, `${p}.notesValueStyle`),
       alwaysShowNotes: S.bool(P.alwaysShowNotes, d.alwaysShowNotes, `${p}.alwaysShowNotes`), notesTemplate: tpl(S, P.notesTemplate, d.notesTemplate, `${p}.notesTemplate`, TEMPLATE_KEYS.CHORD_DETECTION),
       unrecognized: S.oneOf(P.unrecognized, ['nc', 'notes'] as const, d.unrecognized, `${p}.unrecognized`), noChordText: S.str(P.noChordText, d.noChordText, `${p}.noChordText`, (s) => s.length <= 20) };
   },
@@ -364,7 +452,7 @@ const HUD_SANITIZERS = {
     const d = DEFAULT_PROGRESS_BAR;
     return { orientation: S.oneOf(P.orientation, ['HORIZONTAL', 'VERTICAL'] as const, d.orientation, `${p}.orientation`), thickness: S.num(P.thickness, d.thickness, 1, 200, `${p}.thickness`),
       progressColor: S.str(P.progressColor, d.progressColor, `${p}.progressColor`, (s) => HEX.test(s)), trackColor: S.str(P.trackColor, d.trackColor, `${p}.trackColor`, (s) => s === '' || HEX.test(s)),
-      radius: S.num(P.radius, d.radius, 0, 100, `${p}.radius`), showTime: S.bool(P.showTime, d.showTime, `${p}.showTime`), timeStyle: textStyle(S, P.timeStyle, d.timeStyle, `${p}.timeStyle`),
+      radius: S.num(P.radius, d.radius, 0, 100, `${p}.radius`), showTime: S.bool(P.showTime, d.showTime, `${p}.showTime`), timeStyle: textRef(S, P.timeStyle, d.timeStyle, `${p}.timeStyle`), timeValueStyle: textRef(S, P.timeValueStyle, d.timeValueStyle, `${p}.timeValueStyle`),
       timeTemplate: tpl(S, P.timeTemplate, d.timeTemplate, `${p}.timeTemplate`, TEMPLATE_KEYS.PROGRESS_BAR), timeAlign: S.oneOf(P.timeAlign, ALIGNS, d.timeAlign, `${p}.timeAlign`) };
   },
 } as const;
