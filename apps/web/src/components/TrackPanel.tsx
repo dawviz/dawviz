@@ -1,16 +1,18 @@
 // Danh sách track (REQ-UI-12, REQ-UI-14, UI-DIRECTION 5.3): hai cách trình bày.
 //  • Danh sách: mỗi track một dòng gọn trong mục 03 của inspector: [tay nắm] ô màu, tên, mắt, S, số nốt căn phải.
-//    Bấm tên (hoặc Enter) để mở chi tiết. Không có khoá ở đây: khoá chỉ có ở danh sách lớp của Editor.
+//    Mắt, S và số nốt nằm ở cột bề rộng cố định nên thẳng hàng dù tên hay số nốt dài ngắn khác nhau. Hàng đầu (không chữ,
+//    chú thích khi rê chuột) bật/tắt tất cả: mắt = hiện hết trước rồi mới ẩn hết; S = bỏ mọi solo.
+//    Bấm tên (hoặc Enter) để mở chi tiết. Không có khoá ở đây (D-57): khoá lớp ở danh sách Lớp của Editor, khoá track sẽ ở làn
+//    track trên timeline của Editor (cùng khoảng hiển thị T-52); thẻ Preview chỉ chỉnh nhanh.
 //  • Lưới: thẻ xếp dưới khung xem trước; người dùng chọn số cột (hoặc tự động). Nếu bề rộng không đủ thì hiện ít cột hơn và báo.
 // Cơ bản: màu, ẩn/hiện, solo, thông tin track. Nâng cao thêm: kéo đổi thứ tự, độ sáng nền và ngưỡng (REQ-UI-13).
 // Ẩn/hiện, solo và thứ tự là việc của ứng dụng (lọc/sắp danh sách track trước khi đưa cho Render Core), không đổi Render Core.
-import { useEffect, useRef, useState, type DragEvent, type KeyboardEvent, type RefObject } from 'react';
+import { useEffect, useRef, useState, type DragEvent, type KeyboardEvent, type ReactNode, type RefObject } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { BRIGHTNESS_DB_RANGE, DEFAULT_BRIGHTNESS, pitchName, trackBrightness, type ProjectTrack, type BrightnessConfig, type BrightnessSource, type NoteStyle, type TempoPoint } from '@dawviz/render-core';
 import { SliderField } from './SliderField.tsx';
 import { NumberField } from './NumberField.tsx';
 import { Select } from './Select.tsx';
-import { AdvTag } from './Inspector.tsx';
 import { ChevronRight, Eye, EyeOff, Grip } from './Icons.tsx';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { usePlayback, type Playback } from '../lib/playback.ts';
@@ -45,6 +47,8 @@ interface Props {
   t?: number; playback?: Playback; tempoMap?: TempoPoint[]; layout?: TrackLayout;
   advanced?: boolean; view?: TrackView;
   onToggleHidden?(id: string): void; onToggleSolo?(id: string): void;
+  /** Hàng đầu: bật/tắt mắt mọi track (hiện hết trước), bỏ mọi solo. */
+  onToggleAllHidden?(): void; onClearSolo?(): void;
   /** Đổi thứ tự (Nâng cao): đưa track `id` tới vị trí `to` trong danh sách. */
   onMove?(id: string, to: number): void;
 }
@@ -102,6 +106,48 @@ function arrowNav(e: KeyboardEvent<HTMLElement>, container: HTMLElement | null) 
   if (best) { e.preventDefault(); best.focus(); }
 }
 
+/** Cột số nốt: đủ cho "12.345 nốt" ở 13 px; cố định để mắt và S của mọi dòng thẳng hàng. */
+const COUNT_COL = 'w-[4.75rem]';
+/** Có track nào đang bật độ sáng nền (khi đó mọi dòng chừa cột % độ sáng để cột vẫn thẳng). */
+const anyBright = (p: Props) => p.tracks.some((t) => (p.config[t.id] ?? DEFAULT_BRIGHTNESS).source !== 'off');
+
+/**
+ * Hàng đầu danh sách: mắt và S chỉ là biểu tượng ở đúng cột, rê chuột thì có chú thích (kiểu bảng lớp của AE).
+ * Mắt: còn track ẩn thì bấm để hiện hết, đã hiện hết thì bấm để ẩn hết. S: bỏ mọi solo (không có solo thì mờ đi).
+ * `lead`: phần bên trái (nút "Hiện tất cả N track" / "Thu gọn"); cột số nốt hiện TỔNG số nốt mọi track.
+ * `compact`: chỉ hai nút (đầu lưới thẻ), không chừa cột như danh sách.
+ */
+export function TrackColumnsHead({ p, className = '', compact, lead }: { p: Props; className?: string; compact?: boolean; lead?: ReactNode }) {
+  const { i18n } = useI18n();
+  const view = p.view ?? EMPTY_VIEW;
+  if (!p.onToggleAllHidden && !p.onClearSolo && !lead) return null;
+  const total = p.tracks.reduce((n, t) => n + t.notes.length, 0);
+  const hiddenN = p.tracks.filter((t) => view.hidden.has(t.id)).length;
+  const allHidden = hiddenN > 0 && hiddenN === p.tracks.length, someHidden = hiddenN > 0;
+  const eyeLabel = i18n.t(someHidden ? 'web.tracks.allShow' : 'web.tracks.allHide');
+  const solo = view.solo.size > 0;
+  const soloLabel = i18n.t(solo ? 'web.tracks.soloClear' : 'web.tracks.soloNone');
+  return (
+    <div role="group" aria-label={i18n.t('web.tracks.head')} className={`flex items-center gap-1.5 ${className}`} data-testid="track-head">
+      {!compact && <div className="flex min-w-0 flex-1 items-center">{lead}</div>}
+      {p.onToggleAllHidden && (
+        <button type="button" className="tog" aria-pressed={allHidden ? true : someHidden ? 'mixed' : false} aria-label={eyeLabel} title={eyeLabel} onClick={p.onToggleAllHidden} data-testid="track-all-hidden">
+          {allHidden ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className={`h-3.5 w-3.5 ${someHidden ? 'opacity-50' : ''}`} />}
+        </button>
+      )}
+      {p.onClearSolo && (
+        <button type="button" className="tog text-xs disabled:cursor-default disabled:opacity-40" aria-pressed={solo} disabled={!solo} aria-label={soloLabel} title={soloLabel} onClick={p.onClearSolo} data-testid="track-clear-solo">
+          <span aria-hidden>{i18n.t('web.track.soloShort')}</span>
+        </button>
+      )}
+      {!compact && anyBright(p) && <span aria-hidden className="w-9 shrink-0" />}
+      {!compact && <span className={`${COUNT_COL} shrink-0 truncate whitespace-nowrap text-right text-xs font-medium tabular-nums text-fg`} title={i18n.t('web.tracks.totalNotes')} data-testid="track-total-notes">
+        {i18n.t('web.track.notes', { n: total })}<span className="sr-only"> ({i18n.t('web.tracks.totalNotes')})</span>
+      </span>}
+    </div>
+  );
+}
+
 /** Ô màu + tên + mắt + solo + số nốt (+ độ sáng hiện tại). Dùng chung cho dòng danh sách và đầu thẻ lưới. */
 function TrackHeader({ tr, i, p, expanded, onExpand, focusRef }: { tr: ProjectTrack; i: number; p: Props; expanded?: boolean; onExpand?(): void; focusRef: RefObject<HTMLElement> }) {
   const { i18n } = useI18n();
@@ -147,8 +193,8 @@ function TrackHeader({ tr, i, p, expanded, onExpand, focusRef }: { tr: ProjectTr
         <button type="button" className="tog text-xs" aria-pressed={solo} aria-label={i18n.t('web.track.solo', { name: tr.name })} title={i18n.t('web.track.solo', { name: tr.name })}
           onClick={() => p.onToggleSolo!(tr.id)}><span aria-hidden>{i18n.t('web.track.soloShort')}</span></button>
       )}
-      {c.source !== 'off' && <Brightness tr={tr} c={c} p={p} />}
-      <span className="shrink-0 whitespace-nowrap text-right text-xs tabular-nums text-muted">{i18n.t('web.track.notes', { n: tr.notes.length })}</span>
+      {c.source !== 'off' ? <Brightness tr={tr} c={c} p={p} /> : anyBright(p) && <span aria-hidden className="w-9 shrink-0" />}
+      <span className={`${COUNT_COL} shrink-0 truncate whitespace-nowrap text-right text-xs tabular-nums text-muted`}>{i18n.t('web.track.notes', { n: tr.notes.length })}</span>
     </div>
   );
 }
@@ -193,6 +239,7 @@ function TrackGrid(p: Props & { columns: number | 'auto' }) {
   return (
     <div>
       {limited && <p className="mb-2 text-xs text-warning" data-testid="track-columns-limited">{i18n.t('web.tracks.columns.limited', { n: cols })}</p>}
+      <TrackColumnsHead p={p} compact className="mb-1 justify-end" />
       <ul ref={ref} role="list" className="grid gap-px border border-line bg-line" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }} data-testid="track-grid" data-cols={cols}>
         <AnimatePresence initial={false}>
           {p.tracks.map((tr, i) => (
@@ -244,6 +291,11 @@ function TrackList(p: Props) {
   const capped = p.tracks.length > LIST_ROWS && !all;
   return (
     <>
+    <TrackColumnsHead p={p} className="-mx-4 px-3 pb-1" lead={p.tracks.length > LIST_ROWS ? (
+      <button type="button" className="-ml-1.5 flex min-h-[var(--hit)] min-w-0 max-w-full items-center truncate rounded px-1.5 text-xs font-medium text-fg transition hover:bg-raised" aria-expanded={all} onClick={() => (all ? collapse() : setAll(true))} data-testid="track-list-all">
+        {all ? i18n.t('web.tracks.showFewer') : i18n.t('web.tracks.showAll', { n: i18n.number(p.tracks.length) })}
+      </button>
+    ) : undefined} />
     <ul ref={ref} role="list" className={`-mx-4 divide-y divide-line border-y border-line ${capped ? 'overflow-y-auto overscroll-contain' : ''}`}
       style={capped ? { maxHeight: `${LIST_ROWS * LIST_ROW_REM}rem` } : undefined} data-testid="track-list">
       <AnimatePresence initial={false}>
@@ -269,11 +321,6 @@ function TrackList(p: Props) {
       </AnimatePresence>
       {p.tracks.length === 0 && <li className="px-4 py-2 text-xs text-muted">{i18n.t('web.track.none')}</li>}
     </ul>
-    {p.tracks.length > LIST_ROWS && (
-      <button type="button" className="mt-1 -ml-1.5 flex min-h-[var(--hit)] w-fit items-center rounded px-1.5 text-xs font-medium text-fg transition hover:bg-raised" aria-expanded={all} onClick={() => (all ? collapse() : setAll(true))} data-testid="track-list-all">
-        {all ? i18n.t('web.tracks.showFewer') : i18n.t('web.tracks.showAll', { n: i18n.number(p.tracks.length) })}
-      </button>
-    )}
     </>
   );
 }
@@ -315,7 +362,7 @@ function BrightnessControls({ tr, c, onChange }: { tr: ProjectTrack; c: Brightne
     <div className="space-y-1.5 border-t border-line pt-2">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <label className="flex min-w-0 max-w-full flex-1 items-center gap-2">
-          <span className="flex shrink-0 items-center gap-1.5">{i18n.t('web.brightness.source')}<AdvTag /></span>
+          <span className="flex shrink-0 items-center gap-1.5">{i18n.t('web.brightness.source')}</span>
           <Select value={c.source} onChange={(e) => onChange({ source: e.target.value as BrightnessSource })} wrapClassName="min-w-0 flex-1" className="truncate py-1 pl-2">
             {SOURCES.map((s) => <option key={s} value={s}>{i18n.t(`web.brightness.${s}`)}{EXPERIMENTAL.has(s) ? ` (${i18n.t('web.experimental')})` : ''}</option>)}
           </Select>
@@ -329,11 +376,11 @@ function BrightnessControls({ tr, c, onChange }: { tr: ProjectTrack; c: Brightne
       </div>
       {c.source !== 'off' && <>
         {usesDb && <>
-          <SliderField adv id={id('floor')} label={i18n.t('web.brightness.floorDb')} value={c.floorDb} min={-60} max={0} hardMin={dLo} hardMax={dHi} step={1} onChange={(v) => onChange({ floorDb: v })} />
-          <SliderField adv id={id('ceil')} label={i18n.t('web.brightness.ceilDb')} value={c.ceilDb} min={-48} max={12} hardMin={dLo} hardMax={dHi} step={1} onChange={(v) => onChange({ ceilDb: v })} />
+          <SliderField id={id('floor')} label={i18n.t('web.brightness.floorDb')} value={c.floorDb} min={-60} max={0} hardMin={dLo} hardMax={dHi} step={1} reset={DEFAULT_BRIGHTNESS.floorDb} onChange={(v) => onChange({ floorDb: v })} />
+          <SliderField id={id('ceil')} label={i18n.t('web.brightness.ceilDb')} value={c.ceilDb} min={-48} max={12} hardMin={dLo} hardMax={dHi} step={1} reset={DEFAULT_BRIGHTNESS.ceilDb} onChange={(v) => onChange({ ceilDb: v })} />
         </>}
-        <SliderField adv id={id('min')} label={i18n.t('web.brightness.min')} value={c.minBrightness} min={0} max={1} step={0.05} onChange={(v) => onChange({ minBrightness: v })} />
-        <SliderField adv id={id('max')} label={i18n.t('web.brightness.max')} value={c.maxBrightness} min={0} max={1} step={0.05} onChange={(v) => onChange({ maxBrightness: v })} />
+        <SliderField id={id('min')} label={i18n.t('web.brightness.min')} value={c.minBrightness} min={0} max={1} step={0.05} reset={DEFAULT_BRIGHTNESS.minBrightness} onChange={(v) => onChange({ minBrightness: v })} />
+        <SliderField id={id('max')} label={i18n.t('web.brightness.max')} value={c.maxBrightness} min={0} max={1} step={0.05} reset={DEFAULT_BRIGHTNESS.maxBrightness} onChange={(v) => onChange({ maxBrightness: v })} />
         <button type="button" className="btn-ghost -ml-1.5" onClick={() => onChange({ floorDb: DEFAULT_BRIGHTNESS.floorDb, ceilDb: DEFAULT_BRIGHTNESS.ceilDb, minBrightness: DEFAULT_BRIGHTNESS.minBrightness, maxBrightness: DEFAULT_BRIGHTNESS.maxBrightness })}>{i18n.t('web.brightness.reset')}</button>
       </>}
     </div>

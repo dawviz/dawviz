@@ -8,7 +8,7 @@ import { sceneForStyle, videoStyleBase, noteStylePreset } from './videoScenes.ts
 
 const initial = (): C.Doc => ({
   videoStyle: 'paper', scene: sceneForStyle('paper', { base: videoStyleBase('paper'), tracks: {} }, {}),
-  brightness: { a: { ...DEFAULT_BRIGHTNESS }, b: { ...DEFAULT_BRIGHTNESS } }, order: ['a', 'b', 'c'], hidden: [], solo: [], audioOffsetMs: 0,
+  brightness: { a: { ...DEFAULT_BRIGHTNESS }, b: { ...DEFAULT_BRIGHTNESS } }, order: ['a', 'b', 'c'], hidden: [], solo: ['a'], audioOffsetMs: 0, lookRef: videoStyleBase('paper'), layoutRef: {},
 });
 const mk = (now = () => 0) => createStore<C.Doc>(initial(), { now });
 const run = (s: Store<C.Doc>, f: (d: C.Doc) => C.Cmd | null) => s.dispatch(f(s.get()));
@@ -43,6 +43,11 @@ roundTrip('patchWidgetProps', (d) => C.patchWidgetProps(d, 'piano-roll', { looka
 roundTrip('setWidgetVisible', (d) => C.setWidgetVisible(d, 'track-info', false));
 roundTrip('reorderZ (front)', (d) => C.reorderZ(d, 'piano-roll', 'front'));
 roundTrip('reorderZ (back)', (d) => C.reorderZ(d, 'track-info', 'back'));
+roundTrip('clearSolo', (d) => C.clearSolo(d));
+roundTrip('toggleAllHidden', (d) => C.toggleAllHidden(d));
+roundTrip('moveLayer (lên trên cùng)', (d) => C.moveLayer(d, C.layerOrder(d.scene).at(-1)!, 0));
+roundTrip('moveLayer (xuống một bậc)', (d) => C.moveLayer(d, C.layerOrder(d.scene)[0], 1));
+roundTrip('toggleAllWidgetsVisible', (d) => C.toggleAllWidgetsVisible(d));
 roundTrip('patchSnapping', (d) => C.patchSnapping(d, { gridSize: 16, smartGuidesEnabled: false }));
 
 test('patchTrackStyle: bỏ ghi đè (null) hoàn tác được; không đổi thì không ghi mục', () => {
@@ -253,4 +258,47 @@ test('offset âm thanh: hoàn tác/làm lại, gộp ± liên tiếp, kẹp ±10
   run(s, (d) => C.setAudioOffset(d, -99999)); assert.equal(s.get().audioOffsetMs, -10000);
   assert.equal(C.setAudioOffset(s.get(), -10000), null, 'không đổi thì không có mục lịch sử');
   s.undo(); s.undo(); assert.ok(s.get().audioOffsetMs !== -10000);
+});
+
+test('moveLayer: đổi đúng thứ tự danh sách Lớp, đánh lại zIndex liền mạch; ra ngoài hai đầu thì kẹp, đứng yên thì null', () => {
+  const d = initial(), order = C.layerOrder(d.scene);
+  assert.ok(order.length >= 3);
+  const moved = C.moveLayer(d, order[2], 0)!.redo(d);
+  assert.deepEqual(C.layerOrder(moved.scene), [order[2], order[0], order[1], ...order.slice(3)]);
+  assert.deepEqual(moved.scene.widgets.map((w) => w.zIndex).sort((a, b) => a - b), order.map((_, i) => i));
+  assert.equal(C.moveLayer(d, order[0], -5), null);
+  assert.deepEqual(C.layerOrder(C.moveLayer(d, order[0], 99)!.redo(d).scene).at(-1), order[0]);
+});
+
+test('lookRef: áp bộ kiểu nốt đổi tham chiếu của nút ↺; hoàn tác trả tham chiếu cũ; chỉnh tay không đổi tham chiếu', () => {
+  const s = mk(); const ref0 = s.get().lookRef;
+  run(s, (d) => C.patchNoteStyle(d, { ...base(d), opacity: 0.2 }));
+  assert.deepEqual(s.get().lookRef, ref0);
+  run(s, (d) => C.applyNotePreset(d, noteStylePreset('neon'), 'neon'));
+  assert.deepEqual(s.get().lookRef, noteStylePreset('neon'));
+  s.undo(); assert.deepEqual(s.get().lookRef, ref0);
+  run(s, (d) => C.setVideoStyle(d, 'default'));
+  assert.deepEqual(s.get().lookRef, videoStyleBase('default'));
+});
+
+test('toggleAllHidden: còn track ẩn thì hiện hết trước, hiện hết rồi mới ẩn hết', () => {
+  const d = { ...initial(), hidden: ['a'] };
+  assert.deepEqual(C.toggleAllHidden(d)!.redo(d).hidden, []);
+  const none = initial();
+  assert.deepEqual(C.toggleAllHidden(none)!.redo(none).hidden, ['a', 'b', 'c']);
+});
+
+test('toggleAllWidgetsVisible: còn lớp ẩn thì hiện hết trước, hiện hết rồi mới ẩn hết', () => {
+  const d0 = initial(), id = d0.scene.widgets[0].id;
+  const one = C.setWidgetVisible(d0, id, false)!.redo(d0);
+  assert.ok(C.toggleAllWidgetsVisible(one)!.redo(one).scene.widgets.every((w) => w.visible));
+  assert.ok(C.toggleAllWidgetsVisible(d0)!.redo(d0).scene.widgets.every((w) => !w.visible));
+});
+
+test('layoutRef: đổi phong cách / mở preset đặt bố cục tham chiếu cho nút ↺; hoàn tác trả lại', () => {
+  const s = mk(); const ref0 = s.get().layoutRef;
+  run(s, (d) => C.setVideoStyle(d, 'default'));
+  assert.deepEqual(s.get().layoutRef, Object.fromEntries(s.get().scene.widgets.map((w) => [w.id, w.layout])));
+  s.undo(); assert.deepEqual(s.get().layoutRef, ref0);
+  assert.ok(Object.keys(C.initialDoc('paper').layoutRef).length > 0);
 });

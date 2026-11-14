@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-GRAPHICS-10: Template chuyển cảnh nốt"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) > REQ-GRAPHICS-10: Template chuyển cảnh nốt"
 chunk: req-graphics-10-template-chuyen-canh-not.md
-source_lines: 836-838
-source_sha1: 0fd28ef586
+source_lines: 838-840
+source_sha1: f4f69f9f7d
 ids: [AD-11, REQ-GRAPHICS-10, REQ-GRAPHICS-16, REQ-WIDGET-01]
 ---
 #### REQ-GRAPHICS-10: Template chuyển cảnh nốt

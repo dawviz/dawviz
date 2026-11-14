@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "11. Hiệu năng và bộ nhớ (ngân sách)"
 path: "11. Hiệu năng và bộ nhớ (ngân sách)"
 chunk: 11-hieu-nang-va-bo-nho-ngan-sach.md
-source_lines: 400-409
-source_sha1: 89531c2f60
+source_lines: 402-411
+source_sha1: 49e19e4d81
 ids: [NFR-PERF-04, NFR-PERF-05]
 ---
 ## 11. Hiệu năng và bộ nhớ (ngân sách)

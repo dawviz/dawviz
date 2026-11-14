@@ -46,6 +46,23 @@ export function nudge(value: number, dir: 1 | -1, spec: NumberSpec = {}, mods: {
   return clamp(roundTo(value + dir * step, step), spec).value as number;
 }
 
+/** Bề rộng (px) kéo để đi hết phạm vi mềm: phạm vi 0–1 bước 0,05 thì cứ ~10 px một bước. */
+export const SCRUB_SPAN_PX = 200;
+
+/**
+ * Giá trị khi kéo trên ô (scrub): `px` là quãng con trỏ đã đi tính từ lúc bắt đầu (dương = tăng).
+ * Có `range` (phạm vi mềm) thì kéo SCRUB_SPAN_PX px đi hết phạm vi; không có thì một bước mỗi px.
+ * Shift ×10, Alt ×0,1 (bước làm tròn cũng nhỏ đi theo). Kết quả làm tròn theo bước rồi kẹp theo giới hạn cứng.
+ */
+export function scrubValue(start: number, px: number, spec: NumberSpec = {}, range?: [number, number], mods: { shift?: boolean; alt?: boolean } = {}): number {
+  const step = spec.step ?? 1;
+  const mult = (mods.shift ? 10 : 1) * (mods.alt ? 0.1 : 1);
+  const perPx = range && range[1] > range[0] ? Math.max((range[1] - range[0]) / SCRUB_SPAN_PX, step / 10) : step;
+  const unit = step * (mods.alt ? 0.1 : 1);
+  const raw = start + px * perPx * mult;
+  return clamp(roundTo(Math.round(raw / unit) * unit, unit), spec).value;
+}
+
 /** Hiển thị giá trị trong ô: số chữ số thập phân theo bước. */
 export function formatNumber(value: number, step = 1): string {
   return value.toFixed(decimals(step));

@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-PARSER-01: Ableton Live (`.als`)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) > REQ-PARSER-01: Ableton Live (`.als`)"
 chunk: req-parser-01-ableton-live-als.md
-source_lines: 268-288
-source_sha1: 0fd28ef586
+source_lines: 269-289
+source_sha1: f4f69f9f7d
 ids: [ERR_NO_NOTES, REQ-PARSER-00, REQ-PARSER-01, REQ-PARSER-07, SOI-06, WARN_SESSION_CLIPS_IGNORED, WARN_TEMPO_RAMP]
 ---
 #### REQ-PARSER-01: Ableton Live (`.als`)

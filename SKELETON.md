@@ -893,7 +893,7 @@ Thẻ Editor (T-68, UI-DIRECTION 5.3 mục 3, SRS 5.3 Edit Mode): bố cục wid
 ```text
 interface EditorActions
 function useWidgetNames(widgets: readonly WidgetSpec[]): (id: string) => string   // Tên hiển thị của widget: tên loại theo ngôn ngữ, đánh số khi có nhiều widget cùng loại.
-function Editor({ scene, derived, ast, playback, fonts, advanced, actions, transport, active }: Props)
+function Editor({ scene, derived, ast, playback, fonts, advanced, actions, transport, active, widgetSections, layoutRef }: Props)
 ```
 
 #### `apps/web/src/components/EditorOverlay.tsx`
@@ -950,6 +950,8 @@ const Lock = (p: P) =>
 const Unlock = (p: P) =>
 const RotateReset = (p: P) =>   // Mũi tên vòng: đặt lại góc xoay.
 const ToFront = (p: P) =>
+const LayerUp = (p: P) =>
+const LayerDown = (p: P) =>
 const ToBack = (p: P) =>
 ```
 
@@ -959,8 +961,8 @@ Inspector (UI-DIRECTION 5.3): mục đánh số 01, 02, 03…, phân cách bằn
 
 ```text
 function InspectorSection({ n, id, title, more, children }: { n: number; id: string; title: string; children: ReactNode; /** Có khi đang ở Cơ bản và mục có phần nâng cao. `edited`: phần nâng cao đang khác mặc định. */ more?: { open: boolean; edited: boolean; onToggle(): void }; })
-function AdvTag()   // Nhãn nhỏ cho dòng chỉ có ở Nâng cao.
 function Facts({ rows }: { rows: [string, ReactNode][] })   // Dòng nhãn – giá trị chỉ đọc (mục Bài).
+function ResetButton({ label, changed, disabled, onReset, text }: { label: string; changed: boolean; disabled?: boolean; onReset(): void; /** Thay chú thích mặc định "về giá trị bộ dựng sẵn". */ text?: string })   // Nút ↺ đưa một thông số về giá trị tham chiếu (giá trị của bộ dựng sẵn đang chọn), kiểu DaVinci Resolve / Prem…
 ```
 
 #### `apps/web/src/components/LanguageSelect.tsx`
@@ -992,7 +994,7 @@ function Notices({ problems, basic = false }: { problems: Problem[]; basic?: boo
 Ô nhập số dùng chung (REQ-UI-15): gõ giá trị, phép tính, đơn vị, `+=`; ↑/↓ (Shift ×10, Alt ×0,1); Enter/rời ô để áp, Esc huỷ.
 
 ```text
-function NumberField({ id, label, value, onChange, spec, className = '', disabled, describedBy }: { id?: string; label: string; value: number; onChange(v: number): void; spec: NumberSpec; className?: string; disabled?: boolean; describedBy?: string })   // `disabled`: ô bị khoá (vd. vạch phát khi bật bàn phím, T-71); `describedBy`: id đoạn chú thích giải thích lý …
+function NumberField({ id, label, value, onChange, spec, className = '', disabled, describedBy, range, scrub = true }: { id?: string; label: string; value: number; onChange(v: number): void; spec: NumberSpec; className?: string; disabled?: boolean; describedBy?: string; range?: [number, number]; scrub?: boolean })   // `disabled`: ô bị khoá (vd. vạch phát khi bật bàn phím, T-71); `describedBy`: id đoạn chú thích giải thích lý …
 ```
 
 #### `apps/web/src/components/PresetSettings.tsx`
@@ -1021,10 +1023,10 @@ function Select({ wrapClassName = '', className = '', ...props }: SelectHTMLAttr
 
 #### `apps/web/src/components/SliderField.tsx`
 
-Thanh trượt + ô nhập số (REQ-UI-15) dùng chung cho mọi bảng. Lưới dùng minmax(0,1fr) để không tràn khung hẹp (T-61).
+Dòng thông số số dùng chung cho mọi bảng (REQ-UI-15, D-57): nhãn | ô số kéo được | nút ↺.
 
 ```text
-function SliderField({ id, label, value, min, max, step, hardMin, hardMax, adv, disabled, describedBy, onChange }: { id: string; label: string; value: number; min: number; max: number; step: number; hardMin?: number; hardMax?: number; adv?: boolean; disabled?: boolean; describedBy?: string; onChange(v: number): void })   // `min`/`max` là phạm vi thanh trượt (phạm vi mềm); `hardMin`/`hardMax` cho phép gõ vượt phạm vi đó (mặc định b…
+function SliderField({ id, label, value, min, max, step, hardMin, hardMax, disabled, describedBy, reset, onChange }: { id: string; label: string; value: number; min: number; max: number; step: number; hardMin?: number; hardMax?: number; disabled?: boolean; describedBy?: string; reset?: number; onChange(v: number): void })   // `disabled` + `describedBy`: khoá ô, nối với chú thích lý do. `reset`: giá trị tham chiếu (bộ dựng sẵn đang ch…
 ```
 
 #### `apps/web/src/components/Stage.tsx`
@@ -1051,7 +1053,7 @@ Mục "Hình thức" của inspector: kiểu dáng nốt (toàn cục) và bàn 
 
 ```text
 const ADVANCED_STYLE_KEYS   // Trường chỉ có ở Nâng cao (REQ-UI-13). Dùng để biết phần nâng cao đang khác mặc định hay không.
-function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset, playhead }: { playhead?: { ratio: number; visible: boolean; onChange(ratio: number): void; onVisible(visible: boolean): void }; notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean })   // `lanes`: tên lane automation có trong dự án đang mở (cho nguồn phát sáng "automation"). `playhead`: vị trí vạ…
+function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset, playhead, reference }: { reference?: NoteStyle; playhead?: { ratio: number; visible: boolean; reference?: number; onChange(ratio: number): void; onVisible(visible: boolean): void }; notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean })   // `lanes`: tên lane automation có trong dự án đang mở (cho nguồn phát sáng "automation"). `playhead`: vị trí vạ…
 ```
 
 #### `apps/web/src/components/ThemeSelect.tsx`
@@ -1078,6 +1080,7 @@ const EMPTY_VIEW
 function isShown(id: string, v: TrackView): boolean
 function TrackPanel(props: Props)
 function TrackLayoutBar({ value, onChange, count }: { value: TrackLayout; onChange(v: TrackLayout): void; count: number })   // Thanh chọn kiểu trình bày: Lưới/Danh sách + số cột (ô nhập số, không giới hạn cứng ngoài số track).
+function TrackColumnsHead({ p, className = '', compact, lead }: { p: Props; className?: string; compact?: boolean; lead?: ReactNode })   // Hàng đầu danh sách: mắt và S chỉ là biểu tượng ở đúng cột, rê chuột thì có chú thích (kiểu bảng lớp của AE). …
 ```
 
 #### `apps/web/src/components/Transport.tsx`
@@ -1251,13 +1254,18 @@ const patchBrightness = (d: Doc, id: TrackId, next: BrightnessConfig) =>   // �
 const toggleHidden = (d: Doc, id: TrackId) =>
 const toggleSolo = (d: Doc, id: TrackId) =>
 const setAllHidden = (d: Doc, hidden: boolean) =>
+const toggleAllHidden = (d: Doc) =>   // Ô "bật/tắt tất cả" của cột mắt: đang có track ẩn thì hiện hết trước; đã hiện hết thì ẩn hết.
+const clearSolo = (d: Doc) =>   // Ô "bỏ solo tất cả" của cột S.
 const moveTrack = (d: Doc, id: TrackId, to: number) =>
 const setAudioOffset = (d: Doc, ms: number) =>   // Đặt offset âm thanh (ms). Gõ/bấm ± liên tiếp gộp thành một bước. Kẹp ±10 s, làm tròn 1 ms.
 const patchLayout = (d: Doc, widgetId: string, patch: Partial<WidgetLayout>) =>   // Đổi layout widget (x, y, width, height, rotation, anchor). Gộp theo widget: kéo/đổi cỡ/xoay trong một cử chỉ …
 const patchLayouts = (d: Doc, patches: Record<string, Partial<WidgetLayout>>) =>   // Đổi layout của một hoặc nhiều widget trong MỘT lệnh (Editor: kéo, đổi cỡ, xoay, xoay nhóm). Gộp theo tập widg…
 const patchWidgetProps = (d: Doc, widgetId: string, patch: Record<string, unknown>) =>   // Đổi một số thuộc tính (`properties`) của widget.
 const setWidgetVisible = (d: Doc, widgetId: string, visible: boolean) =>
+const toggleAllWidgetsVisible = (d: Doc) =>   // Ô mắt ở hàng đầu danh sách Lớp: còn lớp ẩn thì hiện hết trước, đã hiện hết thì ẩn hết. Một bước hoàn tác.
 const reorderZ = (d: Doc, widgetId: string, where: 'front' | 'back') =>   // Đưa widget lên trên cùng / xuống dưới cùng bằng cách đổi zIndex của nó.
+const layerOrder = (s: SceneDocument) =>   // Thứ tự lớp như danh sách Lớp hiển thị: trên cùng trước (zIndex giảm dần; cùng zIndex thì widget đứng sau tron…
+const moveLayer = (d: Doc, widgetId: string, to: number) =>   // Đưa lớp `widgetId` tới vị trí `to` trong danh sách Lớp (0 = trên cùng): kéo thả, lên/xuống một bậc, lên trên/…
 const patchSnapping = (d: Doc, patch: Partial<SceneDocument['canvas']['snapping']>) =>
 function handEdited(d: Doc): boolean   // Chỉnh tay (kiểu nốt hoặc bố cục) có bị mất nếu đổi sang phong cách khác không? Dùng để hiện thông báo nhỏ sau…
 function initialDoc(videoStyle: string, saved: { style?: Partial<{ base: Partial<NoteStyle>; tracks: Record<string, Partial<NoteStyle>> }>; keyboard?: Partial<KeyboardStyle> } = {}): Doc   // Tài liệu ban đầu từ thiết lập đã lưu (localStorage): phong cách video, kiểu nốt, ghi đè theo track, bàn phím …
@@ -1282,6 +1290,8 @@ const HANDLES
 const MIN_SIZE   // Cỡ nhỏ nhất khi kéo tay nắm (pt). Ô nhập số vẫn cho xuống 1 pt như lược đồ preset.
 function toCanvas(l: L, qx: number, qy: number): [number, number]   // Điểm trong widget (toạ độ widget) → điểm trên khung.
 function resizeLayout(start: L, handle: Handle, p: { x: number; y: number }, o: { shift?: boolean; alt?: boolean } = {}): L   // Đổi cỡ bằng tay nắm. `p`: con trỏ trên khung. Cạnh/góc đối diện đứng yên (theo hướng của chính widget, kể cả …
+interface ResizeSnap
+function snapResize(start: L, handle: Handle, p: { x: number; y: number }, mods: { shift?: boolean; alt?: boolean }, o: ResizeSnap):    // Đổi cỡ có bắt dính (REQ-GRAPHICS-02): tay nắm đang kéo hút vào mép/tâm khung video và cạnh/tâm widget khác tr…
 function setAnchor(l: L, anchor: { x: number; y: number }): L   // Đổi điểm neo mà widget không nhảy chỗ trên khung.
 function pointerAngle(pivot: [number, number], p: { x: number; y: number }): number   // Góc (độ) của con trỏ quanh tâm xoay; 0° = hướng lên (tay nắm xoay nằm phía trên khung).
 function hitTest<W extends { id: string; zIndex: number; visible: boolean; layout: L }>(widgets: readonly W[], p: { x: number; y: number }, locked: ReadonlySet<string> = new Set()): W | null   // Widget trên cùng (zIndex lớn nhất, cùng zIndex thì đứng sau trong tài liệu) chứa điểm `p`; bỏ widget ẩn hoặc …
@@ -1352,6 +1362,8 @@ interface NumberSpec
 type ParseResult
 function parseNumberInput(text: string, current: number, spec: NumberSpec = {}): ParseResult   // Đọc chuỗi người dùng nhập; `current` dùng cho dạng tương đối `+=`/`-=`/`*=`/`/=`.
 function nudge(value: number, dir: 1 | -1, spec: NumberSpec = {}, mods: { shift?: boolean; alt?: boolean } = {}): number   // Bước bằng phím: dir = +1/-1; Shift ×10, Alt ×0,1. Kết quả làm tròn theo bước để tránh 0.30000000000000004.
+const SCRUB_SPAN_PX   // Bề rộng (px) kéo để đi hết phạm vi mềm: phạm vi 0–1 bước 0,05 thì cứ ~10 px một bước.
+function scrubValue(start: number, px: number, spec: NumberSpec = {}, range?: [number, number], mods: { shift?: boolean; alt?: boolean } = {}): number   // Giá trị khi kéo trên ô (scrub): `px` là quãng con trỏ đã đi tính từ lúc bắt đầu (dương = tăng). Có `range` (p…
 function formatNumber(value: number, step = 1): string   // Hiển thị giá trị trong ô: số chữ số thập phân theo bước.
 ```
 
@@ -1650,4 +1662,4 @@ type ParseResponse
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 577 ký hiệu công khai -->
+<!-- 10 thư mục src, 589 ký hiệu công khai -->

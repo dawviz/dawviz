@@ -15,3 +15,12 @@ for (const [name, read] of [['arrayBuffer', 'readAsArrayBuffer'], ['text', 'read
 
 // jsdom không vẽ canvas: getContext trả null (SceneCanvas bỏ qua) thay vì in "Not implemented" mỗi khung.
 HTMLCanvasElement.prototype.getContext = (() => null) as unknown as HTMLCanvasElement['getContext'];
+
+// jsdom chưa có PointerEvent: fireEvent.pointerDown/Move rơi về Event trơn, mất clientX/pointerId. Bù bằng MouseEvent có thêm trường con trỏ.
+if (typeof window.PointerEvent === 'undefined') {
+  class PointerEventShim extends MouseEvent {
+    pointerId: number; pointerType: string;
+    constructor(type: string, init: PointerEventInit = {}) { super(type, init); this.pointerId = init.pointerId ?? 0; this.pointerType = init.pointerType ?? ''; }
+  }
+  (window as unknown as { PointerEvent: unknown }).PointerEvent = PointerEventShim;
+}

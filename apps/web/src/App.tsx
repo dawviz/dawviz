@@ -129,6 +129,8 @@ export function App() {
   const onToggleHidden = useCallback((id: string) => run((d) => Cmds.toggleHidden(d, id)), [run]);
   const onToggleSolo = useCallback((id: string) => run((d) => Cmds.toggleSolo(d, id)), [run]);
   const onMove = useCallback((id: string, to: number) => run((d) => Cmds.moveTrack(d, id, to)), [run]);
+  const onToggleAllHidden = useCallback(() => run((d) => Cmds.toggleAllHidden(d)), [run]);
+  const onClearSolo = useCallback(() => run((d) => Cmds.clearSolo(d)), [run]);
   const brightness = doc.brightness;
 
   // T-05: khung hình = renderFrame(scene, derived, ast, t). Scene nằm trong store (T-07): kiểu nốt, bàn phím, bố cục widget đều ở đây.
@@ -261,7 +263,9 @@ export function App() {
   const editorActions: EditorActions = useMemo(() => ({
     layouts: (p) => run((d) => Cmds.patchLayouts(d, p)),
     visible: (id, v) => run((d) => Cmds.setWidgetVisible(d, id, v)),
+    allVisible: () => run((d) => Cmds.toggleAllWidgetsVisible(d)),
     z: (id, where) => run((d) => Cmds.reorderZ(d, id, where)),
+    moveLayer: (id, to) => run((d) => Cmds.moveLayer(d, id, to)),
     snapping: (p) => run((d) => Cmds.patchSnapping(d, p)),
   }), [run]);
 
@@ -269,8 +273,10 @@ export function App() {
   const lanes = useMemo(() => [...new Set((loaded?.ast.tracks ?? []).flatMap((tr) => Object.entries(tr.automation ?? {}).filter(([, l]) => l?.points.length).map(([k]) => k)))], [loaded]);
 
   // REQ-UI-13: ở Cơ bản, mục có phần nâng cao có nút "Thêm tuỳ chọn" (nhớ theo mục); chấm báo khi phần ẩn đang khác mặc định.
-  const ref = videoStyleBase(doc.videoStyle);
+  // Tham chiếu của "đã chỉnh" và nút ↺: kiểu nốt của bộ dựng sẵn áp gần nhất (D-57).
+  const ref = doc.lookRef;
   const lookEdited = ADVANCED_STYLE_KEYS.some((k) => style.base[k] !== ref[k]);
+  const playheadRef = useMemo(() => (doc.videoStyle === CUSTOM_STYLE ? undefined : pianoOf(sceneForStyle(doc.videoStyle, { base: videoStyleBase(doc.videoStyle), tracks: {} }))?.properties.playheadPositionRatio), [doc.videoStyle]);
   const tracksEdited = Object.values(brightness).some((c) => c.source !== 'off') || (!!loaded && doc.order.some((id, i) => loaded.ast.tracks[i]?.id !== id));
   const more = (id: string, edited: boolean) => advanced ? undefined : {
     open: !!ui.more[id], edited, onToggle: () => setUi((u) => ({ ...u, more: { ...u.more, [id]: !u.more[id] } })),
@@ -280,7 +286,7 @@ export function App() {
   const trackProps = loaded && {
     tracks: ordered, config: brightness, overrides: style.tracks, onChange: patchBrightness, onStyle: patchTrackStyle,
     playback, tempoMap: loaded.ast.tempoMap, layout: trackLayout, advanced: showAdv('tracks'), view,
-    onToggleHidden, onToggleSolo, onMove,
+    onToggleHidden, onToggleSolo, onMove, onToggleAllHidden, onClearSolo,
   };
   const tempoText = (() => {
     const bpms = loaded?.ast.tempoMap.map((p) => p.bpm) ?? [];
@@ -298,9 +304,18 @@ export function App() {
   });
   const aboveStage = !!(midi && midiLevel) || problems.length > 0;
 
-  // Các mục của inspector. Cơ bản: Bài, Track, Hình thức (ẩn/hiện, solo là việc hay làm nhất của người làm beat);
-  // Nâng cao: Bài, Hình thức, Track. Số mục đánh theo vị trí.
-  const sections: Record<'song' | 'look' | 'tracks', (n: number) => React.ReactNode> = loaded && trackProps ? {
+  // Inspector của Preview: Bài, Track (D-57). Mục Hình thức chỉ còn ở bảng Thuộc tính của Editor khi chọn Piano Roll
+  // (chủ dự án chốt 2026-11-14): Preview giữ phong cách video, bài và track để chỉnh nhanh.
+  const lookSection = (n: number) => (
+    <InspectorSection key="look" n={n} id="look" title={i18n.t('web.section.look')} more={more('look', lookEdited)}>
+      {piano
+        ? <StylePanel style={style} keyboard={keyboard} onStyle={(n2) => run((d) => Cmds.patchNoteStyle(d, n2.base))} onKeyboard={(n2) => run((d) => Cmds.patchKeyboard(d, n2))} lanes={lanes} advanced={showAdv('look')} notePresets={NOTE_PRESETS} onNotePreset={pickNotePreset}
+            reference={ref}
+            playhead={{ ratio: piano.properties.playheadPositionRatio, visible: piano.properties.playheadVisible, reference: playheadRef, onChange: (r) => run((d) => Cmds.setPlayheadRatio(d, r)), onVisible: (v) => run((d) => Cmds.setPlayheadVisible(d, v)) }} />
+        : <p className="text-xs text-muted">{i18n.t('web.look.noPiano')}</p>}
+    </InspectorSection>
+  );
+  const sections: Record<'song' | 'tracks', (n: number) => React.ReactNode> = loaded && trackProps ? {
     song: (n) => (
       <InspectorSection key="song" n={n} id="song" title={i18n.t('web.section.song')} more={more('song', offsetMs !== 0)}>
         <Facts rows={[
@@ -316,22 +331,14 @@ export function App() {
           onLoad={onLoadAudio} onRemove={dropAudio} onOffset={(ms) => run((d) => Cmds.setAudioOffset(d, ms))} />
       </InspectorSection>
     ),
-    look: (n) => (
-      <InspectorSection key="look" n={n} id="look" title={i18n.t('web.section.look')} more={more('look', lookEdited)}>
-        {piano
-          ? <StylePanel style={style} keyboard={keyboard} onStyle={(n) => run((d) => Cmds.patchNoteStyle(d, n.base))} onKeyboard={(n) => run((d) => Cmds.patchKeyboard(d, n))} lanes={lanes} advanced={showAdv('look')} notePresets={NOTE_PRESETS} onNotePreset={pickNotePreset}
-              playhead={{ ratio: piano.properties.playheadPositionRatio, visible: piano.properties.playheadVisible, onChange: (r) => run((d) => Cmds.setPlayheadRatio(d, r)), onVisible: (v) => run((d) => Cmds.setPlayheadVisible(d, v)) }} />
-          : <p className="text-xs text-muted">{i18n.t('web.look.noPiano')}</p>}
-      </InspectorSection>
-    ),
     tracks: (n) => (
       <InspectorSection key="tracks" n={n} id="tracks" title={`${i18n.t('web.section.tracks')} · ${i18n.number(loaded.ast.tracks.length)}`} more={more('tracks', tracksEdited)}>
         <TrackLayoutBar value={trackLayout} onChange={setTrackLayout} count={loaded.ast.tracks.length} />
         {trackLayout.mode === 'list' ? <TrackPanel {...trackProps} /> : <p className="text-xs text-muted">{i18n.t('web.tracks.gridBelow')}</p>}
       </InspectorSection>
     ),
-  } : { song: () => null, look: () => null, tracks: () => null };
-  const sectionOrder = ['song', 'look', 'tracks'] as const;
+  } : { song: () => null, tracks: () => null };
+  const sectionOrder = ['song', 'tracks'] as const;
 
   // `relative` ở cả ba vùng cuộn: phần tử sr-only (position: absolute) bên trong phải neo vào vùng cuộn của nó,
   // nếu không nó thoát ra ngoài, làm cả trang cuộn theo và đẩy thanh trên đi.
@@ -378,6 +385,8 @@ export function App() {
         <div role="tabpanel" id="panel-preview" aria-labelledby="tab-preview" hidden={tab !== 'preview'} className="h-full">{preview}</div>
         <div role="tabpanel" id="panel-editor" aria-labelledby="tab-editor" hidden={tab !== 'editor'} className="h-full">
           <Editor scene={scene} derived={derived} ast={renderAst} playback={playback} fonts={fonts} advanced={advanced} actions={editorActions} active={tab === 'editor'}
+            layoutRef={doc.layoutRef}
+            widgetSections={(w, n) => (w.type === 'PIANO_ROLL' && w.id === piano?.id ? lookSection(n) : null)}
             transport={loaded ? <Transport playback={playback} duration={playDuration} offsetMs={offsetMs} wave={audio && peaks ? { peaks, durationSec: audio.durationSec } : null} /> : undefined} />
         </div>
         <div role="tabpanel" id="panel-settings" aria-labelledby="tab-settings" hidden={tab !== 'settings'} className="h-full overflow-y-auto bg-page">

@@ -6,7 +6,7 @@ import { useContext, useMemo, useRef, useState, type KeyboardEvent, type Pointer
 import { rotateGroup, rotatedBounds, snap, snapAngle, toWidgetLocal, type Guide, type SceneDocument, type Spacing, type WidgetLayout } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { GestureContext } from '../lib/storeReact.ts';
-import { HANDLES, hitTest, pointerAngle, resizeLayout, round, setAnchor, toCanvas, type Handle } from '../lib/editorGeometry.ts';
+import { HANDLES, hitTest, pointerAngle, round, setAnchor, snapResize, toCanvas, type Handle } from '../lib/editorGeometry.ts';
 
 type Patches = Record<string, Partial<WidgetLayout>>;
 interface Props {
@@ -102,7 +102,14 @@ export function EditorOverlay({ scene, cssWidth, selected, locked, onSelect, onL
       setGuides({ g: r.guides, s: r.spacings });
       onLayouts(Object.fromEntries(Object.entries(d.starts).map(([id, l]) => [id, { x: l.x + dx, y: l.y + dy }])));
     } else if (d.kind === 'resize') {
-      onLayouts({ [d.id]: resizeLayout(d.start, d.handle, p, { shift: e.shiftKey, alt: e.altKey }) });
+      // Bắt dính khi đổi cỡ: Alt đã là "co giãn quanh tâm" nên Ctrl/⌘ mới tắt tạm bắt dính.
+      const others = scene.widgets.filter((w) => w.visible && w.id !== d.id).map((w) => w.layout);
+      const r = snapResize(d.start, d.handle, p, { shift: e.shiftKey, alt: e.altKey }, {
+        others, canvas: { width: W, height: H }, grid: { enabled: snapping.gridEnabled, size: snapping.gridSize }, guides: snapping.smartGuidesEnabled,
+        threshold: 5 * k, off: e.ctrlKey || e.metaKey,
+      });
+      setGuides({ g: r.guides, s: [] });
+      onLayouts({ [d.id]: r.layout });
     } else if (d.kind === 'rotate') {
       const raw = pointerAngle(d.pivot, p) - d.a0;
       if (d.ids.length === 1) {

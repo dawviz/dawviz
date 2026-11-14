@@ -5,7 +5,7 @@ section: "4. Dữ liệu dẫn xuất (derived) 🟢/⚪"
 path: "4. Dữ liệu dẫn xuất (derived) 🟢/⚪"
 chunk: 4-du-lieu-dan-xuat-derived.md
 source_lines: 92-104
-source_sha1: 89531c2f60
+source_sha1: 49e19e4d81
 ids: [OI-05]
 ---
 ## 4. Dữ liệu dẫn xuất (derived) 🟢/⚪

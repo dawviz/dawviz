@@ -14,6 +14,8 @@ import { StylePanel } from '../src/components/StylePanel.tsx';
 import { defaultStyleConfig, DEFAULT_KEYBOARD_STYLE, STYLE_PRESETS } from '@dawviz/render-core';
 
 const wrap = (ui: React.ReactElement) => render(<I18nProvider>{ui}</I18nProvider>);
+/** Gõ giá trị vào ô số rồi Enter (ô số thay thanh trượt, D-57). */
+const typeIn = (el: HTMLElement, v: string) => { fireEvent.focus(el); fireEvent.change(el, { target: { value: v } }); fireEvent.keyDown(el, { key: 'Enter' }); fireEvent.blur(el); };
 
 describe('Transport', () => {
   it('bấm nút gọi onToggle; kéo thanh gọi onSeek', () => {
@@ -44,44 +46,41 @@ describe('LanguageSelect', () => {
 });
 
 describe('StylePanel', () => {
-  it('thanh trượt phát ra StyleConfig mới; bàn phím bật/tắt được', () => {
+  it('ô số phát ra StyleConfig mới; bàn phím bật/tắt được', () => {
     let st = defaultStyleConfig(), kb = { ...DEFAULT_KEYBOARD_STYLE };
     wrap(<StylePanel style={st} keyboard={kb} onStyle={(n) => (st = n)} onKeyboard={(n) => (kb = n)} />);
-    fireEvent.change(screen.getByRole('slider', { name: /^(Opacity|Độ đục(?! khi))/ }), { target: { value: '0.4' } });
+    typeIn(screen.getByRole('spinbutton', { name: /^(Opacity|Độ đục(?! khi))/ }), '0.4');
     expect(st.base.opacity).toBe(0.4);
     fireEvent.click(screen.getByRole('checkbox', { name: /keyboard|bàn phím/i }));
     expect(kb.enabled).toBe(false);
   });
-  it('Cơ bản ẩn dòng nâng cao (REQ-UI-13); Nâng cao hiện kèm nhãn ADV', () => {
+  it('Cơ bản ẩn dòng nâng cao (REQ-UI-13); Nâng cao hiện, không có nhãn NC/ADV ở đâu (D-57)', () => {
     const props = { style: defaultStyleConfig(), keyboard: { ...DEFAULT_KEYBOARD_STYLE }, onStyle: () => {}, onKeyboard: () => {} };
     const v = wrap(<StylePanel {...props} advanced={false} />);
-    expect(screen.queryByRole('slider', { name: /^(Glow size|Cỡ quầng sáng)/i })).toBeNull();
-    expect(screen.getByRole('slider', { name: /^(Glow|Phát sáng)$/i })).toBeInTheDocument();
+    expect(screen.queryByRole('spinbutton', { name: /^(Glow size|Cỡ quầng sáng)/i })).toBeNull();
+    expect(screen.getByRole('spinbutton', { name: /^(Glow|Phát sáng)$/i })).toBeInTheDocument();
     v.unmount();
     wrap(<StylePanel {...props} advanced />);
-    expect(screen.getByRole('slider', { name: /^(Glow size|Cỡ quầng sáng)/i })).toBeInTheDocument();
-    expect(screen.getAllByTitle(/Advanced setting|Thiết lập nâng cao/).length).toBeGreaterThan(0);
+    expect(screen.getByRole('spinbutton', { name: /^(Glow size|Cỡ quầng sáng)/i })).toBeInTheDocument();
+    expect(screen.queryAllByTitle(/Advanced setting|Thiết lập nâng cao/).length).toBe(0);
   });
 });
 describe('StylePanel: vị trí vạch phát khoá khi bật bàn phím (T-71)', () => {
-  it('bàn phím tắt: chỉnh được, gửi tỉ lệ 0..1; bàn phím bật: thanh trượt và ô số bị khoá, có chú thích nối bằng aria-describedby', () => {
+  it('bàn phím tắt: chỉnh được, gửi tỉ lệ 0..1; bàn phím bật: ô số bị khoá, có chú thích nối bằng aria-describedby', () => {
     let ratio = 0.3, visible = true;
     const props = { style: defaultStyleConfig(), onStyle: () => {}, onKeyboard: () => {}, playhead: { ratio, visible, onChange: (r: number) => (ratio = r), onVisible: (v: boolean) => (visible = v) } };
     const v = wrap(<StylePanel {...props} keyboard={{ ...DEFAULT_KEYBOARD_STYLE, enabled: false }} />);
     const slider = () => document.getElementById('st-playhead') as HTMLInputElement;
     expect(slider().disabled).toBe(false);
     expect(screen.queryByTestId('playhead-locked')).toBeNull();
-    fireEvent.change(slider(), { target: { value: '45' } });
+    typeIn(slider(), '45');
     expect(ratio).toBe(0.45);
     fireEvent.click(screen.getByTestId('playhead-visible'));
     expect(visible).toBe(false);
     v.rerender(<I18nProvider><StylePanel {...props} keyboard={{ ...DEFAULT_KEYBOARD_STYLE, enabled: true }} /></I18nProvider>);
     const note = screen.getByTestId('playhead-locked');
     expect(slider().disabled).toBe(true);
-    expect(slider().getAttribute('aria-describedby')).toBe(note.id);
-    const box = screen.getByRole('textbox', { name: /Playhead position|Vị trí vạch phát/ }) as HTMLInputElement;
-    expect(box.disabled).toBe(true);
-    expect(box.getAttribute('aria-describedby')).toContain(note.id);
+    expect(slider().getAttribute('aria-describedby')).toContain(note.id);
   });
 });
 
@@ -127,7 +126,7 @@ describe('NumberField trong StylePanel (REQ-UI-15)', () => {
     let st = defaultStyleConfig();
     const view = wrap(<StylePanel style={st} keyboard={{ ...DEFAULT_KEYBOARD_STYLE }} onStyle={(n) => (st = n)} onKeyboard={() => {}} />);
     const rerender = () => view.rerender(<I18nProvider><StylePanel style={st} keyboard={{ ...DEFAULT_KEYBOARD_STYLE }} onStyle={(n) => (st = n)} onKeyboard={() => {}} /></I18nProvider>);
-    const box = () => screen.getByRole('textbox', { name: /^(Glow size|Cỡ quầng sáng)/i });
+    const box = () => screen.getByRole('spinbutton', { name: /^(Glow size|Cỡ quầng sáng)/i });
     fireEvent.focus(box()); fireEvent.change(box(), { target: { value: '10*3' } }); fireEvent.keyDown(box(), { key: 'Enter' });
     expect(st.base.glowRadius).toBe(30); rerender();
     fireEvent.change(box(), { target: { value: '500' } }); fireEvent.keyDown(box(), { key: 'Enter' });
@@ -157,13 +156,13 @@ describe('TrackPanel: Track Info và ngưỡng độ sáng (T-03)', () => {
     expect(box.textContent).toMatch(/-12 dB/);
     // -12 dB giữa sàn -24 và trần 0 → u = 0.5 → 0.25 + 0.75*0.5 = 62.5% → hiển thị 63%
     expect(screen.getByTestId('brightness-now-t1').textContent).toMatch(/63\s?%/);
-    const floor = screen.getByRole('textbox', { name: /^(Floor|Sàn)/ });
+    const floor = screen.getByRole('spinbutton', { name: /^(Floor|Sàn)/ });
     fireEvent.focus(floor); fireEvent.change(floor, { target: { value: '-30' } }); fireEvent.keyDown(floor, { key: 'Enter' });
     expect(patches.at(-1)).toEqual({ floorDb: -30 });
   });
   it('nguồn off thì ẩn các thanh ngưỡng', () => {
     wrap(<TrackPanel tracks={[tr as any]} config={{ t1: { ...DEFAULT_BRIGHTNESS, source: 'off' } }} overrides={{}} onChange={() => {}} onStyle={() => {}} advanced />);
-    expect(screen.queryByRole('textbox', { name: /^(Floor|Sàn)/ })).toBeNull();
+    expect(screen.queryByRole('spinbutton', { name: /^(Floor|Sàn)/ })).toBeNull();
     expect(screen.queryByTestId('brightness-now-t1')).toBeNull(); // "đều nhau": không có số độ sáng
   });
 });
@@ -240,7 +239,7 @@ describe('Danh sách track: lưới N cột / danh sách gọn (REQ-UI-14 sửa)
     const r = wrap(<TrackLayoutBar value={v} onChange={(n) => (v = n)} count={15} />);
     fireEvent.click(screen.getByRole('checkbox')); expect(v.columns).toBe(3);
     r.rerender(<I18nProvider><TrackLayoutBar value={v} onChange={(n) => (v = n)} count={15} /></I18nProvider>);
-    const box = screen.getByRole('textbox'); fireEvent.focus(box); fireEvent.change(box, { target: { value: '99' } }); fireEvent.keyDown(box, { key: 'Enter' });
+    const box = screen.getByRole('spinbutton'); fireEvent.focus(box); fireEvent.change(box, { target: { value: '99' } }); fireEvent.keyDown(box, { key: 'Enter' });
     expect(v.columns).toBe(15);
     fireEvent.click(screen.getByRole('radio', { name: /List|Danh sách/ })); expect(v.mode).toBe('list');
   });
@@ -259,6 +258,62 @@ describe('Danh sách track: lưới N cột / danh sách gọn (REQ-UI-14 sửa)
     wrap(<TrackPanel {...base} advanced />);
     fireEvent.keyDown(screen.getByRole('button', { name: /(Reorder|Đổi thứ tự) Track 3/ }), { key: 'ArrowDown', altKey: true });
     expect(calls).toEqual(['hide:t0', 'solo:t2', 'move:t3:4']);
+  });
+  it('hàng đầu: mắt hiện hết trước khi còn track ẩn, ẩn hết khi đã hiện hết; S bỏ mọi solo (mờ khi không có solo); chỉ biểu tượng + chú thích', () => {
+    const calls: string[] = [];
+    const base = { tracks: trs, config: cfg, overrides: {}, onChange: () => {}, onStyle: () => {}, layout: { mode: 'list' as const, columns: 'auto' as const },
+      onToggleHidden: () => {}, onToggleSolo: () => {}, onToggleAllHidden: () => calls.push('all'), onClearSolo: () => calls.push('clear') };
+    const v = wrap(<TrackPanel {...base} view={{ hidden: new Set(['t1']), solo: new Set<string>() }} />);
+    const eye = screen.getByTestId('track-all-hidden');
+    expect(eye).toHaveAttribute('aria-pressed', 'mixed');
+    expect(eye.getAttribute('title')).toMatch(/Show all|Hiện tất cả/);
+    expect(eye.textContent).toBe('');
+    expect(screen.getByTestId('track-clear-solo')).toBeDisabled();
+    fireEvent.click(eye);
+    v.rerender(<I18nProvider><TrackPanel {...base} view={{ hidden: new Set<string>(), solo: new Set(['t2']) }} /></I18nProvider>);
+    expect(screen.getByTestId('track-all-hidden').getAttribute('title')).toMatch(/Hide all|Ẩn tất cả/);
+    fireEvent.click(screen.getByTestId('track-clear-solo'));
+    expect(calls).toEqual(['all', 'clear']);
+  });
+  it('hàng đầu: cột số nốt hiện tổng số nốt; nút "Hiện tất cả N track" nằm ở hàng đầu khi có hơn 6 track', () => {
+    const many = Array.from({ length: 8 }, (_, i) => ({ ...trs[0], id: `m${i}`, name: `M${i}`, notes: trs[0].notes.slice(0, i + 1) }));
+    const total = many.reduce((n, t) => n + t.notes.length, 0);
+    wrap(<TrackPanel tracks={many as any} config={{}} overrides={{}} onChange={() => {}} onStyle={() => {}} layout={{ mode: 'list', columns: 'auto' }}
+      onToggleHidden={() => {}} onToggleSolo={() => {}} onToggleAllHidden={() => {}} onClearSolo={() => {}} />);
+    const head = screen.getByTestId('track-head');
+    expect(screen.getByTestId('track-total-notes').textContent).toMatch(new RegExp(`^${total}`));
+    expect(head.contains(screen.getByTestId('track-list-all'))).toBe(true);
+  });
+});
+
+describe('Ô số kéo được và nút ↺ (D-57)', () => {
+  it('kéo lên tăng, kéo xuống giảm theo phạm vi mềm; nhấp không kéo thì vào chế độ gõ; chạm thì không kéo', () => {
+    let v = 0.5;
+    const r = wrap(<NumberField label="Độ đục" value={v} range={[0, 1]} spec={{ min: 0, max: 1, step: 0.05 }} onChange={(n) => (v = n)} />);
+    const box = screen.getByRole('spinbutton', { name: 'Độ đục' });
+    box.setPointerCapture = () => {};
+    fireEvent.pointerDown(box, { button: 0, pointerId: 1, pointerType: 'mouse', clientX: 50, clientY: 100 });
+    fireEvent.pointerMove(box, { pointerId: 1, clientX: 50, clientY: 80 }); // lên 20 px = 2 bước
+    expect(v).toBe(0.6);
+    fireEvent.pointerMove(box, { pointerId: 1, clientX: 50, clientY: 130 }); // xuống 30 px so với lúc bắt đầu
+    expect(v).toBe(0.35);
+    fireEvent.pointerUp(box, { pointerId: 1 });
+    expect(document.activeElement).not.toBe(box);
+    r.rerender(<I18nProvider><NumberField label="Độ đục" value={v} range={[0, 1]} spec={{ min: 0, max: 1, step: 0.05 }} onChange={(n) => (v = n)} /></I18nProvider>);
+    fireEvent.pointerDown(box, { button: 0, pointerId: 2, pointerType: 'mouse', clientX: 50, clientY: 100 });
+    fireEvent.pointerUp(box, { pointerId: 2 });
+    expect(document.activeElement).toBe(box);
+  });
+  it('↺ chỉ hiện khi khác giá trị bộ dựng sẵn và đưa đúng về đó', () => {
+    let st = defaultStyleConfig();
+    const ref = { ...st.base };
+    const props = () => ({ style: st, keyboard: { ...DEFAULT_KEYBOARD_STYLE }, onStyle: (n: any) => (st = n), onKeyboard: () => {}, reference: ref, advanced: true });
+    const v = wrap(<StylePanel {...props()} />);
+    expect(screen.queryByRole('button', { name: /(Reset|Đưa) (Opacity|Độ đục)/ })).toBeNull();
+    typeIn(screen.getByRole('spinbutton', { name: /^(Opacity|Độ đục(?! khi))/ }), '0.3');
+    v.rerender(<I18nProvider><StylePanel {...props()} /></I18nProvider>);
+    fireEvent.click(screen.getByRole('button', { name: /(Reset|Đưa) (Opacity|Độ đục)/ }));
+    expect(st.base.opacity).toBe(ref.opacity);
   });
 });
 describe('Phát sáng động (REQ-GRAPHICS-17)', () => {
@@ -307,7 +362,7 @@ describe('NumberField', () => {
   it('giá trị không đọc được: báo bằng chữ qua aria-describedby, rời ô thì nói đã giữ giá trị cũ (WCAG 1.4.1)', () => {
     let v = 0.5;
     wrap(<NumberField label="Độ đục" value={v} spec={{ min: 0, max: 1, step: 0.05 }} onChange={(x) => (v = x)} />);
-    const input = screen.getByRole('textbox', { name: 'Độ đục' });
+    const input = screen.getByRole('spinbutton', { name: 'Độ đục' });
     fireEvent.focus(input);
     fireEvent.change(input, { target: { value: 'abc' } });
     fireEvent.keyDown(input, { key: 'Enter' });
@@ -404,7 +459,7 @@ describe('Space làm phím phát/dừng (critique P1)', () => {
 
   it('ô gõ chữ giữ nguyên Space; thân trang (không focus gì) thì phát/dừng; giữ phím không bật/tắt liên tục', () => {
     wrap(<><Harness keyboardFocus={false} /><NumberField label="Độ đục" value={0.5} spec={{ min: 0, max: 1, step: 0.05 }} onChange={() => {}} /></>);
-    const box = screen.getByRole('textbox', { name: 'Độ đục' }); box.focus();
+    const box = screen.getByRole('spinbutton', { name: 'Độ đục' }); box.focus();
     expect(fireEvent.keyDown(box, { code: 'Space', key: ' ' })).toBe(true);
     expect(pb.get().playing).toBe(false);
     expect(fireEvent.keyDown(document.body, { code: 'Space', key: ' ' })).toBe(false);

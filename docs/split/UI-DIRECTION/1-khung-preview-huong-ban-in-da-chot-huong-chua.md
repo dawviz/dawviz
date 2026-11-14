@@ -5,7 +5,7 @@ section: "1. Khung preview: hướng \"Bản in\" 🟡 đã chốt hướng, ch�
 path: "1. Khung preview: hướng \"Bản in\" 🟡 đã chốt hướng, chưa làm (D-51)"
 chunk: 1-khung-preview-huong-ban-in-da-chot-huong-chua.md
 source_lines: 21-57
-source_sha1: 17129663d4
+source_sha1: 4b6c40ad59
 ids: [D-51, REQ-GRAPHICS-00, REQ-GRAPHICS-04, REQ-GRAPHICS-07, REQ-GRAPHICS-10, REQ-GRAPHICS-16, REQ-WIDGET-01, REQ-WIDGET-02, REQ-WIDGET-03, REQ-WIDGET-04, REQ-WIDGET-05, REQ-WIDGET-06, REQ-WIDGET-08]
 ---
 ## 1. Khung preview: hướng "Bản in" 🟡 đã chốt hướng, chưa làm (D-51)

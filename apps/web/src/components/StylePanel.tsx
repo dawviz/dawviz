@@ -6,22 +6,25 @@ import { useI18n } from '../i18n/I18nProvider.tsx';
 import { radioKeys, radioTab } from '../lib/a11y.ts';
 import { matchNotePreset } from '../lib/videoScenes.ts';
 import { Select } from './Select.tsx';
-import { AdvTag } from './Inspector.tsx';
+import { ResetButton } from './Inspector.tsx';
 import { SliderField as Slider } from './SliderField.tsx';
 
 const MODES: ColorMode[] = ['track', 'custom', 'pitch', 'velocity'];
 /** Trường chỉ có ở Nâng cao (REQ-UI-13). Dùng để biết phần nâng cao đang khác mặc định hay không. */
 export const ADVANCED_STYLE_KEYS: readonly (keyof NoteStyle)[] = ['inactiveOpacity', 'glowRadius', 'borderWidth', 'glowActiveOnly', 'glowMin', 'glowMax', 'glowInvert', 'glowRelease', 'glowLane', 'glowPanMode'];
-const row = 'grid grid-cols-[minmax(0,7.5rem)_minmax(0,1fr)] items-center gap-2 text-xs text-muted';
+// Cùng lưới với dòng số (SliderField): nhãn | điều khiển | ô ↺, để cột ↺ thẳng hàng ở mọi dòng.
+const row = 'grid grid-cols-[minmax(0,1fr)_minmax(0,9.5rem)_1.5rem] items-center gap-2 text-xs text-muted';
 
 /** `lanes`: tên lane automation có trong dự án đang mở (cho nguồn phát sáng "automation").
  *  `playhead`: vị trí vạch phát (0..1) và hàm đổi; bàn phím bật thì ô bị khoá kèm chú thích (T-71).
- *  `advanced`: hiện cả dòng nâng cao (chế độ Nâng cao, hoặc "Thêm tuỳ chọn" của mục đang mở). */
-export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset, playhead }: { playhead?: { ratio: number; visible: boolean; onChange(ratio: number): void; onVisible(visible: boolean): void }; notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean }) {
+ *  `advanced`: hiện cả dòng nâng cao (chế độ Nâng cao, hoặc "Thêm tuỳ chọn" của mục đang mở).
+ *  `reference`: kiểu nốt của bộ dựng sẵn đang chọn; thông số khác nó thì có nút ↺ đưa về (D-57). */
+export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset, playhead, reference }: { reference?: NoteStyle; playhead?: { ratio: number; visible: boolean; reference?: number; onChange(ratio: number): void; onVisible(visible: boolean): void }; notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean }) {
   const { i18n } = useI18n();
   const b = style.base;
   const set = (patch: Partial<NoteStyle>) => onStyle({ ...style, base: { ...b, ...patch } });
   const lockId = useId();
+  const ref = (k: keyof NoteStyle) => { const v = reference?.[k]; return typeof v === 'number' ? v : undefined; };
   return (
     <div className="space-y-2.5" data-testid="style-panel">
       <h3 className="pt-1 text-xs font-medium text-fg">{i18n.t('web.look.notes')}</h3>
@@ -32,6 +35,7 @@ export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], a
             {matchNotePreset(b) === 'custom' && <option value="custom">{i18n.t('web.style.preset.custom')}</option>}
             {notePresets.map((id) => <option key={id} value={id}>{i18n.t(`web.style.preset.${id}`)}</option>)}
           </Select>
+          <span aria-hidden />
         </label>
       )}
       <label className={row}>
@@ -42,19 +46,21 @@ export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], a
           </Select>
           {b.colorMode === 'custom' && <input type="color" aria-label={i18n.t('web.style.customColor')} value={b.customColor} onChange={(e) => set({ customColor: e.target.value })} />}
         </span>
+        <ResetButton label={i18n.t('web.style.colorMode')} changed={!!reference && (reference.colorMode !== b.colorMode || (b.colorMode === 'custom' && reference.customColor !== b.customColor))}
+          onReset={() => set({ colorMode: reference!.colorMode, customColor: reference!.customColor })} />
       </label>
-      <Slider id="st-opacity" label={i18n.t('web.style.opacity')} value={b.opacity} min={0} max={1} step={0.05} onChange={(v) => set({ opacity: v })} />
-      {advanced && <Slider adv id="st-inactive" label={i18n.t('web.style.inactiveOpacity')} value={b.inactiveOpacity} min={0} max={1} step={0.05} onChange={(v) => set({ inactiveOpacity: v })} />}
-      <Slider id="st-height" label={i18n.t('web.style.heightScale')} value={b.heightScale} min={0.1} max={1.5} step={0.05} onChange={(v) => set({ heightScale: v })} />
-      <Slider id="st-radius" label={i18n.t('web.style.cornerRadius')} value={b.cornerRadius} min={0} max={20} hardMax={999} step={1} onChange={(v) => set({ cornerRadius: v })} />
-      {advanced && <Slider adv id="st-border" label={i18n.t('web.style.borderWidth')} value={b.borderWidth} min={0} max={6} hardMax={8} step={0.5} onChange={(v) => set({ borderWidth: v })} />}
+      <Slider id="st-opacity" label={i18n.t('web.style.opacity')} value={b.opacity} min={0} max={1} step={0.05} reset={ref('opacity')} onChange={(v) => set({ opacity: v })} />
+      {advanced && <Slider id="st-inactive" label={i18n.t('web.style.inactiveOpacity')} value={b.inactiveOpacity} min={0} max={1} step={0.05} reset={ref('inactiveOpacity')} onChange={(v) => set({ inactiveOpacity: v })} />}
+      <Slider id="st-height" label={i18n.t('web.style.heightScale')} value={b.heightScale} min={0.1} max={1.5} step={0.05} reset={ref('heightScale')} onChange={(v) => set({ heightScale: v })} />
+      <Slider id="st-radius" label={i18n.t('web.style.cornerRadius')} value={b.cornerRadius} min={0} max={20} hardMax={999} step={1} reset={ref('cornerRadius')} onChange={(v) => set({ cornerRadius: v })} />
+      {advanced && <Slider id="st-border" label={i18n.t('web.style.borderWidth')} value={b.borderWidth} min={0} max={6} hardMax={8} step={0.5} reset={ref('borderWidth')} onChange={(v) => set({ borderWidth: v })} />}
       <div className="border-t border-line" />
       <h3 className="pt-1 text-xs font-medium text-fg">{i18n.t('web.look.glow')}</h3>
-      <Slider id="st-glow" label={i18n.t('web.style.glow')} value={b.glow} min={0} max={1} step={0.05} onChange={(v) => set({ glow: v })} />
-      {advanced && <Slider adv id="st-glowr" label={i18n.t('web.style.glowRadius')} value={b.glowRadius} min={0} max={40} hardMax={64} step={1} onChange={(v) => set({ glowRadius: v })} />}
-      <GlowSection b={b} set={set} lanes={lanes} advanced={advanced} />
+      <Slider id="st-glow" label={i18n.t('web.style.glow')} value={b.glow} min={0} max={1} step={0.05} reset={ref('glow')} onChange={(v) => set({ glow: v })} />
+      {advanced && <Slider id="st-glowr" label={i18n.t('web.style.glowRadius')} value={b.glowRadius} min={0} max={40} hardMax={64} step={1} reset={ref('glowRadius')} onChange={(v) => set({ glowRadius: v })} />}
+      <GlowSection b={b} set={set} lanes={lanes} advanced={advanced} reference={reference} />
       {advanced && <label className="flex items-center gap-2 text-xs text-muted">
-        <input type="checkbox" checked={b.glowActiveOnly} onChange={(e) => set({ glowActiveOnly: e.target.checked })} />{i18n.t('web.style.glowActiveOnly')}<AdvTag />
+        <input type="checkbox" checked={b.glowActiveOnly} onChange={(e) => set({ glowActiveOnly: e.target.checked })} />{i18n.t('web.style.glowActiveOnly')}
       </label>}
       <div className="space-y-2 border-t border-line pt-2.5">
         <label className="flex items-center gap-2 text-xs text-muted">
@@ -65,7 +71,7 @@ export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], a
             <input type="checkbox" checked={playhead.visible} onChange={(e) => playhead.onVisible(e.target.checked)} data-testid="playhead-visible" />{i18n.t('web.playhead.show')}
           </label>
           {/* Bàn phím bật: vạch phát ghim ở mép bàn phím (Render Core bỏ qua tỉ lệ), nên khoá ô và nói lý do ngay bên dưới. Giá trị vẫn giữ để dùng lại khi tắt bàn phím. */}
-          <Slider id="st-playhead" label={i18n.t('web.playhead.position')} value={Math.round(playhead.ratio * 100)} min={5} max={95} step={1}
+          <Slider id="st-playhead" label={i18n.t('web.playhead.position')} value={Math.round(playhead.ratio * 100)} min={5} max={95} step={1} reset={playhead.reference === undefined ? undefined : Math.round(playhead.reference * 100)}
             disabled={keyboard.enabled} describedBy={keyboard.enabled ? lockId : undefined} onChange={(v) => playhead.onChange(v / 100)} />
           {keyboard.enabled && <p id={lockId} className="text-xs leading-snug text-muted" data-testid="playhead-locked">{i18n.t('web.playhead.locked')}</p>}
         </>}
@@ -75,8 +81,9 @@ export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], a
 }
 
 /** REQ-GRAPHICS-17: đều nhau (mặc định) hoặc phát sáng động khi thanh phát chạm nốt, theo một tiêu chí. */
-function GlowSection({ b, set, lanes, advanced }: { b: NoteStyle; set(p: Partial<NoteStyle>): void; lanes: string[]; advanced: boolean }) {
+function GlowSection({ b, set, lanes, advanced, reference }: { b: NoteStyle; set(p: Partial<NoteStyle>): void; lanes: string[]; advanced: boolean; reference?: NoteStyle }) {
   const { i18n } = useI18n();
+  const ref = (k: 'glowMin' | 'glowMax' | 'glowRelease') => reference?.[k];
   const dyn = b.glowMode === 'dynamic';
   const laneList = lanes.includes(b.glowLane) ? lanes : [b.glowLane, ...lanes];
   return (
@@ -99,10 +106,11 @@ function GlowSection({ b, set, lanes, advanced }: { b: NoteStyle; set(p: Partial
           <Select value={b.glowSource} onChange={(e) => set({ glowSource: e.target.value as GlowSource })} className="py-1 pl-2" wrapClassName="min-w-0">
             {GLOW_SOURCES.map((s) => <option key={s} value={s}>{i18n.t(`web.glow.source.${s}`)}</option>)}
           </Select>
+          <ResetButton label={i18n.t('web.glow.source')} changed={!!reference && reference.glowSource !== b.glowSource} onReset={() => set({ glowSource: reference!.glowSource })} />
         </label>
         {advanced && b.glowSource === 'automation' && (
           <label className={row}>
-            <span className="flex min-w-0 items-center gap-1.5"><span className="min-w-0 break-words leading-tight">{i18n.t('web.glow.lane')}</span><AdvTag /></span>
+            <span className="flex min-w-0 items-center gap-1.5"><span className="min-w-0 break-words leading-tight">{i18n.t('web.glow.lane')}</span></span>
             <Select value={b.glowLane} onChange={(e) => set({ glowLane: e.target.value })} className="py-1 pl-2" wrapClassName="min-w-0">
               {laneList.map((l) => <option key={l} value={l}>{i18n.has(`web.glow.lane.${l}`) ? i18n.t(`web.glow.lane.${l}`) : l}{lanes.includes(l) ? '' : ` (${i18n.t('web.glow.lane.absent')})`}</option>)}
             </Select>
@@ -110,7 +118,7 @@ function GlowSection({ b, set, lanes, advanced }: { b: NoteStyle; set(p: Partial
         )}
         {advanced && (b.glowSource === 'pan' || (b.glowSource === 'automation' && b.glowLane === 'pan')) && (
           <label className={row}>
-            <span className="flex min-w-0 items-center gap-1.5"><span className="min-w-0 break-words leading-tight">{i18n.t('web.glow.panMode')}</span><AdvTag /></span>
+            <span className="flex min-w-0 items-center gap-1.5"><span className="min-w-0 break-words leading-tight">{i18n.t('web.glow.panMode')}</span></span>
             <Select value={b.glowPanMode} onChange={(e) => set({ glowPanMode: e.target.value as GlowPanMode })} className="py-1 pl-2" wrapClassName="min-w-0">
               {(['lr', 'spread'] as const).map((m) => <option key={m} value={m}>{i18n.t(`web.glow.panMode.${m}`)}</option>)}
             </Select>
@@ -118,14 +126,14 @@ function GlowSection({ b, set, lanes, advanced }: { b: NoteStyle; set(p: Partial
         )}
         <p className="text-xs leading-snug text-muted">{i18n.t(b.glowSource === 'pan' ? `web.glow.hint.pan.${b.glowPanMode}` : `web.glow.hint.${b.glowSource}`)}</p>
         {advanced && <>
-          <Slider adv id="st-gmin" label={i18n.t('web.glow.min')} value={b.glowMin} min={0} max={1} step={0.05} onChange={(v) => set({ glowMin: v })} />
-          <Slider adv id="st-gmax" label={i18n.t('web.glow.max')} value={b.glowMax} min={0} max={1} step={0.05} onChange={(v) => set({ glowMax: v })} />
+          <Slider id="st-gmin" label={i18n.t('web.glow.min')} value={b.glowMin} min={0} max={1} step={0.05} reset={ref('glowMin')} onChange={(v) => set({ glowMin: v })} />
+          <Slider id="st-gmax" label={i18n.t('web.glow.max')} value={b.glowMax} min={0} max={1} step={0.05} reset={ref('glowMax')} onChange={(v) => set({ glowMax: v })} />
           <label className="flex items-center gap-2 text-xs text-muted">
-            <input type="checkbox" checked={b.glowInvert} onChange={(e) => set({ glowInvert: e.target.checked })} />{i18n.t('web.glow.invert')}<AdvTag />
+            <input type="checkbox" checked={b.glowInvert} onChange={(e) => set({ glowInvert: e.target.checked })} />{i18n.t('web.glow.invert')}
           </label>
         </>}
       </>}
-      {advanced && <Slider adv id="st-grel" label={i18n.t('web.glow.release')} value={b.glowRelease} min={0} max={2} hardMax={4} step={0.05} onChange={(v) => set({ glowRelease: v })} />}
+      {advanced && <Slider id="st-grel" label={i18n.t('web.glow.release')} value={b.glowRelease} min={0} max={2} hardMax={4} step={0.05} reset={ref('glowRelease')} onChange={(v) => set({ glowRelease: v })} />}
     </div>
   );
 }

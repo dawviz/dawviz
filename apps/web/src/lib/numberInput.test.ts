@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseNumberInput as p, nudge, formatNumber } from './numberInput.ts';
+import { parseNumberInput as p, nudge, formatNumber, scrubValue } from './numberInput.ts';
 
 const val = (r: ReturnType<typeof p>) => (r.ok ? r.value : r.reason);
 
@@ -39,4 +39,16 @@ test('numberInput: nudge theo bước, Shift/Alt, làm tròn, kẹp; format theo
   assert.equal(nudge(0, -1, { step: 1, min: 0 }), 0);
   assert.equal(formatNumber(0.7, 0.05), '0.70');
   assert.equal(formatNumber(12, 1), '12');
+});
+test('numberInput: scrubValue theo phạm vi mềm, Shift/Alt, làm tròn bước, kẹp cứng', () => {
+  // 0–1 bước 0,05: 200 px đi hết phạm vi → 10 px một bước.
+  assert.equal(scrubValue(0.5, 10, { step: 0.05, min: 0, max: 1 }, [0, 1]), 0.55);
+  assert.equal(scrubValue(0.5, -4, { step: 0.05, min: 0, max: 1 }, [0, 1]), 0.5); // chưa đủ nửa bước
+  assert.equal(scrubValue(0.5, 1000, { step: 0.05, min: 0, max: 1 }, [0, 1]), 1);
+  // Không có phạm vi: một bước mỗi px; Shift ×10; Alt ×0,1 và bước nhỏ lại.
+  assert.equal(scrubValue(100, 7, { step: 1 }), 107);
+  assert.equal(scrubValue(100, 7, { step: 1 }, undefined, { shift: true }), 170);
+  assert.equal(scrubValue(100, 7, { step: 1 }, undefined, { alt: true }), 100.7);
+  // Phạm vi mềm 0–20, gõ tới 999: kéo vẫn vượt phạm vi mềm được tới giới hạn cứng.
+  assert.equal(scrubValue(20, 400, { step: 1, min: 0, max: 999 }, [0, 20]), 60);
 });

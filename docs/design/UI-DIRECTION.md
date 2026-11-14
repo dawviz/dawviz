@@ -342,8 +342,9 @@ Vì theme chỉ đổi màu, 6 phong cách không phải 6 giao diện khác nha
 | Cột trái | "Video styles" (phong cách video, không gọi là theme): **chỉ chứa preset scene** (Paper, Mặc định…), mỗi mục có ảnh thu nhỏ do Render Core vẽ, cắt quanh vạch phát và phóng ~2 lần. Bộ kiểu nốt dựng sẵn (Neon, Soft, Flat, Outline) là chọn ở mục `02 Look`, không ở cột này |
 | Sân khấu | Preview luôn trắng theo preset, kể cả theme tối. Khung "bản in thử" của E: dấu cắt ở góc, thông số kỹ thuật chạy dọc mép (kích thước, tỉ lệ, tên phong cách; không có thời gian, vì thời gian đã ở thanh phát), dải xám bên cạnh; mặc định bật, tắt được trong Settings |
 | Thanh phát | Lùi / phát / tới (biểu tượng, không chữ), thanh tua có sóng âm mờ của file âm thanh nếu có, thời gian kiểu nhạc tô màu nhấn khi đang phát |
-| Inspector | Mục đánh số `01 Song`, `02 Look`, `03 Tracks`…; "More options" ở đầu mục (REQ-UI-13); mọi thanh trượt có ô số căn phải (REQ-UI-15); dòng Nâng cao có nhãn nhỏ `ADV` |
-| Dòng track | Tay nắm kéo đổi thứ tự, ô màu, mắt (ẩn/hiện), `S` (solo), số nốt căn phải. **Không** có khoá ở Preview; khoá chỉ ở danh sách lớp của Editor |
+| Inspector | Preview: mục đánh số `01 Song`, `02 Tracks` (Look chỉ ở bảng Thuộc tính của Editor, D-57); "More options" ở đầu mục (REQ-UI-13). **Không thanh trượt (D-57):** mỗi thông số số là một dòng nhãn | ô số kéo lên/xuống được (REQ-UI-15) | ô ↺ (chỉ hiện khi khác bộ dựng sẵn, giữ chỗ khi ẩn); ô ↺ và ô số ở cột cố định nên thẳng hàng. Dòng Nâng cao **không có nhãn** `NC`/`ADV` ở chế độ nào |
+| Dòng track | Tay nắm kéo đổi thứ tự, ô màu, mắt (ẩn/hiện), `S` (solo), số nốt căn phải; mắt, S và số nốt ở **cột bề rộng cố định**. Hàng đầu: "Hiện tất cả N track" bên trái, biểu tượng mắt/S đúng cột (chú thích khi rê, bật/tắt tất cả), tổng số nốt ở cột số nốt (D-57). Danh sách Lớp của Editor cùng kiểu: tay nắm 6 chấm mỗi dòng, hàng đầu có mắt và khoá tổng. **Không** có khoá ở Preview: khoá lớp ở danh sách Lớp của Editor, khoá track ở làn track trên timeline của Editor |
+| Preview và Editor (D-57) | Hai cách bày bảng trên cùng dữ liệu (kiểu workspace Adobe). Preview: sân khấu sạch + inspector chỉnh nhanh. Editor: Lớp (kéo thả đổi thứ tự), tay nắm, bắt dính, sau này timeline; bảng Thuộc tính đi theo widget đang chọn; `Look` chỉ ở đây (chọn Piano Roll, đứng sau mục Vị trí; chưa chọn gì thì có nút "Chỉnh hình thức nốt") |
 | Phân vùng | Kẻ mảnh 1 px (`line`), không thẻ có bóng; bo góc nhỏ đồng nhất cho ô nhập và nút |
 | Chữ | Một grotesk trung tính tự host cho mọi chữ; chữ số đều (tabular); nhãn mục cỡ lớn hơn chữ thường một bậc, không dùng chữ khổng lồ |
 
@@ -414,7 +415,7 @@ Số đo sau chỉnh (tỉ lệ thấp nhất trên `bg`/`surface`/`surface-rais
 
 1. **Vòng 3: các màn chưa có ảnh**, sinh bằng cấu trúc đã chọn: trạng thái rỗng (chưa mở file), hộp chọn Cơ bản/Nâng cao lần đầu (REQ-UI-13), cảnh báo khi nạp và hỏi file `.mid` thiếu (REQ-UI-07, 08), ô tempo khi file thiếu tempo (REQ-UI-06), hộp xuất video và tiến trình xuất (REQ-EXPORT-00), Settings → Giao diện (chọn bảng màu, xem trước tương phản).
 2. **Cột Presets có ảnh thu nhỏ:** mỗi phong cách video hiện một khung nhỏ do chính Render Core vẽ từ dự án đang mở (ý từ bảng preset của ChatGPT), không dùng ảnh minh hoạ.
-3. **Đặt tên trong giao diện:** thống nhất "Played / Upcoming" (đã phát / sắp tới) cho màu nốt; khoá (lock) chỉ có ở danh sách lớp của Editor, không có ở dòng track của Preview; mọi thanh trượt có ô số (REQ-UI-15).
+3. **Đặt tên trong giao diện:** thống nhất "Played / Upcoming" (đã phát / sắp tới) cho màu nốt; khoá (lock) chỉ có ở Editor (lớp ở danh sách Lớp, track ở làn timeline), không có ở dòng track của Preview; không thanh trượt, mọi thông số là ô số kéo được (REQ-UI-15, D-57).
 4. **Dựng token trước khi dựng màn:** chuyển `apps/web/src/index.css` sang bộ token 5.2, làm theme sáng/tối mặc định, rồi mới dựng lại bố cục theo 5.3 (T-70).
 
 ## 7. Nguyên tắc sản phẩm: trình dựng thật, mặc định đơn giản (D-54)

@@ -96,6 +96,9 @@ export function describeCommand(cmd: Cmd, c: LabelCtx): string {
     case 'patchWidgetProps': return changeLabel(c, i18n.t('web.hist.what.widgetProps'), {}, cmd, widget);
     case 'setWidgetVisible': return i18n.t(cmd.after ? 'web.hist.widgetShow' : 'web.hist.widgetHide', { widget });
     case 'reorderZ': return i18n.t('web.hist.reorderZ', { widget });
+    case 'moveLayer': return i18n.t('web.hist.moveLayer', { widget, from: String(p.from), to: String(p.to) });
+    case 'clearSolo': return i18n.t('web.hist.soloClear');
+    case 'setAllWidgetsVisible': return i18n.t(p.visible ? 'web.hist.widgetsShowAll' : 'web.hist.widgetsHideAll');
     case 'setPlayheadRatio': {
       const pct = (v: unknown) => i18n.number(Math.round(Number(v) * 100));
       return i18n.t('web.hist.change', { name: i18n.t('web.playhead.position'), from: `${pct(cmd.before)}%`, to: `${pct(cmd.after)}%` });

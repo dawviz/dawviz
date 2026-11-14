@@ -16,7 +16,15 @@ export interface Doc {
   solo: TrackId[];
   /** Offset âm thanh so với dự án (ms; dương = âm thanh trễ, âm = sớm và cắt phần trước mốc 0). Thuộc dự án, không thuộc tệp (T-08). */
   audioOffsetMs: number;
+  /**
+   * Kiểu nốt của bộ dựng sẵn áp gần nhất (phong cách video, bộ kiểu nốt, hoặc preset mở từ tệp): nút ↺ cạnh mỗi thông số
+   * đưa về giá trị này (D-57). Đổi cùng lệnh áp bộ dựng sẵn nên hoàn tác trả cả tham chiếu cũ.
+   */
+  lookRef: NoteStyle;
+  /** Bố cục từng widget của phong cách/preset áp gần nhất: nút ↺ của X, Y, W, H đưa về đây. Đổi cùng lệnh đổi phong cách/mở preset. */
+  layoutRef: Record<string, WidgetLayout>;
 }
+const layoutsOf = (s: SceneDocument): Record<string, WidgetLayout> => Object.fromEntries(s.widgets.map((w) => [w.id, w.layout]));
 export type Cmd = Command<Doc>;
 export const CUSTOM_STYLE = 'custom';
 
@@ -56,8 +64,11 @@ export const patchNoteStyle = (d: Doc, next: NoteStyle): Cmd | null => {
   return slice(d, 'patchNoteStyle', 'web.cmd.noteStyle', (x) => pianoOf(x.scene)!.properties.noteStyle.base, (x, v) => withPiano(x, (p) => ({ ...p, noteStyle: { ...p.noteStyle, base: v } })), next, `note:${keysChanged(cur, next).join(',')}`);
 };
 /** Chọn bộ kiểu nốt dựng sẵn: thay cả `base`; hoàn tác trả lại đủ các chỉnh tay trước đó. Không gộp. */
-export const applyNotePreset = (d: Doc, base: NoteStyle, presetId?: string): Cmd | null =>
-  slice(d, 'applyNotePreset', 'web.cmd.notePreset', (x) => pianoOf(x.scene)!.properties.noteStyle.base, (x, v) => withPiano(x, (p) => ({ ...p, noteStyle: { ...p.noteStyle, base: v } })), base, undefined, { preset: presetId });
+export const applyNotePreset = (d: Doc, base: NoteStyle, presetId?: string): Cmd | null => {
+  if (!pianoOf(d.scene)) return null;
+  return slice(d, 'applyNotePreset', 'web.cmd.notePreset', (x) => ({ base: pianoOf(x.scene)!.properties.noteStyle.base, ref: x.lookRef }),
+    (x, v) => ({ ...withPiano(x, (p) => ({ ...p, noteStyle: { ...p.noteStyle, base: v.base } })), lookRef: v.ref }), { base, ref: base }, undefined, { preset: presetId });
+};
 export const patchKeyboard = (d: Doc, next: KeyboardStyle): Cmd | null => {
   const cur = pianoOf(d.scene)?.properties.keyboard;
   if (!cur) return null;
@@ -94,13 +105,14 @@ export const patchTrackStyle = (d: Doc, id: TrackId, patch: Partial<NoteStyle> |
 export const setVideoStyle = (d: Doc, id: string): Cmd | null => {
   const tracks = pianoOf(d.scene)?.properties.noteStyle.tracks ?? {};
   const scene = sceneForStyle(id, { base: videoStyleBase(id), tracks }, {});
-  const before = { videoStyle: d.videoStyle, scene: d.scene }, after = { videoStyle: id, scene };
+  const before = { videoStyle: d.videoStyle, scene: d.scene, lookRef: d.lookRef, layoutRef: d.layoutRef }, after = { videoStyle: id, scene, lookRef: videoStyleBase(id), layoutRef: layoutsOf(scene) };
   if (d.videoStyle === id && same(before.scene, scene)) return null;
   return { type: 'setVideoStyle', label: 'web.cmd.videoStyle', before, after, redo: (x) => ({ ...x, ...after }), undo: (x) => ({ ...x, ...before }) };
 };
 /** Mở preset: thay scene (và đánh dấu phong cách 'custom'). Một bước hoàn tác. */
 export const loadPreset = (d: Doc, scene: SceneDocument): Cmd | null => {
-  const before = { videoStyle: d.videoStyle, scene: d.scene }, after = { videoStyle: CUSTOM_STYLE, scene };
+  const base = pianoOf(scene)?.properties.noteStyle.base;
+  const before = { videoStyle: d.videoStyle, scene: d.scene, lookRef: d.lookRef, layoutRef: d.layoutRef }, after = { videoStyle: CUSTOM_STYLE, scene, lookRef: base ? { ...base } : d.lookRef, layoutRef: layoutsOf(scene) };
   return { type: 'loadPreset', label: 'web.cmd.loadPreset', before, after, redo: (x) => ({ ...x, ...after }), undo: (x) => ({ ...x, ...before }) };
 };
 
@@ -113,6 +125,10 @@ const toggled = (list: readonly string[], id: string) => list.includes(id) ? lis
 export const toggleHidden = (d: Doc, id: TrackId): Cmd | null => slice(d, 'toggleHidden', 'web.cmd.hide', (x) => x.hidden, (x, v) => ({ ...x, hidden: v }), toggled(d.hidden, id), undefined, { track: id, on: !d.hidden.includes(id) });
 export const toggleSolo = (d: Doc, id: TrackId): Cmd | null => slice(d, 'toggleSolo', 'web.cmd.solo', (x) => x.solo, (x, v) => ({ ...x, solo: v }), toggled(d.solo, id), undefined, { track: id, on: !d.solo.includes(id) });
 export const setAllHidden = (d: Doc, hidden: boolean): Cmd | null => slice(d, 'setAllHidden', 'web.cmd.hide', (x) => x.hidden, (x, v) => ({ ...x, hidden: v }), hidden ? [...d.order] : [], undefined, { hidden });
+/** Ô "bật/tắt tất cả" của cột mắt: đang có track ẩn thì hiện hết trước; đã hiện hết thì ẩn hết. */
+export const toggleAllHidden = (d: Doc): Cmd | null => setAllHidden(d, d.hidden.length === 0);
+/** Ô "bỏ solo tất cả" của cột S. */
+export const clearSolo = (d: Doc): Cmd | null => slice(d, 'clearSolo', 'web.cmd.solo', (x) => x.solo, (x, v) => ({ ...x, solo: v }), [], undefined, { n: d.solo.length });
 export const moveTrack = (d: Doc, id: TrackId, to: number): Cmd | null => {
   const from = d.order.indexOf(id), dest = Math.max(0, Math.min(d.order.length - 1, to));
   if (from < 0 || from === dest) return null;
@@ -155,6 +171,13 @@ export const setWidgetVisible = (d: Doc, widgetId: string, visible: boolean): Cm
   const w = d.scene.widgets.find((x) => x.id === widgetId);
   return w ? slice(d, 'setWidgetVisible', 'web.cmd.widgetVisible', (x) => x.scene.widgets.find((q) => q.id === widgetId)!.visible, (x, v) => withWidget(x, widgetId, (q) => ({ ...q, visible: v })), visible, undefined, { widget: widgetId }) : null;
 };
+/** Ô mắt ở hàng đầu danh sách Lớp: còn lớp ẩn thì hiện hết trước, đã hiện hết thì ẩn hết. Một bước hoàn tác. */
+export const toggleAllWidgetsVisible = (d: Doc): Cmd | null => {
+  const show = d.scene.widgets.some((w) => !w.visible);
+  const get = (x: Doc) => Object.fromEntries(x.scene.widgets.map((w) => [w.id, w.visible]));
+  const set = (x: Doc, v: Record<string, boolean>) => ({ ...x, scene: { ...x.scene, widgets: x.scene.widgets.map((w) => (w.id in v && w.visible !== v[w.id] ? { ...w, visible: v[w.id] } : w)) } });
+  return slice(d, 'setAllWidgetsVisible', 'web.cmd.widgetVisible', get, set, Object.fromEntries(d.scene.widgets.map((w) => [w.id, show])), undefined, { visible: show });
+};
 /** Đưa widget lên trên cùng / xuống dưới cùng bằng cách đổi zIndex của nó. */
 export const reorderZ = (d: Doc, widgetId: string, where: 'front' | 'back'): Cmd | null => {
   const others = d.scene.widgets.filter((w) => w.id !== widgetId).map((w) => w.zIndex);
@@ -162,6 +185,27 @@ export const reorderZ = (d: Doc, widgetId: string, where: 'front' | 'back'): Cmd
   const z = where === 'front' ? Math.max(-Infinity, ...others) + 1 : Math.min(Infinity, ...others) - 1;
   if (!Number.isFinite(z)) return null;
   return slice(d, 'reorderZ', where === 'front' ? 'web.cmd.toFront' : 'web.cmd.toBack', (x) => x.scene.widgets.find((q) => q.id === widgetId)!.zIndex, (x, v) => withWidget(x, widgetId, (q) => ({ ...q, zIndex: v })), z, undefined, { widget: widgetId });
+};
+/**
+ * Thứ tự lớp như danh sách Lớp hiển thị: trên cùng trước (zIndex giảm dần; cùng zIndex thì widget đứng sau trong tài liệu
+ * được vẽ sau, nên đứng trước ở đây). Render Core vẽ theo zIndex tăng dần, cùng zIndex theo thứ tự tài liệu.
+ */
+export const layerOrder = (s: SceneDocument): string[] =>
+  s.widgets.map((w, i) => ({ w, i })).sort((a, b) => b.w.zIndex - a.w.zIndex || b.i - a.i).map(({ w }) => w.id);
+/**
+ * Đưa lớp `widgetId` tới vị trí `to` trong danh sách Lớp (0 = trên cùng): kéo thả, lên/xuống một bậc, lên trên/xuống dưới cùng
+ * (REQ-GRAPHICS-01). Đánh lại zIndex 0…n−1 theo thứ tự mới, một bước hoàn tác.
+ */
+export const moveLayer = (d: Doc, widgetId: string, to: number): Cmd | null => {
+  const order = layerOrder(d.scene), from = order.indexOf(widgetId);
+  if (from < 0) return null;
+  const dest = Math.max(0, Math.min(order.length - 1, Math.round(to)));
+  if (dest === from) return null;
+  order.splice(from, 1); order.splice(dest, 0, widgetId);
+  const z = Object.fromEntries(order.map((id, i) => [id, order.length - 1 - i]));
+  const get = (x: Doc) => Object.fromEntries(x.scene.widgets.map((w) => [w.id, w.zIndex]));
+  const set = (x: Doc, v: Record<string, number>) => ({ ...x, scene: { ...x.scene, widgets: x.scene.widgets.map((w) => (w.id in v && w.zIndex !== v[w.id] ? { ...w, zIndex: v[w.id] } : w)) } });
+  return slice(d, 'moveLayer', 'web.cmd.moveLayer', get, set, z, undefined, { widget: widgetId, from: from + 1, to: dest + 1 });
 };
 export const patchSnapping = (d: Doc, patch: Partial<SceneDocument['canvas']['snapping']>): Cmd | null =>
   slice(d, 'patchSnapping', 'web.cmd.snapping', (x) => x.scene.canvas.snapping, (x, v) => ({ ...x, scene: { ...x.scene, canvas: { ...x.scene.canvas, snapping: v } } }), { ...d.scene.canvas.snapping, ...patch }, `snap:${Object.keys(patch).join(',')}`);
@@ -182,5 +226,5 @@ export function handEdited(d: Doc): boolean {
 export function initialDoc(videoStyle: string, saved: { style?: Partial<{ base: Partial<NoteStyle>; tracks: Record<string, Partial<NoteStyle>> }>; keyboard?: Partial<KeyboardStyle> } = {}): Doc {
   const kbOn = typeof saved.keyboard?.enabled === 'boolean' ? saved.keyboard.enabled : videoStyleKeyboard(videoStyle);
   const scene = sceneForStyle(videoStyle, { base: { ...videoStyleBase(videoStyle), ...(saved.style?.base ?? {}) }, tracks: saved.style?.tracks ?? {} }, { enabled: kbOn });
-  return { videoStyle, scene, brightness: {}, order: [], hidden: [], solo: [], audioOffsetMs: 0 };
+  return { videoStyle, scene, brightness: {}, order: [], hidden: [], solo: [], audioOffsetMs: 0, lookRef: videoStyleBase(videoStyle), layoutRef: layoutsOf(sceneForStyle(videoStyle, { base: videoStyleBase(videoStyle), tracks: {} })) };
 }

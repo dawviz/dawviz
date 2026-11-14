@@ -5,7 +5,7 @@ section: "5.4 Piano Roll 🟢"
 path: "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.4 Piano Roll 🟢"
 chunk: 5-4-piano-roll.md
 source_lines: 146-152
-source_sha1: 89531c2f60
+source_sha1: 49e19e4d81
 ids: [D-50]
 ---
 ### 5.4 Piano Roll 🟢

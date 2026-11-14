@@ -38,4 +38,6 @@ export const Unlock = (p: P) => <S {...p}><rect x="3.5" y="7" width="9" height="
 /** Mũi tên vòng: đặt lại góc xoay. */
 export const RotateReset = (p: P) => <S {...p}><path d="M3 8a5 5 0 1 0 1.5-3.5" /><path d="M2.5 2.5v3h3" /></S>;
 export const ToFront = (p: P) => <S {...p}><rect x="5.5" y="5.5" width="8" height="8" rx="1" /><path d="M10.5 3.5v-1a1 1 0 0 0-1-1h-7a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h1" /></S>;
+export const LayerUp = (p: P) => <S {...p}><path d="M8 13V3.5M4 7.5l4-4 4 4" /></S>;
+export const LayerDown = (p: P) => <S {...p}><path d="M8 3v9.5M4 8.5l4 4 4-4" /></S>;
 export const ToBack = (p: P) => <S {...p}><rect x="2.5" y="2.5" width="8" height="8" rx="1" /><path d="M13.5 6.5v6a1 1 0 0 1-1 1h-6" strokeDasharray="1.6 1.8" /></S>;

@@ -5,7 +5,6 @@ import { useI18n } from '../i18n/I18nProvider.tsx';
 import { AUDIO_ACCEPT } from '../lib/audioLimits.ts';
 import { OFFSET_LIMIT_MS, clampOffsetMs } from '../lib/audioMap.ts';
 import { formatClock } from '../lib/timeFormat.ts';
-import { AdvTag } from './Inspector.tsx';
 import { Minus, Plus } from './Icons.tsx';
 import { NumberField } from './NumberField.tsx';
 
@@ -45,7 +44,7 @@ export function AudioPanel({ audio, busy, offsetMs, showOffset, onLoad, onRemove
       {audio && showOffset && (
         <div className="space-y-1.5" data-testid="audio-offset">
           <div className="flex items-center gap-1.5">
-            <span className="flex min-w-0 flex-1 items-center gap-1.5 text-xs text-muted">{i18n.t('web.audio.offsetLabel')}<AdvTag /></span>
+            <span className="flex min-w-0 flex-1 items-center gap-1.5 text-xs text-muted">{i18n.t('web.audio.offsetLabel')}</span>
             <button type="button" className={stepBtn} aria-label={i18n.t('web.audio.offset.minus')} title={i18n.t('web.audio.offset.step')} onClick={bump(-1)}><Minus /></button>
             <span className="w-24 shrink-0">
               <NumberField label={i18n.t('web.audio.offset.field')} value={offsetMs} spec={{ min: -OFFSET_LIMIT_MS, max: OFFSET_LIMIT_MS, step: 1, units: { ms: 1, s: 1000 } }} onChange={(v) => onOffset(clampOffsetMs(v))} />

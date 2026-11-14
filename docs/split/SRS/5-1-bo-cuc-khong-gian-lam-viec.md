@@ -4,9 +4,9 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "5.1. Bố cục không gian làm việc"
 path: "5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.1. Bố cục không gian làm việc"
 chunk: 5-1-bo-cuc-khong-gian-lam-viec.md
-source_lines: 917-949
-source_sha1: 0fd28ef586
-ids: []
+source_lines: 919-956
+source_sha1: f4f69f9f7d
+ids: [D-57, REQ-GRAPHICS-14]
 ---
 ### 5.1. Bố cục không gian làm việc
 
@@ -40,3 +40,8 @@ ids: []
 |               00:00             Range Start 00:45.000   Range End 01:45.000 (60 s)                                             |
 +--------------------------------------------------------------------------------------------------------------------------------+
 ```
+
+**Hai thẻ, một dữ liệu (D-57):** thẻ **Preview** và thẻ **Editor** không phải hai bộ dữ liệu mà là hai cách bày bảng trên cùng tài liệu, cùng lựa chọn và cùng lịch sử hoàn tác (giống workspace của phần mềm Adobe).
+* **Preview:** sân khấu sạch (không khung chọn, không tay nắm), cột phong cách video, inspector chỉnh nhanh: Bài (kèm âm thanh) và Track (màu, mắt, solo, thứ tự). Đây là đường đi nhanh của người dùng Cơ bản. **Không có mục Hình thức** (chủ dự án chốt 2026-11-14): kiểu nốt là thuộc tính của Piano Roll nên chỉ chỉnh ở Editor.
+* **Editor:** thêm danh sách Lớp, tay nắm trên khung, bắt dính; sau này thêm timeline có làn track, khoảng hiển thị (REQ-GRAPHICS-14) và keyframe. Bảng Thuộc tính đi theo widget đang chọn: tên widget đứng riêng ở đầu bảng ("Đang chọn"), mục 01 là **Vị trí và kích thước**; chọn Piano Roll thì mục **Hình thức** (kiểu nốt, phát sáng, bàn phím, vạch phát) đứng ngay sau mục Vị trí. Khi chưa chọn gì, bảng Thuộc tính có nút "Chỉnh hình thức nốt" chọn sẵn Piano Roll, để người mới không phải đoán chỗ.
+* **Khoá:** khoá lớp ở danh sách Lớp của Editor; khoá track ở làn track trên timeline của Editor (làm cùng T-52). Preview không có khoá.

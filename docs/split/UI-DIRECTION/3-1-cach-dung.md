@@ -5,7 +5,7 @@ section: "3.1 Cách dùng"
 path: "3. Bộ prompt sinh ảnh giao diện web > 3.1 Cách dùng"
 chunk: 3-1-cach-dung.md
 source_lines: 80-86
-source_sha1: 17129663d4
+source_sha1: 4b6c40ad59
 ids: []
 ---
 ### 3.1 Cách dùng

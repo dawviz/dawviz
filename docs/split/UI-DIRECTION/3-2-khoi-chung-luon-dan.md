@@ -5,7 +5,7 @@ section: "3.2 Khối chung (luôn dán)"
 path: "3. Bộ prompt sinh ảnh giao diện web > 3.2 Khối chung (luôn dán)"
 chunk: 3-2-khoi-chung-luon-dan.md
 source_lines: 87-100
-source_sha1: 17129663d4
+source_sha1: 4b6c40ad59
 ids: []
 ---
 ### 3.2 Khối chung (luôn dán)

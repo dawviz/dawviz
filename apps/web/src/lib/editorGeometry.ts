@@ -2,7 +2,7 @@
 // Đổi cỡ và đổi điểm neo của widget ĐÃ XOAY phải giữ nguyên chỗ trên khung của phần không bị kéo: công thức chung
 //   X' = X + a − a' + R(o + a' − a)
 // với X = (x, y), a = neo × cỡ cũ, a' = neo × cỡ mới, o = góc trên trái mới tính trong toạ độ widget cũ, R = ma trận xoay.
-import { normalizeAngle, pointInWidget, rotatedBounds, toWidgetLocal, type WidgetLayout } from '@dawviz/render-core';
+import { normalizeAngle, pointInWidget, rotatedBounds, toWidgetLocal, type Guide, type WidgetLayout } from '@dawviz/render-core';
 
 export type Handle = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw';
 export const HANDLES: readonly Handle[] = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
@@ -60,6 +60,64 @@ export function resizeLayout(start: L, handle: Handle, p: { x: number; y: number
     if (handle === 'e' || handle === 'w') oy = 0;
   }
   return round(reframe(start, ox, oy, w, h));
+}
+
+export interface ResizeSnap {
+  /** Khung các widget khác (đích hút), mép và tâm khung video. */
+  others: readonly WidgetLayout[];
+  canvas: { width: number; height: number };
+  grid: { enabled: boolean; size: number };
+  /** Smart Guides bật/tắt. */
+  guides: boolean;
+  /** Ngưỡng hút (pt logic). */
+  threshold: number;
+  /** Tắt tạm bắt dính (giữ Ctrl/⌘ khi đổi cỡ; Alt đã dùng cho co giãn quanh tâm). */
+  off?: boolean;
+}
+
+/**
+ * Đổi cỡ có bắt dính (REQ-GRAPHICS-02): tay nắm đang kéo hút vào mép/tâm khung video và cạnh/tâm widget khác trong ngưỡng
+ * (vẽ đường gióng), không có đích nào thì làm tròn theo lưới. Chỉ áp khi góc xoay là bội số của 90°: ở góc xiên cạnh đang kéo
+ * không thẳng trục, hút theo khung bao sẽ làm méo widget. Shift (giữ tỉ lệ) thì chỉ hút một trục, trục gần đích hơn.
+ */
+export function snapResize(start: L, handle: Handle, p: { x: number; y: number }, mods: { shift?: boolean; alt?: boolean }, o: ResizeSnap): { layout: L; guides: Guide[] } {
+  const first = resizeLayout(start, handle, p, mods);
+  const r = normalizeAngle(start.rotation);
+  if (o.off || r % 90 !== 0) return { layout: first, guides: [] };
+  const [fx, fy] = [handle.includes('w') ? 0 : handle.includes('e') ? 1 : 0.5, handle.includes('n') ? 0 : handle.includes('s') ? 1 : 0.5];
+  const hp = toCanvas(first, fx * first.width, fy * first.height);
+  // Trục khung video mà tay nắm đi theo: trục x của widget nằm ngang khi góc 0/180, nằm dọc khi ±90.
+  const flip = Math.abs(r) === 90;
+  const moves = { x: false, y: false };
+  if (fx !== 0.5) moves[flip ? 'y' : 'x'] = true;
+  if (fy !== 0.5) moves[flip ? 'x' : 'y'] = true;
+  const rects = [{ x: 0, y: 0, width: o.canvas.width, height: o.canvas.height }, ...o.others.map((w) => rotatedBounds(w))];
+  const lines = (b: { x: number; y: number; width: number; height: number }, a: 'x' | 'y') => a === 'x' ? [b.x, b.x + b.width / 2, b.x + b.width] : [b.y, b.y + b.height / 2, b.y + b.height];
+  const hits: { a: 'x' | 'y'; d: number; target: number; rect: number; guide: boolean }[] = [];
+  for (const a of ['x', 'y'] as const) {
+    if (!moves[a]) continue;
+    const at = a === 'x' ? hp[0] : hp[1];
+    let best: (typeof hits)[number] | null = null;
+    if (o.guides) rects.forEach((b, i) => { for (const t of lines(b, a)) { const d = t - at; if (Math.abs(d) <= o.threshold && (!best || Math.abs(d) < Math.abs(best.d))) best = { a, d, target: t, rect: i, guide: true }; } });
+    if (!best && o.grid.enabled && o.grid.size > 0) { const t = Math.round(at / o.grid.size) * o.grid.size; best = { a, d: t - at, target: t, rect: -1, guide: false }; }
+    if (best) hits.push(best);
+  }
+  let use = hits;
+  if (mods.shift && fx !== 0.5 && fy !== 0.5 && hits.length > 1) {
+    const g = hits.filter((h) => h.guide), pool = g.length ? g : hits;
+    use = [pool.reduce((m, h) => (Math.abs(h.d) < Math.abs(m.d) ? h : m))];
+  }
+  if (!use.length) return { layout: first, guides: [] };
+  const q = { x: p.x, y: p.y };
+  for (const h of use) q[h.a] += h.d;
+  const layout = resizeLayout(start, handle, q, mods);
+  const mine = rotatedBounds(layout);
+  const guides: Guide[] = use.filter((h) => h.guide).map((h) => {
+    const other = h.a === 'x' ? 'y' : 'x', t = rects[h.rect];
+    const [m0, , m1] = lines(mine, other), [t0, , t1] = lines(t, other);
+    return { axis: h.a, pos: h.target, from: Math.min(m0, t0), to: Math.max(m1, t1), kind: 'edge', with: h.rect === 0 ? 'canvas' : h.rect - 1 };
+  });
+  return { layout, guides };
 }
 
 /** Đổi điểm neo mà widget không nhảy chỗ trên khung. */

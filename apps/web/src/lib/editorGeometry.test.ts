@@ -1,7 +1,7 @@
 // T-68: hình học của Editor. Đổi cỡ/đổi neo widget đã xoay giữ đứng yên phần không bị kéo; chọn đúng widget trên cùng.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { resizeLayout, setAnchor, toCanvas, pointerAngle, hitTest, MIN_SIZE, HANDLES, type Handle } from './editorGeometry.ts';
+import { resizeLayout, snapResize, setAnchor, toCanvas, pointerAngle, hitTest, MIN_SIZE, HANDLES, type Handle } from './editorGeometry.ts';
 import type { WidgetLayout } from '@dawviz/render-core';
 
 const near = (a: number, b: number, m = '', eps = 1) => assert.ok(Math.abs(a - b) <= eps, `${m}: ${a} ≠ ${b}`);
@@ -74,4 +74,34 @@ test('outsideFrame / intoFrame: chỉ báo khi khung bao không còn giao khung;
   // xoay 90°: khung bao 80 × 200 quanh tâm (x + 100, y + 40)
   const r = intoFrame(l(1100, 500, 90), 1080, 1080), b = { x: r.x + 100 - 40, w: 80 };
   assert.equal(b.x + b.w, 1080);
+});
+
+const SNAP = { others: [] as WidgetLayout[], canvas: { width: 1080, height: 1080 }, grid: { enabled: false, size: 8 }, guides: true, threshold: 5 };
+test('snapResize: cạnh đang kéo hút vào mép khung trong ngưỡng, có đường gióng; ngoài ngưỡng thì không', () => {
+  const s: WidgetLayout = { x: 100, y: 100, width: 500, height: 400, rotation: 0, anchor: { x: 0.5, y: 0.5 } };
+  const r = snapResize(s, 'e', { x: 1077, y: 300 }, {}, SNAP);
+  assert.equal(r.layout.x + r.layout.width, 1080); assert.equal(r.layout.x, 100);
+  assert.deepEqual(r.guides.map((g) => [g.axis, g.pos, g.with]), [['x', 1080, 'canvas']]);
+  const far = snapResize(s, 'e', { x: 1060, y: 300 }, {}, SNAP);
+  assert.equal(far.layout.width, 960); assert.equal(far.guides.length, 0);
+});
+test('snapResize: hút vào cạnh widget khác; góc kéo hút cả hai trục; Ctrl (off) tắt; lưới khi không có đích', () => {
+  const s: WidgetLayout = { x: 100, y: 100, width: 300, height: 300, rotation: 0, anchor: { x: 0.5, y: 0.5 } };
+  const other: WidgetLayout = { x: 600, y: 700, width: 200, height: 100, rotation: 0, anchor: { x: 0.5, y: 0.5 } };
+  const r = snapResize(s, 'se', { x: 597, y: 703 }, {}, { ...SNAP, others: [other] });
+  assert.deepEqual([r.layout.x + r.layout.width, r.layout.y + r.layout.height], [600, 700]);
+  assert.equal(r.guides.length, 2);
+  const off = snapResize(s, 'se', { x: 597, y: 703 }, {}, { ...SNAP, others: [other], off: true });
+  assert.deepEqual([off.layout.width, off.layout.height], [497, 603]);
+  const grid = snapResize(s, 'se', { x: 503, y: 509 }, {}, { ...SNAP, guides: false, grid: { enabled: true, size: 8 } });
+  assert.deepEqual([grid.layout.x + grid.layout.width, grid.layout.y + grid.layout.height], [504, 512]);
+});
+test('snapResize: xoay 90° vẫn hút đúng trục khung; góc xiên thì không hút', () => {
+  // Widget 200×80 xoay 90° quanh tâm: tay nắm "e" đi theo trục y của khung.
+  const s: WidgetLayout = { x: 400, y: 300, width: 200, height: 80, rotation: 90, anchor: { x: 0.5, y: 0.5 } };
+  const [, ey] = at(s, 1, 0.5);
+  const r = snapResize(s, 'e', { x: 440, y: ey + 3 }, {}, { ...SNAP, canvas: { width: 1080, height: ey + 5 } });
+  near(at(r.layout, 1, 0.5)[1], ey + 5, 'mép dưới khung', 0.6);
+  const tilted = snapResize({ ...s, rotation: 30 }, 'e', { x: 700, y: 400 }, {}, SNAP);
+  assert.equal(tilted.guides.length, 0);
 });

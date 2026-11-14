@@ -4,8 +4,8 @@ doc_title: "Định hướng hình ảnh: khung preview và giao diện web"
 section: "5.4 Bảng màu dựng sẵn (đã kiểm AA, v0.5)"
 path: "5. Theme giao diện chỉ đổi màu (D-52) > 5.4 Bảng màu dựng sẵn (đã kiểm AA, v0.5)"
 chunk: 5-4-bang-mau-dung-san-da-kiem-aa-v0-5.md
-source_lines: 350-412
-source_sha1: 17129663d4
+source_lines: 351-413
+source_sha1: 4b6c40ad59
 ids: [REQ-GRAPHICS-02]
 ---
 ### 5.4 Bảng màu dựng sẵn (đã kiểm AA, v0.5)

@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04)"
 chunk: 3-4-dac-ta-8-widget-hud-br-02-br-03-br-04.md
-source_lines: 526-529
-source_sha1: 0fd28ef586
+source_lines: 528-531
+source_sha1: f4f69f9f7d
 ids: [BR-02, BR-03, BR-04]
 ---
 ### 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04)
