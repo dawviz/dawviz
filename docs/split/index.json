@@ -2697,7 +2697,7 @@
   },
   "TECHNICAL-DESIGN.md": {
    "title": "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER",
-   "sha1": "ba7b039c7b",
+   "sha1": "03d31db5d8",
    "chunks": [
     {
      "n": 0,
@@ -3227,14 +3227,34 @@
     },
     {
      "n": 28,
-     "file": "TECHNICAL-DESIGN/7-duong-ong-xuat-video-m3-spike-1-la-co-so.md",
-     "title": "7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở)",
+     "file": "TECHNICAL-DESIGN/7-1-trinh-tu.md",
+     "title": "7.1 Trình tự",
      "path": [
-      "7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở)"
+      "7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở)",
+      "7.1 Trình tự"
      ],
-     "chars": 2020,
+     "chars": 1019,
      "lines": [
-      384,
+      386,
+      401
+     ],
+     "ids": [
+      "REQ-EXPORT-00",
+      "REQ-EXPORT-02",
+      "REQ-EXPORT-06"
+     ]
+    },
+    {
+     "n": 29,
+     "file": "TECHNICAL-DESIGN/7-2-quyet-dinh-ky-thuat.md",
+     "title": "7.2 Quyết định kỹ thuật",
+     "path": [
+      "7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở)",
+      "7.2 Quyết định kỹ thuật"
+     ],
+     "chars": 947,
+     "lines": [
+      402,
       409
      ],
      "ids": [
@@ -3242,14 +3262,60 @@
       "D-01",
       "ERR_EXPORT_FAILED",
       "ERR_NO_SUPPORTED_ENCODER",
-      "REQ-EXPORT-00",
-      "REQ-EXPORT-02",
-      "REQ-EXPORT-06",
       "SOI-10"
      ]
     },
     {
-     "n": 29,
+     "n": 30,
+     "file": "TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md",
+     "title": "7.3 Phần lõi thuần đã làm (T-09, 2026-11-14)",
+     "path": [
+      "7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở)",
+      "7.3 Phần lõi thuần đã làm (T-09, 2026-11-14)"
+     ],
+     "chars": 1745,
+     "lines": [
+      410,
+      419
+     ],
+     "ids": [
+      "D-26",
+      "ERR_NO_SUPPORTED_ENCODER",
+      "REQ-EXPORT-00",
+      "REQ-EXPORT-01",
+      "REQ-EXPORT-02",
+      "REQ-EXPORT-03",
+      "REQ-EXPORT-05",
+      "REQ-EXPORT-06",
+      "SOI-05"
+     ]
+    },
+    {
+     "n": 31,
+     "file": "TECHNICAL-DESIGN/7-4-export-worker-va-giao-dien-t-09-2026-11-14.md",
+     "title": "7.4 Export Worker và giao diện (T-09, 2026-11-14)",
+     "path": [
+      "7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở)",
+      "7.4 Export Worker và giao diện (T-09, 2026-11-14)"
+     ],
+     "chars": 2905,
+     "lines": [
+      420,
+      429
+     ],
+     "ids": [
+      "AT-03",
+      "AT-05",
+      "D-04",
+      "D-26",
+      "ERR_EXPORT_FAILED",
+      "REQ-EXPORT-02",
+      "REQ-GRAPHICS-05",
+      "SOI-10"
+     ]
+    },
+    {
+     "n": 32,
      "file": "TECHNICAL-DESIGN/8-luu-tru-m4.md",
      "title": "8. Lưu trữ ⚪ (M4)",
      "path": [
@@ -3257,8 +3323,8 @@
      ],
      "chars": 1035,
      "lines": [
-      410,
-      415
+      430,
+      435
      ],
      "ids": [
       "ERR_PRESET_INVALID",
@@ -3267,7 +3333,7 @@
      ]
     },
     {
-     "n": 30,
+     "n": 33,
      "file": "TECHNICAL-DESIGN/9-da-ngon-ngu.md",
      "title": "9. Đa ngôn ngữ 🟢",
      "path": [
@@ -3275,13 +3341,13 @@
      ],
      "chars": 492,
      "lines": [
-      416,
-      418
+      436,
+      438
      ],
      "ids": []
     },
     {
-     "n": 31,
+     "n": 34,
      "file": "TECHNICAL-DESIGN/10-loi-ghi-nhat-ky-quan-sat.md",
      "title": "10. Lỗi, ghi nhật ký, quan sát",
      "path": [
@@ -3289,15 +3355,15 @@
      ],
      "chars": 470,
      "lines": [
-      419,
-      423
+      439,
+      443
      ],
      "ids": [
       "D-13"
      ]
     },
     {
-     "n": 32,
+     "n": 35,
      "file": "TECHNICAL-DESIGN/11-hieu-nang-va-bo-nho-ngan-sach.md",
      "title": "11. Hiệu năng và bộ nhớ (ngân sách)",
      "path": [
@@ -3305,8 +3371,8 @@
      ],
      "chars": 885,
      "lines": [
-      424,
-      433
+      444,
+      453
      ],
      "ids": [
       "NFR-PERF-04",
@@ -3314,7 +3380,7 @@
      ]
     },
     {
-     "n": 33,
+     "n": 36,
      "file": "TECHNICAL-DESIGN/12-bao-mat-va-quyen-rieng-tu.md",
      "title": "12. Bảo mật và quyền riêng tư",
      "path": [
@@ -3322,15 +3388,15 @@
      ],
      "chars": 728,
      "lines": [
-      434,
-      436
+      454,
+      456
      ],
      "ids": [
       "OI-07"
      ]
     },
     {
-     "n": 34,
+     "n": 37,
      "file": "TECHNICAL-DESIGN/13-xay-dung-kiem-thu-phat-hanh.md",
      "title": "13. Xây dựng, kiểm thử, phát hành",
      "path": [
@@ -3338,8 +3404,8 @@
      ],
      "chars": 906,
      "lines": [
-      437,
-      443
+      457,
+      463
      ],
      "ids": [
       "D-12",
@@ -3348,7 +3414,7 @@
      ]
     },
     {
-     "n": 35,
+     "n": 38,
      "file": "TECHNICAL-DESIGN/14-viec-can-lam-theo-moc-tu-thiet-ke-nay.md",
      "title": "14. Việc cần làm theo mốc (từ thiết kế này)",
      "path": [
@@ -3356,8 +3422,8 @@
      ],
      "chars": 760,
      "lines": [
-      444,
-      451
+      464,
+      471
      ],
      "ids": []
     }
@@ -6032,7 +6098,7 @@
    "SRS/lich-su-phien-ban.md",
    "SRS/1-gioi-thieu-muc-tieu-he-thong.md",
    "SRS/req-export-03-luong-am-thanh-va-silent-audio-d-0.md",
-   "TECHNICAL-DESIGN/7-duong-ong-xuat-video-m3-spike-1-la-co-so.md",
+   "TECHNICAL-DESIGN/7-2-quyet-dinh-ky-thuat.md",
    "SPIKE-1-EXPORT/5-doi-chieu-voi-tai-lieu-v1-1.md"
   ],
   "D-15": [
@@ -6090,6 +6156,8 @@
    "BRD/4-1-trong-pham-vi-phien-ban-1-0-in-scope.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/req-export-00-pre-flight-r-01-d-17.md",
+   "TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md",
+   "TECHNICAL-DESIGN/7-4-export-worker-va-giao-dien-t-09-2026-11-14.md",
    "SPIKE-1-EXPORT/5-doi-chieu-voi-tai-lieu-v1-1.md"
   ],
   "D-27": [
@@ -6518,7 +6586,8 @@
    "BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md",
    "SRS/req-cap-01-phat-hien-kha-nang-cua-trinh-duyet-r.md",
    "SRS/req-export-06-chuoi-du-phong-codec-d-05-r-06.md",
-   "TECHNICAL-DESIGN/7-duong-ong-xuat-video-m3-spike-1-la-co-so.md"
+   "TECHNICAL-DESIGN/7-1-trinh-tu.md",
+   "TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md"
   ],
   "D-19": [
    "BRD/3-chan-dung-nguoi-dung-muc-tieu-user-personas.md",
@@ -6539,7 +6608,8 @@
    "SRS/1-gioi-thieu-muc-tieu-he-thong.md",
    "SRS/2-1-kien-truc-phan-tang-he-thong.md",
    "SRS/2-3-thanh-phan-ben-thu-ba.md",
-   "SRS/req-export-04-ghep-container-qua-mediabunny-d-04.md"
+   "SRS/req-export-04-ghep-container-qua-mediabunny-d-04.md",
+   "TECHNICAL-DESIGN/7-4-export-worker-va-giao-dien-t-09-2026-11-14.md"
   ],
   "D-05": [
    "BRD/4-1-trong-pham-vi-phien-ban-1-0-in-scope.md",
@@ -6564,6 +6634,7 @@
    "SRS/lich-su-phien-ban.md",
    "SRS/2-6-ngan-xep-giao-dien-render-core-va-cau-truc-k.md",
    "SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md",
+   "TECHNICAL-DESIGN/7-4-export-worker-va-giao-dien-t-09-2026-11-14.md",
    "SPIKE-1-EXPORT/1-moi-truong-va-ket-qua-chung.md",
    "SPIKE-1-EXPORT/5-doi-chieu-voi-tai-lieu-v1-1.md"
   ],
@@ -6755,7 +6826,8 @@
    "SRS/req-export-00-pre-flight-r-01-d-17.md",
    "SRS/5-3-yeu-cau-giao-dien.md",
    "SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md",
-   "TECHNICAL-DESIGN/7-duong-ong-xuat-video-m3-spike-1-la-co-so.md",
+   "TECHNICAL-DESIGN/7-1-trinh-tu.md",
+   "TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md",
    "CUSTOMIZATION/6-tai-nguyen-assets-cua-phien-va-cua-cong-dong-a.md",
    "UI-DIRECTION/6-viec-tiep-theo-de-xuat.md",
    "SPIKE-1-EXPORT/5-doi-chieu-voi-tai-lieu-v1-1.md"
@@ -6769,6 +6841,7 @@
    "TECHNICAL-DESIGN/6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md",
    "TECHNICAL-DESIGN/6-2-1-nap-tep-am-thanh-mix.md",
    "TECHNICAL-DESIGN/6-2-7-du-lieu-giu-lai-cho-t-09-xuat-video-7.md",
+   "TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md",
    "SPIKE-1-EXPORT/5-doi-chieu-voi-tai-lieu-v1-1.md"
   ],
   "REQ-PARSER-00": [
@@ -7013,6 +7086,7 @@
    "SDD/1-pham-vi-va-nguyen-tac.md",
    "SDD/3-render-core-dawviz-render-core-d-36.md",
    "TECHNICAL-DESIGN/5-5-quy-tac-tat-dinh-kiem-bang-test.md",
+   "TECHNICAL-DESIGN/7-4-export-worker-va-giao-dien-t-09-2026-11-14.md",
    "TDD/2-danh-muc-test-moi.md",
    "TDD/3-ma-tran-truy-vet.md",
    "CUSTOMIZATION/12-huong-3d-day-du-sau-1-2-de-xuat-chua-chot.md",
@@ -7502,7 +7576,8 @@
   ],
   "REQ-EXPORT-01": [
    "SRS/2-2-luong-du-lieu-chinh.md",
-   "SRS/req-export-01-xung-nhip-khung-hinh-doc-lap.md"
+   "SRS/req-export-01-xung-nhip-khung-hinh-doc-lap.md",
+   "TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md"
   ],
   "REQ-STORAGE-01": [
    "SRS/2-2-luong-du-lieu-chinh.md",
@@ -7866,17 +7941,21 @@
   ],
   "SOI-05": [
    "SRS/req-export-00-pre-flight-r-01-d-17.md",
-   "SRS/8-cac-van-de-con-mo-cua-srs.md"
+   "SRS/8-cac-van-de-con-mo-cua-srs.md",
+   "TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md"
   ],
   "REQ-EXPORT-02": [
    "SRS/req-export-02-kiem-soat-dong-chay-r-01.md",
-   "TECHNICAL-DESIGN/7-duong-ong-xuat-video-m3-spike-1-la-co-so.md"
+   "TECHNICAL-DESIGN/7-1-trinh-tu.md",
+   "TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md",
+   "TECHNICAL-DESIGN/7-4-export-worker-va-giao-dien-t-09-2026-11-14.md"
   ],
   "AT-03": [
    "SRS/req-export-03-luong-am-thanh-va-silent-audio-d-0.md",
    "SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md",
    "TECHNICAL-DESIGN/6-2-7-du-lieu-giu-lai-cho-t-09-xuat-video-7.md",
-   "TECHNICAL-DESIGN/7-duong-ong-xuat-video-m3-spike-1-la-co-so.md",
+   "TECHNICAL-DESIGN/7-2-quyet-dinh-ky-thuat.md",
+   "TECHNICAL-DESIGN/7-4-export-worker-va-giao-dien-t-09-2026-11-14.md",
    "SPIKE-1-EXPORT/3-dong-bo-a-v-kpi-02-at-03.md"
   ],
   "NFR-ACC-01": [
@@ -7888,23 +7967,27 @@
   "SOI-10": [
    "SRS/req-export-04-ghep-container-qua-mediabunny-d-04.md",
    "SRS/8-cac-van-de-con-mo-cua-srs.md",
-   "TECHNICAL-DESIGN/7-duong-ong-xuat-video-m3-spike-1-la-co-so.md",
+   "TECHNICAL-DESIGN/7-2-quyet-dinh-ky-thuat.md",
+   "TECHNICAL-DESIGN/7-4-export-worker-va-giao-dien-t-09-2026-11-14.md",
    "SPIKE-1-EXPORT/4-container-va-fast-start-soi-10.md",
    "SPIKE-1-EXPORT/5-doi-chieu-voi-tai-lieu-v1-1.md"
   ],
   "REQ-EXPORT-05": [
    "SRS/req-export-05-giao-dien-tien-do-va-huy.md",
-   "SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md"
+   "SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md",
+   "TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md"
   ],
   "ERR_NO_SUPPORTED_ENCODER": [
    "SRS/req-export-06-chuoi-du-phong-codec-d-05-r-06.md",
    "SRS/phu-luc-a-ma-loi.md",
-   "TECHNICAL-DESIGN/7-duong-ong-xuat-video-m3-spike-1-la-co-so.md"
+   "TECHNICAL-DESIGN/7-2-quyet-dinh-ky-thuat.md",
+   "TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md"
   ],
   "ERR_EXPORT_FAILED": [
    "SRS/req-export-07-thuc-thi-trong-worker-arc-02-d-21.md",
    "SRS/phu-luc-a-ma-loi.md",
-   "TECHNICAL-DESIGN/7-duong-ong-xuat-video-m3-spike-1-la-co-so.md"
+   "TECHNICAL-DESIGN/7-2-quyet-dinh-ky-thuat.md",
+   "TECHNICAL-DESIGN/7-4-export-worker-va-giao-dien-t-09-2026-11-14.md"
   ],
   "AD-11": [
    "SRS/req-graphics-10-template-chuyen-canh-not.md",

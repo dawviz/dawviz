@@ -1,0 +1,29 @@
+name: Góp ý / báo lỗi khi dùng thử
+description: Bạn vừa thử bản demo và muốn nói điều gì đó (lỗi, chỗ khó dùng, ý tưởng)
+labels: [feedback]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Cảm ơn bạn đã dùng thử! Đừng đính kèm tệp dự án nhạc nếu bạn không muốn công khai nó (issue này công khai).
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Loại
+      options: [Lỗi, Khó dùng / khó hiểu, Thiếu tính năng, Ý tưởng, Khen]
+    validations: { required: true }
+  - type: textarea
+    id: what
+    attributes:
+      label: Chuyện gì đã xảy ra, hoặc bạn muốn gì?
+      description: Nếu là lỗi, hãy ghi các bước để gặp lại nó.
+    validations: { required: true }
+  - type: input
+    id: daw
+    attributes:
+      label: Bạn dùng phần mềm nhạc nào, định dạng tệp nào? (Ableton, Reaper, FL Studio xuất .mid…)
+  - type: input
+    id: env
+    attributes:
+      label: Trình duyệt và hệ điều hành
+      placeholder: Chrome 140, Windows 11

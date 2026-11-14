@@ -9,19 +9,17 @@
         "apps/web/src/components/NumberField.tsx",
         "apps/web/src/components/HistoryMenu.tsx",
         "locales/en.json#web.mode",
-        "locales/en.json#web.number.",
-        "locales/en.json#web.export"
+        "locales/en.json#web.number."
       ],
-      "uiHash": "740d4d0bc0c7",
-      "viHash": "76759c8e57a8",
-      "enHash": "d862e83576e4",
+      "uiHash": "6d90d8951bae",
+      "viHash": "acaae0cae341",
+      "enHash": "d880fff51a83",
       "coverHashes": {
         "apps/web/src/lib/numberInput.ts": "8e27c53523c3",
         "apps/web/src/components/NumberField.tsx": "f7668b64f388",
         "apps/web/src/components/HistoryMenu.tsx": "7ddeee2941d7",
         "locales/en.json#web.mode": "a81afde54c35",
-        "locales/en.json#web.number.": "5ca95d85a4e1",
-        "locales/en.json#web.export": "058448ce5f05"
+        "locales/en.json#web.number.": "5ca95d85a4e1"
       }
     },
     "01-mo-du-an": {
@@ -33,18 +31,20 @@
         "apps/web/src/components/Notices.tsx",
         "locales/en.json#web.drop.",
         "locales/en.json#web.missing.",
-        "locales/en.json#web.notices."
+        "locales/en.json#web.notices.",
+        "locales/en.json#web.sample"
       ],
-      "uiHash": "eec7cae67e82",
-      "viHash": "e5bc2bef26dd",
-      "enHash": "fac552052f88",
+      "uiHash": "1ffc11ab18c5",
+      "viHash": "d63406a68746",
+      "enHash": "251b73e642eb",
       "coverHashes": {
-        "apps/web/src/components/FileDrop.tsx": "01fa7dac41df",
+        "apps/web/src/components/FileDrop.tsx": "79f582ef4296",
         "apps/web/src/components/MissingMidiPanel.tsx": "e23f856f4d3c",
         "apps/web/src/components/Notices.tsx": "dd254d41dc67",
         "locales/en.json#web.drop.": "0281a3609725",
         "locales/en.json#web.missing.": "1fb211bdffa6",
-        "locales/en.json#web.notices.": "7eea093650ff"
+        "locales/en.json#web.notices.": "7eea093650ff",
+        "locales/en.json#web.sample": "4febfe1aa8cf"
       }
     },
     "02-xem-truoc": {
@@ -155,6 +155,38 @@
         "apps/web/src/components/EditorOverlay.tsx": "3f83719e6d7e",
         "apps/web/src/lib/numberInput.ts": "8e27c53523c3",
         "apps/web/src/components/Editor.tsx": "39355031b2ac"
+      }
+    },
+    "06-xuat-video": {
+      "vi": "docs/manual/06-xuat-video.md",
+      "en": "docs/manual/en/06-export-video.md",
+      "covers": [
+        "apps/web/src/components/ExportDialog.tsx",
+        "locales/en.json#web.export"
+      ],
+      "uiHash": "e2b20895beb9",
+      "viHash": "7c9254b67242",
+      "enHash": "e59c268fdeb4",
+      "coverHashes": {
+        "apps/web/src/components/ExportDialog.tsx": "7157fd5babc6",
+        "locales/en.json#web.export": "8560c62d281b"
+      }
+    },
+    "07-thu-nghiem": {
+      "vi": "docs/manual/07-thu-nghiem.md",
+      "en": "docs/manual/en/07-testing-export.md",
+      "covers": [
+        "apps/web/src/lib/exportDiagnostics.ts",
+        "locales/en.json#web.export.diagnose",
+        "locales/en.json#web.sample"
+      ],
+      "uiHash": "dabaec0b4447",
+      "viHash": "fda87c8b6e40",
+      "enHash": "2600718da04b",
+      "coverHashes": {
+        "apps/web/src/lib/exportDiagnostics.ts": "b740749c40ff",
+        "locales/en.json#web.export.diagnose": "495dccd042ca",
+        "locales/en.json#web.sample": "4febfe1aa8cf"
       }
     }
   }

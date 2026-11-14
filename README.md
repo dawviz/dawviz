@@ -2,6 +2,8 @@
 
 Trình trực quan hóa dự án âm nhạc (Ableton, Reaper, DAWproject, MIDI…) và xuất video ngay trong trình duyệt, không backend.
 
+**Dùng thử:** [bản demo trên trình duyệt](https://dawviz.github.io/dawviz/app/) (đang phát triển; xin góp ý và [giúp thử xuất video](https://dawviz.github.io/dawviz/)).
+
 | Thư mục | Nội dung |
 |---|---|
 | `apps/web` | Ứng dụng React + TypeScript + Vite + Tailwind + Framer Motion (mốc M1: nạp file → Piano Roll → phát/tua, en/vi) |

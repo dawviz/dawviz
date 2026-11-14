@@ -13,6 +13,8 @@ This guide grows with the app. If something isn't in the app yet, it isn't descr
 3. [The Editor tab](03-editor.md): arranging the blocks on the video frame, changing how notes look.
 4. [The Settings tab](04-settings.md): light or dark, accent colour, opening and saving presets.
 5. [Keyboard shortcuts](05-shortcuts.md).
+6. [Exporting video](06-export-video.md): choose the size and format, follow progress, cancel.
+7. [Testing video export](07-testing-export.md): help us try export on your computer and send the results.
 
 ## Good to know
 
@@ -20,7 +22,6 @@ This guide grows with the app. If something isn't in the app yet, it isn't descr
 - **Undo.** Almost every change can be undone with Ctrl+Z (⌘Z on Mac). The clock button next to Undo/Redo lists your steps; click one to go back to that point.
 - **The ↺ button.** It appears next to a setting you have changed. Click it to return that setting to the value of the current video style.
 - **Hover over a button** to see its name and shortcut.
-- **Exporting video** isn't available in this version yet.
 
 ## Number fields
 

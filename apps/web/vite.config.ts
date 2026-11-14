@@ -7,6 +7,8 @@ import { CSP } from './src/lib/csp.ts';
 const csp = { name: 'dawviz-csp', apply: 'build' as const, transformIndexHtml: () => [{ tag: 'meta', attrs: { 'http-equiv': 'Content-Security-Policy', content: CSP }, injectTo: 'head-prepend' as const }] };
 
 export default defineConfig({
+  // GitHub Pages phục vụ ở thư mục con (vd. /dawviz/app/): workflow đặt DAWVIZ_BASE. Cũng là BASE_URL cho phông và dự án mẫu (kể cả trong Worker).
+  base: process.env.DAWVIZ_BASE || '/',
   plugins: [react(), csp],
   worker: { format: 'es' },
   server: { fs: { allow: ['../..'] } }, // cho phép đọc locales/ và packages/ ở gốc monorepo

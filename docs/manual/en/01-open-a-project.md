@@ -15,6 +15,8 @@ The app reads:
 | Bitwig Studio, Studio One and other software that saves DAWproject | `.dawproject` |
 | Any software that exports MIDI | `.mid` |
 
+Don't have a project at hand? On the first screen click **Try the sample project** to open a ready-made one.
+
 **FL Studio:** `.flp` files can't be opened directly yet. In FL Studio choose File → Export → MIDI file, then open the `.mid` you exported.
 
 **Bitwig:** `.bwproject` files can't be opened directly yet. Save as `.dawproject` instead (File → Export → DAWproject).

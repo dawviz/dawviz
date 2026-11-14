@@ -13,6 +13,8 @@ Hướng dẫn này viết dần theo ứng dụng. Phần nào chưa có trong 
 3. [Thẻ Chỉnh sửa](03-chinh-sua.md): sắp xếp các khối trên khung video, đổi hình thức nốt.
 4. [Thẻ Cài đặt](04-cai-dat.md): giao diện sáng/tối, màu nhấn, mở và lưu preset.
 5. [Phím tắt](05-phim-tat.md).
+6. [Xuất video](06-xuat-video.md): chọn kích thước và định dạng, theo dõi tiến độ, hủy.
+7. [Thử nghiệm xuất video](07-thu-nghiem.md): giúp thử xuất video trên máy của bạn và gửi kết quả.
 
 ## Vài điều nên biết trước
 
@@ -20,7 +22,6 @@ Hướng dẫn này viết dần theo ứng dụng. Phần nào chưa có trong 
 - **Hoàn tác.** Hầu hết mọi thay đổi đều hoàn tác được bằng Ctrl+Z (⌘Z trên Mac). Nút đồng hồ cạnh Hoàn tác/Làm lại mở danh sách các bước đã làm; bấm vào một bước để quay về đúng lúc đó.
 - **Nút ↺.** Cạnh một thiết lập đã đổi sẽ có nút ↺. Bấm để đưa thiết lập đó về giá trị gốc của phong cách video đang dùng.
 - **Rê chuột lên nút** để xem tên và phím tắt của nút.
-- **Xuất video** chưa có trong bản này.
 
 ## Ô nhập số
 

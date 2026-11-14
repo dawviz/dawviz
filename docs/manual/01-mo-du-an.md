@@ -15,6 +15,8 @@ Kéo tệp dự án thả vào giữa màn hình, hoặc bấm vào đó để c
 | Bitwig Studio, Studio One và các phần mềm khác lưu được DAWproject | `.dawproject` |
 | Bất kỳ phần mềm nào xuất được MIDI | `.mid` |
 
+Chưa có tệp nhạc trong tay? Ở màn đầu tiên bấm **Thử với dự án mẫu** để mở một dự án có sẵn.
+
 **FL Studio:** chưa mở thẳng được tệp `.flp`. Trong FL Studio chọn File → Export → MIDI file, rồi mở tệp `.mid` vừa xuất.
 
 **Bitwig:** tệp `.bwproject` chưa mở thẳng được. Hãy lưu thành `.dawproject` (File → Export → DAWproject).

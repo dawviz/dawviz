@@ -5,7 +5,7 @@ section: "5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)"
 path: "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)"
 chunk: 5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md
 source_lines: 167-192
-source_sha1: ba7b039c7b
+source_sha1: 03d31db5d8
 ids: [ERR_FONT_LOAD, NFR-SEC-03, REQ-STORAGE-05, REQ-WIDGET-02]
 ---
 ### 5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)

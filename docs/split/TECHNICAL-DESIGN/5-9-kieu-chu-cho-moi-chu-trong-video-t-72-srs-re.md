@@ -5,7 +5,7 @@ section: "5.9 Kiểu chữ cho mọi chữ trong video 🟢 (T-72, SRS REQ-GRAPH
 path: "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.9 Kiểu chữ cho mọi chữ trong video 🟢 (T-72, SRS REQ-GRAPHICS-18, D-58)"
 chunk: 5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md
 source_lines: 196-210
-source_sha1: ba7b039c7b
+source_sha1: 03d31db5d8
 ids: [D-58, REQ-GRAPHICS-18, REQ-STORAGE-05, WARN_PRESET_FONT_MISSING, WARN_PRESET_VALUE]
 ---
 ### 5.9 Kiểu chữ cho mọi chữ trong video 🟢 (T-72, SRS REQ-GRAPHICS-18, D-58)

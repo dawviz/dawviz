@@ -21,12 +21,15 @@ dawviz/
 │     │  │  ├─ space-grotesk-latin-ext-700-normal.woff2
 │     │  │  ├─ space-grotesk-vietnamese-400-normal.woff2
 │     │  │  └─ space-grotesk-vietnamese-700-normal.woff2
+│     │  ├─ samples/
+│     │  │  └─ demo.rpp
 │     │  └─ theme-boot.js
 │     ├─ src/
 │     │  ├─ components/
 │     │  │  ├─ AudioPanel.tsx
 │     │  │  ├─ Editor.tsx
 │     │  │  ├─ EditorOverlay.tsx
+│     │  │  ├─ ExportDialog.tsx
 │     │  │  ├─ FileDrop.tsx
 │     │  │  ├─ HistoryMenu.tsx
 │     │  │  ├─ Icons.tsx
@@ -71,6 +74,17 @@ dawviz/
 │     │  │  ├─ csp.ts
 │     │  │  ├─ editorGeometry.test.ts
 │     │  │  ├─ editorGeometry.ts
+│     │  │  ├─ exportClient.test.ts
+│     │  │  ├─ exportClient.ts
+│     │  │  ├─ exportDiagnostics.test.ts
+│     │  │  ├─ exportDiagnostics.ts
+│     │  │  ├─ exportEngine.test.ts
+│     │  │  ├─ exportEngine.ts
+│     │  │  ├─ exportOutput.ts
+│     │  │  ├─ exportPlan.test.ts
+│     │  │  ├─ exportPlan.ts
+│     │  │  ├─ exportProtocol.ts
+│     │  │  ├─ exportWorker.ts
 │     │  │  ├─ externalMidi.test.ts
 │     │  │  ├─ externalMidi.ts
 │     │  │  ├─ fonts.ts
@@ -112,6 +126,7 @@ dawviz/
 │     │  │  └─ dawviz.d.ts
 │     │  ├─ workers/
 │     │  │  ├─ audioPeaks.worker.ts
+│     │  │  ├─ export.worker.ts
 │     │  │  └─ parser.worker.ts
 │     │  ├─ App.tsx
 │     │  ├─ index.css
@@ -967,13 +982,22 @@ Lớp tương tác của Editor (T-68, SRS 5.3 Edit Mode, REQ-GRAPHICS-02/03): k
 function EditorOverlay({ scene, cssWidth, selected, locked, onSelect, onLayouts, name, advanced }: Props)
 ```
 
+#### `apps/web/src/components/ExportDialog.tsx`
+
+Hộp thoại Xuất video (T-09, REQ-EXPORT-00/05/06). Chọn cỡ/FPS/chất lượng → tóm tắt pre-flight (kích thước thực, dung lượng,
+
+```text
+const browserProbe   // Dò hỗ trợ thật của trình duyệt; không có WebCodecs thì mọi cấu hình đều "không hỗ trợ".
+function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec, fileName, onClose }: { scene: SceneDocument; ast: UnifiedProjectAST; derived: Derived; audio: AudioAsset | null; offsetMs: number; projectSec: number; fileName: string; onClose(): void; })
+```
+
 #### `apps/web/src/components/FileDrop.tsx`
 
 Khung thả/chọn tệp dự án (kèm .mid ngoài); hiệu ứng Framer Motion.
 
 ```text
 interface Picked
-function FileDrop({ onPick, busy, compact = false, slim = false }: { onPick(p: Picked): void; busy: boolean; compact?: boolean; slim?: boolean })   // `compact`: nút nhỏ ở thanh trên. `slim`: ô thả thu gọn một dòng, dùng khi bảng thiếu .mid đang hiện (hành độn…
+function FileDrop({ onPick, busy, compact = false, slim = false, onSample }: { onPick(p: Picked): void; busy: boolean; compact?: boolean; slim?: boolean; onSample?(): void })   // `compact`: nút nhỏ ở thanh trên. `slim`: ô thả thu gọn một dòng, dùng khi bảng thiếu .mid đang hiện (hành độn…
 ```
 
 #### `apps/web/src/components/HistoryMenu.tsx`
@@ -1401,6 +1425,124 @@ function distributeLayouts(items: { id: string; layout: WidgetLayout }[], axis: 
 function marqueeHits(widgets: readonly { id: string; visible: boolean; layout: WidgetLayout }[], r: { x: number; y: number; width: number; height: number }, locked: ReadonlySet<string>): string[]   // Widget hiện, không khoá, có khung bao (đã xoay) giao với khung chọn.
 ```
 
+#### `apps/web/src/lib/exportClient.ts`
+
+Client của Export Worker (T-09): một lần xuất = một Worker; huỷ = gửi cancel rồi chờ Worker báo, quá hạn thì terminate.
+
+```text
+interface ExportWorkerLike
+type ExportResult
+class ExportError extends Error
+interface ExportHandle
+function startExport( job: ExportJob, makeWorker: () => ExportWorkerLike, opts: { file?: WritableStream<{ type: 'write'; data: Uint8Array; position: number }>; onProgress?: (p: ProgressInfo) => void; cancelGraceMs?: number } = {}, ): ExportHandle
+```
+
+#### `apps/web/src/lib/exportDiagnostics.ts`
+
+Kiểm tra máy cho người thử (Spike 1, T-09): dò hỗ trợ codec và THỬ MÃ HOÁ THẬT vài khung/vài giây, vì `isConfigSupported` có thể
+
+```text
+interface ProbeLine
+interface EnvInfo
+function formatReport(env: EnvInfo, lines: ProbeLine[], appVersion: string): string
+async function runDiagnostics(appVersion: string): Promise<string>
+```
+
+#### `apps/web/src/lib/exportEngine.ts`
+
+T-09: vòng xuất khung hình (Technical Design §7.1). Không biết gì về WebCodecs/Mediabunny/canvas: nhận `draw`, `video`, `audio`
+
+```text
+class ExportCancelled extends Error
+  constructor()
+interface VideoSink
+interface AudioSink
+interface AudioInput
+interface EngineOptions
+async function runExport(o: EngineOptions): Promise<number>   // Với khung k: nếu k rơi đúng đầu một khối 1 s thì đẩy khối âm thanh tương ứng trước (âm thanh dẫn trước 1 s để…
+```
+
+#### `apps/web/src/lib/exportOutput.ts`
+
+T-09: adapter Mediabunny (MuxerAdapter, Technical Design §7.2, REQ-EXPORT-04). Chỉ chạy được trong trình duyệt có WebCodecs;
+
+```text
+interface OutputConfig
+interface ExportOutput
+function createExportOutput(cfg: OutputConfig): ExportOutput
+```
+
+#### `apps/web/src/lib/exportPlan.ts`
+
+T-09 (phần lõi thuần, chạy được không cần trình duyệt): kế hoạch xuất video theo SRS REQ-EXPORT-00/01/02/05/06 và
+
+```text
+const MAX_EDGE   // ---------- Kích thước (REQ-EXPORT-00) ----------
+const MIN_SHORT_EDGE
+const FPS_CHOICES
+type Fps
+type ResolutionClass
+type SizeNote
+interface Size
+function sizeForClass(aspectW: number, aspectH: number, cls: ResolutionClass): Size   // Lớp độ phân giải theo cạnh ngắn: cạnh dài = round(cạnh ngắn × tỉ lệ) rồi làm chẵn (lên); > 4096 thì thu nhỏ đ…
+function sizeFromCustom(w: number, h: number): Size | null   // Kích thước tuỳ ý (D-26): số lẻ làm tròn xuống chẵn, cạnh ngắn ≥ 128, cạnh dài > 4096 thì thu nhỏ đồng tỉ lệ. …
+function parseAspect(text: string): [number, number] | null   // Đọc tỉ lệ `W:H`, `W/H` hoặc số thập phân (`21:9`, `2.39:1`, `1.91`) thành [rộng, cao].
+const TAIL_SECONDS   // ---------- Thời lượng, khung hình (REQ-EXPORT-00/01) ----------
+function exportDuration(opts: { projectSec: number; audioSec?: number; range?: { start: number; end: number } }):    // Cả bài: max(dự án, âm thanh) + 2 s. Đoạn Start→End: đúng độ dài đoạn.
+const frameCount = (duration: number, fps: number) =>   // N = ceil(Duration × FPS); sai số nhị phân không được làm thừa một khung (0,1 s × 30 = 3,0000000000000004).
+const frameTime = (start: number, k: number, fps: number) =>
+const frameTimestampUs = (k: number, fps: number) =>
+const frameDurationUs = (fps: number) =>
+const isKeyFrame = (k: number, fps: number) =>   // Khung khoá mỗi 2 giây.
+type Quality   // ---------- Bitrate và dung lượng (REQ-EXPORT-00) ----------
+const QUALITY_FACTOR
+const AUDIO_BITRATE
+const RAM_WARN_BYTES
+function videoBitrate(width: number, height: number, quality: Quality): number
+function estimateBytes(opts: { bitrate: number; duration: number; hasAudio: boolean }): number
+function h264Candidates(width: number, height: number, fps: number): string[]   // Chuỗi codec avc1 cần thử, từ profile cao xuống thấp; trong mỗi profile bắt đầu từ level nhỏ nhất đủ dùng rồi …
+const VP9_CODEC   // ---------- Bậc dự phòng codec (REQ-EXPORT-06) ----------
+const VP8_CODEC
+const AAC_CODEC
+const OPUS_CODEC
+interface CodecProbe
+type TierNotice
+interface CodecChoice
+async function chooseCodec( probe: CodecProbe, cfg: { width: number; height: number; fps: number; bitrate: number; hasAudio: boolean; sampleRate?: number; channels?: number }, ): Promise<CodecChoice | null>   // Chọn bậc: 1 H.264 + AAC (MP4), 2 H.264 không tiếng (MP4), 3 VP9/VP8 + Opus (WebM), còn lại null = `ERR_NO_SUP…
+interface PreflightInput   // ---------- Pre-flight tổng hợp (REQ-EXPORT-00) ----------
+type PreflightWarning
+interface Preflight
+function preflight(i: PreflightInput): Preflight
+const QUEUE_HIGH   // ---------- Kiểm soát dòng chảy (REQ-EXPORT-02) ----------
+const QUEUE_LOW
+function createBackpressure(high = QUEUE_HIGH, low = QUEUE_LOW)   // Trễ hai ngưỡng: > 8 thì dừng sinh khung, chỉ chạy lại khi ≤ 2. Một bộ cho video, một bộ cho audio.
+interface ProgressInfo   // ---------- Tiến độ và ETR (REQ-EXPORT-05) ----------
+function createProgress(total: number, videoFps: number, windowMs = 5000)   // Trung bình trượt theo cửa sổ `windowMs`: ổn định hơn tốc độ tức thời nên ETR không nhảy.
+const AUDIO_BLOCK_SECONDS   // ---------- Khối âm thanh 1 giây (Technical Design §7.1, REQ-EXPORT-03) ----------
+function audioBlocks(duration: number, sampleRate: number, blockSec = AUDIO_BLOCK_SECONDS): Array<   // Số mẫu và vị trí (mẫu, tính từ đầu khoảng xuất) của từng khối. Khối cuối ngắn hơn nếu khoảng không chia hết.
+function renderAudioBlock( channels: readonly Float32Array[], sampleRate: number, rangeStart: number, offsetMs: number, block: { start: number; length: number }, ): Float32Array[]   // Dựng một khối PCM cho khoảng xuất bắt đầu ở `rangeStart` (giây dự án): đoạn thiếu là im lặng, đoạn thừa bị cắ…
+function audibleSeconds(rangeStart: number, duration: number, offsetMs: number, bufferDuration: number): number   // Tổng thời lượng có tiếng thật trong khoảng xuất (để pre-flight báo "không có âm thanh trong đoạn này").
+function sliceAudioForRange( channels: readonly Float32Array[], sampleRate: number, rangeStart: number, duration: number, offsetMs: number, ):    // Cắt phần AudioBuffer mà khoảng xuất thật sự dùng, để chuyển sang Worker (không gửi cả bài). Trả bản sao theo …
+```
+
+#### `apps/web/src/lib/exportProtocol.ts`
+
+T-09: thông điệp giữa giao diện và Export Worker (Technical Design §7.1, REQ-EXPORT-07).
+
+```text
+interface ExportJob
+type ExportIn
+type ExportOut
+```
+
+#### `apps/web/src/lib/exportWorker.ts`
+
+Tạo Export Worker qua chính sách Trusted Types (NFR-SEC-06), như audioWorkers.ts.
+
+```text
+const makeExportWorker = () =>
+```
+
 #### `apps/web/src/lib/externalMidi.ts`
 
 REQ-UI-08: tóm tắt tình trạng file .mid ngoài mà dự án Reaper tham chiếu. Hàm thuần; cách so tên lấy từ parser
@@ -1714,6 +1856,10 @@ type PeaksIn
 type PeaksOut
 ```
 
+#### `apps/web/src/workers/export.worker.ts`
+
+Export Worker (T-09, REQ-EXPORT-07): dựng derived từ ast + scene, vẽ từng khung bằng renderFrame lên OffscreenCanvas,
+
 #### `apps/web/src/workers/parser.worker.ts`
 
 Worker: toàn bộ việc parse chạy ở đây để không chặn giao diện (NFR-PERF). Không có logic parser trong app.
@@ -1748,6 +1894,10 @@ type ParseResponse
 - `apps/web/src/lib/clock.test.ts`
 - `apps/web/src/lib/csp.test.ts`
 - `apps/web/src/lib/editorGeometry.test.ts`
+- `apps/web/src/lib/exportClient.test.ts`
+- `apps/web/src/lib/exportDiagnostics.test.ts`
+- `apps/web/src/lib/exportEngine.test.ts`
+- `apps/web/src/lib/exportPlan.test.ts`
 - `apps/web/src/lib/externalMidi.test.ts`
 - `apps/web/src/lib/historyLabels.test.ts`
 - `apps/web/src/lib/masterClock.test.ts`
@@ -1783,4 +1933,4 @@ type ParseResponse
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 671 ký hiệu công khai -->
+<!-- 10 thư mục src, 742 ký hiệu công khai -->

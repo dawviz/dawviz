@@ -30,6 +30,14 @@
         {
           "src": "docs/manual/05-phim-tat.md",
           "title": "Phím tắt"
+        },
+        {
+          "src": "docs/manual/06-xuat-video.md",
+          "title": "Xuất video"
+        },
+        {
+          "src": "docs/manual/07-thu-nghiem.md",
+          "title": "Thử nghiệm xuất video"
         }
       ]
     },
@@ -59,6 +67,14 @@
         {
           "src": "docs/manual/en/05-shortcuts.md",
           "title": "Keyboard shortcuts"
+        },
+        {
+          "src": "docs/manual/en/06-export-video.md",
+          "title": "Exporting video"
+        },
+        {
+          "src": "docs/manual/en/07-testing-export.md",
+          "title": "Testing video export"
         }
       ]
     },

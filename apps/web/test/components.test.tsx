@@ -12,6 +12,8 @@ import { createPlayback } from '../src/lib/playback.ts';
 import { NumberField } from '../src/components/NumberField.tsx';
 import { StylePanel } from '../src/components/StylePanel.tsx';
 import { TextPanel } from '../src/components/TextPanel.tsx';
+import { ExportDialog } from '../src/components/ExportDialog.tsx';
+import { synthAst } from '../../../packages/render-core/test/helpers.ts';
 import { defaultStyleConfig, DEFAULT_KEYBOARD_STYLE, STYLE_PRESETS } from '@dawviz/render-core';
 
 const wrap = (ui: React.ReactElement) => render(<I18nProvider>{ui}</I18nProvider>);
@@ -515,5 +517,33 @@ describe('TextPanel (T-72)', () => {
     fireEvent.keyDown(screen.getByTestId('text-new-name'), { key: 'Enter' });
     const [set, field, ref, kind] = saves.at(-1) as [Record<string, { italic: boolean; name: string }>, string, unknown, string];
     expect([field, ref, kind, set['hop-am-nghieng'].italic, set['hop-am-nghieng'].name]).toEqual(['nameStyle', { styleId: 'hop-am-nghieng' }, 'save', true, 'Hợp âm nghiêng']);
+  });
+});
+
+describe('ExportDialog (T-09)', () => {
+  const ast = synthAst();
+  const derived = { index: {}, brightness: {} } as never;
+  const open = () => wrap(<ExportDialog scene={PAPER_SCENE} ast={ast} derived={derived} audio={null} offsetMs={0} projectSec={30} fileName="Song.rpp" onClose={() => {}} />);
+
+  it('hiện kích thước thực, số khung và dung lượng; đổi cỡ/FPS cập nhật ngay', async () => {
+    open();
+    const sum = () => screen.getByTestId('export-summary').textContent ?? '';
+    expect(sum()).toMatch(/1080.1080.*30 fps.*0:32.*960/); // (30 + 2) s × 30 fps
+    fireEvent.change(screen.getByLabelText(/Size|Kích thước/), { target: { value: '720' } });
+    fireEvent.change(screen.getByLabelText(/Frame rate|Số khung/), { target: { value: '60' } });
+    expect(sum()).toMatch(/720.720.*60 fps.*1[.,]920/);
+  });
+
+  it('trình duyệt không có WebCodecs: báo ERR_NO_SUPPORTED_ENCODER và khoá nút Bắt đầu', async () => {
+    open();
+    expect(await screen.findByRole('alert')).toHaveTextContent(/can't encode video|không mã hoá được video/);
+    expect(screen.getByTestId('export-start')).toBeDisabled();
+  });
+
+  it('Esc đóng hộp thoại khi chưa xuất', () => {
+    let closed = 0;
+    wrap(<ExportDialog scene={PAPER_SCENE} ast={ast} derived={derived} audio={null} offsetMs={0} projectSec={30} fileName="a.rpp" onClose={() => { closed++; }} />);
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(closed).toBe(1);
   });
 });

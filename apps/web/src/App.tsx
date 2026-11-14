@@ -26,6 +26,7 @@ import { NOTE_PRESETS, VIDEO_STYLES, noteStylePreset, sceneForStyle, videoStyleB
 import { createStore, type History } from './lib/store.ts';
 import * as Cmds from './lib/commands.ts';
 import { AudioPanel } from './components/AudioPanel.tsx';
+import { ExportDialog } from './components/ExportDialog.tsx';
 import { AudioLoadError, browserDeps, loadAudioAsset, type AudioAsset } from './lib/audioAsset.ts';
 import { audioLengthCheck } from './lib/audioLength.ts';
 import { peaksInWorker } from './lib/audioWorkers.ts';
@@ -86,6 +87,7 @@ export function App() {
   useEffect(() => { if (VIDEO_STYLES.includes(doc.videoStyle)) setUi((u) => (u.videoStyle === doc.videoStyle ? u : { ...u, videoStyle: doc.videoStyle })); }, [doc.videoStyle, setUi]);
   const [theme, setTheme] = useTheme();
   const [tab, setTab] = useState<Tab>('preview');
+  const [exporting, setExporting] = useState(false);
   const advanced = ui.mode === 'advanced';
 
   // Đồng hồ phát ngoài React state (PROGRESS T-70): chỉ canvas, thanh phát và số đo đăng ký theo dõi.
@@ -185,6 +187,14 @@ export function App() {
       setLoaded((prev) => { if (!prev) playback.reset(0); return prev; });
     } finally { if (gate.isLatest(ticket)) setBusy(false); }
   }, [gate, playback, store, dropAudio]);
+  // Dự án mẫu đi kèm bản demo (tự tạo, công khai): để người xem thử ngay không cần có sẵn tệp DAW.
+  const onSample = useCallback(async () => {
+    try {
+      const res = await fetch(`${import.meta.env.BASE_URL}samples/demo.rpp`);
+      if (!res.ok) throw new Error(String(res.status));
+      await onPick({ main: new File([await res.blob()], 'demo.rpp'), extras: [] });
+    } catch { setFailure({ code: 'ERR_UNKNOWN', message: 'sample unavailable' }); }
+  }, [onPick]);
 
   const midiLevel = missingMidiLevel(midi, !!failure);
   const addMidi = useCallback((files: File[]) => { if (source) void onPick({ main: source.main, extras: mergeExtras(source.extras, files) }); }, [source, onPick]);
@@ -390,7 +400,7 @@ export function App() {
       <div ref={scrollerRef} className="relative min-h-0 min-w-0 overflow-y-auto bg-page p-6">
         <div className={`space-y-4 ${loaded ? '' : 'mx-auto max-w-2xl pt-10'}`}>
           {midi && midiLevel && <MissingMidiPanel info={midi} level={midiLevel} busy={busy} onAdd={addMidi} />}
-          {!loaded && <FileDrop onPick={onPick} busy={busy} slim={!!(midi && midiLevel)} />}
+          {!loaded && <FileDrop onPick={onPick} busy={busy} slim={!!(midi && midiLevel)} onSample={onSample} />}
           <Notices problems={problems} basic={!advanced} />
         </div>
         {loaded && derived && renderAst && (
@@ -416,7 +426,7 @@ export function App() {
   return (
     <GestureContext.Provider value={gesture}><MotionConfig reducedMotion="user"><LayoutGroup>
     <div className="flex h-screen min-h-0 flex-col">
-      <TopBar tab={tab} onTab={setTab} fileName={loaded?.name} mode={ui.mode} onMode={(mode) => setUi((u) => ({ ...u, mode }))}
+      <TopBar tab={tab} onTab={setTab} fileName={loaded?.name} onExport={derived && renderAst ? () => setExporting(true) : undefined} mode={ui.mode} onMode={(mode) => setUi((u) => ({ ...u, mode }))}
         history={history} shortcuts={shortcuts} onUndo={doUndo} onRedo={doRedo} onJump={doJump} stepLabel={stepLabel} announce={announce}
         file={<FileDrop onPick={onPick} busy={busy} compact />} theme={<ThemeToggle pref={theme} onChange={setTheme} />} />
       <main className="min-h-0 flex-1">
@@ -445,13 +455,14 @@ export function App() {
         </div>
       </main>
     </div>
+    {exporting && derived && renderAst && <ExportDialog scene={scene} ast={renderAst} derived={derived} audio={audio} offsetMs={offsetMs} projectSec={duration} fileName={loaded?.name ?? 'dawviz'} onClose={() => setExporting(false)} />}
     </LayoutGroup></MotionConfig></GestureContext.Provider>
   );
 }
 
 /** Thanh trên hai hàng (UI-DIRECTION 5.3). Hàng 1: dấu + tên, tệp đang mở; chế độ, mở tệp, xuất video, sáng/tối, ngôn ngữ.
  *  Hàng 2: ba thẻ, thẻ đang mở gạch chân màu nhấn; phím ←/→ chuyển thẻ (WAI-ARIA tabs, kích hoạt tự động). */
-function TopBar({ tab, onTab, fileName, mode, onMode, file, theme, history, shortcuts, onUndo, onRedo, onJump, stepLabel, announce }: { tab: Tab; onTab(t: Tab): void; fileName?: string; mode: UiMode; onMode(m: UiMode): void; file: React.ReactNode; theme: React.ReactNode; history: History<Doc>; shortcuts: { undo: string; redo: string }; onUndo(): void; onRedo(): void; onJump(position: number): void; stepLabel(h: History<Doc>, position: number): string; announce: { n: number; text: string } }) {
+function TopBar({ tab, onTab, fileName, onExport, mode, onMode, file, theme, history, shortcuts, onUndo, onRedo, onJump, stepLabel, announce }: { tab: Tab; onTab(t: Tab): void; fileName?: string; onExport?(): void; mode: UiMode; onMode(m: UiMode): void; file: React.ReactNode; theme: React.ReactNode; history: History<Doc>; shortcuts: { undo: string; redo: string }; onUndo(): void; onRedo(): void; onJump(position: number): void; stepLabel(h: History<Doc>, position: number): string; announce: { n: number; text: string } }) {
   const { i18n } = useI18n();
   const onKey = (e: KeyboardEvent<HTMLButtonElement>) => {
     const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : e.key === 'Home' ? -99 : e.key === 'End' ? 99 : 0;
@@ -473,12 +484,12 @@ function TopBar({ tab, onTab, fileName, mode, onMode, file, theme, history, shor
             ))}
           </div>
           {file}
-          {/* Xuất video chưa có (M3): nút vẫn ở đúng chỗ để bố cục ổn định, nhưng nói rõ vì sao chưa bấm được. */}
-          <button type="button" aria-disabled="true" aria-describedby="export-why" title={i18n.t('web.export.unavailable')}
-            className="cursor-not-allowed rounded border border-accent px-3 py-1.5 text-[13px] font-medium text-accent" data-testid="export">
+          {/* Chưa mở dự án thì chưa có gì để xuất: nút giữ chỗ cho bố cục ổn định và nói rõ vì sao chưa bấm được. */}
+          <button type="button" disabled={!onExport} onClick={onExport} aria-describedby={onExport ? undefined : 'export-why'} title={onExport ? undefined : i18n.t('web.export.needProject')}
+            className="rounded border border-accent px-3 py-1.5 text-[13px] font-medium text-accent disabled:cursor-not-allowed disabled:opacity-60" data-testid="export">
             {i18n.t('web.export')}
           </button>
-          <span id="export-why" className="sr-only">{i18n.t('web.export.unavailable')}</span>
+          {!onExport && <span id="export-why" className="sr-only">{i18n.t('web.export.needProject')}</span>}
           {theme}
           <LanguageSelect />
         </div>

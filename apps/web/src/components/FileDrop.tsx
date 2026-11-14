@@ -15,7 +15,7 @@ const UploadIcon = ({ className = '' }: { className?: string }) => (
 );
 
 /** `compact`: nút nhỏ ở thanh trên. `slim`: ô thả thu gọn một dòng, dùng khi bảng thiếu .mid đang hiện (hành động chính là nạp .mid, không phải chọn lại dự án). */
-export function FileDrop({ onPick, busy, compact = false, slim = false }: { onPick(p: Picked): void; busy: boolean; compact?: boolean; slim?: boolean }) {
+export function FileDrop({ onPick, busy, compact = false, slim = false, onSample }: { onPick(p: Picked): void; busy: boolean; compact?: boolean; slim?: boolean; onSample?(): void }) {
   const { i18n } = useI18n();
   const [over, setOver] = useState(false);
   const input = useRef<HTMLInputElement>(null);
@@ -83,6 +83,13 @@ export function FileDrop({ onPick, busy, compact = false, slim = false }: { onPi
           {fileInput}
         </div>
       </div>
+      {onSample && (
+        <p className="pt-3 text-center text-sm text-muted">
+          {i18n.t('web.sample.or')}{' '}
+          <button type="button" disabled={busy} onClick={onSample} data-testid="sample-open"
+            className="rounded border border-accent px-3 py-1 text-[13px] font-medium text-accent disabled:cursor-not-allowed disabled:opacity-60">{i18n.t('web.sample.open')}</button>
+        </p>
+      )}
     </div>
   );
 }

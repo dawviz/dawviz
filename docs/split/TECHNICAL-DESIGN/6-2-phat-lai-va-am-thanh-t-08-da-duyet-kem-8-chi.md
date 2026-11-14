@@ -5,7 +5,7 @@ section: "6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh)
 path: "6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh)"
 chunk: 6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md
 source_lines: 224-226
-source_sha1: ba7b039c7b
+source_sha1: 03d31db5d8
 ids: [NFR-SEC-04, REQ-EXPORT-03, REQ-PARSER-00, REQ-STORAGE-05, REQ-UI-03, REQ-WIDGET-07]
 ---
 ### 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh)
