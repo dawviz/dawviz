@@ -7,6 +7,7 @@ import type { AudioAsset } from '../lib/audioAsset.ts';
 import { startExport, type ExportHandle } from '../lib/exportClient.ts';
 import type { FileTarget } from '../lib/exportProtocol.ts';
 import { AUDIO_LABEL, CONTAINER_EXT, CONTAINER_LABEL, CONTAINER_MIME, FPS_CHOICES, VIDEO_LABEL, autoChoice, detectSupport, exportDuration, manualChoice, normalizeSelection, optionsFor, preflight, sizeForClass, sliceAudioForRange, usableContainers, type AudioId, type CodecChoice, type CodecProbe, type ContainerId, type Fps, type ProgressInfo, type Quality, type ResolutionClass, type Selection, type Support, type VideoId } from '../lib/exportPlan.ts';
+import { downsample, formatExportReport, type ExportReport, type ExportStats } from '../lib/exportStats.ts';
 import { isExportBusy, tryExportLock, type ExportLock } from '../lib/exportLock.ts';
 import { makeExportWorker } from '../lib/exportWorker.ts';
 import { runDiagnostics } from '../lib/exportDiagnostics.ts';
@@ -30,8 +31,8 @@ type SavePicker = (o: { suggestedName: string; types: { description: string; acc
 const mmss = (sec: number) => `${Math.floor(sec / 60)}:${String(Math.round(sec % 60)).padStart(2, '0')}`;
 const baseOf = (n: string) => (n.replace(/\.[^.]+$/, '') || 'dawviz').replace(/[\\/:*?"<>|]+/g, '_');
 
-export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec, fileName, advanced = false, onClose }: {
-  scene: SceneDocument; ast: UnifiedProjectAST; derived: Derived; audio: AudioAsset | null; offsetMs: number; projectSec: number; fileName: string; advanced?: boolean; onClose(): void;
+export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec, fileName, advanced = false, styleId, styleName, onClose }: {
+  styleId?: string; styleName?: string; scene: SceneDocument; ast: UnifiedProjectAST; derived: Derived; audio: AudioAsset | null; offsetMs: number; projectSec: number; fileName: string; advanced?: boolean; onClose(): void;
 }) {
   const { i18n } = useI18n();
   const [cls, setCls] = useState<ResolutionClass>(1080);
@@ -42,6 +43,13 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
   const [support, setSupport] = useState<Support | 'checking'>('checking');
   const [sel, setSel] = useState<Selection>({ container: 'mp4', video: 'avc', audio: 'aac' });
   const [busy, setBusy] = useState(false);
+  const [stats, setStats] = useState<ExportStats | null>(null);
+  const [finalReport, setFinalReport] = useState<ExportReport | null>(null);
+  const [copiedRun, setCopiedRun] = useState(false);
+  const thumbCanvas = useRef<HTMLCanvasElement>(null);
+  const points = useRef<Array<[number, number]>>([]);
+  const startedAt = useRef(0);
+  const lastProgress = useRef<ProgressInfo | null>(null);
   const exportLock = useRef<ExportLock | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ url: string | null; name: string; bytes: number; ms: number } | null>(null);
@@ -125,25 +133,44 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
     const slice = audio && choice.audioCodec
       ? sliceAudioForRange(Array.from({ length: audio.buffer.numberOfChannels }, (_, c) => audio.buffer.getChannelData(c)), audio.buffer.sampleRate, range.start, range.duration, offsetMs)
       : null;
-    setPhase('running'); setProgress(null);
+    setPhase('running'); setProgress(null); setStats(null); setFinalReport(null); setCopiedRun(false); points.current = []; startedAt.current = performance.now(); lastProgress.current = null;
     try { lock.current = await (navigator as unknown as { wakeLock?: { request(t: 'screen'): Promise<{ release(): Promise<void> }> } }).wakeLock?.request('screen') ?? null; } catch { lock.current = null; }
     let h: ExportHandle;
     try { h = startExport({
       ast, scene, brightness: derived.brightness, width: size.width, height: size.height, fps, bitrate: pre.bitrate, choice,
-      start: range.start, duration: range.duration,
+      start: range.start, duration: range.duration, style: styleId,
       audio: slice ? { channels: slice.channels, sampleRate: audio!.buffer.sampleRate, offsetMs: slice.offsetMs } : undefined,
-    }, makeExportWorker, { file, onProgress: setProgress });
+    }, makeExportWorker, {
+      file,
+      onProgress: (p, st, thumb) => {
+        setProgress(p); lastProgress.current = p;
+        if (st) { setStats(st); points.current.push([p.frame, st.drawMs]); }
+        if (thumb) { const c = thumbCanvas.current; if (c) { c.width = thumb.width; c.height = thumb.height; c.getContext('2d')?.drawImage(thumb, 0, 0); } thumb.close(); }
+      },
+    });
     } catch (e) { setError(e instanceof Error ? e.message : String(e)); setPhase('error'); void lock.current?.release(); lock.current = null; freeLock(); return; }
     handle.current = h;
     try {
       const r = await h.result;
       if (r.status === 'cancelled') { setPhase('setup'); return; }
       setResult({ url: r.blob ? URL.createObjectURL(r.blob) : null, name: suggestedName, bytes: r.bytes, ms: r.ms });
+      setFinalReport(r.report ?? null);
       setPhase('done');
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e)); setPhase('error');
     } finally { handle.current = null; void lock.current?.release(); lock.current = null; freeLock(); }
   };
+
+  /** Báo cáo chẩn đoán lần xuất: cuối lần xuất lấy từ Worker; giữa chừng dựng tạm từ số liệu mới nhất. */
+  const exportReportText = (): string | null => {
+    const env = { userAgent: navigator.userAgent, cores: navigator.hardwareConcurrency ?? null, appVersion: pkg.version };
+    if (finalReport) return formatExportReport(finalReport, env);
+    const p = lastProgress.current;
+    if (!stats || !p) return null;
+    return formatExportReport({ stats, series: downsample(points.current), frames: p.frame, fps, width: size.width, height: size.height, totalMs: performance.now() - startedAt.current, bytes: 0, style: styleId }, env);
+  };
+  const copyExportReport = () => { const t = exportReportText(); if (t) void navigator.clipboard?.writeText(t).then(() => setCopiedRun(true), () => {}); };
+  const pill = [styleName, `${size.width}×${size.height}`, `${fps} fps`, format].filter(Boolean).join(' · ');
 
   const mb = (b: number) => i18n.number(b / 1e6, { maximumFractionDigits: 1 });
   const unsupported = choice === null;
@@ -210,15 +237,35 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
         )}
 
         {phase === 'running' && (
-          <div className="space-y-2" aria-live="polite">
-            <div role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round((progress?.fraction ?? 0) * 100)} aria-label={i18n.t('web.export.running')} className="h-2 w-full overflow-hidden rounded bg-raised">
-              <div className="h-full bg-accent" style={{ width: `${(progress?.fraction ?? 0) * 100}%` }} />
+          <div className="space-y-3">
+            <div className="relative overflow-hidden rounded border border-line bg-raised">
+              <canvas ref={thumbCanvas} className="block h-auto w-full" aria-label={i18n.t('web.export.preview')} role="img" data-testid="export-thumb" />
+              <span className="absolute bottom-1.5 left-1.5 max-w-[calc(100%-12px)] truncate rounded-full bg-black/65 px-2 py-0.5 text-[11px] text-white" data-testid="export-pill">{pill}</span>
             </div>
-            <p className="text-[13px] tabular-nums text-muted">
-              {progress ? i18n.t('web.export.frame', { frame: i18n.number(progress.frame), total: i18n.number(progress.total) }) : i18n.t('web.export.running')}
-              {progress?.speed != null && ` · ${i18n.t('web.export.speed', { speed: i18n.number(progress.speed, { maximumFractionDigits: 1 }) })}`}
-              {progress?.etrSec != null && ` · ${i18n.t('web.export.etr', { time: mmss(progress.etrSec) })}`}
-            </p>
+            <div className="space-y-2" aria-live="polite">
+              <div role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round((progress?.fraction ?? 0) * 100)} aria-label={i18n.t('web.export.running')} className="h-2 w-full overflow-hidden rounded bg-raised">
+                <div className="h-full bg-accent" style={{ width: `${(progress?.fraction ?? 0) * 100}%` }} />
+              </div>
+              <p className="text-[13px] tabular-nums text-muted">
+                {progress ? `${Math.round(progress.fraction * 100)}% · ${i18n.t('web.export.frame', { frame: i18n.number(progress.frame), total: i18n.number(progress.total) })}` : i18n.t('web.export.running')}
+                {progress?.etrSec != null && ` · ${i18n.t('web.export.etr', { time: mmss(progress.etrSec) })}`}
+              </p>
+            </div>
+            <details className="text-[13px]" data-testid="export-details">
+              <summary className="disclosure cursor-pointer text-muted">{i18n.t('web.export.details')}</summary>
+              <dl className="mt-2 grid grid-cols-[6.5rem_1fr] gap-x-2 gap-y-1 font-mono text-[12px] tabular-nums">
+                <dt className="text-muted">{i18n.t('web.export.stat.speed')}</dt>
+                <dd>{progress?.fps != null ? i18n.t('web.export.stat.speedValue', { fps: i18n.number(progress.fps, { maximumFractionDigits: 1 }), speed: i18n.number(progress.speed ?? 0, { maximumFractionDigits: 2 }) }) : '—'}</dd>
+                <dt className="text-muted">{i18n.t('web.export.stat.time')}</dt>
+                <dd className={stats?.slowing ? 'text-warning' : ''}>{stats ? i18n.t('web.export.stat.timeValue', { draw: i18n.number(stats.drawMs, { maximumFractionDigits: 1 }), encode: i18n.number(stats.encodeMs, { maximumFractionDigits: 1 }) }) : '—'}</dd>
+                <dt className="text-muted">{i18n.t('web.export.stat.resources')}</dt>
+                <dd>{stats ? i18n.t('web.export.stat.fonts', { n: String(stats.fontFaces) }) : '—'}</dd>
+                <dt className="text-muted">{i18n.t('web.export.stat.codec')}</dt>
+                <dd className="break-all">{stats ? `${stats.container} · ${stats.videoCodec} · ${stats.audioCodec ?? i18n.t('web.export.audioNone')}` : '—'}</dd>
+              </dl>
+              {stats?.slowing && <p role="status" className="mt-2 text-warning" data-testid="export-slowing">{i18n.t('web.export.stat.slowing', { first: i18n.number(stats.drawFirstMs ?? 0, { maximumFractionDigits: 1 }), now: i18n.number(stats.drawMs, { maximumFractionDigits: 1 }) })}</p>}
+              <button type="button" className="btn-ghost mt-2 border border-control" disabled={!stats} onClick={copyExportReport} data-testid="export-copy-report">{copiedRun ? i18n.t('web.export.diagnose.copied') : i18n.t('web.export.copyReport')}</button>
+            </details>
           </div>
         )}
 
@@ -228,6 +275,7 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
             {result.url
               ? <a className="inline-block rounded border border-accent px-3 py-1.5 font-medium text-accent" href={result.url} download={result.name} data-testid="export-download">{i18n.t('web.export.download')}</a>
               : <p className="text-muted">{i18n.t('web.export.saved')}</p>}
+            {finalReport && <button type="button" className="btn-ghost block border border-control" onClick={copyExportReport} data-testid="export-copy-report">{copiedRun ? i18n.t('web.export.diagnose.copied') : i18n.t('web.export.copyReport')}</button>}
           </div>
         )}
 

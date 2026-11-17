@@ -14,7 +14,8 @@ This demo is being tried on many computers, because video encoding depends a lot
 
 1. Keep the default settings (1080p, 30 fps), or pick 720p and 24 fps if your computer is slow. Click **Start export**.
 2. Note which format the app chose, whether it finished, how long it took and the speed shown (for example 2×).
-3. Open the exported file in a normal video player. Does it play, and does the picture look right?
+3. Click **Copy export report** (in **Technical details** while exporting, or in the dialog when it's done) and paste it into the result form: it includes the drawing-time curve, which shows whether your computer slows down during the export.
+4. Open the exported file in a normal video player. Does it play, and does the picture look right?
 
 ## Step 3. Check sound against picture (if you have audio)
 

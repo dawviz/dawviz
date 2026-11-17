@@ -30,7 +30,14 @@ export interface RenderCtx extends Ctx2D {
 }
 export interface CanvasGradientLike { addColorStop(offset: number, color: string): void }
 /** Phép biến đổi đang áp khi vẽ một widget: cần cho đổ bóng chữ, vì shadowOffset/shadowBlur của Canvas tính theo điểm ảnh thiết bị, không theo transform. */
-export interface DrawEnv { scale: number; rotation: number }
+export interface DrawEnv {
+  scale: number; rotation: number;
+  /**
+   * Phông đang đặt trên ctx (trong phạm vi save/restore hiện tại). Gán `g.font` rất tốn trên Firefox khi phông web nạp nhiều mặt,
+   * nên chỉ gán khi đổi (docs/design/FIREFOX-FONT-SLOWDOWN.md). Mỗi lần gọi `drawPrimitives` bắt đầu từ '' (chưa biết) nên luôn gán lần đầu.
+   */
+  font?: { v: string };
+}
 /** `width`/`height` theo điểm ảnh thật của đích vẽ. */
 export interface RenderTarget { ctx: RenderCtx; width: number; height: number }
 
@@ -162,9 +169,10 @@ function roundedPath(g: Ctx2D, x: number, y: number, w: number, h: number, r: nu
 }
 
 /** Chỉ vẽ, không tính nghiệp vụ. Mọi trạng thái ctx bị đổi (alpha, shadow) được trả về mặc định sau mỗi hình. */
-export function drawPrimitives(g: RenderCtx, prims: Primitive[], env: DrawEnv = { scale: 1, rotation: 0 }): void {
+export function drawPrimitives(g: RenderCtx, prims: Primitive[], env0: DrawEnv = { scale: 1, rotation: 0 }): void {
+  const env: DrawEnv = { ...env0, font: { v: '' } };
   for (const p of prims) {
-    if (p.kind === 'text') { if (p.rich) drawRichText(g, p, p.rich, env); else drawText(g, p); continue; }
+    if (p.kind === 'text') { if (p.rich) drawRichText(g, p, p.rich, env); else drawText(g, p, env); continue; }
     g.globalAlpha = p.alpha; g.fillStyle = p.fill;
     if (p.glowBlur > 0) { g.shadowColor = p.glowColor; g.shadowBlur = p.glowBlur; }
     if (p.radius > 0) { roundedPath(g, p.x, p.y, p.w, p.h, p.radius); g.fill(); } else g.fillRect(p.x, p.y, p.w, p.h);
@@ -174,10 +182,13 @@ export function drawPrimitives(g: RenderCtx, prims: Primitive[], env: DrawEnv = 
   g.globalAlpha = 1;
 }
 
+/** Gán `g.font` chỉ khi khác giá trị đang đặt (xem DrawEnv.font). */
+function setFont(g: Ctx2D, env: DrawEnv, f: string): void { const st = env.font; if (st) { if (st.v === f) return; st.v = f; } g.font = f; }
+
 /** Chữ: baseline chữ cái, không kerning, textRendering geometricPrecision (đo bằng FONT_METRICS không có cặp kerning). maxWidth truyền cho fillText để không bao giờ tràn khung. */
-function drawText(g: Ctx2D, p: TextPrim): void {
+function drawText(g: Ctx2D, p: TextPrim, env: DrawEnv): void {
   g.globalAlpha = p.alpha; g.fillStyle = p.color; g.shadowBlur = 0;
-  g.font = `${p.weight} ${p.size}px "${p.font}", sans-serif`;
+  setFont(g, env, `${p.weight} ${p.size}px "${p.font}", sans-serif`);
   g.textAlign = p.align; g.textBaseline = 'alphabetic'; g.fontKerning = 'none'; g.textRendering = 'geometricPrecision'; // không kerning, không làm tròn advance: khớp bảng đo
   if (p.maxWidth !== undefined) g.fillText(p.text, p.x, p.y, p.maxWidth); else g.fillText(p.text, p.x, p.y);
 }
@@ -208,11 +219,11 @@ function drawRichText(g: RenderCtx, p: TextPrim, r: RichText, env: DrawEnv): voi
     const lx = Math.cos(a) * sh.distance - FAR, ly = Math.sin(a) * sh.distance; // dời bản sao về vị trí bóng, quy ra điểm ảnh thiết bị
     g.globalAlpha = alpha; g.shadowColor = rgba(sh.color, sh.opacity); g.shadowBlur = sh.blur * env.scale;
     g.shadowOffsetX = env.scale * (lx * Math.cos(rot) - ly * Math.sin(rot)); g.shadowOffsetY = env.scale * (lx * Math.sin(rot) + ly * Math.cos(rot));
-    for (const run of r.runs) paintRun(g, p, r, run, FAR, true);
+    for (const run of r.runs) paintRun(g, p, r, run, FAR, true, env);
     g.shadowBlur = 0; g.shadowOffsetX = 0; g.shadowOffsetY = 0; g.shadowColor = 'rgba(0,0,0,0)';
   }
   g.globalAlpha = alpha;
-  for (const run of r.runs) paintRun(g, p, r, run, 0, false);
+  for (const run of r.runs) paintRun(g, p, r, run, 0, false, env);
 }
 /** Gradient trên hộp cả dòng, đổi sang toạ độ riêng của run (đã dời tới baseline và co theo tỉ lệ ngang/dọc). */
 function runGradient(g: RenderCtx, r: RichText, baseY: number, grad: TextGradient, x0: number, y0: number, sx: number, sy: number) {
@@ -227,14 +238,15 @@ function runGradient(g: RenderCtx, r: RichText, baseY: number, grad: TextGradien
   for (const s of grad.stops) gr.addColorStop(s.at, s.color);
   return gr;
 }
-function paintRun(g: RenderCtx, p: TextPrim, r: RichText, run: PlacedRun, offX: number, shadow: boolean): void {
+function paintRun(g: RenderCtx, p: TextPrim, r: RichText, run: PlacedRun, offX: number, shadow: boolean, env: DrawEnv): void {
   const M = TEXT_METRICS, x0 = r.left + run.dx + offX, y0 = p.y - run.shift;
   const sx = run.scaleX, sy = run.scaleY;
   const fill = shadow ? '#000000' : run.gradient ? runGradient(g, r, p.y, run.gradient, x0, y0, sx, sy) : run.color;
+  const fontBefore = env.font?.v;
   g.save(); g.translate(x0, y0);
   if (sx !== 1 || sy !== 1) g.scale(sx, sy);
   if (run.italic) g.transform(1, 0, -M.italicSkew, 1, 0, 0); // nghiêng giả, giống nhau mọi trình duyệt (phông đóng gói không có mặt nghiêng)
-  g.font = `${run.weight} ${run.size}px "${run.font}", sans-serif`;
+  setFont(g, env, `${run.weight} ${run.size}px "${run.font}", sans-serif`);
   const glyphs: [string, number][] = run.clusters && run.xs ? run.clusters.map((c, i) => [c, run.xs![i] / sx]) : [[run.text, 0]];
   const st = run.stroke, outside = st.position === 'outside';
   const stroke = () => {
@@ -245,6 +257,7 @@ function paintRun(g: RenderCtx, p: TextPrim, r: RichText, run: PlacedRun, offX: 
   if (st.width > 0 && (!st.over || outside)) { stroke(); doFill(); }
   else { doFill(); if (st.width > 0) stroke(); }
   g.restore();
+  if (env.font && fontBefore !== undefined) env.font.v = fontBefore; // restore() trả phông về giá trị trước save
   if (run.underline || run.strike) { // gạch tự vẽ: không xiên theo chữ nghiêng, dài đúng bề rộng run
     const th = run.decoThickness > 0 ? run.decoThickness : Math.max(0.5, run.size * M.decoThickness * sy);
     g.fillStyle = shadow ? '#000000' : run.decoColor || fill as string;

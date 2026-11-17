@@ -37,10 +37,12 @@ The **Check this computer** button at the bottom of the settings really encodes 
 ## Export and cancel
 
 1. Click **Start export**. On Chrome and Edge the app first asks where to save the file, and writes the video straight to disk. Firefox and other browsers can't do this: the video is kept in memory and the **Save file** button, where you pick the location, only appears when the export has finished. This is normal, not an error.
-2. The progress bar shows the current frame, the speed (for example 2× means twice as fast as real time) and the estimated time left.
+2. The dialog shows a small picture of the frame being exported (refreshed about twice a second) with a tag naming the style, size, frame rate and format. Under it is the progress bar with the percentage, the frame count and the estimated time left.
 3. **Cancel export** stops right away and leaves no half-written file. Your project is unchanged.
 
-Firefox is usually slower than Chrome (about twice as slow for the same scene in our tests) because encoding and drawing frames is slower there. Saving after the export is not the cause.
+Click **Technical details** under the progress bar to see the speed (for example 2× means twice as fast as real time), the draw and encode time per frame, the number of font faces and the codecs in use. The drawing time turns yellow, with a note, when drawing is slowing down compared with the start. **Copy export report** copies a short text (no file names or project content) you can paste into a bug report.
+
+Firefox is usually slower than Chrome. One known cause is that Firefox draws text more and more slowly on long songs; the app now reduces this, so a song of about 2.5 minutes takes around half a minute on our test machine, but it is still slower than Chrome. Saving after the export is not the cause.
 
 Keep this tab open while exporting. The screen is kept awake when the browser allows it.
 

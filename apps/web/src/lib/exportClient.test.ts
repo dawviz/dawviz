@@ -31,6 +31,19 @@ test('startExport: gửi start kèm chuyển quyền buffer âm thanh, báo ti�
   assert.equal(f.terminated, 1);
 });
 
+test('startExport: chuyển tiếp số liệu (stats), ảnh thu nhỏ và báo cáo cuối của Worker', async () => {
+  const f = fake();
+  const got: unknown[] = [];
+  const h = startExport(job, () => f.w, { onProgress: (p, st, thumb) => got.push([p.frame, st?.drawMs, thumb]) });
+  const stats = { drawMs: 5, encodeMs: 2, drawFirstMs: null, slowing: false, fontFaces: 2, container: 'mp4', videoCodec: 'avc1.640028', audioCodec: null };
+  const thumb = { width: 240 } as unknown as ImageBitmap;
+  f.emit({ type: 'progress', progress: { fraction: 0.1, frame: 1, total: 10, fps: null, speed: null, etrSec: null }, stats, thumb });
+  const report = { stats, series: [[1, 5]] as Array<[number, number]>, frames: 10, fps: 30, width: 8, height: 8, totalMs: 1000, bytes: 1 };
+  f.emit({ type: 'done', blob: null, bytes: 1, ms: 5, report });
+  assert.deepEqual(got, [[1, 5, thumb]]);
+  assert.deepEqual(await h.result, { status: 'done', blob: null, bytes: 1, ms: 5, report });
+});
+
 test('startExport: Worker báo lỗi → ExportError mã ERR_EXPORT_FAILED và terminate', async () => {
   const f = fake();
   const h = startExport(job, () => f.w);

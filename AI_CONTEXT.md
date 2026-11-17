@@ -73,7 +73,7 @@ node scripts/sync-docs.mjs --find "độ sáng"   # lấy liên kết mảnh#hea
 <!-- sync:begin docs-index -->
 <!-- Khối này do scripts/sync-docs.mjs sinh ra; đừng sửa tay. -->
 
-Có 18 tài liệu, 287 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
+Có 19 tài liệu, 295 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
 
 ### BRD.md — TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)
 
@@ -205,7 +205,7 @@ Nguồn: `docs/design/TECHNICAL-DESIGN.md` · [thứ tự đọc](docs/split/TEC
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.4 Piano Roll 🟢](docs/split/TECHNICAL-DESIGN/5-4-piano-roll.md) · 0.7k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.5 Quy tắc tất định (kiểm bằng test)](docs/split/TECHNICAL-DESIGN/5-5-quy-tac-tat-dinh-kiem-bang-test.md) · 0.6k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.6 Phát sáng động khi chạm 🟢](docs/split/TECHNICAL-DESIGN/5-6-phat-sang-dong-khi-cham.md) · 1.8k
-- [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)](docs/split/TECHNICAL-DESIGN/5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md) · 5.0k
+- [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)](docs/split/TECHNICAL-DESIGN/5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md) · 5.4k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp 🟢 (đã dùng ở T-69)](docs/split/TECHNICAL-DESIGN/5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md) · 0.9k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.9 Kiểu chữ cho mọi chữ trong video 🟢 (T-72, SRS REQ-GRAPHICS-18, D-58)](docs/split/TECHNICAL-DESIGN/5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md) · 6.6k
 - [6. Ứng dụng web và phát lại 🟡 › 6.1 Trạng thái](docs/split/TECHNICAL-DESIGN/6-1-trang-thai.md) · 1.3k
@@ -224,7 +224,7 @@ Nguồn: `docs/design/TECHNICAL-DESIGN.md` · [thứ tự đọc](docs/split/TEC
 - [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) › 7.1 Trình tự](docs/split/TECHNICAL-DESIGN/7-1-trinh-tu.md) · 1.0k
 - [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) › 7.2 Quyết định kỹ thuật](docs/split/TECHNICAL-DESIGN/7-2-quyet-dinh-ky-thuat.md) · 0.9k
 - [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) › 7.3 Phần lõi thuần đã làm (T-09, 2026-11-14)](docs/split/TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md) · 1.7k
-- [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) › 7.4 Export Worker và giao diện (T-09, 2026-11-14)](docs/split/TECHNICAL-DESIGN/7-4-export-worker-va-giao-dien-t-09-2026-11-14.md) · 7.1k
+- [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) › 7.4 Export Worker và giao diện (T-09, 2026-11-14)](docs/split/TECHNICAL-DESIGN/7-4-export-worker-va-giao-dien-t-09-2026-11-14.md) · 8.2k
 - [8. Lưu trữ ⚪ (M4)](docs/split/TECHNICAL-DESIGN/8-luu-tru-m4.md) · 1.0k
 - [9. Đa ngôn ngữ 🟢](docs/split/TECHNICAL-DESIGN/9-da-ngon-ngu.md) · 0.5k
 - [10. Lỗi, ghi nhật ký, quan sát](docs/split/TECHNICAL-DESIGN/10-loi-ghi-nhat-ky-quan-sat.md) · 0.5k
@@ -339,6 +339,19 @@ Nguồn: `docs/design/UI-DIRECTION.md` · [thứ tự đọc](docs/split/UI-DIRE
 - [5. Theme giao diện chỉ đổi màu (D-52) › 5.4 Bảng màu dựng sẵn (đã kiểm AA, v0.5)](docs/split/UI-DIRECTION/5-4-bang-mau-dung-san-da-kiem-aa-v0-5.md) · 4.5k
 - [6. Việc tiếp theo đề xuất](docs/split/UI-DIRECTION/6-viec-tiep-theo-de-xuat.md) · 1.0k
 - [7. Nguyên tắc sản phẩm: trình dựng thật, mặc định đơn giản (D-54)](docs/split/UI-DIRECTION/7-nguyen-tac-san-pham-trinh-dung-that-mac-dinh-d.md) · 1.1k
+
+### FIREFOX-FONT-SLOWDOWN.md — Firefox xuất chậm dần: điều tra và cách giảm nhẹ
+
+Nguồn: `docs/design/FIREFOX-FONT-SLOWDOWN.md` · [thứ tự đọc](docs/split/FIREFOX-FONT-SLOWDOWN/_index.md)
+
+- [Firefox xuất chậm dần: điều tra và cách giảm nhẹ (mở đầu)](docs/split/FIREFOX-FONT-SLOWDOWN/firefox-xuat-cham-dan-dieu-tra-va-cach-giam-nhe.md) · 0.2k
+- [1. Triệu chứng (do người thử báo, Linux, cùng một máy 22 lõi)](docs/split/FIREFOX-FONT-SLOWDOWN/1-trieu-chung-do-nguoi-thu-bao-linux-cung-mot-ma.md) · 0.4k
+- [2. Kết luận ngắn](docs/split/FIREFOX-FONT-SLOWDOWN/2-ket-luan-ngan.md) · 0.8k
+- [3. Đã loại trừ (mỗi mục là một thí nghiệm riêng, Firefox)](docs/split/FIREFOX-FONT-SLOWDOWN/3-da-loai-tru-moi-muc-la-mot-thi-nghiem-rieng-fi.md) · 0.9k
+- [4. Điều thật sự quyết định](docs/split/FIREFOX-FONT-SLOWDOWN/4-dieu-that-su-quyet-dinh.md) · 0.8k
+- [5. Đã làm (2026-11-18)](docs/split/FIREFOX-FONT-SLOWDOWN/5-da-lam-2026-11-18.md) · 1.3k
+- [6. Chưa làm](docs/split/FIREFOX-FONT-SLOWDOWN/6-chua-lam.md) · 0.8k
+- [7. Cách đo lại (để khỏi mất thời gian dựng lại)](docs/split/FIREFOX-FONT-SLOWDOWN/7-cach-do-lai-de-khoi-mat-thoi-gian-dung-lai.md) · 1.3k
 
 ### PARSER-SRS.md — SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer
 

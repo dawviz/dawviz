@@ -7,6 +7,7 @@
 | `design/SDD.md` | Thiết kế ứng dụng: kho mã, Render Core, ứng dụng web, quyết định `AD-xx` |
 | `design/TECHNICAL-DESIGN.md` | **Thiết kế kỹ thuật chi tiết**: luồng dữ liệu, thời gian/tick, parser, Render Core, phát lại, xuất video, lưu trữ, hiệu năng, bảo mật, CI; đánh dấu 🟢 đã làm / 🟡 khung / ⚪ thiết kế |
 | `design/TDD.md` | Test Design Document (không phải bắt buộc làm test-driven): kiểm thử ứng dụng: chiến lược, danh mục test, ma trận truy vết, khoảng trống, danh sách kiểm thủ công |
+| `design/FIREFOX-FONT-SLOWDOWN.md` | Điều tra Firefox xuất chậm dần theo số mặt phông web trong Worker (số đo, đã loại trừ gì, đã làm gì, cách đo lại) |
 | `design/ANIMATION.md` | So sánh công cụ làm hiệu ứng chuyển động và xuất video (Remotion, GSAP, Motion Canvas, Framer Motion); quyết định AD-07/D-37 |
 | `design/CUSTOMIZATION.md` | **[Đề xuất]** Tùy biến tối đa: storyboard trực quan dễ dùng, template chuyển cảnh nốt, easing, hạt, tài nguyên của phiên, preset cộng đồng; đánh giá khả thi (AD-08…AD-12, D-38) |
 | `design/ANIMATION-CATALOG.md` | **[Đề xuất]** Danh mục đầy đủ hiệu ứng và kiểu nội suy, đồ thị tốc độ của các trình dựng hiện đại, kèm ưu tiên v1.0/v1.1 |

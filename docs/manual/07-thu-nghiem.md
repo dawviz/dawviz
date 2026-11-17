@@ -14,7 +14,8 @@ Bản demo này đang được thử trên nhiều máy, vì việc mã hoá vid
 
 1. Giữ cấu hình mặc định (1080p, 30 khung hình/giây) hoặc chọn 720p, 24 khung hình/giây nếu máy yếu. Bấm **Bắt đầu xuất**.
 2. Ghi lại: ứng dụng đã chọn định dạng nào, có xong không, mất bao lâu, tốc độ hiển thị (ví dụ 2×).
-3. Mở tệp vừa xuất bằng trình phát video bình thường. Xem có phát được và hình có đúng không.
+3. Bấm **Sao chép báo cáo xuất** (trong ngăn **Chi tiết kỹ thuật** khi đang xuất, hoặc ở hộp thoại khi xong) và dán vào biểu mẫu kết quả: báo cáo có đường cong thời gian vẽ, rất hữu ích để biết máy có chậm dần không.
+4. Mở tệp vừa xuất bằng trình phát video bình thường. Xem có phát được và hình có đúng không.
 
 ## Bước 3. Kiểm tra tiếng và hình (nếu có âm thanh)
 

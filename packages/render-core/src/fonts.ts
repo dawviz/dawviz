@@ -30,10 +30,40 @@ export function fontFamiliesOf(scene: SceneDocument): string[] {
   }
   return [...out].sort();
 }
-/** Mặt phông cần nạp cho scene (chỉ họ đóng gói; họ khác là phông hệ thống/người dùng nạp riêng). */
-export function requiredFonts(scene: SceneDocument): FontFaceSpec[] {
+/**
+ * Mặt phông cần nạp cho scene (chỉ họ đóng gói; họ khác là phông hệ thống/người dùng nạp riêng).
+ * `chars` (tuỳ chọn): các ký tự sẽ được vẽ. Có thì chỉ nạp dải ký tự (latin, latin-ext, vietnamese) thật sự phủ các ký tự đó:
+ * Firefox chậm dần theo SỐ mặt phông trong Worker (docs/design/FIREFOX-FONT-SLOWDOWN.md), nên văn bản chỉ có ASCII chỉ cần 2 mặt thay vì 6.
+ * Ký tự không dải nào phủ vẫn rơi về phông dự phòng như trước. Không có `chars` thì nạp đủ (Preview).
+ */
+export function requiredFonts(scene: SceneDocument, chars?: string): FontFaceSpec[] {
   const fam = new Set(fontFamiliesOf(scene));
-  return BUNDLED_FONTS.filter((f) => fam.has(f.family));
+  const all = BUNDLED_FONTS.filter((f) => fam.has(f.family));
+  if (chars === undefined) return all;
+  const need = new Set<string>(); // tệp mặt phông cần giữ (theo dải, không theo độ đậm)
+  const ranges = new Map<string, Array<[number, number]>>();
+  const rangeOf = (r: string) => { let v = ranges.get(r); if (!v) ranges.set(r, v = r.split(',').map((x) => { const [a, b] = x.replace(/U\+/g, '').split('-'); return [parseInt(a, 16), parseInt(b ?? a, 16)] as [number, number]; })); return v; };
+  const covers = (r: string, c: number) => rangeOf(r).some(([a, b]) => c >= a && c <= b);
+  const subsets = [['latin', LATIN], ['vietnamese', VIET], ['latin-ext', LATIN_EXT]] as const; // thứ tự ưu tiên khi nhiều dải cùng phủ
+  need.add('latin'); // luôn có: chữ số, dấu, tên nốt
+  for (const ch of new Set(chars)) {
+    const c = ch.codePointAt(0)!;
+    if (covers(LATIN, c)) continue;
+    const hit = subsets.find(([, r]) => covers(r, c));
+    if (hit) need.add(hit[0]);
+  }
+  const subsetOf = (file: string) => /-(latin-ext|latin|vietnamese)-\d+-normal\.woff2$/.exec(file)?.[1]; // 'latin' khác 'latin-ext'
+  return all.filter((f) => need.has(subsetOf(f.file) ?? ''));
+}
+/**
+ * Mọi ký tự mà scene có thể vẽ: tên bài, nghệ sĩ, tên track và mọi chuỗi trong thuộc tính widget (mẫu chữ, chữ ghi đè). Tên nốt, hợp âm,
+ * số và dấu là ASCII nên không cần liệt kê. Dùng cho `requiredFonts(scene, chars)`.
+ */
+export function charsOfScene(scene: SceneDocument, ast: { meta?: { title?: string; artist?: string }; tracks?: ReadonlyArray<{ name?: string }> }): string {
+  const out: string[] = [ast.meta?.title ?? '', ast.meta?.artist ?? '', ...(ast.tracks ?? []).map((t) => t.name ?? '')];
+  const walk = (v: unknown) => { if (typeof v === 'string') out.push(v); else if (v && typeof v === 'object') for (const x of Object.values(v)) walk(x); };
+  for (const w of scene.widgets) walk(w.properties);
+  return out.join('');
 }
 /** Scene có vẽ chữ không (để biết có cần chờ phông). */
 export const needsFonts = (scene: SceneDocument) => scene.widgets.some((w) => w.visible && ['TRACK_INFO', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'PROGRESS_BAR'].includes(w.type));

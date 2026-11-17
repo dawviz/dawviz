@@ -164,12 +164,12 @@
         "apps/web/src/components/ExportDialog.tsx",
         "locales/en.json#web.export"
       ],
-      "uiHash": "d53abd5b6efa",
-      "viHash": "4c921d901348",
-      "enHash": "2e40e8104740",
+      "uiHash": "64b703e6e284",
+      "viHash": "a2255a66e3ed",
+      "enHash": "b47064672654",
       "coverHashes": {
-        "apps/web/src/components/ExportDialog.tsx": "9e3a4a75b341",
-        "locales/en.json#web.export": "9fa43fa9ca41"
+        "apps/web/src/components/ExportDialog.tsx": "474f28ab8c15",
+        "locales/en.json#web.export": "5241df5d5c8d"
       }
     },
     "07-thu-nghiem": {
@@ -181,8 +181,8 @@
         "locales/en.json#web.sample"
       ],
       "uiHash": "dabaec0b4447",
-      "viHash": "fda87c8b6e40",
-      "enHash": "2600718da04b",
+      "viHash": "383a3a73c203",
+      "enHash": "30037d85e1ae",
       "coverHashes": {
         "apps/web/src/lib/exportDiagnostics.ts": "b740749c40ff",
         "locales/en.json#web.export.diagnose": "495dccd042ca",

@@ -4,11 +4,13 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)"
 path: "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)"
 chunk: 5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md
-source_lines: 167-192
-source_sha1: 4c32e8264d
+source_lines: 167-194
+source_sha1: 865e7b29ab
 ids: [ERR_FONT_LOAD, NFR-SEC-03, REQ-STORAGE-05, REQ-WIDGET-02]
 ---
 ### 5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)
+> **Hiệu năng (2026-11-18):** trên Firefox, vẽ chữ bằng phông web nhiều mặt trong Worker chậm dần theo số khung (5 → 44 ms/khung). Vì vậy (1) `requiredFonts(scene, chars)` chỉ nạp dải ký tự thật sự cần (Export Worker; Preview nạp đủ), (2) `drawPrimitives` chỉ gán `ctx.font` khi đổi (`DrawEnv.font`). Chi tiết, số đo, thí nghiệm đã loại trừ: [FIREFOX-FONT-SLOWDOWN](../../design/FIREFOX-FONT-SLOWDOWN.md).
+
 **Primitive.** Thêm vào `Primitive` một kiểu `text`; `layout` của widget trả về, `drawPrimitives` vẽ, giống `rect` (không widget nào tự gọi `fillText`):
 
 ```ts

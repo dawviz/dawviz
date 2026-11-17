@@ -2705,7 +2705,7 @@
   },
   "TECHNICAL-DESIGN.md": {
    "title": "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER",
-   "sha1": "4c32e8264d",
+   "sha1": "865e7b29ab",
    "chunks": [
     {
      "n": 0,
@@ -2922,10 +2922,10 @@
       "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại",
       "5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)"
      ],
-     "chars": 4996,
+     "chars": 5390,
      "lines": [
       167,
-      192
+      194
      ],
      "ids": [
       "ERR_FONT_LOAD",
@@ -2944,8 +2944,8 @@
      ],
      "chars": 925,
      "lines": [
-      193,
-      195
+      195,
+      197
      ],
      "ids": [
       "REQ-WIDGET-05"
@@ -2961,8 +2961,8 @@
      ],
      "chars": 6552,
      "lines": [
-      196,
-      210
+      198,
+      212
      ],
      "ids": [
       "D-58",
@@ -2982,8 +2982,8 @@
      ],
      "chars": 1256,
      "lines": [
-      213,
-      223
+      215,
+      225
      ],
      "ids": [
       "REQ-UI-14"
@@ -2999,8 +2999,8 @@
      ],
      "chars": 233,
      "lines": [
-      224,
-      226
+      226,
+      228
      ],
      "ids": [
       "NFR-SEC-04",
@@ -3022,8 +3022,8 @@
      ],
      "chars": 3263,
      "lines": [
-      227,
-      240
+      229,
+      242
      ],
      "ids": [
       "ARC-03",
@@ -3048,8 +3048,8 @@
      ],
      "chars": 4556,
      "lines": [
-      241,
-      261
+      243,
+      263
      ],
      "ids": []
     },
@@ -3064,8 +3064,8 @@
      ],
      "chars": 1992,
      "lines": [
-      262,
-      269
+      264,
+      271
      ],
      "ids": [
       "REQ-UI-15",
@@ -3083,8 +3083,8 @@
      ],
      "chars": 1439,
      "lines": [
-      270,
-      277
+      272,
+      279
      ],
      "ids": [
       "REQ-UI-03"
@@ -3101,8 +3101,8 @@
      ],
      "chars": 1211,
      "lines": [
-      278,
-      284
+      280,
+      286
      ],
      "ids": [
       "REQ-WIDGET-07"
@@ -3119,8 +3119,8 @@
      ],
      "chars": 826,
      "lines": [
-      285,
-      290
+      287,
+      292
      ],
      "ids": [
       "REQ-PARSER-07",
@@ -3138,8 +3138,8 @@
      ],
      "chars": 1023,
      "lines": [
-      291,
-      301
+      293,
+      303
      ],
      "ids": [
       "AT-03",
@@ -3157,8 +3157,8 @@
      ],
      "chars": 1014,
      "lines": [
-      302,
-      304
+      304,
+      306
      ],
      "ids": [
       "ERR_AUDIO_DECODE",
@@ -3177,8 +3177,8 @@
      ],
      "chars": 672,
      "lines": [
-      305,
-      312
+      307,
+      314
      ],
      "ids": []
     },
@@ -3192,8 +3192,8 @@
      ],
      "chars": 1860,
      "lines": [
-      313,
-      322
+      315,
+      324
      ],
      "ids": [
       "D-50",
@@ -3210,8 +3210,8 @@
      ],
      "chars": 18818,
      "lines": [
-      323,
-      383
+      325,
+      385
      ],
      "ids": [
       "ARC-05",
@@ -3243,8 +3243,8 @@
      ],
      "chars": 1019,
      "lines": [
-      386,
-      401
+      388,
+      403
      ],
      "ids": [
       "REQ-EXPORT-00",
@@ -3262,8 +3262,8 @@
      ],
      "chars": 947,
      "lines": [
-      402,
-      409
+      404,
+      411
      ],
      "ids": [
       "AT-03",
@@ -3283,8 +3283,8 @@
      ],
      "chars": 1745,
      "lines": [
-      410,
-      419
+      412,
+      421
      ],
      "ids": [
       "D-26",
@@ -3306,10 +3306,10 @@
       "7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở)",
       "7.4 Export Worker và giao diện (T-09, 2026-11-14)"
      ],
-     "chars": 7086,
+     "chars": 8203,
      "lines": [
-      420,
-      432
+      422,
+      436
      ],
      "ids": [
       "AT-03",
@@ -3332,8 +3332,8 @@
      ],
      "chars": 1035,
      "lines": [
-      433,
-      438
+      437,
+      442
      ],
      "ids": [
       "ERR_PRESET_INVALID",
@@ -3350,8 +3350,8 @@
      ],
      "chars": 492,
      "lines": [
-      439,
-      441
+      443,
+      445
      ],
      "ids": []
     },
@@ -3364,8 +3364,8 @@
      ],
      "chars": 470,
      "lines": [
-      442,
-      446
+      446,
+      450
      ],
      "ids": [
       "D-13"
@@ -3380,8 +3380,8 @@
      ],
      "chars": 885,
      "lines": [
-      447,
-      456
+      451,
+      460
      ],
      "ids": [
       "NFR-PERF-04",
@@ -3397,8 +3397,8 @@
      ],
      "chars": 728,
      "lines": [
-      457,
-      459
+      461,
+      463
      ],
      "ids": [
       "OI-07"
@@ -3413,8 +3413,8 @@
      ],
      "chars": 906,
      "lines": [
-      460,
-      466
+      464,
+      470
      ],
      "ids": [
       "D-12",
@@ -3431,8 +3431,8 @@
      ],
      "chars": 760,
      "lines": [
-      467,
-      474
+      471,
+      478
      ],
      "ids": []
     }
@@ -4778,6 +4778,122 @@
       "REQ-UI-13",
       "REQ-WIDGET-07"
      ]
+    }
+   ]
+  },
+  "FIREFOX-FONT-SLOWDOWN.md": {
+   "title": "Firefox xuất chậm dần: điều tra và cách giảm nhẹ",
+   "sha1": "a549031f0a",
+   "chunks": [
+    {
+     "n": 0,
+     "file": "FIREFOX-FONT-SLOWDOWN/firefox-xuat-cham-dan-dieu-tra-va-cach-giam-nhe.md",
+     "title": "Firefox xuất chậm dần: điều tra và cách giảm nhẹ (mở đầu)",
+     "path": [],
+     "chars": 216,
+     "lines": [
+      1,
+      4
+     ],
+     "ids": []
+    },
+    {
+     "n": 1,
+     "file": "FIREFOX-FONT-SLOWDOWN/1-trieu-chung-do-nguoi-thu-bao-linux-cung-mot-ma.md",
+     "title": "1. Triệu chứng (do người thử báo, Linux, cùng một máy 22 lõi)",
+     "path": [
+      "1. Triệu chứng (do người thử báo, Linux, cùng một máy 22 lõi)"
+     ],
+     "chars": 445,
+     "lines": [
+      5,
+      14
+     ],
+     "ids": []
+    },
+    {
+     "n": 2,
+     "file": "FIREFOX-FONT-SLOWDOWN/2-ket-luan-ngan.md",
+     "title": "2. Kết luận ngắn",
+     "path": [
+      "2. Kết luận ngắn"
+     ],
+     "chars": 810,
+     "lines": [
+      15,
+      27
+     ],
+     "ids": []
+    },
+    {
+     "n": 3,
+     "file": "FIREFOX-FONT-SLOWDOWN/3-da-loai-tru-moi-muc-la-mot-thi-nghiem-rieng-fi.md",
+     "title": "3. Đã loại trừ (mỗi mục là một thí nghiệm riêng, Firefox)",
+     "path": [
+      "3. Đã loại trừ (mỗi mục là một thí nghiệm riêng, Firefox)"
+     ],
+     "chars": 887,
+     "lines": [
+      28,
+      40
+     ],
+     "ids": []
+    },
+    {
+     "n": 4,
+     "file": "FIREFOX-FONT-SLOWDOWN/4-dieu-that-su-quyet-dinh.md",
+     "title": "4. Điều thật sự quyết định",
+     "path": [
+      "4. Điều thật sự quyết định"
+     ],
+     "chars": 793,
+     "lines": [
+      41,
+      55
+     ],
+     "ids": []
+    },
+    {
+     "n": 5,
+     "file": "FIREFOX-FONT-SLOWDOWN/5-da-lam-2026-11-18.md",
+     "title": "5. Đã làm (2026-11-18)",
+     "path": [
+      "5. Đã làm (2026-11-18)"
+     ],
+     "chars": 1295,
+     "lines": [
+      56,
+      63
+     ],
+     "ids": []
+    },
+    {
+     "n": 6,
+     "file": "FIREFOX-FONT-SLOWDOWN/6-chua-lam.md",
+     "title": "6. Chưa làm",
+     "path": [
+      "6. Chưa làm"
+     ],
+     "chars": 834,
+     "lines": [
+      64,
+      70
+     ],
+     "ids": []
+    },
+    {
+     "n": 7,
+     "file": "FIREFOX-FONT-SLOWDOWN/7-cach-do-lai-de-khoi-mat-thoi-gian-dung-lai.md",
+     "title": "7. Cách đo lại (để khỏi mất thời gian dựng lại)",
+     "path": [
+      "7. Cách đo lại (để khỏi mất thời gian dựng lại)"
+     ],
+     "chars": 1286,
+     "lines": [
+      71,
+      78
+     ],
+     "ids": []
     }
    ]
   },

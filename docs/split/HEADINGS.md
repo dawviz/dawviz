@@ -508,6 +508,24 @@
 - [7. Nguyên tắc sản phẩm: trình dựng thật, mặc định đơn giản (D-54)](UI-DIRECTION/7-nguyen-tac-san-pham-trinh-dung-that-mac-dinh-d.md)
   - [7. Nguyên tắc sản phẩm: trình dựng thật, mặc định đơn giản (D-54)](UI-DIRECTION/7-nguyen-tac-san-pham-trinh-dung-that-mac-dinh-d.md#7-nguyên-tắc-sản-phẩm-trình-dựng-thật-mặc-định-đơn-giản-d-54)
 
+## FIREFOX-FONT-SLOWDOWN.md
+
+- [Firefox xuất chậm dần: điều tra và cách giảm nhẹ (mở đầu)](FIREFOX-FONT-SLOWDOWN/firefox-xuat-cham-dan-dieu-tra-va-cach-giam-nhe.md)
+- [1. Triệu chứng (do người thử báo, Linux, cùng một máy 22 lõi)](FIREFOX-FONT-SLOWDOWN/1-trieu-chung-do-nguoi-thu-bao-linux-cung-mot-ma.md)
+  - [1. Triệu chứng (do người thử báo, Linux, cùng một máy 22 lõi)](FIREFOX-FONT-SLOWDOWN/1-trieu-chung-do-nguoi-thu-bao-linux-cung-mot-ma.md#1-triệu-chứng-do-người-thử-báo-linux-cùng-một-máy-22-lõi)
+- [2. Kết luận ngắn](FIREFOX-FONT-SLOWDOWN/2-ket-luan-ngan.md)
+  - [2. Kết luận ngắn](FIREFOX-FONT-SLOWDOWN/2-ket-luan-ngan.md#2-kết-luận-ngắn)
+- [3. Đã loại trừ (mỗi mục là một thí nghiệm riêng, Firefox)](FIREFOX-FONT-SLOWDOWN/3-da-loai-tru-moi-muc-la-mot-thi-nghiem-rieng-fi.md)
+  - [3. Đã loại trừ (mỗi mục là một thí nghiệm riêng, Firefox)](FIREFOX-FONT-SLOWDOWN/3-da-loai-tru-moi-muc-la-mot-thi-nghiem-rieng-fi.md#3-đã-loại-trừ-mỗi-mục-là-một-thí-nghiệm-riêng-firefox)
+- [4. Điều thật sự quyết định](FIREFOX-FONT-SLOWDOWN/4-dieu-that-su-quyet-dinh.md)
+  - [4. Điều thật sự quyết định](FIREFOX-FONT-SLOWDOWN/4-dieu-that-su-quyet-dinh.md#4-điều-thật-sự-quyết-định)
+- [5. Đã làm (2026-11-18)](FIREFOX-FONT-SLOWDOWN/5-da-lam-2026-11-18.md)
+  - [5. Đã làm (2026-11-18)](FIREFOX-FONT-SLOWDOWN/5-da-lam-2026-11-18.md#5-đã-làm-2026-11-18)
+- [6. Chưa làm](FIREFOX-FONT-SLOWDOWN/6-chua-lam.md)
+  - [6. Chưa làm](FIREFOX-FONT-SLOWDOWN/6-chua-lam.md#6-chưa-làm)
+- [7. Cách đo lại (để khỏi mất thời gian dựng lại)](FIREFOX-FONT-SLOWDOWN/7-cach-do-lai-de-khoi-mat-thoi-gian-dung-lai.md)
+  - [7. Cách đo lại (để khỏi mất thời gian dựng lại)](FIREFOX-FONT-SLOWDOWN/7-cach-do-lai-de-khoi-mat-thoi-gian-dung-lai.md#7-cách-đo-lại-để-khỏi-mất-thời-gian-dựng-lại)
+
 ## PARSER-SRS.md
 
 - [SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer (mở đầu)](PARSER-SRS/srs-dac-ta-yeu-cau-thu-vien-parser-daw-visualize.md)

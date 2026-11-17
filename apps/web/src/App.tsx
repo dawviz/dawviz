@@ -457,7 +457,7 @@ export function App() {
         </div>
       </main>
     </div>
-    {exporting && derived && renderAst && <ExportDialog scene={scene} ast={renderAst} derived={derived} audio={audio} offsetMs={offsetMs} projectSec={duration} fileName={loaded?.name ?? 'dawviz'} advanced={advanced} onClose={() => setExporting(false)} />}
+    {exporting && derived && renderAst && <ExportDialog scene={scene} ast={renderAst} derived={derived} audio={audio} offsetMs={offsetMs} projectSec={duration} fileName={loaded?.name ?? 'dawviz'} advanced={advanced} styleId={doc.videoStyle} styleName={VIDEO_STYLES.includes(doc.videoStyle) ? i18n.t(`web.style.video.${doc.videoStyle}`) : undefined} onClose={() => setExporting(false)} />}
     </LayoutGroup></MotionConfig></GestureContext.Provider>
   );
 }

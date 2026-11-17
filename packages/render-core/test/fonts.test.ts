@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { ensureFonts, requiredFonts, needsFonts, BUNDLED_FONTS, FontLoadError, sanitizeScene, renderFrame, measureText, defaultScene } from '../src/index.ts';
+import { charsOfScene, ensureFonts, requiredFonts, needsFonts, BUNDLED_FONTS, FontLoadError, sanitizeScene, renderFrame, measureText, defaultScene } from '../src/index.ts';
 import { FONT_METRICS_DATA } from '../src/fontMetrics.generated.ts';
 import { synthAst, derivedOf, recCtx } from './helpers.ts';
 
@@ -83,4 +83,33 @@ test('FONT_METRICS so với measureText của Chromium thật: lệch ≤ 1 pt (
       assert.ok(Math.abs(mine - widths[i]) <= 1, `"${t}" ${s}pt/${w}: bảng ${mine.toFixed(2)} ≠ trình duyệt ${widths[i].toFixed(2)}`);
     });
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('requiredFonts(scene, chars): chỉ nạp dải ký tự thật sự cần (Firefox chậm dần theo số mặt phông trong Worker)', () => {
+  const sc = paper(), files = (c?: string) => requiredFonts(sc, c).map((f) => f.file.replace('space-grotesk-', '').replace('-normal.woff2', '')).sort();
+  assert.equal(requiredFonts(sc).length, 6, 'không có chars: nạp đủ (Preview)');
+  assert.deepEqual(files('Demo Song 120 BPM Em7/G #♭'), ['latin-400', 'latin-700'], 'ASCII (và dấu có trong dải latin): 2 mặt thay vì 6');
+  assert.deepEqual(files(''), ['latin-400', 'latin-700'], 'luôn có dải latin');
+  assert.deepEqual(files('Bài hát Việt'), ['latin-400', 'latin-700', 'vietnamese-400', 'vietnamese-700'], 'chữ Việt thêm dải vietnamese');
+  assert.deepEqual(files('Łódź'), ['latin-400', 'latin-700', 'latin-ext-400', 'latin-ext-700'], 'Latin mở rộng thêm dải latin-ext');
+  assert.equal(files('ă').length, 4, 'ký tự cả hai dải cùng phủ chỉ cần một dải (vietnamese ưu tiên)');
+  assert.deepEqual(files('日本語'), ['latin-400', 'latin-700'], 'ký tự không dải nào phủ: rơi về phông dự phòng như trước, không nạp thừa');
+  assert.deepEqual(requiredFonts(defaultScene(), 'abc'), [], 'scene không dùng phông đóng gói: không nạp gì');
+});
+
+test('charsOfScene: gom tên bài, nghệ sĩ, tên track và mọi chuỗi trong thuộc tính widget', () => {
+  const sc = paper(), ast = { meta: { title: 'Bản nhạc', artist: 'Nghệ sĩ' }, tracks: [{ name: 'Đàn piano' }] };
+  const chars = charsOfScene(sc, ast);
+  for (const ch of 'ảệĐ') assert.ok(chars.includes(ch), ch);
+  assert.ok(requiredFonts(sc, chars).some((f) => f.file.includes('vietnamese')));
+  assert.ok(!requiredFonts(sc, charsOfScene(sc, { meta: { title: 'Song' }, tracks: [{ name: 'Piano' }] })).some((f) => f.file.includes('vietnamese')));
+});
+
+test('drawPrimitives chỉ gán font khi đổi (gán font rất tốn trên Firefox với phông web nhiều mặt); kết quả vẽ không đổi', () => {
+  const ast = synthAst(), sc = paper();
+  const { ctx, log } = recCtx(); renderFrame(sc, derivedOf(ast, { fontsReady: true }), ast, 1, { ctx, width: 1080, height: 1080 }, 1);
+  const fonts = log.filter((l) => l.startsWith('font=')), texts = log.filter((l) => l.startsWith('fillText'));
+  assert.ok(texts.length > fonts.length, 'nhiều chữ dùng chung một phông: số lần gán font ít hơn số lần vẽ chữ');
+  // cùng phông liên tiếp trong cùng widget không bị gán lại
+  for (let i = 1; i < log.length; i++) if (log[i].startsWith('font=') && log[i - 1].startsWith('font=')) assert.notEqual(log[i], log[i - 1]);
 });

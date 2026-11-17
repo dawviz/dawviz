@@ -37,10 +37,12 @@ Nút **Kiểm tra máy này** ở cuối phần cấu hình thử mã hoá thậ
 ## Xuất và hủy
 
 1. Bấm **Bắt đầu xuất**. Trên Chrome và Edge, ứng dụng hỏi nơi lưu tệp trước; video được ghi thẳng xuống ổ đĩa. Firefox và các trình duyệt khác không có tính năng này: video được giữ trong bộ nhớ, và chỉ khi xuất xong mới hiện nút **Lưu tệp** để chọn nơi lưu. Đây là cách hoạt động bình thường, không phải lỗi.
-2. Thanh tiến độ cho biết khung đang làm, tốc độ (ví dụ 2× nghĩa là nhanh gấp đôi thời gian thực) và thời gian còn lại ước tính.
+2. Hộp thoại hiện ảnh thu nhỏ của khung đang xuất (cập nhật khoảng hai lần mỗi giây) kèm thẻ ghi phong cách, kích thước, số khung hình/giây và định dạng. Dưới ảnh là thanh tiến độ với phần trăm, số khung và thời gian còn lại ước tính.
 3. **Hủy xuất** dừng ngay và không để lại tệp dở. Dự án của bạn không đổi.
 
-Firefox thường xuất chậm hơn Chrome (trong thử nghiệm của chúng tôi khoảng gấp đôi cho cùng một cảnh), vì mã hoá và vẽ khung hình trong Firefox chậm hơn. Việc lưu sau khi xuất xong không phải nguyên nhân.
+Bấm **Chi tiết kỹ thuật** dưới thanh tiến độ để xem tốc độ (ví dụ 2× nghĩa là nhanh gấp đôi thời gian thực), thời gian vẽ và mã hoá mỗi khung, số mặt phông và codec đang dùng. Dòng thời gian vẽ chuyển vàng và có lời nhắn khi việc vẽ đang chậm dần so với lúc đầu. Nút **Sao chép báo cáo xuất** chép một đoạn văn bản ngắn (không có tên tệp hay nội dung dự án) để bạn dán vào báo cáo lỗi.
+
+Firefox thường xuất chậm hơn Chrome. Một nguyên nhân đã biết là Firefox vẽ chữ chậm dần khi bài dài; ứng dụng đã giảm bớt việc này nên bài dài khoảng 2,5 phút mất cỡ nửa phút trên máy thử, nhưng vẫn chậm hơn Chrome. Việc lưu sau khi xuất xong không phải nguyên nhân.
 
 Trong lúc xuất, hãy để tab này mở. Máy được giữ không tắt màn hình khi trình duyệt cho phép.
 

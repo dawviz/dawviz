@@ -124,7 +124,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [5.4 Piano Roll 🟢](TECHNICAL-DESIGN/5-4-piano-roll.md) · 714 ký tự
 - [5.5 Quy tắc tất định (kiểm bằng test)](TECHNICAL-DESIGN/5-5-quy-tac-tat-dinh-kiem-bang-test.md) · 640 ký tự
 - [5.6 Phát sáng động khi chạm 🟢](TECHNICAL-DESIGN/5-6-phat-sang-dong-khi-cham.md) · 1776 ký tự
-- [5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)](TECHNICAL-DESIGN/5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md) · 4996 ký tự
+- [5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)](TECHNICAL-DESIGN/5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md) · 5390 ký tự
 - [5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp 🟢 (đã dùng ở T-69)](TECHNICAL-DESIGN/5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md) · 925 ký tự
 - [5.9 Kiểu chữ cho mọi chữ trong video 🟢 (T-72, SRS REQ-GRAPHICS-18, D-58)](TECHNICAL-DESIGN/5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md) · 6552 ký tự
 - [6.1 Trạng thái](TECHNICAL-DESIGN/6-1-trang-thai.md) · 1256 ký tự
@@ -143,7 +143,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [7.1 Trình tự](TECHNICAL-DESIGN/7-1-trinh-tu.md) · 1019 ký tự
 - [7.2 Quyết định kỹ thuật](TECHNICAL-DESIGN/7-2-quyet-dinh-ky-thuat.md) · 947 ký tự
 - [7.3 Phần lõi thuần đã làm (T-09, 2026-11-14)](TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md) · 1745 ký tự
-- [7.4 Export Worker và giao diện (T-09, 2026-11-14)](TECHNICAL-DESIGN/7-4-export-worker-va-giao-dien-t-09-2026-11-14.md) · 7086 ký tự
+- [7.4 Export Worker và giao diện (T-09, 2026-11-14)](TECHNICAL-DESIGN/7-4-export-worker-va-giao-dien-t-09-2026-11-14.md) · 8203 ký tự
 - [8. Lưu trữ ⚪ (M4)](TECHNICAL-DESIGN/8-luu-tru-m4.md) · 1035 ký tự
 - [9. Đa ngôn ngữ 🟢](TECHNICAL-DESIGN/9-da-ngon-ngu.md) · 492 ký tự
 - [10. Lỗi, ghi nhật ký, quan sát](TECHNICAL-DESIGN/10-loi-ghi-nhat-ky-quan-sat.md) · 470 ký tự
@@ -246,6 +246,17 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [5.4 Bảng màu dựng sẵn (đã kiểm AA, v0.5)](UI-DIRECTION/5-4-bang-mau-dung-san-da-kiem-aa-v0-5.md) · 4454 ký tự
 - [6. Việc tiếp theo đề xuất](UI-DIRECTION/6-viec-tiep-theo-de-xuat.md) · 988 ký tự
 - [7. Nguyên tắc sản phẩm: trình dựng thật, mặc định đơn giản (D-54)](UI-DIRECTION/7-nguyen-tac-san-pham-trinh-dung-that-mac-dinh-d.md) · 1117 ký tự
+
+## FIREFOX-FONT-SLOWDOWN.md — Firefox xuất chậm dần: điều tra và cách giảm nhẹ
+
+- [Firefox xuất chậm dần: điều tra và cách giảm nhẹ (mở đầu)](FIREFOX-FONT-SLOWDOWN/firefox-xuat-cham-dan-dieu-tra-va-cach-giam-nhe.md) · 216 ký tự
+- [1. Triệu chứng (do người thử báo, Linux, cùng một máy 22 lõi)](FIREFOX-FONT-SLOWDOWN/1-trieu-chung-do-nguoi-thu-bao-linux-cung-mot-ma.md) · 445 ký tự
+- [2. Kết luận ngắn](FIREFOX-FONT-SLOWDOWN/2-ket-luan-ngan.md) · 810 ký tự
+- [3. Đã loại trừ (mỗi mục là một thí nghiệm riêng, Firefox)](FIREFOX-FONT-SLOWDOWN/3-da-loai-tru-moi-muc-la-mot-thi-nghiem-rieng-fi.md) · 887 ký tự
+- [4. Điều thật sự quyết định](FIREFOX-FONT-SLOWDOWN/4-dieu-that-su-quyet-dinh.md) · 793 ký tự
+- [5. Đã làm (2026-11-18)](FIREFOX-FONT-SLOWDOWN/5-da-lam-2026-11-18.md) · 1295 ký tự
+- [6. Chưa làm](FIREFOX-FONT-SLOWDOWN/6-chua-lam.md) · 834 ký tự
+- [7. Cách đo lại (để khỏi mất thời gian dựng lại)](FIREFOX-FONT-SLOWDOWN/7-cach-do-lai-de-khoi-mat-thoi-gian-dung-lai.md) · 1286 ký tự
 
 ## PARSER-SRS.md — SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer
 

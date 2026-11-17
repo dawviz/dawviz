@@ -86,6 +86,8 @@ dawviz/
 │     │  │  ├─ exportPlan.test.ts
 │     │  │  ├─ exportPlan.ts
 │     │  │  ├─ exportProtocol.ts
+│     │  │  ├─ exportStats.test.ts
+│     │  │  ├─ exportStats.ts
 │     │  │  ├─ exportWorker.ts
 │     │  │  ├─ externalMidi.test.ts
 │     │  │  ├─ externalMidi.ts
@@ -599,7 +601,8 @@ interface FontFaceSpec
 const DEFAULT_FONT
 const BUNDLED_FONTS   // Phông đóng gói cùng ứng dụng (OFL, tự host; CSP font-src 'self'). `file` tính từ thư mục phông của ứng dụng.
 function fontFamiliesOf(scene: SceneDocument): string[]   // Họ phông mà scene dùng (widget chữ ẩn cũng tính để không giật khi bật). Thứ tự ổn định.
-function requiredFonts(scene: SceneDocument): FontFaceSpec[]   // Mặt phông cần nạp cho scene (chỉ họ đóng gói; họ khác là phông hệ thống/người dùng nạp riêng).
+function requiredFonts(scene: SceneDocument, chars?: string): FontFaceSpec[]   // Mặt phông cần nạp cho scene (chỉ họ đóng gói; họ khác là phông hệ thống/người dùng nạp riêng). `chars` (tuỳ c…
+function charsOfScene(scene: SceneDocument, ast: { meta?: { title?: string; artist?: string }; tracks?: ReadonlyArray<{ name?: string }> }): string   // Mọi ký tự mà scene có thể vẽ: tên bài, nghệ sĩ, tên track và mọi chuỗi trong thuộc tính widget (mẫu chữ, chữ …
 const needsFonts = (scene: SceneDocument) =>   // Scene có vẽ chữ không (để biết có cần chờ phông).
 class FontLoadError extends Error
 type FontLoader   // Nạp một mặt phông; ném khi thất bại. Preview/Worker tự cài (FontFace + fonts.add).
@@ -749,7 +752,7 @@ const WIDGET_RENDERERS   // Bảng renderer theo loại. Widget chưa có render
 const buildSceneHud = (scene: SceneDocument, ast: UnifiedProjectAST, index: TimelineIndex) =>   // HudData cho một scene: số đếm, lưới ô nhịp và hợp âm của mọi widget Chord Detection. Gọi ở bước derived (một …
 function layoutFrame(scene: SceneDocument, derived0: Derived, ast: UnifiedProjectAST, t: number, renderers = WIDGET_RENDERERS)
 function renderFrame(scene: SceneDocument, derived: Derived, ast: UnifiedProjectAST, t: number, target: RenderTarget, scale: number, renderers = WIDGET_RENDERERS): void   // Vẽ một khung hình. `scale` = điểm ảnh đích / pt (Preview: bề rộng canvas × DPR / designWidth; Export: W_expor…
-function drawPrimitives(g: RenderCtx, prims: Primitive[], env: DrawEnv = { scale: 1, rotation: 0 }): void   // Chỉ vẽ, không tính nghiệp vụ. Mọi trạng thái ctx bị đổi (alpha, shadow) được trả về mặc định sau mỗi hình.
+function drawPrimitives(g: RenderCtx, prims: Primitive[], env0: DrawEnv = { scale: 1, rotation: 0 }): void   // Chỉ vẽ, không tính nghiệp vụ. Mọi trạng thái ctx bị đổi (alpha, shadow) được trả về mặc định sau mỗi hình.
 ```
 
 #### `packages/render-core/src/scene.ts`
@@ -991,7 +994,7 @@ Hộp thoại Xuất video (T-09, REQ-EXPORT-00/05/06). Chọn cỡ/FPS/chất l
 
 ```text
 const browserProbe   // Dò hỗ trợ thật của trình duyệt; không có WebCodecs thì mọi cấu hình đều "không hỗ trợ".
-function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec, fileName, advanced = false, onClose }: { scene: SceneDocument; ast: UnifiedProjectAST; derived: Derived; audio: AudioAsset | null; offsetMs: number; projectSec: number; fileName: string; advanced?: boolean; onClose(): void; })
+function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec, fileName, advanced = false, styleId, styleName, onClose }: { styleId?: string; styleName?: string; scene: SceneDocument; ast: UnifiedProjectAST; derived: Derived; audio: AudioAsset | null; offsetMs: number; projectSec: number; fileName: string; advanced?: boolean; onClose(): void; })
 ```
 
 #### `apps/web/src/components/FileDrop.tsx`
@@ -1441,7 +1444,7 @@ interface ExportWorkerLike
 type ExportResult
 class ExportError extends Error
 interface ExportHandle
-function startExport( job: ExportJob, makeWorker: () => ExportWorkerLike, opts: { file?: FileTarget; onProgress?: (p: ProgressInfo) => void; cancelGraceMs?: number } = {}, ): ExportHandle
+function startExport( job: ExportJob, makeWorker: () => ExportWorkerLike, opts: { file?: FileTarget; onProgress?: (p: ProgressInfo, stats?: ExportStats, thumb?: ImageBitmap) => void; cancelGraceMs?: number } = {}, ): ExportHandle
 ```
 
 #### `apps/web/src/lib/exportDiagnostics.ts`
@@ -1571,6 +1574,21 @@ interface ExportJob
 interface FileTarget   // Tay cầm tệp từ showSaveFilePicker: clone được sang Worker (FileSystemWritableFileStream thì KHÔNG, Chrome ném…
 type ExportIn
 type ExportOut
+```
+
+#### `apps/web/src/lib/exportStats.ts`
+
+Thống kê khi xuất cho ngăn "Chi tiết kỹ thuật" và báo cáo chẩn đoán (T-09). Thuần, không biết gì về trình duyệt: Worker bấm giờ rồi
+
+```text
+interface ExportStats
+interface ExportReport   // Báo cáo cuối lần xuất: số liệu cuối + đường cong thời gian vẽ theo khung để thấy xu hướng (không chỉ trung bì…
+const STATS_WINDOW
+const SLOWING_MIN_FRAME   // Chậm dần: từ khung 300, vẽ gấp ≥ 3 lần lúc đầu và hơn lúc đầu ≥ 6 ms (tránh báo nhầm khi cảnh đầu quá nhẹ).
+const isSlowing = (frame: number, first: number | null, now: number) =>
+function createStats(window = STATS_WINDOW)
+function downsample(points: ReadonlyArray<readonly [number, number]>, max = 24): Array<[number, number]>   // Rút gọn xuống tối đa `max` điểm đều nhau (giữ điểm đầu và cuối), làm tròn 0,1 ms.
+function formatExportReport(r: ExportReport, env: { userAgent: string; cores: number | null; appVersion: string }): string   // Đoạn văn bản ngắn để người thử dán vào GitHub Issue: không có tên tệp hay nội dung dự án.
 ```
 
 #### `apps/web/src/lib/exportWorker.ts`
@@ -1947,6 +1965,7 @@ type ParseResponse
 - `apps/web/src/lib/exportEngine.test.ts`
 - `apps/web/src/lib/exportLock.test.ts`
 - `apps/web/src/lib/exportPlan.test.ts`
+- `apps/web/src/lib/exportStats.test.ts`
 - `apps/web/src/lib/externalMidi.test.ts`
 - `apps/web/src/lib/historyLabels.test.ts`
 - `apps/web/src/lib/masterClock.test.ts`
@@ -1982,4 +2001,4 @@ type ParseResponse
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 773 ký hiệu công khai -->
+<!-- 10 thư mục src, 782 ký hiệu công khai -->
