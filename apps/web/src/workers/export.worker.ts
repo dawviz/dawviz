@@ -26,8 +26,9 @@ async function run(job: ExportJob, file: Extract<ExportIn, { type: 'start' }>['f
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('2D context unavailable');
   const scale = width / scene.canvas.designWidth;
+  const stream = file ? await file.createWritable() : undefined; // tạo ở đây (không ở luồng chính): luồng ghi không chuyển qua Worker được
   const out = createExportOutput({
-    choice: job.choice, canvas, fps: job.fps, bitrate: job.bitrate, file,
+    choice: job.choice, canvas, fps: job.fps, bitrate: job.bitrate, file: stream,
     audio: job.audio && job.choice.audioCodec ? { sampleRate: job.audio.sampleRate, channels: job.audio.channels.length, bitrate: 128_000 } : undefined,
   });
   try {
@@ -39,7 +40,7 @@ async function run(job: ExportJob, file: Extract<ExportIn, { type: 'start' }>['f
       onProgress: (progress) => post({ type: 'progress', progress }),
     });
     const blob = await out.finalize();
-    post({ type: 'done', blob, bytes: blob?.size ?? 0, ms: performance.now() - t0 });
+    post({ type: 'done', blob, bytes: blob?.size ?? out.bytes(), ms: performance.now() - t0 });
   } catch (e) {
     await out.cancel().catch(() => {});
     throw e;

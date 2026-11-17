@@ -285,11 +285,18 @@ export const liveTriggerRenderer: WidgetRenderer<LiveTriggerProps> = {
     // Một dòng ngang: nối các nốt (cao → thấp), hậu tố tên track một lần cuối dòng; quá rộng thì bỏ nốt thấp nhất, thêm "+N".
     const names = (list: typeof items) => [...new Set(list.map((it) => it.track.track.name))].join(', ');
     const suffix = (list: typeof items): TextSpan[] => (p.showTrack ? templateSpans(p.trackTemplate, { track: names(list) }, p.valueStyle) : []);
+    // O(n) mỗi khung (trước đây O(n²): mỗi lần thử bớt một nốt lại đo lại toàn bộ). Cộng dồn đúng thứ tự cũ nên kết quả số học giữ nguyên.
     let keep = items.length, dropped = 0;
-    const totalW = (n: number) => {
-      const part = items.slice(0, n), sfx = suffix(part), extra = items.length - n;
-      return part.reduce((s, it, i) => s + w(label(it)) + (i ? w(p.separator) : 0), 0) + (sfx.length ? w(p.separator) + w(sfx) : 0) + (extra ? w(p.separator) + w(`+${extra}`) : 0);
-    };
+    const sepW0 = w(p.separator), prefix: number[] = [0], sfxW: number[] = [0], seen = new Set<string>(), nameList: string[] = [];
+    let lastNames: string | null = null, lastSfx = 0;
+    items.forEach((it, i) => {
+      prefix.push(prefix[i] + w(label(it)) + (i ? sepW0 : 0));
+      if (!seen.has(it.track.track.name)) { seen.add(it.track.track.name); nameList.push(it.track.track.name); }
+      const key = nameList.join(', ');
+      if (key !== lastNames) { lastNames = key; const sx = suffix(items.slice(0, i + 1)); lastSfx = sx.length ? sepW0 + w(sx) : 0; }
+      sfxW.push(lastSfx);
+    });
+    const totalW = (n: number) => { const extra = items.length - n; return prefix[n] + sfxW[n] + (extra ? sepW0 + w(`+${extra}`) : 0); };
     while (keep > 1 && totalW(keep) > W) keep--;
     dropped = items.length - keep;
     const part = items.slice(0, keep), segs: { s: string | TextSpan[]; a: number }[] = part.map((it) => ({ s: label(it), a: it.alpha }));

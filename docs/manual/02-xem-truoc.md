@@ -51,7 +51,8 @@ Trên mỗi track:
 - **Mắt:** ẩn hoặc hiện track trong video.
 - **S (solo):** chỉ hiện các track đang solo.
 - Hàng trên cùng điều khiển mọi track: mắt để ẩn/hiện tất cả, S để bỏ mọi solo.
-- **Đổi thứ tự** (Nâng cao): kéo tay nắm sáu chấm, hoặc chọn dòng rồi bấm Alt+Lên / Alt+Xuống. Track ở trên được vẽ đè lên track ở dưới khi nốt trùng nhau.
+- **Ẩn hoặc solo nhanh:** bấm giữ vào một mắt (hoặc S) rồi kéo lên hoặc xuống qua các track khác; mọi track đi qua được đặt cùng trạng thái với lần bấm đầu. Cả lần kéo là một bước hoàn tác.
+- **Đổi thứ tự** (cả Cơ bản lẫn Nâng cao): kéo tay nắm sáu chấm, hoặc chọn dòng rồi bấm Alt+Lên / Alt+Xuống. Track ở trên được vẽ đè lên track ở dưới khi nốt trùng nhau.
 
 Ẩn, solo và thứ tự track chỉ đổi video, không đổi tệp dự án của bạn.
 

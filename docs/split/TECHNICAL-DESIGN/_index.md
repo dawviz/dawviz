@@ -1,6 +1,6 @@
 # Chỉ mục TECHNICAL-DESIGN.md — THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER
 
-nguồn: `TECHNICAL-DESIGN.md` (sha1 03d31db5d8)
+nguồn: `TECHNICAL-DESIGN.md` (sha1 4c32e8264d)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -35,7 +35,7 @@ nguồn: `TECHNICAL-DESIGN.md` (sha1 03d31db5d8)
 | 28 | 7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) > 7.1 Trình tự | [7-1-trinh-tu.md](7-1-trinh-tu.md) | 1019 | REQ-EXPORT-00, REQ-EXPORT-02, REQ-EXPORT-06 |
 | 29 | 7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) > 7.2 Quyết định kỹ thuật | [7-2-quyet-dinh-ky-thuat.md](7-2-quyet-dinh-ky-thuat.md) | 947 | AT-03, D-01, ERR_EXPORT_FAILED, ERR_NO_SUPPORTED_ENCODER, SOI-10 |
 | 30 | 7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) > 7.3 Phần lõi thuần đã làm (T-09, 2026-11-14) | [7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md](7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md) | 1745 | D-26, ERR_NO_SUPPORTED_ENCODER, REQ-EXPORT-00, REQ-EXPORT-01, REQ-EXPORT-02, REQ-EXPORT-03… |
-| 31 | 7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) > 7.4 Export Worker và giao diện (T-09, 2026-11-14) | [7-4-export-worker-va-giao-dien-t-09-2026-11-14.md](7-4-export-worker-va-giao-dien-t-09-2026-11-14.md) | 2905 | AT-03, AT-05, D-04, D-26, ERR_EXPORT_FAILED, REQ-EXPORT-02… |
+| 31 | 7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) > 7.4 Export Worker và giao diện (T-09, 2026-11-14) | [7-4-export-worker-va-giao-dien-t-09-2026-11-14.md](7-4-export-worker-va-giao-dien-t-09-2026-11-14.md) | 7086 | AT-03, AT-05, D-04, D-26, D-61, ERR_EXPORT_FAILED… |
 | 32 | 8. Lưu trữ ⚪ (M4) | [8-luu-tru-m4.md](8-luu-tru-m4.md) | 1035 | ERR_PRESET_INVALID, ERR_SCHEMA_NEWER, WARN_PRESET_MIGRATED |
 | 33 | 9. Đa ngôn ngữ 🟢 | [9-da-ngon-ngu.md](9-da-ngon-ngu.md) | 492 |  |
 | 34 | 10. Lỗi, ghi nhật ký, quan sát | [10-loi-ghi-nhat-ky-quan-sat.md](10-loi-ghi-nhat-ky-quan-sat.md) | 470 | D-13 |

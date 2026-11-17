@@ -80,6 +80,8 @@ dawviz/
 │     │  │  ├─ exportDiagnostics.ts
 │     │  │  ├─ exportEngine.test.ts
 │     │  │  ├─ exportEngine.ts
+│     │  │  ├─ exportLock.test.ts
+│     │  │  ├─ exportLock.ts
 │     │  │  ├─ exportOutput.ts
 │     │  │  ├─ exportPlan.test.ts
 │     │  │  ├─ exportPlan.ts
@@ -94,6 +96,7 @@ dawviz/
 │     │  │  ├─ masterClock.ts
 │     │  │  ├─ numberInput.test.ts
 │     │  │  ├─ numberInput.ts
+│     │  │  ├─ paintDrag.ts
 │     │  │  ├─ parseInWorker.ts
 │     │  │  ├─ parserClient.test.ts
 │     │  │  ├─ parserClient.ts
@@ -988,7 +991,7 @@ Hộp thoại Xuất video (T-09, REQ-EXPORT-00/05/06). Chọn cỡ/FPS/chất l
 
 ```text
 const browserProbe   // Dò hỗ trợ thật của trình duyệt; không có WebCodecs thì mọi cấu hình đều "không hỗ trợ".
-function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec, fileName, onClose }: { scene: SceneDocument; ast: UnifiedProjectAST; derived: Derived; audio: AudioAsset | null; offsetMs: number; projectSec: number; fileName: string; onClose(): void; })
+function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec, fileName, advanced = false, onClose }: { scene: SceneDocument; ast: UnifiedProjectAST; derived: Derived; audio: AudioAsset | null; offsetMs: number; projectSec: number; fileName: string; advanced?: boolean; onClose(): void; })
 ```
 
 #### `apps/web/src/components/FileDrop.tsx`
@@ -1184,9 +1187,10 @@ function effectiveColumns(chosen: number | 'auto', widthPx: number, count: numbe
 interface TrackView   // Ẩn/hiện và solo (REQ-UI-12). Có track solo thì chỉ các track solo được vẽ.
 const EMPTY_VIEW
 function isShown(id: string, v: TrackView): boolean
+type PaintKind
 function TrackPanel(props: Props)
 function TrackLayoutBar({ value, onChange, count }: { value: TrackLayout; onChange(v: TrackLayout): void; count: number })   // Thanh chọn kiểu trình bày: Lưới/Danh sách + số cột (ô nhập số, không giới hạn cứng ngoài số track).
-function TrackColumnsHead({ p, className = '', compact, lead }: { p: Props; className?: string; compact?: boolean; lead?: ReactNode })   // Hàng đầu danh sách: mắt và S chỉ là biểu tượng ở đúng cột, rê chuột thì có chú thích (kiểu bảng lớp của AE). …
+function TrackColumnsHead({ p, className = '', compact, lead, padRight = 0 }: { p: Props; className?: string; compact?: boolean; lead?: ReactNode; padRight?: number })   // Hàng đầu danh sách: mắt và S chỉ là biểu tượng ở đúng cột, rê chuột thì có chú thích (kiểu bảng lớp của AE). …
 ```
 
 #### `apps/web/src/components/Transport.tsx`
@@ -1369,6 +1373,8 @@ const loadPreset = (d: Doc, scene: SceneDocument) =>   // Mở preset: thay scen
 const patchBrightness = (d: Doc, id: TrackId, next: BrightnessConfig) =>   // ── độ sáng nền theo track ──
 const toggleHidden = (d: Doc, id: TrackId) =>
 const toggleSolo = (d: Doc, id: TrackId) =>
+const setHiddenOf = (d: Doc, id: TrackId, on: boolean) =>
+const setSoloOf = (d: Doc, id: TrackId, on: boolean) =>
 const setAllHidden = (d: Doc, hidden: boolean) =>
 const toggleAllHidden = (d: Doc) =>   // Ô "bật/tắt tất cả" của cột mắt: đang có track ẩn thì hiện hết trước; đã hiện hết thì ẩn hết.
 const clearSolo = (d: Doc) =>   // Ô "bỏ solo tất cả" của cột S.
@@ -1383,6 +1389,7 @@ const addWidget = (d: Doc, w: WidgetSpec) =>   // Thêm widget (T-68). Một bư
 const addWidgets = (d: Doc, ws: WidgetSpec[]) =>   // Thêm nhiều widget một lúc (nhân bản vùng chọn).
 const removeWidgets = (d: Doc, ids: readonly string[]) =>   // Xoá widget (T-68). Hoàn tác trả widget về đúng chỗ trong tài liệu (giữ thứ tự và zIndex).
 const setWidgetVisible = (d: Doc, widgetId: string, visible: boolean) =>
+const paintWidgetVisible = (d: Doc, widgetId: string, visible: boolean) =>   // Kéo qua các mắt của danh sách Lớp: đặt thẳng giá trị (không đảo). Lệnh nắm toàn bộ bảng hiện/ẩn nên gộp cả lầ…
 const toggleAllWidgetsVisible = (d: Doc) =>   // Ô mắt ở hàng đầu danh sách Lớp: còn lớp ẩn thì hiện hết trước, đã hiện hết thì ẩn hết. Một bước hoàn tác.
 const reorderZ = (d: Doc, widgetId: string, where: 'front' | 'back') =>   // Đưa widget lên trên cùng / xuống dưới cùng bằng cách đổi zIndex của nó.
 const layerOrder = (s: SceneDocument) =>   // Thứ tự lớp như danh sách Lớp hiển thị: trên cùng trước (zIndex giảm dần; cùng zIndex thì widget đứng sau tron…
@@ -1434,7 +1441,7 @@ interface ExportWorkerLike
 type ExportResult
 class ExportError extends Error
 interface ExportHandle
-function startExport( job: ExportJob, makeWorker: () => ExportWorkerLike, opts: { file?: WritableStream<{ type: 'write'; data: Uint8Array; position: number }>; onProgress?: (p: ProgressInfo) => void; cancelGraceMs?: number } = {}, ): ExportHandle
+function startExport( job: ExportJob, makeWorker: () => ExportWorkerLike, opts: { file?: FileTarget; onProgress?: (p: ProgressInfo) => void; cancelGraceMs?: number } = {}, ): ExportHandle
 ```
 
 #### `apps/web/src/lib/exportDiagnostics.ts`
@@ -1460,6 +1467,17 @@ interface AudioSink
 interface AudioInput
 interface EngineOptions
 async function runExport(o: EngineOptions): Promise<number>   // Với khung k: nếu k rơi đúng đầu một khối 1 s thì đẩy khối âm thanh tương ứng trước (âm thanh dẫn trước 1 s để…
+```
+
+#### `apps/web/src/lib/exportLock.ts`
+
+Mỗi lần chỉ một tab xuất video (Web Locks). Hai tab xuất cùng lúc tranh nhau bộ mã hoá (mỗi tab chậm đi nhiều) và nếu cùng
+
+```text
+const EXPORT_LOCK   // Mỗi lần chỉ một tab xuất video (Web Locks). Hai tab xuất cùng lúc tranh nhau bộ mã hoá (mỗi tab chậm đi nhiều…
+interface ExportLock
+function tryExportLock(): Promise<ExportLock | null>   // Lấy khoá nếu chưa tab nào giữ; `null` nếu tab khác đang xuất. Gọi `release()` khi xong (mọi đường: xong, lỗi,…
+async function isExportBusy(): Promise<boolean>   // Có tab nào (kể cả tab này) đang giữ khoá xuất không; dùng để báo sớm trong hộp thoại. Không có Web Locks → fa…
 ```
 
 #### `apps/web/src/lib/exportOutput.ts`
@@ -1501,14 +1519,33 @@ const RAM_WARN_BYTES
 function videoBitrate(width: number, height: number, quality: Quality): number
 function estimateBytes(opts: { bitrate: number; duration: number; hasAudio: boolean }): number
 function h264Candidates(width: number, height: number, fps: number): string[]   // Chuỗi codec avc1 cần thử, từ profile cao xuống thấp; trong mỗi profile bắt đầu từ level nhỏ nhất đủ dùng rồi …
-const VP9_CODEC   // ---------- Bậc dự phòng codec (REQ-EXPORT-06) ----------
-const VP8_CODEC
+type ContainerId   // ---------- Định dạng và codec (REQ-EXPORT-06) ----------
+type VideoId
+type AudioId
+const CONTAINERS   // Thứ tự hiển thị.
+const CONTAINER_LABEL
+const CONTAINER_EXT
+const CONTAINER_MIME
+const VIDEO_LABEL
+const AUDIO_LABEL
+const CONTAINER_CODECS   // Tổ hợp phổ biến, chạy được ở các trình phát/phần mềm dựng thông dụng (không phải mọi tổ hợp Mediabunny ghi đư…
+const AUTO_VIDEO_ORDER   // Chế độ Cơ bản: video thử lần lượt (HEVC không tự chọn: nhiều trình duyệt không phát được); video nào đi với đ…
 const AAC_CODEC
 const OPUS_CODEC
+const VP9_CODEC
+const VP8_CODEC
 interface CodecProbe
-type TierNotice
+type TierNotice   // `NO_AUDIO_ENCODER`: dự án có âm thanh nhưng không codec nào của định dạng này mã hoá được. `AUDIO_FALLBACK`: …
 interface CodecChoice
-async function chooseCodec( probe: CodecProbe, cfg: { width: number; height: number; fps: number; bitrate: number; hasAudio: boolean; sampleRate?: number; channels?: number }, ): Promise<CodecChoice | null>   // Chọn bậc: 1 H.264 + AAC (MP4), 2 H.264 không tiếng (MP4), 3 VP9/VP8 + Opus (WebM), còn lại null = `ERR_NO_SUP…
+interface Support   // Máy này mã hoá được gì: chuỗi codec đã dò cho từng loại video, và tập codec âm thanh.
+async function detectSupport( probe: CodecProbe, cfg: { width: number; height: number; fps: number; bitrate: number; sampleRate?: number; channels?: number }, ): Promise<Support>   // Dò hỗ trợ thật của máy cho mọi codec (một lần mỗi cấu hình kích thước/fps). `isConfigSupported` ném lỗi coi n…
+function optionsFor(container: ContainerId, sup: Support):    // Các lựa chọn hợp lệ cho một định dạng: chỉ codec vừa hợp định dạng vừa được máy hỗ trợ (cho hai ô thả xuống p…
+const usableContainers = (sup: Support) =>   // Định dạng có ít nhất một codec video dùng được (ô Định dạng chỉ liệt kê những định dạng này).
+function autoChoice(sup: Support, hasAudio: boolean): CodecChoice | null   // Chế độ Cơ bản, theo thứ tự ưu tiên: H.264 + AAC (MP4); thiếu AAC thì hạ dần trong cùng MP4 (MP3, Opus, FLAC) …
+interface Selection
+function normalizeSelection(sel: Selection, sup: Support, hasAudio: boolean): Selection | null   // Đưa lựa chọn về trạng thái hợp lệ: đổi định dạng thì giữ codec cũ nếu còn hợp, không thì lấy codec đầu danh s…
+function manualChoice(sup: Support, sel: Selection, hasAudio: boolean): CodecChoice | null   // Chế độ Nâng cao: đổi lựa chọn đã chuẩn hoá thành `CodecChoice`.
+async function chooseCodec( probe: CodecProbe, cfg: { width: number; height: number; fps: number; bitrate: number; hasAudio: boolean; sampleRate?: number; channels?: number }, ): Promise<CodecChoice | null>   // Tương thích: dò rồi chọn tự động (chế độ Cơ bản).
 interface PreflightInput   // ---------- Pre-flight tổng hợp (REQ-EXPORT-00) ----------
 type PreflightWarning
 interface Preflight
@@ -1531,6 +1568,7 @@ T-09: thông điệp giữa giao diện và Export Worker (Technical Design §7.
 
 ```text
 interface ExportJob
+interface FileTarget   // Tay cầm tệp từ showSaveFilePicker: clone được sang Worker (FileSystemWritableFileStream thì KHÔNG, Chrome ném…
 type ExportIn
 type ExportOut
 ```
@@ -1608,6 +1646,16 @@ function nudge(value: number, dir: 1 | -1, spec: NumberSpec = {}, mods: { shift?
 const SCRUB_SPAN_PX   // Bề rộng (px) kéo để đi hết phạm vi mềm: phạm vi 0–1 bước 0,05 thì cứ ~10 px một bước.
 function scrubValue(start: number, px: number, spec: NumberSpec = {}, range?: [number, number], mods: { shift?: boolean; alt?: boolean } = {}): number   // Giá trị khi kéo trên ô (scrub): `px` là quãng con trỏ đã đi tính từ lúc bắt đầu (dương = tăng). Có `range` (p…
 function formatNumber(value: number, step = 1): string   // Hiển thị giá trị trong ô: số chữ số thập phân theo bước.
+```
+
+#### `apps/web/src/lib/paintDrag.ts`
+
+Kéo để bật/tắt nhanh (như cột mắt/khoá của After Effects), dùng chung cho danh sách Track và danh sách Lớp của Editor.
+
+```text
+interface PaintOptions   // Kéo để bật/tắt nhanh (như cột mắt/khoá của After Effects), dùng chung cho danh sách Track và danh sách Lớp củ…
+const clickIsKeyboard = (e: { detail: number }) =>   // Nút chỉ nên xử lý onClick khi đến từ bàn phím; chuột/cảm ứng đã xử lý ở pointerdown.
+function startPaintDrag(e: { button: number; isPrimary: boolean; target: EventTarget; clientX: number; clientY: number }, o: PaintOptions): void
 ```
 
 #### `apps/web/src/lib/parseInWorker.ts`
@@ -1897,6 +1945,7 @@ type ParseResponse
 - `apps/web/src/lib/exportClient.test.ts`
 - `apps/web/src/lib/exportDiagnostics.test.ts`
 - `apps/web/src/lib/exportEngine.test.ts`
+- `apps/web/src/lib/exportLock.test.ts`
 - `apps/web/src/lib/exportPlan.test.ts`
 - `apps/web/src/lib/externalMidi.test.ts`
 - `apps/web/src/lib/historyLabels.test.ts`
@@ -1933,4 +1982,4 @@ type ParseResponse
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 742 ký hiệu công khai -->
+<!-- 10 thư mục src, 773 ký hiệu công khai -->

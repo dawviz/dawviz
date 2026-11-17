@@ -53,4 +53,4 @@ Khi đang gõ trong một ô nhập, các phím này dùng cho ô đó.
 
 | Phím | Việc |
 |---|---|
-| Alt+Lên / Alt+Xuống | Đổi thứ tự track (Nâng cao) |
+| Alt+Lên / Alt+Xuống | Đổi thứ tự track |

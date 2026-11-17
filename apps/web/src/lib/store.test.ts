@@ -166,6 +166,20 @@ test('lệnh không có mergeKey (đổi phong cách, bộ nốt, ẩn/hiện) k
   assert.equal(s.state().history.undoCount, 2);
 });
 
+test('kéo qua các mắt/S (setHiddenOf/setSoloOf): đặt giá trị, không đảo, cả lần kéo là một bước hoàn tác', () => {
+  const s = mk();
+  s.beginGesture();
+  run(s, (d) => C.setHiddenOf(d, 'a', true)); run(s, (d) => C.setHiddenOf(d, 'b', true)); run(s, (d) => C.setHiddenOf(d, 'b', true));
+  s.endGesture();
+  assert.deepEqual(s.get().hidden, ['a', 'b']);
+  assert.equal(s.state().history.undoCount, 1);
+  s.undo(); assert.deepEqual(s.get().hidden, []);
+  s.redo(); assert.deepEqual(s.get().hidden, ['a', 'b']);
+  s.beginGesture(); run(s, (d) => C.setSoloOf(d, 'b', true)); run(s, (d) => C.setSoloOf(d, 'c', true)); run(s, (d) => C.setSoloOf(d, 'a', false)); s.endGesture();
+  assert.deepEqual(s.get().solo, ['b', 'c']);
+  assert.equal(C.setHiddenOf(s.get(), 'a', true), null); // đã ẩn rồi: không tạo mục lịch sử rỗng
+});
+
 test('làm lại bị xoá khi có lệnh mới; Redo không gộp vào cử chỉ', () => {
   const s = mk();
   run(s, (d) => C.toggleHidden(d, 'a')); run(s, (d) => C.toggleHidden(d, 'b'));

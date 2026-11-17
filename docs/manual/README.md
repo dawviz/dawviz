@@ -33,6 +33,14 @@ Các ô số trong ứng dụng dùng chung một cách nhập:
 - Giữ chuột trên ô rồi kéo lên hoặc xuống để đổi giá trị. Giữ Shift khi kéo để đổi nhanh gấp 10, giữ Alt để đổi chậm lại 10 lần.
 - Gõ sai thì ô giữ nguyên giá trị cũ và báo lý do ngay bên dưới.
 
+## Giới hạn đã biết (bản demo)
+
+- **Xuất video** thử nhiều nhất trên Chrome. Firefox xuất chậm hơn (khoảng gấp đôi) và chỉ hỏi nơi lưu sau khi xuất xong.
+- **Âm thanh AAC** chưa kiểm trên Windows và macOS. Trên Linux, Chrome và Firefox không mã hoá được AAC nên ứng dụng tự dùng codec khác (xem [Xuất video](06-xuat-video.md)).
+- **Chưa lưu phiên làm việc:** đóng hoặc tải lại trang thì mất các chỉnh sửa. Hãy xuất video trước khi đóng.
+- **Không hỗ trợ điện thoại và máy tính bảng**; hãy dùng máy tính.
+- Chỉ một tab xuất video tại một thời điểm.
+
 ## Ghi công
 
 Tác giả, nguồn của phong cách Bản in và phông chữ: [CREDITS.md](../../CREDITS.md).

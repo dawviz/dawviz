@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-WIDGET-03: Event Counter"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-03: Event Counter"
 chunk: req-widget-03-event-counter.md
-source_lines: 576-582
-source_sha1: 46410b6da3
+source_lines: 577-583
+source_sha1: 38e49d98aa
 ids: [D-60, REQ-GRAPHICS-19, REQ-WIDGET-02, REQ-WIDGET-03, WARN_PRESET_VALUE]
 ---
 #### REQ-WIDGET-03: Event Counter

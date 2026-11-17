@@ -12,8 +12,8 @@
         "locales/en.json#web.number."
       ],
       "uiHash": "6d90d8951bae",
-      "viHash": "acaae0cae341",
-      "enHash": "d880fff51a83",
+      "viHash": "21ff6103b3dd",
+      "enHash": "e135f99a2dcc",
       "coverHashes": {
         "apps/web/src/lib/numberInput.ts": "8e27c53523c3",
         "apps/web/src/components/NumberField.tsx": "f7668b64f388",
@@ -63,14 +63,14 @@
         "locales/en.json#web.song.",
         "locales/en.json#web.loop"
       ],
-      "uiHash": "2060ed07609c",
-      "viHash": "b5e0f06304f7",
-      "enHash": "4b49c4b710da",
+      "uiHash": "38c61f0f4531",
+      "viHash": "06a9b2b8c33c",
+      "enHash": "3714ede959ae",
       "coverHashes": {
         "apps/web/src/components/Transport.tsx": "81e2194963a6",
         "apps/web/src/components/VideoStyles.tsx": "4aa9c99f4358",
         "apps/web/src/components/AudioPanel.tsx": "d10b6d8f2293",
-        "apps/web/src/components/TrackPanel.tsx": "d3b1030e3656",
+        "apps/web/src/components/TrackPanel.tsx": "9f50e33fc8f9",
         "apps/web/src/components/Stage.tsx": "010dfe525aed",
         "locales/en.json#web.audio.": "833abe622053",
         "locales/en.json#web.track": "e06c4e497fcd",
@@ -97,11 +97,11 @@
         "apps/web/src/components/WidgetSettings.tsx",
         "locales/en.json#web.ws."
       ],
-      "uiHash": "36ec1bf9a6b8",
-      "viHash": "d03e31a51f2d",
-      "enHash": "0ccdc3305bc5",
+      "uiHash": "b78f4059a05d",
+      "viHash": "8af2a8028a7a",
+      "enHash": "cfb97514a631",
       "coverHashes": {
-        "apps/web/src/components/Editor.tsx": "39355031b2ac",
+        "apps/web/src/components/Editor.tsx": "46f6fdd4cf4f",
         "apps/web/src/components/EditorOverlay.tsx": "3f83719e6d7e",
         "apps/web/src/components/StylePanel.tsx": "739c0fb27805",
         "locales/en.json#web.editor.": "156fc45645ea",
@@ -146,15 +146,15 @@
         "apps/web/src/lib/numberInput.ts",
         "apps/web/src/components/Editor.tsx"
       ],
-      "uiHash": "7048a44959dd",
-      "viHash": "62c4e1b5e95b",
-      "enHash": "eccee6bbbaf1",
+      "uiHash": "5aa3db5146e7",
+      "viHash": "f27f268434a2",
+      "enHash": "cf6a34d159f8",
       "coverHashes": {
         "apps/web/src/lib/transportKeys.ts": "3c74099d457e",
         "apps/web/src/lib/undoKeys.ts": "07c2c99f5cf4",
         "apps/web/src/components/EditorOverlay.tsx": "3f83719e6d7e",
         "apps/web/src/lib/numberInput.ts": "8e27c53523c3",
-        "apps/web/src/components/Editor.tsx": "39355031b2ac"
+        "apps/web/src/components/Editor.tsx": "46f6fdd4cf4f"
       }
     },
     "06-xuat-video": {
@@ -164,12 +164,12 @@
         "apps/web/src/components/ExportDialog.tsx",
         "locales/en.json#web.export"
       ],
-      "uiHash": "e2b20895beb9",
-      "viHash": "7c9254b67242",
-      "enHash": "e59c268fdeb4",
+      "uiHash": "d53abd5b6efa",
+      "viHash": "4c921d901348",
+      "enHash": "2e40e8104740",
       "coverHashes": {
-        "apps/web/src/components/ExportDialog.tsx": "7157fd5babc6",
-        "locales/en.json#web.export": "8560c62d281b"
+        "apps/web/src/components/ExportDialog.tsx": "9e3a4a75b341",
+        "locales/en.json#web.export": "9fa43fa9ca41"
       }
     },
     "07-thu-nghiem": {

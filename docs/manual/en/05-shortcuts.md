@@ -53,4 +53,4 @@ While you're typing in a field, these keys go to the field.
 
 | Keys | What it does |
 |---|---|
-| Alt+Up / Alt+Down | Reorder tracks (Advanced) |
+| Alt+Up / Alt+Down | Reorder tracks |

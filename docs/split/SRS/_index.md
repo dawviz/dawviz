@@ -1,11 +1,11 @@
 # Chỉ mục SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
-nguồn: `SRS.md` (sha1 46410b6da3)
+nguồn: `SRS.md` (sha1 38e49d98aa)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
 | 0 | DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) | [du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md](du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) | 422 |  |
-| 1 | DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) > Lịch sử phiên bản | [lich-su-phien-ban.md](lich-su-phien-ban.md) | 8906 | AT-05, AT-13, AT-16, AT-17, AT-18, AT-19… |
+| 1 | DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) > Lịch sử phiên bản | [lich-su-phien-ban.md](lich-su-phien-ban.md) | 9301 | AT-05, AT-13, AT-16, AT-17, AT-18, AT-19… |
 | 2 | DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) > Quy ước trong tài liệu | [quy-uoc-trong-tai-lieu.md](quy-uoc-trong-tai-lieu.md) | 818 | REQ-GRAPHICS-00 |
 | 3 | DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) > Mục lục | [muc-luc.md](muc-luc.md) | 365 |  |
 | 4 | 1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG | [1-gioi-thieu-muc-tieu-he-thong.md](1-gioi-thieu-muc-tieu-he-thong.md) | 4720 | ARC-01, BR-01, BR-02, BR-03, BR-04, BR-05… |
@@ -57,9 +57,9 @@ nguồn: `SRS.md` (sha1 46410b6da3)
 | 50 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-EXPORT-03: Luồng âm thanh và Silent Audio (D-01 sửa, R-08) | [req-export-03-luong-am-thanh-va-silent-audio-d-0.md](req-export-03-luong-am-thanh-va-silent-audio-d-0.md) | 1276 | AT-03, D-01, KPI-02, NFR-ACC-01, REQ-EXPORT-03 |
 | 51 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-EXPORT-04: Ghép container qua Mediabunny (D-04) | [req-export-04-ghep-container-qua-mediabunny-d-04.md](req-export-04-ghep-container-qua-mediabunny-d-04.md) | 845 | D-04, REQ-EXPORT-04, SOI-10 |
 | 52 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-EXPORT-05: Giao diện tiến độ và hủy | [req-export-05-giao-dien-tien-do-va-huy.md](req-export-05-giao-dien-tien-do-va-huy.md) | 466 | REQ-EXPORT-05 |
-| 53 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-EXPORT-06: Chuỗi dự phòng codec (D-05, R-06) | [req-export-06-chuoi-du-phong-codec-d-05-r-06.md](req-export-06-chuoi-du-phong-codec-d-05-r-06.md) | 2356 | D-05, D-17, ERR_NO_SUPPORTED_ENCODER, KPI-03, REQ-EXPORT-06 |
+| 53 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-EXPORT-06: Chọn định dạng và chuỗi dự phòng codec (D-05, D-61, R-06) | [req-export-06-chon-dinh-dang-va-chuoi-du-phong-c.md](req-export-06-chon-dinh-dang-va-chuoi-du-phong-c.md) | 1793 | D-05, D-61, ERR_NO_SUPPORTED_ENCODER, KPI-03, REQ-EXPORT-06 |
 | 54 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-EXPORT-08: Xuất nền trong suốt để ghép trong phần mềm dựng (D-47), bản 1.0 | [req-export-08-xuat-nen-trong-suot-de-ghep-trong.md](req-export-08-xuat-nen-trong-suot-de-ghep-trong.md) | 2121 | D-47, REQ-EXPORT-08 |
-| 55 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-EXPORT-07: Thực thi trong Worker (ARC-02, D-21) | [req-export-07-thuc-thi-trong-worker-arc-02-d-21.md](req-export-07-thuc-thi-trong-worker-arc-02-d-21.md) | 516 | ARC-02, D-21, ERR_EXPORT_FAILED, REQ-EXPORT-07 |
+| 55 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-EXPORT-07: Thực thi trong Worker (ARC-02, D-21) | [req-export-07-thuc-thi-trong-worker-arc-02-d-21.md](req-export-07-thuc-thi-trong-worker-arc-02-d-21.md) | 946 | ARC-02, D-21, D-61, ERR_EXPORT_FAILED, REQ-EXPORT-07 |
 | 56 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.7. Đa ngôn ngữ và cộng đồng dịch (BR-09, D-30, KPI-08) | [3-7-da-ngon-ngu-va-cong-dong-dich-br-09-d-30-kpi.md](3-7-da-ngon-ngu-va-cong-dong-dich-br-09-d-30-kpi.md) | 2714 | BR-09, D-30, KPI-08, OI-13 |
 | 57 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) | [3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md](3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md) | 328 | AD-08, AD-12, AD-13, AD-15, D-37, D-38… |
 | 58 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) > REQ-GRAPHICS-09: Bộ máy keyframe, easing và Graph Editor | [req-graphics-09-bo-may-keyframe-easing-va-graph.md](req-graphics-09-bo-may-keyframe-easing-va-graph.md) | 844 | REQ-GRAPHICS-09 |

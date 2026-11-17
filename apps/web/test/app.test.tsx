@@ -401,7 +401,7 @@ describe('thẻ Editor (T-68)', () => {
     // Kéo dòng đầu thả vào dòng cuối. jsdom không có DragEvent nên không có clientY: coi như nửa trên → chèn TRƯỚC dòng cuối.
     const rows = () => [...screen.getByTestId('layers').querySelectorAll('li')];
     const top = names()[0], dt = { data: {} as Record<string, string>, types: ['text/x-dawviz-layer'], setData(k: string, v: string) { this.data[k] = v; }, getData(k: string) { return this.data[k]; }, effectAllowed: '', dropEffect: '' };
-    fireEvent.dragStart(rows()[0], { dataTransfer: dt });
+    fireEvent.dragStart(rows()[0].querySelector('[data-testid="layer-grip"]')!, { dataTransfer: { ...dt, setDragImage() {} } as any });
     const end = rows().at(-1)!;
     fireEvent.dragOver(end, { dataTransfer: dt });
     expect(screen.getByTestId('layer-drop')).toBeInTheDocument();
@@ -454,7 +454,6 @@ describe('thẻ Editor (T-68)', () => {
     const start = names(), last = start.at(-1)!;
     fireEvent.click(screen.getByRole('button', { name: new RegExp(`^(Lock|Khoá) ${last}$`) }));
     const row = screen.getByTestId('layers').querySelector(`li[data-locked]`)!;
-    expect(row.getAttribute('draggable')).toBe('false');
     expect(row.querySelector('[data-testid="layer-grip"]')).toBeNull();
     expect(screen.getAllByTestId('layer-grip').length).toBe(start.length - 1);
     fireEvent.click(layerBtn(new RegExp(`^${last}$`)));

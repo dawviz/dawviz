@@ -33,6 +33,14 @@ All number fields work the same way:
 - Hold the mouse on the field and drag up or down to change the value. Hold Shift while dragging for 10× faster, Alt for 10× slower.
 - If the input can't be read, the field keeps its old value and says why just below.
 
+## Known limits (demo)
+
+- **Video export** is tested most on Chrome. Firefox exports more slowly (about twice as slow) and only asks where to save after the export finishes.
+- **AAC audio** hasn't been tested on Windows and macOS. On Linux, Chrome and Firefox can't encode AAC, so the app uses another codec automatically (see [Export video](06-export-video.md)).
+- **Sessions aren't saved:** closing or reloading the page loses your edits. Export the video before you close.
+- **Phones and tablets aren't supported**; please use a computer.
+- Only one tab can export a video at a time.
+
 ## Credits
 
 Authors, the source of the Paper style, and fonts: [CREDITS.md](../../../CREDITS.md).

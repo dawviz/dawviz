@@ -1,6 +1,6 @@
 // Client của Export Worker (T-09): một lần xuất = một Worker; huỷ = gửi cancel rồi chờ Worker báo, quá hạn thì terminate.
 // Worker tiêm vào (`makeWorker`) để test; bản thật ở lib/exportWorker.ts (Trusted Types).
-import type { ExportIn, ExportJob, ExportOut } from './exportProtocol.ts';
+import type { ExportIn, ExportJob, ExportOut, FileTarget } from './exportProtocol.ts';
 import type { ProgressInfo } from './exportPlan.ts';
 
 export interface ExportWorkerLike {
@@ -21,7 +21,7 @@ export interface ExportHandle {
 export function startExport(
   job: ExportJob,
   makeWorker: () => ExportWorkerLike,
-  opts: { file?: WritableStream<{ type: 'write'; data: Uint8Array; position: number }>; onProgress?: (p: ProgressInfo) => void; cancelGraceMs?: number } = {},
+  opts: { file?: FileTarget; onProgress?: (p: ProgressInfo) => void; cancelGraceMs?: number } = {},
 ): ExportHandle {
   const w = makeWorker();
   let timer: ReturnType<typeof setTimeout> | undefined;
@@ -39,9 +39,8 @@ export function startExport(
     w.onerror = (e) => { end(); reject(new ExportError(e instanceof Error ? e.message : 'worker crashed')); };
   });
   const transfer: Transferable[] = [];
-  if (opts.file) transfer.push(opts.file as unknown as Transferable);
   if (job.audio) transfer.push(...job.audio.channels.map((c) => c.buffer as ArrayBuffer));
-  w.postMessage({ type: 'start', job, file: opts.file }, transfer);
+  try { w.postMessage({ type: 'start', job, file: opts.file }, transfer); } catch (e) { w.terminate(); if (timer) clearTimeout(timer); throw e; }
   return {
     result,
     cancel() {

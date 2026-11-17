@@ -4,7 +4,7 @@
  "docs": {
   "BRD.md": {
    "title": "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)",
-   "sha1": "a19d8dcb70",
+   "sha1": "bdfba51959",
    "chunks": [
     {
      "n": 0,
@@ -13,10 +13,10 @@
      "path": [
       "DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)"
      ],
-     "chars": 4828,
+     "chars": 5114,
      "lines": [
       2,
-      29
+      30
      ],
      "ids": [
       "BR-09",
@@ -50,6 +50,7 @@
       "D-58",
       "D-59",
       "D-60",
+      "D-61",
       "OI-09",
       "OI-10",
       "OI-11",
@@ -74,8 +75,8 @@
      ],
      "chars": 1753,
      "lines": [
-      30,
-      44
+      31,
+      45
      ],
      "ids": [
       "D-54"
@@ -90,8 +91,8 @@
      ],
      "chars": 4778,
      "lines": [
-      45,
-      83
+      46,
+      84
      ],
      "ids": [
       "BR-01",
@@ -126,8 +127,8 @@
      ],
      "chars": 1342,
      "lines": [
-      84,
-      103
+      85,
+      104
      ],
      "ids": [
       "D-19"
@@ -143,8 +144,8 @@
      ],
      "chars": 3226,
      "lines": [
-      106,
-      132
+      107,
+      133
      ],
      "ids": [
       "BR-09",
@@ -173,8 +174,8 @@
      ],
      "chars": 892,
      "lines": [
-      133,
-      142
+      134,
+      143
      ],
      "ids": [
       "AT-05",
@@ -191,8 +192,8 @@
      ],
      "chars": 2931,
      "lines": [
-      143,
-      154
+      144,
+      155
      ],
      "ids": [
       "D-14",
@@ -227,8 +228,8 @@
      ],
      "chars": 1215,
      "lines": [
-      155,
-      169
+      156,
+      170
      ],
      "ids": [
       "D-12",
@@ -251,8 +252,8 @@
      ],
      "chars": 4347,
      "lines": [
-      170,
-      190
+      171,
+      191
      ],
      "ids": [
       "D-01",
@@ -277,8 +278,8 @@
      ],
      "chars": 554,
      "lines": [
-      191,
-      199
+      192,
+      200
      ],
      "ids": [
       "D-01"
@@ -291,10 +292,10 @@
      "path": [
       "7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)"
      ],
-     "chars": 25016,
+     "chars": 25947,
      "lines": [
-      200,
-      268
+      201,
+      270
      ],
      "ids": [
       "AD-08",
@@ -364,6 +365,7 @@
       "D-58",
       "D-59",
       "D-60",
+      "D-61",
       "KPI-04",
       "NFR-ACC-02",
       "NFR-SEC-01",
@@ -377,6 +379,7 @@
       "P-01",
       "P-13",
       "REQ-AST-02",
+      "REQ-EXPORT-06",
       "REQ-GRAPHICS-02",
       "REQ-GRAPHICS-05",
       "REQ-GRAPHICS-12",
@@ -404,8 +407,8 @@
      ],
      "chars": 5029,
      "lines": [
-      269,
-      290
+      271,
+      292
      ],
      "ids": [
       "D-01",
@@ -446,7 +449,7 @@
   },
   "SRS.md": {
    "title": "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)",
-   "sha1": "46410b6da3",
+   "sha1": "38e49d98aa",
    "chunks": [
     {
      "n": 0,
@@ -470,10 +473,10 @@
       "DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)",
       "Lịch sử phiên bản"
      ],
-     "chars": 8906,
+     "chars": 9301,
      "lines": [
       7,
-      24
+      25
      ],
      "ids": [
       "AT-05",
@@ -511,10 +514,12 @@
       "D-57",
       "D-58",
       "D-60",
+      "D-61",
       "ERR_AUDIO_TOO_MANY",
       "ERR_PRESET_INVALID",
       "ERR_PRESET_TOO_LARGE",
       "ERR_SCHEMA_NEWER",
+      "KPI-03",
       "NFR-COMP-03",
       "NFR-SEC-05",
       "OI-18",
@@ -524,6 +529,8 @@
       "REQ-EXPORT-00",
       "REQ-EXPORT-03",
       "REQ-EXPORT-04",
+      "REQ-EXPORT-06",
+      "REQ-EXPORT-07",
       "REQ-EXPORT-08",
       "REQ-GRAPHICS-01",
       "REQ-GRAPHICS-02",
@@ -589,8 +596,8 @@
      ],
      "chars": 818,
      "lines": [
-      25,
-      33
+      26,
+      34
      ],
      "ids": [
       "REQ-GRAPHICS-00"
@@ -606,8 +613,8 @@
      ],
      "chars": 365,
      "lines": [
-      34,
-      47
+      35,
+      48
      ],
      "ids": []
     },
@@ -620,8 +627,8 @@
      ],
      "chars": 4720,
      "lines": [
-      48,
-      111
+      49,
+      112
      ],
      "ids": [
       "ARC-01",
@@ -670,8 +677,8 @@
      ],
      "chars": 6588,
      "lines": [
-      114,
-      191
+      115,
+      192
      ],
      "ids": [
       "ARC-01",
@@ -698,8 +705,8 @@
      ],
      "chars": 641,
      "lines": [
-      192,
-      199
+      193,
+      200
      ],
      "ids": [
       "REQ-AST-01",
@@ -724,8 +731,8 @@
      ],
      "chars": 1063,
      "lines": [
-      200,
-      214
+      201,
+      215
      ],
      "ids": [
       "ARC-01",
@@ -749,8 +756,8 @@
      ],
      "chars": 2241,
      "lines": [
-      215,
-      230
+      216,
+      231
      ],
      "ids": [
       "ARC-01",
@@ -782,8 +789,8 @@
      ],
      "chars": 1119,
      "lines": [
-      231,
-      246
+      232,
+      247
      ],
      "ids": [
       "ARC-04",
@@ -800,8 +807,8 @@
      ],
      "chars": 1199,
      "lines": [
-      247,
-      257
+      248,
+      258
      ],
      "ids": [
       "AT-05",
@@ -821,8 +828,8 @@
      ],
      "chars": 1425,
      "lines": [
-      262,
-      270
+      263,
+      271
      ],
      "ids": [
       "ERR_ARCHIVE_INVALID",
@@ -844,8 +851,8 @@
      ],
      "chars": 2658,
      "lines": [
-      271,
-      291
+      272,
+      292
      ],
      "ids": [
       "ERR_NO_NOTES",
@@ -868,8 +875,8 @@
      ],
      "chars": 3655,
      "lines": [
-      292,
-      305
+      293,
+      306
      ],
      "ids": [
       "ERR_NO_NOTES",
@@ -896,8 +903,8 @@
      ],
      "chars": 1203,
      "lines": [
-      306,
-      316
+      307,
+      317
      ],
      "ids": [
       "D-03",
@@ -920,8 +927,8 @@
      ],
      "chars": 924,
      "lines": [
-      317,
-      325
+      318,
+      326
      ],
      "ids": [
       "ERR_UNSUPPORTED_FORMAT",
@@ -942,8 +949,8 @@
      ],
      "chars": 1509,
      "lines": [
-      326,
-      332
+      327,
+      333
      ],
      "ids": [
       "D-18",
@@ -967,8 +974,8 @@
      ],
      "chars": 1100,
      "lines": [
-      333,
-      340
+      334,
+      341
      ],
      "ids": [
       "ERR_ARCHIVE_INVALID",
@@ -989,8 +996,8 @@
      ],
      "chars": 1665,
      "lines": [
-      341,
-      346
+      342,
+      347
      ],
      "ids": [
       "D-24",
@@ -1012,8 +1019,8 @@
      ],
      "chars": 3457,
      "lines": [
-      347,
-      407
+      348,
+      408
      ],
      "ids": [
       "D-08",
@@ -1039,8 +1046,8 @@
      ],
      "chars": 421,
      "lines": [
-      410,
-      414
+      411,
+      415
      ],
      "ids": [
       "D-06",
@@ -1058,8 +1065,8 @@
      ],
      "chars": 1434,
      "lines": [
-      415,
-      420
+      416,
+      421
      ],
      "ids": [
       "D-07",
@@ -1078,8 +1085,8 @@
      ],
      "chars": 1248,
      "lines": [
-      421,
-      427
+      422,
+      428
      ],
      "ids": [
       "D-57",
@@ -1097,8 +1104,8 @@
      ],
      "chars": 1489,
      "lines": [
-      428,
-      437
+      429,
+      438
      ],
      "ids": [
       "REQ-GRAPHICS-09",
@@ -1120,8 +1127,8 @@
      ],
      "chars": 1998,
      "lines": [
-      438,
-      446
+      439,
+      447
      ],
      "ids": [
       "D-15",
@@ -1147,8 +1154,8 @@
      ],
      "chars": 673,
      "lines": [
-      447,
-      451
+      448,
+      452
      ],
      "ids": [
       "KPI-04",
@@ -1167,8 +1174,8 @@
      ],
      "chars": 2443,
      "lines": [
-      452,
-      463
+      453,
+      464
      ],
      "ids": [
       "D-33",
@@ -1195,8 +1202,8 @@
      ],
      "chars": 3425,
      "lines": [
-      464,
-      483
+      465,
+      484
      ],
      "ids": [
       "P-01",
@@ -1220,8 +1227,8 @@
      ],
      "chars": 442,
      "lines": [
-      484,
-      488
+      485,
+      489
      ],
      "ids": [
       "D-37",
@@ -1239,8 +1246,8 @@
      ],
      "chars": 1021,
      "lines": [
-      489,
-      496
+      490,
+      497
      ],
      "ids": [
       "ARC-01",
@@ -1259,8 +1266,8 @@
      ],
      "chars": 2766,
      "lines": [
-      497,
-      516
+      498,
+      517
      ],
      "ids": [
       "D-50",
@@ -1285,8 +1292,8 @@
      ],
      "chars": 5095,
      "lines": [
-      517,
-      535
+      518,
+      536
      ],
      "ids": [
       "D-57",
@@ -1318,8 +1325,8 @@
      ],
      "chars": 1710,
      "lines": [
-      536,
-      544
+      537,
+      545
      ],
      "ids": [
       "D-60",
@@ -1346,8 +1353,8 @@
      ],
      "chars": 2214,
      "lines": [
-      545,
-      557
+      546,
+      558
      ],
      "ids": [
       "D-50",
@@ -1369,8 +1376,8 @@
      ],
      "chars": 368,
      "lines": [
-      558,
-      561
+      559,
+      562
      ],
      "ids": [
       "BR-02",
@@ -1389,8 +1396,8 @@
      ],
      "chars": 1411,
      "lines": [
-      562,
-      570
+      563,
+      571
      ],
      "ids": [
       "D-15",
@@ -1411,8 +1418,8 @@
      ],
      "chars": 1101,
      "lines": [
-      571,
-      575
+      572,
+      576
      ],
      "ids": [
       "NFR-SEC-03",
@@ -1432,8 +1439,8 @@
      ],
      "chars": 1199,
      "lines": [
-      576,
-      582
+      577,
+      583
      ],
      "ids": [
       "D-60",
@@ -1454,8 +1461,8 @@
      ],
      "chars": 935,
      "lines": [
-      583,
-      589
+      584,
+      590
      ],
      "ids": [
       "REQ-WIDGET-04"
@@ -1472,8 +1479,8 @@
      ],
      "chars": 1520,
      "lines": [
-      590,
-      599
+      591,
+      600
      ],
      "ids": [
       "REQ-AST-01",
@@ -1491,8 +1498,8 @@
      ],
      "chars": 2250,
      "lines": [
-      600,
-      609
+      601,
+      610
      ],
      "ids": [
       "D-09",
@@ -1513,8 +1520,8 @@
      ],
      "chars": 2473,
      "lines": [
-      610,
-      622
+      611,
+      623
      ],
      "ids": [
       "ARC-03",
@@ -1539,8 +1546,8 @@
      ],
      "chars": 3254,
      "lines": [
-      623,
-      635
+      624,
+      636
      ],
      "ids": [
       "ERR_AUDIO_TOO_MANY",
@@ -1565,8 +1572,8 @@
      ],
      "chars": 822,
      "lines": [
-      636,
-      641
+      637,
+      642
      ],
      "ids": [
       "D-27",
@@ -1585,8 +1592,8 @@
      ],
      "chars": 2994,
      "lines": [
-      642,
-      665
+      643,
+      666
      ],
      "ids": [
       "D-32",
@@ -1621,8 +1628,8 @@
      ],
      "chars": 3208,
      "lines": [
-      666,
-      735
+      667,
+      736
      ],
      "ids": [
       "BR-05",
@@ -1647,8 +1654,8 @@
      ],
      "chars": 413,
      "lines": [
-      738,
-      740
+      739,
+      741
      ],
      "ids": [
       "D-05",
@@ -1667,8 +1674,8 @@
      ],
      "chars": 2606,
      "lines": [
-      741,
-      763
+      742,
+      764
      ],
      "ids": [
       "D-17",
@@ -1690,8 +1697,8 @@
      ],
      "chars": 502,
      "lines": [
-      764,
-      769
+      765,
+      770
      ],
      "ids": [
       "REQ-EXPORT-01",
@@ -1709,8 +1716,8 @@
      ],
      "chars": 192,
      "lines": [
-      770,
-      772
+      771,
+      773
      ],
      "ids": [
       "REQ-EXPORT-02"
@@ -1727,8 +1734,8 @@
      ],
      "chars": 1276,
      "lines": [
-      773,
-      778
+      774,
+      779
      ],
      "ids": [
       "AT-03",
@@ -1749,8 +1756,8 @@
      ],
      "chars": 845,
      "lines": [
-      779,
-      783
+      780,
+      784
      ],
      "ids": [
       "D-04",
@@ -1769,8 +1776,8 @@
      ],
      "chars": 466,
      "lines": [
-      784,
-      786
+      785,
+      787
      ],
      "ids": [
       "REQ-EXPORT-05"
@@ -1778,21 +1785,21 @@
     },
     {
      "n": 53,
-     "file": "SRS/req-export-06-chuoi-du-phong-codec-d-05-r-06.md",
-     "title": "REQ-EXPORT-06: Chuỗi dự phòng codec (D-05, R-06)",
+     "file": "SRS/req-export-06-chon-dinh-dang-va-chuoi-du-phong-c.md",
+     "title": "REQ-EXPORT-06: Chọn định dạng và chuỗi dự phòng codec (D-05, D-61, R-06)",
      "path": [
       "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS)",
       "3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07)",
-      "REQ-EXPORT-06: Chuỗi dự phòng codec (D-05, R-06)"
+      "REQ-EXPORT-06: Chọn định dạng và chuỗi dự phòng codec (D-05, D-61, R-06)"
      ],
-     "chars": 2356,
+     "chars": 1793,
      "lines": [
-      787,
-      823
+      788,
+      814
      ],
      "ids": [
       "D-05",
-      "D-17",
+      "D-61",
       "ERR_NO_SUPPORTED_ENCODER",
       "KPI-03",
       "REQ-EXPORT-06"
@@ -1809,8 +1816,8 @@
      ],
      "chars": 2121,
      "lines": [
-      824,
-      835
+      815,
+      826
      ],
      "ids": [
       "D-47",
@@ -1826,14 +1833,15 @@
       "3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07)",
       "REQ-EXPORT-07: Thực thi trong Worker (ARC-02, D-21)"
      ],
-     "chars": 516,
+     "chars": 946,
      "lines": [
-      836,
-      844
+      827,
+      836
      ],
      "ids": [
       "ARC-02",
       "D-21",
+      "D-61",
       "ERR_EXPORT_FAILED",
       "REQ-EXPORT-07"
      ]
@@ -1848,8 +1856,8 @@
      ],
      "chars": 2714,
      "lines": [
-      845,
-      859
+      837,
+      851
      ],
      "ids": [
       "BR-09",
@@ -1868,8 +1876,8 @@
      ],
      "chars": 328,
      "lines": [
-      860,
-      863
+      852,
+      855
      ],
      "ids": [
       "AD-08",
@@ -1894,8 +1902,8 @@
      ],
      "chars": 844,
      "lines": [
-      864,
-      867
+      856,
+      859
      ],
      "ids": [
       "REQ-GRAPHICS-09"
@@ -1912,8 +1920,8 @@
      ],
      "chars": 467,
      "lines": [
-      868,
-      870
+      860,
+      862
      ],
      "ids": [
       "AD-11",
@@ -1933,8 +1941,8 @@
      ],
      "chars": 327,
      "lines": [
-      871,
-      873
+      863,
+      865
      ],
      "ids": [
       "REQ-GRAPHICS-11"
@@ -1951,8 +1959,8 @@
      ],
      "chars": 529,
      "lines": [
-      874,
-      876
+      866,
+      868
      ],
      "ids": [
       "REQ-GRAPHICS-12"
@@ -1969,8 +1977,8 @@
      ],
      "chars": 339,
      "lines": [
-      877,
-      879
+      869,
+      871
      ],
      "ids": [
       "REQ-GRAPHICS-13"
@@ -1987,8 +1995,8 @@
      ],
      "chars": 759,
      "lines": [
-      880,
-      884
+      872,
+      876
      ],
      "ids": [
       "P-04",
@@ -2011,8 +2019,8 @@
      ],
      "chars": 1874,
      "lines": [
-      885,
-      893
+      877,
+      885
      ],
      "ids": [
       "D-47",
@@ -2032,8 +2040,8 @@
      ],
      "chars": 322,
      "lines": [
-      894,
-      896
+      886,
+      888
      ],
      "ids": [
       "ERR_ASSET_DECODE",
@@ -2052,8 +2060,8 @@
      ],
      "chars": 444,
      "lines": [
-      897,
-      899
+      889,
+      891
      ],
      "ids": [
       "D-14",
@@ -2071,8 +2079,8 @@
      ],
      "chars": 5167,
      "lines": [
-      900,
-      946
+      892,
+      938
      ],
      "ids": [
       "ARC-07",
@@ -2123,8 +2131,8 @@
      ],
      "chars": 4893,
      "lines": [
-      949,
-      986
+      941,
+      978
      ],
      "ids": [
       "D-57",
@@ -2141,8 +2149,8 @@
      ],
      "chars": 364,
      "lines": [
-      987,
-      991
+      979,
+      983
      ],
      "ids": [
       "REQ-GRAPHICS-05"
@@ -2158,8 +2166,8 @@
      ],
      "chars": 18674,
      "lines": [
-      992,
-      1065
+      984,
+      1057
      ],
      "ids": [
       "ARC-05",
@@ -2222,8 +2230,8 @@
      ],
      "chars": 1419,
      "lines": [
-      1066,
-      1081
+      1058,
+      1073
      ],
      "ids": [
       "BR-01",
@@ -2283,8 +2291,8 @@
      ],
      "chars": 6665,
      "lines": [
-      1082,
-      1116
+      1074,
+      1108
      ],
      "ids": [
       "ARC-01",
@@ -2350,8 +2358,8 @@
      ],
      "chars": 4032,
      "lines": [
-      1117,
-      1143
+      1109,
+      1135
      ],
      "ids": [
       "D-20",
@@ -2405,8 +2413,8 @@
      ],
      "chars": 2383,
      "lines": [
-      1146,
-      1168
+      1138,
+      1160
      ],
      "ids": [
       "ERR_ARCHIVE_INVALID",
@@ -2441,8 +2449,8 @@
      ],
      "chars": 1151,
      "lines": [
-      1169,
-      1181
+      1161,
+      1173
      ],
      "ids": [
       "NFR-SEC-04",
@@ -2465,8 +2473,8 @@
      ],
      "chars": 1331,
      "lines": [
-      1182,
-      1187
+      1174,
+      1179
      ],
      "ids": [
       "REQ-AUDIO-01",
@@ -2513,8 +2521,8 @@
      ],
      "chars": 2889,
      "lines": [
-      1188,
-      1219
+      1180,
+      1211
      ],
      "ids": [
       "D-20",
@@ -2697,7 +2705,7 @@
   },
   "TECHNICAL-DESIGN.md": {
    "title": "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER",
-   "sha1": "03d31db5d8",
+   "sha1": "4c32e8264d",
    "chunks": [
     {
      "n": 0,
@@ -3298,16 +3306,17 @@
       "7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở)",
       "7.4 Export Worker và giao diện (T-09, 2026-11-14)"
      ],
-     "chars": 2905,
+     "chars": 7086,
      "lines": [
       420,
-      429
+      432
      ],
      "ids": [
       "AT-03",
       "AT-05",
       "D-04",
       "D-26",
+      "D-61",
       "ERR_EXPORT_FAILED",
       "REQ-EXPORT-02",
       "REQ-GRAPHICS-05",
@@ -3323,8 +3332,8 @@
      ],
      "chars": 1035,
      "lines": [
-      430,
-      435
+      433,
+      438
      ],
      "ids": [
       "ERR_PRESET_INVALID",
@@ -3341,8 +3350,8 @@
      ],
      "chars": 492,
      "lines": [
-      436,
-      438
+      439,
+      441
      ],
      "ids": []
     },
@@ -3355,8 +3364,8 @@
      ],
      "chars": 470,
      "lines": [
-      439,
-      443
+      442,
+      446
      ],
      "ids": [
       "D-13"
@@ -3371,8 +3380,8 @@
      ],
      "chars": 885,
      "lines": [
-      444,
-      453
+      447,
+      456
      ],
      "ids": [
       "NFR-PERF-04",
@@ -3388,8 +3397,8 @@
      ],
      "chars": 728,
      "lines": [
-      454,
-      456
+      457,
+      459
      ],
      "ids": [
       "OI-07"
@@ -3404,8 +3413,8 @@
      ],
      "chars": 906,
      "lines": [
-      457,
-      463
+      460,
+      466
      ],
      "ids": [
       "D-12",
@@ -3422,8 +3431,8 @@
      ],
      "chars": 760,
      "lines": [
-      464,
-      471
+      467,
+      474
      ],
      "ids": []
     }
@@ -6342,6 +6351,14 @@
    "SRS/req-graphics-19-o-chu-nguoi-dung-them-va-cho-giu.md",
    "SRS/req-widget-03-event-counter.md"
   ],
+  "D-61": [
+   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
+   "SRS/lich-su-phien-ban.md",
+   "SRS/req-export-06-chon-dinh-dang-va-chuoi-du-phong-c.md",
+   "SRS/req-export-07-thuc-thi-trong-worker-arc-02-d-21.md",
+   "TECHNICAL-DESIGN/7-4-export-worker-va-giao-dien-t-09-2026-11-14.md"
+  ],
   "OI-09": [
    "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
    "BRD/8-cac-van-de-con-mo-open-issues.md",
@@ -6540,7 +6557,8 @@
   ],
   "KPI-03": [
    "BRD/2-muc-tieu-kinh-doanh-chi-so-do-luong-yeu-cau-ng.md",
-   "SRS/req-export-06-chuoi-du-phong-codec-d-05-r-06.md",
+   "SRS/lich-su-phien-ban.md",
+   "SRS/req-export-06-chon-dinh-dang-va-chuoi-du-phong-c.md",
    "SRS/4-yeu-cau-phi-chuc-nang-non-functional-requireme.md",
    "SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md",
    "SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md",
@@ -6584,8 +6602,10 @@
   "REQ-EXPORT-06": [
    "BRD/2-muc-tieu-kinh-doanh-chi-so-do-luong-yeu-cau-ng.md",
    "BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md",
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
+   "SRS/lich-su-phien-ban.md",
    "SRS/req-cap-01-phat-hien-kha-nang-cua-trinh-duyet-r.md",
-   "SRS/req-export-06-chuoi-du-phong-codec-d-05-r-06.md",
+   "SRS/req-export-06-chon-dinh-dang-va-chuoi-du-phong-c.md",
    "TECHNICAL-DESIGN/7-1-trinh-tu.md",
    "TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md"
   ],
@@ -6618,7 +6638,7 @@
    "SRS/lich-su-phien-ban.md",
    "SRS/2-1-kien-truc-phan-tang-he-thong.md",
    "SRS/req-cap-01-phat-hien-kha-nang-cua-trinh-duyet-r.md",
-   "SRS/req-export-06-chuoi-du-phong-codec-d-05-r-06.md",
+   "SRS/req-export-06-chon-dinh-dang-va-chuoi-du-phong-c.md",
    "SRS/4-yeu-cau-phi-chuc-nang-non-functional-requireme.md"
   ],
   "SOI-12": [
@@ -6974,8 +6994,7 @@
   ],
   "D-17": [
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
-   "SRS/req-export-00-pre-flight-r-01-d-17.md",
-   "SRS/req-export-06-chuoi-du-phong-codec-d-05-r-06.md"
+   "SRS/req-export-00-pre-flight-r-01-d-17.md"
   ],
   "D-18": [
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
@@ -7283,6 +7302,12 @@
    "SRS/2-2-luong-du-lieu-chinh.md",
    "SRS/req-export-04-ghep-container-qua-mediabunny-d-04.md",
    "SPIKE-1-EXPORT/5-doi-chieu-voi-tai-lieu-v1-1.md"
+  ],
+  "REQ-EXPORT-07": [
+   "SRS/lich-su-phien-ban.md",
+   "SRS/2-4-danh-gia-kien-truc-hien-tai.md",
+   "SRS/req-export-07-thuc-thi-trong-worker-arc-02-d-21.md",
+   "SRS/phu-luc-b-ghi-chu-ra-soat.md"
   ],
   "REQ-EXPORT-08": [
    "SRS/lich-su-phien-ban.md",
@@ -7612,11 +7637,6 @@
    "SRS/4-yeu-cau-phi-chuc-nang-non-functional-requireme.md",
    "TECHNICAL-DESIGN/5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md",
    "EXPRESSIONS/5-phong-thu-nhieu-lop-cho-ung-dung-ad-14.md"
-  ],
-  "REQ-EXPORT-07": [
-   "SRS/2-4-danh-gia-kien-truc-hien-tai.md",
-   "SRS/req-export-07-thuc-thi-trong-worker-arc-02-d-21.md",
-   "SRS/phu-luc-b-ghi-chu-ra-soat.md"
   ],
   "ERR_ARCHIVE_INVALID": [
    "SRS/req-parser-00-thuc-thi-an-toan-va-gioi-han-dau-v.md",
@@ -7978,7 +7998,7 @@
    "TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md"
   ],
   "ERR_NO_SUPPORTED_ENCODER": [
-   "SRS/req-export-06-chuoi-du-phong-codec-d-05-r-06.md",
+   "SRS/req-export-06-chon-dinh-dang-va-chuoi-du-phong-c.md",
    "SRS/phu-luc-a-ma-loi.md",
    "TECHNICAL-DESIGN/7-2-quyet-dinh-ky-thuat.md",
    "TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md"

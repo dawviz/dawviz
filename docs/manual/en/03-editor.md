@@ -65,10 +65,11 @@ To turn snapping off for a moment, hold Alt while moving, or Ctrl (⌘ on Mac) w
 
 The **Layers** list shows which widget sits on top: the top row is drawn on top.
 
-- **Reorder:** drag the six-dot handle, or select a row and press Alt+Up / Alt+Down. **Arrange** on the right has four buttons: bring to front, bring forward, send backward, send to back (shortcuts Ctrl+] and Ctrl+[, add Shift to go all the way).
+- **Reorder:** drag the six-dot handle (only the handle reorders; dragging elsewhere on the row doesn't), or select a row and press Alt+Up / Alt+Down. **Arrange** on the right has four buttons: bring to front, bring forward, send backward, send to back (shortcuts Ctrl+] and Ctrl+[, add Shift to go all the way).
 - **Eye:** hide or show the widget in the video (same as **Show in video**).
 - **Lock:** stops the widget from being dragged by accident. A locked widget can still be selected in Layers to see its numbers or unlock it.
 - The top row hides/shows or locks/unlocks every layer at once.
+- **Quick hide or lock:** press and hold an eye (or lock) and drag up or down over other layers; every layer you pass gets the same state as the first one you pressed. A drag that hides/shows is one undo step.
 
 ## Settings
 

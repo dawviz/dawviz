@@ -4,8 +4,11 @@
 // thành phần và cùng lệnh với inspector của Preview (App truyền vào qua `widgetSections`).
 // Khoá là trạng thái của phiên chỉnh sửa (không vào preset video, không vào lịch sử); ẩn/hiện, vị trí, cỡ, góc, neo, thứ tự lớp
 // và bắt dính đều là lệnh hoàn tác được (lib/commands.ts).
-import { useMemo, useRef, useState, type DragEvent, type KeyboardEvent, type ReactNode } from 'react';
+import { motion } from 'framer-motion';
+import { useContext, useMemo, useRef, useState, type DragEvent, type KeyboardEvent, type ReactNode } from 'react';
 import { ADDABLE_WIDGETS, normalizeAngle, rotateGroup, type Derived, type SceneDocument, type UnifiedProjectAST, type WidgetLayout, type WidgetSpec, type WidgetType } from '@dawviz/render-core';
+import { clickIsKeyboard, startPaintDrag } from '../lib/paintDrag.ts';
+import { GestureContext } from '../lib/storeReact.ts';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import type { Playback } from '../lib/playback.ts';
 import type { FontsStatus } from '../lib/fonts.ts';
@@ -25,9 +28,13 @@ const PASTEBOARD = 28;
 
 
 type Patches = Record<string, Partial<WidgetLayout>>;
+/** Lớp trượt về chỗ mới khi đổi thứ tự (cùng lò xo với danh sách Track ở Preview; MotionConfig reducedMotion=user tắt khi người dùng yêu cầu). */
+const LAYER_SPRING = { type: 'spring', stiffness: 420, damping: 38, mass: 0.8 } as const;
 export interface EditorActions {
   layouts(p: Patches): void;
   visible(id: string, v: boolean): void;
+  /** Kéo qua các mắt của Lớp: đặt giá trị cho từng lớp đi qua (gộp trong cử chỉ kéo). */
+  paintVisible(id: string, v: boolean): void;
   /** Ô mắt ở hàng đầu Lớp: còn lớp ẩn thì hiện hết, không thì ẩn hết. */
   allVisible(): void;
   z(id: string, where: 'front' | 'back'): void;
@@ -80,6 +87,17 @@ export function Editor({ scene, derived, ast, playback, fonts, advanced, actions
   // Ô khoá ở hàng đầu Lớp: còn lớp chưa khoá thì khoá hết, đã khoá hết thì mở hết (cùng quy tắc với ô mắt).
   const lockAll = () => setLocked(() => (scene.widgets.every((w) => locked.has(w.id)) ? new Set() : new Set(scene.widgets.map((w) => w.id))));
   const { designWidth: W, designHeight: H } = scene.canvas;
+  // Kéo qua các mắt/khoá của Lớp để ẩn hoặc khoá nhanh (lib/paintDrag.ts). Cả lần kéo là một bước hoàn tác (mắt); khoá không vào lịch sử.
+  const gestureCtx = useContext(GestureContext);
+  const paintRef = useRef({ scene, locked, actions }); paintRef.current = { scene, locked, actions };
+  const paintLayers = (e: React.PointerEvent<HTMLElement>) => startPaintDrag(e, {
+    current: (kind, id) => (kind === 'eye' ? !paintRef.current.scene.widgets.find((w) => w.id === id)?.visible : paintRef.current.locked.has(id)),
+    apply: (kind, id, on) => {
+      if (kind === 'eye') paintRef.current.actions.paintVisible(id, !on);
+      else setLocked((s) => { if (s.has(id) === on) return s; const n = new Set(s); if (on) n.add(id); else n.delete(id); return n; });
+    },
+    gesture: gestureCtx ?? undefined,
+  });
 
   const scrollerRef = useRef<HTMLDivElement>(null), stageRef = useRef<HTMLDivElement>(null);
   const width = useStageWidth(scrollerRef, stageRef, { aspect: scene.canvas.designWidth / scene.canvas.designHeight, chrome: STAGE_CHROME.plain + 48 + 2 * PASTEBOARD, extra: 2 * PASTEBOARD, active: active && !!derived });
@@ -140,22 +158,22 @@ export function Editor({ scene, derived, ast, playback, fonts, advanced, actions
       <aside aria-labelledby="layers-h" className="relative min-h-0 overflow-y-auto border-b border-line bg-surface py-3 lg:border-b-0 lg:border-r">
         <h2 id="layers-h" className="px-4 pb-2 text-[15px] font-semibold text-fg">{i18n.t('web.editor.layers')}</h2>
         <LayersHead widgets={scene.widgets} locked={locked} onAllVisible={actions.allVisible} onLockAll={lockAll} onAdd={addWidget} />
-        <ul aria-labelledby="layers-h" data-testid="layers">
+        <ul aria-labelledby="layers-h" data-testid="layers" onPointerDown={paintLayers}>
           {layers.map((w, i) => {
             const on = live.includes(w.id), lk = locked.has(w.id), out = w.visible && outsideFrame(w.layout, W, H);
             return (
-              <li key={w.id} draggable={!lk} data-layer={w.id} data-locked={lk || undefined} {...rowDrag(i)}
-                onDragStart={(e) => { if (lk) { e.preventDefault(); return; } dragId.current = w.id; e.dataTransfer.setData(LAYER_MIME, w.id); e.dataTransfer.effectAllowed = 'move'; }}
-                onDragEnd={() => { setDrop(null); dragId.current = null; }}
+              <motion.li key={w.id} layout layoutId={`layer-${w.id}`} transition={LAYER_SPRING} data-layer={w.id} data-locked={lk || undefined} {...rowDrag(i)}
                 onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setDrop((d) => (d?.i === i ? null : d)); }}
-                className={`group relative flex items-center gap-1 pl-2 pr-2 ${lk ? '' : 'cursor-grab active:cursor-grabbing'} ${on ? 'bg-raised' : 'hover:bg-raised'}`}>
+                className={`group relative flex items-center gap-1 pl-2 pr-2 ${on ? 'bg-raised' : 'hover:bg-raised'}`}>
                 {on && <span aria-hidden className="absolute inset-y-0 left-0 w-0.5 bg-accent" />}
                 {drop?.i === i && <span aria-hidden className={`pointer-events-none absolute inset-x-2 h-0.5 bg-focus ${drop.after ? '-bottom-px' : '-top-px'}`} data-testid="layer-drop" />}
-                {/* Tay nắm 6 chấm như dòng track: chỉ để nhìn (cả dòng kéo được); bàn phím dùng Alt+↑/↓ trên tên lớp.
+                {/* Tay nắm 6 chấm: chỉ kéo tay nắm mới đổi lớp (như dòng track), nên kéo qua mắt/khoá không kéo nhầm lớp. Bàn phím: Alt+↑/↓ trên tên lớp.
                     Lớp khoá không kéo được nên không có tay nắm (vẫn giữ chỗ để tên thẳng cột). */}
                 {lk ? <span aria-hidden className="w-4 shrink-0" />
-                  : <span aria-hidden className="grid h-6 w-4 shrink-0 place-items-center text-faint group-hover:text-fg" data-testid="layer-grip"><Grip className="h-3.5 w-3.5" /></span>}
-                <button type="button" aria-pressed={on} title={lk ? undefined : i18n.t('web.editor.layerDrag', { name: name(w.id) })}
+                  : <span draggable aria-hidden className="grid h-6 w-4 shrink-0 cursor-grab place-items-center text-faint hover:text-fg active:cursor-grabbing" data-testid="layer-grip" title={i18n.t('web.editor.layerDrag', { name: name(w.id) })}
+                      onDragStart={(e) => { dragId.current = w.id; e.dataTransfer.setData(LAYER_MIME, w.id); e.dataTransfer.effectAllowed = 'move'; const row = e.currentTarget.closest('li'); if (row) e.dataTransfer.setDragImage(row, 16, 12); }}
+                      onDragEnd={() => { setDrop(null); dragId.current = null; }}><Grip className="h-3.5 w-3.5" /></span>}
+                <button type="button" aria-pressed={on}
                   onKeyDown={(e) => {
                     if (!e.altKey || (e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) return;
                     e.preventDefault(); move(w.id, i + (e.key === 'ArrowUp' ? -1 : 1));
@@ -166,15 +184,15 @@ export function Editor({ scene, derived, ast, playback, fonts, advanced, actions
                   <span className={`truncate ${w.visible ? '' : 'line-through decoration-faint'}`}>{name(w.id)}</span>
                   {out && <span className="flex shrink-0 items-center" title={i18n.t('web.editor.outside')}><StatusIcon kind="warning" className="h-3.5 w-3.5 text-warning" /><span className="sr-only">({i18n.t('web.editor.outside')})</span></span>}
                 </button>
-                <button type="button" className="tog" aria-pressed={!w.visible} aria-label={i18n.t(w.visible ? 'web.editor.hide' : 'web.editor.show', { name: name(w.id) })}
-                  title={i18n.t(w.visible ? 'web.editor.hide' : 'web.editor.show', { name: name(w.id) })} onClick={() => actions.visible(w.id, !w.visible)}>
+                <button type="button" className="tog touch-none" data-paint="eye" data-paint-id={w.id} aria-pressed={!w.visible} aria-label={i18n.t(w.visible ? 'web.editor.hide' : 'web.editor.show', { name: name(w.id) })}
+                  title={i18n.t(w.visible ? 'web.editor.hide' : 'web.editor.show', { name: name(w.id) })} onClick={(e) => { if (clickIsKeyboard(e)) actions.visible(w.id, !w.visible); }}>
                   {w.visible ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
                 </button>
-                <button type="button" className="tog" aria-pressed={lk} aria-label={i18n.t(lk ? 'web.editor.unlock' : 'web.editor.lock', { name: name(w.id) })}
-                  title={i18n.t(lk ? 'web.editor.unlock' : 'web.editor.lock', { name: name(w.id) })} onClick={() => toggleLock(w.id)}>
+                <button type="button" className="tog touch-none" data-paint="lock" data-paint-id={w.id} aria-pressed={lk} aria-label={i18n.t(lk ? 'web.editor.unlock' : 'web.editor.lock', { name: name(w.id) })}
+                  title={i18n.t(lk ? 'web.editor.unlock' : 'web.editor.lock', { name: name(w.id) })} onClick={(e) => { if (clickIsKeyboard(e)) toggleLock(w.id); }}>
                   {lk ? <Lock className="h-3.5 w-3.5" /> : <Unlock className="h-3.5 w-3.5" />}
                 </button>
-              </li>
+              </motion.li>
             );
           })}
         </ul>

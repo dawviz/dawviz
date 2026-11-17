@@ -5,9 +5,9 @@
 //    Bấm tên (hoặc Enter) để mở chi tiết. Không có khoá ở đây (D-57): khoá lớp ở danh sách Lớp của Editor, khoá track sẽ ở làn
 //    track trên timeline của Editor (cùng khoảng hiển thị T-52); thẻ Preview chỉ chỉnh nhanh.
 //  • Lưới: thẻ xếp dưới khung xem trước; người dùng chọn số cột (hoặc tự động). Nếu bề rộng không đủ thì hiện ít cột hơn và báo.
-// Cơ bản: màu, ẩn/hiện, solo, thông tin track. Nâng cao thêm: kéo đổi thứ tự, độ sáng nền và ngưỡng (REQ-UI-13).
+// Cơ bản: màu, ẩn/hiện, solo, thông tin track. Kéo tay nắm 6 chấm đổi thứ tự (cả hai chế độ). Nâng cao thêm: độ sáng nền và ngưỡng (REQ-UI-13).
 // Ẩn/hiện, solo và thứ tự là việc của ứng dụng (lọc/sắp danh sách track trước khi đưa cho Render Core), không đổi Render Core.
-import { useEffect, useRef, useState, type DragEvent, type KeyboardEvent, type ReactNode, type RefObject } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type DragEvent, type KeyboardEvent, type ReactNode, type RefObject } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { BRIGHTNESS_DB_RANGE, DEFAULT_BRIGHTNESS, pitchName, trackBrightness, type ProjectTrack, type BrightnessConfig, type BrightnessSource, type NoteStyle, type TempoPoint } from '@dawviz/render-core';
 import { SliderField } from './SliderField.tsx';
@@ -17,6 +17,7 @@ import { ChevronRight, Eye, EyeOff, Grip } from './Icons.tsx';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { usePlayback, type Playback } from '../lib/playback.ts';
 import { radioKeys, radioTab } from '../lib/a11y.ts';
+import { clickIsKeyboard, startPaintDrag } from '../lib/paintDrag.ts';
 
 const SOURCES: BrightnessSource[] = ['off', 'volume', 'static', 'pan', 'mute'];
 const EXPERIMENTAL = new Set<BrightnessSource>(['pan', 'mute']); // chiều pan / nghĩa mute chưa kiểm (SOI-19)
@@ -51,7 +52,11 @@ interface Props {
   onToggleAllHidden?(): void; onClearSolo?(): void;
   /** Đổi thứ tự (Nâng cao): đưa track `id` tới vị trí `to` trong danh sách. */
   onMove?(id: string, to: number): void;
+  /** Bấm giữ rồi kéo qua các mắt (hoặc S): đặt cùng một giá trị cho từng track đi qua. `gesture` gộp cả lần kéo thành một bước hoàn tác. */
+  onPaint?(kind: PaintKind, id: string, on: boolean): void;
+  gesture?: { begin(): void; end(): void };
 }
+export type PaintKind = 'hide' | 'solo';
 
 export function TrackPanel(props: Props) {
   const layout = props.layout ?? DEFAULT_TRACK_LAYOUT;
@@ -88,6 +93,20 @@ export function TrackLayoutBar({ value, onChange, count }: { value: TrackLayout;
   );
 }
 
+/** Kéo qua các mắt (hoặc S) để ẩn/solo nhanh: chi tiết ở lib/paintDrag.ts. */
+function usePaint(p: Props) {
+  const ref = useRef(p); ref.current = p;
+  return (e: React.PointerEvent<HTMLElement>) => {
+    const q = ref.current;
+    if (!q.onPaint) return;
+    startPaintDrag(e, {
+      current: (kind, id) => { const v = q.view ?? EMPTY_VIEW; return kind === 'hide' ? v.hidden.has(id) : v.solo.has(id); },
+      apply: (kind, id, on) => ref.current.onPaint?.(kind as PaintKind, id, on),
+      gesture: q.gesture,
+    });
+  };
+}
+
 /** Phím mũi tên đi theo hướng xếp: tìm phần tử gần nhất theo hướng bấm (dùng cho cả lưới tự động lẫn danh sách). */
 function arrowNav(e: KeyboardEvent<HTMLElement>, container: HTMLElement | null) {
   const dir = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
@@ -117,7 +136,7 @@ const anyBright = (p: Props) => p.tracks.some((t) => (p.config[t.id] ?? DEFAULT_
  * `lead`: phần bên trái (nút "Hiện tất cả N track" / "Thu gọn"); cột số nốt hiện TỔNG số nốt mọi track.
  * `compact`: chỉ hai nút (đầu lưới thẻ), không chừa cột như danh sách.
  */
-export function TrackColumnsHead({ p, className = '', compact, lead }: { p: Props; className?: string; compact?: boolean; lead?: ReactNode }) {
+export function TrackColumnsHead({ p, className = '', compact, lead, padRight = 0 }: { p: Props; className?: string; compact?: boolean; lead?: ReactNode; padRight?: number }) {
   const { i18n } = useI18n();
   const view = p.view ?? EMPTY_VIEW;
   if (!p.onToggleAllHidden && !p.onClearSolo && !lead) return null;
@@ -128,7 +147,7 @@ export function TrackColumnsHead({ p, className = '', compact, lead }: { p: Prop
   const solo = view.solo.size > 0;
   const soloLabel = i18n.t(solo ? 'web.tracks.soloClear' : 'web.tracks.soloNone');
   return (
-    <div role="group" aria-label={i18n.t('web.tracks.head')} className={`flex items-center gap-1.5 ${className}`} data-testid="track-head">
+    <div role="group" aria-label={i18n.t('web.tracks.head')} className={`flex items-center gap-1.5 ${className}`} style={padRight ? { paddingRight: `calc(0.75rem + ${padRight}px)` } : undefined} data-testid="track-head">
       {!compact && <div className="flex min-w-0 flex-1 items-center">{lead}</div>}
       {p.onToggleAllHidden && (
         <button type="button" className="tog" aria-pressed={allHidden ? true : someHidden ? 'mixed' : false} aria-label={eyeLabel} title={eyeLabel} onClick={p.onToggleAllHidden} data-testid="track-all-hidden">
@@ -160,7 +179,7 @@ function TrackHeader({ tr, i, p, expanded, onExpand, focusRef }: { tr: ProjectTr
   };
   return (
     <div className="flex min-w-0 flex-1 items-center gap-1.5">
-      {p.advanced && p.onMove && (
+      {p.onMove && (
         <button type="button" draggable data-track-grip={tr.id} aria-label={i18n.t('web.track.reorder', { name: tr.name })} title={i18n.t('web.track.reorder', { name: tr.name })}
           className="hit grid h-6 w-4 shrink-0 cursor-grab place-items-center text-faint hover:text-fg active:cursor-grabbing"
           onDragStart={(e) => { e.dataTransfer.setData('text/x-dawviz-track', tr.id); e.dataTransfer.effectAllowed = 'move'; }}
@@ -186,12 +205,12 @@ function TrackHeader({ tr, i, p, expanded, onExpand, focusRef }: { tr: ProjectTr
         <span title={tr.name} className={`${nameCls} font-semibold`}>{tr.name}</span>
       )}
       {p.onToggleHidden && (
-        <button type="button" className="tog" aria-pressed={hidden} aria-label={i18n.t('web.track.hide', { name: tr.name })} title={i18n.t('web.track.hide', { name: tr.name })}
-          onClick={() => p.onToggleHidden!(tr.id)}>{hidden ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}</button>
+        <button type="button" className="tog touch-none" data-paint={p.onPaint ? 'hide' : undefined} data-paint-id={tr.id} aria-pressed={hidden} aria-label={i18n.t('web.track.hide', { name: tr.name })} title={i18n.t('web.track.hide', { name: tr.name })}
+          onClick={(e) => { if (!p.onPaint || clickIsKeyboard(e)) p.onToggleHidden!(tr.id); }}>{hidden ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}</button>
       )}
       {p.onToggleSolo && (
-        <button type="button" className="tog text-xs" aria-pressed={solo} aria-label={i18n.t('web.track.solo', { name: tr.name })} title={i18n.t('web.track.solo', { name: tr.name })}
-          onClick={() => p.onToggleSolo!(tr.id)}><span aria-hidden>{i18n.t('web.track.soloShort')}</span></button>
+        <button type="button" className="tog touch-none text-xs" data-paint={p.onPaint ? 'solo' : undefined} data-paint-id={tr.id} aria-pressed={solo} aria-label={i18n.t('web.track.solo', { name: tr.name })} title={i18n.t('web.track.solo', { name: tr.name })}
+          onClick={(e) => { if (!p.onPaint || clickIsKeyboard(e)) p.onToggleSolo!(tr.id); }}><span aria-hidden>{i18n.t('web.track.soloShort')}</span></button>
       )}
       {c.source !== 'off' ? <Brightness tr={tr} c={c} p={p} /> : anyBright(p) && <span aria-hidden className="w-9 shrink-0" />}
       <span className={`${COUNT_COL} shrink-0 truncate whitespace-nowrap text-right text-xs tabular-nums text-muted`}>{i18n.t('web.track.notes', { n: tr.notes.length })}</span>
@@ -236,11 +255,12 @@ function TrackGrid(p: Props & { columns: number | 'auto' }) {
   }, []);
   const { cols, limited } = effectiveColumns(p.columns, width || MIN_CARD_PX * 3, p.tracks.length);
   const drop = useDrop(p);
+  const paint = usePaint(p);
   return (
     <div>
       {limited && <p className="mb-2 text-xs text-warning" data-testid="track-columns-limited">{i18n.t('web.tracks.columns.limited', { n: cols })}</p>}
       <TrackColumnsHead p={p} compact className="mb-1 justify-end" />
-      <ul ref={ref} role="list" className="grid gap-px border border-line bg-line" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }} data-testid="track-grid" data-cols={cols}>
+      <ul ref={ref} role="list" onPointerDown={paint} className="grid gap-px border border-line bg-line" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }} data-testid="track-grid" data-cols={cols}>
         <AnimatePresence initial={false}>
           {p.tracks.map((tr, i) => (
             <motion.li key={tr.id} data-track-row={tr.id} layout layoutId={`track-${tr.id}`} transition={SPRING} {...drop(i)}
@@ -287,16 +307,27 @@ function TrackList(p: Props) {
   // Mở chi tiết xong chuyển động thì cuộn dòng đó vào vùng nhìn (đo sau khi chiều cao đã ổn định, không đoán thời gian).
   const reveal = (id: string) => ref.current?.querySelector(`[data-track-row="${CSS.escape(id)}"]`)?.scrollIntoView({ block: 'nearest' });
   const drop = useDrop(p);
+  const paint = usePaint(p);
   // Mục Track có chiều cao tối đa ~6 dòng và cuộn riêng; "Hiện tất cả" bỏ giới hạn. Chỉ áp khi có hơn LIST_ROWS track.
   const capped = p.tracks.length > LIST_ROWS && !all;
+  // Thanh cuộn kiểu cổ điển (Chrome/Windows) chiếm chỗ của dòng nhưng không chiếm chỗ của hàng đầu → mắt/S lệch. Đo bề rộng thật rồi bù vào hàng đầu (thanh cuộn nổi như Firefox Linux đo ra 0).
+  const [sbw, setSbw] = useState(0);
+  useLayoutEffect(() => {
+    const el = ref.current; if (!el) return;
+    const measure = () => setSbw(capped ? Math.max(0, el.offsetWidth - el.clientWidth) : 0);
+    measure();
+    if (typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(measure); ro.observe(el);
+    return () => ro.disconnect();
+  }, [capped, p.tracks.length]);
   return (
     <>
-    <TrackColumnsHead p={p} className="-mx-4 px-3 pb-1" lead={p.tracks.length > LIST_ROWS ? (
+    <TrackColumnsHead p={p} className="-mx-4 px-3 pb-1" padRight={sbw} lead={p.tracks.length > LIST_ROWS ? (
       <button type="button" className="-ml-1.5 flex min-h-[var(--hit)] min-w-0 max-w-full items-center truncate rounded px-1.5 text-xs font-medium text-fg transition hover:bg-raised" aria-expanded={all} onClick={() => (all ? collapse() : setAll(true))} data-testid="track-list-all">
         {all ? i18n.t('web.tracks.showFewer') : i18n.t('web.tracks.showAll', { n: i18n.number(p.tracks.length) })}
       </button>
     ) : undefined} />
-    <ul ref={ref} role="list" className={`-mx-4 divide-y divide-line border-y border-line ${capped ? 'overflow-y-auto overscroll-contain' : ''}`}
+    <ul ref={ref} role="list" onPointerDown={paint} className={`-mx-4 divide-y divide-line border-y border-line ${capped ? 'overflow-y-auto overscroll-contain' : ''}`}
       style={capped ? { maxHeight: `${LIST_ROWS * LIST_ROW_REM}rem` } : undefined} data-testid="track-list">
       <AnimatePresence initial={false}>
         {p.tracks.map((tr, i) => {
@@ -325,10 +356,10 @@ function TrackList(p: Props) {
   );
 }
 
-/** Thả để đổi thứ tự (Nâng cao). Chỉ nhận dữ liệu kéo từ tay nắm của chính danh sách này. */
+/** Thả để đổi thứ tự (cả Cơ bản lẫn Nâng cao). Chỉ nhận dữ liệu kéo từ tay nắm của chính danh sách này. */
 function useDrop(p: Props) {
   const [over, setOver] = useState<number | null>(null);
-  const handlers = (i: number) => p.advanced && p.onMove ? {
+  const handlers = (i: number) => p.onMove ? {
     onDragOver: (e: DragEvent) => { if (e.dataTransfer.types.includes('text/x-dawviz-track')) { e.preventDefault(); setOver(i); } },
     onDragLeave: () => setOver((o) => (o === i ? null : o)),
     onDrop: (e: DragEvent) => { const id = e.dataTransfer.getData('text/x-dawviz-track'); setOver(null); if (id) { e.preventDefault(); p.onMove!(id, i); } },

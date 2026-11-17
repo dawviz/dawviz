@@ -14,13 +14,21 @@ Dòng tóm tắt bên dưới cho biết kích thước thực, thời lượng,
 
 ## Định dạng
 
-Ứng dụng tự chọn định dạng tốt nhất mà trình duyệt của bạn mã hoá được:
+**Chế độ Cơ bản:** ứng dụng tự chọn định dạng tốt nhất mà trình duyệt của bạn mã hoá được, theo thứ tự ưu tiên giống các phần mềm dựng phổ biến:
 
 1. **MP4 (H.264 + AAC)**, mở được hầu như ở mọi nơi.
-2. **MP4 không tiếng**, khi máy không mã hoá được AAC. Ứng dụng báo rõ.
-3. **WebM (VP9 hoặc VP8 + Opus)**, khi trình duyệt không mã hoá được H.264. Ứng dụng báo rõ.
+2. Máy không mã hoá được AAC thì vẫn là **MP4 H.264** nhưng âm thanh hạ dần sang MP3, rồi Opus, rồi FLAC. Hộp thoại cho biết đang dùng codec nào. Chỉ khi không codec âm thanh nào dùng được thì tệp mới không có tiếng.
+3. Trình duyệt không mã hoá được H.264 thì **WebM** (VP9, AV1 hoặc VP8, kèm Opus). Ứng dụng báo rõ.
 
-Nếu cả ba đều không được, ứng dụng nói rõ và gợi ý thử kích thước nhỏ hơn hoặc dùng Chrome hoặc Edge.
+Nếu không cái nào được, ứng dụng nói rõ và gợi ý thử kích thước nhỏ hơn hoặc dùng Chrome hoặc Edge.
+
+**Chế độ Nâng cao:** hiện ba ô chọn phụ thuộc nhau, từ trên xuống:
+
+- **Định dạng tệp:** MP4, WebM, MOV hoặc MKV.
+- **Codec video:** chỉ liệt kê codec hợp với định dạng đã chọn và máy này mã hoá được (H.264, H.265, VP9, AV1, VP8).
+- **Codec âm thanh:** chỉ liệt kê codec hợp với định dạng đã chọn và máy này mã hoá được (AAC, MP3, Opus, FLAC, hoặc PCM không nén cho MOV và MKV), hoặc **Không có âm thanh**. Dự án chưa nạp âm thanh thì ô này bị khoá.
+
+Đổi định dạng thì ứng dụng giữ codec cũ nếu còn hợp, không thì chọn codec đầu danh sách. Định dạng nào máy không mã hoá được video thì không hiện. PCM cho tiếng không nén nên tệp lớn hơn nhiều.
 
 ## Kiểm tra máy
 
@@ -28,10 +36,22 @@ Nút **Kiểm tra máy này** ở cuối phần cấu hình thử mã hoá thậ
 
 ## Xuất và hủy
 
-1. Bấm **Bắt đầu xuất**. Trên Chrome và Edge, ứng dụng hỏi nơi lưu tệp trước; video được ghi thẳng xuống ổ đĩa. Trình duyệt khác giữ tệp trong bộ nhớ rồi cho bạn **Lưu tệp** khi xong.
+1. Bấm **Bắt đầu xuất**. Trên Chrome và Edge, ứng dụng hỏi nơi lưu tệp trước; video được ghi thẳng xuống ổ đĩa. Firefox và các trình duyệt khác không có tính năng này: video được giữ trong bộ nhớ, và chỉ khi xuất xong mới hiện nút **Lưu tệp** để chọn nơi lưu. Đây là cách hoạt động bình thường, không phải lỗi.
 2. Thanh tiến độ cho biết khung đang làm, tốc độ (ví dụ 2× nghĩa là nhanh gấp đôi thời gian thực) và thời gian còn lại ước tính.
 3. **Hủy xuất** dừng ngay và không để lại tệp dở. Dự án của bạn không đổi.
 
+Firefox thường xuất chậm hơn Chrome (trong thử nghiệm của chúng tôi khoảng gấp đôi cho cùng một cảnh), vì mã hoá và vẽ khung hình trong Firefox chậm hơn. Việc lưu sau khi xuất xong không phải nguyên nhân.
+
 Trong lúc xuất, hãy để tab này mở. Máy được giữ không tắt màn hình khi trình duyệt cho phép.
 
+Nếu xuất chậm hơn nhiều so với thời gian thực dù máy còn rảnh, hãy báo kèm kết quả của nút **Kiểm tra máy này** và phong cách video đang dùng.
+
 Tệp lớn hơn 1 GB trên trình duyệt không ghi thẳng xuống đĩa được thì ứng dụng cảnh báo, vì có thể thiếu bộ nhớ. Khi đó hãy giảm kích thước hoặc dùng Chrome/Edge.
+
+## Âm thanh trên Linux
+
+Trên Ubuntu, cả Chrome lẫn Firefox hiện báo không mã hoá được AAC. Đây là giới hạn của trình duyệt, chưa có cách khắc phục trong ứng dụng, và chúng tôi chưa thấy thư viện nào cài thêm trên máy giúp được. Ở chế độ Cơ bản, ứng dụng tự hạ xuống một codec khác trong MP4 (thường là Opus), nên tệp vẫn có tiếng. Opus phát được trong Chrome, Firefox, VLC, mpv và các phần mềm dựng mới; phần mềm cũ có thể không mở được tiếng Opus trong MP4. Khi đó dùng chế độ Nâng cao, chọn **MOV** hoặc **MKV** với **PCM** (không nén, tệp lớn nhưng đọc được ở hầu hết nơi).
+
+## Chỉ một lần xuất mỗi lúc
+
+Ứng dụng chỉ cho một tab xuất tại một thời điểm. Tab thứ hai báo "Một tab khác đang xuất video" và khoá nút **Bắt đầu xuất** cho tới khi tab kia xong. Lý do: hai lần xuất cùng lúc tranh nhau bộ mã hoá nên cả hai chậm đi nhiều, và nếu cùng lưu vào một tên tệp thì lần xong sau ghi đè lần kia mà không báo.

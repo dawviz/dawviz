@@ -4,7 +4,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 
 ## BRD.md — TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)
 
-- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 4828 ký tự
+- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 5114 ký tự
 - [1. THÔNG TIN CHUNG & BỐI CẢNH DỰ ÁN](BRD/1-thong-tin-chung-boi-canh-du-an.md) · 1753 ký tự
 - [2. MỤC TIÊU KINH DOANH, CHỈ SỐ ĐO LƯỜNG & YÊU CẦU NGHIỆP VỤ](BRD/2-muc-tieu-kinh-doanh-chi-so-do-luong-yeu-cau-ng.md) · 4778 ký tự
 - [3. CHÂN DUNG NGƯỜI DÙNG MỤC TIÊU (USER PERSONAS)](BRD/3-chan-dung-nguoi-dung-muc-tieu-user-personas.md) · 1342 ký tự
@@ -14,13 +14,13 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1215 ký tự
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4347 ký tự
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](BRD/6-gia-dinh-assumptions.md) · 554 ký tự
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 25016 ký tự
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 25947 ký tự
 - [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](BRD/8-cac-van-de-con-mo-open-issues.md) · 5029 ký tự
 
 ## SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
 - [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 422 ký tự
-- [Lịch sử phiên bản](SRS/lich-su-phien-ban.md) · 8906 ký tự
+- [Lịch sử phiên bản](SRS/lich-su-phien-ban.md) · 9301 ký tự
 - [Quy ước trong tài liệu](SRS/quy-uoc-trong-tai-lieu.md) · 818 ký tự
 - [Mục lục](SRS/muc-luc.md) · 365 ký tự
 - [1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG](SRS/1-gioi-thieu-muc-tieu-he-thong.md) · 4720 ký tự
@@ -72,9 +72,9 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [REQ-EXPORT-03: Luồng âm thanh và Silent Audio (D-01 sửa, R-08)](SRS/req-export-03-luong-am-thanh-va-silent-audio-d-0.md) · 1276 ký tự
 - [REQ-EXPORT-04: Ghép container qua Mediabunny (D-04)](SRS/req-export-04-ghep-container-qua-mediabunny-d-04.md) · 845 ký tự
 - [REQ-EXPORT-05: Giao diện tiến độ và hủy](SRS/req-export-05-giao-dien-tien-do-va-huy.md) · 466 ký tự
-- [REQ-EXPORT-06: Chuỗi dự phòng codec (D-05, R-06)](SRS/req-export-06-chuoi-du-phong-codec-d-05-r-06.md) · 2356 ký tự
+- [REQ-EXPORT-06: Chọn định dạng và chuỗi dự phòng codec (D-05, D-61, R-06)](SRS/req-export-06-chon-dinh-dang-va-chuoi-du-phong-c.md) · 1793 ký tự
 - [REQ-EXPORT-08: Xuất nền trong suốt để ghép trong phần mềm dựng (D-47), bản 1.0](SRS/req-export-08-xuat-nen-trong-suot-de-ghep-trong.md) · 2121 ký tự
-- [REQ-EXPORT-07: Thực thi trong Worker (ARC-02, D-21)](SRS/req-export-07-thuc-thi-trong-worker-arc-02-d-21.md) · 516 ký tự
+- [REQ-EXPORT-07: Thực thi trong Worker (ARC-02, D-21)](SRS/req-export-07-thuc-thi-trong-worker-arc-02-d-21.md) · 946 ký tự
 - [3.7. Đa ngôn ngữ và cộng đồng dịch (BR-09, D-30, KPI-08)](SRS/3-7-da-ngon-ngu-va-cong-dong-dich-br-09-d-30-kpi.md) · 2714 ký tự
 - [3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)](SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md) · 328 ký tự
 - [REQ-GRAPHICS-09: Bộ máy keyframe, easing và Graph Editor](SRS/req-graphics-09-bo-may-keyframe-easing-va-graph.md) · 844 ký tự
@@ -143,7 +143,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [7.1 Trình tự](TECHNICAL-DESIGN/7-1-trinh-tu.md) · 1019 ký tự
 - [7.2 Quyết định kỹ thuật](TECHNICAL-DESIGN/7-2-quyet-dinh-ky-thuat.md) · 947 ký tự
 - [7.3 Phần lõi thuần đã làm (T-09, 2026-11-14)](TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md) · 1745 ký tự
-- [7.4 Export Worker và giao diện (T-09, 2026-11-14)](TECHNICAL-DESIGN/7-4-export-worker-va-giao-dien-t-09-2026-11-14.md) · 2905 ký tự
+- [7.4 Export Worker và giao diện (T-09, 2026-11-14)](TECHNICAL-DESIGN/7-4-export-worker-va-giao-dien-t-09-2026-11-14.md) · 7086 ký tự
 - [8. Lưu trữ ⚪ (M4)](TECHNICAL-DESIGN/8-luu-tru-m4.md) · 1035 ký tự
 - [9. Đa ngôn ngữ 🟢](TECHNICAL-DESIGN/9-da-ngon-ngu.md) · 492 ký tự
 - [10. Lỗi, ghi nhật ký, quan sát](TECHNICAL-DESIGN/10-loi-ghi-nhat-ky-quan-sat.md) · 470 ký tự

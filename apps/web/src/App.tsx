@@ -132,6 +132,7 @@ export function App() {
   }, [loaded, doc.order]);
   const renderAst = useMemo(() => (loaded ? { ...loaded.ast, tracks: ordered.filter((t) => isShown(t.id, view)) } : null), [loaded, ordered, view]);
   const onToggleHidden = useCallback((id: string) => run((d) => Cmds.toggleHidden(d, id)), [run]);
+  const onPaint = useCallback((kind: 'hide' | 'solo', id: string, on: boolean) => run((d) => (kind === 'hide' ? Cmds.setHiddenOf(d, id, on) : Cmds.setSoloOf(d, id, on))), [run]);
   const onToggleSolo = useCallback((id: string) => run((d) => Cmds.toggleSolo(d, id)), [run]);
   const onMove = useCallback((id: string, to: number) => run((d) => Cmds.moveTrack(d, id, to)), [run]);
   const onToggleAllHidden = useCallback(() => run((d) => Cmds.toggleAllHidden(d)), [run]);
@@ -276,6 +277,7 @@ export function App() {
   const editorActions: EditorActions = useMemo(() => ({
     layouts: (p) => run((d) => Cmds.patchLayouts(d, p)),
     visible: (id, v) => run((d) => Cmds.setWidgetVisible(d, id, v)),
+    paintVisible: (id, v) => run((d) => Cmds.paintWidgetVisible(d, id, v)),
     allVisible: () => run((d) => Cmds.toggleAllWidgetsVisible(d)),
     z: (id, where) => run((d) => Cmds.reorderZ(d, id, where)),
     moveLayer: (id, to) => run((d) => Cmds.moveLayer(d, id, to)),
@@ -306,7 +308,7 @@ export function App() {
   const trackProps = loaded && {
     tracks: ordered, config: brightness, overrides: style.tracks, onChange: patchBrightness, onStyle: patchTrackStyle,
     playback, tempoMap: loaded.ast.tempoMap, layout: trackLayout, advanced: showAdv('tracks'), view,
-    onToggleHidden, onToggleSolo, onMove, onToggleAllHidden, onClearSolo,
+    onToggleHidden, onToggleSolo, onMove, onToggleAllHidden, onClearSolo, onPaint, gesture,
   };
   const tempoText = (() => {
     const bpms = loaded?.ast.tempoMap.map((p) => p.bpm) ?? [];
@@ -455,7 +457,7 @@ export function App() {
         </div>
       </main>
     </div>
-    {exporting && derived && renderAst && <ExportDialog scene={scene} ast={renderAst} derived={derived} audio={audio} offsetMs={offsetMs} projectSec={duration} fileName={loaded?.name ?? 'dawviz'} onClose={() => setExporting(false)} />}
+    {exporting && derived && renderAst && <ExportDialog scene={scene} ast={renderAst} derived={derived} audio={audio} offsetMs={offsetMs} projectSec={duration} fileName={loaded?.name ?? 'dawviz'} advanced={advanced} onClose={() => setExporting(false)} />}
     </LayoutGroup></MotionConfig></GestureContext.Provider>
   );
 }

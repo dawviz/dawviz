@@ -141,68 +141,136 @@ export function h264Candidates(width: number, height: number, fps: number): stri
   return out;
 }
 
-// ---------- Bậc dự phòng codec (REQ-EXPORT-06) ----------
-export const VP9_CODEC = 'vp09.00.10.08';
-export const VP8_CODEC = 'vp8';
+// ---------- Định dạng và codec (REQ-EXPORT-06) ----------
+export type ContainerId = 'mp4' | 'webm' | 'mov' | 'mkv';
+export type VideoId = 'avc' | 'hevc' | 'vp9' | 'av1' | 'vp8';
+export type AudioId = 'aac' | 'opus' | 'mp3' | 'flac' | 'pcm';
+
+/** Thứ tự hiển thị. */
+export const CONTAINERS: readonly ContainerId[] = ['mp4', 'webm', 'mov', 'mkv'];
+export const CONTAINER_LABEL: Record<ContainerId, string> = { mp4: 'MP4', webm: 'WebM', mov: 'MOV', mkv: 'MKV' };
+export const CONTAINER_EXT: Record<ContainerId, string> = { mp4: 'mp4', webm: 'webm', mov: 'mov', mkv: 'mkv' };
+export const CONTAINER_MIME: Record<ContainerId, string> = { mp4: 'video/mp4', webm: 'video/webm', mov: 'video/quicktime', mkv: 'video/x-matroska' };
+export const VIDEO_LABEL: Record<VideoId, string> = { avc: 'H.264', hevc: 'H.265 (HEVC)', vp9: 'VP9', av1: 'AV1', vp8: 'VP8' };
+export const AUDIO_LABEL: Record<AudioId, string> = { aac: 'AAC', opus: 'Opus', mp3: 'MP3', flac: 'FLAC', pcm: 'PCM' };
+
+/**
+ * Tổ hợp phổ biến, chạy được ở các trình phát/phần mềm dựng thông dụng (không phải mọi tổ hợp Mediabunny ghi được). Thứ tự = ưu tiên:
+ * phần tử đầu là lựa chọn mặc định của phần mềm dựng phổ biến (H.264 + AAC), các phần tử sau là dự phòng khi máy không mã hoá được.
+ * MOV chỉ có codec của QuickTime; WebM theo chuẩn WebM (VP8/VP9/AV1 + Opus). PCM không nén chạy bằng bộ ghi của Mediabunny, không cần WebCodecs.
+ */
+export const CONTAINER_CODECS: Record<ContainerId, { video: readonly VideoId[]; audio: readonly AudioId[] }> = {
+  mp4: { video: ['avc', 'hevc', 'vp9', 'av1'], audio: ['aac', 'mp3', 'opus', 'flac'] },
+  webm: { video: ['vp9', 'av1', 'vp8'], audio: ['opus'] },
+  mov: { video: ['avc', 'hevc'], audio: ['aac', 'mp3', 'pcm'] },
+  mkv: { video: ['avc', 'hevc', 'vp9', 'av1', 'vp8'], audio: ['aac', 'opus', 'mp3', 'flac', 'pcm'] },
+};
+/** Chế độ Cơ bản: video thử lần lượt (HEVC không tự chọn: nhiều trình duyệt không phát được); video nào đi với định dạng nào. */
+export const AUTO_VIDEO_ORDER: readonly VideoId[] = ['avc', 'vp9', 'av1', 'vp8'];
+const AUTO_CONTAINER: Record<VideoId, ContainerId> = { avc: 'mp4', hevc: 'mp4', vp9: 'webm', av1: 'webm', vp8: 'webm' };
+
 export const AAC_CODEC = 'mp4a.40.2';
 export const OPUS_CODEC = 'opus';
+export const VP9_CODEC = 'vp09.00.10.08';
+export const VP8_CODEC = 'vp8';
 
 export interface CodecProbe {
   video(config: { codec: string; width: number; height: number; framerate: number; bitrate: number }): Promise<boolean>;
   audio(config: { codec: string; sampleRate: number; numberOfChannels: number; bitrate: number }): Promise<boolean>;
 }
 
-export type TierNotice = 'NO_AAC_VIDEO_ONLY' | 'WEBM_NO_H264' | 'WEBM_NO_AUDIO';
+/** `NO_AUDIO_ENCODER`: dự án có âm thanh nhưng không codec nào của định dạng này mã hoá được. `AUDIO_FALLBACK`: dùng codec âm thanh thay cho codec ưu tiên. */
+export type TierNotice = 'NO_AUDIO_ENCODER' | 'AUDIO_FALLBACK' | 'WEBM_NO_H264';
 export interface CodecChoice {
-  tier: 1 | 2 | 3;
-  container: 'mp4' | 'webm';
+  container: ContainerId;
+  video: VideoId;
+  /** Chuỗi codec WebCodecs đã dò được (vd. `avc1.640028`). */
   videoCodec: string;
-  audioCodec: string | null;
+  audioCodec: AudioId | null;
   notices: TierNotice[];
 }
 
+/** Máy này mã hoá được gì: chuỗi codec đã dò cho từng loại video, và tập codec âm thanh. */
+export interface Support {
+  video: Partial<Record<VideoId, string>>;
+  audio: ReadonlySet<AudioId>;
+}
+
+const HEVC_CANDIDATES = ['hvc1.1.6.L93.B0', 'hvc1.1.6.L120.B0', 'hvc1.1.6.L123.B0', 'hvc1.1.6.L150.B0', 'hvc1.1.6.L153.B0', 'hvc1.1.6.L156.B0'];
+const AV1_CANDIDATES = ['av01.0.05M.08', 'av01.0.08M.08', 'av01.0.09M.08', 'av01.0.12M.08', 'av01.0.13M.08', 'av01.0.14M.08'];
+const AUDIO_PROBE: Record<Exclude<AudioId, 'pcm'>, string> = { aac: AAC_CODEC, opus: OPUS_CODEC, mp3: 'mp3', flac: 'flac' };
+
+/** Dò hỗ trợ thật của máy cho mọi codec (một lần mỗi cấu hình kích thước/fps). `isConfigSupported` ném lỗi coi như không hỗ trợ. */
+export async function detectSupport(
+  probe: CodecProbe,
+  cfg: { width: number; height: number; fps: number; bitrate: number; sampleRate?: number; channels?: number },
+): Promise<Support> {
+  const video = { width: cfg.width, height: cfg.height, framerate: cfg.fps, bitrate: cfg.bitrate };
+  const ok = async (p: Promise<boolean>): Promise<boolean> => { try { return await p; } catch { return false; } };
+  const firstOf = async (list: readonly string[]) => { for (const codec of list) if (await ok(probe.video({ codec, ...video }))) return codec; return undefined; };
+  const found: Support['video'] = {};
+  const lists: Record<VideoId, readonly string[]> = { avc: h264Candidates(cfg.width, cfg.height, cfg.fps), hevc: HEVC_CANDIDATES, vp9: [VP9_CODEC], av1: AV1_CANDIDATES, vp8: [VP8_CODEC] };
+  for (const v of Object.keys(lists) as VideoId[]) { const c = await firstOf(lists[v]); if (c) found[v] = c; }
+  const audio = new Set<AudioId>(['pcm']);
+  for (const a of Object.keys(AUDIO_PROBE) as Array<keyof typeof AUDIO_PROBE>) {
+    if (await ok(probe.audio({ codec: AUDIO_PROBE[a], sampleRate: cfg.sampleRate ?? 48_000, numberOfChannels: cfg.channels ?? 2, bitrate: AUDIO_BITRATE }))) audio.add(a);
+  }
+  return { video: found, audio };
+}
+
+/** Các lựa chọn hợp lệ cho một định dạng: chỉ codec vừa hợp định dạng vừa được máy hỗ trợ (cho hai ô thả xuống phụ thuộc ở chế độ Nâng cao). */
+export function optionsFor(container: ContainerId, sup: Support): { videos: VideoId[]; audios: AudioId[] } {
+  return { videos: CONTAINER_CODECS[container].video.filter((v) => sup.video[v]), audios: CONTAINER_CODECS[container].audio.filter((a) => sup.audio.has(a)) };
+}
+/** Định dạng có ít nhất một codec video dùng được (ô Định dạng chỉ liệt kê những định dạng này). */
+export const usableContainers = (sup: Support): ContainerId[] => CONTAINERS.filter((c) => optionsFor(c, sup).videos.length > 0);
+
 /**
- * Chọn bậc: 1 H.264 + AAC (MP4), 2 H.264 không tiếng (MP4), 3 VP9/VP8 + Opus (WebM), còn lại null = `ERR_NO_SUPPORTED_ENCODER`.
- * Dự án không có âm thanh thì bậc 1 chỉ cần H.264 (Silent AAC mặc định tắt, D-01).
+ * Chế độ Cơ bản, theo thứ tự ưu tiên: H.264 + AAC (MP4); thiếu AAC thì hạ dần trong cùng MP4 (MP3, Opus, FLAC) rồi mới bỏ tiếng;
+ * thiếu H.264 thì WebM (VP9, AV1, VP8) + Opus. Dự án không có âm thanh thì không cần codec âm thanh. Không có encoder video nào → null.
  */
+export function autoChoice(sup: Support, hasAudio: boolean): CodecChoice | null {
+  for (const video of AUTO_VIDEO_ORDER) {
+    const videoCodec = sup.video[video];
+    if (!videoCodec) continue;
+    const container = AUTO_CONTAINER[video];
+    const notices: TierNotice[] = container === 'webm' ? ['WEBM_NO_H264'] : [];
+    let audioCodec: AudioId | null = null;
+    if (hasAudio) {
+      const order = CONTAINER_CODECS[container].audio;
+      audioCodec = order.find((a) => sup.audio.has(a) && a !== 'pcm') ?? null; // PCM chỉ khi người dùng chọn: tệp rất lớn
+      if (!audioCodec) notices.push('NO_AUDIO_ENCODER');
+      else if (audioCodec !== order[0]) notices.push('AUDIO_FALLBACK');
+    }
+    return { container, video, videoCodec, audioCodec, notices };
+  }
+  return null;
+}
+
+export interface Selection { container: ContainerId; video: VideoId; audio: AudioId | 'none' }
+/** Đưa lựa chọn về trạng thái hợp lệ: đổi định dạng thì giữ codec cũ nếu còn hợp, không thì lấy codec đầu danh sách; null nếu máy không có gì cho định dạng này. */
+export function normalizeSelection(sel: Selection, sup: Support, hasAudio: boolean): Selection | null {
+  const { videos, audios } = optionsFor(sel.container, sup);
+  if (!videos.length) return null;
+  const video = videos.includes(sel.video) ? sel.video : videos[0];
+  // 'none' là lựa chọn tường minh của người dùng: giữ nguyên. Codec đang chọn không hợp định dạng mới thì lấy codec đầu danh sách (không tự chọn PCM).
+  const wanted = sel.audio === 'none' || audios.includes(sel.audio) ? sel.audio : audios.find((a) => a !== 'pcm') ?? audios[0] ?? 'none';
+  return { container: sel.container, video, audio: hasAudio ? wanted : 'none' };
+}
+/** Chế độ Nâng cao: đổi lựa chọn đã chuẩn hoá thành `CodecChoice`. */
+export function manualChoice(sup: Support, sel: Selection, hasAudio: boolean): CodecChoice | null {
+  const n = normalizeSelection(sel, sup, hasAudio);
+  if (!n) return null;
+  const audioCodec = hasAudio && n.audio !== 'none' ? n.audio : null;
+  return { container: n.container, video: n.video, videoCodec: sup.video[n.video]!, audioCodec, notices: hasAudio && !audioCodec && sel.audio !== 'none' ? ['NO_AUDIO_ENCODER'] : [] };
+}
+
+/** Tương thích: dò rồi chọn tự động (chế độ Cơ bản). */
 export async function chooseCodec(
   probe: CodecProbe,
   cfg: { width: number; height: number; fps: number; bitrate: number; hasAudio: boolean; sampleRate?: number; channels?: number },
 ): Promise<CodecChoice | null> {
-  const video = { width: cfg.width, height: cfg.height, framerate: cfg.fps, bitrate: cfg.bitrate };
-  const audioCfg = (codec: string) => ({ codec, sampleRate: cfg.sampleRate ?? 48_000, numberOfChannels: cfg.channels ?? 2, bitrate: AUDIO_BITRATE });
-  const safe = async (p: Promise<boolean>): Promise<boolean> => {
-    try {
-      return await p;
-    } catch {
-      return false;
-    }
-  };
-
-  let avc: string | null = null;
-  for (const codec of h264Candidates(cfg.width, cfg.height, cfg.fps)) {
-    if (await safe(probe.video({ codec, ...video }))) {
-      avc = codec;
-      break;
-    }
-  }
-  if (avc) {
-    if (!cfg.hasAudio) return { tier: 1, container: 'mp4', videoCodec: avc, audioCodec: null, notices: [] };
-    if (await safe(probe.audio(audioCfg(AAC_CODEC)))) return { tier: 1, container: 'mp4', videoCodec: avc, audioCodec: AAC_CODEC, notices: [] };
-    return { tier: 2, container: 'mp4', videoCodec: avc, audioCodec: null, notices: ['NO_AAC_VIDEO_ONLY'] };
-  }
-
-  for (const codec of [VP9_CODEC, VP8_CODEC]) {
-    if (!(await safe(probe.video({ codec, ...video })))) continue;
-    const notices: TierNotice[] = ['WEBM_NO_H264'];
-    let audioCodec: string | null = null;
-    if (cfg.hasAudio) {
-      if (await safe(probe.audio(audioCfg(OPUS_CODEC)))) audioCodec = OPUS_CODEC;
-      else notices.push('WEBM_NO_AUDIO');
-    }
-    return { tier: 3, container: 'webm', videoCodec: codec, audioCodec, notices };
-  }
-  return null;
+  return autoChoice(await detectSupport(probe, cfg), cfg.hasAudio);
 }
 
 // ---------- Pre-flight tổng hợp (REQ-EXPORT-00) ----------

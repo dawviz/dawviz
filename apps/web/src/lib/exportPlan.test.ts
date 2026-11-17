@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   audibleSeconds, audioBlocks, sliceAudioForRange, chooseCodec, createBackpressure, createProgress, estimateBytes, exportDuration, frameCount,
-  frameDurationUs, frameTimestampUs, h264Candidates, isKeyFrame, parseAspect, preflight, renderAudioBlock, sizeForClass,
+  detectSupport, frameDurationUs, frameTimestampUs, h264Candidates, manualChoice, normalizeSelection, optionsFor, usableContainers, isKeyFrame, parseAspect, preflight, renderAudioBlock, sizeForClass,
   sizeFromCustom, videoBitrate, type CodecProbe,
 } from './exportPlan.ts';
 import { exportSegments } from './audioMap.ts';
@@ -113,9 +113,9 @@ const probeOf = (video: (c: string) => boolean, audio: (c: string) => boolean): 
 });
 const cfg = { width: 1920, height: 1080, fps: 30, bitrate: 12_000_000, hasAudio: true };
 
-test('chooseCodec: bậc 1 H.264 + AAC', async () => {
+test('chooseCodec: ưu tiên H.264 + AAC trong MP4', async () => {
   const r = await chooseCodec(probeOf((c) => c.startsWith('avc1'), (c) => c === 'mp4a.40.2'), cfg);
-  assert.deepEqual(r, { tier: 1, container: 'mp4', videoCodec: 'avc1.640028', audioCodec: 'mp4a.40.2', notices: [] });
+  assert.deepEqual(r, { container: 'mp4', video: 'avc', videoCodec: 'avc1.640028', audioCodec: 'aac', notices: [] });
 });
 
 test('chooseCodec: hạ profile khi High không được hỗ trợ', async () => {
@@ -123,23 +123,62 @@ test('chooseCodec: hạ profile khi High không được hỗ trợ', async () =
   assert.equal(r?.videoCodec, 'avc1.420028');
 });
 
-test('chooseCodec: bậc 1 không cần AAC khi dự án không có âm thanh (Silent AAC tắt)', async () => {
+test('chooseCodec: dự án không có âm thanh thì không cần codec âm thanh, không thông báo', async () => {
   const r = await chooseCodec(probeOf((c) => c.startsWith('avc1'), () => false), { ...cfg, hasAudio: false });
-  assert.equal(r?.tier, 1);
+  assert.equal(r?.container, 'mp4');
   assert.equal(r?.audioCodec, null);
   assert.deepEqual(r?.notices, []);
 });
 
-test('chooseCodec: bậc 2 video-only khi thiếu AAC', async () => {
-  const r = await chooseCodec(probeOf((c) => c.startsWith('avc1'), () => false), cfg);
-  assert.deepEqual(r, { tier: 2, container: 'mp4', videoCodec: 'avc1.640028', audioCodec: null, notices: ['NO_AAC_VIDEO_ONLY'] });
+test('chooseCodec: thiếu AAC thì hạ dần trong MP4 (MP3 → Opus → FLAC) và báo AUDIO_FALLBACK', async () => {
+  const opus = await chooseCodec(probeOf((c) => c.startsWith('avc1'), (c) => c === 'opus'), cfg);
+  assert.deepEqual(opus, { container: 'mp4', video: 'avc', videoCodec: 'avc1.640028', audioCodec: 'opus', notices: ['AUDIO_FALLBACK'] });
+  const mp3 = await chooseCodec(probeOf((c) => c.startsWith('avc1'), (c) => c === 'mp3' || c === 'opus'), cfg);
+  assert.equal(mp3?.audioCodec, 'mp3');
+  const flac = await chooseCodec(probeOf((c) => c.startsWith('avc1'), (c) => c === 'flac'), cfg);
+  assert.equal(flac?.audioCodec, 'flac');
 });
 
-test('chooseCodec: bậc 3 WebM; VP9 rồi VP8; Opus hoặc không tiếng', async () => {
-  const vp9 = await chooseCodec(probeOf((c) => c.startsWith('vp'), (c) => c === 'opus'), cfg);
-  assert.deepEqual(vp9, { tier: 3, container: 'webm', videoCodec: 'vp09.00.10.08', audioCodec: 'opus', notices: ['WEBM_NO_H264'] });
+test('chooseCodec: không codec âm thanh nào (PCM không tự chọn) → MP4 không tiếng kèm NO_AUDIO_ENCODER', async () => {
+  const r = await chooseCodec(probeOf((c) => c.startsWith('avc1'), () => false), cfg);
+  assert.deepEqual(r, { container: 'mp4', video: 'avc', videoCodec: 'avc1.640028', audioCodec: null, notices: ['NO_AUDIO_ENCODER'] });
+});
+
+test('chooseCodec: không có H.264 → WebM theo thứ tự VP9, AV1, VP8; Opus hoặc không tiếng', async () => {
+  const vp9 = await chooseCodec(probeOf((c) => c.startsWith('vp0') || c.startsWith('av01') || c === 'vp8', (c) => c === 'opus'), cfg);
+  assert.deepEqual(vp9, { container: 'webm', video: 'vp9', videoCodec: 'vp09.00.10.08', audioCodec: 'opus', notices: ['WEBM_NO_H264'] });
+  const av1 = await chooseCodec(probeOf((c) => c.startsWith('av01.0.08'), () => false), cfg);
+  assert.equal(av1?.video, 'av1'); assert.equal(av1?.videoCodec, 'av01.0.08M.08');
   const vp8 = await chooseCodec(probeOf((c) => c === 'vp8', () => false), cfg);
-  assert.deepEqual(vp8, { tier: 3, container: 'webm', videoCodec: 'vp8', audioCodec: null, notices: ['WEBM_NO_H264', 'WEBM_NO_AUDIO'] });
+  assert.deepEqual(vp8, { container: 'webm', video: 'vp8', videoCodec: 'vp8', audioCodec: null, notices: ['WEBM_NO_H264', 'NO_AUDIO_ENCODER'] });
+});
+
+test('HEVC không bao giờ được tự chọn ở chế độ Cơ bản (nhiều trình duyệt không phát được)', async () => {
+  assert.equal(await chooseCodec(probeOf((c) => c.startsWith('hvc1'), () => true), cfg), null);
+});
+
+test('optionsFor/usableContainers: chỉ codec vừa hợp định dạng vừa được máy hỗ trợ (Nâng cao, ba ô phụ thuộc nhau)', async () => {
+  const sup = await detectSupport(probeOf((c) => c.startsWith('avc1') || c.startsWith('vp0') || c.startsWith('hvc1'), (c) => c === 'opus'), cfg);
+  assert.deepEqual(usableContainers(sup), ['mp4', 'webm', 'mov', 'mkv']);
+  assert.deepEqual(optionsFor('mp4', sup), { videos: ['avc', 'hevc', 'vp9'], audios: ['opus'] });
+  assert.deepEqual(optionsFor('webm', sup), { videos: ['vp9'], audios: ['opus'] });
+  assert.deepEqual(optionsFor('mov', sup), { videos: ['avc', 'hevc'], audios: ['pcm'] }, 'PCM chạy bằng bộ ghi của Mediabunny nên luôn có');
+  const noAv = await detectSupport(probeOf((c) => c === 'vp8', () => false), cfg);
+  assert.deepEqual(usableContainers(noAv), ['webm', 'mkv'], 'MP4/MOV không có codec video nào dùng được thì ẩn');
+});
+
+test('normalizeSelection/manualChoice: đổi định dạng thì giữ codec cũ nếu còn hợp, không thì lấy codec đầu danh sách', async () => {
+  const sup = await detectSupport(probeOf((c) => c.startsWith('avc1') || c.startsWith('vp0'), (c) => c === 'aac' || c === 'opus'), cfg);
+  const toWebm = normalizeSelection({ container: 'webm', video: 'avc', audio: 'aac' }, sup, true);
+  assert.deepEqual(toWebm, { container: 'webm', video: 'vp9', audio: 'opus' });
+  const keep = normalizeSelection({ container: 'mkv', video: 'vp9', audio: 'opus' }, sup, true);
+  assert.deepEqual(keep, { container: 'mkv', video: 'vp9', audio: 'opus' });
+  assert.equal(normalizeSelection({ container: 'mp4', video: 'avc', audio: 'aac' }, sup, false)?.audio, 'none', 'không có âm thanh dự án thì không codec âm thanh');
+  const c = manualChoice(sup, { container: 'mkv', video: 'avc', audio: 'none' }, true);
+  assert.deepEqual(c, { container: 'mkv', video: 'avc', videoCodec: 'avc1.640028', audioCodec: null, notices: [] }, 'chọn "Không có âm thanh" là có chủ ý: không báo');
+  const none = await detectSupport(probeOf((c) => c.startsWith('avc1'), () => false), cfg);
+  assert.equal(manualChoice({ ...none, audio: new Set() }, { container: 'mp4', video: 'avc', audio: 'aac' }, true)?.notices[0], 'NO_AUDIO_ENCODER');
+  assert.equal(manualChoice({ video: {}, audio: new Set() }, { container: 'mp4', video: 'avc', audio: 'aac' }, true), null);
 });
 
 test('chooseCodec: không có encoder → null (ERR_NO_SUPPORTED_ENCODER); isConfigSupported ném lỗi coi như không hỗ trợ', async () => {

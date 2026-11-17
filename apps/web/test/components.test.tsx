@@ -246,21 +246,33 @@ describe('Danh sách track: lưới N cột / danh sách gọn (REQ-UI-14 sửa)
     expect(v.columns).toBe(15);
     fireEvent.click(screen.getByRole('radio', { name: /List|Danh sách/ })); expect(v.mode).toBe('list');
   });
-  it('dòng track: mắt và S bật/tắt (REQ-UI-12); tay nắm đổi thứ tự bằng Alt+↓ chỉ ở Nâng cao; không có khoá', () => {
+  it('dòng track: mắt và S bật/tắt (REQ-UI-12); tay nắm đổi thứ tự bằng Alt+↓ ở cả Cơ bản lẫn Nâng cao; không có khoá', () => {
     const calls: string[] = [];
     const base = { tracks: trs, config: cfg, overrides: {}, onChange: () => {}, onStyle: () => {}, layout: { mode: 'list' as const, columns: 'auto' as const },
       view: { hidden: new Set(['t1']), solo: new Set<string>() },
       onToggleHidden: (id: string) => calls.push(`hide:${id}`), onToggleSolo: (id: string) => calls.push(`solo:${id}`), onMove: (id: string, to: number) => calls.push(`move:${id}:${to}`) };
-    const v = wrap(<TrackPanel {...base} />);
+    wrap(<TrackPanel {...base} />);
     expect(screen.getByRole('button', { name: /(Hide|Ẩn) Track 1/ })).toHaveAttribute('aria-pressed', 'true');
     fireEvent.click(screen.getByRole('button', { name: /(Hide|Ẩn) Track 0/ }));
     fireEvent.click(screen.getByRole('button', { name: /Solo Track 2/ }));
-    expect(screen.queryByRole('button', { name: /(Reorder|Đổi thứ tự)/ })).toBeNull();
     expect(screen.queryByRole('button', { name: /lock|khoá/i })).toBeNull();
-    v.unmount();
-    wrap(<TrackPanel {...base} advanced />);
     fireEvent.keyDown(screen.getByRole('button', { name: /(Reorder|Đổi thứ tự) Track 3/ }), { key: 'ArrowDown', altKey: true });
     expect(calls).toEqual(['hide:t0', 'solo:t2', 'move:t3:4']);
+  });
+  it('kéo qua các mắt: đặt cùng một giá trị cho mọi track đi qua, một cử chỉ; bấm chuột không đảo hai lần', () => {
+    const calls: string[] = [], g: string[] = [];
+    const base = { tracks: trs, config: cfg, overrides: {}, onChange: () => {}, onStyle: () => {}, layout: { mode: 'list' as const, columns: 'auto' as const },
+      view: { hidden: new Set<string>(), solo: new Set<string>() }, onToggleHidden: (id: string) => calls.push(`toggle:${id}`), onToggleSolo: () => {},
+      onPaint: (k: string, id: string, on: boolean) => calls.push(`${k}:${id}:${on}`), gesture: { begin: () => g.push('b'), end: () => g.push('e') } };
+    wrap(<TrackPanel {...base} />);
+    const eye = (n: number) => screen.getByRole('button', { name: new RegExp(`(Hide|Ẩn) Track ${n}`) });
+    fireEvent.pointerDown(eye(0), { button: 0, isPrimary: true, clientX: 0, clientY: 0 });
+    fireEvent.pointerUp(window);
+    fireEvent.click(eye(0), { detail: 1 }); // chuột: pointerdown đã xử lý
+    expect(calls).toEqual(['hide:t0:true']);
+    expect(g).toEqual(['b', 'e']);
+    fireEvent.click(eye(1), { detail: 0 }); // bàn phím
+    expect(calls).toEqual(['hide:t0:true', 'toggle:t1']);
   });
   it('hàng đầu: mắt hiện hết trước khi còn track ẩn, ẩn hết khi đã hiện hết; S bỏ mọi solo (mờ khi không có solo); chỉ biểu tượng + chú thích', () => {
     const calls: string[] = [];
@@ -538,6 +550,29 @@ describe('ExportDialog (T-09)', () => {
     open();
     expect(await screen.findByRole('alert')).toHaveTextContent(/can't encode video|không mã hoá được video/);
     expect(screen.getByTestId('export-start')).toBeDisabled();
+  });
+
+  it('Nâng cao: ba ô phụ thuộc nhau (định dạng → codec video → codec âm thanh), chỉ liệt kê codec hợp lệ và máy hỗ trợ; Cơ bản không có ba ô', async () => {
+    const g = globalThis as Record<string, unknown>, old = [g.VideoEncoder, g.AudioEncoder];
+    g.VideoEncoder = { isConfigSupported: async (c: { codec: string }) => ({ supported: c.codec.startsWith('avc1') || c.codec.startsWith('vp0') }) };
+    g.AudioEncoder = { isConfigSupported: async (c: { codec: string }) => ({ supported: c.codec === 'opus' }) };
+    try {
+      const mk = (advanced: boolean) => wrap(<ExportDialog scene={PAPER_SCENE} ast={ast} derived={derived} audio={null} offsetMs={0} projectSec={30} fileName="Song.rpp" advanced={advanced} onClose={() => {}} />);
+      const basic = mk(false);
+      expect(await screen.findByText(/MP4 · H\.264/)).toBeInTheDocument();
+      expect(screen.queryByTestId('export-format-pickers')).toBeNull();
+      basic.unmount();
+      mk(true);
+      const pickers = await screen.findByTestId('export-format-pickers');
+      const opts = (el: HTMLElement) => [...el.querySelectorAll('option')].map((o) => o.textContent);
+      const container = screen.getByLabelText(/File format|Định dạng tệp/), video = screen.getByLabelText(/Video codec|Codec video/);
+      expect(opts(container)).toEqual(['MP4', 'WebM', 'MOV', 'MKV']);
+      expect(opts(video)).toEqual(['H.264', 'VP9']);
+      fireEvent.change(container, { target: { value: 'webm' } });
+      expect(opts(screen.getByLabelText(/Video codec|Codec video/))).toEqual(['VP9']);
+      expect(screen.getByLabelText(/Audio codec|Codec âm thanh/)).toBeDisabled(); // dự án không có âm thanh
+      expect(pickers).toBeInTheDocument();
+    } finally { g.VideoEncoder = old[0]; g.AudioEncoder = old[1]; }
   });
 
   it('Esc đóng hộp thoại khi chưa xuất', () => {

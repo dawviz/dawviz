@@ -12,6 +12,7 @@
 | v0.2 | 2026-11-11 | Tái cấu trúc bám sát BRD v0.2: ma trận truy xuất BR-01 đến BR-08; Bitwig chuyển sang `.dawproject` (D-03); Mediabunny qua `MuxerAdapter` (D-04); trục Tick trong Unified AST (D-08); hệ tọa độ thiết kế logic (D-06); chuỗi dự phòng codec (D-05); Silent Audio (D-01); Pre-flight (REQ-EXPORT-00); ngưỡng hiệu năng gắn Máy chuẩn RM-1 (D-16). **Rà soát kiến trúc:** thêm Render Core dùng chung, Export Worker, giới hạn bộ nhớ audio, CSP đầy đủ (mục 2.4, Phụ lục B). |
 | v1.0 | 2026-11-12 | **Chốt đường cơ sở yêu cầu** sau Spike 1 và Spike 2 (xem BRD v1.0): thêm REQ-GRAPHICS-06 (độ sáng theo automation), track `mix`/`automation` trong AST, đọc envelope Reaper (REQ-RPP-07 của thư viện), mục 2.6 ngăn xếp giao diện và Render Core (D-34 đến D-36), AT-17 và AT-18, SOI-18/19. Mục còn [VERIFY] giữ nguyên làm Open Issue có chủ. |
 | v0.3 | 2026-11-12 | **Bổ sung sau cùng:** đa ngôn ngữ ngay từ đầu (REQ-I18N-01 đến 08, REQ-UI-09, NFR-COMP-03 sửa, AT-16); ghi đè tempo có dấu nhịp và 3 cách nhập mốc (REQ-PARSER-07, REQ-UI-06, AT-13); đề xuất widget và dữ liệu bổ sung (mục 3.4b); `IGNTEMPO` có mẫu cú pháp từ tài liệu Reaper; trạng thái Spike 1 và Spike 2: hoàn thành (Phụ lục B). **Theo Spike 1:** Silent Audio mặc định TẮT (REQ-EXPORT-03); nhập rộng × cao và tỉ lệ tuỳ ý (REQ-EXPORT-00); tên file chốt trước khi render (REQ-EXPORT-04); số đo A/V và tốc độ xuất; giới hạn di động. **Theo Spike 2:** thư viện parser độc lập (mục 2.5); không đoán tempo, ghi đè tempo theo mốc (REQ-PARSER-07, REQ-UI-06); widget Progress Bar (REQ-WIDGET-08, nay 8 widget). **Theo thư viện parser đã dựng:** `.als` XML thuần hoặc Gzip, sửa công thức clip/loop và đường dẫn đã kiểm bằng file thật (REQ-PARSER-01); `.alp` thật định dạng `pl-a` và chọn `.als` (REQ-PARSER-06, REQ-UI-07); cập nhật `.rpp`, `.dawproject`, `.mid`; parser nhị phân theo schema (REQ-PARSER-05); giới hạn nạp cập nhật (REQ-PARSER-00); AST thêm trường (REQ-AST-01); `.flp`/`.bwproject` ghi *chưa hỗ trợ*; mã lỗi và vấn đề còn mở cập nhật. |
+| v1.10 | 2026-11-17 | **Theo BRD v1.7 (D-61):** viết lại **REQ-EXPORT-06** từ chuỗi bốn bậc cố định thành *chọn định dạng*: Cơ bản tự chọn theo thứ tự ưu tiên và hạ dần codec âm thanh trong cùng MP4; Nâng cao có ba ô phụ thuộc Định dạng/Codec video/Codec âm thanh (MP4, WebM, MOV, MKV). Thêm quy tắc **một lần xuất mỗi lúc** (Web Locks) vào REQ-EXPORT-07. KPI-03 chỉ áp dụng cho H.264 + AAC. |
 | v1.9 | 2026-11-14 | **Theo BRD v1.6 (D-60):** thêm **REQ-GRAPHICS-19** ô chữ người dùng thêm và bộ chỗ giữ dùng chung cho mọi chữ (đã chốt hướng, chưa làm; còn mở OI-18). REQ-WIDGET-03 trỏ về. |
 | v1.8 | 2026-11-14 | **Theo BRD v1.5 (D-58):** thêm **REQ-GRAPHICS-18 kiểu chữ** cho mọi chữ trong video: kiểu dựng sẵn làm mặc định, người dùng ghi đè mọi thứ các trình dựng phổ biến làm được với chữ (phông và kiểu, cỡ, tỉ lệ, đậm/nghiêng, gạch chân/ngang, chữ hoa, khoảng cách, đoạn, tràn khung, màu/gradient, viền, đổ bóng, nền chữ, OpenType, định dạng từng đoạn; 1.1: trục phông biến thiên, text animator, chữ theo đường); REQ-WIDGET-02 trỏ về REQ-GRAPHICS-18; REQ-UI-13 thêm dòng "Chữ trong video". |
 | v1.7 | 2026-11-14 | **Theo BRD v1.4 (D-57, rà soát thẻ Editor):** REQ-GRAPHICS-01 thêm **kéo thả trong danh sách Lớp** và lên/xuống một bậc (Ctrl/⌘+]/[, thêm Shift = lên trên/xuống dưới cùng); REQ-GRAPHICS-02 thêm **bắt dính khi đổi cỡ** (cạnh đang kéo hút vào mép/tâm khung và widget khác; Ctrl/⌘ tắt tạm vì Alt là co giãn quanh tâm; chỉ ở góc bội số 90°); REQ-GRAPHICS-03 thêm nút ↺ đưa điểm neo về tâm (cạnh ô chọn 9 điểm, và riêng từng trục cạnh ô Neo X / Neo Y); **không** dùng nhấp đúp điểm neo (đã thử rồi bỏ, xem REQ-GRAPHICS-03); REQ-UI-15: **bỏ thanh trượt**, kéo lên/xuống (hoặc trái/phải) ngay trên ô số thay cho kéo trên nhãn, thêm **nút ↺ về giá trị của bộ dựng sẵn** cạnh từng thông số; REQ-UI-13: **bỏ hẳn nhãn NC** ở cả hai chế độ; mục Hình thức (kiểu nốt, phát sáng, bàn phím, vạch phát) **chỉ còn ở Editor** (bảng Thuộc tính khi chọn Piano Roll), Preview giữ phong cách video, Bài và Track; REQ-UI-14: dòng track có cột cố định và hàng bật/tắt tất cả; §5.1: Preview và Editor là hai cách bày bảng trên cùng dữ liệu (D-57). |
@@ -784,42 +785,32 @@ Theo dõi `videoEncoder.encodeQueueSize`. Nếu > 8 thì tạm dừng sinh khung
 #### REQ-EXPORT-05: Giao diện tiến độ và hủy
 Lớp phủ modal hiển thị: thanh tiến độ 0–100%, `Frame x / N`, tốc độ (FPS render, bội số thời gian thực, ví dụ `1.8x`), thời gian còn lại ước tính (ETR, làm mượt theo trung bình trượt). Nút **Hủy xuất**: gửi lệnh cho Export Worker, gọi `reset()`/`close()` các encoder, hủy luồng ghi (`abort()` để không để lại file dở), giải phóng bộ nhớ mà không làm sập tab. Hoàn thành thì hiển thị tên file, kích thước, thời gian xuất.
 
-#### REQ-EXPORT-06: Chuỗi dự phòng codec (D-05, R-06)
+#### REQ-EXPORT-06: Chọn định dạng và chuỗi dự phòng codec (D-05, D-61, R-06)
+
+Máy nào cũng được dò thật (`isConfigSupported`, lỗi coi như không hỗ trợ) cho từng codec video (H.264, H.265, VP9, AV1, VP8) và âm thanh (AAC, Opus, MP3, FLAC; PCM chạy bằng bộ ghi của Mediabunny nên luôn có). Chỉ tổ hợp phổ biến, chạy được ở trình phát và phần mềm dựng thông dụng, được đưa ra:
+
+| Định dạng | Video | Âm thanh (thứ tự ưu tiên) |
+|---|---|---|
+| MP4 | H.264, H.265, VP9, AV1 | AAC, MP3, Opus, FLAC |
+| WebM | VP9, AV1, VP8 | Opus |
+| MOV | H.264, H.265 | AAC, MP3, PCM |
+| MKV | H.264, H.265, VP9, AV1, VP8 | AAC, Opus, MP3, FLAC, PCM |
+
+**Chế độ Cơ bản (tự chọn, hạ dần):**
 
 ```text
-+----------------------------------------------------------------------------+
-| TIER 1 - Maximum compatibility (default)                                   |
-| Video: H.264 (AVC), profile/level chosen per D-17                          |
-| Audio: AAC (real audio or Silent Audio)                                    |
-| Container: MP4 (Mediabunny)                                                |
-+----------------------------------------------------------------------------+
-                     |  AAC encode unsupported on this OS
-                                      v
-+----------------------------------------------------------------------------+
-| TIER 2 - Video-only MP4                                                    |
-| Video: H.264 (AVC)                                                         |
-| Audio: none                                                                |
-| Container: MP4                                                             |
-| Notice: file has no audio because the OS lacks an AAC encoder              |
-+----------------------------------------------------------------------------+
-                         |  H.264 encode unsupported
-                                      v
-+----------------------------------------------------------------------------+
-| TIER 3 - Open standards fallback                                           |
-| Video: VP9 (or VP8)                                                        |
-| Audio: Opus (or none)                                                      |
-| Container: WebM (Mediabunny)                                               |
-| Notice: WebM output because the browser lacks H.264                        |
-+----------------------------------------------------------------------------+
-                           |  no supported encoder
-                                      v
-+----------------------------------------------------------------------------+
-| TIER 4 - Fatal error                                                       |
-| Abort export, show ERR_NO_SUPPORTED_ENCODER                                |
-+----------------------------------------------------------------------------+
+Video thử lần lượt: H.264 (MP4) → VP9 (WebM) → AV1 (WebM) → VP8 (WebM)      [H.265 không tự chọn]
+Âm thanh trong định dạng đã chọn, theo thứ tự ưu tiên của bảng trên:
+  MP4:  AAC → MP3 → Opus → FLAC       WebM: Opus
+Không còn codec âm thanh nào → xuất không tiếng, báo rõ.   PCM không tự chọn (tệp rất lớn).
+Không có encoder video nào → ERR_NO_SUPPORTED_ENCODER.
 ```
 
-KPI-03 chỉ áp dụng cho Tier 1. Từ Tier 2 trở đi, người dùng được thông báo rõ phiên bản đầu ra khác mặc định.
+Thiếu AAC thì **hạ dần trong cùng MP4** (không bỏ tiếng, không bỏ sang WebM chỉ vì thế) và hộp thoại báo codec âm thanh đang dùng. Thiếu H.264 thì WebM kèm thông báo. Dự án không có âm thanh thì không cần codec âm thanh.
+
+**Chế độ Nâng cao (ba ô thả xuống phụ thuộc nhau):** *Định dạng tệp* → *Codec video* → *Codec âm thanh*. Mỗi ô chỉ liệt kê lựa chọn vừa hợp định dạng ở ô trước vừa được máy này mã hoá; định dạng không có codec video nào dùng được thì ẩn. Đổi định dạng thì giữ codec cũ nếu còn hợp, không thì lấy codec đầu danh sách. "Không có âm thanh" là lựa chọn có chủ ý (không báo). Dự án không có âm thanh thì ô âm thanh bị khoá.
+
+KPI-03 chỉ áp dụng cho H.264 + AAC (MP4). Mọi kết quả khác mặc định được thông báo rõ trong hộp thoại.
 
 #### REQ-EXPORT-08: Xuất nền trong suốt để ghép trong phần mềm dựng (D-47), bản 1.0
 Dành cho người muốn tự xoay 3D, ghép cảnh hay thêm hiệu ứng trong After Effects, Premiere Pro, DaVinci Resolve, CapCut…
@@ -838,6 +829,7 @@ Dành cho người muốn tự xoay 3D, ghép cảnh hay thêm hiệu ứng tron
 * Dữ liệu cần thiết (AST, ChordTimeline, cache audio, font, ảnh nền) được chuyển sang Worker bằng `postMessage` có chuyển quyền sở hữu (transferable) khi có thể.
 * Worker lỗi bất ngờ thì báo `ERR_EXPORT_FAILED`, giữ nguyên phiên làm việc và cho thử lại.
 * Nên dùng Screen Wake Lock trong lúc xuất để máy không ngủ (nếu trình duyệt hỗ trợ).
+* **Một lần xuất mỗi lúc (D-61):** các tab của ứng dụng dùng chung một khoá Web Locks (`dawviz-export`). Tab đang xuất giữ khoá tới khi xong, lỗi, huỷ hoặc đóng; tab khác thấy báo "đang xuất ở tab khác" và nút Bắt đầu bị khoá (kiểm lại mỗi 2 giây). Lý do: hai lần xuất tranh bộ mã hoá nên mỗi lần chậm đi nhiều, và cùng chọn một tên tệp thì lần xong sau ghi đè lần kia mà không báo. Trình duyệt không có Web Locks thì không chặn.
 
 ---
 

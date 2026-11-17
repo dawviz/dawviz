@@ -5,7 +5,9 @@ import type { Derived, SceneDocument, UnifiedProjectAST } from '@dawviz/render-c
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import type { AudioAsset } from '../lib/audioAsset.ts';
 import { startExport, type ExportHandle } from '../lib/exportClient.ts';
-import { chooseCodec, exportDuration, preflight, sizeForClass, sliceAudioForRange, type CodecChoice, type CodecProbe, type Fps, type ProgressInfo, type Quality, type ResolutionClass, FPS_CHOICES } from '../lib/exportPlan.ts';
+import type { FileTarget } from '../lib/exportProtocol.ts';
+import { AUDIO_LABEL, CONTAINER_EXT, CONTAINER_LABEL, CONTAINER_MIME, FPS_CHOICES, VIDEO_LABEL, autoChoice, detectSupport, exportDuration, manualChoice, normalizeSelection, optionsFor, preflight, sizeForClass, sliceAudioForRange, usableContainers, type AudioId, type CodecChoice, type CodecProbe, type ContainerId, type Fps, type ProgressInfo, type Quality, type ResolutionClass, type Selection, type Support, type VideoId } from '../lib/exportPlan.ts';
+import { isExportBusy, tryExportLock, type ExportLock } from '../lib/exportLock.ts';
 import { makeExportWorker } from '../lib/exportWorker.ts';
 import { runDiagnostics } from '../lib/exportDiagnostics.ts';
 import pkg from '../../package.json';
@@ -22,14 +24,14 @@ export const browserProbe: CodecProbe = {
 };
 
 type Phase = 'setup' | 'running' | 'done' | 'error';
-interface SaveHandle { createWritable(): Promise<WritableStream<{ type: 'write'; data: Uint8Array; position: number }>> }
+type SaveHandle = FileTarget;
 type SavePicker = (o: { suggestedName: string; types: { description: string; accept: Record<string, string[]> }[] }) => Promise<SaveHandle>;
 
 const mmss = (sec: number) => `${Math.floor(sec / 60)}:${String(Math.round(sec % 60)).padStart(2, '0')}`;
 const baseOf = (n: string) => (n.replace(/\.[^.]+$/, '') || 'dawviz').replace(/[\\/:*?"<>|]+/g, '_');
 
-export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec, fileName, onClose }: {
-  scene: SceneDocument; ast: UnifiedProjectAST; derived: Derived; audio: AudioAsset | null; offsetMs: number; projectSec: number; fileName: string; onClose(): void;
+export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec, fileName, advanced = false, onClose }: {
+  scene: SceneDocument; ast: UnifiedProjectAST; derived: Derived; audio: AudioAsset | null; offsetMs: number; projectSec: number; fileName: string; advanced?: boolean; onClose(): void;
 }) {
   const { i18n } = useI18n();
   const [cls, setCls] = useState<ResolutionClass>(1080);
@@ -37,7 +39,10 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
   const [quality, setQuality] = useState<Quality>('medium');
   const [phase, setPhase] = useState<Phase>('setup');
   const [progress, setProgress] = useState<ProgressInfo | null>(null);
-  const [choice, setChoice] = useState<CodecChoice | null | 'checking'>('checking');
+  const [support, setSupport] = useState<Support | 'checking'>('checking');
+  const [sel, setSel] = useState<Selection>({ container: 'mp4', video: 'avc', audio: 'aac' });
+  const [busy, setBusy] = useState(false);
+  const exportLock = useRef<ExportLock | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ url: string | null; name: string; bytes: number; ms: number } | null>(null);
   const handle = useRef<ExportHandle | null>(null);
@@ -53,11 +58,26 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
 
   useEffect(() => {
     let live = true;
-    setChoice('checking');
-    chooseCodec(browserProbe, { width: size.width, height: size.height, fps, bitrate: pre.bitrate, hasAudio: !!audio, sampleRate: audio?.buffer.sampleRate, channels: audio?.buffer.numberOfChannels })
-      .then((c) => live && setChoice(c), () => live && setChoice(null));
+    setSupport('checking');
+    detectSupport(browserProbe, { width: size.width, height: size.height, fps, bitrate: pre.bitrate, sampleRate: audio?.buffer.sampleRate, channels: audio?.buffer.numberOfChannels })
+      .then((x) => live && setSupport(x), () => live && setSupport({ video: {}, audio: new Set() }));
     return () => { live = false; };
   }, [size, fps, pre.bitrate, audio]);
+  // Cơ bản: tự chọn theo thứ tự ưu tiên. Nâng cao: ba ô phụ thuộc nhau; lựa chọn luôn được đưa về trạng thái hợp lệ với định dạng đang chọn.
+  const effSel = useMemo(() => (support === 'checking' ? null : normalizeSelection(sel, support, !!audio)), [support, sel, audio]);
+  const choice: CodecChoice | null | 'checking' = useMemo(() => {
+    if (support === 'checking') return 'checking';
+    return advanced ? manualChoice(support, sel, !!audio) : autoChoice(support, !!audio);
+  }, [support, sel, advanced, audio]);
+  // Báo sớm khi tab khác đang xuất (kiểm lại mỗi 2 giây khi đang ở màn cấu hình).
+  useEffect(() => {
+    if (phase === 'running' || phase === 'done') return;
+    let live = true;
+    const tick = () => { void isExportBusy().then((b) => { if (live) setBusy(b); }); };
+    tick();
+    const id = window.setInterval(tick, 2000);
+    return () => { live = false; window.clearInterval(id); };
+  }, [phase]);
 
   useEffect(() => { startBtn.current?.focus(); }, []);
   useEffect(() => {
@@ -66,46 +86,54 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
     return () => window.removeEventListener('keydown', onKey);
   }, [phase, onClose]);
   // Dừng Worker và nhả khoá màn hình nếu đóng hộp thoại giữa chừng; thu hồi URL tải về.
-  useEffect(() => () => { handle.current?.cancel(); void lock.current?.release(); }, []);
+  useEffect(() => () => { handle.current?.cancel(); void lock.current?.release(); exportLock.current?.release(); }, []);
   useEffect(() => () => { if (result?.url) URL.revokeObjectURL(result.url); }, [result]);
 
   const QUALITY_LABEL: Record<Quality, string> = { low: i18n.t('web.export.quality.low'), medium: i18n.t('web.export.quality.medium'), high: i18n.t('web.export.quality.high') };
   const notes: string[] = [];
   const NOTE: Record<string, string> = {
     ROUNDED_EVEN: i18n.t('web.export.note.ROUNDED_EVEN'), SCALED_DOWN: i18n.t('web.export.note.SCALED_DOWN'),
-    NO_AAC_VIDEO_ONLY: i18n.t('web.export.note.NO_AAC_VIDEO_ONLY'), WEBM_NO_H264: i18n.t('web.export.note.WEBM_NO_H264'), WEBM_NO_AUDIO: i18n.t('web.export.note.WEBM_NO_AUDIO'),
-    LARGE_IN_MEMORY: i18n.t('web.export.note.LARGE_IN_MEMORY'),
+    NO_AUDIO_ENCODER: i18n.t('web.export.note.NO_AUDIO_ENCODER'), WEBM_NO_H264: i18n.t('web.export.note.WEBM_NO_H264'),
+    AUDIO_FALLBACK: choice && choice !== 'checking' && choice.audioCodec ? i18n.t('web.export.note.AUDIO_FALLBACK', { codec: AUDIO_LABEL[choice.audioCodec] }) : '',
+    LARGE_IN_MEMORY: i18n.t('web.export.note.LARGE_IN_MEMORY'), SAVE_AFTER: i18n.t('web.export.note.SAVE_AFTER'),
   };
   for (const n of size.notes) notes.push(NOTE[n]);
   if (choice && choice !== 'checking') for (const n of choice.notices) notes.push(NOTE[n]);
   for (const w of pre.warnings) notes.push(NOTE[w]);
+  if (!hasFsa) notes.push(NOTE.SAVE_AFTER);
 
   const format = choice && choice !== 'checking'
-    ? (choice.container === 'mp4' ? `MP4 · H.264${choice.audioCodec ? ' + AAC' : ''}` : `WebM · ${choice.videoCodec.startsWith('vp09') ? 'VP9' : 'VP8'}${choice.audioCodec ? ' + Opus' : ''}`)
+    ? `${CONTAINER_LABEL[choice.container]} · ${VIDEO_LABEL[choice.video]}${choice.audioCodec ? ` + ${AUDIO_LABEL[choice.audioCodec]}` : ''}`
     : null;
 
   const start = async () => {
     if (!choice || choice === 'checking') return;
     setError(null);
-    const ext = choice.container;
+    // Một tab xuất mỗi lần: lấy khoá trước khi hỏi nơi lưu để không bắt người dùng chọn tệp rồi mới báo bận.
+    const got = await tryExportLock();
+    if (!got) { setBusy(true); return; }
+    exportLock.current = got;
+    const freeLock = () => { exportLock.current?.release(); exportLock.current = null; };
+    const ext = CONTAINER_EXT[choice.container];
     const suggestedName = `${baseOf(fileName)}.${ext}`;
-    let file: Awaited<ReturnType<SaveHandle['createWritable']>> | undefined;
+    let file: SaveHandle | undefined;
     if (hasFsa) {
       try {
-        const h = await (window as unknown as { showSaveFilePicker: SavePicker }).showSaveFilePicker({ suggestedName, types: [{ description: ext.toUpperCase(), accept: { [ext === 'mp4' ? 'video/mp4' : 'video/webm']: [`.${ext}`] } }] });
-        file = await h.createWritable();
-      } catch (e) { if ((e as DOMException)?.name === 'AbortError') return; file = undefined; }
+        file = await (window as unknown as { showSaveFilePicker: SavePicker }).showSaveFilePicker({ suggestedName, types: [{ description: ext.toUpperCase(), accept: { [CONTAINER_MIME[choice.container]]: [`.${ext}`] } }] });
+      } catch (e) { if ((e as DOMException)?.name === 'AbortError') { freeLock(); return; } file = undefined; }
     }
     const slice = audio && choice.audioCodec
       ? sliceAudioForRange(Array.from({ length: audio.buffer.numberOfChannels }, (_, c) => audio.buffer.getChannelData(c)), audio.buffer.sampleRate, range.start, range.duration, offsetMs)
       : null;
     setPhase('running'); setProgress(null);
     try { lock.current = await (navigator as unknown as { wakeLock?: { request(t: 'screen'): Promise<{ release(): Promise<void> }> } }).wakeLock?.request('screen') ?? null; } catch { lock.current = null; }
-    const h = startExport({
+    let h: ExportHandle;
+    try { h = startExport({
       ast, scene, brightness: derived.brightness, width: size.width, height: size.height, fps, bitrate: pre.bitrate, choice,
       start: range.start, duration: range.duration,
       audio: slice ? { channels: slice.channels, sampleRate: audio!.buffer.sampleRate, offsetMs: slice.offsetMs } : undefined,
     }, makeExportWorker, { file, onProgress: setProgress });
+    } catch (e) { setError(e instanceof Error ? e.message : String(e)); setPhase('error'); void lock.current?.release(); lock.current = null; freeLock(); return; }
     handle.current = h;
     try {
       const r = await h.result;
@@ -114,7 +142,7 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
       setPhase('done');
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e)); setPhase('error');
-    } finally { handle.current = null; void lock.current?.release(); lock.current = null; }
+    } finally { handle.current = null; void lock.current?.release(); lock.current = null; freeLock(); }
   };
 
   const mb = (b: number) => i18n.number(b / 1e6, { maximumFractionDigits: 1 });
@@ -136,12 +164,30 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
                 {QUALITIES.map((q) => <option key={q} value={q}>{QUALITY_LABEL[q]}</option>)}
               </Select>
             </div>
+            {advanced && support !== 'checking' && effSel && (
+              <div className="grid grid-cols-[7rem_1fr] items-center gap-2 text-[13px]" data-testid="export-format-pickers">
+                <label htmlFor="exp-container" className="text-muted">{i18n.t('web.export.container')}</label>
+                <Select id="exp-container" value={effSel.container} onChange={(e) => setSel({ ...effSel, container: e.target.value as ContainerId })}>
+                  {usableContainers(support).map((c) => <option key={c} value={c}>{CONTAINER_LABEL[c]}</option>)}
+                </Select>
+                <label htmlFor="exp-vcodec" className="text-muted">{i18n.t('web.export.videoCodec')}</label>
+                <Select id="exp-vcodec" value={effSel.video} onChange={(e) => setSel({ ...effSel, video: e.target.value as VideoId })}>
+                  {optionsFor(effSel.container, support).videos.map((v) => <option key={v} value={v}>{VIDEO_LABEL[v]}</option>)}
+                </Select>
+                <label htmlFor="exp-acodec" className="text-muted">{i18n.t('web.export.audioCodec')}</label>
+                <Select id="exp-acodec" value={effSel.audio} disabled={!audio} onChange={(e) => setSel({ ...effSel, audio: e.target.value as AudioId | 'none' })}>
+                  {audio ? optionsFor(effSel.container, support).audios.map((a) => <option key={a} value={a}>{AUDIO_LABEL[a]}</option>) : null}
+                  <option value="none">{i18n.t('web.export.audioNone')}</option>
+                </Select>
+              </div>
+            )}
             <p className="text-[13px] tabular-nums text-muted" data-testid="export-summary">
               {i18n.t('web.export.summary', { width: String(size.width), height: String(size.height), fps: String(fps), duration: mmss(range.duration), frames: i18n.number(pre.frames), size: mb(pre.bytes) })}
             </p>
             <p className="text-[13px]" aria-live="polite">
               {choice === 'checking' ? i18n.t('web.export.checking') : unsupported ? '' : i18n.t('web.export.format', { format: format ?? '' })}
             </p>
+            {busy && <p role="alert" className="text-[13px] text-warning" data-testid="export-busy">{i18n.t('web.export.busy')}</p>}
             {unsupported && <p role="alert" className="text-[13px] text-danger">{i18n.t('errors.ERR_NO_SUPPORTED_ENCODER')}</p>}
             {notes.length > 0 && <ul className="space-y-1 text-[13px] text-warning">{notes.map((n, i) => <li key={i}>{n}</li>)}</ul>}
             <div className="space-y-2">
@@ -190,7 +236,7 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
             ? <button type="button" className="btn-ghost border border-control" onClick={() => handle.current?.cancel()} data-testid="export-cancel">{i18n.t('web.export.cancel')}</button>
             : <>
                 <button type="button" className="btn-ghost border border-control" onClick={onClose} data-testid="export-close">{i18n.t('web.export.close')}</button>
-                {phase !== 'done' && <button ref={startBtn} type="button" disabled={choice === 'checking' || unsupported} onClick={() => void start()}
+                {phase !== 'done' && <button ref={startBtn} type="button" disabled={choice === 'checking' || unsupported || busy} onClick={() => void start()}
                   className="rounded border border-accent px-3 py-1.5 text-[13px] font-medium text-accent disabled:cursor-not-allowed disabled:opacity-50" data-testid="export-start">{i18n.t('web.export.start')}</button>}
               </>}
         </div>

@@ -51,7 +51,8 @@ For each track:
 - **Eye:** hide or show the track in the video.
 - **S (solo):** only soloed tracks are shown.
 - The top row controls all tracks: the eye hides or shows them all, S clears every solo.
-- **Reorder** (Advanced): drag the six-dot handle, or select a row and press Alt+Up / Alt+Down. When notes overlap, the higher track is drawn on top.
+- **Quick hide or solo:** press and hold an eye (or S) and drag up or down over other tracks; every track you pass gets the same state as the first one you pressed. The whole drag is one undo step.
+- **Reorder** (Basic and Advanced): drag the six-dot handle, or select a row and press Alt+Up / Alt+Down. When notes overlap, the higher track is drawn on top.
 
 Hiding, soloing and reordering only change the video, never your project file.
 

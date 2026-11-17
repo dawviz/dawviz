@@ -5,7 +5,7 @@ section: "7.1 Trình tự"
 path: "7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) > 7.1 Trình tự"
 chunk: 7-1-trinh-tu.md
 source_lines: 386-401
-source_sha1: 03d31db5d8
+source_sha1: 4c32e8264d
 ids: [REQ-EXPORT-00, REQ-EXPORT-02, REQ-EXPORT-06]
 ---
 ### 7.1 Trình tự

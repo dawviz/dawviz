@@ -65,10 +65,11 @@ Muốn tạm tắt bắt dính: giữ Alt khi kéo để di chuyển, giữ Ctrl
 
 Danh sách **Lớp** cho biết widget nào nằm trên widget nào: dòng trên cùng được vẽ trên cùng.
 
-- **Đổi thứ tự:** kéo tay nắm sáu chấm, hoặc chọn dòng rồi bấm Alt+Lên / Alt+Xuống. Ở mục **Sắp xếp** bên phải còn có bốn nút: đưa lên trên cùng, lên một bậc, xuống một bậc, xuống dưới cùng (phím tắt Ctrl+] và Ctrl+[, thêm Shift để đưa hẳn lên trên cùng hoặc xuống dưới cùng).
+- **Đổi thứ tự:** kéo tay nắm sáu chấm (chỉ kéo tay nắm mới đổi thứ tự, kéo chỗ khác trên dòng thì không), hoặc chọn dòng rồi bấm Alt+Lên / Alt+Xuống. Ở mục **Sắp xếp** bên phải còn có bốn nút: đưa lên trên cùng, lên một bậc, xuống một bậc, xuống dưới cùng (phím tắt Ctrl+] và Ctrl+[, thêm Shift để đưa hẳn lên trên cùng hoặc xuống dưới cùng).
 - **Mắt:** ẩn hoặc hiện widget trong video (giống ô **Hiện trong video**).
 - **Ổ khoá:** khoá widget để không lỡ tay kéo nó. Widget đã khoá vẫn chọn được trong danh sách Lớp để xem số liệu hoặc mở khoá.
 - Hàng trên cùng ẩn/hiện hoặc khoá/mở khoá mọi lớp cùng lúc.
+- **Ẩn hoặc khoá nhanh:** bấm giữ một mắt (hoặc ổ khoá) rồi kéo lên/xuống qua các lớp khác; mọi lớp đi qua được đặt cùng trạng thái với lần bấm đầu. Cả lần kéo ẩn/hiện là một bước hoàn tác.
 
 ## Thiết lập
 

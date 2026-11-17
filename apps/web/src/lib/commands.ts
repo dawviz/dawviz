@@ -124,6 +124,10 @@ export const patchBrightness = (d: Doc, id: TrackId, next: BrightnessConfig): Cm
 const toggled = (list: readonly string[], id: string) => list.includes(id) ? list.filter((x) => x !== id) : [...list, id];
 export const toggleHidden = (d: Doc, id: TrackId): Cmd | null => slice(d, 'toggleHidden', 'web.cmd.hide', (x) => x.hidden, (x, v) => ({ ...x, hidden: v }), toggled(d.hidden, id), undefined, { track: id, on: !d.hidden.includes(id) });
 export const toggleSolo = (d: Doc, id: TrackId): Cmd | null => slice(d, 'toggleSolo', 'web.cmd.solo', (x) => x.solo, (x, v) => ({ ...x, solo: v }), toggled(d.solo, id), undefined, { track: id, on: !d.solo.includes(id) });
+/** Kéo qua các mắt/S để ẩn hay solo nhanh: đặt thẳng giá trị cho một track (không đảo). Gộp trong một cử chỉ kéo thành một bước hoàn tác. */
+const withId = (list: readonly string[], id: string, on: boolean) => (list.includes(id) === on ? [...list] : on ? [...list, id] : list.filter((x) => x !== id));
+export const setHiddenOf = (d: Doc, id: TrackId, on: boolean): Cmd | null => slice(d, 'toggleHidden', 'web.cmd.hide', (x) => x.hidden, (x, v) => ({ ...x, hidden: v }), withId(d.hidden, id, on), 'paint:hide', { track: id, on });
+export const setSoloOf = (d: Doc, id: TrackId, on: boolean): Cmd | null => slice(d, 'toggleSolo', 'web.cmd.solo', (x) => x.solo, (x, v) => ({ ...x, solo: v }), withId(d.solo, id, on), 'paint:solo', { track: id, on });
 export const setAllHidden = (d: Doc, hidden: boolean): Cmd | null => slice(d, 'setAllHidden', 'web.cmd.hide', (x) => x.hidden, (x, v) => ({ ...x, hidden: v }), hidden ? [...d.order] : [], undefined, { hidden });
 /** Ô "bật/tắt tất cả" của cột mắt: đang có track ẩn thì hiện hết trước; đã hiện hết thì ẩn hết. */
 export const toggleAllHidden = (d: Doc): Cmd | null => setAllHidden(d, d.hidden.length === 0);
@@ -213,6 +217,13 @@ export const removeWidgets = (d: Doc, ids: readonly string[]): Cmd | null => {
 export const setWidgetVisible = (d: Doc, widgetId: string, visible: boolean): Cmd | null => {
   const w = d.scene.widgets.find((x) => x.id === widgetId);
   return w ? slice(d, 'setWidgetVisible', 'web.cmd.widgetVisible', (x) => x.scene.widgets.find((q) => q.id === widgetId)!.visible, (x, v) => withWidget(x, widgetId, (q) => ({ ...q, visible: v })), visible, undefined, { widget: widgetId }) : null;
+};
+/** Kéo qua các mắt của danh sách Lớp: đặt thẳng giá trị (không đảo). Lệnh nắm toàn bộ bảng hiện/ẩn nên gộp cả lần kéo thành một bước hoàn tác. */
+export const paintWidgetVisible = (d: Doc, widgetId: string, visible: boolean): Cmd | null => {
+  const get = (x: Doc) => Object.fromEntries(x.scene.widgets.map((w) => [w.id, w.visible])) as Record<string, boolean>;
+  const set = (x: Doc, v: Record<string, boolean>): Doc => ({ ...x, scene: { ...x.scene, widgets: x.scene.widgets.map((w) => (w.id in v && w.visible !== v[w.id] ? { ...w, visible: v[w.id] } : w)) } });
+  if (!d.scene.widgets.some((w) => w.id === widgetId)) return null;
+  return slice(d, 'setWidgetVisible', 'web.cmd.widgetVisible', get, set, { ...get(d), [widgetId]: visible }, 'paint:wvis', { widget: widgetId });
 };
 /** Ô mắt ở hàng đầu danh sách Lớp: còn lớp ẩn thì hiện hết trước, đã hiện hết thì ẩn hết. Một bước hoàn tác. */
 export const toggleAllWidgetsVisible = (d: Doc): Cmd | null => {

@@ -17,8 +17,10 @@ export interface ExportJob {
   /** PCM đã cắt theo khoảng xuất (sliceAudioForRange); thiếu thì video không tiếng */
   audio?: { channels: Float32Array[]; sampleRate: number; offsetMs: number };
 }
+/** Tay cầm tệp từ showSaveFilePicker: clone được sang Worker (FileSystemWritableFileStream thì KHÔNG, Chrome ném DataCloneError). */
+export interface FileTarget { createWritable(): Promise<WritableStream<{ type: 'write'; data: Uint8Array; position: number }>> }
 export type ExportIn =
-  | { type: 'start'; job: ExportJob; file?: WritableStream<{ type: 'write'; data: Uint8Array; position: number }> }
+  | { type: 'start'; job: ExportJob; file?: FileTarget }
   | { type: 'cancel' };
 export type ExportOut =
   | { type: 'progress'; progress: ProgressInfo }
