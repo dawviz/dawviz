@@ -5,7 +5,7 @@ section: "9. Bundle, CLI, demo"
 path: "9. Bundle, CLI, demo"
 chunk: 9-bundle-cli-demo.md
 source_lines: 103-107
-source_sha1: dbb03a72c8
+source_sha1: ba174dece0
 ids: []
 ---
 ## 9. Bundle, CLI, demo

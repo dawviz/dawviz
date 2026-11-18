@@ -5,7 +5,7 @@ section: "8b. Package `i18n` (`@dawviz/i18n`)"
 path: "8b. Package `i18n` (`@dawviz/i18n`)"
 chunk: 8b-package-i18n-dawviz-i18n.md
 source_lines: 99-102
-source_sha1: dbb03a72c8
+source_sha1: ba174dece0
 ids: []
 ---
 ## 8b. Package `i18n` (`@dawviz/i18n`)

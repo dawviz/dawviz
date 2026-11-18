@@ -21,7 +21,7 @@ Chạy: `npm test` (= `node --test test/*.test.js`). Không dùng `node --test t
 - `assertAstInvariants(assert, ast)`: PPQ 960; tempoMap tăng nghiêm ngặt; tick nguyên, `durationTick ≥ 1`, `endTick = start + duration`; pitch 0..127; velocity 1..127; thời gian giây hữu hạn và tăng; nốt sắp theo `startTick`.
 - `fx(name)`: đọc fixture.
 
-## 3. Danh mục test (66 test, 7 file)
+## 3. Danh mục test (77 test, 8 file)
 
 ### 3.1 `als.test.js` (15) — REQ-FMT-01, REQ-ALS-*
 | Test | Kiểm tra |
@@ -51,11 +51,14 @@ Inspect 5 template thật (tempo 180, 39 điểm envelope…); `youdreamarked` t
 ### 3.4 `dawproject.test.js` (7) — REQ-DAWP-*
 Ví dụ Bitwig chính thức (149 BPM, 1 track nốt, 9 nốt, vel 100, nốt dài 1440/2400); ZIP + metadata + inventory + thiếu `project.xml`; clip lặp; `playStart`; `timeUnit=seconds`; mute / thiếu tempo / override; gốc sai.
 
-### 3.5 `binary.test.js` (7) — REQ-BIN-*
+### 3.5 `binary.test.js` (9) — REQ-BIN-*
 Schema demo parse đúng + `matchSchema`; không tempo → fallback + cảnh báo; file cụt / magic sai / version sai; `count` 0xFFFFFFFF; schema độc (version, tên cấm, kiểu lạ, biểu thức `process.exit`, `constructor…`, `eval`, `__proto__`, thiếu `ast`); `maxNotes` và mảng không tiến con trỏ; công cụ cấu trúc (switch/when/offset/peek).
 
+### 3.5b `flp.test.js` (8, 1 tự bỏ qua khi thiếu tệp thật) — REQ-FMT-08, REQ-BIN-05/06
+FLP tổng hợp do `test/helpers.mjs` dựng (`flp`, `flpEv`, `flpNote`, `flpClip`): ánh xạ pattern→playlist (tick ×10, clip lặp, clip tắt, cắt cuối clip, `startoffset`, tên kênh không bị tên khe mixer đè); clip âm thanh + `WARN_FLP_CLIPS_SKIPPED` + tên dự phòng từ mẫu (cả bố cục clip 60 byte); phiên bản < 12, tệp cụt, blob khai khống, sai magic, không clip; `.flp` dạng ZIP; `probeProject`/ưu tiên schema người dùng; module dựng sẵn khớp JSON. Tệp thật `big roar.flp` (không commit, tự bỏ qua khi thiếu): 128 BPM, 7 kênh, 2.150 nốt, < 2 s. `binary.test.js` có thêm hai test engine (`$last`, `index`, `inner`, `warnings`, `splitNum`, `basename`).
+
 ### 3.6 `detect-bundle.test.js` (4) — REQ-CORE-02, REQ-CORE-05
-`detectFormat` theo đuôi + magic + hướng dẫn flp/bwproject; `probeProject` (cần `.mid` ngoài / schema);  `parseProject` điều phối + schema đăng ký; **bundle** dựng xong chạy và `deepEqual` với bản nguồn trên Demo.als.
+`detectFormat` theo đuôi + magic + hướng dẫn bwproject, nhận `.flp` dựng sẵn; `probeProject` (cần `.mid` ngoài / schema);  `parseProject` điều phối + schema đăng ký; **bundle** dựng xong chạy và `deepEqual` với bản nguồn trên Demo.als.
 
 ### 3.7 `i18n.test.js` (5) — REQ-I18N-*
 `t()`: nội suy, số nhiều (`one`/`other`/`=0`, định dạng số theo locale), dự phòng `vi-VN → vi → en → khoá`, `onMissing`; `matchLocale`/`localeChain`/`dirOf` (rtl); `parseMessage`/`describeMessage` bắt chuỗi sai (ngoặc, thiếu `other`); **danh mục thật của repo qua `check-i18n`** (đủ khoá, tham số khớp, khoá dùng trong mã có mặt, các mã lỗi chính có bản dịch); `check-i18n` bắt đúng các lỗi hay gặp của cộng tác viên (sai tên tham số, thiếu `other`, thiếu/thừa khoá, chuỗi rỗng, `partial` được thiếu khoá, locale chưa vào `index.json`, nhánh số nhiều không tồn tại trong ngôn ngữ).

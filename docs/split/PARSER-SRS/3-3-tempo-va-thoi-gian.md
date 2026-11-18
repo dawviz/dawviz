@@ -4,8 +4,8 @@ doc_title: "SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer"
 section: "3.3 Tempo và thời gian"
 path: "3. Yêu cầu chức năng > 3.3 Tempo và thời gian"
 chunk: 3-3-tempo-va-thoi-gian.md
-source_lines: 40-46
-source_sha1: dd04828ada
+source_lines: 41-47
+source_sha1: c1f2666bb0
 ids: [REQ-TEMPO-01, REQ-TEMPO-02, REQ-TEMPO-03, REQ-TEMPO-04, REQ-TEMPO-05, WARN_TEMPO_FALLBACK, WARN_TEMPO_MIDI_DEFAULT, WARN_TEMPO_RAMP]
 ---
 ### 3.3 Tempo và thời gian

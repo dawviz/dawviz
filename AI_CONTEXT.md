@@ -58,7 +58,7 @@ DAW Visualizer: trình duyệt đọc tệp dự án DAW (Ableton `.als/.alp`, R
 
 ```bash
 npm install                      # cần mạng; Node >= 22.18
-npm test                         # parser (66) + render-core (12) + logic web (9) + docs-site (6)
+npm test                         # parser (77) + render-core (12) + logic web (9) + docs-site (6)
 npm run test:components          # Vitest (thành phần React) — cần npm install
 npm run typecheck && npm run build
 npm run i18n:check               # kiểm danh mục ngôn ngữ
@@ -73,24 +73,24 @@ node scripts/sync-docs.mjs --find "độ sáng"   # lấy liên kết mảnh#hea
 <!-- sync:begin docs-index -->
 <!-- Khối này do scripts/sync-docs.mjs sinh ra; đừng sửa tay. -->
 
-Có 19 tài liệu, 296 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
+Có 20 tài liệu, 314 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
 
 ### BRD.md — TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)
 
 Nguồn: `docs/product/BRD.md` · [thứ tự đọc](docs/split/BRD/_index.md)
 
-- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](docs/split/BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 5.1k
+- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](docs/split/BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 5.5k
 - [1. THÔNG TIN CHUNG & BỐI CẢNH DỰ ÁN](docs/split/BRD/1-thong-tin-chung-boi-canh-du-an.md) · 1.8k
 - [2. MỤC TIÊU KINH DOANH, CHỈ SỐ ĐO LƯỜNG & YÊU CẦU NGHIỆP VỤ](docs/split/BRD/2-muc-tieu-kinh-doanh-chi-so-do-luong-yeu-cau-ng.md) · 4.8k
-- [3. CHÂN DUNG NGƯỜI DÙNG MỤC TIÊU (USER PERSONAS)](docs/split/BRD/3-chan-dung-nguoi-dung-muc-tieu-user-personas.md) · 1.3k
+- [3. CHÂN DUNG NGƯỜI DÙNG MỤC TIÊU (USER PERSONAS)](docs/split/BRD/3-chan-dung-nguoi-dung-muc-tieu-user-personas.md) · 1.5k
 - [4. PHẠM VI DỰ ÁN (PROJECT SCOPE) › 4.1. Trong phạm vi phiên bản 1.0 (In-Scope)](docs/split/BRD/4-1-trong-pham-vi-phien-ban-1-0-in-scope.md) · 3.2k
 - [4. PHẠM VI DỰ ÁN (PROJECT SCOPE) › 4.3. Lộ trình phát hành (Milestones)](docs/split/BRD/4-3-lo-trinh-phat-hanh-milestones.md) · 0.9k
 - [4. PHẠM VI DỰ ÁN (PROJECT SCOPE) › 4.4. Phân bổ theo bản phát hành (D-40, chốt ở tài liệu v1.1)](docs/split/BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md) · 2.9k
 - [4. PHẠM VI DỰ ÁN (PROJECT SCOPE) › 4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](docs/split/BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1.2k
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](docs/split/BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4.3k
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](docs/split/BRD/6-gia-dinh-assumptions.md) · 0.6k
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 26.0k
-- [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](docs/split/BRD/8-cac-van-de-con-mo-open-issues.md) · 5.6k
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 27.4k
+- [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](docs/split/BRD/8-cac-van-de-con-mo-open-issues.md) · 6.3k
 
 ### SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
@@ -100,7 +100,7 @@ Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 - [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) › Lịch sử phiên bản](docs/split/SRS/lich-su-phien-ban.md) · 9.3k
 - [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) › Quy ước trong tài liệu](docs/split/SRS/quy-uoc-trong-tai-lieu.md) · 0.8k
 - [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) › Mục lục](docs/split/SRS/muc-luc.md) · 0.4k
-- [1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG](docs/split/SRS/1-gioi-thieu-muc-tieu-he-thong.md) · 4.7k
+- [1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG](docs/split/SRS/1-gioi-thieu-muc-tieu-he-thong.md) · 4.8k
 - [2. KIẾN TRÚC KỸ THUẬT, LUỒNG DỮ LIỆU & ĐÁNH GIÁ KIẾN TRÚC › 2.1. Kiến trúc phân tầng hệ thống](docs/split/SRS/2-1-kien-truc-phan-tang-he-thong.md) · 6.6k
 - [2. KIẾN TRÚC KỸ THUẬT, LUỒNG DỮ LIỆU & ĐÁNH GIÁ KIẾN TRÚC › 2.2. Luồng dữ liệu chính](docs/split/SRS/2-2-luong-du-lieu-chinh.md) · 0.6k
 - [2. KIẾN TRÚC KỸ THUẬT, LUỒNG DỮ LIỆU & ĐÁNH GIÁ KIẾN TRÚC › 2.3. Thành phần bên thứ ba](docs/split/SRS/2-3-thanh-phan-ben-thu-ba.md) · 1.1k
@@ -112,7 +112,8 @@ Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) › REQ-PARSER-02: Cockos Reaper (`.rpp`)](docs/split/SRS/req-parser-02-cockos-reaper-rpp.md) · 3.7k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) › REQ-PARSER-03: DAWproject (`.dawproject`, D-03)](docs/split/SRS/req-parser-03-dawproject-dawproject-d-03.md) · 1.2k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) › REQ-PARSER-04: Standard MIDI File (`.mid`, format 0/1)](docs/split/SRS/req-parser-04-standard-midi-file-mid-format-0-1.md) · 0.9k
-- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) › REQ-PARSER-05: Parser JSON khai báo (D-18, D-28, R-05)](docs/split/SRS/req-parser-05-parser-json-khai-bao-d-18-d-28-r-0.md) · 1.5k
+- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) › REQ-PARSER-05: Parser JSON khai báo (D-18, D-28, R-05)](docs/split/SRS/req-parser-05-parser-json-khai-bao-d-18-d-28-r-0.md) · 1.8k
+- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) › REQ-PARSER-08: FL Studio (`.flp`, D-62)](docs/split/SRS/req-parser-08-fl-studio-flp-d-62.md) · 1.9k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) › REQ-PARSER-06: Ableton Live Pack (`.alp`)](docs/split/SRS/req-parser-06-ableton-live-pack-alp.md) · 1.1k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) › REQ-PARSER-07: Tempo không đoán ngầm và ghi đè (D-24, D-29)](docs/split/SRS/req-parser-07-tempo-khong-doan-ngam-va-ghi-de-d.md) · 1.7k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.2. Cấu trúc dữ liệu chuẩn hóa (Unified AST, D-08, D-09)](docs/split/SRS/3-2-cau-truc-du-lieu-chuan-hoa-unified-ast-d-08.md) · 3.5k
@@ -129,7 +130,7 @@ Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-17: Phát sáng động khi chạm (D-50, 1.0)](docs/split/SRS/req-graphics-17-phat-sang-dong-khi-cham-d-50-1-0.md) · 2.8k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-18: Kiểu chữ cho mọi chữ trong video (D-58)](docs/split/SRS/req-graphics-18-kieu-chu-cho-moi-chu-trong-video.md) · 5.1k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-19: Ô chữ người dùng thêm và chỗ giữ dùng chung (D-60; đã làm 2026-11-18, T-73)](docs/split/SRS/req-graphics-19-o-chu-nguoi-dung-them-va-cho-giu.md) · 2.9k
-- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-AST-02: Automation tổng quát (D-50; 1.0 cho Reaper track + MIDI CC, các nguồn khác theo tệp mẫu)](docs/split/SRS/req-ast-02-automation-tong-quat-d-50-1-0-cho-rea.md) · 2.2k
+- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-AST-02: Automation tổng quát (D-50; 1.0 cho Reaper track + MIDI CC, các nguồn khác theo tệp mẫu)](docs/split/SRS/req-ast-02-automation-tong-quat-d-50-1-0-cho-rea.md) · 2.4k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04)](docs/split/SRS/3-4-dac-ta-8-widget-hud-br-02-br-03-br-04.md) · 0.4k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-WIDGET-01: Piano Roll](docs/split/SRS/req-widget-01-piano-roll.md) · 1.4k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-WIDGET-02: Track Info](docs/split/SRS/req-widget-02-track-info.md) · 1.1k
@@ -172,7 +173,7 @@ Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 - [8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS](docs/split/SRS/8-cac-van-de-con-mo-cua-srs.md) · 4.0k
 - [9. PHỤ LỤC › Phụ lục A: Mã lỗi](docs/split/SRS/phu-luc-a-ma-loi.md) · 2.9k
 - [9. PHỤ LỤC › Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)](docs/split/SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md) · 1.7k
-- [9. PHỤ LỤC › Phụ lục A2: Mã cảnh báo của Parser Library](docs/split/SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md) · 1.3k
+- [9. PHỤ LỤC › Phụ lục A2: Mã cảnh báo của Parser Library](docs/split/SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md) · 1.4k
 - [9. PHỤ LỤC › Phụ lục B: Ghi chú rà soát](docs/split/SRS/phu-luc-b-ghi-chu-ra-soat.md) · 2.9k
 
 ### SDD.md — TÀI LIỆU THIẾT KẾ PHẦN MỀM (SDD) — ỨNG DỤNG DAW VISUALIZER
@@ -243,7 +244,7 @@ Nguồn: `docs/design/TDD.md` · [thứ tự đọc](docs/split/TDD/_index.md)
 - [2. Danh mục test mới](docs/split/TDD/2-danh-muc-test-moi.md) · 3.2k
 - [3. Ma trận truy vết](docs/split/TDD/3-ma-tran-truy-vet.md) · 0.5k
 - [4. Khoảng trống đã biết](docs/split/TDD/4-khoang-trong-da-biet.md) · 0.4k
-- [5. Danh sách kiểm thủ công cho AT-18 (Chrome)](docs/split/TDD/5-danh-sach-kiem-thu-cong-cho-at-18-chrome.md) · 4.1k
+- [5. Danh sách kiểm thủ công cho AT-18 (Chrome)](docs/split/TDD/5-danh-sach-kiem-thu-cong-cho-at-18-chrome.md) · 4.2k
 
 ### ANIMATION.md — Hiệu ứng chuyển động và xuất video: so sánh công cụ và quyết định
 
@@ -359,8 +360,8 @@ Nguồn: `docs/design/FIREFOX-FONT-SLOWDOWN.md` · [thứ tự đọc](docs/spli
 Nguồn: `docs/parser/PARSER-SRS.md` · [thứ tự đọc](docs/split/PARSER-SRS/_index.md)
 
 - [SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer (mở đầu)](docs/split/PARSER-SRS/srs-dac-ta-yeu-cau-thu-vien-parser-daw-visualize.md) · 0.4k
-- [1. Mục đích và phạm vi](docs/split/PARSER-SRS/1-muc-dich-va-pham-vi.md) · 0.4k
-- [2. Định dạng hỗ trợ](docs/split/PARSER-SRS/2-dinh-dang-ho-tro.md) · 1.2k
+- [1. Mục đích và phạm vi](docs/split/PARSER-SRS/1-muc-dich-va-pham-vi.md) · 0.5k
+- [2. Định dạng hỗ trợ](docs/split/PARSER-SRS/2-dinh-dang-ho-tro.md) · 1.5k
 - [3. Yêu cầu chức năng › 3.1 Chung (core)](docs/split/PARSER-SRS/3-1-chung-core.md) · 0.7k
 - [3. Yêu cầu chức năng › 3.2 Giới hạn và an toàn (REQ-PARSER-00)](docs/split/PARSER-SRS/3-2-gioi-han-va-an-toan-req-parser-00.md) · 0.8k
 - [3. Yêu cầu chức năng › 3.3 Tempo và thời gian](docs/split/PARSER-SRS/3-3-tempo-va-thoi-gian.md) · 0.7k
@@ -369,7 +370,7 @@ Nguồn: `docs/parser/PARSER-SRS.md` · [thứ tự đọc](docs/split/PARSER-SR
 - [3. Yêu cầu chức năng › 3.6 Reaper (.rpp) — VERIFY](docs/split/PARSER-SRS/3-6-reaper-rpp-verify.md) · 4.5k
 - [3. Yêu cầu chức năng › 3.7 DAWproject](docs/split/PARSER-SRS/3-7-dawproject.md) · 0.7k
 - [3. Yêu cầu chức năng › 3.8 MIDI](docs/split/PARSER-SRS/3-8-midi.md) · 0.4k
-- [3. Yêu cầu chức năng › 3.9 Binary theo schema](docs/split/PARSER-SRS/3-9-binary-theo-schema.md) · 0.7k
+- [3. Yêu cầu chức năng › 3.9 Binary theo schema](docs/split/PARSER-SRS/3-9-binary-theo-schema.md) · 1.6k
 - [3. Yêu cầu chức năng › 3.10 So sánh kiểm chứng (KPI-01)](docs/split/PARSER-SRS/3-10-so-sanh-kiem-chung-kpi-01.md) · 0.3k
 - [4. Mã lỗi](docs/split/PARSER-SRS/4-ma-loi.md) · 1.0k
 - [5. Yêu cầu phi chức năng](docs/split/PARSER-SRS/5-yeu-cau-phi-chuc-nang.md) · 0.3k
@@ -387,8 +388,8 @@ Nguồn: `docs/parser/PARSER-SDD.md` · [thứ tự đọc](docs/split/PARSER-SD
 - [4. Package `als` (REQ-ALS-*, REQ-ALP-*)](docs/split/PARSER-SDD/4-package-als-req-als-req-alp.md) · 2.0k
 - [5. Package `rpp` (REQ-RPP-*)](docs/split/PARSER-SDD/5-package-rpp-req-rpp.md) · 1.2k
 - [6. Package `dawproject` (REQ-DAWP-*)](docs/split/PARSER-SDD/6-package-dawproject-req-dawp.md) · 0.4k
-- [7. Package `binary` (REQ-BIN-*)](docs/split/PARSER-SDD/7-package-binary-req-bin.md) · 0.9k
-- [8. Package `parser` (bao ngoài)](docs/split/PARSER-SDD/8-package-parser-bao-ngoai.md) · 0.6k
+- [7. Package `binary` (REQ-BIN-*)](docs/split/PARSER-SDD/7-package-binary-req-bin.md) · 1.0k
+- [8. Package `parser` (bao ngoài)](docs/split/PARSER-SDD/8-package-parser-bao-ngoai.md) · 0.9k
 - [8b. Package `i18n` (`@dawviz/i18n`)](docs/split/PARSER-SDD/8b-package-i18n-dawviz-i18n.md) · 1.1k
 - [9. Bundle, CLI, demo](docs/split/PARSER-SDD/9-bundle-cli-demo.md) · 0.7k
 - [10. Quyết định thiết kế và đánh đổi](docs/split/PARSER-SDD/10-quyet-dinh-thiet-ke-va-danh-doi.md) · 1.7k
@@ -401,7 +402,14 @@ Nguồn: `docs/parser/PARSER-TDD.md` · [thứ tự đọc](docs/split/PARSER-TD
 - [TDD — Tài liệu kiểm thử: Thư viện parser DAW Visualizer (mở đầu)](docs/split/PARSER-TDD/tdd-tai-lieu-kiem-thu-thu-vien-parser-daw-visual.md) · 0.2k
 - [1. Chiến lược](docs/split/PARSER-TDD/1-chien-luoc.md) · 0.8k
 - [2. Công cụ dùng chung (`test/helpers.mjs`)](docs/split/PARSER-TDD/2-cong-cu-dung-chung-test-helpers-mjs.md) · 0.5k
-- [3. Danh mục test (66 test, 7 file)](docs/split/PARSER-TDD/3-danh-muc-test-66-test-7-file.md) · 5.7k
+- [3. Danh mục test (77 test, 8 file) › 3.1 `als.test.js` (15) — REQ-FMT-01, REQ-ALS-*](docs/split/PARSER-TDD/3-1-als-test-js-15-req-fmt-01-req-als.md) · 1.9k
+- [3. Danh mục test (77 test, 8 file) › 3.2 `midi-alp.test.js` (11) — REQ-MIDI-*, REQ-ALP-01, REQ-CMP-01](docs/split/PARSER-TDD/3-2-midi-alp-test-js-11-req-midi-req-alp-01-req.md) · 0.6k
+- [3. Danh mục test (77 test, 8 file) › 3.3 `rpp.test.js` (17) — REQ-RPP-*](docs/split/PARSER-TDD/3-3-rpp-test-js-17-req-rpp.md) · 1.7k
+- [3. Danh mục test (77 test, 8 file) › 3.4 `dawproject.test.js` (7) — REQ-DAWP-*](docs/split/PARSER-TDD/3-4-dawproject-test-js-7-req-dawp.md) · 0.3k
+- [3. Danh mục test (77 test, 8 file) › 3.5 `binary.test.js` (9) — REQ-BIN-*](docs/split/PARSER-TDD/3-5-binary-test-js-9-req-bin.md) · 0.4k
+- [3. Danh mục test (77 test, 8 file) › 3.5b `flp.test.js` (8, 1 tự bỏ qua khi thiếu tệp thật) — REQ-FMT-08, REQ-BIN-05/06](docs/split/PARSER-TDD/3-5b-flp-test-js-8-1-tu-bo-qua-khi-thieu-tep-tha.md) · 0.7k
+- [3. Danh mục test (77 test, 8 file) › 3.6 `detect-bundle.test.js` (4) — REQ-CORE-02, REQ-CORE-05](docs/split/PARSER-TDD/3-6-detect-bundle-test-js-4-req-core-02-req-core.md) · 0.3k
+- [3. Danh mục test (77 test, 8 file) › 3.7 `i18n.test.js` (5) — REQ-I18N-*](docs/split/PARSER-TDD/3-7-i18n-test-js-5-req-i18n.md) · 0.6k
 - [4. Ma trận truy vết (rút gọn)](docs/split/PARSER-TDD/4-ma-tran-truy-vet-rut-gon.md) · 0.5k
 - [5. Khoảng trống kiểm thử (cần dữ liệu thật, xem SRS §6)](docs/split/PARSER-TDD/5-khoang-trong-kiem-thu-can-du-lieu-that-xem-srs.md) · 1.0k
 - [6. Kiểm thử thủ công trình duyệt](docs/split/PARSER-TDD/6-kiem-thu-thu-cong-trinh-duyet.md) · 0.4k
@@ -465,5 +473,20 @@ Nguồn: `docs/spikes/SPIKE-2-PARSER.md` · [thứ tự đọc](docs/split/SPIKE
 - [3. Bài học và đề xuất](docs/split/SPIKE-2-PARSER/3-bai-hoc-va-de-xuat.md) · 0.3k
 - [4. Kế hoạch hành động lúc đó](docs/split/SPIKE-2-PARSER/4-ke-hoach-hanh-dong-luc-do.md) · 0.3k
 - [5. Trạng thái hiện tại (tài liệu v1.1)](docs/split/SPIKE-2-PARSER/5-trang-thai-hien-tai-tai-lieu-v1-1.md) · 1.1k
+
+### SPIKE-3-FLP.md — Spike 3: đọc `.flp` (FL Studio) bằng JSON schema
+
+Nguồn: `docs/spikes/SPIKE-3-FLP.md` · [thứ tự đọc](docs/split/SPIKE-3-FLP/_index.md)
+
+- [Spike 3: đọc `.flp` (FL Studio) bằng JSON schema (mở đầu)](docs/split/SPIKE-3-FLP/spike-3-doc-flp-fl-studio-bang-json-schema-mo-da.md) · 0.3k
+- [1. Kết luận](docs/split/SPIKE-3-FLP/1-ket-luan.md) · 0.8k
+- [2. Vì sao TLV vẫn vừa JSON schema](docs/split/SPIKE-3-FLP/2-vi-sao-tlv-van-vua-json-schema.md) · 0.9k
+- [3. Điều JSON chưa làm được và bốn bổ sung cho engine](docs/split/SPIKE-3-FLP/3-dieu-json-chua-lam-duoc-va-bon-bo-sung-cho-eng.md) · 1.3k
+- [4. Mô hình ánh xạ (quyết định)](docs/split/SPIKE-3-FLP/4-mo-hinh-anh-xa-quyet-dinh.md) · 1.1k
+- [5. Giới hạn đã biết (cần tệp mẫu hoặc quyết định để mở)](docs/split/SPIKE-3-FLP/5-gioi-han-da-biet-can-tep-mau-hoac-quyet-dinh-d.md) · 3.3k
+- [6. Automation (volume, pan của track)](docs/split/SPIKE-3-FLP/6-automation-volume-pan-cua-track.md) · 1.8k
+- [6b. Tệp mẫu cần để gỡ [VERIFY] (danh sách cho người thử)](docs/split/SPIKE-3-FLP/6b-tep-mau-can-de-go-verify-danh-sach-cho-nguoi.md) · 1.6k
+- [7. Phương án đã cân nhắc](docs/split/SPIKE-3-FLP/7-phuong-an-da-can-nhac.md) · 0.6k
+- [8. Nguồn và giấy phép](docs/split/SPIKE-3-FLP/8-nguon-va-giay-phep.md) · 0.6k
 
 <!-- sync:end docs-index -->

@@ -1,6 +1,6 @@
 # Chỉ mục PARSER-SDD.md — SDD — Thiết kế phần mềm: Thư viện parser DAW Visualizer
 
-nguồn: `PARSER-SDD.md` (sha1 dbb03a72c8)
+nguồn: `PARSER-SDD.md` (sha1 ba174dece0)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -11,8 +11,8 @@ nguồn: `PARSER-SDD.md` (sha1 dbb03a72c8)
 | 4 | 4. Package `als` (REQ-ALS-*, REQ-ALP-*) | [4-package-als-req-als-req-alp.md](4-package-als-req-als-req-alp.md) | 1990 | ERR_UNSUPPORTED_FORMAT |
 | 5 | 5. Package `rpp` (REQ-RPP-*) | [5-package-rpp-req-rpp.md](5-package-rpp-req-rpp.md) | 1240 | ERR_NO_NOTES |
 | 6 | 6. Package `dawproject` (REQ-DAWP-*) | [6-package-dawproject-req-dawp.md](6-package-dawproject-req-dawp.md) | 408 |  |
-| 7 | 7. Package `binary` (REQ-BIN-*) | [7-package-binary-req-bin.md](7-package-binary-req-bin.md) | 874 |  |
-| 8 | 8. Package `parser` (bao ngoài) | [8-package-parser-bao-ngoai.md](8-package-parser-bao-ngoai.md) | 632 |  |
+| 7 | 7. Package `binary` (REQ-BIN-*) | [7-package-binary-req-bin.md](7-package-binary-req-bin.md) | 1028 | D-62 |
+| 8 | 8. Package `parser` (bao ngoài) | [8-package-parser-bao-ngoai.md](8-package-parser-bao-ngoai.md) | 910 |  |
 | 9 | 8b. Package `i18n` (`@dawviz/i18n`) | [8b-package-i18n-dawviz-i18n.md](8b-package-i18n-dawviz-i18n.md) | 1072 |  |
 | 10 | 9. Bundle, CLI, demo | [9-bundle-cli-demo.md](9-bundle-cli-demo.md) | 709 |  |
 | 11 | 10. Quyết định thiết kế và đánh đổi | [10-quyet-dinh-thiet-ke-va-danh-doi.md](10-quyet-dinh-thiet-ke-va-danh-doi.md) | 1710 | ERR_NO_SUPPORTED_ENV, PD-01, PD-02, PD-03, PD-04, PD-05… |

@@ -4,8 +4,8 @@ doc_title: "SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer"
 section: "3.1 Chung (core)"
 path: "3. Yêu cầu chức năng > 3.1 Chung (core)"
 chunk: 3-1-chung-core.md
-source_lines: 26-32
-source_sha1: dd04828ada
+source_lines: 27-33
+source_sha1: c1f2666bb0
 ids: [REQ-CORE-01, REQ-CORE-02, REQ-CORE-03, REQ-CORE-04, REQ-CORE-05]
 ---
 ### 3.1 Chung (core)

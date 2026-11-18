@@ -5,7 +5,7 @@ section: "1. Kiến trúc tổng thể"
 path: "1. Kiến trúc tổng thể"
 chunk: 1-kien-truc-tong-the.md
 source_lines: 5-24
-source_sha1: dbb03a72c8
+source_sha1: ba174dece0
 ids: [REQ-AST-01, REQ-TEMPO-01, REQ-TEMPO-02]
 ---
 ## 1. Kiến trúc tổng thể

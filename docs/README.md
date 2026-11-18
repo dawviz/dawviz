@@ -15,7 +15,7 @@
 | `design/UI-DIRECTION.md` | Định hướng hình ảnh: khung preview "Bản in" đã chốt (D-51) và phân rã widget; chẩn đoán giao diện web; bộ prompt sinh ảnh để thử hướng giao diện web; nhật ký thử |
 | `COMMUNITY-CONTENT.md` | Thư mục `presets/` và `assets/`, định dạng preset, quy tắc giấy phép, kế hoạch tách repo cộng đồng |
 | `parser/PARSER-SRS.md`, `PARSER-SDD.md`, `PARSER-TDD.md` | Thư viện parser: yêu cầu (`REQ-ALS-…`, `REQ-RPP-…`, `REQ-AUTO-…`), thiết kế (quyết định `PD-xx`), 66 test |
-| `spikes/SPIKE-1-EXPORT.md`, `spikes/SPIKE-2-PARSER.md` | Báo cáo hai spike kỹ thuật (xuất video; parser và AST) kèm bảng đối chiếu từng phát hiện với tài liệu hiện hành |
+| `spikes/SPIKE-1-EXPORT.md`, `spikes/SPIKE-2-PARSER.md`, `spikes/SPIKE-3-FLP.md` | Báo cáo ba spike kỹ thuật (xuất video; parser và AST; đọc `.flp` bằng JSON schema) kèm bảng đối chiếu từng phát hiện với tài liệu hiện hành |
 | `I18N.md` | Đa ngôn ngữ và hướng dẫn đóng góp bản dịch |
 | `split/` | Kết quả tách (**sinh tự động, đừng sửa tay; không đưa vào git**) |
 

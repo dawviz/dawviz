@@ -5,8 +5,8 @@ section: "1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG"
 path: "1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG"
 chunk: 1-gioi-thieu-muc-tieu-he-thong.md
 source_lines: 49-112
-source_sha1: b0fe5ff302
-ids: [ARC-01, BR-01, BR-02, BR-03, BR-04, BR-05, BR-06, BR-07, BR-08, D-01, D-04, D-06, D-07, D-08, D-10, D-12, D-13, D-14, D-16, D-19, D-23, D-24, D-28, D-29, D-54, NFR-SEC-01, OI-08, REQ-EXPORT-00, REQ-GRAPHICS-03, REQ-GRAPHICS-15, REQ-PARSER-05, REQ-PARSER-06, REQ-UI-01, REQ-WIDGET-05]
+source_sha1: b14b13f4bc
+ids: [ARC-01, BR-01, BR-02, BR-03, BR-04, BR-05, BR-06, BR-07, BR-08, D-01, D-04, D-06, D-07, D-08, D-10, D-12, D-13, D-14, D-16, D-23, D-24, D-28, D-29, D-54, D-62, NFR-SEC-01, OI-08, REQ-EXPORT-00, REQ-GRAPHICS-03, REQ-GRAPHICS-15, REQ-PARSER-05, REQ-PARSER-06, REQ-PARSER-08, REQ-UI-01, REQ-WIDGET-05]
 ---
 ## 1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG
 
@@ -25,7 +25,7 @@ Tài liệu này đặc tả yêu cầu phần mềm cho **DAW Visualizer Studio
 ### 1.3. Ngoài phạm vi phiên bản 1.0
 Đồng bộ với BRD mục 4.2:
 
-* **Chưa hỗ trợ** đọc trực tiếp `.flp` (FL Studio) và `.bwproject` gốc của Bitwig (định dạng nhị phân; engine schema nhị phân đã có, chờ file mẫu để viết schema, OI-08). Người dùng FL Studio nạp `.mid` xuất từ FL; người dùng Bitwig xuất `.dawproject` (D-19, REQ-UI-01).
+* **Đọc trực tiếp `.flp`** của FL Studio 12 trở lên (D-62, REQ-PARSER-08). **Chưa hỗ trợ** `.bwproject` gốc của Bitwig (định dạng nhị phân; engine schema nhị phân đã có, chờ file mẫu để viết schema, OI-08): người dùng Bitwig xuất `.dawproject`. FL Studio cũ hơn 12 nạp `.mid` xuất từ FL (REQ-UI-01).
 * Đọc clip Session View của Ableton: chưa hỗ trợ (clip bị bỏ qua và được báo).
 * Bộ tổng hợp âm thanh ảo (VST/Sampler) để phát tiếng từ nốt MIDI.
 * Backend render video.

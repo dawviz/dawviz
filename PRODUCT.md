@@ -36,7 +36,7 @@ Mục tiêu đo được (BRD §2): từ file DAW đến MP4 cho đoạn ≤ 60 
 
 ## Capabilities and Constraints
 
-- **Định dạng vào:** Ableton `.als`/`.alp` (chỉ Arrangement), Reaper `.rpp`, `.dawproject` (Bitwig/Studio One), MIDI `.mid`, parser khai báo bằng JSON schema (nguồn nhị phân). `.flp` và `.bwproject` *chưa hỗ trợ*. Người dùng FL Studio xuất `.mid`, và màn hình nạp file phải hướng dẫn điều này (D-19). Audio kèm tuỳ chọn.
+- **Định dạng vào:** Ableton `.als`/`.alp` (chỉ Arrangement), Reaper `.rpp`, `.dawproject` (Bitwig/Studio One), FL Studio `.flp` (≥ 12, chỉ nốt Pattern trên Playlist, D-62), MIDI `.mid`, parser khai báo bằng JSON schema (nguồn nhị phân). `.bwproject` *chưa hỗ trợ*. FL Studio cũ hơn 12 xuất `.mid`; màn hình nạp file nói rõ điều này. Audio kèm tuỳ chọn.
 - **Không bao giờ gán tempo ngầm:** thiếu tempo thì cảnh báo và cho người dùng nhập mốc BPM, dấu nhịp (D-24, D-29, D-31).
 - **Cảnh và widget:** 8 widget cốt lõi + đề xuất P-01…P-13 trong bản 1.0; snapping, smart guides, preset 9:16 / 16:9 / 1:1. Mọi widget chỉnh như lớp của trình dựng motion graphics: vị trí, kích thước, **xoay 2D tự do từ 1.0** (D-54, thay D-15), keyframe, biểu thức; xoay 3D X/Y/Z và camera ở 1.1 (D-47).
 - **Xuất:** MP4 (WebCodecs + Mediabunny), kích thước tuỳ ý (chẵn, ≤ 4096), chọn đoạn xuất, tiến độ và nút huỷ; nền trong suốt ở 1.0 (D-47).

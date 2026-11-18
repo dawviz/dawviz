@@ -186,6 +186,7 @@ dawviz/
 │  ├─ binary/   # @dawviz/parser-binary: nhị phân theo JSON schema
 │  │  ├─ src/
 │  │  │  ├─ binary.js
+│  │  │  ├─ builtin-schemas.js
 │  │  │  └─ index.js
 │  │  └─ package.json
 │  ├─ core/   # @dawviz/parser-core: lỗi, giới hạn, ZIP/XML, tempo, AST, automation
@@ -297,6 +298,7 @@ dawviz/
 │  │  └─ slug.mjs
 │  ├─ bundle.mjs
 │  ├─ check-i18n.mjs
+│  ├─ gen-builtin-schemas.mjs
 │  ├─ gen-font-metrics.mjs
 │  ├─ rewrite-imports.mjs
 │  ├─ split_doc.py
@@ -307,6 +309,7 @@ dawviz/
 │  ├─ binary.test.js
 │  ├─ dawproject.test.js
 │  ├─ detect-bundle.test.js
+│  ├─ flp.test.js
 │  ├─ helpers.mjs
 │  ├─ i18n.test.js
 │  ├─ midi-alp.test.js
@@ -370,12 +373,22 @@ function matchSchema(fileName, u8, schemas = [])   // Chọn schema theo phần 
 async function parseBinaryWithSchema(buffer, schema, options = {})   // ======================= ánh xạ sang AST =======================
 ```
 
+#### `packages/binary/src/builtin-schemas.js`
+
+GENERATED bởi scripts/gen-builtin-schemas.mjs từ schemas/*.schema.json — không sửa tay.
+
+```text
+const SCHEMA_FLP   // GENERATED bởi scripts/gen-builtin-schemas.mjs từ schemas/*.schema.json — không sửa tay. Schema nhị phân dựng …
+const BUILTIN_SCHEMAS
+```
+
 #### `packages/binary/src/index.js`
 
 Cổng vào của @dawviz/parser-binary: đọc tệp nhị phân theo JSON schema.
 
 ```text
 re-export { parseBinaryWithSchema, readBinary, validateSchema, matchSchema } from './binary.js'
+re-export { BUILTIN_SCHEMAS } from './builtin-schemas.js'
 ```
 
 ### packages/core — @dawviz/parser-core: lỗi, giới hạn, ZIP/XML, tempo, AST, automation
@@ -564,7 +577,7 @@ Cổng vào duy nhất cho ứng dụng: parseProject(fileName, buffer, options)
 
 ```text
 re-export * from '@dawviz/parser-core'
-re-export { parseMidi, parseAls, parseAlp, parseRpp, parseDawproject, parseBinaryWithSchema, matchSchema }
+re-export { parseMidi, parseAls, parseAlp, parseRpp, parseDawproject, parseBinaryWithSchema, matchSchema, BUILTIN_SCHEMAS }
 re-export { inspectRpp } from '@dawviz/parser-rpp'
 re-export { listExternalMidi }
 re-export { externalMidiKey } from '@dawviz/parser-rpp'
@@ -2155,6 +2168,7 @@ type ParseResponse
 - `scripts/docs-site/markdown.mjs` — Bộ chuyển Markdown → HTML tối giản, không phụ thuộc thư viện. Hỗ trợ đúng phần tài liệu của dự án dùng:
 - `scripts/docs-site/markdown.test.mjs` — Test của bộ chuyển Markdown → HTML (tiêu đề/id, inline, bảng, danh sách lồng nhau, khối code, trích dẫn, văn bản tìm kiếm).
 - `scripts/docs-site/slug.mjs` — Quy tắc tạo anchor (id) cho heading, giống GitHub: chữ thường, bỏ ký tự đặc biệt/emoji, khoảng trắng → '-'. Dùng chung cho sync-docs và docs site.
+- `scripts/gen-builtin-schemas.mjs` — Sinh packages/binary/src/builtin-schemas.js từ schemas/*.schema.json dựng sẵn (hiện: flp).
 - `scripts/gen-font-metrics.mjs` — Sinh bảng độ rộng ký tự (FONT_METRICS) từ CHÍNH các tệp phông đã đóng gói trong apps/web/public/fonts
 - `scripts/rewrite-imports.mjs` — Công cụ một lần: viết lại import tương đối giữa các package khi tách monorepo.
 - `scripts/split_doc.py` — Tách tài liệu Markdown (SRS/SDD/TDD...) thành các mảnh nhỏ để đưa cho AI tham chiếu.
@@ -2215,8 +2229,9 @@ type ParseResponse
 - `test/binary.test.js`
 - `test/dawproject.test.js`
 - `test/detect-bundle.test.js`
+- `test/flp.test.js`
 - `test/i18n.test.js`
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 896 ký hiệu công khai -->
+<!-- 10 thư mục src, 899 ký hiệu công khai -->

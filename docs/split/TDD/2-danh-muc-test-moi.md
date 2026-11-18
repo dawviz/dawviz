@@ -5,7 +5,7 @@ section: "2. Danh mục test mới"
 path: "2. Danh mục test mới"
 chunk: 2-danh-muc-test-moi.md
 source_lines: 23-53
-source_sha1: 6d93c905f0
+source_sha1: 8e526eb663
 ids: [ARC-01, AT-17, D-33, NFR-PERF-05, REQ-GRAPHICS-05, REQ-GRAPHICS-06]
 ---
 ## 2. Danh mục test mới

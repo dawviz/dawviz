@@ -4,9 +4,9 @@ doc_title: "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT
 section: "8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)"
 path: "8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)"
 chunk: 8-cac-van-de-con-mo-open-issues.md
-source_lines: 271-292
-source_sha1: 8f63fc0d0c
-ids: [D-01, D-05, D-39, D-40, D-41, D-42, D-43, D-44, D-45, D-60, KPI-01, KPI-06, OI-01, OI-02, OI-03, OI-04, OI-05, OI-06, OI-07, OI-08, OI-09, OI-10, OI-11, OI-12, OI-13, OI-14, OI-15, OI-16, OI-17, OI-18, P-01, P-13]
+source_lines: 273-295
+source_sha1: 3ccfd946bc
+ids: [D-01, D-05, D-39, D-40, D-41, D-42, D-43, D-44, D-45, D-60, D-62, KPI-01, KPI-06, OI-01, OI-02, OI-03, OI-04, OI-05, OI-06, OI-07, OI-08, OI-09, OI-10, OI-11, OI-12, OI-13, OI-14, OI-15, OI-16, OI-17, OI-18, OI-19, P-01, P-13]
 ---
 ## 8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)
 
@@ -19,7 +19,7 @@ ids: [D-01, D-05, D-39, D-40, D-41, D-42, D-43, D-44, D-45, D-60, KPI-01, KPI-06
 | **OI-05** | Tích hợp thư viện @tonaljs/chord-detect làm engine nhận diện hợp âm cốt lõi thay vì viết tay. Cần thu thập bộ mẫu test gồm 30–50 đoạn MIDI thực tế (Pop, Lo-Fi, R&B, Jazz) để tinh chỉnh thuật toán gom nốt theo thời gian (time-windowing) và đo đạt KPI-06. **v1.1:** bộ mẫu MIDI tự tạo + Chương trình tệp mẫu (D-45); kiểm giấy phép thư viện trước khi dùng (OI-07). | Product/Nhạc công |
 | **OI-06** | Đánh giá lại D-01 (Silent AAC) khi có phản hồi thực tế từ các nền tảng. **v1.1:** giữ mặc định TẮT; xem lại sau phản hồi của 1.0. | Product |
 | **OI-07** | Kiểm tra giấy phép các thư viện phụ thuộc và font đóng gói kèm. **v1.1:** thêm bước kiểm giấy phép phụ thuộc tự động vào CI trước khi phát hành 1.0 (T-40). | Dev/Pháp lý |
-| **OI-08** | Cần file `.bwproject` (và `.flp`) mẫu để viết schema nhị phân thật; cho tới lúc đó ghi là *chưa hỗ trợ*. **v1.1:** chưa hỗ trợ trong 1.0/1.1; xem lại ở 1.2 nếu có tệp mẫu (D-45). | Product/Dev |
+| **OI-08** | Cần file `.bwproject` mẫu để viết schema nhị phân thật; cho tới lúc đó ghi là *chưa hỗ trợ*. **2026-11-18:** `.flp` đã xong nhờ có tệp mẫu (D-62). **v1.1:** chưa hỗ trợ trong 1.0/1.1; xem lại ở 1.2 nếu có tệp mẫu (D-45). | Product/Dev |
 | **OI-09** | Đo lại A/V sync trên thêm thiết bị di động và quyết định có bù offset hay giữ phạm vi desktop (R-11). **Đã chốt v1.1 (D-44):** 1.0/1.1 chỉ desktop; 1.2 xem trên di động, xuất vẫn khuyến nghị desktop. | Dev |
 | **OI-10** | Quyết định chính thức: chỉ đọc Arrangement hay đọc cả Session View của Ableton (clip Session hiện bị bỏ qua). **Đã chốt v1.1 (D-44):** 1.0/1.1 chỉ Arrangement; Session View ở 1.2. | Product |
 | **OI-11** | Chốt danh sách widget/dữ liệu hiển thị bổ sung đề xuất ở SRS mục 3.4b: cái nào vào v1.0, cái nào để sau; cần đọc thêm dữ liệu nào từ file (marker/vùng, lời bài hát). **Đã chốt v1.1 (D-40):** toàn bộ P-01…P-13 vào bản 1.0. | Product |
@@ -30,3 +30,4 @@ ids: [D-01, D-05, D-39, D-40, D-41, D-42, D-43, D-44, D-45, D-60, KPI-01, KPI-06
 | **OI-16** | **Đã chốt một phần 2026-11-12:** có ngôn ngữ biểu thức (D-39, `docs/design/EXPRESSIONS.md`). Còn mở: có làm morph giữa đường SVG tự do không. **Đã đóng v1.1:** morph SVG tự do ở 1.2 (D-44). | Product/Dev |
 | **OI-17** | Chọn origin để host ứng dụng: tên miền riêng hay tài khoản/tổ chức GitHub riêng (không dùng `tên-cá-nhân.github.io/dawviz` vì dùng chung origin với các repo khác). Phải chốt trước khi lưu dữ liệu người dùng trên site công khai. **Đã đóng v1.1 (D-41):** tổ chức GitHub riêng. | Product |
 | ~~**OI-18**~~ | **ĐÃ CHỐT 2026-11-18 (chủ dự án)** — chỗ giữ dùng chung (D-60): (a) ở Nâng cao, widget có sẵn mở ô mẫu chữ cho **mọi** dòng chữ; Cơ bản giữ các ô hiện có; mẫu mặc định tương đương chuỗi cứng hiện tại nên preset cũ vẽ như cũ. (b) định dạng `{tên:định_dạng}`, tách ở dấu `:` đầu tiên; bộ định dạng nhỏ và đóng (số: `0.0`, đệm `000`; thời gian: `m:ss`, `m:ss.SSS`; `{notes:, }` đổi dấu phân cách); định dạng sai thì giữ nguyên chữ và cảnh báo; không nhập thì dùng mặc định theo từng chỗ giữ (`{bpm}` tối đa 2 số thập phân bỏ số 0 thừa, `{tempo}` là tên cũ của `{bpm}`, `{pct}` số nguyên, thời gian `m:ss`, `{bar}`/`{beat}`/`{played}`/`{total}` số nguyên không đệm). (c) chỗ giữ theo nốt trong ô chữ chỉ có `{notes}`: mọi nốt đang vang của các track đã chọn, xếp thấp → cao, cách nhau bằng khoảng trắng, không có nốt thì rỗng; **không** có `{name}`/`{velocity}` riêng lẻ trong ô chữ (hai tên này chỉ dùng ở mẫu Live Note Trigger, nơi mỗi dòng là một nốt). | Product |
+| **OI-19** | `.flp`: (a) pattern lặp khi kéo dài clip Pattern (FL lặp nội dung; hiện chưa lặp); (b) tempo automation (đã giải mã nhưng công thức giá trị → BPM chưa kiểm được); automation volume/pan của track đã làm (T-76), còn plugin/mute/filter; (c) kiểm trên tệp FL 21–24 (đã kiểm 12.3, 25.2.x, 26.1.x; FL 25 có `172` 3 byte, clip 80 byte, nhóm insert `0x7000`, không còn sự kiện `22`; FL 26 clip 88 byte) và nhiều arrangement; (d) ngữ nghĩa sự kiện bật/tắt kênh; (e) màu kênh. Xem `docs/spikes/SPIKE-3-FLP.md` §5. Danh sách tệp mẫu cần (theo ưu tiên) ở `docs/spikes/SPIKE-3-FLP.md` §6b. | Dev + chủ dự án |

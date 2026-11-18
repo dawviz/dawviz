@@ -4,8 +4,8 @@ doc_title: "SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer"
 section: "3.8 MIDI"
 path: "3. Yêu cầu chức năng > 3.8 MIDI"
 chunk: 3-8-midi.md
-source_lines: 96-100
-source_sha1: dd04828ada
+source_lines: 97-101
+source_sha1: c1f2666bb0
 ids: [ERR_UNSUPPORTED_FORMAT, REQ-MIDI-01, REQ-MIDI-02, REQ-MIDI-03, WARN_MIDI_HANGING_NOTES, WARN_MIDI_TRUNCATED]
 ---
 ### 3.8 MIDI

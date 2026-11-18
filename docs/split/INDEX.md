@@ -4,18 +4,18 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 
 ## BRD.md — TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)
 
-- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 5114 ký tự
+- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 5514 ký tự
 - [1. THÔNG TIN CHUNG & BỐI CẢNH DỰ ÁN](BRD/1-thong-tin-chung-boi-canh-du-an.md) · 1753 ký tự
 - [2. MỤC TIÊU KINH DOANH, CHỈ SỐ ĐO LƯỜNG & YÊU CẦU NGHIỆP VỤ](BRD/2-muc-tieu-kinh-doanh-chi-so-do-luong-yeu-cau-ng.md) · 4778 ký tự
-- [3. CHÂN DUNG NGƯỜI DÙNG MỤC TIÊU (USER PERSONAS)](BRD/3-chan-dung-nguoi-dung-muc-tieu-user-personas.md) · 1342 ký tự
+- [3. CHÂN DUNG NGƯỜI DÙNG MỤC TIÊU (USER PERSONAS)](BRD/3-chan-dung-nguoi-dung-muc-tieu-user-personas.md) · 1453 ký tự
 - [4.1. Trong phạm vi phiên bản 1.0 (In-Scope)](BRD/4-1-trong-pham-vi-phien-ban-1-0-in-scope.md) · 3226 ký tự
 - [4.3. Lộ trình phát hành (Milestones)](BRD/4-3-lo-trinh-phat-hanh-milestones.md) · 892 ký tự
-- [4.4. Phân bổ theo bản phát hành (D-40, chốt ở tài liệu v1.1)](BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md) · 2931 ký tự
-- [4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1215 ký tự
+- [4.4. Phân bổ theo bản phát hành (D-40, chốt ở tài liệu v1.1)](BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md) · 2924 ký tự
+- [4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1202 ký tự
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4347 ký tự
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](BRD/6-gia-dinh-assumptions.md) · 554 ký tự
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 25977 ký tự
-- [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](BRD/8-cac-van-de-con-mo-open-issues.md) · 5616 ký tự
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 27431 ký tự
+- [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](BRD/8-cac-van-de-con-mo-open-issues.md) · 6269 ký tự
 
 ## SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
@@ -23,7 +23,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [Lịch sử phiên bản](SRS/lich-su-phien-ban.md) · 9301 ký tự
 - [Quy ước trong tài liệu](SRS/quy-uoc-trong-tai-lieu.md) · 818 ký tự
 - [Mục lục](SRS/muc-luc.md) · 365 ký tự
-- [1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG](SRS/1-gioi-thieu-muc-tieu-he-thong.md) · 4720 ký tự
+- [1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG](SRS/1-gioi-thieu-muc-tieu-he-thong.md) · 4750 ký tự
 - [2.1. Kiến trúc phân tầng hệ thống](SRS/2-1-kien-truc-phan-tang-he-thong.md) · 6588 ký tự
 - [2.2. Luồng dữ liệu chính](SRS/2-2-luong-du-lieu-chinh.md) · 641 ký tự
 - [2.3. Thành phần bên thứ ba](SRS/2-3-thanh-phan-ben-thu-ba.md) · 1063 ký tự
@@ -35,7 +35,8 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [REQ-PARSER-02: Cockos Reaper (`.rpp`)](SRS/req-parser-02-cockos-reaper-rpp.md) · 3655 ký tự
 - [REQ-PARSER-03: DAWproject (`.dawproject`, D-03)](SRS/req-parser-03-dawproject-dawproject-d-03.md) · 1203 ký tự
 - [REQ-PARSER-04: Standard MIDI File (`.mid`, format 0/1)](SRS/req-parser-04-standard-midi-file-mid-format-0-1.md) · 924 ký tự
-- [REQ-PARSER-05: Parser JSON khai báo (D-18, D-28, R-05)](SRS/req-parser-05-parser-json-khai-bao-d-18-d-28-r-0.md) · 1509 ký tự
+- [REQ-PARSER-05: Parser JSON khai báo (D-18, D-28, R-05)](SRS/req-parser-05-parser-json-khai-bao-d-18-d-28-r-0.md) · 1825 ký tự
+- [REQ-PARSER-08: FL Studio (`.flp`, D-62)](SRS/req-parser-08-fl-studio-flp-d-62.md) · 1933 ký tự
 - [REQ-PARSER-06: Ableton Live Pack (`.alp`)](SRS/req-parser-06-ableton-live-pack-alp.md) · 1100 ký tự
 - [REQ-PARSER-07: Tempo không đoán ngầm và ghi đè (D-24, D-29)](SRS/req-parser-07-tempo-khong-doan-ngam-va-ghi-de-d.md) · 1665 ký tự
 - [3.2. Cấu trúc dữ liệu chuẩn hóa (Unified AST, D-08, D-09)](SRS/3-2-cau-truc-du-lieu-chuan-hoa-unified-ast-d-08.md) · 3457 ký tự
@@ -52,7 +53,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [REQ-GRAPHICS-17: Phát sáng động khi chạm (D-50, 1.0)](SRS/req-graphics-17-phat-sang-dong-khi-cham-d-50-1-0.md) · 2766 ký tự
 - [REQ-GRAPHICS-18: Kiểu chữ cho mọi chữ trong video (D-58)](SRS/req-graphics-18-kieu-chu-cho-moi-chu-trong-video.md) · 5095 ký tự
 - [REQ-GRAPHICS-19: Ô chữ người dùng thêm và chỗ giữ dùng chung (D-60; đã làm 2026-11-18, T-73)](SRS/req-graphics-19-o-chu-nguoi-dung-them-va-cho-giu.md) · 2854 ký tự
-- [REQ-AST-02: Automation tổng quát (D-50; 1.0 cho Reaper track + MIDI CC, các nguồn khác theo tệp mẫu)](SRS/req-ast-02-automation-tong-quat-d-50-1-0-cho-rea.md) · 2214 ký tự
+- [REQ-AST-02: Automation tổng quát (D-50; 1.0 cho Reaper track + MIDI CC, các nguồn khác theo tệp mẫu)](SRS/req-ast-02-automation-tong-quat-d-50-1-0-cho-rea.md) · 2371 ký tự
 - [3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04)](SRS/3-4-dac-ta-8-widget-hud-br-02-br-03-br-04.md) · 368 ký tự
 - [REQ-WIDGET-01: Piano Roll](SRS/req-widget-01-piano-roll.md) · 1411 ký tự
 - [REQ-WIDGET-02: Track Info](SRS/req-widget-02-track-info.md) · 1101 ký tự
@@ -89,14 +90,14 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [4. YÊU CẦU PHI CHỨC NĂNG (NON-FUNCTIONAL REQUIREMENTS)](SRS/4-yeu-cau-phi-chuc-nang-non-functional-requireme.md) · 5167 ký tự
 - [5.1. Bố cục không gian làm việc](SRS/5-1-bo-cuc-khong-gian-lam-viec.md) · 4893 ký tự
 - [5.2. Chế độ tương tác](SRS/5-2-che-do-tuong-tac.md) · 364 ký tự
-- [5.3. Yêu cầu giao diện](SRS/5-3-yeu-cau-giao-dien.md) · 18674 ký tự
+- [5.3. Yêu cầu giao diện](SRS/5-3-yeu-cau-giao-dien.md) · 18661 ký tự
 - [6. MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU](SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md) · 1419 ký tự
 - [7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO](SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md) · 6665 ký tự
-- [8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS](SRS/8-cac-van-de-con-mo-cua-srs.md) · 4032 ký tự
-- [Phụ lục A: Mã lỗi](SRS/phu-luc-a-ma-loi.md) · 2854 ký tự
+- [8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS](SRS/8-cac-van-de-con-mo-cua-srs.md) · 4044 ký tự
+- [Phụ lục A: Mã lỗi](SRS/phu-luc-a-ma-loi.md) · 2864 ký tự
 - [Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)](SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md) · 1673 ký tự
-- [Phụ lục A2: Mã cảnh báo của Parser Library](SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md) · 1331 ký tự
-- [Phụ lục B: Ghi chú rà soát](SRS/phu-luc-b-ghi-chu-ra-soat.md) · 2889 ký tự
+- [Phụ lục A2: Mã cảnh báo của Parser Library](SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md) · 1357 ký tự
+- [Phụ lục B: Ghi chú rà soát](SRS/phu-luc-b-ghi-chu-ra-soat.md) · 2904 ký tự
 
 ## SDD.md — TÀI LIỆU THIẾT KẾ PHẦN MỀM (SDD) — ỨNG DỤNG DAW VISUALIZER
 
@@ -115,7 +116,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER (mở đầu)](TECHNICAL-DESIGN/thiet-ke-ky-thuat-chi-tiet-technical-design-daw.md) · 720 ký tự
 - [1. Bức tranh tổng thể](TECHNICAL-DESIGN/1-buc-tranh-tong-the.md) · 2420 ký tự
 - [2. Mô hình dữ liệu và thời gian 🟢](TECHNICAL-DESIGN/2-mo-hinh-du-lieu-va-thoi-gian.md) · 2921 ký tự
-- [3. Đường ống phân tích (parser) 🟢](TECHNICAL-DESIGN/3-duong-ong-phan-tich-parser.md) · 1875 ký tự
+- [3. Đường ống phân tích (parser) 🟢](TECHNICAL-DESIGN/3-duong-ong-phan-tich-parser.md) · 1897 ký tự
 - [4. Dữ liệu dẫn xuất (derived) 🟢/⚪](TECHNICAL-DESIGN/4-du-lieu-dan-xuat-derived.md) · 1495 ký tự
 - [5.0 Kiểu dáng nốt và bàn phím 🟢 (REQ-GRAPHICS-07)](TECHNICAL-DESIGN/5-0-kieu-dang-not-va-ban-phim-req-graphics-07.md) · 624 ký tự
 - [5.1 Giao diện chính 🟢](TECHNICAL-DESIGN/5-1-giao-dien-chinh.md) · 5650 ký tự
@@ -160,7 +161,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [2. Danh mục test mới](TDD/2-danh-muc-test-moi.md) · 3229 ký tự
 - [3. Ma trận truy vết](TDD/3-ma-tran-truy-vet.md) · 542 ký tự
 - [4. Khoảng trống đã biết](TDD/4-khoang-trong-da-biet.md) · 442 ký tự
-- [5. Danh sách kiểm thủ công cho AT-18 (Chrome)](TDD/5-danh-sach-kiem-thu-cong-cho-at-18-chrome.md) · 4128 ký tự
+- [5. Danh sách kiểm thủ công cho AT-18 (Chrome)](TDD/5-danh-sach-kiem-thu-cong-cho-at-18-chrome.md) · 4169 ký tự
 
 ## ANIMATION.md — Hiệu ứng chuyển động và xuất video: so sánh công cụ và quyết định
 
@@ -262,8 +263,8 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 ## PARSER-SRS.md — SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer
 
 - [SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer (mở đầu)](PARSER-SRS/srs-dac-ta-yeu-cau-thu-vien-parser-daw-visualize.md) · 436 ký tự
-- [1. Mục đích và phạm vi](PARSER-SRS/1-muc-dich-va-pham-vi.md) · 402 ký tự
-- [2. Định dạng hỗ trợ](PARSER-SRS/2-dinh-dang-ho-tro.md) · 1183 ký tự
+- [1. Mục đích và phạm vi](PARSER-SRS/1-muc-dich-va-pham-vi.md) · 496 ký tự
+- [2. Định dạng hỗ trợ](PARSER-SRS/2-dinh-dang-ho-tro.md) · 1510 ký tự
 - [3.1 Chung (core)](PARSER-SRS/3-1-chung-core.md) · 651 ký tự
 - [3.2 Giới hạn và an toàn (REQ-PARSER-00)](PARSER-SRS/3-2-gioi-han-va-an-toan-req-parser-00.md) · 778 ký tự
 - [3.3 Tempo và thời gian](PARSER-SRS/3-3-tempo-va-thoi-gian.md) · 723 ký tự
@@ -272,7 +273,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [3.6 Reaper (.rpp) — VERIFY](PARSER-SRS/3-6-reaper-rpp-verify.md) · 4450 ký tự
 - [3.7 DAWproject](PARSER-SRS/3-7-dawproject.md) · 741 ký tự
 - [3.8 MIDI](PARSER-SRS/3-8-midi.md) · 419 ký tự
-- [3.9 Binary theo schema](PARSER-SRS/3-9-binary-theo-schema.md) · 658 ký tự
+- [3.9 Binary theo schema](PARSER-SRS/3-9-binary-theo-schema.md) · 1642 ký tự
 - [3.10 So sánh kiểm chứng (KPI-01)](PARSER-SRS/3-10-so-sanh-kiem-chung-kpi-01.md) · 287 ký tự
 - [4. Mã lỗi](PARSER-SRS/4-ma-loi.md) · 1033 ký tự
 - [5. Yêu cầu phi chức năng](PARSER-SRS/5-yeu-cau-phi-chuc-nang.md) · 310 ký tự
@@ -288,8 +289,8 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [4. Package `als` (REQ-ALS-*, REQ-ALP-*)](PARSER-SDD/4-package-als-req-als-req-alp.md) · 1990 ký tự
 - [5. Package `rpp` (REQ-RPP-*)](PARSER-SDD/5-package-rpp-req-rpp.md) · 1240 ký tự
 - [6. Package `dawproject` (REQ-DAWP-*)](PARSER-SDD/6-package-dawproject-req-dawp.md) · 408 ký tự
-- [7. Package `binary` (REQ-BIN-*)](PARSER-SDD/7-package-binary-req-bin.md) · 874 ký tự
-- [8. Package `parser` (bao ngoài)](PARSER-SDD/8-package-parser-bao-ngoai.md) · 632 ký tự
+- [7. Package `binary` (REQ-BIN-*)](PARSER-SDD/7-package-binary-req-bin.md) · 1028 ký tự
+- [8. Package `parser` (bao ngoài)](PARSER-SDD/8-package-parser-bao-ngoai.md) · 910 ký tự
 - [8b. Package `i18n` (`@dawviz/i18n`)](PARSER-SDD/8b-package-i18n-dawviz-i18n.md) · 1072 ký tự
 - [9. Bundle, CLI, demo](PARSER-SDD/9-bundle-cli-demo.md) · 709 ký tự
 - [10. Quyết định thiết kế và đánh đổi](PARSER-SDD/10-quyet-dinh-thiet-ke-va-danh-doi.md) · 1710 ký tự
@@ -300,7 +301,14 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [TDD — Tài liệu kiểm thử: Thư viện parser DAW Visualizer (mở đầu)](PARSER-TDD/tdd-tai-lieu-kiem-thu-thu-vien-parser-daw-visual.md) · 164 ký tự
 - [1. Chiến lược](PARSER-TDD/1-chien-luoc.md) · 816 ký tự
 - [2. Công cụ dùng chung (`test/helpers.mjs`)](PARSER-TDD/2-cong-cu-dung-chung-test-helpers-mjs.md) · 473 ký tự
-- [3. Danh mục test (66 test, 7 file)](PARSER-TDD/3-danh-muc-test-66-test-7-file.md) · 5721 ký tự
+- [3.1 `als.test.js` (15) — REQ-FMT-01, REQ-ALS-*](PARSER-TDD/3-1-als-test-js-15-req-fmt-01-req-als.md) · 1855 ký tự
+- [3.2 `midi-alp.test.js` (11) — REQ-MIDI-*, REQ-ALP-01, REQ-CMP-01](PARSER-TDD/3-2-midi-alp-test-js-11-req-midi-req-alp-01-req.md) · 586 ký tự
+- [3.3 `rpp.test.js` (17) — REQ-RPP-*](PARSER-TDD/3-3-rpp-test-js-17-req-rpp.md) · 1699 ký tự
+- [3.4 `dawproject.test.js` (7) — REQ-DAWP-*](PARSER-TDD/3-4-dawproject-test-js-7-req-dawp.md) · 262 ký tự
+- [3.5 `binary.test.js` (9) — REQ-BIN-*](PARSER-TDD/3-5-binary-test-js-9-req-bin.md) · 371 ký tự
+- [3.5b `flp.test.js` (8, 1 tự bỏ qua khi thiếu tệp thật) — REQ-FMT-08, REQ-BIN-05/06](PARSER-TDD/3-5b-flp-test-js-8-1-tu-bo-qua-khi-thieu-tep-tha.md) · 731 ký tự
+- [3.6 `detect-bundle.test.js` (4) — REQ-CORE-02, REQ-CORE-05](PARSER-TDD/3-6-detect-bundle-test-js-4-req-core-02-req-core.md) · 299 ký tự
+- [3.7 `i18n.test.js` (5) — REQ-I18N-*](PARSER-TDD/3-7-i18n-test-js-5-req-i18n.md) · 622 ký tự
 - [4. Ma trận truy vết (rút gọn)](PARSER-TDD/4-ma-tran-truy-vet-rut-gon.md) · 521 ký tự
 - [5. Khoảng trống kiểm thử (cần dữ liệu thật, xem SRS §6)](PARSER-TDD/5-khoang-trong-kiem-thu-can-du-lieu-that-xem-srs.md) · 964 ký tự
 - [6. Kiểm thử thủ công trình duyệt](PARSER-TDD/6-kiem-thu-thu-cong-trinh-duyet.md) · 436 ký tự
@@ -354,4 +362,17 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [3. Bài học và đề xuất](SPIKE-2-PARSER/3-bai-hoc-va-de-xuat.md) · 250 ký tự
 - [4. Kế hoạch hành động lúc đó](SPIKE-2-PARSER/4-ke-hoach-hanh-dong-luc-do.md) · 306 ký tự
 - [5. Trạng thái hiện tại (tài liệu v1.1)](SPIKE-2-PARSER/5-trang-thai-hien-tai-tai-lieu-v1-1.md) · 1062 ký tự
+
+## SPIKE-3-FLP.md — Spike 3: đọc `.flp` (FL Studio) bằng JSON schema
+
+- [Spike 3: đọc `.flp` (FL Studio) bằng JSON schema (mở đầu)](SPIKE-3-FLP/spike-3-doc-flp-fl-studio-bang-json-schema-mo-da.md) · 325 ký tự
+- [1. Kết luận](SPIKE-3-FLP/1-ket-luan.md) · 777 ký tự
+- [2. Vì sao TLV vẫn vừa JSON schema](SPIKE-3-FLP/2-vi-sao-tlv-van-vua-json-schema.md) · 907 ký tự
+- [3. Điều JSON chưa làm được và bốn bổ sung cho engine](SPIKE-3-FLP/3-dieu-json-chua-lam-duoc-va-bon-bo-sung-cho-eng.md) · 1304 ký tự
+- [4. Mô hình ánh xạ (quyết định)](SPIKE-3-FLP/4-mo-hinh-anh-xa-quyet-dinh.md) · 1131 ký tự
+- [5. Giới hạn đã biết (cần tệp mẫu hoặc quyết định để mở)](SPIKE-3-FLP/5-gioi-han-da-biet-can-tep-mau-hoac-quyet-dinh-d.md) · 3266 ký tự
+- [6. Automation (volume, pan của track)](SPIKE-3-FLP/6-automation-volume-pan-cua-track.md) · 1804 ký tự
+- [6b. Tệp mẫu cần để gỡ [VERIFY] (danh sách cho người thử)](SPIKE-3-FLP/6b-tep-mau-can-de-go-verify-danh-sach-cho-nguoi.md) · 1583 ký tự
+- [7. Phương án đã cân nhắc](SPIKE-3-FLP/7-phuong-an-da-can-nhac.md) · 603 ký tự
+- [8. Nguồn và giấy phép](SPIKE-3-FLP/8-nguon-va-giay-phep.md) · 634 ký tự
 

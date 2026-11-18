@@ -2,7 +2,7 @@
 // An toàn theo R-05/D-18: KHÔNG eval/new Function; biểu thức do bộ phân tích riêng đánh giá, chỉ dùng danh sách hàm trắng,
 // có giới hạn độ sâu, số nút, số phép tính, và mọi đọc byte đều bị chặn trong "vùng" (region) hợp lệ.
 // Xem schemas/README.md để biết đặc tả đầy đủ.
-import { fail, warn, resolveLimits, toU8, PPQ, buildAST, normalizeTempoOverride } from '@dawviz/parser-core';
+import { fail, warn, resolveLimits, toU8, PPQ, buildAST, normalizeTempoOverride, makeTempoMap, tickToSec } from '@dawviz/parser-core';
 
 const NAME_RE = /^[A-Za-z_][A-Za-z0-9_]*$/;
 const FORBIDDEN = new Set(['__proto__', 'constructor', 'prototype']);
@@ -16,6 +16,10 @@ const FUNCS = {
   len: (a) => (a && typeof a.length === 'number' ? a.length : 0),
   beatsToTicks: (b) => b * PPQ,
   clamp: (x, lo, hi) => Math.min(hi, Math.max(lo, x)),
+  // splitNum("12.3.0.72", ".", 1) -> 3 (NaN nếu không phải số); dùng đọc số phiên bản dạng chuỗi
+  splitNum: (s, sep, i) => (typeof s === 'string' && typeof sep === 'string' && sep ? Number(s.split(sep)[i]) : NaN),
+  // basename("C:\\a\\kick.wav") -> "kick" (tên tệp không đuôi, cho tên track dự phòng)
+  basename: (s) => (typeof s === 'string' ? s.split(/[\\/]/).pop().replace(/\.[^.]*$/, '') : ''),
 };
 const cache = new Map();
 
@@ -98,7 +102,7 @@ function evalNode(n, scope, budget) {
       return undefined;
     }
     case 'mem': { const o = evalNode(n.o, scope, budget); return o !== null && typeof o === 'object' && Object.hasOwn(o, n.n) ? o[n.n] : undefined; }
-    case 'idx': { const o = evalNode(n.o, scope, budget), i = evalNode(n.i, scope, budget); return Array.isArray(o) || ArrayBuffer.isView(o) ? o[i] : undefined; }
+    case 'idx': { const o = evalNode(n.o, scope, budget), i = evalNode(n.i, scope, budget); return o instanceof Map ? o.get(i) : Array.isArray(o) || ArrayBuffer.isView(o) ? o[i] : undefined; }
     case 'un': { const v = evalNode(n.e, scope, budget); return n.op === '-' ? -v : n.op === '!' ? !v : ~v; }
     case 'if': return evalNode(n.c, scope, budget) ? evalNode(n.a, scope, budget) : evalNode(n.b, scope, budget);
     case 'call': return FUNCS[n.f](...n.args.map((a) => evalNode(a, scope, budget)));
@@ -141,11 +145,31 @@ export function validateSchema(schema) {
   return schema;
 }
 function validateMapping(a) {
-  for (const k of ['title', 'ppq']) if (a[k] !== undefined) compileExpr(a[k]);
-  const rule = (r, keys, path) => { if (r.each !== undefined) compileExpr(r.each); if (r.filter !== undefined) compileExpr(r.filter); if (r.as !== undefined && !NAME_RE.test(r.as)) sbad('"as" không hợp lệ', path); for (const k of keys) if (r[k] !== undefined && typeof r[k] !== 'object') compileExpr(r[k]); };
+  for (const k of ['title', 'ppq', 'sourceVersion']) if (a[k] !== undefined) compileExpr(a[k]);
+  if (a.sourceFormat !== undefined && !/^[a-z0-9_]{1,24}$/.test(a.sourceFormat)) sbad('ast.sourceFormat phải là [a-z0-9_]{1,24}');
+  const rule = (r, keys, path) => {
+    if (r.each !== undefined) compileExpr(r.each);
+    if (r.filter !== undefined) compileExpr(r.filter);
+    if (r.as !== undefined && !NAME_RE.test(r.as)) sbad('"as" không hợp lệ', path);
+    for (const k of keys) if (r[k] !== undefined && typeof r[k] !== 'object') compileExpr(r[k]);
+    if (r.inner !== undefined) { if (!r.inner || r.inner.each === undefined) sbad('"inner" cần "each"', path); rule(r.inner, [], `${path}.inner`); }
+  };
   const T = Array.isArray(a.tempo) ? a.tempo : a.tempo ? [a.tempo] : [];
   T.forEach((r, i) => rule(r, ['tick', 'bpm', 'num', 'den'], `ast.tempo[${i}]`));
-  if (a.tracks) { rule(a.tracks, ['name', 'muted'], 'ast.tracks'); if (a.tracks.notes) rule(a.tracks.notes, ['pitch', 'startTick', 'durationTick', 'endTick', 'velocity', 'channel'], 'ast.tracks.notes'); }
+  if (a.tracks) {
+    for (const [k, e] of Object.entries(a.tracks.let || {})) { if (!NAME_RE.test(k) || FORBIDDEN.has(k)) sbad(`tên let không hợp lệ: ${k}`, 'ast.tracks.let'); compileExpr(e); }
+    (a.tracks.automation || []).forEach((r, i) => { if (!['volume', 'pan', 'mute'].includes(r.kind)) sbad('automation.kind phải là volume|pan|mute', `ast.tracks.automation[${i}]`); if (r.tick === undefined || r.value === undefined) sbad('automation cần tick và value', `ast.tracks.automation[${i}]`); rule(r, ['tick', 'value'], `ast.tracks.automation[${i}]`); });
+    rule(a.tracks, ['name', 'muted'], 'ast.tracks'); if (a.tracks.notes) rule(a.tracks.notes, ['pitch', 'startTick', 'durationTick', 'endTick', 'velocity', 'channel'], 'ast.tracks.notes'); }
+  for (const [name, r] of Object.entries(a.index || {})) {
+    if (!NAME_RE.test(name) || FORBIDDEN.has(name)) sbad(`tên index không hợp lệ: ${name}`, 'ast.index');
+    if (r.each === undefined || r.value === undefined) sbad('index cần "each" và "value"', `ast.index.${name}`);
+    if (!r.list && r.key === undefined) sbad('index cần "key" (hoặc "list": true)', `ast.index.${name}`);
+    rule(r, ['key', 'value'], `ast.index.${name}`);
+  }
+  (a.warnings || []).forEach((w, i) => {
+    if (!w || typeof w.code !== 'string' || !/^WARN_[A-Z0-9_]+$/.test(w.code) || w.when === undefined) sbad('warnings[] cần when + code (WARN_*)', `ast.warnings[${i}]`);
+    compileExpr(w.when);
+  });
 }
 
 // ======================= đọc nhị phân =======================
@@ -188,7 +212,8 @@ function readValue(c, spec, scope, end, endian, schema, depth) {
   else if (t === 'array') {
     const out = [];
     const ofSpec = f.of;
-    const item = (i) => { const sc = { vars: {}, parent: scope, special: { $index: i, $pos: () => c.pos, $remaining: () => rEnd - c.pos } }; return readValue(c, ofSpec, sc, rEnd, en, schema, depth + 1); };
+    let last; // $last: phần tử liền trước (undefined ở phần tử đầu) — cho phép mang "trạng thái chạy" qua dòng sự kiện (vd. pattern hiện tại của FLP)
+    const item = (i) => { const sc = { vars: {}, parent: scope, special: { $index: i, $last: last, $pos: () => c.pos, $remaining: () => rEnd - c.pos } }; return (last = readValue(c, ofSpec, sc, rEnd, en, schema, depth + 1)); };
     if (f.count !== undefined) {
       const n = ev(f.count, scope, c.budget);
       if (!Number.isInteger(n) || n < 0 || n > c.limits.maxBinaryNodes) rbad(c, `count không hợp lệ: ${n}`);
@@ -263,18 +288,34 @@ export async function parseBinaryWithSchema(buffer, schema, options = {}) {
   const warnings = [];
   const a = schema.ast;
   if (!a || !a.tracks) fail('ERR_SCHEMA_INVALID', 'schema thiếu mục "ast.tracks" để ánh xạ sang AST');
-  const top = { vars: root, parent: null, special: {} };
+  const top = { vars: { ...root }, parent: null, special: {} };
   const E = (src, sc) => ev(src, sc, budget);
+  // duyệt "each" (kèm "inner" lồng nhau, kiểu flatMap); inner không phải mảng = rỗng, each ngoài cùng phải là mảng
+  const walk = (rule, sc, cb, nested) => {
+    const arr = E(rule.each, sc);
+    if (!Array.isArray(arr)) { if (nested && (arr === undefined || arr === null)) return; fail('ERR_AST_INVALID', `"each": ${rule.each} không trả về mảng`); }
+    for (let i = 0; i < arr.length; i++) {
+      const s2 = { vars: { [rule.as || 'it']: arr[i] }, parent: sc, special: { $index: i } };
+      if (rule.filter !== undefined && !E(rule.filter, s2)) continue;
+      if (rule.inner) walk(rule.inner, s2, cb, true); else cb(s2, arr[i]);
+    }
+  };
+  const iter = (rule, sc, cb) => walk(rule, sc, cb, false);
+  // bảng tra: dựng một lần, rồi dùng như biến trong biểu thức (name[key]); list => mảng, collect => key -> mảng, mặc định key -> giá trị cuối
+  for (const [name, r] of Object.entries(a.index || {})) {
+    const tbl = r.list ? [] : new Map();
+    iter(r, top, (s) => {
+      const v = E(r.value, s);
+      if (r.list) tbl.push(v);
+      else { const k = E(r.key, s); if (r.collect) { const l = tbl.get(k); if (l) l.push(v); else tbl.set(k, [v]); } else tbl.set(k, v); }
+    });
+    top.vars[name] = tbl;
+  }
   const ppq = a.ppq !== undefined ? Number(E(a.ppq, top)) : PPQ;
   if (!(ppq > 0)) fail('ERR_AST_INVALID', `ppq không hợp lệ: ${ppq}`);
   const unit = a.timeUnit || 'ticks';
   if (!['ticks', 'beats'].includes(unit)) fail('ERR_SCHEMA_INVALID', 'timeUnit phải là ticks|beats');
   const toTicks = unit === 'beats' ? (x) => x * PPQ : (x) => (x * PPQ) / ppq;
-  const iter = (rule, sc, cb) => {
-    const arr = E(rule.each, sc);
-    if (!Array.isArray(arr)) fail('ERR_AST_INVALID', `"each": ${rule.each} không trả về mảng`);
-    arr.forEach((item, i) => { const s2 = { vars: { [rule.as || 'it']: item }, parent: sc, special: { $index: i } }; if (rule.filter !== undefined && !E(rule.filter, s2)) return; cb(s2, item); });
-  };
 
   const ov = normalizeTempoOverride(options.tempoOverride);
   let tempoPoints = [], tempoSource = 'file';
@@ -286,11 +327,13 @@ export async function parseBinaryWithSchema(buffer, schema, options = {}) {
   if (ov) { tempoPoints = ov; tempoSource = 'user'; }
   else if (!tempoPoints.length || tempoPoints.some((p) => !Number.isFinite(p.bpm))) { tempoPoints = [{ tick: 0, bpm: 120, num: 4, den: 4 }]; tempoSource = 'fallback'; }
 
+  const tmap = makeTempoMap(tempoPoints);
   const tracks = [];
-  let total = 0;
+  let total = 0, autoTotal = 0;
   iter(a.tracks, top, (ts, item) => {
     const tr = a.tracks;
     const notes = [];
+    for (const [k, e] of Object.entries(tr.let || {})) ts.vars[k] = E(e, ts); // biến riêng của track (vd. insert mixer), đánh giá một lần
     if (tr.notes) iter(tr.notes, ts, (ns) => {
       const r = tr.notes;
       const start = toTicks(Number(E(r.startTick, ns)));
@@ -298,9 +341,24 @@ export async function parseBinaryWithSchema(buffer, schema, options = {}) {
       notes.push({ pitch: Number(E(r.pitch, ns)), startTick: start, endTick: end, velocity: r.velocity !== undefined ? Number(E(r.velocity, ns)) : 100, ...(r.channel !== undefined ? { channel: Number(E(r.channel, ns)) } : {}) });
       if (++total > limits.maxNotes) fail('ERR_AST_TOO_LARGE', `vượt ${limits.maxNotes} nốt`);
     });
-    tracks.push({ name: tr.name !== undefined ? String(E(tr.name, ts)) : '', muted: tr.muted !== undefined ? !!E(tr.muted, ts) : false, notes });
+    // automation: mỗi luật gom điểm {tick, value}, sắp theo tick (trùng tick: điểm sau thắng), thành lane {kind, points} như Reaper
+    const byKind = {};
+    for (const r of tr.automation || []) iter(r, ts, (as) => {
+      const tick = Math.round(toTicks(Number(E(r.tick, as)))), value = Number(E(r.value, as));
+      if (!Number.isFinite(tick) || tick < 0 || !Number.isFinite(value)) return;
+      (byKind[r.kind] ||= []).push({ tick, value });
+      if (++autoTotal > limits.maxNotes) fail('ERR_AST_TOO_LARGE', `vượt ${limits.maxNotes} điểm automation`);
+    });
+    const automation = {};
+    for (const [kind, raw] of Object.entries(byKind)) {
+      const pts = [];
+      raw.map((q, i) => [q, i]).sort((x, y) => x[0].tick - y[0].tick || x[1] - y[1]).forEach(([q]) => { const p = { tick: q.tick, timeSeconds: tickToSec(tmap, q.tick), value: q.value, shape: 0 }; if (pts.length && pts[pts.length - 1].tick === p.tick) pts[pts.length - 1] = p; else pts.push(p); });
+      automation[kind] = { kind, points: pts };
+    }
+    tracks.push({ name: tr.name !== undefined ? String(E(tr.name, ts)) : '', muted: tr.muted !== undefined ? !!E(tr.muted, ts) : false, notes, ...(Object.keys(automation).length ? { automation } : {}) });
   });
+  for (const w of a.warnings || []) if (E(w.when, top)) warn(warnings, w.code, w.message || w.code);
   const title = options.title || (a.title !== undefined ? String(E(a.title, top)) : schema.name || 'Binary project');
-  const { ast } = buildAST({ title, sourceFormat: 'custom_binary', sourceVersion: `${schema.id || schema.name || 'schema'}@${schema.version || 1}`, sourcePPQ: ppq, tempoPoints, tempoSource, tracks, warnings }, { maxNotes: limits.maxNotes, showMuted: options.showMuted });
+  const { ast } = buildAST({ title, sourceFormat: a.sourceFormat || 'custom_binary', sourceVersion: a.sourceVersion !== undefined ? String(E(a.sourceVersion, top)) : `${schema.id || schema.name || 'schema'}@${schema.version || 1}`, sourcePPQ: ppq, tempoPoints, tempoSource, tracks, warnings }, { maxNotes: limits.maxNotes, showMuted: options.showMuted });
   return { ast, warnings, info: { schema: schema.id || schema.name } };
 }

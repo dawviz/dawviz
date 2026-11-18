@@ -7,7 +7,7 @@
 
 Đọc file dự án DAW trong trình duyệt/Worker/Node và xuất **một** cấu trúc `UnifiedProjectAST` chứa nốt MIDI, tempo, nhịp, track để vẽ visualizer. Không phát âm thanh, không đọc audio, không ghi ngược file dự án.
 
-Ngoài phạm vi: audio clip, plugin/automation ngoài tempo và nhịp, ghi file. Chưa hỗ trợ: Session View của Ableton, `.flp`, `.bwproject` (nhị phân, chờ file mẫu).
+Ngoài phạm vi: audio clip, plugin/automation ngoài tempo và nhịp, ghi file. Chưa hỗ trợ: Session View của Ableton, `.bwproject` (nhị phân, chờ file mẫu). `.flp` đọc bằng schema JSON dựng sẵn, chỉ nốt Pattern (không plugin, không clip âm thanh/automation).
 
 ## 2. Định dạng hỗ trợ
 
@@ -19,7 +19,8 @@ Ngoài phạm vi: audio clip, plugin/automation ngoài tempo và nhịp, ghi fil
 | REQ-FMT-04 | `.dawproject` | ZIP + `project.xml` (+ `metadata.xml`) | PARTIAL (chỉ có ví dụ chính thức) |
 | REQ-FMT-05 | `.mid`/`.midi` | Standard MIDI File 0/1/2 | DONE |
 | REQ-FMT-06 | binary theo schema | JSON schema mô tả byte → AST (cho `.bwproject` khi có mẫu) | DONE (schema demo); `.bwproject` TODO |
-| REQ-FMT-07 | `.flp`, `.bwproject` (không schema) | Báo "chưa hỗ trợ" kèm hướng dẫn (xuất MIDI / xuất `.dawproject`) | DONE |
+| REQ-FMT-07 | `.bwproject` (không schema); `.flp` sai magic | Báo "chưa hỗ trợ"/sai nội dung kèm hướng dẫn (xuất `.dawproject`) | DONE |
+| REQ-FMT-08 | `.flp` | FL Studio ≥ 12 (cả dạng ZIP): schema dựng sẵn `schemas/flp.schema.json`; track = kênh, nốt = nốt Pattern trên Playlist; tick @PPQ header → 960 | DONE (6 tệp thật: FL 12.3, 25.2.3, 25.2.5, 26.1.6, 26.1.7, 26.1.99; kèm automation volume/pan của track; FL 21–24 chưa có tệp thật **[VERIFY]**) |
 
 ## 3. Yêu cầu chức năng
 
@@ -102,7 +103,9 @@ Ngoài phạm vi: audio clip, plugin/automation ngoài tempo và nhịp, ghi fil
 - **REQ-BIN-01** Schema JSON `schemaVersion: 1` mô tả cấu trúc byte và mục `ast` ánh xạ (xem `schemas/README.md`).
 - **REQ-BIN-02** Mọi đọc byte bị chặn trong vùng hợp lệ; `count`/`length` không hợp lệ hoặc quá lớn → lỗi, không cấp phát theo giá trị trong file.
 - **REQ-BIN-03** Biểu thức do bộ phân tích riêng đánh giá; hàm trắng `min max floor ceil round abs len beatsToTicks clamp`; tên `__proto__`, `constructor`, `prototype` bị cấm; có ngân sách phép tính (5e7), nút, độ sâu.
-- **REQ-BIN-04** Schema sai → `ERR_SCHEMA_INVALID`; file không khớp `magic` → `ERR_UNSUPPORTED_FORMAT`; schema được chọn theo `extensions` + `magic`.
+- **REQ-BIN-04** Schema sai → `ERR_SCHEMA_INVALID`; file không khớp `magic` → `ERR_UNSUPPORTED_FORMAT`; schema được chọn theo `extensions` + `magic`; schema người dùng nạp được ưu tiên hơn schema dựng sẵn.
+- **REQ-BIN-05** (D-62) Hỗ trợ định dạng dòng sự kiện có trạng thái ngầm: `$last` trong phần tử mảng (phần tử liền trước); `ast.index` dựng bảng tra một lần (`list` | `collect` | khoá → giá trị cuối) dùng như biến `tên[khoá]`; `inner` lồng trong `each` (flatMap, `inner` không phải mảng = rỗng); `ast.warnings[]` `{when, code: WARN_*, message}`; `ast.sourceFormat`, `ast.sourceVersion`; hàm trắng `splitNum(chuỗi, ngăn, i)` và `basename(đường_dẫn)`; `tracks.let` (biến riêng của track) và `tracks.automation[]` (`kind` volume|pan|mute, `each/inner`, `tick`, `value`) cho lane `{kind, points}` đã sắp theo tick (trùng tick: điểm sau thắng) kèm `timeSeconds` theo TempoMap. Không nới lỏng ràng buộc an toàn của REQ-BIN-02/03.
+- **REQ-BIN-06** (D-62) Schema dựng sẵn `schemas/flp.schema.json` (sinh sang `packages/binary/src/builtin-schemas.js` bằng `node scripts/gen-builtin-schemas.mjs`; test kiểm hai bên khớp). Xem REQ-FMT-08.
 
 ### 3.10 So sánh kiểm chứng (KPI-01)
 - **REQ-CMP-01** `compareAST(a, ref)` ghép nốt theo (pitch, thời điểm gần nhất trong cửa sổ 2 beat); dung sai = 1 tick của nguồn thô hơn (ví dụ MIDI 96 PPQ → 10 tick @960); trả `pass`, số nốt khớp/lệch/chỉ-có-một-bên, chênh tempo và tổng thời lượng.

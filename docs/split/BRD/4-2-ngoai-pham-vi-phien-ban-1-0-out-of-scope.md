@@ -4,12 +4,12 @@ doc_title: "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT
 section: "4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)"
 path: "4. PHẠM VI DỰ ÁN (PROJECT SCOPE) > 4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)"
 chunk: 4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md
-source_lines: 156-170
-source_sha1: 8f63fc0d0c
-ids: [D-12, D-13, D-14, D-15, D-28, D-44, D-47, D-54, OI-08]
+source_lines: 157-171
+source_sha1: 3ccfd946bc
+ids: [D-12, D-13, D-14, D-15, D-28, D-44, D-47, D-54, D-62, OI-08]
 ---
 ### 4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)
-* **Chưa hỗ trợ** trong v1.0: phân tích trực tiếp `.flp` (FL Studio) và `.bwproject` gốc của Bitwig (định dạng nhị phân). Người dùng dùng `.mid` (FL Studio) hoặc `.dawproject` (Bitwig). Engine parser nhị phân theo schema đã sẵn sàng, nên khi có file mẫu và schema thì có thể thêm mà không đổi lõi (D-28, OI-08).
+* **Chưa hỗ trợ** trong v1.0: `.bwproject` gốc của Bitwig (định dạng nhị phân). Người dùng Bitwig dùng `.dawproject`. `.flp` đã hỗ trợ từ v1.0 (D-62). Engine parser nhị phân theo schema đã chứng minh đủ cho `.flp`, nên khi có file mẫu và schema thì thêm `.bwproject` mà không đổi lõi (D-28, OI-08).
 * Đọc clip Session View của Ableton: chưa hỗ trợ ở 1.0/1.1 (clip bị bỏ qua và được báo cho người dùng); dự kiến 1.2 (D-44).
 * Bộ tổng hợp âm thanh ảo (VST/Sampler) để phát tiếng từ nốt MIDI.
 * Backend render video.

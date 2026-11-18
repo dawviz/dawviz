@@ -50,7 +50,7 @@ Giao diện dịch qua `locales/*.json` (en là gốc, vi đầy đủ). Thêm n
 2. `.dawproject` xuất thật từ Bitwig (tempo/nhịp automation, clip lồng nhau, đơn vị giây).
 3. Clip Ableton có `StartRelative ≠ 0` hoặc đang lặp; tempo ramp thật; nhịp ≠ 4/4 (công thức enum suy từ 1 mẫu); cách đếm beat/bar của từng DAW trong nhịp ghép (6/8, 12/8) khi nhập mốc `Bar.Beat`.
 4. KPI-01 (sai số ≤ 1 tick) cần cặp (dự án, MIDI xuất từ chính DAW đó); `compareAST` đã sẵn.
-5. `.bwproject` và `.flp`: *chưa hỗ trợ* (chưa có file mẫu để viết schema) — dùng `.dawproject` / `.mid` trước.
+5. `.flp` (FL Studio ≥ 12): đọc bằng schema dựng sẵn `schemas/flp.schema.json` (D-62). `.bwproject`: *chưa hỗ trợ* (chưa có file mẫu để viết schema) — dùng `.dawproject` / `.mid` trước.
 
 ## Lệch so với SRS gốc
 Đã đưa vào `docs/parser/PARSER-SRS.md` §7 và `docs/product/SRS.md` (xem lịch sử phiên bản và Phụ lục B).

@@ -95,3 +95,58 @@ test('Công cụ cấu trúc: switch/when/offset/peek/vlq trên schema SMF heade
   const { root } = readBinary(hdr, smfSchema);
   assert.deepEqual([root.tag, root.len, root.fmt, root.n, root.div, root.smpte, root.peekTag, root.kind, root.extra], ['MThd', 6, 1, 2, 480, false, 'MThd', 'multi', undefined]);
 });
+
+// ---- mở rộng engine cho định dạng dạng dòng sự kiện (D-62): $last, ast.index, inner, warnings, splitNum/basename
+const evSchema = (over = {}) => ({
+  schemaVersion: 1, id: 'ev', extensions: ['ev'], magic: { ascii: 'EV' }, endian: 'little',
+  root: { fields: [
+    { type: 'skip', length: '2' }, { name: 'n', type: 'u8' },
+    { name: 'events', type: 'array', of: 'E', count: 'n' },
+  ] },
+  types: { E: { fields: [
+    { name: 'kind', type: 'u8' }, { name: 'val', type: 'u8' },
+    { name: 'cur', type: 'computed', expr: 'kind == 1 ? val : ($last.cur || 0)' }, // "trạng thái chạy": kind 1 đặt nhóm hiện tại
+  ] } },
+  ast: {
+    sourceFormat: 'evx', sourceVersion: "splitNum('7.2.9', '.', 1) + basename('C:\\\\a\\\\song.wav')",
+    ppq: '960', timeUnit: 'ticks',
+    index: {
+      byGroup: { each: 'events', as: 'e', filter: 'e.kind == 2', collect: true, key: 'e.cur', value: 'e.val' },
+      groups: { each: 'events', as: 'e', filter: 'e.kind == 1', list: true, value: 'e.val' },
+    },
+    tempo: { bpm: '120' },
+    tracks: { each: 'groups', as: 'g', name: "'G' + g", notes: { each: 'groups', as: 'h', filter: 'h == g', inner: { each: 'byGroup[g]', as: 'p' }, pitch: 'p', startTick: '$index * 10', durationTick: '5' } },
+    warnings: [{ when: 'len(groups) > 1', code: 'WARN_TEST_MULTI', message: 'hai nhóm' }],
+    ...over,
+  },
+});
+const evBin = (events) => Buffer.from([0x45, 0x56, events.length, ...events.flat()]);
+
+test('engine: $last mang trạng thái, index collect/list, inner, warnings, hàm splitNum/basename', async () => {
+  const s = evSchema();
+  const b = evBin([[1, 7], [2, 60], [2, 62], [1, 9], [2, 70]]);
+  const r = await parseBinaryWithSchema(b, s);
+  assert.equal(r.ast.meta.sourceFormat, 'evx'); assert.equal(r.ast.meta.sourceVersion, '2song');
+  assert.deepEqual(r.ast.tracks.map((t) => [t.name, t.notes.map((n) => n.pitch)]), [['G7', [60, 62]], ['G9', [70]]]);
+  assert.deepEqual(r.warnings.map((w) => w.code), ['WARN_TEST_MULTI']);
+  assert.equal(readBinary(b, s).root.events[4].cur, 9);
+});
+
+test('engine: ast.index/warnings sai → ERR_SCHEMA_INVALID; inner không phải mảng = rỗng', async () => {
+  assert.throws(() => validateSchema(evSchema({ index: { x: { each: 'events', value: 'e' } } })), { code: 'ERR_SCHEMA_INVALID' });
+  assert.throws(() => validateSchema(evSchema({ warnings: [{ when: 'true', code: 'oops' }] })), { code: 'ERR_SCHEMA_INVALID' });
+  assert.throws(() => validateSchema(evSchema({ index: { constructor: { each: 'events', list: true, value: '1' } } })), { code: 'ERR_SCHEMA_INVALID' });
+  const r = await parseBinaryWithSchema(evBin([[1, 3], [2, 50], [1, 4]]), evSchema()); // nhóm 4 không có nốt → track rỗng bị bỏ
+  assert.deepEqual(r.ast.tracks.map((t) => t.name), ['G3']);
+});
+
+test('engine: tracks.let và tracks.automation → lane {kind, points} đã sắp theo tick; kind sai → ERR_SCHEMA_INVALID', async () => {
+  const lane = (kind) => ({ kind, each: 'groups', as: 'h', filter: 'h == g', inner: { each: 'byGroup[g]', as: 'p' }, tick: '(5 - $index) * 10', value: 'p / 100' });
+  const s = evSchema(); s.ast.tracks = { ...s.ast.tracks, let: { two: 'g * 2' }, name: "'G' + two", automation: [lane('volume')] };
+  const r = await parseBinaryWithSchema(evBin([[1, 7], [2, 60], [2, 62], [1, 9], [2, 70]]), s);
+  const t = r.ast.tracks[0];
+  assert.equal(t.name, 'G14'); assert.deepEqual(t.automation.volume.points.map((p) => [p.tick, p.value]), [[40, 0.62], [50, 0.6]]);
+  assert.ok(Number.isFinite(t.automation.volume.points[0].timeSeconds) && t.automation.volume.points[0].shape === 0);
+  s.ast.tracks.automation = [lane('tempo')];
+  assert.throws(() => validateSchema(s), { code: 'ERR_SCHEMA_INVALID' });
+});

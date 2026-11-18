@@ -4,8 +4,8 @@ doc_title: "SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer"
 section: "3.4 AST (REQ-AST-01)"
 path: "3. Yêu cầu chức năng > 3.4 AST (REQ-AST-01)"
 chunk: 3-4-ast-req-ast-01.md
-source_lines: 47-51
-source_sha1: dd04828ada
+source_lines: 48-52
+source_sha1: c1f2666bb0
 ids: [ERR_NO_NOTES, REQ-AST-01, REQ-AST-02, REQ-AST-03, WARN_ZERO_LENGTH_NOTES]
 ---
 ### 3.4 AST (REQ-AST-01)

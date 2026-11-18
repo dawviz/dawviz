@@ -4,8 +4,8 @@ doc_title: "SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer"
 section: "6. Câu hỏi mở / cần dữ liệu"
 path: "6. Câu hỏi mở / cần dữ liệu"
 chunk: 6-cau-hoi-mo-can-du-lieu.md
-source_lines: 131-133
-source_sha1: dd04828ada
+source_lines: 134-136
+source_sha1: c1f2666bb0
 ids: [KPI-01, OI-01, OI-02, OI-03, OI-04, OI-05, OI-06]
 ---
 ## 6. Câu hỏi mở / cần dữ liệu

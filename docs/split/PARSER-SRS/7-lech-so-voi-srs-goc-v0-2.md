@@ -4,8 +4,8 @@ doc_title: "SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer"
 section: "7. Lệch so với SRS gốc v0.2"
 path: "7. Lệch so với SRS gốc v0.2"
 chunk: 7-lech-so-voi-srs-goc-v0-2.md
-source_lines: 134-135
-source_sha1: dd04828ada
+source_lines: 137-138
+source_sha1: c1f2666bb0
 ids: [ERR_NO_SUPPORTED_ENV, ERR_SCHEMA_INVALID, WARN_SESSION_CLIPS_IGNORED]
 ---
 ## 7. Lệch so với SRS gốc v0.2
