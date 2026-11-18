@@ -12,12 +12,13 @@ The app reads:
 |---|---|
 | Ableton Live | `.als`, `.alp` packs |
 | Reaper | `.rpp` |
+| FL Studio 12 or newer | `.flp` |
 | Bitwig Studio, Studio One and other software that saves DAWproject | `.dawproject` |
 | Any software that exports MIDI | `.mid` |
 
 Don't have a project at hand? On the first screen click **Try the sample project** to open a ready-made one.
 
-**FL Studio:** `.flp` files can't be opened directly yet. In FL Studio choose File → Export → MIDI file, then open the `.mid` you exported.
+**FL Studio:** `.flp` files from version 12 or newer open directly. Each instrument in the Channel Rack becomes a track, and only the notes of Patterns placed on the Playlist are shown. Audio clips and plugins are not read, and automation is read only for track volume and pan (other kinds are skipped, with a warning). The tempo is the project's starting tempo; if the song changes tempo along the way, enter the tempo in the **BPM** box or use the tempo table in Advanced mode (see [Preview](02-preview.md)). For versions older than 12, or to show Patterns that aren't on the Playlist: in FL Studio choose File → Export → MIDI file, then open the `.mid` you exported.
 
 **Bitwig:** `.bwproject` files can't be opened directly yet. Save as `.dawproject` instead (File → Export → DAWproject).
 

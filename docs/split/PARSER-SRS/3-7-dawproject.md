@@ -4,8 +4,8 @@ doc_title: "SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer"
 section: "3.7 DAWproject"
 path: "3. Yêu cầu chức năng > 3.7 DAWproject"
 chunk: 3-7-dawproject.md
-source_lines: 89-95
-source_sha1: dd04828ada
+source_lines: 90-96
+source_sha1: 59d9967678
 ids: [ERR_ARCHIVE_INVALID, REQ-DAWP-01, REQ-DAWP-02, REQ-DAWP-03, REQ-DAWP-04, REQ-DAWP-05, WARN_TIME_UNIT_MIXED]
 ---
 ### 3.7 DAWproject

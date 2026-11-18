@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-WIDGET-02: Track Info"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-02: Track Info"
 chunk: req-widget-02-track-info.md
-source_lines: 572-576
-source_sha1: b0fe5ff302
+source_lines: 585-589
+source_sha1: 4a4e62e7ba
 ids: [NFR-SEC-03, REQ-GRAPHICS-18, REQ-WIDGET-02, REQ-WIDGET-03]
 ---
 #### REQ-WIDGET-02: Track Info

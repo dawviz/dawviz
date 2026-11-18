@@ -9,14 +9,14 @@ import { test, smf, tempoEv, on, off, zip, fx } from './helpers.mjs';
 
 const mid = smf({ tracks: [[tempoEv(0, 100), on(0, 60), off(480, 60)]] });
 
-test('detectFormat: theo đuôi + magic; hướng dẫn rõ cho .flp/.bwproject', () => {
+test('detectFormat: theo đuôi + magic; hướng dẫn rõ cho .bwproject, nhận .flp dựng sẵn', () => {
   assert.equal(detectFormat('a.als', fx('Demo.als')).format, 'als');
   assert.equal(detectFormat('a.ALS', zlib.gunzipSync(fx('Demo.als'))).format, 'als');
   assert.equal(detectFormat('a.mid', mid).format, 'mid');
   assert.equal(detectFormat('a.rpp', fx('ode_to_zb.RPP')).format, 'rpp');
   assert.equal(detectFormat('a.alp', zip({ 'a.als': 'x' })).format, 'alp');
   assert.equal(detectFormat('weird.bin', zip({ 'project.xml': '<Project/>' })).format, 'dawproject');
-  assert.throws(() => detectFormat('a.flp', mid), (e) => e.code === 'ERR_UNSUPPORTED_FORMAT' && /MIDI/.test(e.message));
+  assert.throws(() => detectFormat('a.flp', mid), (e) => e.code === 'ERR_UNSUPPORTED_FORMAT' && /FLhd/.test(e.message));
   assert.throws(() => detectFormat('a.bwproject', mid), (e) => e.code === 'ERR_UNSUPPORTED_FORMAT' && /dawproject/i.test(e.message));
   assert.throws(() => detectFormat('a.mid', fx('Demo.als')), { code: 'ERR_UNSUPPORTED_FORMAT' });
   assert.throws(() => detectFormat('a.rpp', mid), { code: 'ERR_UNSUPPORTED_FORMAT' });
@@ -50,7 +50,8 @@ test('probeProject: chỉ báo cần .mid ngoài / schema khi thật sự cần'
   assert.deepEqual(probeProject('Demo.als', fx('Demo.als')).needs, { externalMidi: [], schema: false });
   const bw = probeProject('x.bwproject', Buffer.from('BtWgxxxx'));
   assert.equal(bw.format, null); assert.equal(bw.needs.schema, true); assert.match(bw.message, /chưa hỗ trợ/);
-  assert.equal(probeProject('x.flp', Buffer.from('FLhd')).needs.schema, true);
+  assert.equal(probeProject('x.flp', Buffer.from('MThd')).format, null); // .flp là định dạng đã biết: sai nội dung thì báo lỗi, không mời nạp schema
+  assert.equal(probeProject('x.flp', Buffer.from('MThd')).needs.schema, false);
   const bad = probeProject('x.als', Buffer.from('PK\x03\x04zzzz')); // đuôi đã biết nhưng nội dung sai: không mời nạp schema
   assert.equal(bad.needs.schema, false);
 });

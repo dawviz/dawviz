@@ -4,8 +4,8 @@ doc_title: "TDD — Tài liệu kiểm thử: Thư viện parser DAW Visualizer"
 section: "5. Khoảng trống kiểm thử (cần dữ liệu thật, xem SRS §6)"
 path: "5. Khoảng trống kiểm thử (cần dữ liệu thật, xem SRS §6)"
 chunk: 5-khoang-trong-kiem-thu-can-du-lieu-that-xem-srs.md
-source_lines: 74-81
-source_sha1: 42e0660dc8
+source_lines: 77-84
+source_sha1: b369a49402
 ids: [KPI-01]
 ---
 ## 5. Khoảng trống kiểm thử (cần dữ liệu thật, xem SRS §6)

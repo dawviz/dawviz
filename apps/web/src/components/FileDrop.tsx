@@ -6,7 +6,7 @@ import { useI18n } from '../i18n/I18nProvider.tsx';
 
 export interface Picked { main: File; extras: File[] }
 
-const FORMATS = ['.als', '.alp', '.rpp', '.dawproject', '.mid'];
+const FORMATS = ['.als', '.alp', '.rpp', '.flp', '.dawproject', '.mid'];
 
 const UploadIcon = ({ className = '' }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
@@ -39,7 +39,7 @@ export function FileDrop({ onPick, busy, compact = false, slim = false, onSample
   } as const;
   const fileInput = (
     <input ref={input} type="file" multiple className="hidden" data-testid="file-input"
-      accept=".als,.alp,.rpp,.dawproject,.mid,.midi" onChange={(e) => { take(e.target.files); e.target.value = ''; }} />
+      accept=".als,.alp,.rpp,.flp,.dawproject,.mid,.midi" onChange={(e) => { take(e.target.files); e.target.value = ''; }} />
   );
 
   if (compact) {

@@ -4,9 +4,9 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "Phụ lục B: Ghi chú rà soát"
 path: "9. PHỤ LỤC > Phụ lục B: Ghi chú rà soát"
 chunk: phu-luc-b-ghi-chu-ra-soat.md
-source_lines: 1190-1221
-source_sha1: b0fe5ff302
-ids: [D-20, D-22, KPI-01, NFR-ACC-02, NFR-COMP-01, OI-02, OI-08, REQ-AST-01, REQ-CAP-01, REQ-EXPORT-07, REQ-GRAPHICS-04, REQ-PARSER-06, REQ-STORAGE-04, REQ-UI-01, REQ-UI-06, REQ-UI-07, REQ-UI-08, SOI-12]
+source_lines: 1203-1234
+source_sha1: 4a4e62e7ba
+ids: [D-20, D-22, D-62, KPI-01, NFR-ACC-02, NFR-COMP-01, OI-02, OI-08, REQ-AST-01, REQ-CAP-01, REQ-EXPORT-07, REQ-GRAPHICS-04, REQ-PARSER-06, REQ-STORAGE-04, REQ-UI-01, REQ-UI-06, REQ-UI-07, REQ-UI-08, SOI-12]
 ---
 ### Phụ lục B: Ghi chú rà soát
 
@@ -35,7 +35,7 @@ Thay đổi so với v0.2 và nguồn gốc:
 4. **Tempo**: bỏ fallback 120 BPM ngầm; cờ `tempoSource`; nhập nhiều mốc (Spike 2).
 5. **Xuất**: Silent AAC mặc định tắt, kích thước/tỉ lệ tuỳ ý, tên file chốt trước (Spike 1).
 6. **Widget**: thêm Progress Bar (ghi chú cuối v0.2 và Spike 2).
-7. **Ngôn từ**: định dạng nhị phân gốc (`.flp`, `.bwproject`) ghi là *chưa hỗ trợ*.
+7. **Ngôn từ**: định dạng nhị phân gốc `.bwproject` ghi là *chưa hỗ trợ*; `.flp` đã hỗ trợ (D-62).
 8. **Đầu vào theo ngữ cảnh**: ô nạp `.mid` ngoài và schema JSON chỉ hiện khi cần, có cảnh báo khi thiếu (REQ-UI-08); mốc BPM nhập theo kiểu đồng hồ DAW (REQ-UI-06).
 9. **Đa ngôn ngữ** xây ngay từ đầu (REQ-I18N-01 đến 08); **dấu nhịp** trong ghi đè tempo; **đề xuất widget bổ sung** (mục 3.4b).
 10. **Trạng thái spike:** Spike 1 (xuất video) và Spike 2 (parser và AST) hoàn thành. Phần còn lại là việc cần mẫu thật hoặc chưa làm, nêu ở mục 9 và Phụ lục B, không chặn giai đoạn xây ứng dụng chính.

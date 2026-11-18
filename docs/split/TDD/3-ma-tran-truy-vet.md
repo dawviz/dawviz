@@ -5,7 +5,7 @@ section: "3. Ma trận truy vết"
 path: "3. Ma trận truy vết"
 chunk: 3-ma-tran-truy-vet.md
 source_lines: 54-64
-source_sha1: 6d93c905f0
+source_sha1: 8e526eb663
 ids: [AT-18, NFR-PERF-05, REQ-GRAPHICS-05, REQ-GRAPHICS-06, REQ-GRAPHICS-18]
 ---
 ## 3. Ma trận truy vết

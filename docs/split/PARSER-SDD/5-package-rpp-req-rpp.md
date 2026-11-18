@@ -5,7 +5,7 @@ section: "5. Package `rpp` (REQ-RPP-*)"
 path: "5. Package `rpp` (REQ-RPP-*)"
 chunk: 5-package-rpp-req-rpp.md
 source_lines: 78-85
-source_sha1: dbb03a72c8
+source_sha1: ba174dece0
 ids: [ERR_NO_NOTES]
 ---
 ## 5. Package `rpp` (REQ-RPP-*)

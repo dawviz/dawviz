@@ -4,8 +4,8 @@ doc_title: "SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer"
 section: "3.5 Ableton (.als / .alp)"
 path: "3. Yêu cầu chức năng > 3.5 Ableton (.als / .alp)"
 chunk: 3-5-ableton-als-alp.md
-source_lines: 52-76
-source_sha1: dd04828ada
+source_lines: 53-77
+source_sha1: 59d9967678
 ids: [ERR_ARCHIVE_INVALID, ERR_AST_INVALID, ERR_NO_NOTES, REQ-ALP-01, REQ-ALP-02, REQ-ALP-03, REQ-ALP-04, REQ-ALS-01, REQ-ALS-02, REQ-ALS-03, REQ-ALS-04, REQ-ALS-05, REQ-DEMO-01, REQ-DEMO-02, REQ-DEMO-03, REQ-DEMO-04, REQ-TEMPO-03, REQ-TEMPO-04, REQ-TEMPO-05, WARN_ALP_MULTIPLE_ALS, WARN_SESSION_CLIPS_IGNORED]
 ---
 ### 3.5 Ableton (.als / .alp)

@@ -414,7 +414,7 @@ describe('Sau critique T-70', () => {
     expect(screen.getByTestId('style-notice')).toHaveTextContent('Ctrl+Z');
     expect(screen.queryByRole('button', { name: /Undo|Hoàn tác/ })).toBeNull();
   });
-  it('màn đầu tiên hướng dẫn FL Studio xuất .mid (D-19), không dùng chữ mono', () => {
+  it('màn đầu tiên nói rõ FL Studio thả thẳng .flp (D-62), không dùng chữ mono', () => {
     wrap(<FileDrop onPick={() => {}} busy={false} />);
     expect(screen.getByTestId('file-drop').textContent).toMatch(/FL Studio/);
     expect(screen.getByTestId('file-drop').querySelector('.font-mono')).toBeNull();

@@ -12,12 +12,13 @@ Kéo tệp dự án thả vào giữa màn hình, hoặc bấm vào đó để c
 |---|---|
 | Ableton Live | `.als`, gói `.alp` |
 | Reaper | `.rpp` |
+| FL Studio 12 trở lên | `.flp` |
 | Bitwig Studio, Studio One và các phần mềm khác lưu được DAWproject | `.dawproject` |
 | Bất kỳ phần mềm nào xuất được MIDI | `.mid` |
 
 Chưa có tệp nhạc trong tay? Ở màn đầu tiên bấm **Thử với dự án mẫu** để mở một dự án có sẵn.
 
-**FL Studio:** chưa mở thẳng được tệp `.flp`. Trong FL Studio chọn File → Export → MIDI file, rồi mở tệp `.mid` vừa xuất.
+**FL Studio:** mở thẳng được tệp `.flp` của bản 12 trở lên. Mỗi nhạc cụ trong Channel Rack là một track, và chỉ hiện nốt của các Pattern đã được xếp lên Playlist. Clip âm thanh và plugin không được đọc, automation chỉ đọc phần âm lượng và pan của track (các loại khác bị bỏ, có cảnh báo). Tempo lấy từ tempo ban đầu của dự án; nếu bài đổi tempo giữa chừng, hãy nhập tempo ở ô **BPM** hoặc dùng bảng điểm tempo của chế độ Nâng cao (xem [Xem trước](02-xem-truoc.md)). Bản cũ hơn 12, hoặc khi muốn hiện cả Pattern chưa xếp lên Playlist: trong FL Studio chọn File → Export → MIDI file, rồi mở tệp `.mid` vừa xuất.
 
 **Bitwig:** tệp `.bwproject` chưa mở thẳng được. Hãy lưu thành `.dawproject` (File → Export → DAWproject).
 

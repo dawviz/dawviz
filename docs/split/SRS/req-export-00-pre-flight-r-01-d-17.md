@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-EXPORT-00: Pre-flight (R-01, D-17)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-EXPORT-00: Pre-flight (R-01, D-17)"
 chunk: req-export-00-pre-flight-r-01-d-17.md
-source_lines: 745-767
-source_sha1: b0fe5ff302
+source_lines: 758-780
+source_sha1: 4a4e62e7ba
 ids: [D-17, D-26, KPI-05, REQ-EXPORT-00, REQ-GRAPHICS-04, SOI-05]
 ---
 #### REQ-EXPORT-00: Pre-flight (R-01, D-17)

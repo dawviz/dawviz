@@ -4,7 +4,7 @@
  "docs": {
   "BRD.md": {
    "title": "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)",
-   "sha1": "8f63fc0d0c",
+   "sha1": "90f173dba6",
    "chunks": [
     {
      "n": 0,
@@ -13,15 +13,16 @@
      "path": [
       "DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)"
      ],
-     "chars": 5114,
+     "chars": 5514,
      "lines": [
       2,
-      30
+      31
      ],
      "ids": [
       "BR-09",
       "D-01",
       "D-15",
+      "D-19",
       "D-20",
       "D-22",
       "D-23",
@@ -51,6 +52,7 @@
       "D-59",
       "D-60",
       "D-61",
+      "D-62",
       "OI-09",
       "OI-10",
       "OI-11",
@@ -75,8 +77,8 @@
      ],
      "chars": 1753,
      "lines": [
-      31,
-      45
+      32,
+      46
      ],
      "ids": [
       "D-54"
@@ -91,8 +93,8 @@
      ],
      "chars": 4778,
      "lines": [
-      46,
-      84
+      47,
+      85
      ],
      "ids": [
       "BR-01",
@@ -125,13 +127,13 @@
      "path": [
       "3. CHÂN DUNG NGƯỜI DÙNG MỤC TIÊU (USER PERSONAS)"
      ],
-     "chars": 1342,
+     "chars": 1453,
      "lines": [
-      85,
-      104
+      86,
+      105
      ],
      "ids": [
-      "D-19"
+      "D-62"
      ]
     },
     {
@@ -144,8 +146,8 @@
      ],
      "chars": 3226,
      "lines": [
-      107,
-      133
+      108,
+      134
      ],
      "ids": [
       "BR-09",
@@ -174,8 +176,8 @@
      ],
      "chars": 892,
      "lines": [
-      134,
-      143
+      135,
+      144
      ],
      "ids": [
       "AT-05",
@@ -190,10 +192,10 @@
       "4. PHẠM VI DỰ ÁN (PROJECT SCOPE)",
       "4.4. Phân bổ theo bản phát hành (D-40, chốt ở tài liệu v1.1)"
      ],
-     "chars": 2931,
+     "chars": 2924,
      "lines": [
-      144,
-      155
+      145,
+      156
      ],
      "ids": [
       "D-14",
@@ -226,10 +228,10 @@
       "4. PHẠM VI DỰ ÁN (PROJECT SCOPE)",
       "4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)"
      ],
-     "chars": 1215,
+     "chars": 1202,
      "lines": [
-      156,
-      170
+      157,
+      171
      ],
      "ids": [
       "D-12",
@@ -240,6 +242,7 @@
       "D-44",
       "D-47",
       "D-54",
+      "D-62",
       "OI-08"
      ]
     },
@@ -252,8 +255,8 @@
      ],
      "chars": 4347,
      "lines": [
-      171,
-      191
+      172,
+      192
      ],
      "ids": [
       "D-01",
@@ -278,8 +281,8 @@
      ],
      "chars": 554,
      "lines": [
-      192,
-      200
+      193,
+      201
      ],
      "ids": [
       "D-01"
@@ -292,10 +295,10 @@
      "path": [
       "7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)"
      ],
-     "chars": 25977,
+     "chars": 27431,
      "lines": [
-      201,
-      270
+      202,
+      272
      ],
      "ids": [
       "AD-08",
@@ -366,6 +369,7 @@
       "D-59",
       "D-60",
       "D-61",
+      "D-62",
       "KPI-04",
       "NFR-ACC-02",
       "NFR-SEC-01",
@@ -376,6 +380,7 @@
       "OI-12",
       "OI-14",
       "OI-18",
+      "OI-19",
       "P-01",
       "P-13",
       "REQ-AST-02",
@@ -395,7 +400,8 @@
       "SOI-06",
       "SOI-16",
       "SOI-17",
-      "SOI-19"
+      "SOI-19",
+      "WARN_FLP_CLIPS_SKIPPED"
      ]
     },
     {
@@ -405,10 +411,10 @@
      "path": [
       "8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)"
      ],
-     "chars": 5616,
+     "chars": 6307,
      "lines": [
-      271,
-      292
+      273,
+      295
      ],
      "ids": [
       "D-01",
@@ -421,6 +427,7 @@
       "D-44",
       "D-45",
       "D-60",
+      "D-62",
       "KPI-01",
       "KPI-06",
       "OI-01",
@@ -441,6 +448,7 @@
       "OI-16",
       "OI-17",
       "OI-18",
+      "OI-19",
       "P-01",
       "P-13"
      ]
@@ -449,7 +457,7 @@
   },
   "SRS.md": {
    "title": "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)",
-   "sha1": "b0fe5ff302",
+   "sha1": "4a4e62e7ba",
    "chunks": [
     {
      "n": 0,
@@ -625,7 +633,7 @@
      "path": [
       "1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG"
      ],
-     "chars": 4720,
+     "chars": 4750,
      "lines": [
       49,
       112
@@ -650,12 +658,12 @@
       "D-13",
       "D-14",
       "D-16",
-      "D-19",
       "D-23",
       "D-24",
       "D-28",
       "D-29",
       "D-54",
+      "D-62",
       "NFR-SEC-01",
       "OI-08",
       "REQ-EXPORT-00",
@@ -663,6 +671,7 @@
       "REQ-GRAPHICS-15",
       "REQ-PARSER-05",
       "REQ-PARSER-06",
+      "REQ-PARSER-08",
       "REQ-UI-01",
       "REQ-WIDGET-05"
      ]
@@ -947,7 +956,7 @@
       "3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08)",
       "REQ-PARSER-05: Parser JSON khai báo (D-18, D-28, R-05)"
      ],
-     "chars": 1509,
+     "chars": 1825,
      "lines": [
       327,
       333
@@ -955,16 +964,42 @@
      "ids": [
       "D-18",
       "D-28",
+      "D-62",
       "ERR_SCHEMA_INVALID",
       "ERR_UNSUPPORTED_FORMAT",
       "OI-08",
       "REQ-AST-01",
       "REQ-PARSER-05",
+      "REQ-PARSER-08",
       "SOI-12"
      ]
     },
     {
      "n": 17,
+     "file": "SRS/req-parser-08-fl-studio-flp-d-62.md",
+     "title": "REQ-PARSER-08: FL Studio (`.flp`, D-62)",
+     "path": [
+      "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS)",
+      "3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08)",
+      "REQ-PARSER-08: FL Studio (`.flp`, D-62)"
+     ],
+     "chars": 1979,
+     "lines": [
+      334,
+      345
+     ],
+     "ids": [
+      "D-62",
+      "ERR_AST_INVALID",
+      "ERR_NO_NOTES",
+      "OI-19",
+      "REQ-PARSER-08",
+      "WARN_FLP_CLIPS_SKIPPED",
+      "WARN_TEMPO_FALLBACK"
+     ]
+    },
+    {
+     "n": 18,
      "file": "SRS/req-parser-06-ableton-live-pack-alp.md",
      "title": "REQ-PARSER-06: Ableton Live Pack (`.alp`)",
      "path": [
@@ -974,8 +1009,8 @@
      ],
      "chars": 1100,
      "lines": [
-      334,
-      341
+      346,
+      353
      ],
      "ids": [
       "ERR_ARCHIVE_INVALID",
@@ -986,7 +1021,7 @@
      ]
     },
     {
-     "n": 18,
+     "n": 19,
      "file": "SRS/req-parser-07-tempo-khong-doan-ngam-va-ghi-de-d.md",
      "title": "REQ-PARSER-07: Tempo không đoán ngầm và ghi đè (D-24, D-29)",
      "path": [
@@ -996,8 +1031,8 @@
      ],
      "chars": 1665,
      "lines": [
-      342,
-      347
+      354,
+      359
      ],
      "ids": [
       "D-24",
@@ -1010,7 +1045,7 @@
      ]
     },
     {
-     "n": 19,
+     "n": 20,
      "file": "SRS/3-2-cau-truc-du-lieu-chuan-hoa-unified-ast-d-08.md",
      "title": "3.2. Cấu trúc dữ liệu chuẩn hóa (Unified AST, D-08, D-09)",
      "path": [
@@ -1019,8 +1054,8 @@
      ],
      "chars": 3457,
      "lines": [
-      348,
-      408
+      360,
+      420
      ],
      "ids": [
       "D-08",
@@ -1036,7 +1071,7 @@
      ]
     },
     {
-     "n": 20,
+     "n": 21,
      "file": "SRS/req-graphics-00-do-phan-giai-thiet-ke-logic-d-06.md",
      "title": "REQ-GRAPHICS-00: Độ phân giải thiết kế logic (D-06)",
      "path": [
@@ -1046,8 +1081,8 @@
      ],
      "chars": 421,
      "lines": [
-      411,
-      415
+      423,
+      427
      ],
      "ids": [
       "D-06",
@@ -1055,7 +1090,7 @@
      ]
     },
     {
-     "n": 21,
+     "n": 22,
      "file": "SRS/req-graphics-01-phan-lop-do-hoa-d-07.md",
      "title": "REQ-GRAPHICS-01: Phân lớp đồ họa (D-07)",
      "path": [
@@ -1065,8 +1100,8 @@
      ],
      "chars": 1434,
      "lines": [
-      416,
-      421
+      428,
+      433
      ],
      "ids": [
       "D-07",
@@ -1075,7 +1110,7 @@
      ]
     },
     {
-     "n": 22,
+     "n": 23,
      "file": "SRS/req-graphics-02-bat-dinh-thong-minh.md",
      "title": "REQ-GRAPHICS-02: Bắt dính thông minh",
      "path": [
@@ -1085,8 +1120,8 @@
      ],
      "chars": 1248,
      "lines": [
-      422,
-      428
+      434,
+      440
      ],
      "ids": [
       "D-57",
@@ -1094,7 +1129,7 @@
      ]
     },
     {
-     "n": 23,
+     "n": 24,
      "file": "SRS/req-graphics-16-thanh-phat-playhead-tuy-chinh.md",
      "title": "REQ-GRAPHICS-16: Thanh phát (playhead) tuỳ chỉnh",
      "path": [
@@ -1104,8 +1139,8 @@
      ],
      "chars": 1489,
      "lines": [
-      429,
-      438
+      441,
+      450
      ],
      "ids": [
       "REQ-GRAPHICS-09",
@@ -1117,7 +1152,7 @@
      ]
     },
     {
-     "n": 24,
+     "n": 25,
      "file": "SRS/req-graphics-03-xoay-widget-tu-do-d-54-thay-d-15.md",
      "title": "REQ-GRAPHICS-03: Xoay widget tự do (D-54, thay D-15)",
      "path": [
@@ -1127,8 +1162,8 @@
      ],
      "chars": 1998,
      "lines": [
-      439,
-      447
+      451,
+      459
      ],
      "ids": [
       "D-15",
@@ -1144,7 +1179,7 @@
      ]
     },
     {
-     "n": 25,
+     "n": 26,
      "file": "SRS/req-graphics-04-preset-dung-san-va-doi-ti-le-khu.md",
      "title": "REQ-GRAPHICS-04: Preset dựng sẵn và đổi tỉ lệ khung",
      "path": [
@@ -1154,8 +1189,8 @@
      ],
      "chars": 673,
      "lines": [
-      448,
-      452
+      460,
+      464
      ],
      "ids": [
       "KPI-04",
@@ -1164,7 +1199,7 @@
      ]
     },
     {
-     "n": 26,
+     "n": 27,
      "file": "SRS/req-graphics-06-do-sang-track-theo-automation-d.md",
      "title": "REQ-GRAPHICS-06: Độ sáng track theo automation (D-33)",
      "path": [
@@ -1174,8 +1209,8 @@
      ],
      "chars": 2443,
      "lines": [
-      453,
-      464
+      465,
+      476
      ],
      "ids": [
       "D-33",
@@ -1192,7 +1227,7 @@
      ]
     },
     {
-     "n": 27,
+     "n": 28,
      "file": "SRS/req-graphics-07-kieu-dang-not-tuy-chinh-va-ban-p.md",
      "title": "REQ-GRAPHICS-07: Kiểu dáng nốt tuỳ chỉnh và bàn phím",
      "path": [
@@ -1202,8 +1237,8 @@
      ],
      "chars": 3425,
      "lines": [
-      465,
-      484
+      477,
+      496
      ],
      "ids": [
       "P-01",
@@ -1217,7 +1252,7 @@
      ]
     },
     {
-     "n": 28,
+     "n": 29,
      "file": "SRS/req-graphics-08-hieu-ung-chuyen-dong-tat-dinh-d.md",
      "title": "REQ-GRAPHICS-08: Hiệu ứng chuyển động tất định (D-37)",
      "path": [
@@ -1227,8 +1262,8 @@
      ],
      "chars": 442,
      "lines": [
-      485,
-      489
+      497,
+      501
      ],
      "ids": [
       "D-37",
@@ -1236,7 +1271,7 @@
      ]
     },
     {
-     "n": 29,
+     "n": 30,
      "file": "SRS/req-graphics-05-render-core-dung-chung-arc-01-d.md",
      "title": "REQ-GRAPHICS-05: Render Core dùng chung (ARC-01, D-20)",
      "path": [
@@ -1246,8 +1281,8 @@
      ],
      "chars": 1021,
      "lines": [
-      490,
-      497
+      502,
+      509
      ],
      "ids": [
       "ARC-01",
@@ -1256,7 +1291,7 @@
      ]
     },
     {
-     "n": 30,
+     "n": 31,
      "file": "SRS/req-graphics-17-phat-sang-dong-khi-cham-d-50-1-0.md",
      "title": "REQ-GRAPHICS-17: Phát sáng động khi chạm (D-50, 1.0)",
      "path": [
@@ -1266,8 +1301,8 @@
      ],
      "chars": 2766,
      "lines": [
-      498,
-      517
+      510,
+      529
      ],
      "ids": [
       "D-50",
@@ -1282,7 +1317,7 @@
      ]
     },
     {
-     "n": 31,
+     "n": 32,
      "file": "SRS/req-graphics-18-kieu-chu-cho-moi-chu-trong-video.md",
      "title": "REQ-GRAPHICS-18: Kiểu chữ cho mọi chữ trong video (D-58)",
      "path": [
@@ -1292,8 +1327,8 @@
      ],
      "chars": 5095,
      "lines": [
-      518,
-      536
+      530,
+      548
      ],
      "ids": [
       "D-57",
@@ -1315,7 +1350,7 @@
      ]
     },
     {
-     "n": 32,
+     "n": 33,
      "file": "SRS/req-graphics-19-o-chu-nguoi-dung-them-va-cho-giu.md",
      "title": "REQ-GRAPHICS-19: Ô chữ người dùng thêm và chỗ giữ dùng chung (D-60; đã làm 2026-11-18, T-73)",
      "path": [
@@ -1325,8 +1360,8 @@
      ],
      "chars": 2854,
      "lines": [
-      537,
-      545
+      549,
+      557
      ],
      "ids": [
       "D-60",
@@ -1343,7 +1378,7 @@
      ]
     },
     {
-     "n": 33,
+     "n": 34,
      "file": "SRS/req-ast-02-automation-tong-quat-d-50-1-0-cho-rea.md",
      "title": "REQ-AST-02: Automation tổng quát (D-50; 1.0 cho Reaper track + MIDI CC, các nguồn khác theo tệp mẫu)",
      "path": [
@@ -1351,10 +1386,10 @@
       "3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02)",
       "REQ-AST-02: Automation tổng quát (D-50; 1.0 cho Reaper track + MIDI CC, các nguồn khác theo tệp mẫu)"
      ],
-     "chars": 2214,
+     "chars": 2371,
      "lines": [
-      546,
-      558
+      558,
+      571
      ],
      "ids": [
       "D-50",
@@ -1363,11 +1398,12 @@
       "REQ-GRAPHICS-06",
       "REQ-GRAPHICS-13",
       "REQ-GRAPHICS-17",
+      "REQ-PARSER-08",
       "SOI-18"
      ]
     },
     {
-     "n": 34,
+     "n": 35,
      "file": "SRS/3-4-dac-ta-8-widget-hud-br-02-br-03-br-04.md",
      "title": "3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04)",
      "path": [
@@ -1376,8 +1412,8 @@
      ],
      "chars": 368,
      "lines": [
-      559,
-      562
+      572,
+      575
      ],
      "ids": [
       "BR-02",
@@ -1386,7 +1422,7 @@
      ]
     },
     {
-     "n": 35,
+     "n": 36,
      "file": "SRS/req-widget-01-piano-roll.md",
      "title": "REQ-WIDGET-01: Piano Roll",
      "path": [
@@ -1396,8 +1432,8 @@
      ],
      "chars": 1411,
      "lines": [
-      563,
-      571
+      576,
+      584
      ],
      "ids": [
       "D-15",
@@ -1408,7 +1444,7 @@
      ]
     },
     {
-     "n": 36,
+     "n": 37,
      "file": "SRS/req-widget-02-track-info.md",
      "title": "REQ-WIDGET-02: Track Info",
      "path": [
@@ -1418,8 +1454,8 @@
      ],
      "chars": 1101,
      "lines": [
-      572,
-      576
+      585,
+      589
      ],
      "ids": [
       "NFR-SEC-03",
@@ -1429,7 +1465,7 @@
      ]
     },
     {
-     "n": 37,
+     "n": 38,
      "file": "SRS/req-widget-03-event-counter.md",
      "title": "REQ-WIDGET-03: Event Counter",
      "path": [
@@ -1439,8 +1475,8 @@
      ],
      "chars": 1220,
      "lines": [
-      577,
-      583
+      590,
+      596
      ],
      "ids": [
       "D-60",
@@ -1451,7 +1487,7 @@
      ]
     },
     {
-     "n": 38,
+     "n": 39,
      "file": "SRS/req-widget-04-live-note-trigger.md",
      "title": "REQ-WIDGET-04: Live Note Trigger",
      "path": [
@@ -1461,15 +1497,15 @@
      ],
      "chars": 935,
      "lines": [
-      584,
-      590
+      597,
+      603
      ],
      "ids": [
       "REQ-WIDGET-04"
      ]
     },
     {
-     "n": 39,
+     "n": 40,
      "file": "SRS/req-widget-05-time-bar-counter.md",
      "title": "REQ-WIDGET-05: Time & Bar Counter",
      "path": [
@@ -1479,8 +1515,8 @@
      ],
      "chars": 1520,
      "lines": [
-      591,
-      600
+      604,
+      613
      ],
      "ids": [
       "REQ-AST-01",
@@ -1488,7 +1524,7 @@
      ]
     },
     {
-     "n": 40,
+     "n": 41,
      "file": "SRS/req-widget-06-chord-detection-d-09.md",
      "title": "REQ-WIDGET-06: Chord Detection (D-09)",
      "path": [
@@ -1498,8 +1534,8 @@
      ],
      "chars": 2250,
      "lines": [
-      601,
-      610
+      614,
+      623
      ],
      "ids": [
       "D-09",
@@ -1510,7 +1546,7 @@
      ]
     },
     {
-     "n": 41,
+     "n": 42,
      "file": "SRS/req-widget-07-audio-spectrum-meter-d-10-arc-03-a.md",
      "title": "REQ-WIDGET-07: Audio Spectrum & Meter (D-10, ARC-03, ARC-06)",
      "path": [
@@ -1520,8 +1556,8 @@
      ],
      "chars": 2473,
      "lines": [
-      611,
-      623
+      624,
+      636
      ],
      "ids": [
       "ARC-03",
@@ -1536,7 +1572,7 @@
      ]
     },
     {
-     "n": 42,
+     "n": 43,
      "file": "SRS/req-audio-01-am-thanh-theo-track-stem-ban-1-2.md",
      "title": "REQ-AUDIO-01: Âm thanh theo track (stem), bản 1.2",
      "path": [
@@ -1546,8 +1582,8 @@
      ],
      "chars": 3254,
      "lines": [
-      624,
-      636
+      637,
+      649
      ],
      "ids": [
       "ERR_AUDIO_TOO_MANY",
@@ -1562,7 +1598,7 @@
      ]
     },
     {
-     "n": 43,
+     "n": 44,
      "file": "SRS/req-widget-08-progress-bar-d-27.md",
      "title": "REQ-WIDGET-08: Progress Bar (D-27)",
      "path": [
@@ -1572,8 +1608,8 @@
      ],
      "chars": 822,
      "lines": [
-      637,
-      642
+      650,
+      655
      ],
      "ids": [
       "D-27",
@@ -1583,7 +1619,7 @@
      ]
     },
     {
-     "n": 44,
+     "n": 45,
      "file": "SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md",
      "title": "3.4b. Đề xuất widget và dữ liệu hiển thị bổ sung (D-32, OI-11) **[ĐỀ XUẤT, chưa cam kết v1.0]**",
      "path": [
@@ -1592,8 +1628,8 @@
      ],
      "chars": 2994,
      "lines": [
-      643,
-      666
+      656,
+      679
      ],
      "ids": [
       "D-32",
@@ -1619,7 +1655,7 @@
      ]
     },
     {
-     "n": 45,
+     "n": 46,
      "file": "SRS/3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md",
      "title": "3.5. Lưu trữ, cấu hình & đóng gói (BR-05, D-11)",
      "path": [
@@ -1628,8 +1664,8 @@
      ],
      "chars": 4696,
      "lines": [
-      667,
-      739
+      680,
+      752
      ],
      "ids": [
       "BR-05",
@@ -1648,7 +1684,7 @@
      ]
     },
     {
-     "n": 46,
+     "n": 47,
      "file": "SRS/req-cap-01-phat-hien-kha-nang-cua-trinh-duyet-r.md",
      "title": "REQ-CAP-01: Phát hiện khả năng của trình duyệt (R-06, D-05)",
      "path": [
@@ -1658,8 +1694,8 @@
      ],
      "chars": 413,
      "lines": [
-      742,
-      744
+      755,
+      757
      ],
      "ids": [
       "D-05",
@@ -1668,7 +1704,7 @@
      ]
     },
     {
-     "n": 47,
+     "n": 48,
      "file": "SRS/req-export-00-pre-flight-r-01-d-17.md",
      "title": "REQ-EXPORT-00: Pre-flight (R-01, D-17)",
      "path": [
@@ -1678,8 +1714,8 @@
      ],
      "chars": 2606,
      "lines": [
-      745,
-      767
+      758,
+      780
      ],
      "ids": [
       "D-17",
@@ -1691,7 +1727,7 @@
      ]
     },
     {
-     "n": 48,
+     "n": 49,
      "file": "SRS/req-export-01-xung-nhip-khung-hinh-doc-lap.md",
      "title": "REQ-EXPORT-01: Xung nhịp khung hình độc lập",
      "path": [
@@ -1701,8 +1737,8 @@
      ],
      "chars": 502,
      "lines": [
-      768,
-      773
+      781,
+      786
      ],
      "ids": [
       "REQ-EXPORT-01",
@@ -1710,7 +1746,7 @@
      ]
     },
     {
-     "n": 49,
+     "n": 50,
      "file": "SRS/req-export-02-kiem-soat-dong-chay-r-01.md",
      "title": "REQ-EXPORT-02: Kiểm soát dòng chảy (R-01)",
      "path": [
@@ -1720,15 +1756,15 @@
      ],
      "chars": 192,
      "lines": [
-      774,
-      776
+      787,
+      789
      ],
      "ids": [
       "REQ-EXPORT-02"
      ]
     },
     {
-     "n": 50,
+     "n": 51,
      "file": "SRS/req-export-03-luong-am-thanh-va-silent-audio-d-0.md",
      "title": "REQ-EXPORT-03: Luồng âm thanh và Silent Audio (D-01 sửa, R-08)",
      "path": [
@@ -1738,8 +1774,8 @@
      ],
      "chars": 1276,
      "lines": [
-      777,
-      782
+      790,
+      795
      ],
      "ids": [
       "AT-03",
@@ -1750,7 +1786,7 @@
      ]
     },
     {
-     "n": 51,
+     "n": 52,
      "file": "SRS/req-export-04-ghep-container-qua-mediabunny-d-04.md",
      "title": "REQ-EXPORT-04: Ghép container qua Mediabunny (D-04)",
      "path": [
@@ -1760,8 +1796,8 @@
      ],
      "chars": 845,
      "lines": [
-      783,
-      787
+      796,
+      800
      ],
      "ids": [
       "D-04",
@@ -1770,7 +1806,7 @@
      ]
     },
     {
-     "n": 52,
+     "n": 53,
      "file": "SRS/req-export-05-giao-dien-tien-do-va-huy.md",
      "title": "REQ-EXPORT-05: Giao diện tiến độ và hủy",
      "path": [
@@ -1780,15 +1816,15 @@
      ],
      "chars": 466,
      "lines": [
-      788,
-      790
+      801,
+      803
      ],
      "ids": [
       "REQ-EXPORT-05"
      ]
     },
     {
-     "n": 53,
+     "n": 54,
      "file": "SRS/req-export-06-chon-dinh-dang-va-chuoi-du-phong-c.md",
      "title": "REQ-EXPORT-06: Chọn định dạng và chuỗi dự phòng codec (D-05, D-61, R-06)",
      "path": [
@@ -1798,8 +1834,8 @@
      ],
      "chars": 1793,
      "lines": [
-      791,
-      817
+      804,
+      830
      ],
      "ids": [
       "D-05",
@@ -1810,7 +1846,7 @@
      ]
     },
     {
-     "n": 54,
+     "n": 55,
      "file": "SRS/req-export-08-xuat-nen-trong-suot-de-ghep-trong.md",
      "title": "REQ-EXPORT-08: Xuất nền trong suốt để ghép trong phần mềm dựng (D-47), bản 1.0",
      "path": [
@@ -1820,8 +1856,8 @@
      ],
      "chars": 2121,
      "lines": [
-      818,
-      829
+      831,
+      842
      ],
      "ids": [
       "D-47",
@@ -1829,7 +1865,7 @@
      ]
     },
     {
-     "n": 55,
+     "n": 56,
      "file": "SRS/req-export-07-thuc-thi-trong-worker-arc-02-d-21.md",
      "title": "REQ-EXPORT-07: Thực thi trong Worker (ARC-02, D-21)",
      "path": [
@@ -1839,8 +1875,8 @@
      ],
      "chars": 946,
      "lines": [
-      830,
-      839
+      843,
+      852
      ],
      "ids": [
       "ARC-02",
@@ -1851,7 +1887,7 @@
      ]
     },
     {
-     "n": 56,
+     "n": 57,
      "file": "SRS/3-7-da-ngon-ngu-va-cong-dong-dich-br-09-d-30-kpi.md",
      "title": "3.7. Đa ngôn ngữ và cộng đồng dịch (BR-09, D-30, KPI-08)",
      "path": [
@@ -1860,8 +1896,8 @@
      ],
      "chars": 2714,
      "lines": [
-      840,
-      854
+      853,
+      867
      ],
      "ids": [
       "BR-09",
@@ -1871,7 +1907,7 @@
      ]
     },
     {
-     "n": 57,
+     "n": 58,
      "file": "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md",
      "title": "3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)",
      "path": [
@@ -1880,8 +1916,8 @@
      ],
      "chars": 328,
      "lines": [
-      855,
-      858
+      868,
+      871
      ],
      "ids": [
       "AD-08",
@@ -1896,7 +1932,7 @@
      ]
     },
     {
-     "n": 58,
+     "n": 59,
      "file": "SRS/req-graphics-09-bo-may-keyframe-easing-va-graph.md",
      "title": "REQ-GRAPHICS-09: Bộ máy keyframe, easing và Graph Editor",
      "path": [
@@ -1906,15 +1942,15 @@
      ],
      "chars": 844,
      "lines": [
-      859,
-      862
+      872,
+      875
      ],
      "ids": [
       "REQ-GRAPHICS-09"
      ]
     },
     {
-     "n": 59,
+     "n": 60,
      "file": "SRS/req-graphics-10-template-chuyen-canh-not.md",
      "title": "REQ-GRAPHICS-10: Template chuyển cảnh nốt",
      "path": [
@@ -1924,8 +1960,8 @@
      ],
      "chars": 467,
      "lines": [
-      863,
-      865
+      876,
+      878
      ],
      "ids": [
       "AD-11",
@@ -1935,7 +1971,7 @@
      ]
     },
     {
-     "n": 60,
+     "n": 61,
      "file": "SRS/req-graphics-11-hat-khong-trang-thai.md",
      "title": "REQ-GRAPHICS-11: Hạt không trạng thái",
      "path": [
@@ -1945,15 +1981,15 @@
      ],
      "chars": 327,
      "lines": [
-      866,
-      868
+      879,
+      881
      ],
      "ids": [
       "REQ-GRAPHICS-11"
      ]
     },
     {
-     "n": 61,
+     "n": 62,
      "file": "SRS/req-graphics-12-storyboard-hieu-ung-va-chu-dong.md",
      "title": "REQ-GRAPHICS-12: Storyboard, hiệu ứng và chữ động",
      "path": [
@@ -1963,15 +1999,15 @@
      ],
      "chars": 529,
      "lines": [
-      869,
-      871
+      882,
+      884
      ],
      "ids": [
       "REQ-GRAPHICS-12"
      ]
     },
     {
-     "n": 62,
+     "n": 63,
      "file": "SRS/req-graphics-13-bieu-thuc-thuoc-tinh.md",
      "title": "REQ-GRAPHICS-13: Biểu thức thuộc tính",
      "path": [
@@ -1981,15 +2017,15 @@
      ],
      "chars": 339,
      "lines": [
-      872,
-      874
+      885,
+      887
      ],
      "ids": [
       "REQ-GRAPHICS-13"
      ]
     },
     {
-     "n": 63,
+     "n": 64,
      "file": "SRS/req-graphics-14-khoang-hien-thi-theo-thoi-gian-v.md",
      "title": "REQ-GRAPHICS-14: Khoảng hiển thị theo thời gian và theo track",
      "path": [
@@ -1999,8 +2035,8 @@
      ],
      "chars": 759,
      "lines": [
-      875,
-      879
+      888,
+      892
      ],
      "ids": [
       "P-04",
@@ -2013,7 +2049,7 @@
      ]
     },
     {
-     "n": 64,
+     "n": 65,
      "file": "SRS/req-graphics-15-khong-gian-2-5d-xoay-x-y-z-va-ca.md",
      "title": "REQ-GRAPHICS-15: Không gian 2.5D: xoay X/Y/Z và camera phối cảnh (D-47), bản 1.1",
      "path": [
@@ -2023,8 +2059,8 @@
      ],
      "chars": 1874,
      "lines": [
-      880,
-      888
+      893,
+      901
      ],
      "ids": [
       "D-47",
@@ -2034,7 +2070,7 @@
      ]
     },
     {
-     "n": 65,
+     "n": 66,
      "file": "SRS/req-storage-05-tai-nguyen-cua-phien.md",
      "title": "REQ-STORAGE-05: Tài nguyên của phiên",
      "path": [
@@ -2044,8 +2080,8 @@
      ],
      "chars": 322,
      "lines": [
-      889,
-      891
+      902,
+      904
      ],
      "ids": [
       "ERR_ASSET_DECODE",
@@ -2054,7 +2090,7 @@
      ]
     },
     {
-     "n": 66,
+     "n": 67,
      "file": "SRS/req-storage-06-preset-moi-va-chia-se.md",
      "title": "REQ-STORAGE-06: Preset mới và chia sẻ",
      "path": [
@@ -2064,8 +2100,8 @@
      ],
      "chars": 444,
      "lines": [
-      892,
-      894
+      905,
+      907
      ],
      "ids": [
       "D-14",
@@ -2075,7 +2111,7 @@
      ]
     },
     {
-     "n": 67,
+     "n": 68,
      "file": "SRS/4-yeu-cau-phi-chuc-nang-non-functional-requireme.md",
      "title": "4. YÊU CẦU PHI CHỨC NĂNG (NON-FUNCTIONAL REQUIREMENTS)",
      "path": [
@@ -2083,8 +2119,8 @@
      ],
      "chars": 5167,
      "lines": [
-      895,
-      941
+      908,
+      954
      ],
      "ids": [
       "ARC-07",
@@ -2126,7 +2162,7 @@
      ]
     },
     {
-     "n": 68,
+     "n": 69,
      "file": "SRS/5-1-bo-cuc-khong-gian-lam-viec.md",
      "title": "5.1. Bố cục không gian làm việc",
      "path": [
@@ -2135,8 +2171,8 @@
      ],
      "chars": 4893,
      "lines": [
-      944,
-      981
+      957,
+      994
      ],
      "ids": [
       "D-57",
@@ -2144,7 +2180,7 @@
      ]
     },
     {
-     "n": 69,
+     "n": 70,
      "file": "SRS/5-2-che-do-tuong-tac.md",
      "title": "5.2. Chế độ tương tác",
      "path": [
@@ -2153,25 +2189,25 @@
      ],
      "chars": 364,
      "lines": [
-      982,
-      986
+      995,
+      999
      ],
      "ids": [
       "REQ-GRAPHICS-05"
      ]
     },
     {
-     "n": 70,
+     "n": 71,
      "file": "SRS/5-3-yeu-cau-giao-dien.md",
      "title": "5.3. Yêu cầu giao diện",
      "path": [
       "5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG",
       "5.3. Yêu cầu giao diện"
      ],
-     "chars": 18674,
+     "chars": 18661,
      "lines": [
-      987,
-      1060
+      1000,
+      1073
      ],
      "ids": [
       "ARC-05",
@@ -2226,7 +2262,7 @@
      ]
     },
     {
-     "n": 71,
+     "n": 72,
      "file": "SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md",
      "title": "6. MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU",
      "path": [
@@ -2234,8 +2270,8 @@
      ],
      "chars": 1419,
      "lines": [
-      1061,
-      1076
+      1074,
+      1089
      ],
      "ids": [
       "BR-01",
@@ -2287,7 +2323,7 @@
      ]
     },
     {
-     "n": 72,
+     "n": 73,
      "file": "SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md",
      "title": "7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO",
      "path": [
@@ -2295,8 +2331,8 @@
      ],
      "chars": 6665,
      "lines": [
-      1077,
-      1111
+      1090,
+      1124
      ],
      "ids": [
       "ARC-01",
@@ -2354,16 +2390,16 @@
      ]
     },
     {
-     "n": 73,
+     "n": 74,
      "file": "SRS/8-cac-van-de-con-mo-cua-srs.md",
      "title": "8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS",
      "path": [
       "8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS"
      ],
-     "chars": 4032,
+     "chars": 4044,
      "lines": [
-      1112,
-      1138
+      1125,
+      1151
      ],
      "ids": [
       "D-20",
@@ -2372,6 +2408,7 @@
       "D-31",
       "D-44",
       "D-45",
+      "D-62",
       "KPI-03",
       "OI-01",
       "OI-02",
@@ -2408,17 +2445,17 @@
      ]
     },
     {
-     "n": 74,
+     "n": 75,
      "file": "SRS/phu-luc-a-ma-loi.md",
      "title": "Phụ lục A: Mã lỗi",
      "path": [
       "9. PHỤ LỤC",
       "Phụ lục A: Mã lỗi"
      ],
-     "chars": 2854,
+     "chars": 2864,
      "lines": [
-      1141,
-      1166
+      1154,
+      1179
      ],
      "ids": [
       "ERR_ARCHIVE_INVALID",
@@ -2447,7 +2484,7 @@
      ]
     },
     {
-     "n": 75,
+     "n": 76,
      "file": "SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md",
      "title": "Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)",
      "path": [
@@ -2456,8 +2493,8 @@
      ],
      "chars": 1673,
      "lines": [
-      1167,
-      1183
+      1180,
+      1196
      ],
      "ids": [
       "NFR-SEC-04",
@@ -2475,17 +2512,17 @@
      ]
     },
     {
-     "n": 76,
+     "n": 77,
      "file": "SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md",
      "title": "Phụ lục A2: Mã cảnh báo của Parser Library",
      "path": [
       "9. PHỤ LỤC",
       "Phụ lục A2: Mã cảnh báo của Parser Library"
      ],
-     "chars": 1331,
+     "chars": 1357,
      "lines": [
-      1184,
-      1189
+      1197,
+      1202
      ],
      "ids": [
       "REQ-AUDIO-01",
@@ -2496,6 +2533,7 @@
       "WARN_DAWPROJECT_NO_ARRANGEMENT",
       "WARN_DAWPROJECT_NO_METADATA",
       "WARN_DAWPROJECT_NO_NOTE_TRACKS",
+      "WARN_FLP_CLIPS_SKIPPED",
       "WARN_MIDI_HANGING_NOTES",
       "WARN_MIDI_TRUNCATED",
       "WARN_RPP_ENVELOPES_IGNORED",
@@ -2523,21 +2561,22 @@
      ]
     },
     {
-     "n": 77,
+     "n": 78,
      "file": "SRS/phu-luc-b-ghi-chu-ra-soat.md",
      "title": "Phụ lục B: Ghi chú rà soát",
      "path": [
       "9. PHỤ LỤC",
       "Phụ lục B: Ghi chú rà soát"
      ],
-     "chars": 2889,
+     "chars": 2904,
      "lines": [
-      1190,
-      1221
+      1203,
+      1234
      ],
      "ids": [
       "D-20",
       "D-22",
+      "D-62",
       "KPI-01",
       "NFR-ACC-02",
       "NFR-COMP-01",
@@ -2716,7 +2755,7 @@
   },
   "TECHNICAL-DESIGN.md": {
    "title": "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER",
-   "sha1": "95f47009aa",
+   "sha1": "925424465c",
    "chunks": [
     {
      "n": 0,
@@ -2772,7 +2811,7 @@
      "path": [
       "3. Đường ống phân tích (parser) 🟢"
      ],
-     "chars": 1875,
+     "chars": 1897,
      "lines": [
       65,
       91
@@ -3472,7 +3511,7 @@
   },
   "TDD.md": {
    "title": "TÀI LIỆU THIẾT KẾ KIỂM THỬ (TDD = Test Design Document) — ỨNG DỤNG DAW VISUALIZER",
-   "sha1": "6d93c905f0",
+   "sha1": "8e526eb663",
    "chunks": [
     {
      "n": 0,
@@ -3564,7 +3603,7 @@
      "path": [
       "5. Danh sách kiểm thủ công cho AT-18 (Chrome)"
      ],
-     "chars": 4128,
+     "chars": 4169,
      "lines": [
       72,
       86
@@ -4931,7 +4970,7 @@
   },
   "PARSER-SRS.md": {
    "title": "SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer",
-   "sha1": "dd04828ada",
+   "sha1": "59d9967678",
    "chunks": [
     {
      "n": 0,
@@ -4955,7 +4994,7 @@
      "path": [
       "1. Mục đích và phạm vi"
      ],
-     "chars": 402,
+     "chars": 496,
      "lines": [
       6,
       11
@@ -4969,10 +5008,10 @@
      "path": [
       "2. Định dạng hỗ trợ"
      ],
-     "chars": 1183,
+     "chars": 1551,
      "lines": [
       12,
-      23
+      24
      ],
      "ids": [
       "REQ-FMT-01",
@@ -4981,7 +5020,8 @@
       "REQ-FMT-04",
       "REQ-FMT-05",
       "REQ-FMT-06",
-      "REQ-FMT-07"
+      "REQ-FMT-07",
+      "REQ-FMT-08"
      ]
     },
     {
@@ -4994,8 +5034,8 @@
      ],
      "chars": 651,
      "lines": [
-      26,
-      32
+      27,
+      33
      ],
      "ids": [
       "REQ-CORE-01",
@@ -5015,8 +5055,8 @@
      ],
      "chars": 778,
      "lines": [
-      33,
-      39
+      34,
+      40
      ],
      "ids": [
       "ERR_ARCHIVE_INVALID",
@@ -5039,8 +5079,8 @@
      ],
      "chars": 723,
      "lines": [
-      40,
-      46
+      41,
+      47
      ],
      "ids": [
       "REQ-TEMPO-01",
@@ -5063,8 +5103,8 @@
      ],
      "chars": 746,
      "lines": [
-      47,
-      51
+      48,
+      52
      ],
      "ids": [
       "ERR_NO_NOTES",
@@ -5084,8 +5124,8 @@
      ],
      "chars": 6061,
      "lines": [
-      52,
-      76
+      53,
+      77
      ],
      "ids": [
       "ERR_ARCHIVE_INVALID",
@@ -5121,8 +5161,8 @@
      ],
      "chars": 4450,
      "lines": [
-      77,
-      88
+      78,
+      89
      ],
      "ids": [
       "ERR_NO_NOTES",
@@ -5156,8 +5196,8 @@
      ],
      "chars": 741,
      "lines": [
-      89,
-      95
+      90,
+      96
      ],
      "ids": [
       "ERR_ARCHIVE_INVALID",
@@ -5179,8 +5219,8 @@
      ],
      "chars": 419,
      "lines": [
-      96,
-      100
+      97,
+      101
      ],
      "ids": [
       "ERR_UNSUPPORTED_FORMAT",
@@ -5199,18 +5239,22 @@
       "3. Yêu cầu chức năng",
       "3.9 Binary theo schema"
      ],
-     "chars": 658,
+     "chars": 1642,
      "lines": [
-      101,
-      106
+      102,
+      109
      ],
      "ids": [
+      "D-62",
       "ERR_SCHEMA_INVALID",
       "ERR_UNSUPPORTED_FORMAT",
       "REQ-BIN-01",
       "REQ-BIN-02",
       "REQ-BIN-03",
-      "REQ-BIN-04"
+      "REQ-BIN-04",
+      "REQ-BIN-05",
+      "REQ-BIN-06",
+      "REQ-FMT-08"
      ]
     },
     {
@@ -5223,8 +5267,8 @@
      ],
      "chars": 287,
      "lines": [
-      107,
-      109
+      110,
+      112
      ],
      "ids": [
       "KPI-01",
@@ -5240,8 +5284,8 @@
      ],
      "chars": 1033,
      "lines": [
-      110,
-      125
+      113,
+      128
      ],
      "ids": [
       "ERR_ARCHIVE_INVALID",
@@ -5279,8 +5323,8 @@
      ],
      "chars": 310,
      "lines": [
-      126,
-      130
+      129,
+      133
      ],
      "ids": [
       "REQ-NFR-01",
@@ -5297,8 +5341,8 @@
      ],
      "chars": 507,
      "lines": [
-      131,
-      133
+      134,
+      136
      ],
      "ids": [
       "KPI-01",
@@ -5319,8 +5363,8 @@
      ],
      "chars": 379,
      "lines": [
-      134,
-      135
+      137,
+      138
      ],
      "ids": [
       "ERR_NO_SUPPORTED_ENV",
@@ -5332,7 +5376,7 @@
   },
   "PARSER-SDD.md": {
    "title": "SDD — Thiết kế phần mềm: Thư viện parser DAW Visualizer",
-   "sha1": "dbb03a72c8",
+   "sha1": "ba174dece0",
    "chunks": [
     {
      "n": 0,
@@ -5450,12 +5494,14 @@
      "path": [
       "7. Package `binary` (REQ-BIN-*)"
      ],
-     "chars": 874,
+     "chars": 1028,
      "lines": [
       89,
       95
      ],
-     "ids": []
+     "ids": [
+      "D-62"
+     ]
     },
     {
      "n": 8,
@@ -5464,7 +5510,7 @@
      "path": [
       "8. Package `parser` (bao ngoài)"
      ],
-     "chars": 632,
+     "chars": 910,
      "lines": [
       96,
       98
@@ -5546,7 +5592,7 @@
   },
   "PARSER-TDD.md": {
    "title": "TDD — Tài liệu kiểm thử: Thư viện parser DAW Visualizer",
-   "sha1": "42e0660dc8",
+   "sha1": "b369a49402",
    "chunks": [
     {
      "n": 0,
@@ -5590,34 +5636,148 @@
     },
     {
      "n": 3,
-     "file": "PARSER-TDD/3-danh-muc-test-66-test-7-file.md",
-     "title": "3. Danh mục test (66 test, 7 file)",
+     "file": "PARSER-TDD/3-1-als-test-js-15-req-fmt-01-req-als.md",
+     "title": "3.1 `als.test.js` (15) — REQ-FMT-01, REQ-ALS-*",
      "path": [
-      "3. Danh mục test (66 test, 7 file)"
+      "3. Danh mục test (77 test, 8 file)",
+      "3.1 `als.test.js` (15) — REQ-FMT-01, REQ-ALS-*"
      ],
-     "chars": 5721,
+     "chars": 1855,
      "lines": [
-      24,
-      62
+      26,
+      43
      ],
      "ids": [
       "ERR_ARCHIVE_TOO_LARGE",
       "ERR_AST_INVALID",
       "ERR_NO_NOTES",
       "ERR_UNSUPPORTED_FORMAT",
-      "REQ-ALP-01",
-      "REQ-CMP-01",
-      "REQ-CORE-02",
-      "REQ-CORE-05",
       "REQ-FMT-01",
-      "WARN_RPP_ENVELOPES_IGNORED",
-      "WARN_RPP_ENVELOPE_SHAPE_APPROX",
-      "WARN_RPP_SRC_UNIT",
       "WARN_TEMPO_RAMP"
      ]
     },
     {
      "n": 4,
+     "file": "PARSER-TDD/3-2-midi-alp-test-js-11-req-midi-req-alp-01-req.md",
+     "title": "3.2 `midi-alp.test.js` (11) — REQ-MIDI-*, REQ-ALP-01, REQ-CMP-01",
+     "path": [
+      "3. Danh mục test (77 test, 8 file)",
+      "3.2 `midi-alp.test.js` (11) — REQ-MIDI-*, REQ-ALP-01, REQ-CMP-01"
+     ],
+     "chars": 586,
+     "lines": [
+      44,
+      46
+     ],
+     "ids": [
+      "REQ-ALP-01",
+      "REQ-CMP-01"
+     ]
+    },
+    {
+     "n": 5,
+     "file": "PARSER-TDD/3-3-rpp-test-js-17-req-rpp.md",
+     "title": "3.3 `rpp.test.js` (17) — REQ-RPP-*",
+     "path": [
+      "3. Danh mục test (77 test, 8 file)",
+      "3.3 `rpp.test.js` (17) — REQ-RPP-*"
+     ],
+     "chars": 1699,
+     "lines": [
+      47,
+      50
+     ],
+     "ids": [
+      "ERR_NO_NOTES",
+      "WARN_RPP_ENVELOPES_IGNORED",
+      "WARN_RPP_ENVELOPE_SHAPE_APPROX",
+      "WARN_RPP_SRC_UNIT"
+     ]
+    },
+    {
+     "n": 6,
+     "file": "PARSER-TDD/3-4-dawproject-test-js-7-req-dawp.md",
+     "title": "3.4 `dawproject.test.js` (7) — REQ-DAWP-*",
+     "path": [
+      "3. Danh mục test (77 test, 8 file)",
+      "3.4 `dawproject.test.js` (7) — REQ-DAWP-*"
+     ],
+     "chars": 262,
+     "lines": [
+      51,
+      53
+     ],
+     "ids": []
+    },
+    {
+     "n": 7,
+     "file": "PARSER-TDD/3-5-binary-test-js-9-req-bin.md",
+     "title": "3.5 `binary.test.js` (9) — REQ-BIN-*",
+     "path": [
+      "3. Danh mục test (77 test, 8 file)",
+      "3.5 `binary.test.js` (9) — REQ-BIN-*"
+     ],
+     "chars": 371,
+     "lines": [
+      54,
+      56
+     ],
+     "ids": []
+    },
+    {
+     "n": 8,
+     "file": "PARSER-TDD/3-5b-flp-test-js-8-1-tu-bo-qua-khi-thieu-tep-tha.md",
+     "title": "3.5b `flp.test.js` (8, 1 tự bỏ qua khi thiếu tệp thật) — REQ-FMT-08, REQ-BIN-05/06",
+     "path": [
+      "3. Danh mục test (77 test, 8 file)",
+      "3.5b `flp.test.js` (8, 1 tự bỏ qua khi thiếu tệp thật) — REQ-FMT-08, REQ-BIN-05/06"
+     ],
+     "chars": 731,
+     "lines": [
+      57,
+      59
+     ],
+     "ids": [
+      "REQ-BIN-05",
+      "REQ-FMT-08",
+      "WARN_FLP_CLIPS_SKIPPED"
+     ]
+    },
+    {
+     "n": 9,
+     "file": "PARSER-TDD/3-6-detect-bundle-test-js-4-req-core-02-req-core.md",
+     "title": "3.6 `detect-bundle.test.js` (4) — REQ-CORE-02, REQ-CORE-05",
+     "path": [
+      "3. Danh mục test (77 test, 8 file)",
+      "3.6 `detect-bundle.test.js` (4) — REQ-CORE-02, REQ-CORE-05"
+     ],
+     "chars": 299,
+     "lines": [
+      60,
+      62
+     ],
+     "ids": [
+      "REQ-CORE-02",
+      "REQ-CORE-05"
+     ]
+    },
+    {
+     "n": 10,
+     "file": "PARSER-TDD/3-7-i18n-test-js-5-req-i18n.md",
+     "title": "3.7 `i18n.test.js` (5) — REQ-I18N-*",
+     "path": [
+      "3. Danh mục test (77 test, 8 file)",
+      "3.7 `i18n.test.js` (5) — REQ-I18N-*"
+     ],
+     "chars": 622,
+     "lines": [
+      63,
+      65
+     ],
+     "ids": []
+    },
+    {
+     "n": 11,
      "file": "PARSER-TDD/4-ma-tran-truy-vet-rut-gon.md",
      "title": "4. Ma trận truy vết (rút gọn)",
      "path": [
@@ -5625,8 +5785,8 @@
      ],
      "chars": 521,
      "lines": [
-      63,
-      73
+      66,
+      76
      ],
      "ids": [
       "REQ-ALS-02",
@@ -5639,7 +5799,7 @@
      ]
     },
     {
-     "n": 5,
+     "n": 12,
      "file": "PARSER-TDD/5-khoang-trong-kiem-thu-can-du-lieu-that-xem-srs.md",
      "title": "5. Khoảng trống kiểm thử (cần dữ liệu thật, xem SRS §6)",
      "path": [
@@ -5647,15 +5807,15 @@
      ],
      "chars": 964,
      "lines": [
-      74,
-      81
+      77,
+      84
      ],
      "ids": [
       "KPI-01"
      ]
     },
     {
-     "n": 6,
+     "n": 13,
      "file": "PARSER-TDD/6-kiem-thu-thu-cong-trinh-duyet.md",
      "title": "6. Kiểm thử thủ công trình duyệt",
      "path": [
@@ -5663,15 +5823,15 @@
      ],
      "chars": 436,
      "lines": [
-      82,
-      89
+      85,
+      92
      ],
      "ids": [
       "ERR_NO_NOTES"
      ]
     },
     {
-     "n": 7,
+     "n": 14,
      "file": "PARSER-TDD/7-quy-uoc-viet-test-moi.md",
      "title": "7. Quy ước viết test mới",
      "path": [
@@ -5679,13 +5839,13 @@
      ],
      "chars": 383,
      "lines": [
-      90,
-      96
+      93,
+      99
      ],
      "ids": []
     },
     {
-     "n": 8,
+     "n": 15,
      "file": "PARSER-TDD/8-tieu-chi-chap-nhan.md",
      "title": "8. Tiêu chí chấp nhận",
      "path": [
@@ -5693,8 +5853,8 @@
      ],
      "chars": 189,
      "lines": [
-      97,
-      98
+      100,
+      101
      ],
      "ids": []
     }
@@ -6233,6 +6393,174 @@
      ]
     }
    ]
+  },
+  "SPIKE-3-FLP.md": {
+   "title": "Spike 3: đọc `.flp` (FL Studio) bằng JSON schema",
+   "sha1": "a703402bcf",
+   "chunks": [
+    {
+     "n": 0,
+     "file": "SPIKE-3-FLP/spike-3-doc-flp-fl-studio-bang-json-schema-mo-da.md",
+     "title": "Spike 3: đọc `.flp` (FL Studio) bằng JSON schema (mở đầu)",
+     "path": [],
+     "chars": 325,
+     "lines": [
+      1,
+      4
+     ],
+     "ids": [
+      "D-19",
+      "D-28",
+      "D-62"
+     ]
+    },
+    {
+     "n": 1,
+     "file": "SPIKE-3-FLP/1-ket-luan.md",
+     "title": "1. Kết luận",
+     "path": [
+      "1. Kết luận"
+     ],
+     "chars": 777,
+     "lines": [
+      5,
+      11
+     ],
+     "ids": [
+      "ERR_AST_TOO_LARGE"
+     ]
+    },
+    {
+     "n": 2,
+     "file": "SPIKE-3-FLP/2-vi-sao-tlv-van-vua-json-schema.md",
+     "title": "2. Vì sao TLV vẫn vừa JSON schema",
+     "path": [
+      "2. Vì sao TLV vẫn vừa JSON schema"
+     ],
+     "chars": 907,
+     "lines": [
+      12,
+      19
+     ],
+     "ids": []
+    },
+    {
+     "n": 3,
+     "file": "SPIKE-3-FLP/3-dieu-json-chua-lam-duoc-va-bon-bo-sung-cho-eng.md",
+     "title": "3. Điều JSON chưa làm được và bốn bổ sung cho engine",
+     "path": [
+      "3. Điều JSON chưa làm được và bốn bổ sung cho engine"
+     ],
+     "chars": 1304,
+     "lines": [
+      20,
+      32
+     ],
+     "ids": [
+      "D-28",
+      "WARN_FLP_CLIPS_SKIPPED"
+     ]
+    },
+    {
+     "n": 4,
+     "file": "SPIKE-3-FLP/4-mo-hinh-anh-xa-quyet-dinh.md",
+     "title": "4. Mô hình ánh xạ (quyết định)",
+     "path": [
+      "4. Mô hình ánh xạ (quyết định)"
+     ],
+     "chars": 1131,
+     "lines": [
+      33,
+      40
+     ],
+     "ids": [
+      "D-44",
+      "ERR_AST_INVALID"
+     ]
+    },
+    {
+     "n": 5,
+     "file": "SPIKE-3-FLP/5-gioi-han-da-biet-can-tep-mau-hoac-quyet-dinh-d.md",
+     "title": "5. Giới hạn đã biết (cần tệp mẫu hoặc quyết định để mở)",
+     "path": [
+      "5. Giới hạn đã biết (cần tệp mẫu hoặc quyết định để mở)"
+     ],
+     "chars": 3739,
+     "lines": [
+      41,
+      72
+     ],
+     "ids": [
+      "D-24",
+      "ERR_NO_NOTES",
+      "WARN_FLP_CLIPS_SKIPPED",
+      "WARN_ZERO_LENGTH_NOTES"
+     ]
+    },
+    {
+     "n": 6,
+     "file": "SPIKE-3-FLP/6-automation-volume-pan-cua-track.md",
+     "title": "6. Automation (volume, pan của track)",
+     "path": [
+      "6. Automation (volume, pan của track)"
+     ],
+     "chars": 1804,
+     "lines": [
+      73,
+      82
+     ],
+     "ids": [
+      "REQ-AST-02",
+      "REQ-GRAPHICS-06"
+     ]
+    },
+    {
+     "n": 7,
+     "file": "SPIKE-3-FLP/6b-tep-mau-can-de-go-verify-danh-sach-cho-nguoi.md",
+     "title": "6b. Tệp mẫu cần để gỡ [VERIFY] (danh sách cho người thử)",
+     "path": [
+      "6b. Tệp mẫu cần để gỡ [VERIFY] (danh sách cho người thử)"
+     ],
+     "chars": 1612,
+     "lines": [
+      83,
+      96
+     ],
+     "ids": [
+      "ERR_NO_NOTES"
+     ]
+    },
+    {
+     "n": 8,
+     "file": "SPIKE-3-FLP/7-phuong-an-da-can-nhac.md",
+     "title": "7. Phương án đã cân nhắc",
+     "path": [
+      "7. Phương án đã cân nhắc"
+     ],
+     "chars": 603,
+     "lines": [
+      97,
+      104
+     ],
+     "ids": [
+      "D-28"
+     ]
+    },
+    {
+     "n": 9,
+     "file": "SPIKE-3-FLP/8-nguon-va-giay-phep.md",
+     "title": "8. Nguồn và giấy phép",
+     "path": [
+      "8. Nguồn và giấy phép"
+     ],
+     "chars": 634,
+     "lines": [
+      105,
+      107
+     ],
+     "ids": []
+    }
+   ]
   }
  },
  "ids": {
@@ -6267,6 +6595,12 @@
    "SRS/req-widget-01-piano-roll.md",
    "UI-DIRECTION/7-nguyen-tac-san-pham-trinh-dung-that-mac-dinh-d.md"
   ],
+  "D-19": [
+   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
+   "SRS/5-3-yeu-cau-giao-dien.md",
+   "SPIKE-3-FLP/spike-3-doc-flp-fl-studio-bang-json-schema-mo-da.md"
+  ],
   "D-20": [
    "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
@@ -6299,7 +6633,8 @@
    "SRS/1-gioi-thieu-muc-tieu-he-thong.md",
    "SRS/req-parser-07-tempo-khong-doan-ngam-va-ghi-de-d.md",
    "SRS/3-2-cau-truc-du-lieu-chuan-hoa-unified-ast-d-08.md",
-   "SPIKE-2-PARSER/5-trang-thai-hien-tai-tai-lieu-v1-1.md"
+   "SPIKE-2-PARSER/5-trang-thai-hien-tai-tai-lieu-v1-1.md",
+   "SPIKE-3-FLP/5-gioi-han-da-biet-can-tep-mau-hoac-quyet-dinh-d.md"
   ],
   "D-25": [
    "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
@@ -6331,7 +6666,10 @@
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/1-gioi-thieu-muc-tieu-he-thong.md",
    "SRS/2-1-kien-truc-phan-tang-he-thong.md",
-   "SRS/req-parser-05-parser-json-khai-bao-d-18-d-28-r-0.md"
+   "SRS/req-parser-05-parser-json-khai-bao-d-18-d-28-r-0.md",
+   "SPIKE-3-FLP/spike-3-doc-flp-fl-studio-bang-json-schema-mo-da.md",
+   "SPIKE-3-FLP/3-dieu-json-chua-lam-duoc-va-bon-bo-sung-cho-eng.md",
+   "SPIKE-3-FLP/7-phuong-an-da-can-nhac.md"
   ],
   "D-29": [
    "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
@@ -6507,6 +6845,21 @@
    "SRS/req-export-06-chon-dinh-dang-va-chuoi-du-phong-c.md",
    "SRS/req-export-07-thuc-thi-trong-worker-arc-02-d-21.md",
    "TECHNICAL-DESIGN/7-4-export-worker-va-giao-dien-t-09-2026-11-14.md"
+  ],
+  "D-62": [
+   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/3-chan-dung-nguoi-dung-muc-tieu-user-personas.md",
+   "BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md",
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
+   "BRD/8-cac-van-de-con-mo-open-issues.md",
+   "SRS/1-gioi-thieu-muc-tieu-he-thong.md",
+   "SRS/req-parser-05-parser-json-khai-bao-d-18-d-28-r-0.md",
+   "SRS/req-parser-08-fl-studio-flp-d-62.md",
+   "SRS/8-cac-van-de-con-mo-cua-srs.md",
+   "SRS/phu-luc-b-ghi-chu-ra-soat.md",
+   "PARSER-SRS/3-9-binary-theo-schema.md",
+   "PARSER-SDD/7-package-binary-req-bin.md",
+   "SPIKE-3-FLP/spike-3-doc-flp-fl-studio-bang-json-schema-mo-da.md"
   ],
   "OI-09": [
    "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
@@ -6759,12 +7112,6 @@
    "TECHNICAL-DESIGN/7-1-trinh-tu.md",
    "TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md"
   ],
-  "D-19": [
-   "BRD/3-chan-dung-nguoi-dung-muc-tieu-user-personas.md",
-   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
-   "SRS/1-gioi-thieu-muc-tieu-he-thong.md",
-   "SRS/5-3-yeu-cau-giao-dien.md"
-  ],
   "D-03": [
    "BRD/4-1-trong-pham-vi-phien-ban-1-0-in-scope.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
@@ -6831,7 +7178,8 @@
    "CUSTOMIZATION/11-van-de-mo.md",
    "ANIMATION-CATALOG/8-hinh-dang-shape-va-bien-dang-hinh-hoc.md",
    "EXPRESSIONS/9-van-de-mo.md",
-   "SPIKE-1-EXPORT/5-doi-chieu-voi-tai-lieu-v1-1.md"
+   "SPIKE-1-EXPORT/5-doi-chieu-voi-tai-lieu-v1-1.md",
+   "SPIKE-3-FLP/4-mo-hinh-anh-xa-quyet-dinh.md"
   ],
   "D-47": [
    "BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md",
@@ -6879,7 +7227,8 @@
    "TECHNICAL-DESIGN/2-mo-hinh-du-lieu-va-thoi-gian.md",
    "CUSTOMIZATION/3-mo-hinh-du-lieu-storyboard-ad-08.md",
    "PARSER-SRS/3-4-ast-req-ast-01.md",
-   "PARSER-TDD/4-ma-tran-truy-vet-rut-gon.md"
+   "PARSER-TDD/4-ma-tran-truy-vet-rut-gon.md",
+   "SPIKE-3-FLP/6-automation-volume-pan-cua-track.md"
   ],
   "REQ-AUDIO-01": [
    "BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md",
@@ -7235,6 +7584,11 @@
    "SRS/req-parser-07-tempo-khong-doan-ngam-va-ghi-de-d.md",
    "SRS/8-cac-van-de-con-mo-cua-srs.md"
   ],
+  "OI-19": [
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
+   "BRD/8-cac-van-de-con-mo-open-issues.md",
+   "SRS/req-parser-08-fl-studio-flp-d-62.md"
+  ],
   "REQ-GRAPHICS-05": [
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/lich-su-phien-ban.md",
@@ -7327,6 +7681,14 @@
    "SRS/8-cac-van-de-con-mo-cua-srs.md",
    "SDD/5-quyet-dinh-thiet-ke-cua-ung-dung.md",
    "TECHNICAL-DESIGN/2-mo-hinh-du-lieu-va-thoi-gian.md"
+  ],
+  "WARN_FLP_CLIPS_SKIPPED": [
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
+   "SRS/req-parser-08-fl-studio-flp-d-62.md",
+   "SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md",
+   "PARSER-TDD/3-5b-flp-test-js-8-1-tu-bo-qua-khi-thieu-tep-tha.md",
+   "SPIKE-3-FLP/3-dieu-json-chua-lam-duoc-va-bon-bo-sung-cho-eng.md",
+   "SPIKE-3-FLP/5-gioi-han-da-biet-can-tep-mau-hoac-quyet-dinh-d.md"
   ],
   "OI-02": [
    "BRD/8-cac-van-de-con-mo-open-issues.md",
@@ -7504,7 +7866,8 @@
    "TDD/2-danh-muc-test-moi.md",
    "TDD/3-ma-tran-truy-vet.md",
    "CUSTOMIZATION/3-mo-hinh-du-lieu-storyboard-ad-08.md",
-   "PARSER-SRS/3-6-reaper-rpp-verify.md"
+   "PARSER-SRS/3-6-reaper-rpp-verify.md",
+   "SPIKE-3-FLP/6-automation-volume-pan-cua-track.md"
   ],
   "REQ-GRAPHICS-09": [
    "SRS/lich-su-phien-ban.md",
@@ -7739,6 +8102,12 @@
    "SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md",
    "UI-DIRECTION/1-khung-preview-huong-ban-in-da-chot-huong-chua.md"
   ],
+  "REQ-PARSER-08": [
+   "SRS/1-gioi-thieu-muc-tieu-he-thong.md",
+   "SRS/req-parser-05-parser-json-khai-bao-d-18-d-28-r-0.md",
+   "SRS/req-parser-08-fl-studio-flp-d-62.md",
+   "SRS/req-ast-02-automation-tong-quat-d-50-1-0-cho-rea.md"
+  ],
   "REQ-UI-01": [
    "SRS/1-gioi-thieu-muc-tieu-he-thong.md",
    "SRS/2-2-luong-du-lieu-chinh.md",
@@ -7804,7 +8173,7 @@
    "SRS/req-parser-00-thuc-thi-an-toan-va-gioi-han-dau-v.md",
    "SRS/phu-luc-a-ma-loi.md",
    "PARSER-SRS/4-ma-loi.md",
-   "PARSER-TDD/3-danh-muc-test-66-test-7-file.md"
+   "PARSER-TDD/3-1-als-test-js-15-req-fmt-01-req-als.md"
   ],
   "ERR_FILE_TOO_LARGE": [
    "SRS/req-parser-00-thuc-thi-an-toan-va-gioi-han-dau-v.md",
@@ -7828,6 +8197,7 @@
   "ERR_NO_NOTES": [
    "SRS/req-parser-01-ableton-live-als.md",
    "SRS/req-parser-02-cockos-reaper-rpp.md",
+   "SRS/req-parser-08-fl-studio-flp-d-62.md",
    "SRS/3-2-cau-truc-du-lieu-chuan-hoa-unified-ast-d-08.md",
    "SRS/phu-luc-a-ma-loi.md",
    "PARSER-SRS/3-4-ast-req-ast-01.md",
@@ -7836,8 +8206,11 @@
    "PARSER-SRS/4-ma-loi.md",
    "PARSER-SDD/2-package-core.md",
    "PARSER-SDD/5-package-rpp-req-rpp.md",
-   "PARSER-TDD/3-danh-muc-test-66-test-7-file.md",
-   "PARSER-TDD/6-kiem-thu-thu-cong-trinh-duyet.md"
+   "PARSER-TDD/3-1-als-test-js-15-req-fmt-01-req-als.md",
+   "PARSER-TDD/3-3-rpp-test-js-17-req-rpp.md",
+   "PARSER-TDD/6-kiem-thu-thu-cong-trinh-duyet.md",
+   "SPIKE-3-FLP/5-gioi-han-da-biet-can-tep-mau-hoac-quyet-dinh-d.md",
+   "SPIKE-3-FLP/6b-tep-mau-can-de-go-verify-danh-sach-cho-nguoi.md"
   ],
   "WARN_SESSION_CLIPS_IGNORED": [
    "SRS/req-parser-01-ableton-live-als.md",
@@ -7852,7 +8225,7 @@
    "TECHNICAL-DESIGN/2-mo-hinh-du-lieu-va-thoi-gian.md",
    "PARSER-SRS/3-3-tempo-va-thoi-gian.md",
    "PARSER-SRS/4-ma-loi.md",
-   "PARSER-TDD/3-danh-muc-test-66-test-7-file.md"
+   "PARSER-TDD/3-1-als-test-js-15-req-fmt-01-req-als.md"
   ],
   "REQ-PARSER-02": [
    "SRS/req-parser-02-cockos-reaper-rpp.md"
@@ -7874,12 +8247,12 @@
    "SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md",
    "TECHNICAL-DESIGN/3-duong-ong-phan-tich-parser.md",
    "PARSER-SRS/3-6-reaper-rpp-verify.md",
-   "PARSER-TDD/3-danh-muc-test-66-test-7-file.md"
+   "PARSER-TDD/3-3-rpp-test-js-17-req-rpp.md"
   ],
   "WARN_RPP_ENVELOPE_SHAPE_APPROX": [
    "SRS/req-parser-02-cockos-reaper-rpp.md",
    "PARSER-SRS/3-6-reaper-rpp-verify.md",
-   "PARSER-TDD/3-danh-muc-test-66-test-7-file.md"
+   "PARSER-TDD/3-3-rpp-test-js-17-req-rpp.md"
   ],
   "WARN_RPP_EXTERNAL_MIDI": [
    "SRS/req-parser-02-cockos-reaper-rpp.md",
@@ -7902,7 +8275,7 @@
    "SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md",
    "TECHNICAL-DESIGN/3-duong-ong-phan-tich-parser.md",
    "PARSER-SRS/3-6-reaper-rpp-verify.md",
-   "PARSER-TDD/3-danh-muc-test-66-test-7-file.md"
+   "PARSER-TDD/3-3-rpp-test-js-17-req-rpp.md"
   ],
   "WARN_TEMPO_SHAPE": [
    "SRS/req-parser-02-cockos-reaper-rpp.md",
@@ -7929,7 +8302,7 @@
    "PARSER-SRS/3-9-binary-theo-schema.md",
    "PARSER-SRS/4-ma-loi.md",
    "PARSER-SDD/4-package-als-req-als-req-alp.md",
-   "PARSER-TDD/3-danh-muc-test-66-test-7-file.md"
+   "PARSER-TDD/3-1-als-test-js-15-req-fmt-01-req-als.md"
   ],
   "WARN_MIDI_TRUNCATED": [
    "SRS/req-parser-04-standard-midi-file-mid-format-0-1.md",
@@ -7949,26 +8322,29 @@
    "PARSER-SRS/4-ma-loi.md",
    "PARSER-SRS/7-lech-so-voi-srs-goc-v0-2.md"
   ],
-  "WARN_ALP_MULTIPLE_ALS": [
-   "SRS/req-parser-06-ableton-live-pack-alp.md",
-   "SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md",
-   "PARSER-SRS/3-5-ableton-als-alp.md",
-   "PARSER-SRS/4-ma-loi.md"
-  ],
   "ERR_AST_INVALID": [
+   "SRS/req-parser-08-fl-studio-flp-d-62.md",
    "SRS/req-parser-07-tempo-khong-doan-ngam-va-ghi-de-d.md",
    "SRS/3-2-cau-truc-du-lieu-chuan-hoa-unified-ast-d-08.md",
    "SRS/phu-luc-a-ma-loi.md",
    "PARSER-SRS/3-5-ableton-als-alp.md",
    "PARSER-SRS/4-ma-loi.md",
-   "PARSER-TDD/3-danh-muc-test-66-test-7-file.md"
+   "PARSER-TDD/3-1-als-test-js-15-req-fmt-01-req-als.md",
+   "SPIKE-3-FLP/4-mo-hinh-anh-xa-quyet-dinh.md"
   ],
   "WARN_TEMPO_FALLBACK": [
+   "SRS/req-parser-08-fl-studio-flp-d-62.md",
    "SRS/req-parser-07-tempo-khong-doan-ngam-va-ghi-de-d.md",
    "SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md",
    "PARSER-SRS/3-3-tempo-va-thoi-gian.md",
    "PARSER-SRS/4-ma-loi.md",
    "SPIKE-2-PARSER/5-trang-thai-hien-tai-tai-lieu-v1-1.md"
+  ],
+  "WARN_ALP_MULTIPLE_ALS": [
+   "SRS/req-parser-06-ableton-live-pack-alp.md",
+   "SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md",
+   "PARSER-SRS/3-5-ableton-als-alp.md",
+   "PARSER-SRS/4-ma-loi.md"
   ],
   "WARN_TEMPO_OVERRIDDEN": [
    "SRS/req-parser-07-tempo-khong-doan-ngam-va-ghi-de-d.md",
@@ -7979,13 +8355,15 @@
    "SRS/3-2-cau-truc-du-lieu-chuan-hoa-unified-ast-d-08.md",
    "SRS/phu-luc-a-ma-loi.md",
    "PARSER-SRS/3-2-gioi-han-va-an-toan-req-parser-00.md",
-   "PARSER-SRS/4-ma-loi.md"
+   "PARSER-SRS/4-ma-loi.md",
+   "SPIKE-3-FLP/1-ket-luan.md"
   ],
   "WARN_ZERO_LENGTH_NOTES": [
    "SRS/3-2-cau-truc-du-lieu-chuan-hoa-unified-ast-d-08.md",
    "SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md",
    "PARSER-SRS/3-4-ast-req-ast-01.md",
-   "PARSER-SRS/4-ma-loi.md"
+   "PARSER-SRS/4-ma-loi.md",
+   "SPIKE-3-FLP/5-gioi-han-da-biet-can-tep-mau-hoac-quyet-dinh-d.md"
   ],
   "REQ-GRAPHICS-11": [
    "SRS/req-graphics-16-thanh-phat-playhead-tuy-chinh.md",
@@ -8426,7 +8804,7 @@
   ],
   "REQ-FMT-01": [
    "PARSER-SRS/2-dinh-dang-ho-tro.md",
-   "PARSER-TDD/3-danh-muc-test-66-test-7-file.md"
+   "PARSER-TDD/3-1-als-test-js-15-req-fmt-01-req-als.md"
   ],
   "REQ-FMT-02": [
    "PARSER-SRS/2-dinh-dang-ho-tro.md"
@@ -8446,12 +8824,17 @@
   "REQ-FMT-07": [
    "PARSER-SRS/2-dinh-dang-ho-tro.md"
   ],
+  "REQ-FMT-08": [
+   "PARSER-SRS/2-dinh-dang-ho-tro.md",
+   "PARSER-SRS/3-9-binary-theo-schema.md",
+   "PARSER-TDD/3-5b-flp-test-js-8-1-tu-bo-qua-khi-thieu-tep-tha.md"
+  ],
   "REQ-CORE-01": [
    "PARSER-SRS/3-1-chung-core.md"
   ],
   "REQ-CORE-02": [
    "PARSER-SRS/3-1-chung-core.md",
-   "PARSER-TDD/3-danh-muc-test-66-test-7-file.md"
+   "PARSER-TDD/3-6-detect-bundle-test-js-4-req-core-02-req-core.md"
   ],
   "REQ-CORE-03": [
    "PARSER-SRS/3-1-chung-core.md"
@@ -8461,7 +8844,7 @@
   ],
   "REQ-CORE-05": [
    "PARSER-SRS/3-1-chung-core.md",
-   "PARSER-TDD/3-danh-muc-test-66-test-7-file.md"
+   "PARSER-TDD/3-6-detect-bundle-test-js-4-req-core-02-req-core.md"
   ],
   "REQ-LIM-01": [
    "PARSER-SRS/3-2-gioi-han-va-an-toan-req-parser-00.md"
@@ -8507,7 +8890,7 @@
   ],
   "REQ-ALP-01": [
    "PARSER-SRS/3-5-ableton-als-alp.md",
-   "PARSER-TDD/3-danh-muc-test-66-test-7-file.md"
+   "PARSER-TDD/3-2-midi-alp-test-js-11-req-midi-req-alp-01-req.md"
   ],
   "REQ-ALP-02": [
    "PARSER-SRS/3-5-ableton-als-alp.md"
@@ -8611,9 +8994,16 @@
   "REQ-BIN-04": [
    "PARSER-SRS/3-9-binary-theo-schema.md"
   ],
+  "REQ-BIN-05": [
+   "PARSER-SRS/3-9-binary-theo-schema.md",
+   "PARSER-TDD/3-5b-flp-test-js-8-1-tu-bo-qua-khi-thieu-tep-tha.md"
+  ],
+  "REQ-BIN-06": [
+   "PARSER-SRS/3-9-binary-theo-schema.md"
+  ],
   "REQ-CMP-01": [
    "PARSER-SRS/3-10-so-sanh-kiem-chung-kpi-01.md",
-   "PARSER-TDD/3-danh-muc-test-66-test-7-file.md",
+   "PARSER-TDD/3-2-midi-alp-test-js-11-req-midi-req-alp-01-req.md",
    "PARSER-TDD/4-ma-tran-truy-vet-rut-gon.md"
   ],
   "WARN_DAWPROJECT_": [

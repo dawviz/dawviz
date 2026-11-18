@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-CAP-01: Phát hiện khả năng của trình duyệt (R-06, D-05)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-CAP-01: Phát hiện khả năng của trình duyệt (R-06, D-05)"
 chunk: req-cap-01-phat-hien-kha-nang-cua-trinh-duyet-r.md
-source_lines: 742-744
-source_sha1: b0fe5ff302
+source_lines: 755-757
+source_sha1: 4a4e62e7ba
 ids: [D-05, REQ-CAP-01, REQ-EXPORT-06]
 ---
 #### REQ-CAP-01: Phát hiện khả năng của trình duyệt (R-06, D-05)

@@ -4,9 +4,9 @@ doc_title: "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT
 section: "3. CHÂN DUNG NGƯỜI DÙNG MỤC TIÊU (USER PERSONAS)"
 path: "3. CHÂN DUNG NGƯỜI DÙNG MỤC TIÊU (USER PERSONAS)"
 chunk: 3-chan-dung-nguoi-dung-muc-tieu-user-personas.md
-source_lines: 85-104
-source_sha1: 8f63fc0d0c
-ids: [D-19]
+source_lines: 86-105
+source_sha1: 90f173dba6
+ids: [D-62]
 ---
 ## 3. CHÂN DUNG NGƯỜI DÙNG MỤC TIÊU (USER PERSONAS)
 
@@ -14,7 +14,7 @@ ids: [D-19]
 * **Độ tuổi:** 20 - 28. **Công cụ:** FL Studio, Ableton Live.
 * **Nhu cầu:** làm video dọc 9:16 thật nhanh để đăng TikTok/Shorts khoe beat mới; không muốn mở Premiere Pro hay After Effects.
 * **Kỳ vọng:** kéo project vào web → dùng preset dọc mặc định → (tùy chọn) chọn đoạn highlight → Export MP4 trong khoảng 1 phút.
-* **Lưu ý về FL Studio:** v1.0 *chưa hỗ trợ* đọc `.flp` trực tiếp. Người dùng FL Studio xuất file MIDI từ FL rồi nạp file `.mid` (D-19). Hướng dẫn thao tác này phải có trong màn hình nhập file.
+* **Lưu ý về FL Studio:** v1.0 đọc thẳng `.flp` của FL Studio 12 trở lên (D-62): chỉ nốt của Pattern đã xếp lên Playlist; clip âm thanh, automation, plugin không đọc. FL Studio cũ hơn 12 hoặc cần hiện cả Pattern chưa xếp lên Playlist thì xuất MIDI rồi nạp `.mid`. Màn hình nhập file phải nói rõ điều này.
 
 ### Persona 2: Elena Rostova - Giảng viên Piano & Keyboardist (Mục tiêu: Phân tích nhạc lý)
 * **Độ tuổi:** 25 - 40. **Công cụ:** Reaper, MIDI Keyboard.

@@ -2,7 +2,9 @@
 
 Parser nhị phân (`@dawviz/parser-binary`) không chứa mã riêng cho từng DAW. Một file JSON mô tả (1) cách đọc byte và (2) cách ánh xạ sang AST. Dùng cho `.bwproject` hoặc bất kỳ định dạng nhị phân nào khi đã biết cấu trúc. Ví dụ chạy được: `demo-dbin.schema.json`.
 
-Dùng: `parseProject('x.dbin', buf, { schemas: [schemaJson] })` — schema được chọn theo `extensions` + `magic`.
+Dùng: `parseProject('x.dbin', buf, { schemas: [schemaJson] })` — schema được chọn theo `extensions` + `magic`. Schema do người dùng nạp được thử **trước** schema dựng sẵn.
+
+**Schema dựng sẵn:** `flp.schema.json` (FL Studio ≥ 12, D-62) là ví dụ đầy đủ cho định dạng dòng sự kiện TLV có trạng thái ngầm; sau khi sửa phải chạy `node scripts/gen-builtin-schemas.mjs` để cập nhật `packages/binary/src/builtin-schemas.js` (test báo nếu quên). Phân tích thiết kế: [docs/spikes/SPIKE-3-FLP.md](../docs/spikes/SPIKE-3-FLP.md).
 
 ## Khung
 
@@ -30,7 +32,7 @@ Dùng: `parseProject('x.dbin', buf, { schemas: [schemaJson] })` — schema đư�
 | `switch` | `on` (biểu thức), `cases` {giá trị: kiểu}, `default` |
 | `{ "assert": "expr", "message": "..." }` | dừng với lỗi nếu sai (kiểm version, v.v.) |
 
-Trong biểu thức dùng được: biến đã đọc (từ trong ra ngoài), `parent`, `root`, `$index`, `$pos`, `$remaining`, `.` và `[]`, toán tử số học/bit/so sánh/logic/`?:`, hàm `min max floor ceil round abs len beatsToTicks clamp`. **Không** có eval/Function; tên `__proto__ constructor prototype` bị cấm; có giới hạn số phép tính, số nút, độ sâu.
+Trong biểu thức dùng được: biến đã đọc (từ trong ra ngoài), `parent`, `root`, `$index`, `$pos`, `$remaining`, `$last` (phần tử liền trước của cùng mảng, `undefined` ở phần tử đầu), `.` và `[]`, toán tử số học/bit/so sánh/logic/`?:`, hàm `min max floor ceil round abs len beatsToTicks clamp splitNum basename` (`splitNum("12.3.0.72", ".", 1)` = 3; `basename("C:\\a\\kick.wav")` = `"kick"`). **Không** có eval/Function; tên `__proto__ constructor prototype` bị cấm; có giới hạn số phép tính, số nút, độ sâu.
 
 ## Ánh xạ AST (`ast`)
 
@@ -43,6 +45,16 @@ Trong biểu thức dùng được: biến đã đọc (từ trong ra ngoài), `
                "durationTick": "n.dur", "endTick": "...", "velocity": "n.vel", "channel": "..." } }
 }
 ```
+
+### Định dạng dòng sự kiện có trạng thái ngầm (FLP)
+
+- **Trạng thái chạy:** trong phần tử mảng, thêm trường `computed` dùng `$last`, ví dụ `{ "name": "pat", "type": "computed", "expr": "id == 65 ? v : ($last.pat || 0)" }` — mỗi sự kiện mang theo "pattern hiện tại".
+- **`ast.index`** (dựng một lần, dùng như biến trong mọi biểu thức): `{ "tên": { "each", "as", "filter", "inner"?, "key", "value", "collect"? } }`. Mặc định `key → giá trị cuối`; `"collect": true` cho `key → mảng`; `"list": true` (không cần `key`) cho một mảng. Truy cập `tên[khoá]` (khoá thiếu → `undefined`).
+- **`inner`:** trong `each` (dùng được ở `tracks.notes`, `tempo`, `index`), `"inner": { "each", "as", "filter" }` duyệt lồng kiểu flatMap; biểu thức giá trị thấy cả biến ngoài lẫn trong; `inner.each` không trả mảng thì coi là rỗng.
+- **`ast.warnings`:** `[ { "when": "biểu thức", "code": "WARN_XXX", "message": "..." } ]` — thêm cảnh báo khi `when` đúng (khoá dịch `warn.WARN_XXX` phải có trong `locales/`).
+- **`tracks.let`:** `{ "tên": "biểu thức" }` — biến riêng của mỗi track, đánh giá một lần (vd. insert mixer của kênh).
+- **`tracks.automation`:** `[ { "kind": "volume|pan|mute", "each", "as", "filter", "inner"?, "tick", "value" } ]` — mỗi luật góp điểm vào lane `kind` của track; engine sắp theo tick (trùng tick: điểm sau thắng), đổi tick theo `ppq`/`timeUnit`, điền `timeSeconds`. `volume` = gain tuyến tính (1 = 0 dB), `pan` ∈ [−1, 1].
+- **`ast.sourceFormat`** (`[a-z0-9_]{1,24}`) và **`ast.sourceVersion`** (biểu thức) ghi vào `meta`.
 
 - `timeUnit: ticks` → chia cho `ppq` rồi đổi sang 960; `beats` → nhân 960.
 - `tempo` có thể là mảng nhiều luật. Không có tempo trong file → `tempoSource: "fallback"` + cảnh báo `WARN_TEMPO_FALLBACK`; truyền `options.tempoOverride` để thay.

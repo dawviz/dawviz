@@ -5,7 +5,7 @@ section: "2. Package `core`"
 path: "2. Package `core`"
 chunk: 2-package-core.md
 source_lines: 25-60
-source_sha1: dbb03a72c8
+source_sha1: ba174dece0
 ids: [ERR_NO_NOTES, KPI-01, REQ-LIM-03, REQ-LIM-04]
 ---
 ## 2. Package `core`

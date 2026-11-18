@@ -4,8 +4,8 @@ doc_title: "SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer"
 section: "3.6 Reaper (.rpp) — VERIFY"
 path: "3. Yêu cầu chức năng > 3.6 Reaper (.rpp) — VERIFY"
 chunk: 3-6-reaper-rpp-verify.md
-source_lines: 77-88
-source_sha1: dd04828ada
+source_lines: 78-89
+source_sha1: 59d9967678
 ids: [ERR_NO_NOTES, REQ-AUTO-01, REQ-AUTO-02, REQ-AUTO-03, REQ-GRAPHICS-06, REQ-RPP-01, REQ-RPP-02, REQ-RPP-03, REQ-RPP-04, REQ-RPP-05, REQ-RPP-06, REQ-RPP-07, WARN_RPP_ENVELOPES_IGNORED, WARN_RPP_ENVELOPE_SHAPE_APPROX, WARN_RPP_EXTERNAL_MIDI, WARN_RPP_LOOPED_ITEMS, WARN_RPP_MUTED_ITEMS, WARN_RPP_SRC_UNIT, WARN_TEMPO_SHAPE]
 ---
 ### 3.6 Reaper (.rpp) — VERIFY

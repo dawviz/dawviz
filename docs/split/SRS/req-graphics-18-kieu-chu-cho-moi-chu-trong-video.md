@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-GRAPHICS-18: Kiểu chữ cho mọi chữ trong video (D-58)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-18: Kiểu chữ cho mọi chữ trong video (D-58)"
 chunk: req-graphics-18-kieu-chu-cho-moi-chu-trong-video.md
-source_lines: 518-536
-source_sha1: b0fe5ff302
+source_lines: 530-548
+source_sha1: 4a4e62e7ba
 ids: [D-57, D-58, REQ-GRAPHICS-00, REQ-GRAPHICS-03, REQ-GRAPHICS-05, REQ-GRAPHICS-07, REQ-GRAPHICS-08, REQ-GRAPHICS-09, REQ-GRAPHICS-12, REQ-GRAPHICS-15, REQ-GRAPHICS-18, REQ-STORAGE-05, REQ-UI-13, REQ-UI-15, REQ-WIDGET-02, SOI-20]
 ---
 #### REQ-GRAPHICS-18: Kiểu chữ cho mọi chữ trong video (D-58)

@@ -4,8 +4,8 @@ doc_title: "TDD — Tài liệu kiểm thử: Thư viện parser DAW Visualizer"
 section: "6. Kiểm thử thủ công trình duyệt"
 path: "6. Kiểm thử thủ công trình duyệt"
 chunk: 6-kiem-thu-thu-cong-trinh-duyet.md
-source_lines: 82-89
-source_sha1: 42e0660dc8
+source_lines: 85-92
+source_sha1: b369a49402
 ids: [ERR_NO_NOTES]
 ---
 ## 6. Kiểm thử thủ công trình duyệt

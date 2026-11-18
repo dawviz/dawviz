@@ -212,6 +212,10 @@
         {
           "src": "docs/spikes/SPIKE-2-PARSER.md",
           "title": "Spike 2: parser và AST"
+        },
+        {
+          "src": "docs/spikes/SPIKE-3-FLP.md",
+          "title": "Spike 3: đọc .flp bằng JSON schema"
         }
       ]
     },

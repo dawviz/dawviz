@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-EXPORT-05: Giao diện tiến độ và hủy"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-EXPORT-05: Giao diện tiến độ và hủy"
 chunk: req-export-05-giao-dien-tien-do-va-huy.md
-source_lines: 788-790
-source_sha1: b0fe5ff302
+source_lines: 801-803
+source_sha1: 4a4e62e7ba
 ids: [REQ-EXPORT-05]
 ---
 #### REQ-EXPORT-05: Giao diện tiến độ và hủy
