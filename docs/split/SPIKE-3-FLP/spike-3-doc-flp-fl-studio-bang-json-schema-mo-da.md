@@ -5,7 +5,7 @@ section: "Spike 3: đọc `.flp` (FL Studio) bằng JSON schema (mở đầu)"
 path: "Spike 3: đọc `.flp` (FL Studio) bằng JSON schema (mở đầu)"
 chunk: spike-3-doc-flp-fl-studio-bang-json-schema-mo-da.md
 source_lines: 1-4
-source_sha1: 8c83939972
+source_sha1: a703402bcf
 ids: [D-19, D-28, D-62]
 ---
 # Spike 3: đọc `.flp` (FL Studio) bằng JSON schema

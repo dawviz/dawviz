@@ -4,8 +4,8 @@ doc_title: "Spike 3: đọc `.flp` (FL Studio) bằng JSON schema"
 section: "8. Nguồn và giấy phép"
 path: "8. Nguồn và giấy phép"
 chunk: 8-nguon-va-giay-phep.md
-source_lines: 102-104
-source_sha1: 8c83939972
+source_lines: 105-107
+source_sha1: a703402bcf
 ids: []
 ---
 ## 8. Nguồn và giấy phép

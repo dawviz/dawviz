@@ -4,8 +4,8 @@ doc_title: "Spike 3: đọc `.flp` (FL Studio) bằng JSON schema"
 section: "7. Phương án đã cân nhắc"
 path: "7. Phương án đã cân nhắc"
 chunk: 7-phuong-an-da-can-nhac.md
-source_lines: 94-101
-source_sha1: 8c83939972
+source_lines: 97-104
+source_sha1: a703402bcf
 ids: [D-28]
 ---
 ## 7. Phương án đã cân nhắc

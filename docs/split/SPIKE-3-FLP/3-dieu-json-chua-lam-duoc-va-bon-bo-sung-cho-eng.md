@@ -5,7 +5,7 @@ section: "3. Điều JSON chưa làm được và bốn bổ sung cho engine"
 path: "3. Điều JSON chưa làm được và bốn bổ sung cho engine"
 chunk: 3-dieu-json-chua-lam-duoc-va-bon-bo-sung-cho-eng.md
 source_lines: 20-32
-source_sha1: 8c83939972
+source_sha1: a703402bcf
 ids: [D-28, WARN_FLP_CLIPS_SKIPPED]
 ---
 ## 3. Điều JSON chưa làm được và bốn bổ sung cho engine

@@ -192,6 +192,9 @@ test('FLP FL 26: clip Playlist 88 byte', async () => {
 
 // Tệp thật đã thử (không commit): [tên, phiên bản, BPM, số track, số nốt]
 const REAL = [
+  ['TS404 Template_v20.8.flp', '20.8.3.2293', 140, 1, 17],
+  ['TRANCECRAFTER_37.flp', '21.2.1.3859', 141.998, 28, 33487],
+  ['Promise.flp', '24.1.2.4394', 86.991, 13, 8201],
   ['fun song.flp', '25.2.3.5171', 128, 7, 2286],
   ['3x OSC Abuse.flp', '26.1.6.5639', 165, 5, 1331],
   ['Ction_35.flp', '26.1.99.5789', 120, 6, 320],

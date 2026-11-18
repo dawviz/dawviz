@@ -4,8 +4,8 @@ doc_title: "Spike 3: đọc `.flp` (FL Studio) bằng JSON schema"
 section: "6. Automation (volume, pan của track)"
 path: "6. Automation (volume, pan của track)"
 chunk: 6-automation-volume-pan-cua-track.md
-source_lines: 70-79
-source_sha1: 8c83939972
+source_lines: 73-82
+source_sha1: a703402bcf
 ids: [REQ-AST-02, REQ-GRAPHICS-06]
 ---
 ## 6. Automation (volume, pan của track)

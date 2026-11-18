@@ -340,8 +340,8 @@ Cấu trúc XML cần đối chiếu đặc tả chính thức và file mẫu **
 * **Nốt** = nốt của Pattern đặt trên Playlist của arrangement đầu; vị trí = vị trí clip + vị trí nốt − `startoffset`; nốt ngoài `[startoffset, startoffset+độ dài clip)` bị bỏ, độ dài nốt cắt ở cuối clip; clip tắt tiếng bỏ. Cao độ = khoá FL (C5 = 60, kẹp 0–127). PPQ từ header (thường 96) quy về 960.
 * **Tempo** = một điểm (tempo đầu); thiếu → `WARN_TEMPO_FALLBACK`. Nhịp từ sự kiện nhịp. Có clip âm thanh/automation trên Playlist → `WARN_FLP_CLIPS_SKIPPED`. Không có clip Pattern → `ERR_NO_NOTES`.
 * **Automation (T-76):** clip automation trên Playlist nhắm tới **âm lượng hoặc pan** của kênh hoặc của insert mixer thành lane `volume`/`pan` của track (insert gắn vào mọi kênh đi qua nó; FL 25 gắn theo tên). Volume = `(v/0,8)³`, pan = `2v−1` **[VERIFY]**. Tham số plugin, mute, tempo… chưa đọc, báo `WARN_FLP_CLIPS_SKIPPED`.
-* **FL 25 và 26** khác FL 12: sự kiện `172` dài 3 byte; clip Playlist 80 byte (FL 25) và 88 byte (FL 26). Đã kiểm trên tệp thật 12.3, 25.2.3, 25.2.5, 26.1.6, 26.1.7, 26.1.99.
-* **Giới hạn đã biết [VERIFY]:** pattern không lặp khi kéo dài clip; automation tempo chưa đọc (công thức BPM chưa kiểm); nhiều arrangement chỉ lấy cái đầu; FL 21–24 chưa có tệp thật (OI-19).
+* **FL 25 và 26** khác FL 12: sự kiện `172` dài 3 byte; clip Playlist 80 byte (FL 25) và 88 byte (FL 26). Đã kiểm trên tệp thật 12.3, 20.8, 21.2.1, 24.1.2, 25.2.3, 25.2.5, 26.1.6, 26.1.7, 26.1.99.
+* **Giới hạn đã biết [VERIFY]:** pattern không lặp khi kéo dài clip; automation tempo chưa đọc (công thức BPM chưa kiểm); nhiều arrangement chỉ lấy cái đầu; FL 22–23 và đúng ranh giới 20.99 chưa có tệp thật (OI-19).
 
 #### REQ-PARSER-06: Ableton Live Pack (`.alp`)
 **[ĐÃ KIỂM]** trên một `.alp` thật (Live 9.1, 65 MB, 3 file `.als`). Giả định của v0.2 rằng `.alp` là ZIP **không đúng** với mẫu này.

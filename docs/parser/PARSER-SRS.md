@@ -20,7 +20,7 @@ Ngoài phạm vi: audio clip, plugin/automation ngoài tempo và nhịp, ghi fil
 | REQ-FMT-05 | `.mid`/`.midi` | Standard MIDI File 0/1/2 | DONE |
 | REQ-FMT-06 | binary theo schema | JSON schema mô tả byte → AST (cho `.bwproject` khi có mẫu) | DONE (schema demo); `.bwproject` TODO |
 | REQ-FMT-07 | `.bwproject` (không schema); `.flp` sai magic | Báo "chưa hỗ trợ"/sai nội dung kèm hướng dẫn (xuất `.dawproject`) | DONE |
-| REQ-FMT-08 | `.flp` | FL Studio ≥ 12 (cả dạng ZIP): schema dựng sẵn `schemas/flp.schema.json`; track = kênh, nốt = nốt Pattern trên Playlist; tick @PPQ header → 960 | DONE (6 tệp thật: FL 12.3, 25.2.3, 25.2.5, 26.1.6, 26.1.7, 26.1.99; kèm automation volume/pan của track; FL 21–24 chưa có tệp thật **[VERIFY]**) |
+| REQ-FMT-08 | `.flp` | FL Studio ≥ 12 (cả dạng ZIP): schema dựng sẵn `schemas/flp.schema.json`; track = kênh, nốt = nốt Pattern trên Playlist; tick @PPQ header → 960 | DONE (9 tệp thật: FL 12.3, 20.8, 21.2.1, 24.1.2, 25.2.3, 25.2.5, 26.1.6, 26.1.7, 26.1.99; kèm automation volume/pan của track; FL 22–23 và ranh giới 20.99 chưa có tệp thật **[VERIFY]**) |
 
 ## 3. Yêu cầu chức năng
 

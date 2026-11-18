@@ -5,7 +5,7 @@ section: "REQ-PARSER-08: FL Studio (`.flp`, D-62)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) > REQ-PARSER-08: FL Studio (`.flp`, D-62)"
 chunk: req-parser-08-fl-studio-flp-d-62.md
 source_lines: 334-345
-source_sha1: b14b13f4bc
+source_sha1: 4a4e62e7ba
 ids: [D-62, ERR_AST_INVALID, ERR_NO_NOTES, OI-19, REQ-PARSER-08, WARN_FLP_CLIPS_SKIPPED, WARN_TEMPO_FALLBACK]
 ---
 #### REQ-PARSER-08: FL Studio (`.flp`, D-62)
@@ -17,5 +17,5 @@ ids: [D-62, ERR_AST_INVALID, ERR_NO_NOTES, OI-19, REQ-PARSER-08, WARN_FLP_CLIPS_
 * **Nốt** = nốt của Pattern đặt trên Playlist của arrangement đầu; vị trí = vị trí clip + vị trí nốt − `startoffset`; nốt ngoài `[startoffset, startoffset+độ dài clip)` bị bỏ, độ dài nốt cắt ở cuối clip; clip tắt tiếng bỏ. Cao độ = khoá FL (C5 = 60, kẹp 0–127). PPQ từ header (thường 96) quy về 960.
 * **Tempo** = một điểm (tempo đầu); thiếu → `WARN_TEMPO_FALLBACK`. Nhịp từ sự kiện nhịp. Có clip âm thanh/automation trên Playlist → `WARN_FLP_CLIPS_SKIPPED`. Không có clip Pattern → `ERR_NO_NOTES`.
 * **Automation (T-76):** clip automation trên Playlist nhắm tới **âm lượng hoặc pan** của kênh hoặc của insert mixer thành lane `volume`/`pan` của track (insert gắn vào mọi kênh đi qua nó; FL 25 gắn theo tên). Volume = `(v/0,8)³`, pan = `2v−1` **[VERIFY]**. Tham số plugin, mute, tempo… chưa đọc, báo `WARN_FLP_CLIPS_SKIPPED`.
-* **FL 25 và 26** khác FL 12: sự kiện `172` dài 3 byte; clip Playlist 80 byte (FL 25) và 88 byte (FL 26). Đã kiểm trên tệp thật 12.3, 25.2.3, 25.2.5, 26.1.6, 26.1.7, 26.1.99.
-* **Giới hạn đã biết [VERIFY]:** pattern không lặp khi kéo dài clip; automation tempo chưa đọc (công thức BPM chưa kiểm); nhiều arrangement chỉ lấy cái đầu; FL 21–24 chưa có tệp thật (OI-19).
+* **FL 25 và 26** khác FL 12: sự kiện `172` dài 3 byte; clip Playlist 80 byte (FL 25) và 88 byte (FL 26). Đã kiểm trên tệp thật 12.3, 20.8, 21.2.1, 24.1.2, 25.2.3, 25.2.5, 26.1.6, 26.1.7, 26.1.99.
+* **Giới hạn đã biết [VERIFY]:** pattern không lặp khi kéo dài clip; automation tempo chưa đọc (công thức BPM chưa kiểm); nhiều arrangement chỉ lấy cái đầu; FL 22–23 và đúng ranh giới 20.99 chưa có tệp thật (OI-19).

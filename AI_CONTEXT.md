@@ -113,7 +113,7 @@ Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) › REQ-PARSER-03: DAWproject (`.dawproject`, D-03)](docs/split/SRS/req-parser-03-dawproject-dawproject-d-03.md) · 1.2k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) › REQ-PARSER-04: Standard MIDI File (`.mid`, format 0/1)](docs/split/SRS/req-parser-04-standard-midi-file-mid-format-0-1.md) · 0.9k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) › REQ-PARSER-05: Parser JSON khai báo (D-18, D-28, R-05)](docs/split/SRS/req-parser-05-parser-json-khai-bao-d-18-d-28-r-0.md) · 1.8k
-- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) › REQ-PARSER-08: FL Studio (`.flp`, D-62)](docs/split/SRS/req-parser-08-fl-studio-flp-d-62.md) · 1.9k
+- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) › REQ-PARSER-08: FL Studio (`.flp`, D-62)](docs/split/SRS/req-parser-08-fl-studio-flp-d-62.md) · 2.0k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) › REQ-PARSER-06: Ableton Live Pack (`.alp`)](docs/split/SRS/req-parser-06-ableton-live-pack-alp.md) · 1.1k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) › REQ-PARSER-07: Tempo không đoán ngầm và ghi đè (D-24, D-29)](docs/split/SRS/req-parser-07-tempo-khong-doan-ngam-va-ghi-de-d.md) · 1.7k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.2. Cấu trúc dữ liệu chuẩn hóa (Unified AST, D-08, D-09)](docs/split/SRS/3-2-cau-truc-du-lieu-chuan-hoa-unified-ast-d-08.md) · 3.5k
@@ -361,7 +361,7 @@ Nguồn: `docs/parser/PARSER-SRS.md` · [thứ tự đọc](docs/split/PARSER-SR
 
 - [SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer (mở đầu)](docs/split/PARSER-SRS/srs-dac-ta-yeu-cau-thu-vien-parser-daw-visualize.md) · 0.4k
 - [1. Mục đích và phạm vi](docs/split/PARSER-SRS/1-muc-dich-va-pham-vi.md) · 0.5k
-- [2. Định dạng hỗ trợ](docs/split/PARSER-SRS/2-dinh-dang-ho-tro.md) · 1.5k
+- [2. Định dạng hỗ trợ](docs/split/PARSER-SRS/2-dinh-dang-ho-tro.md) · 1.6k
 - [3. Yêu cầu chức năng › 3.1 Chung (core)](docs/split/PARSER-SRS/3-1-chung-core.md) · 0.7k
 - [3. Yêu cầu chức năng › 3.2 Giới hạn và an toàn (REQ-PARSER-00)](docs/split/PARSER-SRS/3-2-gioi-han-va-an-toan-req-parser-00.md) · 0.8k
 - [3. Yêu cầu chức năng › 3.3 Tempo và thời gian](docs/split/PARSER-SRS/3-3-tempo-va-thoi-gian.md) · 0.7k
@@ -483,7 +483,7 @@ Nguồn: `docs/spikes/SPIKE-3-FLP.md` · [thứ tự đọc](docs/split/SPIKE-3-
 - [2. Vì sao TLV vẫn vừa JSON schema](docs/split/SPIKE-3-FLP/2-vi-sao-tlv-van-vua-json-schema.md) · 0.9k
 - [3. Điều JSON chưa làm được và bốn bổ sung cho engine](docs/split/SPIKE-3-FLP/3-dieu-json-chua-lam-duoc-va-bon-bo-sung-cho-eng.md) · 1.3k
 - [4. Mô hình ánh xạ (quyết định)](docs/split/SPIKE-3-FLP/4-mo-hinh-anh-xa-quyet-dinh.md) · 1.1k
-- [5. Giới hạn đã biết (cần tệp mẫu hoặc quyết định để mở)](docs/split/SPIKE-3-FLP/5-gioi-han-da-biet-can-tep-mau-hoac-quyet-dinh-d.md) · 3.3k
+- [5. Giới hạn đã biết (cần tệp mẫu hoặc quyết định để mở)](docs/split/SPIKE-3-FLP/5-gioi-han-da-biet-can-tep-mau-hoac-quyet-dinh-d.md) · 3.7k
 - [6. Automation (volume, pan của track)](docs/split/SPIKE-3-FLP/6-automation-volume-pan-cua-track.md) · 1.8k
 - [6b. Tệp mẫu cần để gỡ [VERIFY] (danh sách cho người thử)](docs/split/SPIKE-3-FLP/6b-tep-mau-can-de-go-verify-danh-sach-cho-nguoi.md) · 1.6k
 - [7. Phương án đã cân nhắc](docs/split/SPIKE-3-FLP/7-phuong-an-da-can-nhac.md) · 0.6k

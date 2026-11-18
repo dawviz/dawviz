@@ -1,6 +1,6 @@
 # Chỉ mục SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
-nguồn: `SRS.md` (sha1 b14b13f4bc)
+nguồn: `SRS.md` (sha1 4a4e62e7ba)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -21,7 +21,7 @@ nguồn: `SRS.md` (sha1 b14b13f4bc)
 | 14 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) > REQ-PARSER-03: DAWproject (`.dawproject`, D-03) | [req-parser-03-dawproject-dawproject-d-03.md](req-parser-03-dawproject-dawproject-d-03.md) | 1203 | D-03, ERR_ARCHIVE_INVALID, OI-01, REQ-PARSER-03, SOI-04, SOI-06… |
 | 15 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) > REQ-PARSER-04: Standard MIDI File (`.mid`, format 0/1) | [req-parser-04-standard-midi-file-mid-format-0-1.md](req-parser-04-standard-midi-file-mid-format-0-1.md) | 924 | ERR_UNSUPPORTED_FORMAT, REQ-PARSER-04, REQ-PARSER-07, WARN_MIDI_TRUNCATED, WARN_TEMPO_MIDI_DEFAULT |
 | 16 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) > REQ-PARSER-05: Parser JSON khai báo (D-18, D-28, R-05) | [req-parser-05-parser-json-khai-bao-d-18-d-28-r-0.md](req-parser-05-parser-json-khai-bao-d-18-d-28-r-0.md) | 1825 | D-18, D-28, D-62, ERR_SCHEMA_INVALID, ERR_UNSUPPORTED_FORMAT, OI-08… |
-| 17 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) > REQ-PARSER-08: FL Studio (`.flp`, D-62) | [req-parser-08-fl-studio-flp-d-62.md](req-parser-08-fl-studio-flp-d-62.md) | 1933 | D-62, ERR_AST_INVALID, ERR_NO_NOTES, OI-19, REQ-PARSER-08, WARN_FLP_CLIPS_SKIPPED… |
+| 17 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) > REQ-PARSER-08: FL Studio (`.flp`, D-62) | [req-parser-08-fl-studio-flp-d-62.md](req-parser-08-fl-studio-flp-d-62.md) | 1979 | D-62, ERR_AST_INVALID, ERR_NO_NOTES, OI-19, REQ-PARSER-08, WARN_FLP_CLIPS_SKIPPED… |
 | 18 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) > REQ-PARSER-06: Ableton Live Pack (`.alp`) | [req-parser-06-ableton-live-pack-alp.md](req-parser-06-ableton-live-pack-alp.md) | 1100 | ERR_ARCHIVE_INVALID, REQ-PARSER-00, REQ-PARSER-06, REQ-UI-07, WARN_ALP_MULTIPLE_ALS |
 | 19 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) > REQ-PARSER-07: Tempo không đoán ngầm và ghi đè (D-24, D-29) | [req-parser-07-tempo-khong-doan-ngam-va-ghi-de-d.md](req-parser-07-tempo-khong-doan-ngam-va-ghi-de-d.md) | 1665 | D-24, D-29, ERR_AST_INVALID, OI-12, REQ-PARSER-07, WARN_TEMPO_FALLBACK… |
 | 20 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.2. Cấu trúc dữ liệu chuẩn hóa (Unified AST, D-08, D-09) | [3-2-cau-truc-du-lieu-chuan-hoa-unified-ast-d-08.md](3-2-cau-truc-du-lieu-chuan-hoa-unified-ast-d-08.md) | 3457 | D-08, D-09, D-24, ERR_AST_INVALID, ERR_AST_TOO_LARGE, ERR_NO_NOTES… |

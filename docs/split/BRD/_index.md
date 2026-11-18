@@ -1,6 +1,6 @@
 # Chỉ mục BRD.md — TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)
 
-nguồn: `BRD.md` (sha1 3ccfd946bc)
+nguồn: `BRD.md` (sha1 90f173dba6)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -15,4 +15,4 @@ nguồn: `BRD.md` (sha1 3ccfd946bc)
 | 8 | 5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT) | [5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md](5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) | 4347 | D-01, D-12, D-24, D-25, D-29, KPI-02… |
 | 9 | 6. GIẢ ĐỊNH (ASSUMPTIONS) | [6-gia-dinh-assumptions.md](6-gia-dinh-assumptions.md) | 554 | D-01 |
 | 10 | 7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG) | [7-nhat-ky-quyet-dinh-decision-log.md](7-nhat-ky-quyet-dinh-decision-log.md) | 27431 | AD-08, AD-12, AD-13, AD-15, ARC-01, ARC-02… |
-| 11 | 8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES) | [8-cac-van-de-con-mo-open-issues.md](8-cac-van-de-con-mo-open-issues.md) | 6269 | D-01, D-05, D-39, D-40, D-41, D-42… |
+| 11 | 8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES) | [8-cac-van-de-con-mo-open-issues.md](8-cac-van-de-con-mo-open-issues.md) | 6307 | D-01, D-05, D-39, D-40, D-41, D-42… |

@@ -1,12 +1,12 @@
 # Chỉ mục PARSER-SRS.md — SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer
 
-nguồn: `PARSER-SRS.md` (sha1 c1f2666bb0)
+nguồn: `PARSER-SRS.md` (sha1 59d9967678)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
 | 0 | SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer (mở đầu) | [srs-dac-ta-yeu-cau-thu-vien-parser-daw-visualize.md](srs-dac-ta-yeu-cau-thu-vien-parser-daw-visualize.md) | 436 | REQ-AST-01, REQ-PARSER-00 |
 | 1 | 1. Mục đích và phạm vi | [1-muc-dich-va-pham-vi.md](1-muc-dich-va-pham-vi.md) | 496 |  |
-| 2 | 2. Định dạng hỗ trợ | [2-dinh-dang-ho-tro.md](2-dinh-dang-ho-tro.md) | 1510 | REQ-FMT-01, REQ-FMT-02, REQ-FMT-03, REQ-FMT-04, REQ-FMT-05, REQ-FMT-06… |
+| 2 | 2. Định dạng hỗ trợ | [2-dinh-dang-ho-tro.md](2-dinh-dang-ho-tro.md) | 1551 | REQ-FMT-01, REQ-FMT-02, REQ-FMT-03, REQ-FMT-04, REQ-FMT-05, REQ-FMT-06… |
 | 3 | 3. Yêu cầu chức năng > 3.1 Chung (core) | [3-1-chung-core.md](3-1-chung-core.md) | 651 | REQ-CORE-01, REQ-CORE-02, REQ-CORE-03, REQ-CORE-04, REQ-CORE-05 |
 | 4 | 3. Yêu cầu chức năng > 3.2 Giới hạn và an toàn (REQ-PARSER-00) | [3-2-gioi-han-va-an-toan-req-parser-00.md](3-2-gioi-han-va-an-toan-req-parser-00.md) | 778 | ERR_ARCHIVE_INVALID, ERR_AST_TOO_LARGE, REQ-LIM-01, REQ-LIM-02, REQ-LIM-03, REQ-LIM-04… |
 | 5 | 3. Yêu cầu chức năng > 3.3 Tempo và thời gian | [3-3-tempo-va-thoi-gian.md](3-3-tempo-va-thoi-gian.md) | 723 | REQ-TEMPO-01, REQ-TEMPO-02, REQ-TEMPO-03, REQ-TEMPO-04, REQ-TEMPO-05, WARN_TEMPO_FALLBACK… |

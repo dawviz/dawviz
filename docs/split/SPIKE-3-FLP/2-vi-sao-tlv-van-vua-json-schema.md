@@ -5,7 +5,7 @@ section: "2. Vì sao TLV vẫn vừa JSON schema"
 path: "2. Vì sao TLV vẫn vừa JSON schema"
 chunk: 2-vi-sao-tlv-van-vua-json-schema.md
 source_lines: 12-19
-source_sha1: 8c83939972
+source_sha1: a703402bcf
 ids: []
 ---
 ## 2. Vì sao TLV vẫn vừa JSON schema

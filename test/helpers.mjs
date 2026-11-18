@@ -7,7 +7,7 @@ import { test as nodeTest } from 'node:test';
 // Tệp mẫu của bên thứ ba (chưa xác nhận quyền phân phối) KHÔNG được commit: chúng nằm trong
 // test/fixtures/third-party/ (bị .gitignore). Thiếu tệp -> fx() trả Buffer rỗng và test dùng tệp đó bị bỏ qua.
 export const THIRD_PARTY = ['Demo.als', 'Oboe_MIDI_001.mid', 'ode_to_zb.RPP', 'prutypils.rpp', 'siderite_oneD-8.RPP',
-  'tmf-small.RPP', 'youdreamarked-midi.RPP', 'big roar.flp', '11-7-26 ambient vocal.flp', 'yawwapsy.zip', '3x OSC Abuse.flp', 'Ction_35.flp', 'HOUSE, TRANCE (SB, KS10, SIR)_21_NEW.flp', 'fun song.flp', 'bitwig-5.0-example.project.xml', 'reaper-doc-sample.txt'];
+  'tmf-small.RPP', 'youdreamarked-midi.RPP', 'big roar.flp', '11-7-26 ambient vocal.flp', 'yawwapsy.zip', '3x OSC Abuse.flp', 'Ction_35.flp', 'HOUSE, TRANCE (SB, KS10, SIR)_21_NEW.flp', 'fun song.flp', 'TS404 Template_v20.8.flp', 'Promise.flp', 'TRANCECRAFTER_37.flp', 'bitwig-5.0-example.project.xml', 'reaper-doc-sample.txt'];
 const tpDir = path.join(FIX, 'third-party');
 const missing = new Set(THIRD_PARTY.filter((n) => !fs.existsSync(path.join(tpDir, n))));
 export const fx = (n) => {

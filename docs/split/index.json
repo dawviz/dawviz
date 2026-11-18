@@ -4,7 +4,7 @@
  "docs": {
   "BRD.md": {
    "title": "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)",
-   "sha1": "3ccfd946bc",
+   "sha1": "90f173dba6",
    "chunks": [
     {
      "n": 0,
@@ -411,7 +411,7 @@
      "path": [
       "8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)"
      ],
-     "chars": 6269,
+     "chars": 6307,
      "lines": [
       273,
       295
@@ -457,7 +457,7 @@
   },
   "SRS.md": {
    "title": "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)",
-   "sha1": "b14b13f4bc",
+   "sha1": "4a4e62e7ba",
    "chunks": [
     {
      "n": 0,
@@ -983,7 +983,7 @@
       "3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08)",
       "REQ-PARSER-08: FL Studio (`.flp`, D-62)"
      ],
-     "chars": 1933,
+     "chars": 1979,
      "lines": [
       334,
       345
@@ -4970,7 +4970,7 @@
   },
   "PARSER-SRS.md": {
    "title": "SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer",
-   "sha1": "c1f2666bb0",
+   "sha1": "59d9967678",
    "chunks": [
     {
      "n": 0,
@@ -5008,7 +5008,7 @@
      "path": [
       "2. Định dạng hỗ trợ"
      ],
-     "chars": 1510,
+     "chars": 1551,
      "lines": [
       12,
       24
@@ -6396,7 +6396,7 @@
   },
   "SPIKE-3-FLP.md": {
    "title": "Spike 3: đọc `.flp` (FL Studio) bằng JSON schema",
-   "sha1": "8c83939972",
+   "sha1": "a703402bcf",
    "chunks": [
     {
      "n": 0,
@@ -6485,10 +6485,10 @@
      "path": [
       "5. Giới hạn đã biết (cần tệp mẫu hoặc quyết định để mở)"
      ],
-     "chars": 3266,
+     "chars": 3739,
      "lines": [
       41,
-      69
+      72
      ],
      "ids": [
       "D-24",
@@ -6506,8 +6506,8 @@
      ],
      "chars": 1804,
      "lines": [
-      70,
-      79
+      73,
+      82
      ],
      "ids": [
       "REQ-AST-02",
@@ -6521,10 +6521,10 @@
      "path": [
       "6b. Tệp mẫu cần để gỡ [VERIFY] (danh sách cho người thử)"
      ],
-     "chars": 1583,
+     "chars": 1612,
      "lines": [
-      80,
-      93
+      83,
+      96
      ],
      "ids": [
       "ERR_NO_NOTES"
@@ -6539,8 +6539,8 @@
      ],
      "chars": 603,
      "lines": [
-      94,
-      101
+      97,
+      104
      ],
      "ids": [
       "D-28"
@@ -6555,8 +6555,8 @@
      ],
      "chars": 634,
      "lines": [
-      102,
-      104
+      105,
+      107
      ],
      "ids": []
     }

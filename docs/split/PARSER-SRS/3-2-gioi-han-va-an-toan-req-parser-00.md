@@ -5,7 +5,7 @@ section: "3.2 Giới hạn và an toàn (REQ-PARSER-00)"
 path: "3. Yêu cầu chức năng > 3.2 Giới hạn và an toàn (REQ-PARSER-00)"
 chunk: 3-2-gioi-han-va-an-toan-req-parser-00.md
 source_lines: 34-40
-source_sha1: c1f2666bb0
+source_sha1: 59d9967678
 ids: [ERR_ARCHIVE_INVALID, ERR_AST_TOO_LARGE, REQ-LIM-01, REQ-LIM-02, REQ-LIM-03, REQ-LIM-04, REQ-LIM-05, REQ-PARSER-00]
 ---
 ### 3.2 Giới hạn và an toàn (REQ-PARSER-00)
