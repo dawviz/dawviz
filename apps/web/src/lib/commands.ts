@@ -164,6 +164,14 @@ export const patchLayouts = (d: Doc, patches: Record<string, Partial<WidgetLayou
   const after = Object.fromEntries(ids.map((id) => [id, { ...d.scene.widgets.find((q) => q.id === id)!.layout, ...patches[id] }]));
   return slice(d, 'patchLayouts', 'web.cmd.layout', get, set, after, `layouts:${ids.join('|')}`, { widgets: ids, ...(ids.length === 1 ? { widget: ids[0] } : {}) });
 };
+/** Chọn track cho một widget (T-73): `ALL` = mọi track đang hiện, `MANUAL` = chỉ các track có chỉ số trong `indices`. Hoàn tác được. */
+export const setWidgetTracks = (d: Doc, widgetId: string, mode: 'ALL' | 'MANUAL', indices: number[]): Cmd | null => {
+  if (!d.scene.widgets.some((x) => x.id === widgetId)) return null;
+  type TM = { trackMappingMode: WidgetSpec['trackMappingMode']; assignedTrackIndices: number[] };
+  const get = (x: Doc): TM => { const q = x.scene.widgets.find((y) => y.id === widgetId)!; return { trackMappingMode: q.trackMappingMode, assignedTrackIndices: q.assignedTrackIndices }; };
+  const after: TM = { trackMappingMode: mode, assignedTrackIndices: mode === 'MANUAL' ? [...new Set(indices)].sort((a, b) => a - b) : [] };
+  return slice(d, 'setWidgetTracks', 'web.cmd.widgetTracks', get, (x, v) => withWidget(x, widgetId, (q) => ({ ...q, ...v })), after, undefined, { widget: widgetId });
+};
 /** Đổi một số thuộc tính (`properties`) của widget. */
 export const patchWidgetProps = (d: Doc, widgetId: string, patch: Record<string, unknown>): Cmd | null => {
   const w = d.scene.widgets.find((x) => x.id === widgetId);

@@ -81,12 +81,13 @@ Widget chữ có mục **Thiết lập** cho những gì riêng của nó:
 - **Thời gian và ô nhịp:** bật hoặc tắt từng hàng, kiểu hiện số (nhóm số hay đồng hồ, ô nhịp.phách.tick), vạch tiến độ dưới số. Nâng cao: nhãn, khoảng cách hàng, độ dài, độ dày và màu vạch.
 - **Hợp âm:** đọc hợp âm theo nốt đang giữ hay khi dập, luôn hiện danh sách nốt, khi không nhận ra hợp âm thì hiện chữ "không hợp âm" hay hiện các nốt.
 - **Thanh tiến độ:** ngang hoặc dọc, độ dày, màu, hiện thời gian. Nâng cao: nền thanh, bo góc, chữ thời gian.
+- **Ô chữ:** gõ nội dung nhiều dòng, xen số liệu như `{bpm}` hay `{title}`; chọn track mà số liệu đọc. Xem [Chèn số liệu vào chữ](08-cho-giu.md).
 
-Khi sửa chữ của một dòng, những chỗ trong ngoặc nhọn như `{played}` hay `{tempo}` sẽ được thay bằng số thật. Rê chuột lên ô chữ để xem widget đó dùng được những chỗ nào. Gõ xong bấm Enter, hoặc bấm ra ngoài ô; bấm Esc để bỏ.
+Khi sửa chữ của một dòng, những chỗ trong ngoặc nhọn như `{played}` hay `{bpm}` sẽ được thay bằng số thật, dùng được ở mọi chữ. Gõ `{` để xem gợi ý tên, hoặc rê chuột lên ô chữ. Danh sách đầy đủ và cách chọn kiểu hiện số ở trang [Chèn số liệu vào chữ](08-cho-giu.md). Gõ xong bấm Enter, hoặc bấm ra ngoài ô; bấm Esc để bỏ.
 
 ## Chữ
 
-Chọn một widget có chữ (tên bài, bộ đếm nốt, nốt đang phát, thời gian, hợp âm, thanh tiến độ) để thấy mục **Chữ**.
+Chọn một widget có chữ (tên bài, bộ đếm nốt, nốt đang phát, thời gian, hợp âm, thanh tiến độ, ô chữ) để thấy mục **Chữ**.
 
 Mỗi chữ dùng một **kiểu chữ** có sẵn (Tiêu đề, Phụ đề, Số đếm, Đồng hồ…). Bạn đổi gì thì chỉ thứ đó khác kiểu, phần còn lại vẫn theo kiểu. Cạnh mỗi thứ đã đổi có nút ↺ để quay về giá trị của kiểu.
 

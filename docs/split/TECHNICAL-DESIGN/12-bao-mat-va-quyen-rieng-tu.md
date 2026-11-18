@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "12. Bảo mật và quyền riêng tư"
 path: "12. Bảo mật và quyền riêng tư"
 chunk: 12-bao-mat-va-quyen-rieng-tu.md
-source_lines: 461-463
-source_sha1: 865e7b29ab
+source_lines: 469-471
+source_sha1: edafc798ea
 ids: [OI-07]
 ---
 ## 12. Bảo mật và quyền riêng tư

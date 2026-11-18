@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "DAW Visualizer scene preset (schemaVersion 0.5.x)",
+  "title": "DAW Visualizer scene preset (schemaVersion 0.6.x)",
   "description": "Mô tả lược đồ cho tài liệu và test. Việc kiểm lúc chạy là sanitizeScene (packages/render-core/src/scene.ts): trường lạ bị bỏ, giá trị sai về mặc định kèm WARN_PRESET_*.",
   "type": "object",
   "required": ["schemaVersion", "canvas", "widgets"],
   "additionalProperties": true,
   "properties": {
-    "schemaVersion": { "type": "string", "pattern": "^0\\.[345]\\.\\d+$" },
+    "schemaVersion": { "type": "string", "pattern": "^0\\.[3456]\\.\\d+$" },
     "presetName": { "type": "string", "maxLength": 200 },
     "author": { "type": "string", "maxLength": 200 },
     "canvas": {
@@ -42,7 +42,7 @@
         "required": ["type"],
         "properties": {
           "id": { "type": "string", "minLength": 1, "maxLength": 64 },
-          "type": { "enum": ["TRACK_INFO", "PIANO_ROLL", "EVENT_COUNTER", "LIVE_TRIGGER", "TIME_BAR", "CHORD_DETECTION", "AUDIO_SPECTRUM", "PROGRESS_BAR"] },
+          "type": { "enum": ["TRACK_INFO", "PIANO_ROLL", "EVENT_COUNTER", "LIVE_TRIGGER", "TIME_BAR", "CHORD_DETECTION", "AUDIO_SPECTRUM", "PROGRESS_BAR", "TEXT"] },
           "zIndex": { "type": "integer", "minimum": -10000, "maximum": 10000 },
           "visible": { "type": "boolean" },
           "layout": {

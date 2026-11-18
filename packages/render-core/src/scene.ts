@@ -3,17 +3,17 @@
 // `textStyles` và chữ dạng TextRef theo REQ-GRAPHICS-18). Đọc được 0.3.x/0.4.x qua `migrateScene`.
 // Lớp/phần tử storyboard (T-22) sẽ là schemaVersion mới, có hàm di trú từ 0.4.0; vì vậy mọi trường ở đây giữ đúng tên trong SRS.
 import {
-  DEFAULT_CHORD, DEFAULT_EVENT_COUNTER, DEFAULT_LIVE_TRIGGER, DEFAULT_PROGRESS_BAR, DEFAULT_TIME_BAR, DEFAULT_TRACK_INFO, TEMPLATE_KEYS, TEXT_FIELDS,
-  type Align, type ChordProps, type EventCounterProps, type LineCfg, type LiveTriggerProps, type ProgressBarProps, type TimeBarProps, type TrackInfoProps,
+  DEFAULT_CHORD, DEFAULT_EVENT_COUNTER, DEFAULT_LIVE_TRIGGER, DEFAULT_PROGRESS_BAR, DEFAULT_TEXT_BOX, DEFAULT_TIME_BAR, DEFAULT_TRACK_INFO, TEMPLATE_KEYS, TEXT_FIELDS,
+  type Align, type ChordProps, type EventCounterProps, type LineCfg, type LiveTriggerProps, type ProgressBarProps, type TextBoxProps, type TimeBarProps, type TrackInfoProps,
 } from './hud.ts';
 import { BASE_TEXT_STYLE, BUNDLED_TEXT_FAMILIES, DEFAULT_TEXT_STYLES, TEXT_DEFAULT_FONT, applyOverride, cloneStyle, type NamedTextStyle, type TextRef, type TextStyle, type TextStyleSet } from './typography.ts';
-import { unknownPlaceholders } from './text.ts';
+import { ALIAS_KEYS, GLOBAL_KEYS, checkTemplate } from './placeholders.ts';
 import { normalizeAngle } from './snap.ts';
 import { DEFAULT_KEYBOARD_STYLE, DEFAULT_NOTE_STYLE, sanitizeStyle, type KeyboardStyle, type NoteStyle, type StyleConfig } from './style.ts';
 
-export const SCENE_SCHEMA_VERSION = '0.5.0';
+export const SCENE_SCHEMA_VERSION = '0.6.0';
 
-export const WIDGET_TYPES = ['TRACK_INFO', 'PIANO_ROLL', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'AUDIO_SPECTRUM', 'PROGRESS_BAR'] as const;
+export const WIDGET_TYPES = ['TRACK_INFO', 'PIANO_ROLL', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'AUDIO_SPECTRUM', 'PROGRESS_BAR', 'TEXT'] as const;
 export type WidgetType = typeof WIDGET_TYPES[number];
 
 /** `rotation`: độ, (−180, 180]. `anchor`: điểm neo xoay theo tỉ lệ khung widget (0..1), mặc định tâm (REQ-GRAPHICS-03). */
@@ -95,15 +95,15 @@ export function pianoRollWidget(layout: Omit<WidgetLayout, 'anchor'> & { anchor?
     properties: { ...clonePiano(DEFAULT_PIANO_ROLL), ...props } };
 }
 /** Loại widget người dùng thêm được từ Editor (có renderer). AUDIO_SPECTRUM chờ T-53. */
-export const ADDABLE_WIDGETS = ['PIANO_ROLL', 'TRACK_INFO', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'PROGRESS_BAR'] as const satisfies readonly WidgetType[];
+export const ADDABLE_WIDGETS = ['PIANO_ROLL', 'TRACK_INFO', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'PROGRESS_BAR', 'TEXT'] as const satisfies readonly WidgetType[];
 const HUD_DEFAULTS: Record<string, unknown> = {
   TRACK_INFO: DEFAULT_TRACK_INFO, EVENT_COUNTER: DEFAULT_EVENT_COUNTER, LIVE_TRIGGER: DEFAULT_LIVE_TRIGGER,
-  TIME_BAR: DEFAULT_TIME_BAR, CHORD_DETECTION: DEFAULT_CHORD, PROGRESS_BAR: DEFAULT_PROGRESS_BAR,
+  TIME_BAR: DEFAULT_TIME_BAR, CHORD_DETECTION: DEFAULT_CHORD, PROGRESS_BAR: DEFAULT_PROGRESS_BAR, TEXT: DEFAULT_TEXT_BOX,
 };
 /** Cỡ mặc định khi thêm (tỉ lệ theo khung, hoặc pt cố định), kẹp trong khung. */
 const NEW_SIZE: Record<string, (W: number, H: number) => [number, number]> = {
   PIANO_ROLL: (W, H) => [W * 0.6, H * 0.4], TRACK_INFO: (W) => [W * 0.5, 130], EVENT_COUNTER: () => [480, 120], LIVE_TRIGGER: () => [480, 60],
-  TIME_BAR: () => [320, 100], CHORD_DETECTION: () => [400, 100], PROGRESS_BAR: (W) => [W * 0.8, 24],
+  TIME_BAR: () => [320, 100], CHORD_DETECTION: () => [400, 100], PROGRESS_BAR: (W) => [W * 0.8, 24], TEXT: () => [480, 100],
 };
 /** Id mới không trùng trong scene: `<loại>-<n>`. */
 export function newWidgetId(scene: SceneDocument, type: WidgetType): string {
@@ -189,7 +189,8 @@ const parseVersion = (v: unknown): [number, number, number] | null => {
  *  và phiên bản gốc; ném `ERR_SCHEMA_NEWER` nếu mới hơn ứng dụng hiểu, `ERR_PRESET_INVALID` nếu quá cũ hoặc không đọc được.
  *  0.3.x → 0.4.0: mỗi `widget.layout` thêm `anchor` = tâm (REQ-GRAPHICS-03).
  *  0.4.x → 0.5.0: không đổi cấu trúc. Chữ cũ `{font,size,weight,color}` đọc thành ghi đè trên kiểu mặc định của chỗ đó nên vẽ như cũ;
- *  `textStyles` vắng = bộ dựng sẵn (REQ-GRAPHICS-18). */
+ *  `textStyles` vắng = bộ dựng sẵn (REQ-GRAPHICS-18).
+ *  0.5.x → 0.6.0: không đổi cấu trúc; thêm loại widget `TEXT` (ô chữ) và cú pháp chỗ giữ `{tên:định_dạng}`, `{{` (T-73). Preset cũ vẽ như cũ. */
 export function migrateScene(raw: unknown): { raw: Obj; from: string } {
   if (!isObj(raw)) throw new SceneError('preset không phải đối tượng JSON', '$');
   if (typeof raw.schemaVersion !== 'string') throw new SceneError('thiếu schemaVersion', '$.schemaVersion');
@@ -198,13 +199,14 @@ export function migrateScene(raw: unknown): { raw: Obj; from: string } {
   const cur = parseVersion(SCENE_SCHEMA_VERSION)!;
   if (v[0] > cur[0] || (v[0] === cur[0] && v[1] > cur[1]))
     throw new SceneError(`preset phiên bản ${raw.schemaVersion} mới hơn ứng dụng (đọc được tới ${cur[0]}.${cur[1]}.x)`, '$.schemaVersion', 'ERR_SCHEMA_NEWER', { found: raw.schemaVersion, supported: SCENE_SCHEMA_VERSION });
-  if (v[0] !== 0 || v[1] < 3) throw new SceneError(`schemaVersion ${raw.schemaVersion} không đọc được (cần 0.3.x đến 0.5.x)`, '$.schemaVersion');
+  if (v[0] !== 0 || v[1] < 3) throw new SceneError(`schemaVersion ${raw.schemaVersion} không đọc được (cần 0.3.x đến 0.6.x)`, '$.schemaVersion');
   let out: Obj = structuredClone(raw);
   if (v[1] === 3) {
     if (Array.isArray(out.widgets)) for (const w of out.widgets) if (isObj(w) && isObj(w.layout) && w.layout.anchor === undefined) w.layout.anchor = { x: DEFAULT_ANCHOR.x, y: DEFAULT_ANCHOR.y };
     out = { ...out, schemaVersion: '0.4.0' };
   }
   if (v[1] <= 4) out = { ...out, schemaVersion: '0.5.0' };
+  if (v[1] <= 5) out = { ...out, schemaVersion: '0.6.0' };
   return { raw: out, from: raw.schemaVersion };
 }
 
@@ -363,10 +365,12 @@ export interface Sanitizer {
   styleIds?: ReadonlySet<string>;
 }
 const FONT_OK = (s: string) => /^[\w][\w \-]{0,39}$/.test(s);
-const tpl = (S: Sanitizer, v: unknown, d: string, path: string, keys: readonly string[]): string => {
-  const t = S.str(v, d, path, (s) => s.length <= 200);
-  const bad = unknownPlaceholders(t, keys);
-  if (bad.length) S.warn(path, t, `chỗ giữ lạ {${bad.join('}, {')}}; chữ được giữ nguyên`);
+/** Mẫu chữ: tên chỗ giữ riêng của widget + chỗ giữ chung; chỗ giữ lạ hoặc định dạng sai → cảnh báo, chữ giữ nguyên (T-73). */
+const tpl = (S: Sanitizer, v: unknown, d: string, path: string, keys: readonly string[], max = 200): string => {
+  const t = S.str(v, d, path, (s) => s.length <= max);
+  const { unknown, badFormat } = checkTemplate(t, [...keys, ...GLOBAL_KEYS, ...ALIAS_KEYS]);
+  if (unknown.length) S.warn(path, t, `chỗ giữ lạ {${unknown.join('}, {')}}; chữ được giữ nguyên`);
+  if (badFormat.length) S.warn(path, t, `định dạng sai ${badFormat.join(' ')}; chữ được giữ nguyên`);
   return t;
 };
 // ── kiểu chữ (T-72, REQ-GRAPHICS-18) ──
@@ -464,8 +468,8 @@ const groups = (S: Sanitizer, v: unknown, d: readonly number[], path: string): [
 const HUD_SANITIZERS = {
   TRACK_INFO(P: Obj, p: string, S: Sanitizer): TrackInfoProps {
     const d = DEFAULT_TRACK_INFO;
-    return { align: S.oneOf(P.align, ALIGNS, d.align, `${p}.align`), titleText: S.str(P.titleText, d.titleText, `${p}.titleText`, (s) => s.length <= 200),
-      titleStyle: textRef(S, P.titleStyle, d.titleStyle, `${p}.titleStyle`), artistText: S.str(P.artistText, d.artistText, `${p}.artistText`, (s) => s.length <= 200),
+    return { align: S.oneOf(P.align, ALIGNS, d.align, `${p}.align`), titleText: tpl(S, P.titleText, d.titleText, `${p}.titleText`, TEMPLATE_KEYS.TRACK_INFO),
+      titleStyle: textRef(S, P.titleStyle, d.titleStyle, `${p}.titleStyle`), artistText: tpl(S, P.artistText, d.artistText, `${p}.artistText`, TEMPLATE_KEYS.TRACK_INFO),
       artistStyle: textRef(S, P.artistStyle, d.artistStyle, `${p}.artistStyle`) };
   },
   EVENT_COUNTER(P: Obj, p: string, S: Sanitizer): EventCounterProps {
@@ -485,8 +489,8 @@ const HUD_SANITIZERS = {
   TIME_BAR(P: Obj, p: string, S: Sanitizer): TimeBarProps {
     const d = DEFAULT_TIME_BAR, tm = isObj(P.time) ? P.time : {}, bt = isObj(P.beat) ? P.beat : {};
     return { style: textRef(S, P.style, d.style, `${p}.style`), labelStyle: textRef(S, P.labelStyle, d.labelStyle, `${p}.labelStyle`), rowGap: S.num(P.rowGap, d.rowGap, 1, 5, `${p}.rowGap`),
-      time: { enabled: S.bool(tm.enabled, d.time.enabled, `${p}.time.enabled`), label: S.str(tm.label, d.time.label, `${p}.time.label`, (s) => s.length <= 40), format: S.oneOf(tm.format, ['grouped', 'clock'] as const, d.time.format, `${p}.time.format`) },
-      beat: { enabled: S.bool(bt.enabled, d.beat.enabled, `${p}.beat.enabled`), label: S.str(bt.label, d.beat.label, `${p}.beat.label`, (s) => s.length <= 40), format: S.oneOf(bt.format, ['grouped', 'bbs'] as const, d.beat.format, `${p}.beat.format`) },
+      time: { enabled: S.bool(tm.enabled, d.time.enabled, `${p}.time.enabled`), label: tpl(S, tm.label, d.time.label, `${p}.time.label`, TEMPLATE_KEYS.TIME_BAR, 40), format: S.oneOf(tm.format, ['grouped', 'clock'] as const, d.time.format, `${p}.time.format`) },
+      beat: { enabled: S.bool(bt.enabled, d.beat.enabled, `${p}.beat.enabled`), label: tpl(S, bt.label, d.beat.label, `${p}.beat.label`, TEMPLATE_KEYS.TIME_BAR, 40), format: S.oneOf(bt.format, ['grouped', 'bbs'] as const, d.beat.format, `${p}.beat.format`) },
       timeGroups: groups(S, P.timeGroups, d.timeGroups, `${p}.timeGroups`), beatGroups: groups(S, P.beatGroups, d.beatGroups, `${p}.beatGroups`),
       showBars: S.bool(P.showBars, d.showBars, `${p}.showBars`), barLength: S.num(P.barLength, d.barLength, 4, 1000, `${p}.barLength`), barThickness: S.num(P.barThickness, d.barThickness, 0.5, 40, `${p}.barThickness`),
       barColor: S.str(P.barColor, d.barColor, `${p}.barColor`, (s) => HEX.test(s)), barTrackColor: S.str(P.barTrackColor, d.barTrackColor, `${p}.barTrackColor`, (s) => s === '' || HEX.test(s)) };
@@ -496,7 +500,12 @@ const HUD_SANITIZERS = {
     return { mode: S.oneOf(P.mode, ['sustained', 'strike'] as const, d.mode, `${p}.mode`), align: S.oneOf(P.align, ALIGNS, d.align, `${p}.align`), nameStyle: textRef(S, P.nameStyle, d.nameStyle, `${p}.nameStyle`), bassStyle: textRef(S, P.bassStyle, d.bassStyle, `${p}.bassStyle`),
       notesStyle: textRef(S, P.notesStyle, d.notesStyle, `${p}.notesStyle`), notesValueStyle: textRef(S, P.notesValueStyle, d.notesValueStyle, `${p}.notesValueStyle`),
       alwaysShowNotes: S.bool(P.alwaysShowNotes, d.alwaysShowNotes, `${p}.alwaysShowNotes`), notesTemplate: tpl(S, P.notesTemplate, d.notesTemplate, `${p}.notesTemplate`, TEMPLATE_KEYS.CHORD_DETECTION),
-      unrecognized: S.oneOf(P.unrecognized, ['nc', 'notes'] as const, d.unrecognized, `${p}.unrecognized`), noChordText: S.str(P.noChordText, d.noChordText, `${p}.noChordText`, (s) => s.length <= 20) };
+      unrecognized: S.oneOf(P.unrecognized, ['nc', 'notes'] as const, d.unrecognized, `${p}.unrecognized`), noChordText: tpl(S, P.noChordText, d.noChordText, `${p}.noChordText`, TEMPLATE_KEYS.CHORD_DETECTION, 20) };
+  },
+  TEXT(P: Obj, p: string, S: Sanitizer): TextBoxProps {
+    const d = DEFAULT_TEXT_BOX;
+    return { align: S.oneOf(P.align, ALIGNS, d.align, `${p}.align`), text: tpl(S, P.text, d.text, `${p}.text`, TEMPLATE_KEYS.TEXT, 2000),
+      style: textRef(S, P.style, d.style, `${p}.style`), valueStyle: textRef(S, P.valueStyle, d.valueStyle, `${p}.valueStyle`) };
   },
   PROGRESS_BAR(P: Obj, p: string, S: Sanitizer): ProgressBarProps {
     const d = DEFAULT_PROGRESS_BAR;

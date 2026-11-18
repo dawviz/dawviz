@@ -1,6 +1,6 @@
 // T-07: kiểm thử cấp ứng dụng cho hoàn tác. Dựng App thật (Render Core, store, phím tắt), chỉ giả phần tải tệp (Worker) và phông.
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act, within } from '@testing-library/react';
 
 vi.mock('../src/lib/parseInWorker.ts', async () => {
   const { synthAst } = await import('../../../packages/render-core/test/helpers.ts');
@@ -508,6 +508,41 @@ describe('thẻ Editor (T-68)', () => {
     fireEvent.keyDown(screen.getByTestId('editor'), { key: 'Delete' });
     expect(count()).toBe(n0 + 1);
     ctrlZ(); await waitFor(() => expect(count()).toBe(n0 + 2));
+  });
+  it('T-73: thêm Ô chữ, gõ { hiện gợi ý chỗ giữ, bấm gợi ý điền {tên}; Enter ở ô nhiều dòng không áp, rời ô mới áp (một bước hoàn tác)', async () => {
+    await openProject();
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    fireEvent.click(screen.getByTestId('layers-add'));
+    fireEvent.click(screen.getByRole('menuitem', { name: /^(Text box|Ô chữ)$/ }));
+    const box = within(screen.getByTestId('widget-settings')).getByRole('textbox') as HTMLTextAreaElement;
+    expect(box.tagName).toBe('TEXTAREA');
+    expect(screen.queryByTestId('placeholder-hints')).toBeNull();
+    box.focus();
+    fireEvent.change(box, { target: { value: 'BPM {bp', selectionStart: 7, selectionEnd: 7 } });
+    box.setSelectionRange(7, 7); fireEvent.select(box);
+    const hints = await screen.findByTestId('placeholder-hints');
+    expect(hints.textContent).toBe('{bpm}');
+    fireEvent.click(within(hints).getByRole('button', { name: '{bpm}' }));
+    expect(box.value).toBe('BPM {bpm}');
+    expect(undoBtn().title).toMatch(/Add Text box|Thêm Ô chữ/); // chưa áp: còn đang gõ, bước cuối vẫn là lúc thêm
+    fireEvent.blur(box);
+    expect(undoBtn().title).not.toMatch(/Add Text box|Thêm Ô chữ/); // đã áp chữ: một bước mới
+  });
+  it('T-73: Ô chữ chọn track riêng (Cơ bản): chuyển sang Chọn track hiện danh sách; bỏ tick một track là một bước hoàn tác; hoàn tác trả lại', async () => {
+    await openProject();
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    fireEvent.click(screen.getByTestId('layers-add'));
+    fireEvent.click(screen.getByRole('menuitem', { name: /^(Text box|Ô chữ)$/ }));
+    const picker = screen.getByTestId('widget-tracks');
+    expect(within(picker).queryAllByRole('checkbox')).toHaveLength(0);
+    fireEvent.click(within(picker).getByRole('radio', { name: /^(Choose|Chọn track)$/ }));
+    const boxes = within(screen.getByTestId('widget-tracks')).getAllByRole('checkbox') as HTMLInputElement[];
+    expect(boxes.length).toBeGreaterThan(1);
+    expect(boxes.every((b) => b.checked)).toBe(true);
+    fireEvent.click(boxes[0]);
+    expect((within(screen.getByTestId('widget-tracks')).getAllByRole('checkbox')[0] as HTMLInputElement).checked).toBe(false);
+    ctrlZ();
+    await waitFor(() => expect((within(screen.getByTestId('widget-tracks')).getAllByRole('checkbox')[0] as HTMLInputElement).checked).toBe(true));
   });
   it('T-68: chọn nhiều widget có mục Căn chỉnh; căn trái đưa mọi widget về cùng mép', async () => {
     await openProject();

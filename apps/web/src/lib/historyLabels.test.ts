@@ -42,7 +42,7 @@ test('mọi loại lệnh có nhãn đã dịch (en và vi), không lộ khoá t
   go((d) => C.setAllHidden(d, true)); go((d) => C.setAllHidden(d, false)); go((d) => C.moveTrack(d, 'a', 1));
   go((d) => C.setVideoStyle(d, 'default')); go((d) => C.loadPreset(d, defaultScene('9:16'))); go((d) => C.setVideoStyle(d, 'paper'));
   go((d) => C.patchLayout(d, 'piano-roll', { x: 100, width: 300 })); go((d) => C.patchLayout(d, 'piano-roll', { x: 120 }));
-  go((d) => C.patchWidgetProps(d, 'piano-roll', { lookaheadSeconds: 5 })); go((d) => C.setWidgetVisible(d, 'track-info', false)); go((d) => C.reorderZ(d, 'piano-roll', 'front'));
+  go((d) => C.patchWidgetProps(d, 'piano-roll', { lookaheadSeconds: 5 })); go((d) => C.setWidgetVisible(d, 'track-info', false)); go((d) => C.setWidgetTracks(d, 'track-info', 'MANUAL', [0])); go((d) => C.reorderZ(d, 'piano-roll', 'front'));
   go((d) => C.moveLayer(d, C.layerOrder(d.scene).at(-1)!, 0)); go((d) => C.toggleSolo(d, 'b')); go((d) => C.clearSolo(d));
   go((d) => C.toggleAllWidgetsVisible(d)); go((d) => C.toggleAllWidgetsVisible(d));
   go((d) => C.patchSnapping(d, { gridSize: 16 }));

@@ -12,8 +12,8 @@
         "locales/en.json#web.number."
       ],
       "uiHash": "6d90d8951bae",
-      "viHash": "21ff6103b3dd",
-      "enHash": "e135f99a2dcc",
+      "viHash": "8e74d1ef7973",
+      "enHash": "1909c625d4b8",
       "coverHashes": {
         "apps/web/src/lib/numberInput.ts": "8e27c53523c3",
         "apps/web/src/components/NumberField.tsx": "f7668b64f388",
@@ -97,9 +97,9 @@
         "apps/web/src/components/WidgetSettings.tsx",
         "locales/en.json#web.ws."
       ],
-      "uiHash": "b78f4059a05d",
-      "viHash": "8af2a8028a7a",
-      "enHash": "cfb97514a631",
+      "uiHash": "63ddb7283689",
+      "viHash": "1f04d23ed312",
+      "enHash": "4d1b9365f399",
       "coverHashes": {
         "apps/web/src/components/Editor.tsx": "46f6fdd4cf4f",
         "apps/web/src/components/EditorOverlay.tsx": "3f83719e6d7e",
@@ -110,9 +110,9 @@
         "locales/en.json#web.keyboard.": "e1b6968f1e6b",
         "locales/en.json#web.playhead.": "326a6b222302",
         "apps/web/src/components/TextPanel.tsx": "f5eec83fb1fe",
-        "locales/en.json#web.text.": "9409aadac6ce",
-        "apps/web/src/components/WidgetSettings.tsx": "b6442567f71b",
-        "locales/en.json#web.ws.": "5f5407c3d23a"
+        "locales/en.json#web.text.": "1dcb3963c82b",
+        "apps/web/src/components/WidgetSettings.tsx": "b1f185884d2f",
+        "locales/en.json#web.ws.": "9677986d0ac3"
       }
     },
     "04-cai-dat": {
@@ -187,6 +187,23 @@
         "apps/web/src/lib/exportDiagnostics.ts": "b740749c40ff",
         "locales/en.json#web.export.diagnose": "495dccd042ca",
         "locales/en.json#web.sample": "4febfe1aa8cf"
+      }
+    },
+    "08-cho-giu": {
+      "vi": "docs/manual/08-cho-giu.md",
+      "en": "docs/manual/en/08-placeholders.md",
+      "covers": [
+        "apps/web/src/components/WidgetSettings.tsx",
+        "locales/en.json#web.ws.",
+        "locales/en.json#web.widget."
+      ],
+      "uiHash": "a4404ff52a5c",
+      "viHash": "4a81905e767c",
+      "enHash": "47549309992d",
+      "coverHashes": {
+        "apps/web/src/components/WidgetSettings.tsx": "b1f185884d2f",
+        "locales/en.json#web.ws.": "9677986d0ac3",
+        "locales/en.json#web.widget.": "70b8b49ee4f7"
       }
     }
   }

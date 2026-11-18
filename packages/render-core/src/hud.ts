@@ -5,8 +5,9 @@ import { detect } from '@tonaljs/chord-detect';
 import { notesInRange, type TimelineIndex, type TrackIndex } from './notes.ts';
 import type { ASTNote, TempoPoint, UnifiedProjectAST } from './types.ts';
 import type { Derived, Primitive, RectPrim, WidgetRenderer } from './prims.ts';
-import { clockMs, fixed, groupDigits, pad, type Measure } from './text.ts';
+import { fixed, groupDigits, pad, type Measure } from './text.ts';
 import { pitchName } from './music.ts';
+import { listV, numV, timeV, type PV } from './placeholders.ts';
 import { DEFAULT_TEXT_STYLES, resolveTextStyle, templateSpans, textPrims, textWidth, type Align, type TextRef, type TextSpan, type TextStyle, type TextStyleSet } from './typography.ts';
 
 // ───────────────────────────── thuộc tính ─────────────────────────────
@@ -25,6 +26,8 @@ export interface TimeBarProps {
   timeGroups: [number, number, number]; beatGroups: [number, number, number];
   showBars: boolean; barLength: number; barThickness: number; barColor: string; barTrackColor: string;
 }
+/** Ô chữ người dùng thêm (T-73, REQ-GRAPHICS-19): chữ nhiều dòng, có chỗ giữ dùng chung. `style`: kiểu của dòng; `valueStyle`: ghi đè cho phần giá trị của chỗ giữ. */
+export interface TextBoxProps { align: Align; text: string; style: TextRef; valueStyle: TextRef }
 export type ChordMode = 'sustained' | 'strike';
 export interface ChordProps { mode: ChordMode; align: Align; nameStyle: TextRef; bassStyle: TextRef; notesStyle: TextRef; notesValueStyle: TextRef; alwaysShowNotes: boolean; notesTemplate: string; unrecognized: 'nc' | 'notes'; noChordText: string }
 export interface ProgressBarProps { orientation: 'HORIZONTAL' | 'VERTICAL'; thickness: number; progressColor: string; trackColor: string; radius: number; showTime: boolean; timeStyle: TextRef; timeValueStyle: TextRef; timeTemplate: string; timeAlign: Align }
@@ -37,18 +40,19 @@ export const TEXT_FIELDS = {
   TIME_BAR: { style: 'clock', labelStyle: 'label' },
   CHORD_DETECTION: { nameStyle: 'heading', bassStyle: null, notesStyle: 'body', notesValueStyle: null },
   PROGRESS_BAR: { timeStyle: 'tiny', timeValueStyle: null },
+  TEXT: { style: 'body', valueStyle: null },
 } as const satisfies Record<string, Record<string, keyof typeof DEFAULT_TEXT_STYLES | null>>;
 /** Ghi đè một đoạn → trường của dòng chứa nó (kiểu gốc của đoạn là kiểu thật của dòng đó). */
 export const TEXT_SPAN_OF = {
   EVENT_COUNTER: { valueStyle: 'style' }, LIVE_TRIGGER: { valueStyle: 'style' },
-  CHORD_DETECTION: { bassStyle: 'nameStyle', notesValueStyle: 'notesStyle' }, PROGRESS_BAR: { timeValueStyle: 'timeStyle' },
+  CHORD_DETECTION: { bassStyle: 'nameStyle', notesValueStyle: 'notesStyle' }, PROGRESS_BAR: { timeValueStyle: 'timeStyle' }, TEXT: { valueStyle: 'style' },
 } as const;
 const ts = (styleId: string): TextRef => ({ styleId });
 export const DEFAULT_TRACK_INFO: Readonly<TrackInfoProps> = Object.freeze({ align: 'left', titleText: '', titleStyle: ts('title'), artistText: '', artistStyle: ts('subtitle') });
 export const DEFAULT_EVENT_COUNTER: Readonly<EventCounterProps> = Object.freeze({
   align: 'right', style: ts('counter'), valueStyle: {}, lineHeight: 1.45, decimals: 2,
   lines: { played: { enabled: true, template: 'Num played notes: {played}/{total} ({pct})' }, total: { enabled: false, template: 'Num events: {total}' },
-    progress: { enabled: false, template: 'Progress: {pct}' }, tempo: { enabled: false, template: 'Tempo: {tempo} BPM' } },
+    progress: { enabled: false, template: 'Progress: {pct}' }, tempo: { enabled: false, template: 'Tempo: {bpm} BPM' } },
 });
 export const DEFAULT_LIVE_TRIGGER: Readonly<LiveTriggerProps> = Object.freeze({
   mode: 'list', align: 'right', style: ts('caption'), valueStyle: {}, template: 'Note: {name} (Vel: {velocity})', showTrack: false, trackTemplate: '< {track}',
@@ -69,10 +73,12 @@ export const DEFAULT_PROGRESS_BAR: Readonly<ProgressBarProps> = Object.freeze({
   timeStyle: ts('tiny'), timeValueStyle: {}, timeTemplate: '{elapsed} / {total}', timeAlign: 'right',
 });
 
-/** Chỗ giữ được phép dùng trong mẫu chữ theo widget (preset dùng chỗ giữ lạ → cảnh báo, chữ giữ nguyên). */
+export const DEFAULT_TEXT_BOX: Readonly<TextBoxProps> = Object.freeze({ align: 'left', text: 'Text', style: ts('body'), valueStyle: {} });
+
+/** Chỗ giữ RIÊNG của từng widget (che chỗ giữ chung cùng tên). Chỗ giữ chung (GLOBAL_KEYS) dùng được ở mọi chữ; preset dùng chỗ giữ lạ → cảnh báo, chữ giữ nguyên. */
 export const TEMPLATE_KEYS = {
-  EVENT_COUNTER: ['played', 'total', 'pct', 'tempo'], LIVE_TRIGGER: ['name', 'velocity', 'track', 'pitch'],
-  CHORD_DETECTION: ['notes', 'chord'], PROGRESS_BAR: ['elapsed', 'total', 'remaining', 'pct'],
+  EVENT_COUNTER: ['played', 'total', 'pct'], LIVE_TRIGGER: ['name', 'velocity', 'track', 'pitch'],
+  CHORD_DETECTION: ['notes', 'chord'], PROGRESS_BAR: ['elapsed', 'total', 'remaining', 'pct'], TRACK_INFO: [], TIME_BAR: [], TEXT: [],
 } as const;
 
 // ───────────────────────────── dữ liệu dẫn xuất ─────────────────────────────
@@ -203,6 +209,48 @@ function chordAt(segs: ChordSeg[], t: number): ChordSeg | null {
   return r >= 0 && t < segs[r].end && segs[r].pitches.length ? segs[r] : null;
 }
 
+// ───────────────────────────── chỗ giữ dùng chung (T-73, D-60) ─────────────────────────────
+/** Nguồn của chỗ giữ chung: dự án, dữ liệu dẫn xuất, các track của widget đang vẽ. */
+export interface PlaceholderSource { ast: UnifiedProjectAST; derived: Derived; tracks: TrackIndex[] }
+/** Tập chỗ giữ chung tại `t`. Mỗi giá trị chỉ tính khi mẫu thật sự dùng tới (getter, đệm trong một lần vẽ), nên mẫu không có `{…}` không tốn gì. */
+export function globalValues(src: PlaceholderSource, t: number): Record<string, PV> {
+  const { ast, derived, tracks } = src, memo = new Map<string, PV>();
+  const hud = () => hudOf(derived, ast), tt = Math.max(0, t), dur = derived.index.duration;
+  let pos: BarPos | null = null; const bar = () => (pos ??= barPosAt(hud().bars, t));
+  let counts: { played: number; total: number } | null = null;
+  const count = () => {
+    if (counts) return counts;
+    let played = 0, total = 0;
+    for (const ti of shown(tracks)) { const s = hud().starts.get(ti.track.id); if (!s) continue; total += s.length; played += upperBound(s, t); }
+    return (counts = { played, total });
+  };
+  const active = () => { // mọi nốt đang vang của các track đã chọn, thấp → cao
+    const set = new Set<number>();
+    for (const ti of shown(tracks)) for (const n of notesInRange(ti, t, t)) if (n.startTimeSeconds <= t && t < n.endTimeSeconds) set.add(n.pitch);
+    return [...set].sort((a, b) => a - b).map((p) => pitchName(p));
+  };
+  const make: Record<string, () => PV> = {
+    time: () => timeV(tt), elapsed: () => timeV(tt), remaining: () => timeV(Math.max(0, dur - t)), total_time: () => timeV(dur),
+    bpm: () => numV(bar().bpm, String(Math.round(bar().bpm * 100) / 100)), tempo: () => numV(bar().bpm, String(Math.round(bar().bpm * 100) / 100)), // tempo = tên cũ của bpm
+    bar: () => bar().bar, beat: () => bar().beat, sig: () => `${bar().num}/${bar().den}`,
+    title: () => ast.meta.title ?? '', artist: () => (ast.meta as { artist?: string }).artist ?? '',
+    chord: () => chordAt(hud().chords.get(chordKey(shown(tracks))) ?? [], t)?.name ?? '', notes: () => listV(active()),
+    played: () => count().played, total: () => count().total,
+    pct: () => { const c = count(), v = c.total ? c.played / c.total * 100 : 0; return numV(v, String(Math.round(v))); },
+  };
+  const out: Record<string, PV> = {};
+  for (const k of Object.keys(make)) Object.defineProperty(out, k, { enumerable: true, get: () => { let v = memo.get(k); if (v === undefined) memo.set(k, v = make[k]()); return v; } });
+  return out;
+}
+/** Giá trị riêng của widget che giá trị chung cùng tên (`{total}` của Thanh tiến độ là thời lượng, không phải số nốt). */
+export function withLocals(glob: Record<string, PV>, local: Record<string, PV>): Record<string, PV> {
+  const out = Object.create(glob) as Record<string, PV>;
+  for (const k of Object.keys(local)) Object.defineProperty(out, k, { value: local[k], enumerable: true }); // defineProperty: không bị getter của bộ chung chặn
+  return out;
+}
+/** Mẫu của mọi widget có dùng `{chord` thì nhóm track của nó cần dựng dòng thời gian hợp âm ở bước derived. */
+export const usesChordPlaceholder = (w: { properties: unknown }) => JSON.stringify(w.properties).includes('{chord');
+
 // ───────────────────────────── trợ giúp vẽ chữ ─────────────────────────────
 const xFor = (align: Align, width: number) => (align === 'left' ? 0 : align === 'center' ? width / 2 : width);
 /** Bộ dựng chữ của một lần layout: kiểu của scene + hàm đo. `text` thêm primitive vào `out`, trả bước tiến dọc (chữ xuống dòng cao hơn một dòng). */
@@ -228,14 +276,16 @@ const pct = (v: number) => Math.min(1, Math.max(0, Number.isFinite(v) ? v : 0));
 // ───────────────────────────── widget ─────────────────────────────
 export const trackInfoRenderer: WidgetRenderer<TrackInfoProps> = {
   type: 'TRACK_INFO',
-  layout({ ast, measure, textStyles, fonts }, spec) {
+  layout({ ast, derived, tracks, measure, textStyles, fonts }, spec, t) {
     const p = spec.properties, W = spec.layout.width, x = xFor(p.align, W), out: Primitive[] = [], T = typo(textStyles, measure, fonts);
     const ts1 = T.style(p.titleStyle, 'title'), ts2 = T.style(p.artistStyle, 'subtitle');
-    const title = p.titleText || ast.meta.title || '', artist = p.artistText || (ast.meta as { artist?: string }).artist || '';
+    const G = globalValues({ ast, derived, tracks }, t);
+    const title: string | TextSpan[] = p.titleText ? templateSpans(p.titleText, G) : ast.meta.title || '';
+    const artist: string | TextSpan[] = p.artistText ? templateSpans(p.artistText, G) : (ast.meta as { artist?: string }).artist || '';
     const y1 = ts1.size * 0.8;
     // Tên bài xuống nhiều dòng (kiểu bật wrap) đẩy dòng nghệ sĩ xuống theo số dòng thật.
-    const extra = title ? T.text(out, title, x, y1, ts1, p.align, W) - ts1.size * ts1.leading : 0;
-    if (artist) T.text(out, artist, x, (title ? y1 + Math.max(0, extra) : 0) + ts2.size * (title ? 1.5 : 0.8), ts2, p.align, W);
+    const extra = title.length ? T.text(out, title, x, y1, ts1, p.align, W) - ts1.size * ts1.leading : 0;
+    if (artist.length) T.text(out, artist, x, (title.length ? y1 + Math.max(0, extra) : 0) + ts2.size * (title.length ? 1.5 : 0.8), ts2, p.align, W);
     return out;
   },
 };
@@ -247,8 +297,9 @@ export const eventCounterRenderer: WidgetRenderer<EventCounterProps> = {
     const st = T.style(p.style, 'counter');
     let played = 0, total = 0;
     for (const ti of shown(tracks)) { const s = hud.starts.get(ti.track.id); if (!s) continue; total += s.length; played += upperBound(s, t); }
-    const bpm = barPosAt(hud.bars, t).bpm;
-    const v = { played, total, pct: `${fixed(total ? played / total * 100 : 0, p.decimals)}%`, tempo: String(Math.round(bpm * 100) / 100) };
+    const share = total ? played / total * 100 : 0;
+    // `{pct}` giữ chữ cũ kèm "%" (số chữ số theo `decimals`); có định dạng thì ra số trần: `{pct:0.0}`.
+    const v = withLocals(globalValues({ ast, derived, tracks }, t), { played, total, pct: numV(share, `${fixed(share, p.decimals)}%`) });
     let row = 0;
     for (const k of ['played', 'total', 'progress', 'tempo'] as const) {
       const cfg = p.lines[k]; if (!cfg.enabled) continue;
@@ -260,7 +311,7 @@ export const eventCounterRenderer: WidgetRenderer<EventCounterProps> = {
 
 export const liveTriggerRenderer: WidgetRenderer<LiveTriggerProps> = {
   type: 'LIVE_TRIGGER',
-  layout({ tracks, measure, textStyles, fonts }, spec, t) {
+  layout({ ast, derived, tracks, measure, textStyles, fonts }, spec, t) {
     const p = spec.properties, W = spec.layout.width, out: Primitive[] = [], tail = p.tailMs / 1000, T = typo(textStyles, measure, fonts);
     const st = T.style(p.style, 'caption');
     const items: { n: ASTNote; track: TrackIndex; alpha: number }[] = [];
@@ -271,12 +322,13 @@ export const liveTriggerRenderer: WidgetRenderer<LiveTriggerProps> = {
     }
     items.sort((a, b) => b.n.pitch - a.n.pitch || a.track.track.index - b.track.track.index || a.n.startTimeSeconds - b.n.startTimeSeconds);
     if (!items.length) return out;
-    const label = (it: typeof items[number]) => templateSpans(p.template, { name: pitchName(it.n.pitch), velocity: Math.round(it.n.velocity), track: it.track.track.name, pitch: it.n.pitch }, p.valueStyle);
+    const G = globalValues({ ast, derived, tracks }, t);
+    const label = (it: typeof items[number]) => templateSpans(p.template, withLocals(G, { name: pitchName(it.n.pitch), velocity: Math.round(it.n.velocity), track: it.track.track.name, pitch: it.n.pitch }), p.valueStyle);
     const w = (s: string | readonly TextSpan[]) => T.width(s, st), y = base(st.size);
     if (p.mode === 'list') {
       const shownItems = items.slice(0, p.maxLines), more = items.length - shownItems.length;
       shownItems.forEach((it, i) => {
-        const s = [...label(it), ...(p.showTrack ? templateSpans(' ' + p.trackTemplate, { track: it.track.track.name }, p.valueStyle) : [])];
+        const s = [...label(it), ...(p.showTrack ? templateSpans(' ' + p.trackTemplate, withLocals(G, { track: it.track.track.name }), p.valueStyle) : [])];
         T.text(out, s, xFor(p.align, W), y + i * st.size * p.lineHeight, st, p.align, W, it.alpha);
       });
       if (more > 0) T.text(out, `+${more}`, xFor(p.align, W), y + shownItems.length * st.size * p.lineHeight, st, p.align, W, 1);
@@ -284,7 +336,7 @@ export const liveTriggerRenderer: WidgetRenderer<LiveTriggerProps> = {
     }
     // Một dòng ngang: nối các nốt (cao → thấp), hậu tố tên track một lần cuối dòng; quá rộng thì bỏ nốt thấp nhất, thêm "+N".
     const names = (list: typeof items) => [...new Set(list.map((it) => it.track.track.name))].join(', ');
-    const suffix = (list: typeof items): TextSpan[] => (p.showTrack ? templateSpans(p.trackTemplate, { track: names(list) }, p.valueStyle) : []);
+    const suffix = (list: typeof items): TextSpan[] => (p.showTrack ? templateSpans(p.trackTemplate, withLocals(G, { track: names(list) }), p.valueStyle) : []);
     // O(n) mỗi khung (trước đây O(n²): mỗi lần thử bớt một nốt lại đo lại toàn bộ). Cộng dồn đúng thứ tự cũ nên kết quả số học giữ nguyên.
     let keep = items.length, dropped = 0;
     const sepW0 = w(p.separator), prefix: number[] = [0], sfxW: number[] = [0], seen = new Set<string>(), nameList: string[] = [];
@@ -314,8 +366,9 @@ export const liveTriggerRenderer: WidgetRenderer<LiveTriggerProps> = {
 
 export const timeBarRenderer: WidgetRenderer<TimeBarProps> = {
   type: 'TIME_BAR',
-  layout({ ast, derived, measure, textStyles, fonts }, spec, t) {
+  layout({ ast, derived, tracks, measure, textStyles, fonts }, spec, t) {
     const p = spec.properties, W = spec.layout.width, hud = hudOf(derived, ast), out: Primitive[] = [], T = typo(textStyles, measure, fonts);
+    const G = globalValues({ ast, derived, tracks }, t);
     const st = T.style(p.style, 'clock'), lst = T.style(p.labelStyle, 'label');
     const pos = barPosAt(hud.bars, t), tt = Math.max(0, t);
     const totalMs = Math.floor(tt * 1000 + 1e-6), m = Math.floor(totalMs / 60000), s = Math.floor(totalMs / 1000) % 60, ms = totalMs % 1000; // số nguyên ms: không lệch do dấu phẩy động
@@ -327,7 +380,7 @@ export const timeBarRenderer: WidgetRenderer<TimeBarProps> = {
       T.text(out, r.text, 0, y, st, 'left', W);
       if (r.cfg.label) {
         const nx = stableWidth(T, r.text, st) + 6;
-        T.text(out, r.cfg.label, nx, y - st.size * 0.62, lst, 'left', Math.max(0, W - nx));
+        T.text(out, templateSpans(r.cfg.label, G), nx, y - st.size * 0.62, lst, 'left', Math.max(0, W - nx));
       }
       if (r.bars) { // hai vạch mảnh: tiến độ trong beat, rồi trong ô nhịp
         const bh = p.barThickness, L = Math.min(p.barLength, W);
@@ -352,7 +405,8 @@ export const chordRenderer: WidgetRenderer<ChordProps> = {
     const seg = chordAt(hudOf(derived, ast).chords.get(chordKey(shown(tracks), p.mode)) ?? [], t);
     const notes = seg ? seg.pitches.map((n) => pitchName(n)).join(' ') : '';
     const name = seg?.name ?? null;
-    const notesLine = notes ? templateSpans(p.notesTemplate, { notes, chord: name ?? '' }, p.notesValueStyle) : [];
+    const G = globalValues({ ast, derived, tracks }, t);
+    const notesLine = notes ? templateSpans(p.notesTemplate, withLocals(G, { notes: listV(seg!.pitches.map((n) => pitchName(n))), chord: name ?? '' }), p.notesValueStyle) : [];
     const y1 = nst.size * 0.85;
     if (name) {
       T.text(out, chordSpans(name, p.bassStyle), x, y1, nst, p.align, W);
@@ -360,7 +414,7 @@ export const chordRenderer: WidgetRenderer<ChordProps> = {
     } else if (seg) { // có nốt nhưng không nhận diện được: "N.C." hoặc danh sách nốt
       if (p.unrecognized === 'notes' && notesLine.length) T.text(out, notesLine, x, base(bst.size), bst, p.align, W);
       else if (p.unrecognized === 'nc') {
-        T.text(out, p.noChordText, x, y1, nst, p.align, W);
+        T.text(out, templateSpans(p.noChordText, G), x, y1, nst, p.align, W);
         if (p.alwaysShowNotes && notesLine.length) T.text(out, notesLine, x, y1 + bst.size * 1.6, bst, p.align, W);
       }
     }
@@ -370,18 +424,33 @@ export const chordRenderer: WidgetRenderer<ChordProps> = {
 
 export const progressBarRenderer: WidgetRenderer<ProgressBarProps> = {
   type: 'PROGRESS_BAR',
-  layout({ derived, measure, textStyles, fonts }, spec, t) {
+  layout({ ast, derived, tracks, measure, textStyles, fonts }, spec, t) {
     const p = spec.properties, { width: W, height: H } = spec.layout, out: Primitive[] = [], T = typo(textStyles, measure, fonts);
     const dur = derived.index.duration, P = dur > 0 ? pct(t / dur) : 0, th = Math.min(p.thickness, p.orientation === 'HORIZONTAL' ? H : W);
     if (p.orientation === 'HORIZONTAL') {
       const y = H - th;
       if (p.trackColor) out.push(block(0, y, W, th, p.trackColor, p.radius));
       if (P > 0) out.push(block(0, y, W * P, th, p.progressColor, p.radius));
-      if (p.showTime) T.text(out, templateSpans(p.timeTemplate, { elapsed: clockMs(t), total: clockMs(dur), remaining: clockMs(Math.max(0, dur - t)), pct: `${Math.round(P * 100)}%` }, p.timeValueStyle),
+      if (p.showTime) T.text(out, templateSpans(p.timeTemplate, withLocals(globalValues({ ast, derived, tracks }, t), { elapsed: timeV(t), total: timeV(dur), remaining: timeV(Math.max(0, dur - t)), pct: numV(P * 100, `${Math.round(P * 100)}%`) }), p.timeValueStyle),
         xFor(p.timeAlign, W), y - 4, T.style(p.timeStyle, 'tiny'), p.timeAlign, W);
     } else {
       if (p.trackColor) out.push(block(W - th, 0, th, H, p.trackColor, p.radius));
       if (P > 0) out.push(block(W - th, H * (1 - P), th, H * P, p.progressColor, p.radius));
+    }
+    return out;
+  },
+};
+
+/** Ô chữ (T-73): mỗi dòng của `text` là một mẫu; xuống dòng cao theo kiểu chữ, dòng trống vẫn chiếm một dòng. */
+export const textBoxRenderer: WidgetRenderer<TextBoxProps> = {
+  type: 'TEXT',
+  layout({ ast, derived, tracks, measure, textStyles, fonts }, spec, t) {
+    const p = spec.properties, W = spec.layout.width, x = xFor(p.align, W), out: Primitive[] = [], T = typo(textStyles, measure, fonts);
+    const st = T.style(p.style, 'body'), G = globalValues({ ast, derived, tracks }, t);
+    let y = base(st.size);
+    for (const line of p.text.split('\n')) {
+      const spans = templateSpans(line, G, p.valueStyle);
+      y += spans.length ? T.text(out, spans, x, y, st, p.align, W) : st.size * st.leading;
     }
     return out;
   },
@@ -396,5 +465,5 @@ export function chordSpans(name: string, bassStyle?: TextRef): TextSpan[] {
 
 export const HUD_RENDERERS = {
   TRACK_INFO: trackInfoRenderer, EVENT_COUNTER: eventCounterRenderer, LIVE_TRIGGER: liveTriggerRenderer,
-  TIME_BAR: timeBarRenderer, CHORD_DETECTION: chordRenderer, PROGRESS_BAR: progressBarRenderer,
+  TIME_BAR: timeBarRenderer, CHORD_DETECTION: chordRenderer, PROGRESS_BAR: progressBarRenderer, TEXT: textBoxRenderer,
 } as const;

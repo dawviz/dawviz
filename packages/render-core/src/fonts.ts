@@ -66,7 +66,7 @@ export function charsOfScene(scene: SceneDocument, ast: { meta?: { title?: strin
   return out.join('');
 }
 /** Scene có vẽ chữ không (để biết có cần chờ phông). */
-export const needsFonts = (scene: SceneDocument) => scene.widgets.some((w) => w.visible && ['TRACK_INFO', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'PROGRESS_BAR'].includes(w.type));
+export const needsFonts = (scene: SceneDocument) => scene.widgets.some((w) => w.visible && ['TRACK_INFO', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'PROGRESS_BAR', 'TEXT'].includes(w.type));
 
 export class FontLoadError extends Error { code = 'ERR_FONT_LOAD'; constructor(message: string) { super(message); } }
 /** Nạp một mặt phông; ném khi thất bại. Preview/Worker tự cài (FontFace + fonts.add). */

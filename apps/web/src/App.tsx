@@ -5,7 +5,7 @@
 // nên thành phần này không vẽ lại mỗi khung hình. Không có logic vẽ ở đây: khung hình = renderFrame của Render Core.
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { LayoutGroup, MotionConfig } from 'framer-motion';
-import { DEFAULT_BRIGHTNESS, DEFAULT_KEYBOARD_STYLE, defaultStyleConfig, sanitizeBrightness, buildIndex, buildSceneHud, type Derived, type SceneDocument, type BrightnessConfig, type NoteStyle, type StyleConfig, type KeyboardStyle, type UnifiedProjectAST, type WidgetSpec, DEFAULT_TEXT_STYLES, createWidget, duplicateWidget, DEFAULT_CHORD, DEFAULT_EVENT_COUNTER, DEFAULT_LIVE_TRIGGER, DEFAULT_PROGRESS_BAR, DEFAULT_TIME_BAR } from '@dawviz/render-core';
+import { usesChordPlaceholder, DEFAULT_BRIGHTNESS, DEFAULT_KEYBOARD_STYLE, defaultStyleConfig, sanitizeBrightness, buildIndex, buildSceneHud, type Derived, type SceneDocument, type BrightnessConfig, type NoteStyle, type StyleConfig, type KeyboardStyle, type UnifiedProjectAST, type WidgetSpec, DEFAULT_TEXT_STYLES, createWidget, duplicateWidget, DEFAULT_CHORD, DEFAULT_EVENT_COUNTER, DEFAULT_LIVE_TRIGGER, DEFAULT_PROGRESS_BAR, DEFAULT_TIME_BAR } from '@dawviz/render-core';
 import type { ParseWarning } from '@dawviz/parser';
 import { useI18n } from './i18n/I18nProvider.tsx';
 import { LanguageSelect } from './components/LanguageSelect.tsx';
@@ -145,7 +145,7 @@ export function App() {
   const fonts = useFontsStatus(scene); // chưa nạp xong phông thì không vẽ khung có chữ (TECHNICAL-DESIGN 5.7)
   const index = useMemo(() => (renderAst ? buildIndex(renderAst.tracks, renderAst.meta.totalDurationSeconds) : null), [renderAst]);
   // Dò hợp âm là việc nặng của bước derived: dựng lại chỉ khi đổi dự án/track hiển thị/widget Chord (không phải mỗi lần kéo thanh trượt kiểu nốt).
-  const chordSig = JSON.stringify(scene.widgets.filter((w) => w.type === 'CHORD_DETECTION').map((w) => [w.trackMappingMode, w.assignedTrackIndices, (w.properties as { mode?: string }).mode]));
+  const chordSig = JSON.stringify(scene.widgets.filter((w) => w.type === 'CHORD_DETECTION' || usesChordPlaceholder(w)).map((w) => [w.id, w.trackMappingMode, w.assignedTrackIndices, (w.properties as { mode?: string }).mode, usesChordPlaceholder(w)]));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const hud = useMemo(() => (renderAst && index ? buildSceneHud(scene, renderAst, index) : undefined), [renderAst, index, chordSig]);
   const derived: Derived | null = useMemo(() => (index ? { index, brightness, hud, fontsReady: fonts === 'ready' } : null), [index, brightness, hud, fonts]);
@@ -358,10 +358,11 @@ export function App() {
   const settingsSection = (w: WidgetSpec, n: number, locked = false) => {
     if (!hasWidgetSettings(w.type)) return null;
     const P = w.properties as Record<string, unknown>, D = WIDGET_DEFAULTS[w.type] ?? {};
-    const edited = (ADVANCED_WIDGET_KEYS[w.type] ?? []).some((k) => JSON.stringify(P[k]) !== JSON.stringify(D[k]));
+    const edited = (ADVANCED_WIDGET_KEYS[w.type] ?? []).some((k) => JSON.stringify(P[k]) !== JSON.stringify(D[k])) || (w.type !== 'TEXT' && w.trackMappingMode === 'MANUAL');
     return (
       <InspectorSection key="settings" n={n} id="settings" title={i18n.t('web.section.settings')} more={more('settings', edited)}>
-        <WidgetSettings widget={w} advanced={showAdv('settings')} disabled={locked} onProps={(patch) => run((d) => Cmds.patchWidgetProps(d, w.id, patch))} />
+        <WidgetSettings widget={w} advanced={showAdv('settings')} disabled={locked} onProps={(patch) => run((d) => Cmds.patchWidgetProps(d, w.id, patch))}
+          tracks={loaded?.ast.tracks.map((t) => ({ index: t.index, name: t.name }))} onTracks={(mode, idx) => run((d) => Cmds.setWidgetTracks(d, w.id, mode, idx))} />
       </InspectorSection>
     );
   };

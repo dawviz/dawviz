@@ -215,6 +215,7 @@ dawviz/
 │  │  │  ├─ notes.ts
 │  │  │  ├─ parser-core.d.ts
 │  │  │  ├─ pianoroll.ts
+│  │  │  ├─ placeholders.ts
 │  │  │  ├─ prims.ts
 │  │  │  ├─ render.ts
 │  │  │  ├─ scene.ts
@@ -234,6 +235,7 @@ dawviz/
 │  │  │  ├─ hud.test.ts
 │  │  │  ├─ legacy.test.ts
 │  │  │  ├─ paper.test.ts
+│  │  │  ├─ placeholders.test.ts
 │  │  │  ├─ preset.test.ts
 │  │  │  ├─ presets.test.ts
 │  │  │  ├─ render-core.test.ts
@@ -632,6 +634,7 @@ interface EventCounterProps
 interface LiveTriggerProps
 interface ClockCfg
 interface TimeBarProps
+interface TextBoxProps   // Ô chữ người dùng thêm (T-73, REQ-GRAPHICS-19): chữ nhiều dòng, có chỗ giữ dùng chung. `style`: kiểu của dòng;…
 type ChordMode
 interface ChordProps
 interface ProgressBarProps
@@ -643,7 +646,8 @@ const DEFAULT_LIVE_TRIGGER
 const DEFAULT_TIME_BAR
 const DEFAULT_CHORD
 const DEFAULT_PROGRESS_BAR
-const TEMPLATE_KEYS   // Chỗ giữ được phép dùng trong mẫu chữ theo widget (preset dùng chỗ giữ lạ → cảnh báo, chữ giữ nguyên).
+const DEFAULT_TEXT_BOX
+const TEMPLATE_KEYS   // Chỗ giữ RIÊNG của từng widget (che chỗ giữ chung cùng tên). Chỗ giữ chung (GLOBAL_KEYS) dùng được ở mọi chữ; …
 interface BarGrid
 interface HudData
 interface ChordSeg
@@ -656,12 +660,17 @@ function hudOf(derived: Derived, ast: UnifiedProjectAST): HudData   // HudData c
 const isDrumTrack = (name: string) =>
 const STRIKE_WINDOW_SEC   // Khung gom nốt của chế độ Strike: các nốt bắt đầu cách nốt đầu nhóm ≤ 30 ms là một lần dập (SRS REQ-WIDGET-06).
 function chordTimeline(hud: HudData, tracks: TrackIndex[], mode: ChordMode = 'sustained'): ChordSeg[]   // Danh sách đoạn hợp âm (SRS REQ-WIDGET-06) của một nhóm track theo chế độ; đệm theo (derived, chế độ, nhóm tra…
+interface PlaceholderSource   // Nguồn của chỗ giữ chung: dự án, dữ liệu dẫn xuất, các track của widget đang vẽ.
+function globalValues(src: PlaceholderSource, t: number): Record<string, PV>   // Tập chỗ giữ chung tại `t`. Mỗi giá trị chỉ tính khi mẫu thật sự dùng tới (getter, đệm trong một lần vẽ), nên …
+function withLocals(glob: Record<string, PV>, local: Record<string, PV>): Record<string, PV>   // Giá trị riêng của widget che giá trị chung cùng tên (`{total}` của Thanh tiến độ là thời lượng, không phải số…
+const usesChordPlaceholder = (w: { properties: unknown }) =>   // Mẫu của mọi widget có dùng `{chord` thì nhóm track của nó cần dựng dòng thời gian hợp âm ở bước derived.
 const trackInfoRenderer   // ───────────────────────────── widget ─────────────────────────────
 const eventCounterRenderer
 const liveTriggerRenderer
 const timeBarRenderer
 const chordRenderer
 const progressBarRenderer
+const textBoxRenderer   // Ô chữ (T-73): mỗi dòng của `text` là một mẫu; xuống dòng cao theo kiểu chữ, dòng trống vẫn chiếm một dòng.
 function chordSpans(name: string, bassStyle?: TextRef): TextSpan[]   // Tên hợp âm → đoạn: phần bass sau "/" theo `bassStyle` (ví dụ nhạt hơn), phần gốc theo kiểu dòng.
 const HUD_RENDERERS
 ```
@@ -688,6 +697,7 @@ re-export * from './fonts.ts'
 re-export * from './hud.ts'
 re-export * from './thumbnail.ts'
 re-export * from './typography.ts'
+re-export * from './placeholders.ts'
 ```
 
 #### `packages/render-core/src/music.ts`
@@ -720,6 +730,27 @@ interface NoteRect
 function layoutPianoRoll(index: TimelineIndex, tempoMap: TempoPoint[], t: number, o: PianoRollOptions): NoteRect[]
 interface KeyRect
 function layoutKeyboard(index: TimelineIndex, t: number, o: { height: number; pitchMin: number; pitchMax: number; style?: Partial<KeyboardStyle>; noteStyle?: StyleConfig }): KeyRect[]
+```
+
+#### `packages/render-core/src/placeholders.ts`
+
+Chỗ giữ trong mẫu chữ (T-73, SRS REQ-GRAPHICS-19, BRD D-60/OI-18): `{tên}`, `{tên:định_dạng}`, `{{` ra dấu `{`.
+
+```text
+type PV   // Giá trị của một chỗ giữ. Chữ trơn: không nhận định dạng. Số: `{bpm:0.0}`. Thời gian (giây): `{time:m:ss}`. Da…
+type PlaceholderKind
+const numV = (num: number, text?: string) =>   // Số có chữ mặc định riêng (ví dụ phần trăm kèm "%"); có định dạng thì dùng `num`.
+const timeV = (sec: number) =>   // Thời gian theo giây; mặc định `m:ss` (làm tròn xuống).
+const listV = (items: readonly string[]) =>
+function kindOf(v: PV): PlaceholderKind   // Kiểu của giá trị.
+function formatValid(kind: PlaceholderKind, fmt: string): boolean   // Định dạng này có hợp lệ với kiểu giá trị không (kiểm lúc đọc preset, không cần giá trị).
+function formatValue(v: PV, fmt?: string): string | null   // Giá trị → chữ. Không có định dạng thì dùng mặc định của giá trị. Định dạng sai kiểu → null (chỗ gọi giữ nguyê…
+type Token
+function parseTemplate(template: string): Token[]   // Tách mẫu: `{{` → chữ `{`; `{tên}` / `{tên:định_dạng}` → chỗ giữ (tên chữ-số-gạch dưới, bắt đầu bằng chữ). Còn…
+const PLACEHOLDER_KINDS   // Kiểu giá trị mà từng tên chỗ giữ có thể mang (một tên có thể hai kiểu: `{total}` là số nốt ở bộ đếm, là thời …
+const GLOBAL_KEYS   // Tên chỗ giữ dùng chung, dùng được ở mọi chữ (D-60). Widget có thể che bằng giá trị riêng cùng tên.
+const ALIAS_KEYS   // Tên cũ còn đọc được nhưng không gợi ý: `{tempo}` = `{bpm}` (cùng giá trị, cùng cách hiện) để preset cũ không …
+function checkTemplate(template: string, known: readonly string[]):    // Chỗ giữ lạ và định dạng sai trong mẫu (để cảnh báo khi đọc preset). `known`: tên được phép.
 ```
 
 #### `packages/render-core/src/prims.ts`
@@ -923,7 +954,7 @@ function typesetLine(spans: readonly { text: string; st: TextStyle }[], measure:
 function fitLine(sp: Resolved, base: TextStyle, maxWidth: number, measure: Measure):    // Dàn một dòng vừa `maxWidth` theo `overflow` của kiểu dòng. null = không còn gì để vẽ.
 function textPrims(content: string | readonly TextSpan[], style: TextStyle, x: number, y: number, align: Align, maxWidth: number, measure: Measure, alpha = 1, set: TextStyleSet = DEFAULT_TEXT_STYLES, fonts?: ReadonlySet<string>):    // Chữ → primitive. `spans` là các đoạn (một chuỗi = một đoạn), `ref` là kiểu của cả chữ, `fallbackId` kiểu mặc …
 function textWidth(content: string | readonly TextSpan[], style: TextStyle, measure: Measure, set: TextStyleSet = DEFAULT_TEXT_STYLES, fonts?: ReadonlySet<string>): number   // Bề rộng chữ khi dàn trên một dòng không cắt (để đặt các phần cạnh nhau).
-function templateSpans(template: string, values: Readonly<Record<string, string | number>>, valueStyle?: TextRef): TextSpan[]   // Mẫu chữ → các đoạn: chữ cố định theo kiểu dòng, giá trị của chỗ giữ theo `valueStyle` (vắng/rỗng = cùng kiểu)…
+function templateSpans(template: string, values: Readonly<Record<string, PV>>, valueStyle?: TextRef): TextSpan[]   // Mẫu chữ → các đoạn: chữ cố định theo kiểu dòng, giá trị của chỗ giữ theo `valueStyle` (vắng/rỗng = cùng kiểu)…
 ```
 
 ### packages/rpp — @dawviz/parser-rpp: Reaper .rpp
@@ -1222,7 +1253,9 @@ Mục "Thiết lập" của bảng Thuộc tính (T-68/T-06): thuộc tính riê
 ```text
 const hasWidgetSettings = (type: string) =>   // Widget nào có mục Thiết lập.
 const ADVANCED_WIDGET_KEYS   // Thuộc tính chỉ có ở Nâng cao (để biết phần nâng cao đang khác mặc định).
-function WidgetSettings({ widget, advanced, disabled, onProps }: { widget: WidgetSpec; advanced: boolean; disabled?: boolean; onProps(patch: Obj): void })
+const placeholderNames = (type: string) =>   // Tên chỗ giữ dùng được trong mẫu của widget: riêng của widget trước, rồi chỗ giữ chung (T-73).
+interface TrackChoice
+function WidgetSettings(props: SettingsProps)
 ```
 
 #### `apps/web/src/i18n/I18nProvider.tsx`
@@ -1385,6 +1418,7 @@ const moveTrack = (d: Doc, id: TrackId, to: number) =>
 const setAudioOffset = (d: Doc, ms: number) =>   // Đặt offset âm thanh (ms). Gõ/bấm ± liên tiếp gộp thành một bước. Kẹp ±10 s, làm tròn 1 ms.
 const patchLayout = (d: Doc, widgetId: string, patch: Partial<WidgetLayout>) =>   // Đổi layout widget (x, y, width, height, rotation, anchor). Gộp theo widget: kéo/đổi cỡ/xoay trong một cử chỉ …
 const patchLayouts = (d: Doc, patches: Record<string, Partial<WidgetLayout>>) =>   // Đổi layout của một hoặc nhiều widget trong MỘT lệnh (Editor: kéo, đổi cỡ, xoay, xoay nhóm). Gộp theo tập widg…
+const setWidgetTracks = (d: Doc, widgetId: string, mode: 'ALL' | 'MANUAL', indices: number[]) =>   // Chọn track cho một widget (T-73): `ALL` = mọi track đang hiện, `MANUAL` = chỉ các track có chỉ số trong `indi…
 const patchWidgetProps = (d: Doc, widgetId: string, patch: Record<string, unknown>) =>   // Đổi một số thuộc tính (`properties`) của widget.
 const patchTextRef = (d: Doc, widgetId: string, field: string, next: TextRef, path: string) =>   // Đổi ghi đè kiểu chữ của một chỗ chữ (T-72). `path` là thuộc tính vừa đổi: kéo/gõ liên tiếp cùng thuộc tính gộ…
 const setTextStyles = (d: Doc, styles: TextStyleSet, widgetId: string, field: string, ref: TextRef, kind: 'save' | 'update') =>   // Đổi bộ kiểu chữ của scene ("Lưu thành kiểu mới", "Cập nhật kiểu"), kèm ghi đè mới của chỗ chữ vừa dùng. Một b…
@@ -1986,6 +2020,7 @@ type ParseResponse
 - `packages/render-core/test/hud.test.ts`
 - `packages/render-core/test/legacy.test.ts`
 - `packages/render-core/test/paper.test.ts`
+- `packages/render-core/test/placeholders.test.ts`
 - `packages/render-core/test/preset.test.ts`
 - `packages/render-core/test/presets.test.ts`
 - `packages/render-core/test/render-core.test.ts`
@@ -2001,4 +2036,4 @@ type ParseResponse
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 782 ký hiệu công khai -->
+<!-- 10 thư mục src, 807 ký hiệu công khai -->

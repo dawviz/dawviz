@@ -5,7 +5,7 @@ section: "Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-0
 path: "9. PHỤ LỤC > Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)"
 chunk: phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md
 source_lines: 1161-1173
-source_sha1: 3ec9c28927
+source_sha1: 70383ef52c
 ids: [NFR-SEC-04, REQ-STORAGE-02, WARN_PRESET_MIGRATED, WARN_PRESET_UNSAFE_KEY, WARN_PRESET_UNSUPPORTED, WARN_PRESET_VALUE, WARN_PRESET_VERSION, WARN_PRESET_WIDGET_UNKNOWN]
 ---
 ### Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)

@@ -15,6 +15,7 @@ This guide grows with the app. If something isn't in the app yet, it isn't descr
 5. [Keyboard shortcuts](05-shortcuts.md).
 6. [Exporting video](06-export-video.md): choose the size and format, follow progress, cancel.
 7. [Testing video export](07-testing-export.md): help us try export on your computer and send the results.
+8. [Putting live numbers into text](08-placeholders.md): the text box, `{bpm}`, `{title}`, `{notes}` and how to choose the number style.
 
 ## Good to know
 

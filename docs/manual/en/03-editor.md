@@ -81,12 +81,13 @@ Text widgets have a **Settings** section for what is special about them:
 - **Time & bar:** turn each row on or off, number style (grouped digits or clock, bar.beat.tick), progress bars under the numbers. Advanced: labels, row spacing, bar length, thickness and colours.
 - **Chord:** read chords from held notes or when struck, always show the note list, and what to show for an unknown chord ("no chord" text or the notes).
 - **Progress bar:** horizontal or vertical, thickness, colour, show the time. Advanced: bar background, corner radius, time text.
+- **Text box:** type text over several lines and mix in values such as `{bpm}` or `{title}`; choose which tracks the values read. See [Putting live numbers into text](08-placeholders.md).
 
-When you edit the text of a line, words in curly brackets such as `{played}` or `{tempo}` are replaced with the real numbers. Hover over the text box to see which ones that widget understands. Press Enter or click outside the box to apply; Esc cancels.
+When you edit the text of a line, words in curly brackets such as `{played}` or `{bpm}` are replaced with the real numbers, in any text. Type `{` to see suggestions, or hover over the text box. The full list and how to choose the number style are on [Putting live numbers into text](08-placeholders.md). Press Enter or click outside the box to apply; Esc cancels.
 
 ## Text
 
-Select a widget that has text (title, note counter, live notes, time, chord, progress bar) to see the **Text** section.
+Select a widget that has text (title, note counter, live notes, time, chord, progress bar, text box) to see the **Text** section.
 
 Each piece of text uses a **text style** (Title, Subtitle, Counter, Clock…). Whatever you change differs from the style; everything else keeps following it. Next to each change there is a ↺ button that goes back to the style's value.
 

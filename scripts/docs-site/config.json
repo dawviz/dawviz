@@ -38,6 +38,10 @@
         {
           "src": "docs/manual/07-thu-nghiem.md",
           "title": "Thử nghiệm xuất video"
+        },
+        {
+          "src": "docs/manual/08-cho-giu.md",
+          "title": "Chèn số liệu vào chữ"
         }
       ]
     },
@@ -75,6 +79,10 @@
         {
           "src": "docs/manual/en/07-testing-export.md",
           "title": "Testing video export"
+        },
+        {
+          "src": "docs/manual/en/08-placeholders.md",
+          "title": "Putting live numbers into text"
         }
       ]
     },

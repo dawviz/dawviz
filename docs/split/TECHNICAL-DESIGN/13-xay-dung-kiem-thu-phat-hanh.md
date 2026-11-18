@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "13. Xây dựng, kiểm thử, phát hành"
 path: "13. Xây dựng, kiểm thử, phát hành"
 chunk: 13-xay-dung-kiem-thu-phat-hanh.md
-source_lines: 464-470
-source_sha1: 865e7b29ab
+source_lines: 472-478
+source_sha1: edafc798ea
 ids: [D-12, D-35, REQ-CAP-01]
 ---
 ## 13. Xây dựng, kiểm thử, phát hành

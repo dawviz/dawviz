@@ -5,7 +5,7 @@ section: "2. MỤC TIÊU KINH DOANH, CHỈ SỐ ĐO LƯỜNG & YÊU CẦU NGHI�
 path: "2. MỤC TIÊU KINH DOANH, CHỈ SỐ ĐO LƯỜNG & YÊU CẦU NGHIỆP VỤ"
 chunk: 2-muc-tieu-kinh-doanh-chi-so-do-luong-yeu-cau-ng.md
 source_lines: 46-84
-source_sha1: 463b8e497e
+source_sha1: 8f63fc0d0c
 ids: [BR-01, BR-02, BR-03, BR-04, BR-05, BR-06, BR-07, BR-08, BR-09, D-02, D-12, D-14, KPI-01, KPI-02, KPI-03, KPI-04, KPI-05, KPI-06, KPI-07, KPI-08, REQ-EXPORT-06]
 ---
 ## 2. MỤC TIÊU KINH DOANH, CHỈ SỐ ĐO LƯỜNG & YÊU CẦU NGHIỆP VỤ

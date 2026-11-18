@@ -6,6 +6,7 @@
 //   3. Primitive: chữ "thường" (chỉ phông/cỡ/độ đậm/màu) vẫn là TextPrim cũ, vẽ bằng một lệnh fillText như trước T-72;
 //      chữ có thuộc tính Canvas 2D không làm đồng nhất được thì mang `rich` và do Render Core tự vẽ (render.ts).
 import { fitText, type Measure } from './text.ts';
+import { formatValue, parseTemplate, type PV } from './placeholders.ts';
 import type { TextPrim } from './prims.ts';
 
 // ───────────────────────────── mô hình ─────────────────────────────
@@ -328,17 +329,17 @@ export function textWidth(content: string | readonly TextSpan[], style: TextStyl
   return typesetLine(resolveSpans(spans, { ...style, font: usableFont(style.font, fonts) }, set, fonts), measure).width;
 }
 
-/** Mẫu chữ → các đoạn: chữ cố định theo kiểu dòng, giá trị của chỗ giữ theo `valueStyle` (vắng/rỗng = cùng kiểu). Chỗ giữ lạ giữ nguyên chữ. */
-export function templateSpans(template: string, values: Readonly<Record<string, string | number>>, valueStyle?: TextRef): TextSpan[] {
+/** Mẫu chữ → các đoạn: chữ cố định theo kiểu dòng, giá trị của chỗ giữ theo `valueStyle` (vắng/rỗng = cùng kiểu). Chỗ giữ lạ hoặc định dạng sai giữ nguyên chữ.
+ *  Cú pháp (T-73): `{tên}`, `{tên:định_dạng}`, `{{` ra `{`. Giá trị có thể là chữ, số hoặc PV (số/thời gian/danh sách có định dạng). */
+export function templateSpans(template: string, values: Readonly<Record<string, PV>>, valueStyle?: TextRef): TextSpan[] {
   const vs = valueStyle && overriddenKeys(valueStyle).length + (valueStyle.styleId ? 1 : 0) > 0 ? valueStyle : undefined;
-  const out: TextSpan[] = []; let last = 0;
-  for (const m of template.matchAll(/\{([A-Za-z]+)\}/g)) {
-    if (!(m[1] in values)) continue;
-    if (m.index! > last) out.push({ text: template.slice(last, m.index) });
-    out.push(vs ? { text: String(values[m[1]]), style: vs } : { text: String(values[m[1]]) });
-    last = m.index! + m[0].length;
+  const out: TextSpan[] = [];
+  for (const tk of parseTemplate(template)) {
+    if (tk.kind === 'text') { out.push({ text: tk.text }); continue; }
+    const val = tk.name in values ? formatValue(values[tk.name], tk.fmt) : null;
+    if (val === null) { out.push({ text: tk.raw }); continue; } // lạ hoặc định dạng sai: giữ nguyên chữ
+    out.push(vs ? { text: val, style: vs } : { text: val });
   }
-  if (last < template.length) out.push({ text: template.slice(last) });
   // gộp các đoạn liền nhau cùng kiểu
   const merged: TextSpan[] = [];
   for (const s of out) { const p = merged[merged.length - 1]; if (p && p.style === s.style) p.text += s.text; else merged.push({ ...s }); }

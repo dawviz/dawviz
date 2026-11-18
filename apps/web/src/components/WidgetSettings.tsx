@@ -1,8 +1,8 @@
 // Mục "Thiết lập" của bảng Thuộc tính (T-68/T-06): thuộc tính riêng của từng loại widget chữ (SRS REQ-WIDGET-02…08).
 // Cơ bản: bật/tắt và lựa chọn hay dùng. Nâng cao: mẫu chữ, số chữ số, khoảng cách dòng, màu thanh… (REQ-UI-13).
 // Mỗi thay đổi là `patchWidgetProps` (gộp bước theo khoá thuộc tính). Chữ của mẫu chỉ áp khi Enter hoặc rời ô.
-import { useEffect, useState } from 'react';
-import { TEMPLATE_KEYS, type WidgetSpec } from '@dawviz/render-core';
+import { useEffect, useRef, useState } from 'react';
+import { GLOBAL_KEYS, TEMPLATE_KEYS, type WidgetSpec } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { radioKeys, radioTab } from '../lib/a11y.ts';
 import { NumberField } from './NumberField.tsx';
@@ -13,20 +13,59 @@ const numRow = 'grid grid-cols-[minmax(0,1fr)_4.5rem] items-center gap-2 text-xs
 type Obj = Record<string, unknown>;
 
 /** Widget nào có mục Thiết lập. */
-export const hasWidgetSettings = (type: string) => ['TRACK_INFO', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'PROGRESS_BAR'].includes(type);
+export const hasWidgetSettings = (type: string) => ['TRACK_INFO', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'PROGRESS_BAR', 'TEXT'].includes(type);
 /** Thuộc tính chỉ có ở Nâng cao (để biết phần nâng cao đang khác mặc định). */
 export const ADVANCED_WIDGET_KEYS: Readonly<Record<string, readonly string[]>> = {
   EVENT_COUNTER: ['lineHeight', 'decimals'], LIVE_TRIGGER: ['template', 'trackTemplate', 'tailMs', 'lineHeight', 'separator'],
   TIME_BAR: ['rowGap', 'barLength', 'barThickness', 'barColor', 'barTrackColor'], CHORD_DETECTION: ['notesTemplate', 'noChordText'],
   PROGRESS_BAR: ['radius', 'timeTemplate', 'trackColor'],
 };
+/** Tên chỗ giữ dùng được trong mẫu của widget: riêng của widget trước, rồi chỗ giữ chung (T-73). */
+export const placeholderNames = (type: string): string[] => [...new Set([...((TEMPLATE_KEYS as Record<string, readonly string[]>)[type] ?? []), ...GLOBAL_KEYS])];
 
-export function WidgetSettings({ widget, advanced, disabled, onProps }: { widget: WidgetSpec; advanced: boolean; disabled?: boolean; onProps(patch: Obj): void }) {
+/** Widget đọc số liệu từ các track, nên cho chọn track riêng (T-73). Ô chữ ở Cơ bản (vì `{notes}`, `{played}` phụ thuộc track), các widget còn lại ở Nâng cao. */
+const TRACK_WIDGETS = ['TEXT', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'CHORD_DETECTION'];
+export interface TrackChoice { index: number; name: string }
+type SettingsProps = { widget: WidgetSpec; advanced: boolean; disabled?: boolean; onProps(patch: Obj): void; tracks?: TrackChoice[]; onTracks?(mode: 'ALL' | 'MANUAL', indices: number[]): void };
+
+export function WidgetSettings(props: SettingsProps) {
+  const { widget, advanced, disabled, tracks, onTracks } = props;
+  const show = !!tracks?.length && !!onTracks && TRACK_WIDGETS.includes(widget.type) && (widget.type === 'TEXT' || advanced);
+  return <><WidgetSettingsBody {...props} />{show && <TrackPicker widget={widget} tracks={tracks!} disabled={disabled} onTracks={onTracks!} />}</>;
+}
+
+/** Chọn track cho widget: mọi track đang hiện, hoặc chỉ vài track. */
+function TrackPicker({ widget, tracks, disabled, onTracks }: { widget: WidgetSpec; tracks: TrackChoice[]; disabled?: boolean; onTracks(mode: 'ALL' | 'MANUAL', indices: number[]): void }) {
+  const { i18n } = useI18n();
+  const manual = widget.trackMappingMode === 'MANUAL', chosen = new Set(widget.assignedTrackIndices);
+  const label = i18n.t('web.ws.tracks');
+  return (
+    <div className="mt-2.5 space-y-1.5" data-testid="widget-tracks">
+      <span className="block text-xs text-muted">{label}</span>
+      <div className="seg w-full" role="radiogroup" aria-label={label} onKeyDown={radioKeys}>
+        {(['ALL', 'MANUAL'] as const).map((m) => (
+          <button key={m} type="button" role="radio" aria-checked={manual === (m === 'MANUAL')} tabIndex={radioTab(manual === (m === 'MANUAL'))} className="seg-btn flex-1" disabled={disabled}
+            onClick={() => onTracks(m, m === 'MANUAL' ? tracks.map((t) => t.index) : [])}>{i18n.t(`web.ws.tracks.${m}`)}</button>
+        ))}
+      </div>
+      {manual && <ul className="space-y-1">
+        {tracks.map((t) => (
+          <li key={t.index}><label className="flex items-center gap-2 text-xs text-muted">
+            <input type="checkbox" checked={chosen.has(t.index)} disabled={disabled}
+              onChange={(e) => onTracks('MANUAL', e.target.checked ? [...chosen, t.index] : [...chosen].filter((i) => i !== t.index))} />{t.name}
+          </label></li>
+        ))}
+      </ul>}
+    </div>
+  );
+}
+
+function WidgetSettingsBody({ widget, advanced, disabled, onProps }: SettingsProps) {
   const { i18n } = useI18n();
   const P = widget.properties as Obj, t = widget.type;
   const T = (k: string) => i18n.t(`web.ws.${k}`);
-  const keys = (TEMPLATE_KEYS as Record<string, readonly string[]>)[t] ?? [];
-  const hint = keys.length ? i18n.t('web.ws.placeholders', { list: keys.map((k) => `{${k}}`).join(' ') }) : undefined;
+  const names = placeholderNames(t);
+  const hint = i18n.t('web.ws.placeholders', { list: names.map((k) => `{${k}}`).join(' ') });
 
   const check = (label: string, on: boolean, set: (v: boolean) => void, id?: string) => (
     <label className="flex items-center gap-2 text-xs text-muted" data-testid={id}><input type="checkbox" checked={on} disabled={disabled} onChange={(e) => set(e.target.checked)} />{label}</label>
@@ -48,11 +87,15 @@ export function WidgetSettings({ widget, advanced, disabled, onProps }: { widget
         {(!allowNone || value) && <input type="color" aria-label={label} value={value || '#000000'} disabled={disabled} onChange={(e) => set(e.target.value.toUpperCase())} className="h-6 w-full" />}
       </span></div>
   );
-  const text = (label: string, value: string, set: (v: string) => void, opts: { placeholder?: string; title?: string; max?: number } = {}) => (
-    <TextInput label={label} value={value} onCommit={set} disabled={disabled} placeholder={opts.placeholder} title={opts.title} max={opts.max ?? 200} />
+  const text = (label: string, value: string, set: (v: string) => void, opts: { placeholder?: string; title?: string; max?: number; multiline?: boolean } = {}) => (
+    <TextInput label={label} value={value} onCommit={set} disabled={disabled} placeholder={opts.placeholder} title={opts.title ?? hint} max={opts.max ?? 200} names={names} multiline={opts.multiline} />
   );
   const set = (k: string) => (v: unknown) => onProps({ [k]: v });
   const sub = (k: string, f: string) => (v: unknown) => onProps({ [k]: { ...(P[k] as Obj), [f]: v } });
+
+  if (t === 'TEXT') return <div className="space-y-2.5" data-testid="widget-settings">
+    {text(T('boxText'), String(P.text ?? ''), set('text'), { max: 2000, multiline: true })}
+  </div>;
 
   if (t === 'TRACK_INFO') return <div className="space-y-2.5" data-testid="widget-settings">
     {text(T('title'), String(P.titleText ?? ''), set('titleText'), { placeholder: T('fromProject') })}
@@ -135,17 +178,38 @@ export function WidgetSettings({ widget, advanced, disabled, onProps }: { widget
   return null;
 }
 
-/** Ô chữ một dòng: gõ thoải mái, Enter hoặc rời ô mới áp (một bước hoàn tác); Esc trả về chữ cũ. */
-function TextInput({ label, value, onCommit, disabled, placeholder, title, max }: { label: string; value: string; onCommit(v: string): void; disabled?: boolean; placeholder?: string; title?: string; max: number }) {
+/** Ô chữ: gõ thoải mái, Enter (ô một dòng) hoặc rời ô mới áp (một bước hoàn tác); Esc trả về chữ cũ.
+ *  Gõ `{` thì hiện gợi ý tên chỗ giữ (T-73): bấm một tên để điền nốt `{tên}`. */
+function TextInput({ label, value, onCommit, disabled, placeholder, title, max, names, multiline }: { label: string; value: string; onCommit(v: string): void; disabled?: boolean; placeholder?: string; title?: string; max: number; names?: readonly string[]; multiline?: boolean }) {
   const [v, setV] = useState(value);
+  const [caret, setCaret] = useState(0);
+  const ref = useRef<HTMLInputElement & HTMLTextAreaElement>(null);
+  const pending = useRef<number | null>(null);
   useEffect(() => setV(value), [value]);
+  useEffect(() => { if (pending.current !== null && ref.current) { ref.current.setSelectionRange(pending.current, pending.current); pending.current = null; } });
   const commit = () => { if (v !== value) onCommit(v.slice(0, max)); };
+  const open = names?.length ? /\{([A-Za-z][A-Za-z0-9_]*)?$/.exec(v.slice(0, caret)) : null; // đang gõ dở một tên sau dấu {
+  const hits = open ? names!.filter((n) => n.startsWith(open[1] ?? '')).slice(0, 8) : [];
+  const pick = (n: string) => {
+    const start = caret - open![0].length, ins = `{${n}}`, next = (v.slice(0, start) + ins + v.slice(caret)).slice(0, max);
+    pending.current = Math.min(next.length, start + ins.length); setV(next); setCaret(pending.current);
+  };
+  const common = {
+    ref, className: 'w-full border border-control bg-raised px-2 py-1 text-xs text-fg', value: v, maxLength: max, disabled, placeholder, title,
+    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => { setV(e.target.value); setCaret(e.target.selectionStart ?? e.target.value.length); },
+    onSelect: (e: React.SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>) => setCaret(e.currentTarget.selectionStart ?? 0),
+    onBlur: commit,
+    onKeyDown: (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' && !multiline) { e.preventDefault(); commit(); } else if (e.key === 'Escape') { e.stopPropagation(); setV(value); }
+    },
+  };
   return (
     <label className="block space-y-1 text-xs text-muted">
       <span className="block">{label}</span>
-      <input className="w-full border border-control bg-raised px-2 py-1 text-xs text-fg" value={v} maxLength={max} disabled={disabled} placeholder={placeholder} title={title}
-        onChange={(e) => setV(e.target.value)} onBlur={commit}
-        onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); commit(); } else if (e.key === 'Escape') { e.stopPropagation(); setV(value); } }} />
+      {multiline ? <textarea {...common} rows={4} className={`${common.className} resize-y`} /> : <input {...common} />}
+      {hits.length > 0 && <span className="flex flex-wrap gap-1" data-testid="placeholder-hints">
+        {hits.map((n) => <button key={n} type="button" className="border border-control px-1.5 py-0.5 text-[11px] text-fg hover:bg-raised" onMouseDown={(e) => e.preventDefault()} onClick={() => pick(n)}>{`{${n}}`}</button>)}
+      </span>}
     </label>
   );
 }

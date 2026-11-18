@@ -5,7 +5,7 @@ section: "REQ-EXPORT-02: Kiểm soát dòng chảy (R-01)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-EXPORT-02: Kiểm soát dòng chảy (R-01)"
 chunk: req-export-02-kiem-soat-dong-chay-r-01.md
 source_lines: 771-773
-source_sha1: 3ec9c28927
+source_sha1: 70383ef52c
 ids: [REQ-EXPORT-02]
 ---
 #### REQ-EXPORT-02: Kiểm soát dòng chảy (R-01)

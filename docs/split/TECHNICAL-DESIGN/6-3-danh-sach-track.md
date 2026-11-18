@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "6.3 Danh sách track 🟢"
 path: "6. Ứng dụng web và phát lại 🟡 > 6.3 Danh sách track 🟢"
 chunk: 6-3-danh-sach-track.md
-source_lines: 315-324
-source_sha1: 865e7b29ab
+source_lines: 323-332
+source_sha1: edafc798ea
 ids: [D-50, REQ-UI-14]
 ---
 ### 6.3 Danh sách track 🟢
