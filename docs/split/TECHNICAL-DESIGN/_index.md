@@ -1,6 +1,6 @@
 # Chỉ mục TECHNICAL-DESIGN.md — THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER
 
-nguồn: `TECHNICAL-DESIGN.md` (sha1 edafc798ea)
+nguồn: `TECHNICAL-DESIGN.md` (sha1 9b40736009)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -19,7 +19,7 @@ nguồn: `TECHNICAL-DESIGN.md` (sha1 edafc798ea)
 | 12 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02) | [5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md](5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md) | 5390 | ERR_FONT_LOAD, NFR-SEC-03, REQ-STORAGE-05, REQ-WIDGET-02 |
 | 13 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp 🟢 (đã dùng ở T-69) | [5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md](5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md) | 925 | REQ-WIDGET-05 |
 | 14 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.9 Kiểu chữ cho mọi chữ trong video 🟢 (T-72, SRS REQ-GRAPHICS-18, D-58) | [5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md](5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md) | 6552 | D-58, REQ-GRAPHICS-18, REQ-STORAGE-05, WARN_PRESET_FONT_MISSING, WARN_PRESET_VALUE |
-| 15 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.10 Chỗ giữ trong chữ và Ô chữ 🟢 (T-73, SRS REQ-GRAPHICS-19, D-60/OI-18) | [5-10-cho-giu-trong-chu-va-o-chu-t-73-srs-req-gra.md](5-10-cho-giu-trong-chu-va-o-chu-t-73-srs-req-gra.md) | 1789 | D-60, OI-18, REQ-GRAPHICS-19, WARN_PRESET_MIGRATED, WARN_PRESET_VALUE |
+| 15 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.10 Chỗ giữ trong chữ và Ô chữ 🟢 (T-73, SRS REQ-GRAPHICS-19, D-60/OI-18) | [5-10-cho-giu-trong-chu-va-o-chu-t-73-srs-req-gra.md](5-10-cho-giu-trong-chu-va-o-chu-t-73-srs-req-gra.md) | 2966 | D-60, OI-18, REQ-GRAPHICS-19, WARN_PRESET_MIGRATED, WARN_PRESET_VALUE |
 | 16 | 6. Ứng dụng web và phát lại 🟡 > 6.1 Trạng thái | [6-1-trang-thai.md](6-1-trang-thai.md) | 1256 | REQ-UI-14 |
 | 17 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) | [6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md](6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md) | 233 | NFR-SEC-04, REQ-EXPORT-03, REQ-PARSER-00, REQ-STORAGE-05, REQ-UI-03, REQ-WIDGET-07 |
 | 18 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.1 Nạp tệp âm thanh (mix) | [6-2-1-nap-tep-am-thanh-mix.md](6-2-1-nap-tep-am-thanh-mix.md) | 3263 | ARC-03, ERR_AUDIO_DECODE, ERR_AUDIO_TOO_LONG, ERR_FILE_TOO_LARGE, NFR-PERF-04, REQ-AUDIO-01… |
@@ -32,7 +32,7 @@ nguồn: `TECHNICAL-DESIGN.md` (sha1 edafc798ea)
 | 25 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.8 Kiểm thử (thuần, không cần trình duyệt) | [6-2-8-kiem-thu-thuan-khong-can-trinh-duyet.md](6-2-8-kiem-thu-thuan-khong-can-trinh-duyet.md) | 1014 | ERR_AUDIO_DECODE, ERR_AUDIO_TOO_LONG, ERR_FILE_TOO_LARGE |
 | 26 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.9 Quyết định đã duyệt | [6-2-9-quyet-dinh-da-duyet.md](6-2-9-quyet-dinh-da-duyet.md) | 672 |  |
 | 27 | 6. Ứng dụng web và phát lại 🟡 > 6.3 Danh sách track 🟢 | [6-3-danh-sach-track.md](6-3-danh-sach-track.md) | 1860 | D-50, REQ-UI-14 |
-| 28 | 6. Ứng dụng web và phát lại 🟡 > 6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68) | [6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md](6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) | 18818 | ARC-05, D-55, D-57, ERR_PRESET_, ERR_PRESET_INVALID, ERR_PRESET_TOO_LARGE… |
+| 28 | 6. Ứng dụng web và phát lại 🟡 > 6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68) | [6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md](6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) | 19139 | ARC-05, D-55, D-57, ERR_PRESET_, ERR_PRESET_INVALID, ERR_PRESET_TOO_LARGE… |
 | 29 | 7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) > 7.1 Trình tự | [7-1-trinh-tu.md](7-1-trinh-tu.md) | 1019 | REQ-EXPORT-00, REQ-EXPORT-02, REQ-EXPORT-06 |
 | 30 | 7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) > 7.2 Quyết định kỹ thuật | [7-2-quyet-dinh-ky-thuat.md](7-2-quyet-dinh-ky-thuat.md) | 947 | AT-03, D-01, ERR_EXPORT_FAILED, ERR_NO_SUPPORTED_ENCODER, SOI-10 |
 | 31 | 7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) > 7.3 Phần lõi thuần đã làm (T-09, 2026-11-14) | [7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md](7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md) | 1745 | D-26, ERR_NO_SUPPORTED_ENCODER, REQ-EXPORT-00, REQ-EXPORT-01, REQ-EXPORT-02, REQ-EXPORT-03… |

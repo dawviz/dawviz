@@ -21,7 +21,7 @@ Hướng dẫn này viết dần theo ứng dụng. Phần nào chưa có trong 
 
 - **Cơ bản và Nâng cao.** Nút chuyển ở góc trên bên phải. Cơ bản chỉ hiện những thứ hay dùng. Nâng cao hiện đủ mọi tuỳ chọn. Đổi qua lại lúc nào cũng được, thiết lập của bạn không mất.
 - **Hoàn tác.** Hầu hết mọi thay đổi đều hoàn tác được bằng Ctrl+Z (⌘Z trên Mac). Nút đồng hồ cạnh Hoàn tác/Làm lại mở danh sách các bước đã làm; bấm vào một bước để quay về đúng lúc đó.
-- **Nút ↺.** Cạnh một thiết lập đã đổi sẽ có nút ↺. Bấm để đưa thiết lập đó về giá trị gốc của phong cách video đang dùng.
+- **Nút ↺.** Cạnh một thiết lập đã đổi sẽ có nút ↺, ở mọi mục (Vị trí, Thiết lập, Chữ, hình thức nốt…). Bấm để đưa thiết lập đó về giá trị gốc của phong cách video hoặc preset vừa áp; widget mới thêm thì về giá trị mặc định của loại đó. Cách nhanh hơn: giữ Alt (Option trên Mac) rồi bấm vào **chữ nhãn** của thiết lập (không bấm vào ô nhập). Mỗi lần khôi phục là một bước hoàn tác riêng.
 - **Rê chuột lên nút** để xem tên và phím tắt của nút.
 
 ## Ô nhập số

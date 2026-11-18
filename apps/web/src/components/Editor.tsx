@@ -6,7 +6,7 @@
 // và bắt dính đều là lệnh hoàn tác được (lib/commands.ts).
 import { motion } from 'framer-motion';
 import { useContext, useMemo, useRef, useState, type DragEvent, type KeyboardEvent, type ReactNode } from 'react';
-import { ADDABLE_WIDGETS, normalizeAngle, rotateGroup, type Derived, type SceneDocument, type UnifiedProjectAST, type WidgetLayout, type WidgetSpec, type WidgetType } from '@dawviz/render-core';
+import { ADDABLE_WIDGETS, defaultScene, normalizeAngle, rotateGroup, type Derived, type SceneDocument, type UnifiedProjectAST, type WidgetLayout, type WidgetSpec, type WidgetType } from '@dawviz/render-core';
 import { clickIsKeyboard, startPaintDrag } from '../lib/paintDrag.ts';
 import { GestureContext } from '../lib/storeReact.ts';
 import { useI18n } from '../i18n/I18nProvider.tsx';
@@ -16,12 +16,17 @@ import { STAGE_CHROME, useStageWidth } from '../lib/useStageWidth.ts';
 import { alignLayouts, distributeLayouts, intoFrame, outsideFrame, round, setAnchor, type AlignMode } from '../lib/editorGeometry.ts';
 import { LiveCanvas } from './Stage.tsx';
 import { EditorOverlay } from './EditorOverlay.tsx';
-import { InspectorSection, ResetButton } from './Inspector.tsx';
+import { InspectorSection, ResetButton, TickField } from './Inspector.tsx';
 import { NumberField } from './NumberField.tsx';
 import { AlignBottom, AlignHCenter, AlignLeft, AlignRight, AlignTop, AlignVCenter, DistributeH, DistributeV, Duplicate, Eye, EyeOff, Grip, LayerDown, LayerUp, Lock, Plus, ToBack, ToFront, Trash, Unlock } from './Icons.tsx';
 import { isTextEntry } from '../lib/a11y.ts';
 import { layerOrder } from '../lib/commands.ts';
+import { checkLayerName } from '../lib/layerName.ts';
+import { MAX_WIDGET_NAME } from '@dawviz/render-core';
 import { StatusIcon } from './StatusIcon.tsx';
+
+/** Mốc ↺ của mục Bắt dính: giá trị mặc định của canvas (scene mới). */
+const SNAP_DEFAULT = defaultScene().canvas.snapping;
 
 /** Vùng đệm quanh khung (px): tay nắm của widget chạm mép hoặc ra ngoài khung vẫn có chỗ, không vẽ đè thanh phát. */
 const PASTEBOARD = 28;
@@ -32,6 +37,8 @@ type Patches = Record<string, Partial<WidgetLayout>>;
 const LAYER_SPRING = { type: 'spring', stiffness: 420, damping: 38, mass: 0.8 } as const;
 export interface EditorActions {
   layouts(p: Patches): void;
+  /** Đổi tên lớp; null = bỏ tên riêng (dùng tên theo loại). Tên đã được kiểm không trùng. */
+  rename(id: string, name: string | null): void;
   visible(id: string, v: boolean): void;
   /** Kéo qua các mắt của Lớp: đặt giá trị cho từng lớp đi qua (gộp trong cử chỉ kéo). */
   paintVisible(id: string, v: boolean): void;
@@ -70,7 +77,7 @@ export function useWidgetNames(widgets: readonly WidgetSpec[]): (id: string) => 
     for (const w of widgets) {
       const n = (seen.get(w.type) ?? 0) + 1; seen.set(w.type, n);
       const base = i18n.has(`web.widget.${w.type}`) ? i18n.t(`web.widget.${w.type}`) : w.type;
-      names.set(w.id, (count.get(w.type) ?? 0) > 1 ? `${base} ${n}` : base);
+      names.set(w.id, w.name ?? ((count.get(w.type) ?? 0) > 1 ? `${base} ${n}` : base));
     }
     return (id: string) => names.get(id) ?? id;
   }, [widgets, i18n]);
@@ -140,11 +147,54 @@ export function Editor({ scene, derived, ast, playback, fonts, advanced, actions
   // Delete/Backspace: xoá; Ctrl/⌘+D: nhân bản (lớp khoá không bị xoá/nhân bản).
   const removeSel = () => { const ids = live.filter((id) => !locked.has(id)); if (ids.length) { actions.remove(ids); setSelected(live.filter((id) => locked.has(id))); setSay(i18n.t('web.editor.removed', { n: ids.length })); } };
   const duplicateSel = () => { const ids = live.filter((id) => !locked.has(id)); if (ids.length) setSelected(actions.duplicate(ids)); };
+  const selectAll = () => { setSelected(order); setSay(i18n.t('web.editor.selectedAll', { n: order.length })); };
+  // Đổi tên lớp (nhấp đúp hoặc F2): Enter/rời ô thì áp, Esc bỏ. Trống = về tên theo loại. Trùng tên lớp khác: giữ tên cũ và báo lý do.
+  const [editing, setEditing] = useState<string | null>(null);
+  const [nameErr, setNameErr] = useState('');
+  const commitName = (id: string, raw: string) => {
+    setEditing(null);
+    const r = checkLayerName(raw, id, order, name);
+    if (!r.ok) {
+      const msg = i18n.t(r.reason === 'tooLong' ? 'web.editor.nameTooLong' : 'web.editor.nameTaken', { name: r.name, old: name(id), max: MAX_WIDGET_NAME });
+      setNameErr(msg); setSay(msg); return;
+    }
+    setNameErr('');
+    const cur = scene.widgets.find((w) => w.id === id)?.name ?? null;
+    if (r.value === cur || (r.value !== null && r.value === name(id) && cur === null)) return; // không đổi gì
+    actions.rename(id, r.value);
+    setSay(i18n.t(r.value === null ? 'web.editor.nameReset' : 'web.editor.renamed', { name: r.value ?? '' }));
+  };
+  // Kéo trên tên lớp để chọn một dãy lớp (giữ Shift/Ctrl/⌘ để cộng thêm vào những lớp đang chọn). Lần nhấp kèm theo của lần kéo bị bỏ qua.
+  const dragged = useRef(false);
+  const layersRef = useRef<string[]>([]); layersRef.current = order;
+  const liveRef = useRef<string[]>([]); liveRef.current = live;
+  const startLayerSelect = (e: React.PointerEvent<HTMLElement>, startId: string) => {
+    if ((e.button ?? 0) !== 0 || e.isPrimary === false) return;
+    const baseSel = e.shiftKey || e.metaKey || e.ctrlKey ? liveRef.current : [];
+    const from = layersRef.current.indexOf(startId); if (from < 0) return;
+    const prevSelect = document.body.style.userSelect;
+    const idAt = (x: number, y: number) => (document.elementFromPoint(x, y)?.closest<HTMLElement>('[data-layer]'))?.dataset.layer;
+    const move = (m: PointerEvent) => {
+      const id = idAt(m.clientX, m.clientY), to = id ? layersRef.current.indexOf(id) : -1;
+      if (to < 0 || (to === from && !dragged.current)) return;
+      if (!dragged.current) { dragged.current = true; document.body.style.userSelect = 'none'; }
+      const range = layersRef.current.slice(Math.min(from, to), Math.max(from, to) + 1);
+      setSelected([...new Set([...baseSel, ...range])]);
+    };
+    const done = () => {
+      window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', done); window.removeEventListener('pointercancel', done);
+      document.body.style.userSelect = prevSelect;
+      setTimeout(() => { dragged.current = false; }, 0); // sau khi sự kiện click của lần thả đã đi qua
+    };
+    window.addEventListener('pointermove', move); window.addEventListener('pointerup', done); window.addEventListener('pointercancel', done);
+  };
   const addWidget = (type: WidgetType) => { setSelected([actions.add(type)]); setSay(i18n.t('web.editor.added', { name: i18n.t(`web.widget.${type}`) })); };
   const onKeys = (e: KeyboardEvent<HTMLDivElement>) => {
     if (isTextEntry(e.target) || e.altKey) return;
     if ((e.key === 'Delete' || e.key === 'Backspace') && !e.ctrlKey && !e.metaKey && live.length) { e.preventDefault(); removeSel(); return; }
     if ((e.ctrlKey || e.metaKey) && e.code === 'KeyD' && live.length) { e.preventDefault(); duplicateSel(); return; }
+    if ((e.ctrlKey || e.metaKey) && e.code === 'KeyA' && !e.shiftKey) { e.preventDefault(); selectAll(); return; }
+    if (e.key === 'F2' && live.length === 1) { e.preventDefault(); setEditing(live[0]); return; }
     if (!(e.ctrlKey || e.metaKey) || live.length !== 1) return;
     const k = e.code === 'BracketRight' ? 1 : e.code === 'BracketLeft' ? -1 : 0;
     if (!k) return;
@@ -156,7 +206,11 @@ export function Editor({ scene, derived, ast, playback, fonts, advanced, actions
   return (
     <div className="grid h-full min-h-0 lg:grid-cols-[13rem_minmax(0,1fr)_20rem] min-[1440px]:grid-cols-[14rem_minmax(0,1fr)_22rem]" data-testid="editor" onKeyDown={onKeys}>
       <aside aria-labelledby="layers-h" className="relative min-h-0 overflow-y-auto border-b border-line bg-surface py-3 lg:border-b-0 lg:border-r">
-        <h2 id="layers-h" className="px-4 pb-2 text-[15px] font-semibold text-fg">{i18n.t('web.editor.layers')}</h2>
+        <div className="flex items-baseline justify-between gap-2 px-4 pb-2">
+          <h2 id="layers-h" className="text-[15px] font-semibold text-fg">{i18n.t('web.editor.layers')}</h2>
+          <button type="button" className="text-xs text-muted underline-offset-2 hover:text-fg hover:underline disabled:opacity-40" disabled={!order.length || live.length === order.length}
+            onClick={selectAll} title={i18n.t('web.editor.selectAllHint')} data-testid="layers-select-all">{i18n.t('web.editor.selectAll')}</button>
+        </div>
         <LayersHead widgets={scene.widgets} locked={locked} onAllVisible={actions.allVisible} onLockAll={lockAll} onAdd={addWidget} />
         <ul aria-labelledby="layers-h" data-testid="layers" onPointerDown={paintLayers}>
           {layers.map((w, i) => {
@@ -173,17 +227,19 @@ export function Editor({ scene, derived, ast, playback, fonts, advanced, actions
                   : <span draggable aria-hidden className="grid h-6 w-4 shrink-0 cursor-grab place-items-center text-faint hover:text-fg active:cursor-grabbing" data-testid="layer-grip" title={i18n.t('web.editor.layerDrag', { name: name(w.id) })}
                       onDragStart={(e) => { dragId.current = w.id; e.dataTransfer.setData(LAYER_MIME, w.id); e.dataTransfer.effectAllowed = 'move'; const row = e.currentTarget.closest('li'); if (row) e.dataTransfer.setDragImage(row, 16, 12); }}
                       onDragEnd={() => { setDrop(null); dragId.current = null; }}><Grip className="h-3.5 w-3.5" /></span>}
-                <button type="button" aria-pressed={on}
+                {editing === w.id ? <LayerNameInput initial={w.name ?? name(w.id)} label={i18n.t('web.editor.nameLabel')} onCommit={(v) => commitName(w.id, v)} onCancel={() => setEditing(null)} /> : <button type="button" aria-pressed={on}
+                  onPointerDown={(e) => startLayerSelect(e, w.id)}
+                  onDoubleClick={() => setEditing(w.id)}
                   onKeyDown={(e) => {
                     if (!e.altKey || (e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) return;
                     e.preventDefault(); move(w.id, i + (e.key === 'ArrowUp' ? -1 : 1));
                     requestAnimationFrame(() => document.querySelector<HTMLElement>(`[data-layer="${CSS.escape(w.id)}"] button`)?.focus());
                   }}
-                  onClick={(e) => setSelected((s) => (e.shiftKey || e.metaKey || e.ctrlKey ? (s.includes(w.id) ? s.filter((x) => x !== w.id) : [...s, w.id]) : [w.id]))}
+                  onClick={(e) => { if (dragged.current) return; setSelected((s) => (e.shiftKey || e.metaKey || e.ctrlKey ? (s.includes(w.id) ? s.filter((x) => x !== w.id) : [...s, w.id]) : [w.id])); }}
                   className={`flex min-h-[var(--hit)] min-w-0 flex-1 items-center gap-1.5 py-1.5 text-left text-[13px] transition ${on ? 'font-medium text-fg' : 'text-muted hover:text-fg'}`}>
                   <span className={`truncate ${w.visible ? '' : 'line-through decoration-faint'}`}>{name(w.id)}</span>
                   {out && <span className="flex shrink-0 items-center" title={i18n.t('web.editor.outside')}><StatusIcon kind="warning" className="h-3.5 w-3.5 text-warning" /><span className="sr-only">({i18n.t('web.editor.outside')})</span></span>}
-                </button>
+                </button>}
                 <button type="button" className="tog touch-none" data-paint="eye" data-paint-id={w.id} aria-pressed={!w.visible} aria-label={i18n.t(w.visible ? 'web.editor.hide' : 'web.editor.show', { name: name(w.id) })}
                   title={i18n.t(w.visible ? 'web.editor.hide' : 'web.editor.show', { name: name(w.id) })} onClick={(e) => { if (clickIsKeyboard(e)) actions.visible(w.id, !w.visible); }}>
                   {w.visible ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
@@ -196,6 +252,7 @@ export function Editor({ scene, derived, ast, playback, fonts, advanced, actions
             );
           })}
         </ul>
+        {nameErr && <p role="alert" className="mx-4 mt-2 border border-warning/60 bg-warning/10 px-2 py-1.5 text-xs leading-snug text-fg" data-testid="layer-name-error">{nameErr}</p>}
         <span className="sr-only" role="status" aria-live="polite">{say}</span>
       </aside>
 
@@ -230,6 +287,18 @@ export function Editor({ scene, derived, ast, playback, fonts, advanced, actions
 }
 
 /** Hàng đầu danh sách Lớp: mắt và khoá tổng, đúng cột với dòng bên dưới; chỉ biểu tượng, chú thích khi rê (như hàng đầu danh sách track). */
+/** Ô đổi tên lớp ngay trên dòng. Enter hoặc rời ô: áp; Esc: bỏ. */
+function LayerNameInput({ initial, label, onCommit, onCancel }: { initial: string; label: string; onCommit(v: string): void; onCancel(): void }) {
+  const [v, setV] = useState(initial);
+  const done = useRef(false);
+  const finish = (ok: boolean) => { if (done.current) return; done.current = true; if (ok) onCommit(v); else onCancel(); };
+  return (
+    <input autoFocus aria-label={label} value={v} maxLength={MAX_WIDGET_NAME * 2} data-testid="layer-name-input" className="min-w-0 flex-1 border border-control bg-raised px-1.5 py-1 text-[13px] text-fg"
+      onFocus={(e) => e.currentTarget.select()} onChange={(e) => setV(e.target.value)} onBlur={() => finish(true)}
+      onKeyDown={(e) => { e.stopPropagation(); if (e.key === 'Enter') { e.preventDefault(); finish(true); } else if (e.key === 'Escape') { e.preventDefault(); finish(false); } }} />
+  );
+}
+
 function LayersHead({ widgets, locked, onAllVisible, onLockAll, onAdd }: { widgets: readonly WidgetSpec[]; locked: ReadonlySet<string>; onAllVisible(): void; onLockAll(): void; onAdd(type: WidgetType): void }) {
   const { i18n } = useI18n();
   const hiddenN = widgets.filter((w) => !w.visible).length, lockedN = widgets.filter((w) => locked.has(w.id)).length;
@@ -308,21 +377,19 @@ function Properties({ scene, selected, locked, name, advanced, actions, onLock, 
   const { designWidth: W, designHeight: H } = scene.canvas;
   const snapping = (n: number) => (
     <InspectorSection n={n} id="snapping" title={i18n.t('web.editor.snapping')}>
-      <label className="flex items-center gap-2 text-[13px] text-fg">
-        <input type="checkbox" checked={scene.canvas.snapping.smartGuidesEnabled} onChange={(e) => actions.snapping({ smartGuidesEnabled: e.target.checked })} />
-        {i18n.t('web.editor.guides')}
-      </label>
-      <div className="flex items-center justify-between gap-3">
-        <label className="flex items-center gap-2 text-[13px] text-fg">
-          <input type="checkbox" checked={scene.canvas.snapping.gridEnabled} onChange={(e) => actions.snapping({ gridEnabled: e.target.checked })} />
-          {i18n.t('web.editor.grid')}
-        </label>
-        <div className="seg" role="radiogroup" aria-label={i18n.t('web.editor.gridSize')}>
-          {[8, 16].map((g) => (
-            <button key={g} type="button" role="radio" aria-checked={scene.canvas.snapping.gridSize === g} className="seg-btn tabular-nums" disabled={!scene.canvas.snapping.gridEnabled}
-              onClick={() => actions.snapping({ gridSize: g })}>{i18n.t('web.editor.pt', { n: g })}</button>
-          ))}
-        </div>
+      <TickField strong label={i18n.t('web.editor.guides')} checked={scene.canvas.snapping.smartGuidesEnabled} onChange={(v) => actions.snapping({ smartGuidesEnabled: v })} reference={SNAP_DEFAULT.smartGuidesEnabled} />
+      <TickField strong label={i18n.t('web.editor.grid')} checked={scene.canvas.snapping.gridEnabled} onChange={(v) => actions.snapping({ gridEnabled: v })} reference={SNAP_DEFAULT.gridEnabled} />
+      <div className="flex items-center justify-between gap-2 text-[13px] text-fg">
+        <span>{i18n.t('web.editor.gridSize')}</span>
+        <span className="flex items-center gap-2">
+          <div className="seg" role="radiogroup" aria-label={i18n.t('web.editor.gridSize')}>
+            {[8, 16].map((g) => (
+              <button key={g} type="button" role="radio" aria-checked={scene.canvas.snapping.gridSize === g} className="seg-btn tabular-nums" disabled={!scene.canvas.snapping.gridEnabled}
+                onClick={() => actions.snapping({ gridSize: g })}>{i18n.t('web.editor.pt', { n: g })}</button>
+            ))}
+          </div>
+          <ResetButton label={i18n.t('web.editor.gridSize')} changed={scene.canvas.snapping.gridSize !== SNAP_DEFAULT.gridSize} disabled={!scene.canvas.snapping.gridEnabled} onReset={() => actions.snapping({ gridSize: SNAP_DEFAULT.gridSize })} />
+        </span>
       </div>
     </InspectorSection>
   );
@@ -444,12 +511,8 @@ function Properties({ scene, selected, locked, name, advanced, actions, onLock, 
           <button type="button" className={`${btn} w-9 justify-center px-0`} aria-label={i18n.t('web.editor.duplicate')} title={`${i18n.t('web.editor.duplicate')} (Ctrl+D)`} onClick={onDuplicate} data-testid="duplicate"><Duplicate className="h-3.5 w-3.5" /></button>
           <button type="button" className={`${btn} w-9 justify-center px-0`} disabled={lk} aria-label={i18n.t('web.editor.remove')} title={`${i18n.t('web.editor.remove')} (Delete)`} onClick={onRemove} data-testid="remove"><Trash className="h-3.5 w-3.5" /></button>
         </div>
-        <label className="flex items-center gap-2 text-[13px] text-fg">
-          <input type="checkbox" checked={w.visible} onChange={(e) => actions.visible(w.id, e.target.checked)} />{i18n.t('web.editor.visible')}
-        </label>
-        <label className="flex items-center gap-2 text-[13px] text-fg">
-          <input type="checkbox" checked={lk} onChange={() => onLock(w.id)} />{i18n.t('web.editor.locked')}
-        </label>
+        <TickField strong label={i18n.t('web.editor.visible')} checked={w.visible} onChange={(v) => actions.visible(w.id, v)} reference />
+        <TickField strong label={i18n.t('web.editor.locked')} checked={lk} onChange={() => onLock(w.id)} reference={false} />
       </InspectorSection>
       <AlignSection n={4 + k} items={[w]} frame={{ width: W, height: H }} onLayouts={actions.layouts} locked={locked} />
       {snapping(5 + k)}

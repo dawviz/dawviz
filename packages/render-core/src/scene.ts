@@ -27,6 +27,8 @@ export interface WidgetSpec<P = unknown> {
   zIndex: number;
   visible: boolean;
   layout: WidgetLayout;
+  /** Tên lớp do người dùng đặt (chỉ để hiển thị trong ứng dụng, không vào video). Vắng = tên theo loại (`Chord`, `Chord 2`…). Không trùng nhau (so không phân biệt hoa/thường). */
+  name?: string;
   trackMappingMode: TrackMappingMode;
   /** Chỉ số track trong AST (khớp `ProjectTrack.index`), dùng khi `trackMappingMode = MANUAL`. */
   assignedTrackIndices: number[];
@@ -100,11 +102,21 @@ const HUD_DEFAULTS: Record<string, unknown> = {
   TRACK_INFO: DEFAULT_TRACK_INFO, EVENT_COUNTER: DEFAULT_EVENT_COUNTER, LIVE_TRIGGER: DEFAULT_LIVE_TRIGGER,
   TIME_BAR: DEFAULT_TIME_BAR, CHORD_DETECTION: DEFAULT_CHORD, PROGRESS_BAR: DEFAULT_PROGRESS_BAR, TEXT: DEFAULT_TEXT_BOX,
 };
+/** Thuộc tính mặc định của một loại widget (bản sao sâu): mốc tham chiếu của nút ↺ khi widget chưa có bộ dựng sẵn nào áp lên nó. */
+export function widgetDefaults(type: WidgetType): Record<string, unknown> {
+  return JSON.parse(JSON.stringify(type === 'PIANO_ROLL' ? DEFAULT_PIANO_ROLL : (HUD_DEFAULTS[type] ?? {})));
+}
 /** Cỡ mặc định khi thêm (tỉ lệ theo khung, hoặc pt cố định), kẹp trong khung. */
 const NEW_SIZE: Record<string, (W: number, H: number) => [number, number]> = {
   PIANO_ROLL: (W, H) => [W * 0.6, H * 0.4], TRACK_INFO: (W) => [W * 0.5, 130], EVENT_COUNTER: () => [480, 120], LIVE_TRIGGER: () => [480, 60],
   TIME_BAR: () => [320, 100], CHORD_DETECTION: () => [400, 100], PROGRESS_BAR: (W) => [W * 0.8, 24], TEXT: () => [480, 100],
 };
+/** Độ dài tối đa của tên lớp. */
+export const MAX_WIDGET_NAME = 60;
+/** Tên lớp chuẩn hoá: bỏ khoảng trắng đầu/cuối, gộp khoảng trắng liền nhau, bỏ ký tự điều khiển. */
+export const normalizeWidgetName = (s: string): string => s.replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim();
+/** Khoá so sánh tên (không phân biệt hoa/thường, không dấu cách thừa). */
+export const widgetNameKey = (s: string): string => normalizeWidgetName(s).toLocaleLowerCase();
 /** Id mới không trùng trong scene: `<loại>-<n>`. */
 export function newWidgetId(scene: SceneDocument, type: WidgetType): string {
   const base = type.toLowerCase().replace(/_/g, '-'), ids = new Set(scene.widgets.map((w) => w.id));
@@ -126,7 +138,8 @@ export function createWidget(scene: SceneDocument, type: WidgetType, center?: { 
 }
 /** Bản sao của widget (nhân bản): id mới, dời `offset` pt, nằm ngay trên bản gốc. */
 export function duplicateWidget(scene: SceneDocument, w: WidgetSpec, offset = 16): WidgetSpec {
-  return { ...JSON.parse(JSON.stringify(w)), id: newWidgetId(scene, w.type), zIndex: scene.widgets.reduce((m, x) => Math.max(m, x.zIndex), 0) + 1,
+  const { name: _name, ...rest } = JSON.parse(JSON.stringify(w)) as WidgetSpec; // bản sao không mang tên: tên phải khác nhau
+  return { ...rest, id: newWidgetId(scene, w.type), zIndex: scene.widgets.reduce((m, x) => Math.max(m, x.zIndex), 0) + 1,
     layout: { ...w.layout, anchor: { ...w.layout.anchor }, x: w.layout.x + offset, y: w.layout.y + offset } };
 }
 /** Bản sao sâu của bộ kiểu chữ (sửa kiểu trong một scene không đụng bộ mặc định đã đóng băng). */
@@ -268,7 +281,7 @@ export function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] 
   };
 
   const widgets: WidgetSpec[] = [];
-  const ids = new Set<string>();
+  const ids = new Set<string>(), names = new Set<string>();
   const list = Array.isArray(raw.widgets) ? raw.widgets : (w('WARN_PRESET_VALUE', '$.widgets', raw.widgets, 'không phải mảng; bỏ qua'), []);
   list.forEach((rw, i) => {
     const p = `$.widgets[${i}]`;
@@ -292,6 +305,12 @@ export function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] 
       id, type: rw.type as WidgetType, zIndex: Math.round(num(rw.zIndex, 10 * (i + 1), -10000, 10000, `${p}.zIndex`)),
       visible: bool(rw.visible, true, `${p}.visible`), layout, trackMappingMode: mode, assignedTrackIndices: idx,
     };
+    if (rw.name !== undefined) { // tên lớp: chuỗi 1–60 ký tự, không trùng (trùng thì bỏ tên, dùng tên theo loại)
+      const nm = typeof rw.name === 'string' ? normalizeWidgetName(rw.name) : '';
+      if (!nm || nm.length > MAX_WIDGET_NAME) w('WARN_PRESET_VALUE', `${p}.name`, rw.name, `tên lớp phải dài 1–${MAX_WIDGET_NAME} ký tự; bỏ tên`);
+      else if (names.has(widgetNameKey(nm))) w('WARN_PRESET_VALUE', `${p}.name`, rw.name, 'tên lớp trùng với lớp khác; bỏ tên');
+      else { names.add(widgetNameKey(nm)); base.name = nm; }
+    }
     const P = isObj(rw.properties) ? rw.properties : {};
     if (rw.type === 'PIANO_ROLL') {
       const d = DEFAULT_PIANO_ROLL;

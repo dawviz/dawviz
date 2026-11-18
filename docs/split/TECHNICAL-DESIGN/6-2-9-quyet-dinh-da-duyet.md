@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "6.2.9 Quyết định đã duyệt"
 path: "6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.9 Quyết định đã duyệt"
 chunk: 6-2-9-quyet-dinh-da-duyet.md
-source_lines: 315-322
-source_sha1: edafc798ea
+source_lines: 318-325
+source_sha1: 9b40736009
 ids: []
 ---
 #### 6.2.9 Quyết định đã duyệt

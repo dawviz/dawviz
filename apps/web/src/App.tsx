@@ -5,7 +5,7 @@
 // nên thành phần này không vẽ lại mỗi khung hình. Không có logic vẽ ở đây: khung hình = renderFrame của Render Core.
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { LayoutGroup, MotionConfig } from 'framer-motion';
-import { usesChordPlaceholder, DEFAULT_BRIGHTNESS, DEFAULT_KEYBOARD_STYLE, defaultStyleConfig, sanitizeBrightness, buildIndex, buildSceneHud, type Derived, type SceneDocument, type BrightnessConfig, type NoteStyle, type StyleConfig, type KeyboardStyle, type UnifiedProjectAST, type WidgetSpec, DEFAULT_TEXT_STYLES, createWidget, duplicateWidget, DEFAULT_CHORD, DEFAULT_EVENT_COUNTER, DEFAULT_LIVE_TRIGGER, DEFAULT_PROGRESS_BAR, DEFAULT_TIME_BAR } from '@dawviz/render-core';
+import { usesChordPlaceholder, widgetDefaults, DEFAULT_BRIGHTNESS, DEFAULT_KEYBOARD_STYLE, defaultStyleConfig, sanitizeBrightness, buildIndex, buildSceneHud, type Derived, type SceneDocument, type BrightnessConfig, type NoteStyle, type StyleConfig, type KeyboardStyle, type UnifiedProjectAST, type WidgetSpec, DEFAULT_TEXT_STYLES, createWidget, duplicateWidget } from '@dawviz/render-core';
 import type { ParseWarning } from '@dawviz/parser';
 import { useI18n } from './i18n/I18nProvider.tsx';
 import { LanguageSelect } from './components/LanguageSelect.tsx';
@@ -18,7 +18,8 @@ import { Transport } from './components/Transport.tsx';
 import { TrackPanel, TrackLayoutBar, DEFAULT_TRACK_LAYOUT, isShown, type TrackLayout } from './components/TrackPanel.tsx';
 import { ADVANCED_STYLE_KEYS, StylePanel } from './components/StylePanel.tsx';
 import { TextPanel } from './components/TextPanel.tsx';
-import { ADVANCED_WIDGET_KEYS, WidgetSettings, hasWidgetSettings } from './components/WidgetSettings.tsx';
+import { WidgetSettings, hasWidgetSettings } from './components/WidgetSettings.tsx';
+import { advancedEdited } from './lib/widgetFields.ts';
 import { textSlots } from './lib/textRef.ts';
 import { VideoStyles, isEdited } from './components/VideoStyles.tsx';
 import { PresetSettings } from './components/PresetSettings.tsx';
@@ -57,6 +58,9 @@ interface Loaded { name: string; ast: UnifiedProjectAST; warnings: ParseWarning[
 type Tab = 'preview' | 'editor' | 'settings';
 const TABS: readonly Tab[] = ['preview', 'editor', 'settings'];
 
+/** Bố cục danh sách track mặc định (đích của ↺ ở thanh bố cục). */
+const TRACK_LAYOUT_DEFAULT: TrackLayout = { ...DEFAULT_TRACK_LAYOUT, mode: 'list' };
+
 export function App() {
   const { i18n } = useI18n();
   const [busy, setBusy] = useState(false);
@@ -79,7 +83,7 @@ export function App() {
   useEffect(() => { if (piano && doc.videoStyle !== CUSTOM_STYLE) { savePref('style', piano.properties.noteStyle); savePref('keyboard', piano.properties.keyboard); } }, [piano, doc.videoStyle]);
   // REQ-UI-14: kiểu trình bày danh sách track là tuỳ chọn giao diện (không vào preset video).
   // Mặc định Danh sách: dòng track nằm ngay trong mục 03 của inspector (UI-DIRECTION 5.3); Lưới là lựa chọn thêm.
-  const [trackLayout, setTrackLayout] = usePref<TrackLayout>('trackLayout', { ...DEFAULT_TRACK_LAYOUT, mode: 'list' }, (p) => ({
+  const [trackLayout, setTrackLayout] = usePref<TrackLayout>('trackLayout', TRACK_LAYOUT_DEFAULT, (p) => ({
     mode: p.mode === 'grid' ? 'grid' : 'list',
     columns: p.columns === 'auto' || (typeof p.columns === 'number' && p.columns >= 1) ? p.columns : DEFAULT_TRACK_LAYOUT.columns,
   }));
@@ -278,6 +282,7 @@ export function App() {
     layouts: (p) => run((d) => Cmds.patchLayouts(d, p)),
     visible: (id, v) => run((d) => Cmds.setWidgetVisible(d, id, v)),
     paintVisible: (id, v) => run((d) => Cmds.paintWidgetVisible(d, id, v)),
+    rename: (id, name) => run((d) => Cmds.renameWidget(d, id, name)),
     allVisible: () => run((d) => Cmds.toggleAllWidgetsVisible(d)),
     z: (id, where) => run((d) => Cmds.reorderZ(d, id, where)),
     moveLayer: (id, to) => run((d) => Cmds.moveLayer(d, id, to)),
@@ -286,7 +291,9 @@ export function App() {
     duplicate: (ids) => {
       let sc = store.get().scene; const out: WidgetSpec[] = [];
       for (const id of ids) { const w = sc.widgets.find((x) => x.id === id); if (!w) continue; const c = duplicateWidget(sc, w); out.push(c); sc = { ...sc, widgets: [...sc.widgets, c] }; }
-      run((d) => Cmds.addWidgets(d, out)); return out.map((w) => w.id);
+      const d0 = store.get(), refs: Record<string, Record<string, unknown>> = {};
+      ids.forEach((id, i) => { const src = d0.scene.widgets.find((x) => x.id === id); if (src && out[i]) refs[out[i].id] = d0.propsRef[id] ?? widgetDefaults(src.type); });
+      run((d) => Cmds.addWidgets(d, out, refs)); return out.map((w) => w.id);
     },
     remove: (ids) => run((d) => Cmds.removeWidgets(d, ids)),
   }), [run, store]);
@@ -332,8 +339,8 @@ export function App() {
     <InspectorSection key="look" n={n} id="look" title={i18n.t('web.section.look')} more={more('look', lookEdited)}>
       {piano
         ? <StylePanel style={style} keyboard={keyboard} onStyle={(n2) => run((d) => Cmds.patchNoteStyle(d, n2.base))} onKeyboard={(n2) => run((d) => Cmds.patchKeyboard(d, n2))} lanes={lanes} advanced={showAdv('look')} notePresets={NOTE_PRESETS} onNotePreset={pickNotePreset}
-            reference={ref}
-            playhead={{ ratio: piano.properties.playheadPositionRatio, visible: piano.properties.playheadVisible, reference: playheadRef, onChange: (r) => run((d) => Cmds.setPlayheadRatio(d, r)), onVisible: (v) => run((d) => Cmds.setPlayheadVisible(d, v)) }} />
+            reference={ref} keyboardRef={(doc.propsRef[piano.id] as { keyboard?: { enabled?: boolean } } | undefined)?.keyboard?.enabled}
+            playhead={{ ratio: piano.properties.playheadPositionRatio, visible: piano.properties.playheadVisible, visibleRef: (doc.propsRef[piano.id] as { playheadVisible?: boolean } | undefined)?.playheadVisible, reference: playheadRef, onChange: (r) => run((d) => Cmds.setPlayheadRatio(d, r)), onVisible: (v) => run((d) => Cmds.setPlayheadVisible(d, v)) }} />
         : <p className="text-xs text-muted">{i18n.t('web.look.noPiano')}</p>}
     </InspectorSection>
   );
@@ -349,19 +356,18 @@ export function App() {
         <TextPanel widget={w} styles={scene.textStyles ?? DEFAULT_TEXT_STYLES} advanced={showAdv('text')} disabled={locked}
           onRef={(field, next, path) => run((d) => Cmds.patchTextRef(d, w.id, field, next, path))}
           onStyles={(set, field, r, kind) => run((d) => Cmds.setTextStyles(d, set, w.id, field, r, kind))}
-          onProps={(patch) => run((d) => Cmds.patchWidgetProps(d, w.id, patch))} />
+          onProps={(patch) => run((d) => Cmds.patchWidgetProps(d, w.id, patch))} reference={doc.propsRef[w.id] ?? widgetDefaults(w.type)} />
       </InspectorSection>
     );
   };
   // Mục "Thiết lập" (T-68): thuộc tính riêng của widget chữ. "Đã chỉnh nâng cao" = thuộc tính chỉ có ở Nâng cao khác mặc định.
-  const WIDGET_DEFAULTS: Record<string, Record<string, unknown>> = { EVENT_COUNTER: DEFAULT_EVENT_COUNTER as never, LIVE_TRIGGER: DEFAULT_LIVE_TRIGGER as never, TIME_BAR: DEFAULT_TIME_BAR as never, CHORD_DETECTION: DEFAULT_CHORD as never, PROGRESS_BAR: DEFAULT_PROGRESS_BAR as never };
   const settingsSection = (w: WidgetSpec, n: number, locked = false) => {
     if (!hasWidgetSettings(w.type)) return null;
-    const P = w.properties as Record<string, unknown>, D = WIDGET_DEFAULTS[w.type] ?? {};
-    const edited = (ADVANCED_WIDGET_KEYS[w.type] ?? []).some((k) => JSON.stringify(P[k]) !== JSON.stringify(D[k])) || (w.type !== 'TEXT' && w.trackMappingMode === 'MANUAL');
+    const reference = doc.propsRef[w.id] ?? widgetDefaults(w.type); // mốc ↺: bộ dựng sẵn áp gần nhất (widget mới: mặc định của loại)
+    const edited = advancedEdited(w, w.properties as Record<string, unknown>, reference);
     return (
       <InspectorSection key="settings" n={n} id="settings" title={i18n.t('web.section.settings')} more={more('settings', edited)}>
-        <WidgetSettings widget={w} advanced={showAdv('settings')} disabled={locked} onProps={(patch) => run((d) => Cmds.patchWidgetProps(d, w.id, patch))}
+        <WidgetSettings widget={w} advanced={showAdv('settings')} disabled={locked} reference={reference} onProps={(patch) => run((d) => Cmds.patchWidgetProps(d, w.id, patch))}
           tracks={loaded?.ast.tracks.map((t) => ({ index: t.index, name: t.name }))} onTracks={(mode, idx) => run((d) => Cmds.setWidgetTracks(d, w.id, mode, idx))} />
       </InspectorSection>
     );
@@ -384,7 +390,7 @@ export function App() {
     ),
     tracks: (n) => (
       <InspectorSection key="tracks" n={n} id="tracks" title={`${i18n.t('web.section.tracks')} · ${i18n.number(loaded.ast.tracks.length)}`} more={more('tracks', tracksEdited)}>
-        <TrackLayoutBar value={trackLayout} onChange={setTrackLayout} count={loaded.ast.tracks.length} />
+        <TrackLayoutBar value={trackLayout} onChange={setTrackLayout} count={loaded.ast.tracks.length} reference={TRACK_LAYOUT_DEFAULT} />
         {trackLayout.mode === 'list' ? <TrackPanel {...trackProps} /> : <p className="text-xs text-muted">{i18n.t('web.tracks.gridBelow')}</p>}
       </InspectorSection>
     ),

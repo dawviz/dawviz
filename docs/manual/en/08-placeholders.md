@@ -10,7 +10,7 @@ Text in the video can change with the music. Type the name of a value in curly b
 
 For example `{title} - {bpm} BPM` becomes `Demo Song - 120 BPM`.
 
-Type `{` and the app suggests the names; click one to insert it.
+Under each text box, the `{bpm}` and `{title}` buttons insert that name at the cursor with one click. Or type `{` and the app suggests the names; click one to insert it.
 
 ## In the built-in widgets
 
@@ -35,7 +35,7 @@ Built-in widgets look the same as before. In **Advanced** mode, the text of ever
 
 `{tempo}` is the old name of `{bpm}`: it still works and gives exactly the same result, but the app no longer suggests it.
 
-Values follow the tracks that are showing (see the [Preview tab](02-preview.md) to hide or solo tracks). To make one widget read only some tracks, use **Tracks** in its **Settings**: **Choose** and tick the tracks you want. The text box has it in Basic mode; the note counter, live notes and chord have it in Advanced.
+Values follow the tracks that are showing (see the [Preview tab](02-preview.md) to hide or solo tracks). To make one widget read only some tracks, use **Tracks** in its **Settings**: **Choose** and click the tracks you want. Press and hold, then drag over several rows to select or clear them quickly (the whole drag is one undo step); **Select all** and **Clear all** sit above the list. The ↺ button beside **Tracks** (or Alt+click on that word) goes back to **All showing**. The text box has it in Basic mode; the note counter, live notes and chord have it in Advanced.
 
 Some widgets have names of their own, and those win over the general ones: live notes has `{name}`, `{velocity}`, `{track}`, `{pitch}`; the progress bar has `{elapsed}`, `{total}`, `{remaining}`, `{pct}` for the song's time (there `{total}` is the song length, not the note count).
 

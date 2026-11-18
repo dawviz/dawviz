@@ -10,7 +10,7 @@ Chữ trong video có thể tự đổi theo bài nhạc. Bạn gõ tên của s
 
 Ví dụ gõ `{title} - {bpm} BPM` ra `Demo Song - 120 BPM`.
 
-Gõ `{` thì ứng dụng gợi ý tên các số liệu; bấm một tên để điền.
+Dưới ô chữ có nút `{bpm}` và `{title}`: bấm một lần là chèn tên đó vào chỗ con trỏ. Hoặc gõ `{` thì ứng dụng gợi ý tên các số liệu; bấm một tên để điền.
 
 ## Ở các widget có sẵn
 
@@ -35,7 +35,7 @@ Chữ của widget có sẵn vẫn như cũ. Ở chế độ **Nâng cao**, ô c
 
 `{tempo}` là tên cũ của `{bpm}`: vẫn dùng được và cho đúng cùng kết quả, nhưng ứng dụng không gợi ý nữa.
 
-Số liệu tính theo các track đang hiện (xem [thẻ Xem trước](02-xem-truoc.md) để ẩn hoặc solo track). Muốn một widget chỉ đọc vài track, chọn ở mục **Track** trong **Thiết lập** của nó: **Chọn track** rồi tick các track cần. Ô chữ có mục này ở chế độ Cơ bản; bộ đếm nốt, nốt đang phát và hợp âm có ở Nâng cao.
+Số liệu tính theo các track đang hiện (xem [thẻ Xem trước](02-xem-truoc.md) để ẩn hoặc solo track). Muốn một widget chỉ đọc vài track, chọn ở mục **Track** trong **Thiết lập** của nó: **Chọn track** rồi bấm vào các track cần. Bấm giữ rồi kéo qua nhiều dòng để chọn hoặc bỏ nhanh (cả lần kéo là một bước hoàn tác); **Chọn tất cả** và **Bỏ chọn tất cả** ở đầu danh sách. Nút ↺ cạnh chữ **Track** (hoặc Alt+nhấp vào chữ đó) đưa về **Mọi track đang hiện**. Ô chữ có mục này ở chế độ Cơ bản; bộ đếm nốt, nốt đang phát và hợp âm có ở Nâng cao.
 
 Một số widget có thêm tên riêng và chúng được ưu tiên hơn tên chung: nốt đang phát có `{name}`, `{velocity}`, `{track}`, `{pitch}`; thanh tiến độ có `{elapsed}`, `{total}`, `{remaining}`, `{pct}` theo thời gian của bài (ở đó `{total}` là độ dài bài, không phải số nốt).
 

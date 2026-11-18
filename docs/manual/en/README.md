@@ -21,7 +21,7 @@ This guide grows with the app. If something isn't in the app yet, it isn't descr
 
 - **Basic and Advanced.** The switch is at the top right. Basic shows what you use most. Advanced shows every option. Switch any time; your settings stay.
 - **Undo.** Almost every change can be undone with Ctrl+Z (⌘Z on Mac). The clock button next to Undo/Redo lists your steps; click one to go back to that point.
-- **The ↺ button.** It appears next to a setting you have changed. Click it to return that setting to the value of the current video style.
+- **The ↺ button.** It appears next to a setting you have changed, in every section (Position, Settings, Text, note look…). Click it to return that setting to the value of the video style or preset you applied last; for a widget you just added, to the default for its type. A faster way: hold Alt (Option on Mac) and click the setting's **label text** (not the input box). Each reset is its own undo step.
 - **Hover over a button** to see its name and shortcut.
 
 ## Number fields

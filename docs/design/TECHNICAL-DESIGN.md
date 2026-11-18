@@ -216,7 +216,10 @@ Mã: `packages/render-core/src/typography.ts` (mô hình, dàn chữ, tràn khun
 - **Bộ chung** (`globalValues` ở `hud.ts`): các getter tính lười, đệm trong một lần layout của một widget, nên mẫu không dùng thì không tốn gì. `withLocals` chồng giá trị riêng của widget lên bộ chung (`{total}` của Thanh tiến độ là thời lượng, của Bộ đếm là số nốt; `{pct}` của Bộ đếm giữ `%` và `decimals`). Nguồn: AST, `Derived.hud` (`starts`, lưới nhịp, hợp âm) và các track hiển thị của widget; **không** `Date`/`Math.random`, nên Preview = Export.
 - **`{chord}` ở mọi chữ:** hợp âm dò ở bước derived. `buildSceneHud` thêm nhóm track của mọi widget có `{chord` trong thuộc tính (`usesChordPlaceholder`) ngoài các widget Chord; ứng dụng dựng lại `hud` khi tập widget/nhóm track dùng nó đổi (`chordSig` ở `App.tsx`).
 - **`TEXT`:** thuộc tính `{align, text, style, valueStyle}`; mỗi dòng của `text` là một mẫu, dòng trống chiếm đúng một dòng, chữ dài theo luật tràn khung của kiểu chữ (5.9). Tối đa 2000 ký tự (mẫu của các widget khác: 200).
+- **Tên lớp:** `WidgetSpec.name?` (tuỳ chọn, 1–60 ký tự, chỉ hiển thị trong ứng dụng, không vào video). `normalizeWidgetName`/`widgetNameKey` ở Render Core; `sanitizeScene` bỏ tên rỗng, quá dài hoặc trùng (so không phân biệt hoa/thường) kèm `WARN_PRESET_VALUE`. Ứng dụng kiểm trùng bằng `lib/layerName.ts` (so với tên đang hiển thị của mọi lớp, gồm cả tên theo loại) trước lệnh `renameWidget`; trùng thì **giữ tên cũ và báo lý do** (không hỏi lại). Nhân bản không mang tên.
 - **Lược đồ 0.6.0:** thêm loại `TEXT`; 0.5.x di trú không đổi cấu trúc (`WARN_PRESET_MIGRATED`), preset cũ vẽ như cũ.
+
+- **Mục Thiết lập khai báo một lần (`apps/web/src/lib/widgetFields.ts`):** `WIDGET_FIELDS[loại]` liệt kê từng thiết lập (đường dẫn trong `properties`, kiểu điều khiển, nhãn, Cơ bản/Nâng cao, điều kiện hiện, giới hạn). `WidgetSettings` vẽ điều khiển, nút ↺ và dấu "đã chỉnh nâng cao" từ bảng này; test `widgetFields.test.ts` bắt thuộc tính có trong mặc định mà thiếu trong bảng (hoặc trong `SETTINGS_EXEMPT`), nên thiết lập mới tự có ↺. ↺ so với `Doc.propsRef` (xem 6.1). Alt+nhấp (Option+nhấp trên Mac) vào nhãn của dòng khôi phục: làm một lần trong `ResetButton` (pha bắt sự kiện trên phần tử cha của nút, bỏ qua nhấp vào ô nhập), nên có hiệu lực ở mọi bảng dùng `ResetButton`, kể cả ngoài Thiết lập.
 
 ## 6. Ứng dụng web và phát lại 🟡
 
@@ -338,7 +341,8 @@ SRS REQ-UI-14 (sửa theo D-50); `apps/web/src/components/TrackPanel.tsx`.
 ```ts
 interface Doc { videoStyle: string; scene: SceneDocument; brightness: Record<TrackId, BrightnessConfig>; order: TrackId[]; hidden: TrackId[]; solo: TrackId[]; audioOffsetMs: number;
   lookRef: NoteStyle /* kiểu nốt của bộ dựng sẵn áp gần nhất: đích của nút ↺ (D-57); đổi cùng lệnh áp bộ dựng sẵn nên hoàn tác trả cả nó */;
-  layoutRef: Record<WidgetId, WidgetLayout> /* bố cục của phong cách/preset áp gần nhất: đích của ↺ ở X, Y, W, H; đặt bởi initialDoc, setVideoStyle, loadPreset */ }
+  layoutRef: Record<WidgetId, WidgetLayout> /* bố cục của phong cách/preset áp gần nhất: đích của ↺ ở X, Y, W, H; đặt bởi initialDoc, setVideoStyle, loadPreset */,
+  propsRef: Record<WidgetId, Record<string, unknown>> /* thuộc tính (mục Thiết lập) của từng widget trong phong cách/preset áp gần nhất: đích của ↺ ở Thiết lập; đặt bởi initialDoc, setVideoStyle, loadPreset, addWidget/addWidgets (mặc định của loại hoặc mốc của bản gốc); widget không có mặt dùng widgetDefaults(type) */ }
 interface Command<D> { type: string; label: string /* khoá i18n */; mergeKey?: string; redo(d: D): D; undo(d: D): D; before: unknown; after: unknown /* để gộp và để biết mục gộp có thành no-op không */ }
 interface Store<D> { get(): D; state(): { doc: D; history: { canUndo; canRedo; undoLabel?; redoLabel?; undoCount; redoCount } }; dispatch(c: Command<D> | null): void; undo(): void; redo(): void; beginGesture(): void; endGesture(): void; reset(doc: D): void; subscribe(fn): () => void }
 ```

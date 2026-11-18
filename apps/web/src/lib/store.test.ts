@@ -41,6 +41,7 @@ roundTrip('moveTrack', (d) => C.moveTrack(d, 'a', 2));
 roundTrip('patchLayout', (d) => C.patchLayout(d, 'piano-roll', { x: 100, y: 120, width: 400, rotation: 37, anchor: { x: 0, y: 0 } }));
 roundTrip('patchWidgetProps', (d) => C.patchWidgetProps(d, 'piano-roll', { lookaheadSeconds: 5 }));
 roundTrip('setWidgetVisible', (d) => C.setWidgetVisible(d, 'track-info', false));
+roundTrip('renameWidget', (d) => C.renameWidget(d, 'track-info', 'Tiêu đề'));
 roundTrip('setWidgetTracks', (d) => C.setWidgetTracks(d, 'track-info', 'MANUAL', [1, 0, 1]));
 roundTrip('reorderZ (front)', (d) => C.reorderZ(d, 'piano-roll', 'front'));
 roundTrip('reorderZ (back)', (d) => C.reorderZ(d, 'track-info', 'back'));

@@ -29,6 +29,9 @@ Khi đang gõ trong một ô nhập, các phím này dùng cho ô đó.
 | Esc | Bỏ chọn |
 | Delete | Xoá widget đang chọn |
 | Ctrl+D | Nhân bản widget đang chọn |
+| Ctrl+A (⌘A) | Chọn tất cả các lớp |
+| F2 | Đổi tên lớp đang chọn |
+| Alt+nhấp (Option+nhấp trên Mac) vào nhãn của một thiết lập | Khôi phục thiết lập đó về giá trị gốc (khi nó đã đổi) |
 | Kéo trên chỗ trống | Chọn bằng khung (giữ Shift để cộng thêm) |
 | Shift + bấm | Chọn thêm widget |
 | Ctrl+] / Ctrl+[ | Lên một bậc / xuống một bậc |

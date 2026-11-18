@@ -43,6 +43,7 @@
         "properties": {
           "id": { "type": "string", "minLength": 1, "maxLength": 64 },
           "type": { "enum": ["TRACK_INFO", "PIANO_ROLL", "EVENT_COUNTER", "LIVE_TRIGGER", "TIME_BAR", "CHORD_DETECTION", "AUDIO_SPECTRUM", "PROGRESS_BAR", "TEXT"] },
+          "name": { "type": "string", "minLength": 1, "maxLength": 60, "description": "Tên lớp do người dùng đặt; không trùng nhau. Vắng thì dùng tên theo loại." },
           "zIndex": { "type": "integer", "minimum": -10000, "maximum": 10000 },
           "visible": { "type": "boolean" },
           "layout": {

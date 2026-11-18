@@ -7,6 +7,7 @@ import { OFFSET_LIMIT_MS, clampOffsetMs } from '../lib/audioMap.ts';
 import { formatClock } from '../lib/timeFormat.ts';
 import { Minus, Plus } from './Icons.tsx';
 import { NumberField } from './NumberField.tsx';
+import { ResetButton } from './Inspector.tsx';
 
 export interface AudioInfo { name: string; durationSec: number }
 const stepBtn = 'grid h-[var(--hit)] w-8 shrink-0 place-items-center rounded border border-control bg-raised text-fg transition hover:border-line-strong active:scale-95';
@@ -51,6 +52,7 @@ export function AudioPanel({ audio, busy, offsetMs, showOffset, onLoad, onRemove
               <NumberField label={i18n.t('web.audio.offset.field')} value={offsetMs} spec={{ min: -OFFSET_LIMIT_MS, max: OFFSET_LIMIT_MS, step: 1, units: { ms: 1, s: 1000 } }} onChange={(v) => onOffset(clampOffsetMs(v))} />
             </span>
             <button type="button" className={stepBtn} aria-label={i18n.t('web.audio.offset.plus')} title={i18n.t('web.audio.offset.step')} onClick={bump(1)}><Plus /></button>
+            <ResetButton label={i18n.t('web.audio.offsetLabel')} changed={offsetMs !== 0} onReset={() => onOffset(0)} />
           </div>
           <p className="text-xs text-fg" role="status" data-testid="audio-offset-text">{sum.text}</p>
           {sum.cut && <p className="text-xs text-muted">{sum.cut}</p>}

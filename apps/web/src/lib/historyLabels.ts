@@ -109,6 +109,7 @@ export function describeCommand(cmd: Cmd, c: LabelCtx): string {
     case 'addWidget': return i18n.t('web.hist.addWidget', { widget: i18n.has(`web.widget.${String(p.type)}`) ? i18n.t(`web.widget.${String(p.type)}`) : String(p.type) });
     case 'duplicateWidgets': return i18n.t('web.hist.duplicate', { n: Number(p.n) });
     case 'removeWidgets': return i18n.t('web.hist.removeWidget', { n: Number(p.n) });
+    case 'renameWidget': return cmd.after === null ? i18n.t('web.hist.renameReset') : i18n.t('web.hist.rename', { name: String(cmd.after) });
     case 'patchTextRef': return i18n.t('web.hist.text', { widget });
     case 'setTextStyles': return i18n.t(p.kind === 'save' ? 'web.hist.textStyleSave' : 'web.hist.textStyleUpdate', { widget });
     default: return i18n.has(cmd.label) ? i18n.t(cmd.label) : cmd.type;

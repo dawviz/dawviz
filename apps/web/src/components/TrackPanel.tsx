@@ -12,6 +12,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { BRIGHTNESS_DB_RANGE, DEFAULT_BRIGHTNESS, pitchName, trackBrightness, type ProjectTrack, type BrightnessConfig, type BrightnessSource, type NoteStyle, type TempoPoint } from '@dawviz/render-core';
 import { SliderField } from './SliderField.tsx';
 import { NumberField } from './NumberField.tsx';
+import { ResetButton } from './Inspector.tsx';
 import { Select } from './Select.tsx';
 import { ChevronRight, Eye, EyeOff, Grip } from './Icons.tsx';
 import { useI18n } from '../i18n/I18nProvider.tsx';
@@ -64,10 +65,11 @@ export function TrackPanel(props: Props) {
 }
 
 /** Thanh chọn kiểu trình bày: Lưới/Danh sách + số cột (ô nhập số, không giới hạn cứng ngoài số track). */
-export function TrackLayoutBar({ value, onChange, count }: { value: TrackLayout; onChange(v: TrackLayout): void; count: number }) {
+export function TrackLayoutBar({ value, onChange, count, reference }: { value: TrackLayout; onChange(v: TrackLayout): void; count: number; /** Bố cục mặc định: đích của ↺. */ reference?: TrackLayout }) {
   const { i18n } = useI18n();
   return (
     <div className="flex flex-wrap items-center gap-2" data-testid="track-layout-bar">
+      <div className="flex items-center gap-1">
       <div className="seg" role="radiogroup" aria-label={i18n.t('web.tracks.layout')} onKeyDown={radioKeys}>
         {(['list', 'grid'] as const).map((m) => (
           <button key={m} type="button" role="radio" aria-checked={value.mode === m} tabIndex={radioTab(value.mode === m)} className="seg-btn" onClick={() => onChange({ ...value, mode: m })}>
@@ -75,16 +77,22 @@ export function TrackLayoutBar({ value, onChange, count }: { value: TrackLayout;
           </button>
         ))}
       </div>
+      <ResetButton label={i18n.t('web.tracks.layout')} changed={!!reference && reference.mode !== value.mode} onReset={() => onChange({ ...value, mode: reference!.mode })} />
+      </div>
       {value.mode === 'grid' && (
         <div className="flex items-center gap-2 text-xs text-muted">
-          <label className="flex items-center gap-1">
-            <input type="checkbox" checked={value.columns === 'auto'} onChange={(e) => onChange({ ...value, columns: e.target.checked ? 'auto' : 3 })} />
-            {i18n.t('web.tracks.columns.auto')}
-          </label>
+          <span className="flex items-center gap-1">
+            <label className="flex items-center gap-1">
+              <input type="checkbox" checked={value.columns === 'auto'} onChange={(e) => onChange({ ...value, columns: e.target.checked ? 'auto' : 3 })} />
+              {i18n.t('web.tracks.columns.auto')}
+            </label>
+            <ResetButton label={i18n.t('web.tracks.columns.auto')} changed={!!reference && reference.columns === 'auto' && value.columns !== 'auto'} onReset={() => onChange({ ...value, columns: 'auto' })} />
+          </span>
           {value.columns !== 'auto' && (
             <span className="flex items-center gap-1">
               <span>{i18n.t('web.tracks.columns')}</span>
               <span className="w-14"><NumberField label={i18n.t('web.tracks.columns')} value={value.columns} spec={{ min: 1, max: Math.max(1, count), step: 1 }} onChange={(v) => onChange({ ...value, columns: v })} /></span>
+              <ResetButton label={i18n.t('web.tracks.columns')} changed={!!reference && reference.columns !== value.columns} onReset={() => onChange({ ...value, columns: reference!.columns })} />
             </span>
           )}
         </div>
@@ -397,12 +405,16 @@ function BrightnessControls({ tr, c, onChange }: { tr: ProjectTrack; c: Brightne
           <Select value={c.source} onChange={(e) => onChange({ source: e.target.value as BrightnessSource })} wrapClassName="min-w-0 flex-1" className="truncate py-1 pl-2">
             {SOURCES.map((s) => <option key={s} value={s}>{i18n.t(`web.brightness.${s}`)}{EXPERIMENTAL.has(s) ? ` (${i18n.t('web.experimental')})` : ''}</option>)}
           </Select>
+          <ResetButton label={i18n.t('web.brightness.source')} changed={c.source !== DEFAULT_BRIGHTNESS.source} onReset={() => onChange({ source: DEFAULT_BRIGHTNESS.source })} />
         </label>
         {c.source !== 'off' && (
-          <label className="flex items-center gap-1">
-            <input type="checkbox" checked={c.invert} onChange={(e) => onChange({ invert: e.target.checked })} />
-            <span>{i18n.t('web.brightness.invert')}</span>
-          </label>
+          <span className="flex items-center gap-1">
+            <label className="flex items-center gap-1">
+              <input type="checkbox" checked={c.invert} onChange={(e) => onChange({ invert: e.target.checked })} />
+              <span>{i18n.t('web.brightness.invert')}</span>
+            </label>
+            <ResetButton label={i18n.t('web.brightness.invert')} changed={c.invert !== DEFAULT_BRIGHTNESS.invert} onReset={() => onChange({ invert: DEFAULT_BRIGHTNESS.invert })} />
+          </span>
         )}
       </div>
       {c.source !== 'off' && <>

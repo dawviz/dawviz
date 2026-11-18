@@ -208,7 +208,7 @@ Nguồn: `docs/design/TECHNICAL-DESIGN.md` · [thứ tự đọc](docs/split/TEC
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)](docs/split/TECHNICAL-DESIGN/5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md) · 5.4k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp 🟢 (đã dùng ở T-69)](docs/split/TECHNICAL-DESIGN/5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md) · 0.9k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.9 Kiểu chữ cho mọi chữ trong video 🟢 (T-72, SRS REQ-GRAPHICS-18, D-58)](docs/split/TECHNICAL-DESIGN/5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md) · 6.6k
-- [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.10 Chỗ giữ trong chữ và Ô chữ 🟢 (T-73, SRS REQ-GRAPHICS-19, D-60/OI-18)](docs/split/TECHNICAL-DESIGN/5-10-cho-giu-trong-chu-va-o-chu-t-73-srs-req-gra.md) · 1.8k
+- [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.10 Chỗ giữ trong chữ và Ô chữ 🟢 (T-73, SRS REQ-GRAPHICS-19, D-60/OI-18)](docs/split/TECHNICAL-DESIGN/5-10-cho-giu-trong-chu-va-o-chu-t-73-srs-req-gra.md) · 3.0k
 - [6. Ứng dụng web và phát lại 🟡 › 6.1 Trạng thái](docs/split/TECHNICAL-DESIGN/6-1-trang-thai.md) · 1.3k
 - [6. Ứng dụng web và phát lại 🟡 › 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh)](docs/split/TECHNICAL-DESIGN/6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md) · 0.2k
 - [6. Ứng dụng web và phát lại 🟡 › 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) › 6.2.1 Nạp tệp âm thanh (mix)](docs/split/TECHNICAL-DESIGN/6-2-1-nap-tep-am-thanh-mix.md) · 3.3k
@@ -221,7 +221,7 @@ Nguồn: `docs/design/TECHNICAL-DESIGN.md` · [thứ tự đọc](docs/split/TEC
 - [6. Ứng dụng web và phát lại 🟡 › 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) › 6.2.8 Kiểm thử (thuần, không cần trình duyệt)](docs/split/TECHNICAL-DESIGN/6-2-8-kiem-thu-thuan-khong-can-trinh-duyet.md) · 1.0k
 - [6. Ứng dụng web và phát lại 🟡 › 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) › 6.2.9 Quyết định đã duyệt](docs/split/TECHNICAL-DESIGN/6-2-9-quyet-dinh-da-duyet.md) · 0.7k
 - [6. Ứng dụng web và phát lại 🟡 › 6.3 Danh sách track 🟢](docs/split/TECHNICAL-DESIGN/6-3-danh-sach-track.md) · 1.9k
-- [6. Ứng dụng web và phát lại 🟡 › 6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)](docs/split/TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) · 18.8k
+- [6. Ứng dụng web và phát lại 🟡 › 6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)](docs/split/TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) · 19.1k
 - [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) › 7.1 Trình tự](docs/split/TECHNICAL-DESIGN/7-1-trinh-tu.md) · 1.0k
 - [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) › 7.2 Quyết định kỹ thuật](docs/split/TECHNICAL-DESIGN/7-2-quyet-dinh-ky-thuat.md) · 0.9k
 - [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) › 7.3 Phần lõi thuần đã làm (T-09, 2026-11-14)](docs/split/TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md) · 1.7k

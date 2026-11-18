@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "8. Lưu trữ ⚪ (M4)"
 path: "8. Lưu trữ ⚪ (M4)"
 chunk: 8-luu-tru-m4.md
-source_lines: 445-450
-source_sha1: edafc798ea
+source_lines: 449-454
+source_sha1: 9b40736009
 ids: [ERR_PRESET_INVALID, ERR_SCHEMA_NEWER, WARN_PRESET_MIGRATED]
 ---
 ## 8. Lưu trữ ⚪ (M4)

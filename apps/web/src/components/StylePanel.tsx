@@ -6,7 +6,7 @@ import { useI18n } from '../i18n/I18nProvider.tsx';
 import { radioKeys, radioTab } from '../lib/a11y.ts';
 import { matchNotePreset } from '../lib/videoScenes.ts';
 import { Select } from './Select.tsx';
-import { ResetButton } from './Inspector.tsx';
+import { ResetButton, TickField } from './Inspector.tsx';
 import { SliderField as Slider } from './SliderField.tsx';
 
 const MODES: ColorMode[] = ['track', 'custom', 'pitch', 'velocity'];
@@ -19,7 +19,7 @@ const row = 'grid grid-cols-[minmax(0,1fr)_minmax(0,9.5rem)_1.5rem] items-center
  *  `playhead`: vị trí vạch phát (0..1) và hàm đổi; bàn phím bật thì ô bị khoá kèm chú thích (T-71).
  *  `advanced`: hiện cả dòng nâng cao (chế độ Nâng cao, hoặc "Thêm tuỳ chọn" của mục đang mở).
  *  `reference`: kiểu nốt của bộ dựng sẵn đang chọn; thông số khác nó thì có nút ↺ đưa về (D-57). */
-export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset, playhead, reference }: { reference?: NoteStyle; playhead?: { ratio: number; visible: boolean; reference?: number; onChange(ratio: number): void; onVisible(visible: boolean): void }; notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean }) {
+export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset, playhead, reference, keyboardRef }: { reference?: NoteStyle; /** Bàn phím bật/tắt của bộ dựng sẵn áp gần nhất (đích của ↺ ở ô tick Bàn phím). */ keyboardRef?: boolean; playhead?: { ratio: number; visible: boolean; /** Vạch phát hiện/ẩn của bộ dựng sẵn áp gần nhất. */ visibleRef?: boolean; reference?: number; onChange(ratio: number): void; onVisible(visible: boolean): void }; notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean }) {
   const { i18n } = useI18n();
   const b = style.base;
   const set = (patch: Partial<NoteStyle>) => onStyle({ ...style, base: { ...b, ...patch } });
@@ -59,17 +59,11 @@ export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], a
       <Slider id="st-glow" label={i18n.t('web.style.glow')} value={b.glow} min={0} max={1} step={0.05} reset={ref('glow')} onChange={(v) => set({ glow: v })} />
       {advanced && <Slider id="st-glowr" label={i18n.t('web.style.glowRadius')} value={b.glowRadius} min={0} max={40} hardMax={64} step={1} reset={ref('glowRadius')} onChange={(v) => set({ glowRadius: v })} />}
       <GlowSection b={b} set={set} lanes={lanes} advanced={advanced} reference={reference} />
-      {advanced && <label className="flex items-center gap-2 text-xs text-muted">
-        <input type="checkbox" checked={b.glowActiveOnly} onChange={(e) => set({ glowActiveOnly: e.target.checked })} />{i18n.t('web.style.glowActiveOnly')}
-      </label>}
+      {advanced && <TickField label={i18n.t('web.style.glowActiveOnly')} checked={b.glowActiveOnly} onChange={(v) => set({ glowActiveOnly: v })} reference={reference?.glowActiveOnly} />}
       <div className="space-y-2 border-t border-line pt-2.5">
-        <label className="flex items-center gap-2 text-xs text-muted">
-          <input type="checkbox" checked={keyboard.enabled} onChange={(e) => onKeyboard({ ...keyboard, enabled: e.target.checked })} />{i18n.t('web.keyboard.show')}
-        </label>
+        <TickField label={i18n.t('web.keyboard.show')} checked={keyboard.enabled} onChange={(v) => onKeyboard({ ...keyboard, enabled: v })} reference={keyboardRef} />
         {playhead && <>
-          <label className="flex items-center gap-2 text-xs text-muted">
-            <input type="checkbox" checked={playhead.visible} onChange={(e) => playhead.onVisible(e.target.checked)} data-testid="playhead-visible" />{i18n.t('web.playhead.show')}
-          </label>
+          <TickField label={i18n.t('web.playhead.show')} checked={playhead.visible} onChange={playhead.onVisible} reference={playhead.visibleRef} testId="playhead-visible" />
           {/* Bàn phím bật: vạch phát ghim ở mép bàn phím (Render Core bỏ qua tỉ lệ), nên khoá ô và nói lý do ngay bên dưới. Giá trị vẫn giữ để dùng lại khi tắt bàn phím. */}
           {/* Lý do khoá: chú thích khi rê chuột + chữ ẩn cho trình đọc màn hình (giải thích dài nằm trong hướng dẫn sử dụng). */}
           <div title={keyboard.enabled ? i18n.t('web.playhead.locked') : undefined}>
@@ -93,7 +87,10 @@ function GlowSection({ b, set, lanes, advanced, reference }: { b: NoteStyle; set
     <div className="space-y-2" data-testid="glow-section">
       {/* Kiểu phát sáng: nhãn ở trên, nút chọn rộng hết dòng, để "Đều nhau" và "Động khi chạm" không bị cắt chữ. */}
       <div className="space-y-1.5">
-        <span className="block text-xs text-muted">{i18n.t('web.glow.mode')}</span>
+        <div className="flex items-center justify-between gap-2 text-xs text-muted">
+          <span>{i18n.t('web.glow.mode')}</span>
+          <ResetButton label={i18n.t('web.glow.mode')} changed={!!reference && reference.glowMode !== b.glowMode} onReset={() => set({ glowMode: reference!.glowMode })} />
+        </div>
         <div className="seg w-full" role="radiogroup" aria-label={i18n.t('web.glow.mode')} onKeyDown={radioKeys}>
           {(['uniform', 'dynamic'] as const).map((m) => (
             <button key={m} type="button" role="radio" aria-checked={b.glowMode === m} tabIndex={radioTab(b.glowMode === m)} onClick={() => set({ glowMode: m })}
@@ -117,6 +114,7 @@ function GlowSection({ b, set, lanes, advanced, reference }: { b: NoteStyle; set
             <Select value={b.glowLane} onChange={(e) => set({ glowLane: e.target.value })} className="py-1 pl-2" wrapClassName="min-w-0">
               {laneList.map((l) => <option key={l} value={l}>{i18n.has(`web.glow.lane.${l}`) ? i18n.t(`web.glow.lane.${l}`) : l}{lanes.includes(l) ? '' : ` (${i18n.t('web.glow.lane.absent')})`}</option>)}
             </Select>
+            <ResetButton label={i18n.t('web.glow.lane')} changed={!!reference && reference.glowLane !== b.glowLane} onReset={() => set({ glowLane: reference!.glowLane })} />
           </label>
         )}
         {advanced && (b.glowSource === 'pan' || (b.glowSource === 'automation' && b.glowLane === 'pan')) && (
@@ -125,14 +123,13 @@ function GlowSection({ b, set, lanes, advanced, reference }: { b: NoteStyle; set
             <Select value={b.glowPanMode} onChange={(e) => set({ glowPanMode: e.target.value as GlowPanMode })} className="py-1 pl-2" wrapClassName="min-w-0">
               {(['lr', 'spread'] as const).map((m) => <option key={m} value={m}>{i18n.t(`web.glow.panMode.${m}`)}</option>)}
             </Select>
+            <ResetButton label={i18n.t('web.glow.panMode')} changed={!!reference && reference.glowPanMode !== b.glowPanMode} onReset={() => set({ glowPanMode: reference!.glowPanMode })} />
           </label>
         )}
         {advanced && <>
           <Slider id="st-gmin" label={i18n.t('web.glow.min')} value={b.glowMin} min={0} max={1} step={0.05} reset={ref('glowMin')} onChange={(v) => set({ glowMin: v })} />
           <Slider id="st-gmax" label={i18n.t('web.glow.max')} value={b.glowMax} min={0} max={1} step={0.05} reset={ref('glowMax')} onChange={(v) => set({ glowMax: v })} />
-          <label className="flex items-center gap-2 text-xs text-muted">
-            <input type="checkbox" checked={b.glowInvert} onChange={(e) => set({ glowInvert: e.target.checked })} />{i18n.t('web.glow.invert')}
-          </label>
+          <TickField label={i18n.t('web.glow.invert')} checked={b.glowInvert} onChange={(v) => set({ glowInvert: v })} reference={reference?.glowInvert} />
         </>}
       </>}
       {advanced && <Slider id="st-grel" label={i18n.t('web.glow.release')} value={b.glowRelease} min={0} max={2} hardMax={4} step={0.05} reset={ref('glowRelease')} onChange={(v) => set({ glowRelease: v })} />}

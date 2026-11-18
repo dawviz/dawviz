@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)"
 path: "6. Ứng dụng web và phát lại 🟡 > 6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)"
 chunk: 6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md
-source_lines: 333-393
-source_sha1: edafc798ea
+source_lines: 336-397
+source_sha1: 9b40736009
 ids: [ARC-05, D-55, D-57, ERR_PRESET_, ERR_PRESET_INVALID, ERR_PRESET_TOO_LARGE, ERR_SCHEMA_NEWER, NFR-SEC-04, NFR-SEC-06, REQ-GRAPHICS-03, REQ-STORAGE-04, REQ-UI-02, REQ-UI-14, WARN_PRESET_, WARN_PRESET_MIGRATED, WARN_PRESET_UNSAFE_KEY, WARN_PRESET_VERSION]
 ---
 ### 6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)
@@ -16,7 +16,8 @@ ids: [ARC-05, D-55, D-57, ERR_PRESET_, ERR_PRESET_INVALID, ERR_PRESET_TOO_LARGE,
 ```ts
 interface Doc { videoStyle: string; scene: SceneDocument; brightness: Record<TrackId, BrightnessConfig>; order: TrackId[]; hidden: TrackId[]; solo: TrackId[]; audioOffsetMs: number;
   lookRef: NoteStyle /* kiểu nốt của bộ dựng sẵn áp gần nhất: đích của nút ↺ (D-57); đổi cùng lệnh áp bộ dựng sẵn nên hoàn tác trả cả nó */;
-  layoutRef: Record<WidgetId, WidgetLayout> /* bố cục của phong cách/preset áp gần nhất: đích của ↺ ở X, Y, W, H; đặt bởi initialDoc, setVideoStyle, loadPreset */ }
+  layoutRef: Record<WidgetId, WidgetLayout> /* bố cục của phong cách/preset áp gần nhất: đích của ↺ ở X, Y, W, H; đặt bởi initialDoc, setVideoStyle, loadPreset */,
+  propsRef: Record<WidgetId, Record<string, unknown>> /* thuộc tính (mục Thiết lập) của từng widget trong phong cách/preset áp gần nhất: đích của ↺ ở Thiết lập; đặt bởi initialDoc, setVideoStyle, loadPreset, addWidget/addWidgets (mặc định của loại hoặc mốc của bản gốc); widget không có mặt dùng widgetDefaults(type) */ }
 interface Command<D> { type: string; label: string /* khoá i18n */; mergeKey?: string; redo(d: D): D; undo(d: D): D; before: unknown; after: unknown /* để gộp và để biết mục gộp có thành no-op không */ }
 interface Store<D> { get(): D; state(): { doc: D; history: { canUndo; canRedo; undoLabel?; redoLabel?; undoCount; redoCount } }; dispatch(c: Command<D> | null): void; undo(): void; redo(): void; beginGesture(): void; endGesture(): void; reset(doc: D): void; subscribe(fn): () => void }
 ```

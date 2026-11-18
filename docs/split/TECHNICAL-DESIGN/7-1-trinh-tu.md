@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "7.1 Trình tự"
 path: "7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) > 7.1 Trình tự"
 chunk: 7-1-trinh-tu.md
-source_lines: 396-411
-source_sha1: edafc798ea
+source_lines: 400-415
+source_sha1: 9b40736009
 ids: [REQ-EXPORT-00, REQ-EXPORT-02, REQ-EXPORT-06]
 ---
 ### 7.1 Trình tự

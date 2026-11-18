@@ -1,6 +1,7 @@
 // Tài liệu có hoàn tác và các lệnh (T-07, Technical Design §6.4). Hàm dựng lệnh nhận `doc` hiện tại để lấy giá trị "trước";
 // trả null khi không có gì đổi (không ghi mục lịch sử rỗng). `redo`/`undo` là hàm thuần trên Doc bất biến.
 import type { BrightnessConfig, NoteStyle, KeyboardStyle, PianoRollProps, SceneDocument, TextRef, TextStyleSet, WidgetLayout, WidgetSpec } from '@dawviz/render-core';
+import { widgetDefaults } from '@dawviz/render-core';
 import type { Command } from './store.ts';
 import { clampOffsetMs } from './audioMap.ts';
 import { sceneForStyle, videoStyleBase, videoStyleKeyboard } from './videoScenes.ts';
@@ -23,8 +24,14 @@ export interface Doc {
   lookRef: NoteStyle;
   /** Bố cục từng widget của phong cách/preset áp gần nhất: nút ↺ của X, Y, W, H đưa về đây. Đổi cùng lệnh đổi phong cách/mở preset. */
   layoutRef: Record<string, WidgetLayout>;
+  /**
+   * Thuộc tính (mục Thiết lập) của từng widget trong phong cách/preset áp gần nhất: nút ↺ của mọi thiết lập đưa về đây.
+   * Widget không có mặt (thêm mới) dùng mặc định của loại. Đổi cùng lệnh đổi phong cách/mở preset/thêm widget.
+   */
+  propsRef: Record<string, Record<string, unknown>>;
 }
 const layoutsOf = (s: SceneDocument): Record<string, WidgetLayout> => Object.fromEntries(s.widgets.map((w) => [w.id, w.layout]));
+const propsOf = (s: SceneDocument): Record<string, Record<string, unknown>> => Object.fromEntries(s.widgets.map((w) => [w.id, w.properties as Record<string, unknown>]));
 export type Cmd = Command<Doc>;
 export const CUSTOM_STYLE = 'custom';
 
@@ -105,14 +112,14 @@ export const patchTrackStyle = (d: Doc, id: TrackId, patch: Partial<NoteStyle> |
 export const setVideoStyle = (d: Doc, id: string): Cmd | null => {
   const tracks = pianoOf(d.scene)?.properties.noteStyle.tracks ?? {};
   const scene = sceneForStyle(id, { base: videoStyleBase(id), tracks }, {});
-  const before = { videoStyle: d.videoStyle, scene: d.scene, lookRef: d.lookRef, layoutRef: d.layoutRef }, after = { videoStyle: id, scene, lookRef: videoStyleBase(id), layoutRef: layoutsOf(scene) };
+  const before = { videoStyle: d.videoStyle, scene: d.scene, lookRef: d.lookRef, layoutRef: d.layoutRef, propsRef: d.propsRef }, after = { videoStyle: id, scene, lookRef: videoStyleBase(id), layoutRef: layoutsOf(scene), propsRef: propsOf(scene) };
   if (d.videoStyle === id && same(before.scene, scene)) return null;
   return { type: 'setVideoStyle', label: 'web.cmd.videoStyle', before, after, redo: (x) => ({ ...x, ...after }), undo: (x) => ({ ...x, ...before }) };
 };
 /** Mở preset: thay scene (và đánh dấu phong cách 'custom'). Một bước hoàn tác. */
 export const loadPreset = (d: Doc, scene: SceneDocument): Cmd | null => {
   const base = pianoOf(scene)?.properties.noteStyle.base;
-  const before = { videoStyle: d.videoStyle, scene: d.scene, lookRef: d.lookRef, layoutRef: d.layoutRef }, after = { videoStyle: CUSTOM_STYLE, scene, lookRef: base ? { ...base } : d.lookRef, layoutRef: layoutsOf(scene) };
+  const before = { videoStyle: d.videoStyle, scene: d.scene, lookRef: d.lookRef, layoutRef: d.layoutRef, propsRef: d.propsRef }, after = { videoStyle: CUSTOM_STYLE, scene, lookRef: base ? { ...base } : d.lookRef, layoutRef: layoutsOf(scene), propsRef: propsOf(scene) };
   return { type: 'loadPreset', label: 'web.cmd.loadPreset', before, after, redo: (x) => ({ ...x, ...after }), undo: (x) => ({ ...x, ...before }) };
 };
 
@@ -164,6 +171,13 @@ export const patchLayouts = (d: Doc, patches: Record<string, Partial<WidgetLayou
   const after = Object.fromEntries(ids.map((id) => [id, { ...d.scene.widgets.find((q) => q.id === id)!.layout, ...patches[id] }]));
   return slice(d, 'patchLayouts', 'web.cmd.layout', get, set, after, `layouts:${ids.join('|')}`, { widgets: ids, ...(ids.length === 1 ? { widget: ids[0] } : {}) });
 };
+/** Đổi tên lớp (widget). `name` null = bỏ tên riêng, dùng tên theo loại. Kiểm trùng tên làm ở `lib/layerName.ts` trước khi gọi. */
+export const renameWidget = (d: Doc, widgetId: string, name: string | null): Cmd | null => {
+  if (!d.scene.widgets.some((x) => x.id === widgetId)) return null;
+  const get = (x: Doc): string | null => x.scene.widgets.find((q) => q.id === widgetId)!.name ?? null;
+  const set = (x: Doc, v: string | null) => withWidget(x, widgetId, (q) => { const { name: _n, ...rest } = q; return v === null ? rest : { ...rest, name: v }; });
+  return slice(d, 'renameWidget', 'web.cmd.widgetRename', get, set, name, undefined, { widget: widgetId, name });
+};
 /** Chọn track cho một widget (T-73): `ALL` = mọi track đang hiện, `MANUAL` = chỉ các track có chỉ số trong `indices`. Hoàn tác được. */
 export const setWidgetTracks = (d: Doc, widgetId: string, mode: 'ALL' | 'MANUAL', indices: number[]): Cmd | null => {
   if (!d.scene.widgets.some((x) => x.id === widgetId)) return null;
@@ -203,16 +217,19 @@ export const setTextStyles = (d: Doc, styles: TextStyleSet, widgetId: string, fi
 /** Thêm widget (T-68). Một bước hoàn tác. */
 export const addWidget = (d: Doc, w: WidgetSpec): Cmd | null => {
   if (d.scene.widgets.some((x) => x.id === w.id)) return null;
-  const get = (x: Doc) => x.scene.widgets;
-  const set = (x: Doc, v: WidgetSpec[]) => ({ ...x, scene: { ...x.scene, widgets: v } });
-  return slice(d, 'addWidget', 'web.cmd.addWidget', get, set, [...d.scene.widgets, w], undefined, { widget: w.id, type: w.type });
+  // Cùng lệnh ghi mốc ↺ của widget mới = thuộc tính mặc định của nó (id từng dùng cho widget đã xoá không được thừa mốc cũ).
+  const get = (x: Doc) => ({ widgets: x.scene.widgets, propsRef: x.propsRef });
+  const set = (x: Doc, v: { widgets: WidgetSpec[]; propsRef: Doc['propsRef'] }): Doc => ({ ...x, scene: { ...x.scene, widgets: v.widgets }, propsRef: v.propsRef });
+  return slice(d, 'addWidget', 'web.cmd.addWidget', get, set, { widgets: [...d.scene.widgets, w], propsRef: { ...d.propsRef, [w.id]: widgetDefaults(w.type) } }, undefined, { widget: w.id, type: w.type });
 };
 /** Thêm nhiều widget một lúc (nhân bản vùng chọn). */
-export const addWidgets = (d: Doc, ws: WidgetSpec[]): Cmd | null => {
+export const addWidgets = (d: Doc, ws: WidgetSpec[], refs: Doc['propsRef'] = {}): Cmd | null => {
   if (!ws.length) return null;
-  const get = (x: Doc) => x.scene.widgets;
-  const set = (x: Doc, v: WidgetSpec[]) => ({ ...x, scene: { ...x.scene, widgets: v } });
-  return slice(d, 'duplicateWidgets', 'web.cmd.duplicate', get, set, [...d.scene.widgets, ...ws], undefined, { n: ws.length, ...(ws.length === 1 ? { widget: ws[0].id } : {}) });
+  // `refs`: mốc ↺ của từng bản sao (lấy từ bản gốc); thiếu thì dùng mặc định của loại.
+  const get = (x: Doc) => ({ widgets: x.scene.widgets, propsRef: x.propsRef });
+  const set = (x: Doc, v: { widgets: WidgetSpec[]; propsRef: Doc['propsRef'] }): Doc => ({ ...x, scene: { ...x.scene, widgets: v.widgets }, propsRef: v.propsRef });
+  const after = { widgets: [...d.scene.widgets, ...ws], propsRef: { ...d.propsRef, ...Object.fromEntries(ws.map((w) => [w.id, refs[w.id] ?? widgetDefaults(w.type)])) } };
+  return slice(d, 'duplicateWidgets', 'web.cmd.duplicate', get, set, after, undefined, { n: ws.length, ...(ws.length === 1 ? { widget: ws[0].id } : {}) });
 };
 /** Xoá widget (T-68). Hoàn tác trả widget về đúng chỗ trong tài liệu (giữ thứ tự và zIndex). */
 export const removeWidgets = (d: Doc, ids: readonly string[]): Cmd | null => {
@@ -288,5 +305,5 @@ export function handEdited(d: Doc): boolean {
 export function initialDoc(videoStyle: string, saved: { style?: Partial<{ base: Partial<NoteStyle>; tracks: Record<string, Partial<NoteStyle>> }>; keyboard?: Partial<KeyboardStyle> } = {}): Doc {
   const kbOn = typeof saved.keyboard?.enabled === 'boolean' ? saved.keyboard.enabled : videoStyleKeyboard(videoStyle);
   const scene = sceneForStyle(videoStyle, { base: { ...videoStyleBase(videoStyle), ...(saved.style?.base ?? {}) }, tracks: saved.style?.tracks ?? {} }, { enabled: kbOn });
-  return { videoStyle, scene, brightness: {}, order: [], hidden: [], solo: [], audioOffsetMs: 0, lookRef: videoStyleBase(videoStyle), layoutRef: layoutsOf(sceneForStyle(videoStyle, { base: videoStyleBase(videoStyle), tracks: {} })) };
+  return { videoStyle, scene, brightness: {}, order: [], hidden: [], solo: [], audioOffsetMs: 0, lookRef: videoStyleBase(videoStyle), layoutRef: layoutsOf(sceneForStyle(videoStyle, { base: videoStyleBase(videoStyle), tracks: {} })), propsRef: propsOf(sceneForStyle(videoStyle, { base: videoStyleBase(videoStyle), tracks: {} })) };
 }

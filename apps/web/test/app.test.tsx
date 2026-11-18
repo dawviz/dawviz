@@ -30,6 +30,8 @@ const field = (re: RegExp) => { toLook(); return screen.getAllByRole('spinbutton
 const val = (re: RegExp) => String(Number(field(re).getAttribute('aria-valuenow'))); // giá trị đã chốt (không phải chữ đang gõ)
 const setVal = (re: RegExp, v: string) => { const el = field(re); fireEvent.focus(el); fireEvent.change(el, { target: { value: v } }); fireEvent.keyDown(el, { key: 'Enter' }); fireEvent.blur(el); };
 const OPACITY = /^(Opacity|Độ đục(?! khi))/, RADIUS = /^(Corner radius|Bo góc)/, GLOW = /^(Glow|Phát sáng)$/;
+/** jsdom không có elementFromPoint: giả lập theo toạ độ y. Trả hàm gỡ. */
+const fakePoint = (at: (y: number) => Element) => { Object.defineProperty(document, 'elementFromPoint', { configurable: true, writable: true, value: (_x: number, y: number) => at(y) }); return () => { delete (document as unknown as Record<string, unknown>).elementFromPoint; }; };
 const undoBtn = () => screen.getByTestId('undo-button') as HTMLButtonElement;
 const redoBtn = () => screen.getByTestId('redo-button') as HTMLButtonElement;
 
@@ -528,21 +530,192 @@ describe('thẻ Editor (T-68)', () => {
     fireEvent.blur(box);
     expect(undoBtn().title).not.toMatch(/Add Text box|Thêm Ô chữ/); // đã áp chữ: một bước mới
   });
-  it('T-73: Ô chữ chọn track riêng (Cơ bản): chuyển sang Chọn track hiện danh sách; bỏ tick một track là một bước hoàn tác; hoàn tác trả lại', async () => {
+  it('T-73: nút {bpm}/{title} dưới ô chữ chèn tên tại con trỏ trong một bước hoàn tác', async () => {
     await openProject();
     fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
     fireEvent.click(screen.getByTestId('layers-add'));
     fireEvent.click(screen.getByRole('menuitem', { name: /^(Text box|Ô chữ)$/ }));
-    const picker = screen.getByTestId('widget-tracks');
-    expect(within(picker).queryAllByRole('checkbox')).toHaveLength(0);
-    fireEvent.click(within(picker).getByRole('radio', { name: /^(Choose|Chọn track)$/ }));
-    const boxes = within(screen.getByTestId('widget-tracks')).getAllByRole('checkbox') as HTMLInputElement[];
-    expect(boxes.length).toBeGreaterThan(1);
-    expect(boxes.every((b) => b.checked)).toBe(true);
-    fireEvent.click(boxes[0]);
-    expect((within(screen.getByTestId('widget-tracks')).getAllByRole('checkbox')[0] as HTMLInputElement).checked).toBe(false);
+    const quick = screen.getByTestId('placeholder-quick');
+    expect(quick.textContent).toBe('{bpm}{title}');
+    const box = within(screen.getByTestId('widget-settings')).getByRole('textbox') as HTMLTextAreaElement;
+    box.focus(); fireEvent.change(box, { target: { value: 'ab' } }); box.setSelectionRange(1, 1);
+    fireEvent.click(within(quick).getByRole('button', { name: /\{bpm\}/ }));
+    expect(box.value).toBe('a{bpm}b');
+    expect(undoBtn().title).not.toMatch(/Add Text box|Thêm Ô chữ/); // đã áp ngay: một bước hoàn tác mới
+  });
+  it('T-73: Ô chữ chọn track riêng (Cơ bản): Chọn track hiện danh sách; bấm một dòng, Bỏ chọn/Chọn tất cả, kéo qua nhiều dòng là MỘT bước hoàn tác', async () => {
+    await openProject();
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    fireEvent.click(screen.getByTestId('layers-add'));
+    fireEvent.click(screen.getByRole('menuitem', { name: /^(Text box|Ô chữ)$/ }));
+    const boxes = () => within(screen.getByTestId('widget-tracks')).queryAllByRole('checkbox');
+    const on = () => boxes().map((b) => b.getAttribute('aria-checked') === 'true');
+    expect(boxes()).toHaveLength(0);
+    fireEvent.click(within(screen.getByTestId('widget-tracks')).getByRole('radio', { name: /^(Choose|Chọn track)$/ }));
+    expect(boxes().length).toBeGreaterThan(1);
+    expect(on().every(Boolean)).toBe(true);
+    fireEvent.click(screen.getByTestId('tracks-none'));
+    expect(on().some(Boolean)).toBe(false);
+    fireEvent.click(boxes()[0], { detail: 0 });                    // bàn phím (Space/Enter): đảo một dòng
+    expect(on()).toEqual(boxes().map((_, i) => i === 0));
+    fireEvent.click(screen.getByTestId('tracks-all'));
+    expect(on().every(Boolean)).toBe(true);
+    // kéo qua mọi dòng từ dòng đầu: bấm xuống dòng 1 (đang bật → tắt), kéo tới hết → tất cả tắt, cả lần kéo là một bước hoàn tác
+    const rows = boxes(), restore = fakePoint((y) => rows[Math.min(rows.length - 1, Math.max(0, Math.round(y / 10)))]);
+    fireEvent.pointerDown(rows[0], { button: 0, isPrimary: true, clientX: 0, clientY: 0 });
+    fireEvent(window, Object.assign(new Event('pointermove'), { clientX: 0, clientY: 10 * (rows.length - 1) }));
+    fireEvent(window, new Event('pointerup'));
+    restore();
+    expect(on().some(Boolean)).toBe(false);
     ctrlZ();
-    await waitFor(() => expect((within(screen.getByTestId('widget-tracks')).getAllByRole('checkbox')[0] as HTMLInputElement).checked).toBe(true));
+    await waitFor(() => expect(on().every(Boolean)).toBe(true));   // một lần hoàn tác trả cả dãy
+  });
+  it('đổi tên lớp: nhấp đúp (hoặc F2) → Enter áp, là một bước hoàn tác; trùng tên lớp khác → giữ tên cũ và báo; Esc bỏ; để trống → về tên theo loại', async () => {
+    await openProject();
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    const names = () => [...screen.getByTestId('layers').querySelectorAll('li')].map((li) => li.textContent?.trim());
+    const first = () => screen.getByTestId('layers').querySelectorAll<HTMLButtonElement>('li button[aria-pressed]:not([data-paint])')[0];
+    const second = () => screen.getByTestId('layers').querySelectorAll<HTMLButtonElement>('li button[aria-pressed]:not([data-paint])')[1];
+    const oldFirst = first().textContent!, oldSecond = second().textContent!;
+    const type = (v: string, key = 'Enter') => { const i = screen.getByTestId('layer-name-input'); fireEvent.change(i, { target: { value: v } }); fireEvent.keyDown(i, { key }); };
+    fireEvent.doubleClick(first());
+    type('Tiêu đề chính');
+    expect(first().textContent).toBe('Tiêu đề chính');
+    expect(undoBtn().title).toMatch(/Tiêu đề chính/);
+    // trùng tên lớp khác (không phân biệt hoa/thường): giữ tên cũ, báo lý do
+    fireEvent.doubleClick(second());
+    type(oldFirst.toUpperCase() === 'TIÊU ĐỀ CHÍNH' ? 'TIÊU ĐỀ CHÍNH' : 'tiêu đề chính');
+    expect(second().textContent).toBe(oldSecond);
+    expect(screen.getByTestId('layer-name-error').textContent).toMatch(/tiêu đề chính/i);
+    // Esc: bỏ
+    fireEvent.doubleClick(second());
+    type('Không áp', 'Escape');
+    expect(second().textContent).toBe(oldSecond);
+    // F2 trên lớp đang chọn
+    fireEvent.click(second());
+    fireEvent.keyDown(screen.getByTestId('editor'), { key: 'F2' });
+    type('Lớp hai');
+    expect(second().textContent).toBe('Lớp hai');
+    // để trống: về tên theo loại
+    fireEvent.doubleClick(second()); type('   ');
+    expect(second().textContent).toBe(oldSecond);
+    ctrlZ(); await waitFor(() => expect(second().textContent).toBe('Lớp hai'));
+    expect(names().length).toBeGreaterThan(1);
+  });
+  it('Thiết lập: mọi điều khiển có ↺ khi khác bộ dựng sẵn; bấm ↺ hoặc Alt+nhấp nhãn khôi phục, mỗi lần là MỘT bước hoàn tác; nhãn của dòng chưa đổi không bị Alt+nhấp làm gì', async () => {
+    await openProject();
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    fireEvent.click(screen.getByTestId('layers-add'));
+    fireEvent.click(screen.getByRole('menuitem', { name: /^(Progress bar|Thanh tiến độ)$/ }));
+    const box = () => within(screen.getByTestId('widget-settings'));
+    const thick = () => box().getByRole('spinbutton', { name: /^(Thickness|Độ dày)$/ }) as HTMLInputElement;
+    const resets = () => box().queryAllByTestId('reset');
+    const D = thick().getAttribute('aria-valuenow');
+    expect(resets()).toHaveLength(0);
+    // ô số: đổi → ↺ hiện → bấm → về mốc
+    fireEvent.focus(thick()); fireEvent.change(thick(), { target: { value: '33' } }); fireEvent.keyDown(thick(), { key: 'Enter' }); fireEvent.blur(thick());
+    expect(thick().getAttribute('aria-valuenow')).toBe('33');
+    expect(resets()).toHaveLength(1);
+    expect(resets()[0].title).toMatch(/(Alt|Option)\+/);                 // chú thích nói về Alt/Option+nhấp
+    fireEvent.click(resets()[0]);
+    expect(thick().getAttribute('aria-valuenow')).toBe(D);
+    expect(resets()).toHaveLength(0);
+    ctrlZ(); await waitFor(() => expect(thick().getAttribute('aria-valuenow')).toBe('33'));   // một lần hoàn tác = trở lại 33
+    // Alt+nhấp vào nhãn (không phải vào ô) cũng khôi phục
+    fireEvent.click(box().getByText(/^(Thickness|Độ dày)$/), { altKey: true });
+    expect(thick().getAttribute('aria-valuenow')).toBe(D);
+    // ô tick: Alt+nhấp nhãn dòng CHƯA đổi không đảo ô; đã đổi thì khôi phục thay vì đảo
+    const show = () => box().getByRole('checkbox', { name: /^(Show the time|Hiện thời gian)$/ }) as HTMLInputElement;
+    expect(show().checked).toBe(true);
+    fireEvent.click(box().getByText(/^(Show the time|Hiện thời gian)$/), { altKey: true });
+    expect(show().checked).toBe(true);
+    fireEvent.click(show());
+    expect(show().checked).toBe(false);
+    expect(resets()).toHaveLength(1);
+    fireEvent.click(box().getByText(/^(Show the time|Hiện thời gian)$/), { altKey: true });
+    expect(show().checked).toBe(true);
+    expect(resets()).toHaveLength(0);
+    // chọn một lựa chọn khác ở nhóm nút: ↺ hiện, bấm trả về
+    fireEvent.click(box().getByRole('radio', { name: /^(Vertical|Dọc)$/ }));
+    expect(resets().length).toBeGreaterThan(0);
+    fireEvent.click(resets()[0]);
+    expect(box().getByRole('radio', { name: /^(Horizontal|Ngang)$/ }).getAttribute('aria-checked')).toBe('true');
+  });
+  it('↺ phủ các ô ngoài Thiết lập (1): Bắt dính và Hiện trong video; Alt+nhấp nhãn cũng khôi phục', async () => {
+    await openProject();
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    fireEvent.click(layerBtn(/Time|Thời gian/));
+    const props = () => within(screen.getByTestId('editor-props'));
+    const tick = (re: RegExp) => props().getByRole('checkbox', { name: re }) as HTMLInputElement;
+    const resetFor = (re: RegExp) => props().queryAllByTestId('reset').find((x) => re.test(x.getAttribute('aria-label') ?? ''));
+    const GRID = /^(Snap to grid|Bắt theo lưới)$/, SHOW = /^(Show in video|Hiện trong video)$/;
+    expect(tick(GRID).checked).toBe(true);
+    fireEvent.click(tick(GRID));
+    expect(tick(GRID).checked).toBe(false);
+    expect(resetFor(/Snap to grid|Bắt theo lưới/)).toBeTruthy();
+    fireEvent.click(props().getByText(GRID), { altKey: true });             // Alt+nhấp nhãn: không đảo ô, mà khôi phục
+    expect(tick(GRID).checked).toBe(true);
+    expect(resetFor(/Snap to grid|Bắt theo lưới/)).toBeUndefined();
+    fireEvent.click(tick(SHOW));
+    expect(tick(SHOW).checked).toBe(false);
+    fireEvent.click(resetFor(/Show in video|Hiện trong video/)!);
+    expect(tick(SHOW).checked).toBe(true);
+  });
+  it('↺ phủ các ô ngoài Thiết lập (2): Căn lề của mục Chữ, ô tick Bàn phím của hình thức nốt', async () => {
+    await openProject();
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    fireEvent.click(screen.getByTestId('layers-add'));
+    fireEvent.click(screen.getByRole('menuitem', { name: /^(Progress bar|Thanh tiến độ)$/ }));
+    const align = () => within(screen.getByTestId('text-align'));
+    const checkedOf = () => align().getAllByRole('radio').find((r) => r.getAttribute('aria-checked') === 'true')!.textContent;
+    const orig = checkedOf();
+    const other = align().getAllByRole('radio').find((r) => r.textContent !== orig)!;
+    fireEvent.click(other);
+    expect(checkedOf()).toBe(other.textContent);
+    const row = screen.getByTestId('text-align').parentElement!.parentElement!;
+    fireEvent.click(within(row).getByTestId('reset'));
+    expect(checkedOf()).toBe(orig);
+    // Bàn phím: đảo → ↺ hiện trong bảng hình thức → bấm trả về
+    toLook();
+    const kb = () => within(screen.getByTestId('style-panel')).getByRole('checkbox', { name: /^(Show piano keyboard|Hiện bàn phím piano)$/ }) as HTMLInputElement;
+    const k0 = kb().checked;
+    fireEvent.click(kb());
+    expect(kb().checked).toBe(!k0);
+    fireEvent.click(within(screen.getByTestId('style-panel')).getAllByTestId('reset').find((x) => /keyboard|bàn phím/i.test(x.getAttribute('aria-label') ?? ''))!);
+    expect(kb().checked).toBe(k0);
+  });
+  it('mốc ↺ của widget mới là mặc định của loại; Ô chữ: Chọn track có ↺ về "Mọi track đang hiện"', async () => {
+    await openProject();
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    fireEvent.click(screen.getByTestId('layers-add'));
+    fireEvent.click(screen.getByRole('menuitem', { name: /^(Text box|Ô chữ)$/ }));
+    const picker = () => within(screen.getByTestId('widget-tracks'));
+    expect(picker().queryAllByTestId('reset')).toHaveLength(0);
+    fireEvent.click(picker().getByRole('radio', { name: /^(Choose|Chọn track)$/ }));
+    expect(picker().queryAllByTestId('reset')).toHaveLength(1);
+    fireEvent.click(picker().getByTestId('reset'));
+    expect(picker().getByRole('radio', { name: /^(All showing|Mọi track đang hiện)$/ }).getAttribute('aria-checked')).toBe('true');
+  });
+  it('chọn nhiều lớp: nút Chọn tất cả và Ctrl+A; kéo trên tên lớp chọn một dãy', async () => {
+    await openProject();
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    const btns = () => [...screen.getByTestId('layers').querySelectorAll<HTMLButtonElement>('li button[aria-pressed]:not([data-paint])')];
+    const picked = () => btns().map((b) => b.getAttribute('aria-pressed') === 'true');
+    expect(picked().some(Boolean)).toBe(false);
+    fireEvent.click(screen.getByTestId('layers-select-all'));
+    expect(picked().every(Boolean)).toBe(true);
+    fireEvent.click(btns()[0]);                                          // chọn lại một lớp
+    expect(picked().filter(Boolean)).toHaveLength(1);
+    fireEvent.keyDown(screen.getByTestId('editor'), { key: 'a', code: 'KeyA', ctrlKey: true });
+    expect(picked().every(Boolean)).toBe(true);
+    fireEvent.click(btns()[0]);
+    const rows = [...screen.getByTestId('layers').querySelectorAll('li')], restore = fakePoint((y) => rows[Math.min(rows.length - 1, Math.max(0, Math.round(y / 10)))]);
+    fireEvent.pointerDown(btns()[1], { button: 0, isPrimary: true, clientX: 0, clientY: 10 });
+    fireEvent(window, Object.assign(new Event('pointermove'), { clientX: 0, clientY: 30 }));  // kéo từ lớp 2 xuống lớp 4
+    fireEvent(window, new Event('pointerup'));
+    fireEvent.click(btns()[3]);                                          // lần nhấp kèm theo bị bỏ qua
+    restore();
+    expect(picked().slice(0, 5)).toEqual([false, true, true, true, false]);
   });
   it('T-68: chọn nhiều widget có mục Căn chỉnh; căn trái đưa mọi widget về cùng mép', async () => {
     await openProject();

@@ -9,7 +9,9 @@ The screen has three parts: **Layers** on the left, the frame in the middle, and
 ## Selecting
 
 - Click a widget on the frame, or its name in Layers.
-- Shift-click to add more widgets to the selection.
+- Shift-click (or Ctrl/⌘-click) to add more widgets to the selection.
+- Press and hold on a layer's name and drag up or down to select the whole run of layers you pass over. Hold Shift when you start the drag to add to the layers already selected.
+- **Select all** at the top of the Layers list, or Ctrl+A (⌘A on Mac), selects every layer.
 - Drag on an empty part of the frame to draw a selection box: every widget it touches is selected. Hold Shift to add to the current selection.
 - Press Esc to clear the selection.
 
@@ -66,6 +68,7 @@ To turn snapping off for a moment, hold Alt while moving, or Ctrl (⌘ on Mac) w
 The **Layers** list shows which widget sits on top: the top row is drawn on top.
 
 - **Reorder:** drag the six-dot handle (only the handle reorders; dragging elsewhere on the row doesn't), or select a row and press Alt+Up / Alt+Down. **Arrange** on the right has four buttons: bring to front, bring forward, send backward, send to back (shortcuts Ctrl+] and Ctrl+[, add Shift to go all the way).
+- **Rename:** double-click a layer's name (or select the layer and press F2), type the new name, press Enter. Esc cancels. Leave it empty and press Enter to go back to the name by type (for example Chord 2). A name can have up to 60 characters and cannot match another layer (upper and lower case count as the same). If it matches, the old name is kept and the app tells you why. Layer names are only for finding things; they do not appear in the video and are saved in the preset. A duplicate does not carry over the original's name.
 - **Eye:** hide or show the widget in the video (same as **Show in video**).
 - **Lock:** stops the widget from being dragged by accident. A locked widget can still be selected in Layers to see its numbers or unlock it.
 - The top row hides/shows or locks/unlocks every layer at once.
@@ -78,12 +81,14 @@ Text widgets have a **Settings** section for what is special about them:
 - **Title & artist:** type the title and artist. Leave them empty to use the project's.
 - **Note counter:** turn each line on or off (played notes, note count, progress, tempo). Advanced: edit the text of each line, decimal places, line spacing.
 - **Live notes:** one note per line or all on one line, most lines, show the track name. Advanced: edit the text, how long notes fade after release.
-- **Time & bar:** turn each row on or off, number style (grouped digits or clock, bar.beat.tick), progress bars under the numbers. Advanced: labels, row spacing, bar length, thickness and colours.
+- **Time & bar:** turn each row on or off, number style (grouped digits or clock, bar.beat.tick), progress bars under the numbers. Advanced: labels, digits per group (minutes, seconds, milliseconds; bar, beat, tick), row spacing, bar length, thickness and colours.
 - **Chord:** read chords from held notes or when struck, always show the note list, and what to show for an unknown chord ("no chord" text or the notes).
 - **Progress bar:** horizontal or vertical, thickness, colour, show the time. Advanced: bar background, corner radius, time text.
 - **Text box:** type text over several lines and mix in values such as `{bpm}` or `{title}`; choose which tracks the values read. See [Putting live numbers into text](08-placeholders.md).
 
-When you edit the text of a line, words in curly brackets such as `{played}` or `{bpm}` are replaced with the real numbers, in any text. Type `{` to see suggestions, or hover over the text box. The full list and how to choose the number style are on [Putting live numbers into text](08-placeholders.md). Press Enter or click outside the box to apply; Esc cancels.
+Every setting in this section has a ↺ button when it differs from its original value (tick boxes, button groups, colours, text boxes and **Tracks** included), and Alt+click (Option+click on Mac) on the label resets it quickly.
+
+When you edit the text of a line, words in curly brackets such as `{played}` or `{bpm}` are replaced with the real numbers, in any text. Click `{bpm}` or `{title}` under the box to insert it, or type `{` to see suggestions, or hover over the text box. The full list and how to choose the number style are on [Putting live numbers into text](08-placeholders.md). Press Enter or click outside the box to apply; Esc cancels.
 
 ## Text
 

@@ -23,9 +23,11 @@ export interface TextPanelProps {
   onStyles(styles: TextStyleSet, field: string, ref: TextRef, kind: 'save' | 'update'): void;
   /** Căn lề của widget (thuộc tính `align` hoặc `timeAlign`). */
   onProps(patch: Record<string, unknown>): void;
+  /** Thuộc tính của widget trong bộ dựng sẵn áp gần nhất: đích của ↺ ở Căn lề. */
+  reference?: Record<string, unknown>;
 }
 
-export function TextPanel({ widget, styles, advanced, disabled, onRef, onStyles, onProps }: TextPanelProps) {
+export function TextPanel({ widget, styles, advanced, disabled, onRef, onStyles, onProps, reference }: TextPanelProps) {
   const { i18n } = useI18n();
   const slots = textSlots(widget.type);
   const [pick, setPick] = useState(slots[0]?.field ?? '');
@@ -110,7 +112,11 @@ export function TextPanel({ widget, styles, advanced, disabled, onRef, onStyles,
       {check('italic', i18n.t('web.text.italic'))}
       {alignKey && (
         <div className="space-y-1.5">
-          <span className="block text-xs text-muted">{i18n.t('web.text.align')}</span>
+          <div className="flex items-center justify-between gap-2 text-xs text-muted">
+            <span>{i18n.t('web.text.align')}</span>
+            <ResetButton label={i18n.t('web.text.align')} changed={!disabled && reference?.[alignKey] !== undefined && reference[alignKey] !== props[alignKey]} disabled={disabled}
+              onReset={() => onProps({ [alignKey]: reference![alignKey] })} />
+          </div>
           <div className="seg w-full" role="radiogroup" aria-label={i18n.t('web.text.align')} onKeyDown={radioKeys} data-testid="text-align">
             {(['left', 'center', 'right'] as const).map((a) => (
               <button key={a} type="button" role="radio" aria-checked={props[alignKey] === a} tabIndex={radioTab(props[alignKey] === a)} className="seg-btn flex-1" disabled={disabled}
@@ -135,7 +141,7 @@ export function TextPanel({ widget, styles, advanced, disabled, onRef, onStyles,
         </>)}
         {group(i18n.t('web.text.group.fill'), <>
           {check('gradient', i18n.t('web.text.gradient'), !!g, (x) => (x ? { kind: 'linear', angle: 0, stops: [{ at: 0, color: resolved.color }, { at: 1, color: '#1D4ED8' }] } : null))}
-          {g && <GradientRows g={g} disabled={disabled} onChange={(next) => set('gradient', next)} />}
+          {g && <GradientRows g={g} disabled={disabled} color={resolved.color} onChange={(next) => set('gradient', next)} />}
         </>)}
         {group(i18n.t('web.text.group.stroke'), <>
           {num('stroke.width', i18n.t('web.text.strokeWidth'), { min: 0, max: 50, step: 0.5 }, [0, 10])}
@@ -186,9 +192,11 @@ export function TextPanel({ widget, styles, advanced, disabled, onRef, onStyles,
   );
 }
 
-function GradientRows({ g, disabled, onChange }: { g: NonNullable<TextStyle['gradient']>; disabled?: boolean; onChange(next: NonNullable<TextStyle['gradient']>): void }) {
+/** Chuyển màu: ↺ của từng dòng đưa về giá trị lúc mới bật (kiểu thẳng, 0°, từ màu chữ sang xanh), vì "không có chuyển màu" đã có ↺ ở ô tick. */
+function GradientRows({ g, disabled, color, onChange }: { g: NonNullable<TextStyle['gradient']>; disabled?: boolean; color: string; onChange(next: NonNullable<TextStyle['gradient']>): void }) {
   const { i18n } = useI18n();
   const first = g.stops[0], last = g.stops[g.stops.length - 1];
+  const D = { kind: 'linear' as const, angle: 0, from: color, to: '#1D4ED8' };
   const stop = (i: 0 | 1, color: string) => onChange({ ...g, stops: g.stops.map((s, k) => ((i === 0 ? k === 0 : k === g.stops.length - 1) ? { ...s, color } : s)) });
   return <>
     <label className={row}>
@@ -196,13 +204,13 @@ function GradientRows({ g, disabled, onChange }: { g: NonNullable<TextStyle['gra
       <Select value={g.kind} disabled={disabled} onChange={(e) => onChange({ ...g, kind: e.target.value as 'linear' | 'radial' })} className="py-1 pl-2" wrapClassName="min-w-0">
         {(['linear', 'radial'] as const).map((k) => <option key={k} value={k}>{i18n.t(`web.text.gradientKind.${k}`)}</option>)}
       </Select>
-      <span aria-hidden />
+      <ResetButton label={i18n.t('web.text.gradientKind')} changed={g.kind !== D.kind} disabled={disabled} onReset={() => onChange({ ...g, kind: D.kind })} />
     </label>
     {g.kind === 'linear' && (
       <div className={numRow}>
         <span>{i18n.t('web.text.gradientAngle')}</span>
         <NumberField label={i18n.t('web.text.gradientAngle')} value={g.angle} spec={{ min: -360, max: 360, step: 1 }} range={[-180, 180]} disabled={disabled} onChange={(a) => onChange({ ...g, angle: a })} />
-        <span aria-hidden />
+        <ResetButton label={i18n.t('web.text.gradientAngle')} changed={g.angle !== D.angle} disabled={disabled} onReset={() => onChange({ ...g, angle: D.angle })} />
       </div>
     )}
     <div className={numRow}>
@@ -211,7 +219,8 @@ function GradientRows({ g, disabled, onChange }: { g: NonNullable<TextStyle['gra
         <input type="color" aria-label={i18n.t('web.text.gradientFrom')} value={first.color} disabled={disabled} onChange={(e) => stop(0, e.target.value.toUpperCase())} className="h-6 w-1/2" />
         <input type="color" aria-label={i18n.t('web.text.gradientTo')} value={last.color} disabled={disabled} onChange={(e) => stop(1, e.target.value.toUpperCase())} className="h-6 w-1/2" />
       </span>
-      <span aria-hidden />
+      <ResetButton label={i18n.t('web.text.gradientStops')} changed={first.color.toUpperCase() !== D.from.toUpperCase() || last.color.toUpperCase() !== D.to.toUpperCase()} disabled={disabled}
+        onReset={() => onChange({ ...g, stops: g.stops.map((s, k) => (k === 0 ? { ...s, color: D.from } : k === g.stops.length - 1 ? { ...s, color: D.to } : s)) })} />
     </div>
   </>;
 }

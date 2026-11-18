@@ -94,6 +94,8 @@ dawviz/
 │     │  │  ├─ fonts.ts
 │     │  │  ├─ historyLabels.test.ts
 │     │  │  ├─ historyLabels.ts
+│     │  │  ├─ layerName.test.ts
+│     │  │  ├─ layerName.ts
 │     │  │  ├─ masterClock.test.ts
 │     │  │  ├─ masterClock.ts
 │     │  │  ├─ numberInput.test.ts
@@ -126,7 +128,9 @@ dawviz/
 │     │  │  ├─ undoKeys.ts
 │     │  │  ├─ usePref.ts
 │     │  │  ├─ useStageWidth.ts
-│     │  │  └─ videoScenes.ts
+│     │  │  ├─ videoScenes.ts
+│     │  │  ├─ widgetFields.test.ts
+│     │  │  └─ widgetFields.ts
 │     │  ├─ types/
 │     │  │  └─ dawviz.d.ts
 │     │  ├─ workers/
@@ -806,6 +810,10 @@ const ASPECTS
 function defaultScene(aspect: keyof typeof ASPECTS = '16:9'): SceneDocument   // Scene mặc định: một Piano Roll phủ kín khung. Bố cục mặc định theo nền tảng (9:16 cho người mới, KPI-04) chốt…
 function pianoRollWidget(layout: Omit<WidgetLayout, 'anchor'> & { anchor?: WidgetLayout['anchor'] }, props: Partial<PianoRollProps> = {}, id = 'piano-roll-main'): WidgetSpec<PianoRollProps>
 const ADDABLE_WIDGETS   // Loại widget người dùng thêm được từ Editor (có renderer). AUDIO_SPECTRUM chờ T-53.
+function widgetDefaults(type: WidgetType): Record<string, unknown>   // Thuộc tính mặc định của một loại widget (bản sao sâu): mốc tham chiếu của nút ↺ khi widget chưa có bộ dựng sẵ…
+const MAX_WIDGET_NAME   // Độ dài tối đa của tên lớp.
+const normalizeWidgetName = (s: string) =>   // Tên lớp chuẩn hoá: bỏ khoảng trắng đầu/cuối, gộp khoảng trắng liền nhau, bỏ ký tự điều khiển.
+const widgetNameKey = (s: string) =>   // Khoá so sánh tên (không phân biệt hoa/thường, không dấu cách thừa).
 function newWidgetId(scene: SceneDocument, type: WidgetType): string   // Id mới không trùng trong scene: `<loại>-<n>`.
 function createWidget(scene: SceneDocument, type: WidgetType, center?: { x: number; y: number }): WidgetSpec   // Widget mới với thuộc tính mặc định, đặt giữa khung (hoặc quanh `center`), nằm trên cùng (T-68: thêm widget từ…
 function duplicateWidget(scene: SceneDocument, w: WidgetSpec, offset = 16): WidgetSpec   // Bản sao của widget (nhân bản): id mới, dời `offset` pt, nằm ngay trên bản gốc.
@@ -1097,6 +1105,7 @@ Inspector (UI-DIRECTION 5.3): mục đánh số 01, 02, 03…, phân cách bằn
 function InspectorSection({ n, id, title, more, children }: { n: number; id: string; title: string; children: ReactNode; /** Có khi đang ở Cơ bản và mục có phần nâng cao. `edited`: phần nâng cao đang khác mặc định. */ more?: { open: boolean; edited: boolean; onToggle(): void }; })
 function Facts({ rows }: { rows: [string, ReactNode][] })   // Dòng nhãn – giá trị chỉ đọc (mục Bài).
 function ResetButton({ label, changed, disabled, onReset, text }: { label: string; changed: boolean; disabled?: boolean; onReset(): void; /** Thay chú thích mặc định "về giá trị bộ dựng sẵn". */ text?: string })   // Nút ↺ đưa một thông số về giá trị tham chiếu (giá trị của bộ dựng sẵn đang chọn), kiểu DaVinci Resolve / Prem…
+function TickField({ label, checked, onChange, reference, testId, disabled, strong }: { label: string; checked: boolean; onChange(v: boolean): void; reference?: boolean; testId?: string; disabled?: boolean; strong?: boolean })   // Ô tick kèm ↺ (về giá trị `reference`; vắng thì không có ↺). Nhãn ở trong <label>, ↺ đứng ngoài để bấm ↺ không…
 ```
 
 #### `apps/web/src/components/LanguageSelect.tsx`
@@ -1187,7 +1196,7 @@ Mục "Hình thức" của inspector: kiểu dáng nốt (toàn cục) và bàn 
 
 ```text
 const ADVANCED_STYLE_KEYS   // Trường chỉ có ở Nâng cao (REQ-UI-13). Dùng để biết phần nâng cao đang khác mặc định hay không.
-function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset, playhead, reference }: { reference?: NoteStyle; playhead?: { ratio: number; visible: boolean; reference?: number; onChange(ratio: number): void; onVisible(visible: boolean): void }; notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean })   // `lanes`: tên lane automation có trong dự án đang mở (cho nguồn phát sáng "automation"). `playhead`: vị trí vạ…
+function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset, playhead, reference, keyboardRef }: { reference?: NoteStyle; /** Bàn phím bật/tắt của bộ dựng sẵn áp gần nhất (đích của ↺ ở ô tick Bàn phím). */ keyboardRef?: boolean; playhead?: { ratio: number; visible: boolean; /** Vạch phát hiện/ẩn của bộ dựng sẵn áp gần nhất. */ visibleRef?: boolean; reference?: number; onChange(ratio: number): void; onVisible(visible: boolean): void }; notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean })   // `lanes`: tên lane automation có trong dự án đang mở (cho nguồn phát sáng "automation"). `playhead`: vị trí vạ…
 ```
 
 #### `apps/web/src/components/TextPanel.tsx`
@@ -1196,7 +1205,7 @@ Mục "Chữ" của bảng Thuộc tính (T-72, SRS REQ-GRAPHICS-18, giao diện
 
 ```text
 interface TextPanelProps
-function TextPanel({ widget, styles, advanced, disabled, onRef, onStyles, onProps }: TextPanelProps)
+function TextPanel({ widget, styles, advanced, disabled, onRef, onStyles, onProps, reference }: TextPanelProps)
 ```
 
 #### `apps/web/src/components/ThemeSelect.tsx`
@@ -1223,7 +1232,7 @@ const EMPTY_VIEW
 function isShown(id: string, v: TrackView): boolean
 type PaintKind
 function TrackPanel(props: Props)
-function TrackLayoutBar({ value, onChange, count }: { value: TrackLayout; onChange(v: TrackLayout): void; count: number })   // Thanh chọn kiểu trình bày: Lưới/Danh sách + số cột (ô nhập số, không giới hạn cứng ngoài số track).
+function TrackLayoutBar({ value, onChange, count, reference }: { value: TrackLayout; onChange(v: TrackLayout): void; count: number; /** Bố cục mặc định: đích của ↺. */ reference?: TrackLayout })   // Thanh chọn kiểu trình bày: Lưới/Danh sách + số cột (ô nhập số, không giới hạn cứng ngoài số track).
 function TrackColumnsHead({ p, className = '', compact, lead, padRight = 0 }: { p: Props; className?: string; compact?: boolean; lead?: ReactNode; padRight?: number })   // Hàng đầu danh sách: mắt và S chỉ là biểu tượng ở đúng cột, rê chuột thì có chú thích (kiểu bảng lớp của AE). …
 ```
 
@@ -1248,14 +1257,14 @@ function VideoStyles({ value, edited, onPick, notice, thumb }: { value: string; 
 
 #### `apps/web/src/components/WidgetSettings.tsx`
 
-Mục "Thiết lập" của bảng Thuộc tính (T-68/T-06): thuộc tính riêng của từng loại widget chữ (SRS REQ-WIDGET-02…08).
+Mục "Thiết lập" của bảng Thuộc tính (T-68/T-06): thuộc tính riêng của từng loại widget (SRS REQ-WIDGET-02…08).
 
 ```text
-const hasWidgetSettings = (type: string) =>   // Widget nào có mục Thiết lập.
-const ADVANCED_WIDGET_KEYS   // Thuộc tính chỉ có ở Nâng cao (để biết phần nâng cao đang khác mặc định).
+const hasWidgetSettings   // Widget nào có mục Thiết lập.
 const placeholderNames = (type: string) =>   // Tên chỗ giữ dùng được trong mẫu của widget: riêng của widget trước, rồi chỗ giữ chung (T-73).
 interface TrackChoice
-function WidgetSettings(props: SettingsProps)
+interface WidgetSettingsProps
+function WidgetSettings({ widget, advanced, disabled, reference, onProps, tracks, onTracks }: WidgetSettingsProps)
 ```
 
 #### `apps/web/src/i18n/I18nProvider.tsx`
@@ -1418,12 +1427,13 @@ const moveTrack = (d: Doc, id: TrackId, to: number) =>
 const setAudioOffset = (d: Doc, ms: number) =>   // Đặt offset âm thanh (ms). Gõ/bấm ± liên tiếp gộp thành một bước. Kẹp ±10 s, làm tròn 1 ms.
 const patchLayout = (d: Doc, widgetId: string, patch: Partial<WidgetLayout>) =>   // Đổi layout widget (x, y, width, height, rotation, anchor). Gộp theo widget: kéo/đổi cỡ/xoay trong một cử chỉ …
 const patchLayouts = (d: Doc, patches: Record<string, Partial<WidgetLayout>>) =>   // Đổi layout của một hoặc nhiều widget trong MỘT lệnh (Editor: kéo, đổi cỡ, xoay, xoay nhóm). Gộp theo tập widg…
+const renameWidget = (d: Doc, widgetId: string, name: string | null) =>   // Đổi tên lớp (widget). `name` null = bỏ tên riêng, dùng tên theo loại. Kiểm trùng tên làm ở `lib/layerName.ts`…
 const setWidgetTracks = (d: Doc, widgetId: string, mode: 'ALL' | 'MANUAL', indices: number[]) =>   // Chọn track cho một widget (T-73): `ALL` = mọi track đang hiện, `MANUAL` = chỉ các track có chỉ số trong `indi…
 const patchWidgetProps = (d: Doc, widgetId: string, patch: Record<string, unknown>) =>   // Đổi một số thuộc tính (`properties`) của widget.
 const patchTextRef = (d: Doc, widgetId: string, field: string, next: TextRef, path: string) =>   // Đổi ghi đè kiểu chữ của một chỗ chữ (T-72). `path` là thuộc tính vừa đổi: kéo/gõ liên tiếp cùng thuộc tính gộ…
 const setTextStyles = (d: Doc, styles: TextStyleSet, widgetId: string, field: string, ref: TextRef, kind: 'save' | 'update') =>   // Đổi bộ kiểu chữ của scene ("Lưu thành kiểu mới", "Cập nhật kiểu"), kèm ghi đè mới của chỗ chữ vừa dùng. Một b…
 const addWidget = (d: Doc, w: WidgetSpec) =>   // Thêm widget (T-68). Một bước hoàn tác.
-const addWidgets = (d: Doc, ws: WidgetSpec[]) =>   // Thêm nhiều widget một lúc (nhân bản vùng chọn).
+const addWidgets = (d: Doc, ws: WidgetSpec[], refs: Doc['propsRef'] = {}) =>   // Thêm nhiều widget một lúc (nhân bản vùng chọn).
 const removeWidgets = (d: Doc, ids: readonly string[]) =>   // Xoá widget (T-68). Hoàn tác trả widget về đúng chỗ trong tài liệu (giữ thứ tự và zIndex).
 const setWidgetVisible = (d: Doc, widgetId: string, visible: boolean) =>
 const paintWidgetVisible = (d: Doc, widgetId: string, visible: boolean) =>   // Kéo qua các mắt của danh sách Lớp: đặt thẳng giá trị (không đảo). Lệnh nắm toàn bộ bảng hiện/ẩn nên gộp cả lầ…
@@ -1663,6 +1673,15 @@ interface LabelCtx
 function describeCommand(cmd: Cmd, c: LabelCtx): string
 interface HistoryItem
 function historyItems(h: Pick<History<unknown>, 'timeline' | 'position'>, label: (i: number) => string, origin: string): HistoryItem[]   // Dòng danh sách từ dòng thời gian: mới nhất trước, mốc đầu ở cuối.
+```
+
+#### `apps/web/src/lib/layerName.ts`
+
+Đổi tên lớp (widget) trong danh sách Lớp: chuẩn hoá, kiểm độ dài và trùng tên. Hàm thuần.
+
+```text
+type LayerNameCheck
+function checkLayerName(raw: string, id: string, ids: readonly string[], display: (id: string) => string): LayerNameCheck   // Kiểm tên mới cho lớp `id`. `display(id)` là tên đang hiển thị của một lớp (tên riêng hoặc tên theo loại). Trố…
 ```
 
 #### `apps/web/src/lib/masterClock.ts`
@@ -1943,6 +1962,24 @@ const videoStyleKeyboard = (id: string) =>   // Bàn phím piano có bật sẵn
 function sceneForStyle(id: string, style: StyleConfig, keyboard: Partial<Pick<KeyboardStyle, 'enabled'>> = {}): SceneDocument   // Scene của phong cách `id` với kiểu nốt và bàn phím hiện tại. Trả bản sao mới, không đụng PAPER_SCENE.
 ```
 
+#### `apps/web/src/lib/widgetFields.ts`
+
+Bảng khai báo mục Thiết lập của từng loại widget (T-73 bổ sung, REQ-UI-13/15, D-57): MỖI thiết lập khai báo MỘT lần ở đây;
+
+```text
+type FieldKind
+interface FieldDef
+const WIDGET_FIELDS   // Thiết lập của từng loại, theo thứ tự hiển thị. Loại không có thiết lập: không có mặt.
+const SETTINGS_EXEMPT   // Thuộc tính KHÔNG nằm ở mục Thiết lập (kiểu chữ, căn lề ở mục Chữ; vài thuộc tính chưa có giao diện). Test dùn…
+const hasWidgetFields = (type: string) =>
+function getIn(o: unknown, path: readonly string[]): unknown
+function setIn<T extends Obj | unknown[]>(o: T, path: readonly string[], value: unknown): T   // Bản sao có giá trị mới ở `path` (các cấp trên đường đi được sao chép, phần còn lại dùng chung). Chỉ số mảng v…
+function fieldChanged(f: FieldDef, P: Obj, R: Obj | undefined): boolean   // Giá trị đang khác mốc tham chiếu (có mốc để quay về).
+function resetPatch(f: FieldDef, P: Obj, R: Obj): Obj   // Bản vá `properties` đưa thiết lập về mốc tham chiếu (một khoá cấp trên cùng, đúng dạng `patchWidgetProps`).
+function advancedEdited(widget: Pick<WidgetSpec, 'type' | 'trackMappingMode'>, P: Obj, R: Obj | undefined): boolean   // Có thiết lập nâng cao nào của widget khác mốc không (không tính điều kiện hiện, để chấm báo "đã chỉnh nâng ca…
+const TRACK_WIDGETS   // Widget đọc số liệu từ các track nên có mục chọn track (Ô chữ ở Cơ bản, còn lại ở Nâng cao).
+```
+
 #### `apps/web/src/main.tsx`
 
 Điểm vào của ứng dụng web: dựng React root với I18nProvider.
@@ -2002,6 +2039,7 @@ type ParseResponse
 - `apps/web/src/lib/exportStats.test.ts`
 - `apps/web/src/lib/externalMidi.test.ts`
 - `apps/web/src/lib/historyLabels.test.ts`
+- `apps/web/src/lib/layerName.test.ts`
 - `apps/web/src/lib/masterClock.test.ts`
 - `apps/web/src/lib/numberInput.test.ts`
 - `apps/web/src/lib/parserClient.test.ts`
@@ -2013,6 +2051,7 @@ type ParseResponse
 - `apps/web/src/lib/textRef.test.ts`
 - `apps/web/src/lib/theme.test.ts`
 - `apps/web/src/lib/undoKeys.test.ts`
+- `apps/web/src/lib/widgetFields.test.ts`
 - `apps/web/test/app.test.tsx`
 - `apps/web/test/components.test.tsx`
 - `packages/render-core/test/fonts.test.ts`
@@ -2036,4 +2075,4 @@ type ParseResponse
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 807 ký hiệu công khai -->
+<!-- 10 thư mục src, 826 ký hiệu công khai -->

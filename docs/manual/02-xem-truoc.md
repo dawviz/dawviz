@@ -36,7 +36,7 @@ Bấm **Nạp âm thanh** để chọn bản mix của bài (WAV, MP3, OGG, FLAC
 
 - **Đổi âm thanh** để chọn tệp khác, **Gỡ** để bỏ.
 - Nếu tệp âm thanh dài hoặc ngắn hơn bài khá nhiều, ứng dụng sẽ báo. Lệch đều theo một tỉ lệ thường là do tempo đọc sai; lệch nhiều thì có thể bạn chọn nhầm tệp.
-- **Offset** (chế độ Nâng cao): dùng khi âm thanh và nốt không khớp nhau. Gõ số mili giây hoặc bấm −/+. Mỗi lần bấm là 1 ms, giữ Shift là 10 ms, giữ Alt là 100 ms. Dòng chữ bên dưới cho biết âm thanh đang sớm hay trễ bao nhiêu.
+- **Offset** (chế độ Nâng cao): dùng khi âm thanh và nốt không khớp nhau. Gõ số mili giây hoặc bấm −/+. Mỗi lần bấm là 1 ms, giữ Shift là 10 ms, giữ Alt là 100 ms. Dòng chữ bên dưới cho biết âm thanh đang sớm hay trễ bao nhiêu. Nút ↺ cạnh Offset đưa về 0.
 
 ## Track
 
@@ -44,6 +44,7 @@ Mục **Track** liệt kê các track có nốt. Có hai cách trình bày, ch�
 
 - **Danh sách:** mỗi track một dòng gọn ở cột phải.
 - **Lưới:** mỗi track một thẻ, xếp dưới khung xem trước. Chọn số cột hoặc để Tự động. Nếu màn hình không đủ rộng, ứng dụng hiện ít cột hơn và báo cho bạn.
+- Nút ↺ cạnh kiểu trình bày hoặc số cột đưa về mặc định (Danh sách, số cột tự động).
 
 Trên mỗi track:
 

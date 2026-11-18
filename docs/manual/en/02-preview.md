@@ -36,7 +36,7 @@ Click **Load audio** and choose the mix of the song (WAV, MP3, OGG, FLAC or M4A)
 
 - **Replace audio** chooses another file, **Remove** takes it away.
 - If the audio is noticeably longer or shorter than the song, the app tells you. A steady ratio usually means the tempo was read wrong; a big gap may mean the wrong file.
-- **Offset** (Advanced): use it when audio and notes don't line up. Type milliseconds or press −/+. Each press is 1 ms; hold Shift for 10 ms, Alt for 100 ms. The line below says how early or late the audio is.
+- **Offset** (Advanced): use it when audio and notes don't line up. Type milliseconds or press −/+. Each press is 1 ms; hold Shift for 10 ms, Alt for 100 ms. The line below says how early or late the audio is. The ↺ button next to Offset goes back to 0.
 
 ## Tracks
 
@@ -44,6 +44,7 @@ The **Tracks** section lists the tracks that have notes. Choose **List** or **Gr
 
 - **List:** one compact row per track in the right column.
 - **Grid:** one card per track, under the preview. Pick the number of columns or leave it on Auto. If the window is too narrow, fewer columns are shown and the app tells you.
+- The ↺ button next to the layout or the number of columns goes back to the default (List, automatic columns).
 
 For each track:
 

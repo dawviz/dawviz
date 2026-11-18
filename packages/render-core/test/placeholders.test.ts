@@ -147,3 +147,15 @@ test('chọn track riêng cho widget (MANUAL): {notes}, {played}, {total}, {chor
   assert.deepEqual(mk([0]), [`${names(0)}|4/7`]);          // chỉ Chords
   assert.deepEqual(mk([]), ['|0/0']);                      // không chọn track nào
 });
+
+test('tên lớp (name): đọc preset giữ tên đã chuẩn hoá; tên trùng/rỗng/quá dài bị bỏ kèm cảnh báo; nhân bản không mang tên; lưu → đọc lại không đổi', async () => {
+  const { duplicateWidget, normalizeWidgetName, widgetNameKey, MAX_WIDGET_NAME } = await import('../src/index.ts');
+  const w = (id: string, name: unknown) => ({ id, type: 'TEXT', name, layout: { x: 0, y: 0, width: 100, height: 50 } });
+  const r = sanitizeScene({ schemaVersion: SCENE_SCHEMA_VERSION, canvas: {}, widgets: [w('a', '  Tiêu   đề '), w('b', 'tiêu đề'), w('c', ''), w('d', 'x'.repeat(MAX_WIDGET_NAME + 1)), w('e', 5), w('f', 'Khác')] });
+  assert.deepEqual(r.scene.widgets.map((x) => x.name), ['Tiêu đề', undefined, undefined, undefined, undefined, 'Khác']);
+  assert.deepEqual(r.warnings.map((x) => x.details.path), ['$.widgets[1].name', '$.widgets[2].name', '$.widgets[3].name', '$.widgets[4].name']);
+  assert.deepEqual(sanitizeScene(JSON.parse(JSON.stringify(r.scene))).warnings, []);
+  assert.ok(!('name' in duplicateWidget(r.scene, r.scene.widgets[0])));
+  assert.equal(normalizeWidgetName(' a\u0000b\n c '), 'a b c');
+  assert.equal(widgetNameKey('  ÀB  c'), 'àb c');
+});

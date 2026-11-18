@@ -1,186 +1,177 @@
-// Mục "Thiết lập" của bảng Thuộc tính (T-68/T-06): thuộc tính riêng của từng loại widget chữ (SRS REQ-WIDGET-02…08).
+// Mục "Thiết lập" của bảng Thuộc tính (T-68/T-06): thuộc tính riêng của từng loại widget (SRS REQ-WIDGET-02…08).
 // Cơ bản: bật/tắt và lựa chọn hay dùng. Nâng cao: mẫu chữ, số chữ số, khoảng cách dòng, màu thanh… (REQ-UI-13).
-// Mỗi thay đổi là `patchWidgetProps` (gộp bước theo khoá thuộc tính). Chữ của mẫu chỉ áp khi Enter hoặc rời ô.
-import { useEffect, useRef, useState } from 'react';
+// Mọi điều khiển đều vẽ từ bảng khai báo `lib/widgetFields.ts`, nên MỌI thiết lập đều có nút ↺ (về giá trị của bộ dựng sẵn áp gần nhất)
+// và Alt+nhấp (Option+nhấp trên Mac) vào nhãn để khôi phục nhanh (làm trong `ResetButton`, dùng chung cho mọi bảng). Mỗi thay đổi là `patchWidgetProps` (gộp bước theo khoá thuộc tính);
+// mỗi lần khôi phục là một bước hoàn tác riêng. Chữ của mẫu chỉ áp khi Enter hoặc rời ô.
+import { useContext, useEffect, useId, useRef, useState } from 'react';
 import { GLOBAL_KEYS, TEMPLATE_KEYS, type WidgetSpec } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { radioKeys, radioTab } from '../lib/a11y.ts';
+import { clickIsKeyboard, startPaintDrag } from '../lib/paintDrag.ts';
+import { GestureContext } from '../lib/storeReact.ts';
+import { TRACK_WIDGETS, WIDGET_FIELDS, fieldChanged, getIn, hasWidgetFields, resetPatch, setIn, type FieldDef } from '../lib/widgetFields.ts';
 import { NumberField } from './NumberField.tsx';
+import { ResetButton } from './Inspector.tsx';
 import { Select } from './Select.tsx';
 
-const row = 'grid grid-cols-[minmax(0,1fr)_minmax(0,9.5rem)] items-center gap-2 text-xs text-muted';
-const numRow = 'grid grid-cols-[minmax(0,1fr)_4.5rem] items-center gap-2 text-xs text-muted';
 type Obj = Record<string, unknown>;
+const numRow = 'grid grid-cols-[minmax(0,1fr)_4.5rem_1.5rem] items-center gap-2 text-xs text-muted';
 
 /** Widget nào có mục Thiết lập. */
-export const hasWidgetSettings = (type: string) => ['TRACK_INFO', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'PROGRESS_BAR', 'TEXT'].includes(type);
-/** Thuộc tính chỉ có ở Nâng cao (để biết phần nâng cao đang khác mặc định). */
-export const ADVANCED_WIDGET_KEYS: Readonly<Record<string, readonly string[]>> = {
-  EVENT_COUNTER: ['lineHeight', 'decimals'], LIVE_TRIGGER: ['template', 'trackTemplate', 'tailMs', 'lineHeight', 'separator'],
-  TIME_BAR: ['rowGap', 'barLength', 'barThickness', 'barColor', 'barTrackColor'], CHORD_DETECTION: ['notesTemplate', 'noChordText'],
-  PROGRESS_BAR: ['radius', 'timeTemplate', 'trackColor'],
-};
+export const hasWidgetSettings = hasWidgetFields;
 /** Tên chỗ giữ dùng được trong mẫu của widget: riêng của widget trước, rồi chỗ giữ chung (T-73). */
 export const placeholderNames = (type: string): string[] => [...new Set([...((TEMPLATE_KEYS as Record<string, readonly string[]>)[type] ?? []), ...GLOBAL_KEYS])];
 
-/** Widget đọc số liệu từ các track, nên cho chọn track riêng (T-73). Ô chữ ở Cơ bản (vì `{notes}`, `{played}` phụ thuộc track), các widget còn lại ở Nâng cao. */
-const TRACK_WIDGETS = ['TEXT', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'CHORD_DETECTION'];
 export interface TrackChoice { index: number; name: string }
-type SettingsProps = { widget: WidgetSpec; advanced: boolean; disabled?: boolean; onProps(patch: Obj): void; tracks?: TrackChoice[]; onTracks?(mode: 'ALL' | 'MANUAL', indices: number[]): void };
-
-export function WidgetSettings(props: SettingsProps) {
-  const { widget, advanced, disabled, tracks, onTracks } = props;
-  const show = !!tracks?.length && !!onTracks && TRACK_WIDGETS.includes(widget.type) && (widget.type === 'TEXT' || advanced);
-  return <><WidgetSettingsBody {...props} />{show && <TrackPicker widget={widget} tracks={tracks!} disabled={disabled} onTracks={onTracks!} />}</>;
+export interface WidgetSettingsProps {
+  widget: WidgetSpec; advanced: boolean; disabled?: boolean;
+  /** Thuộc tính của widget trong bộ dựng sẵn áp gần nhất: đích của nút ↺. Thiếu thì không có ↺. */
+  reference?: Obj;
+  onProps(patch: Obj): void;
+  tracks?: TrackChoice[];
+  onTracks?(mode: 'ALL' | 'MANUAL', indices: number[]): void;
 }
 
-/** Chọn track cho widget: mọi track đang hiện, hoặc chỉ vài track. */
+export function WidgetSettings({ widget, advanced, disabled, reference, onProps, tracks, onTracks }: WidgetSettingsProps) {
+  const { i18n } = useI18n();
+  const gesture = useContext(GestureContext);
+  const P = widget.properties as Obj, fields = WIDGET_FIELDS[widget.type] ?? [];
+  const T = (k: string) => i18n.t(`web.ws.${k}`);
+  const names = placeholderNames(widget.type);
+  const hint = i18n.t('web.ws.placeholders', { list: names.map((k) => `{${k}}`).join(' ') });
+  const showTracks = !!tracks?.length && !!onTracks && TRACK_WIDGETS.includes(widget.type) && (widget.type === 'TEXT' || advanced);
+
+  const name = (f: FieldDef) => (f.group ? `${T(f.group)}: ${T(f.label)}` : T(f.label));
+  const changed = (f: FieldDef) => !disabled && fieldChanged(f, P, reference);
+  // Một lần khôi phục là MỘT bước hoàn tác, không gộp với lần kéo/gõ trước đó.
+  const reset = (f: FieldDef) => { if (!reference) return; gesture.begin(); onProps(resetPatch(f, P, reference)); gesture.end(); };
+  const resetBtn = (f: FieldDef) => <ResetButton label={name(f)} changed={changed(f)} disabled={disabled} onReset={() => reset(f)} />;
+  const set = (f: FieldDef) => (v: unknown) => onProps({ [f.path[0]]: setIn(P, f.path, v)[f.path[0]] });
+
+  const control = (f: FieldDef) => {
+    const v = getIn(P, f.path);
+    const label = name(f);
+    switch (f.kind) {
+      case 'check': return (
+        <div key={f.path.join('.')} className="flex items-center gap-2">
+          <label className="flex min-w-0 flex-1 items-center gap-2 text-xs text-muted" data-testid={f.testId}>
+            <input type="checkbox" checked={!!v} disabled={disabled} onChange={(e) => set(f)(e.target.checked)} />{T(f.label)}
+          </label>
+          {resetBtn(f)}
+        </div>);
+      case 'num': return (
+        <div key={f.path.join('.')} className={numRow}>
+          <span className="min-w-0 break-words leading-tight">{T(f.label)}</span>
+          <NumberField label={label} value={Number(v)} spec={f.num!} range={f.num!.range} disabled={disabled} onChange={set(f)} />
+          {resetBtn(f)}
+        </div>);
+      case 'choice': return (
+        <div key={f.path.join('.')} className="space-y-1.5">
+          <div className="flex items-center justify-between gap-2 text-xs text-muted"><span>{T(f.label)}</span>{resetBtn(f)}</div>
+          <div className="seg w-full" role="radiogroup" aria-label={label} onKeyDown={radioKeys}>
+            {f.options!.map((o) => <button key={o} type="button" role="radio" aria-checked={v === o} tabIndex={radioTab(v === o)} className="seg-btn flex-1" disabled={disabled} onClick={() => set(f)(o)}>{i18n.t(`${f.prefix}${o}`)}</button>)}
+          </div>
+        </div>);
+      case 'select': return (
+        <div key={f.path.join('.')} className="grid grid-cols-[minmax(0,1fr)_minmax(0,9.5rem)_1.5rem] items-center gap-2 text-xs text-muted">
+          <label>{T(f.label)}</label>
+          <Select value={String(v)} disabled={disabled} aria-label={label} onChange={(e) => set(f)(e.target.value)} className="py-1 pl-2" wrapClassName="min-w-0">
+            {f.options!.map((o) => <option key={o} value={o}>{i18n.t(`${f.prefix}${o}`)}</option>)}
+          </Select>
+          {resetBtn(f)}
+        </div>);
+      case 'color': case 'colorOpt': {
+        const opt = f.kind === 'colorOpt', s = String(v ?? '');
+        return (
+          <div key={f.path.join('.')} className={numRow}>
+            <span className="min-w-0 break-words leading-tight">{T(f.label)}</span>
+            <span className="flex items-center gap-1.5">
+              {opt && <input type="checkbox" aria-label={i18n.t('web.ws.show', { name: label })} checked={!!s} disabled={disabled} onChange={(e) => set(f)(e.target.checked ? '#E4E4E4' : '')} />}
+              {(!opt || s) && <input type="color" aria-label={label} value={s || '#000000'} disabled={disabled} onChange={(e) => set(f)(e.target.value.toUpperCase())} className="h-6 w-full" />}
+            </span>
+            {resetBtn(f)}
+          </div>);
+      }
+      case 'text': return (
+        <TextInput key={f.path.join('.')} label={T(f.label)} aria={label} value={String(v ?? '')} onCommit={set(f)} disabled={disabled}
+          placeholder={f.text?.placeholder ? T(f.text.placeholder) : undefined} title={hint} max={f.text?.max ?? 200} names={names} multiline={f.text?.multiline}
+          reset={resetBtn(f)} />);
+    }
+  };
+
+  return (
+    <div className="space-y-2.5" data-testid="widget-settings">
+      {fields.filter((f) => (!f.adv || advanced) && (f.when?.(P) ?? true)).map(control)}
+      {showTracks && <TrackPicker widget={widget} tracks={tracks!} disabled={disabled} onTracks={onTracks!} />}
+    </div>
+  );
+}
+
+/** Chọn track cho widget: mọi track đang hiện, hoặc chỉ vài track. Bấm giữ rồi kéo qua các dòng để chọn/bỏ nhanh (cả lần kéo là một bước hoàn tác);
+ *  **Chọn tất cả** / **Bỏ chọn tất cả** ở đầu danh sách. ↺ (hoặc Alt+nhấp nhãn) về "Mọi track đang hiện". */
 function TrackPicker({ widget, tracks, disabled, onTracks }: { widget: WidgetSpec; tracks: TrackChoice[]; disabled?: boolean; onTracks(mode: 'ALL' | 'MANUAL', indices: number[]): void }) {
   const { i18n } = useI18n();
-  const manual = widget.trackMappingMode === 'MANUAL', chosen = new Set(widget.assignedTrackIndices);
+  const gesture = useContext(GestureContext);
+  const manual = widget.trackMappingMode === 'MANUAL';
+  const [draft, setDraft] = useState<Set<number> | null>(null); // trong lúc kéo: kết quả tạm, áp một lần khi thả
+  const saved = new Set(widget.assignedTrackIndices);
+  const chosen = draft ?? saved;
+  const live = useRef<Set<number>>(saved); live.current = chosen;
   const label = i18n.t('web.ws.tracks');
+  const commit = (next: Set<number>) => onTracks('MANUAL', [...next]);
+  const back = () => { gesture.begin(); onTracks('ALL', []); gesture.end(); };
+  const paint = (e: React.PointerEvent<HTMLElement>) => {
+    if (disabled) return;
+    startPaintDrag(e, {
+      current: (_k, id) => live.current.has(Number(id)),
+      apply: (_k, id, on) => setDraft((d) => { const n = new Set(d ?? live.current); if (on) n.add(Number(id)); else n.delete(Number(id)); live.current = n; return n; }),
+      gesture: { begin: () => setDraft(new Set(live.current)), end: () => { const n = live.current; setDraft(null); commit(n); } },
+    });
+  };
   return (
     <div className="mt-2.5 space-y-1.5" data-testid="widget-tracks">
-      <span className="block text-xs text-muted">{label}</span>
+      <div className="flex items-center justify-between gap-2 text-xs text-muted">
+        <span>{label}</span>
+        <ResetButton label={label} changed={manual && !disabled} disabled={disabled} onReset={back} />
+      </div>
       <div className="seg w-full" role="radiogroup" aria-label={label} onKeyDown={radioKeys}>
         {(['ALL', 'MANUAL'] as const).map((m) => (
           <button key={m} type="button" role="radio" aria-checked={manual === (m === 'MANUAL')} tabIndex={radioTab(manual === (m === 'MANUAL'))} className="seg-btn flex-1" disabled={disabled}
             onClick={() => onTracks(m, m === 'MANUAL' ? tracks.map((t) => t.index) : [])}>{i18n.t(`web.ws.tracks.${m}`)}</button>
         ))}
       </div>
-      {manual && <ul className="space-y-1">
-        {tracks.map((t) => (
-          <li key={t.index}><label className="flex items-center gap-2 text-xs text-muted">
-            <input type="checkbox" checked={chosen.has(t.index)} disabled={disabled}
-              onChange={(e) => onTracks('MANUAL', e.target.checked ? [...chosen, t.index] : [...chosen].filter((i) => i !== t.index))} />{t.name}
-          </label></li>
-        ))}
-      </ul>}
+      {manual && <>
+        <div className="flex gap-3 text-xs">
+          <button type="button" className="hit text-muted underline-offset-2 hover:text-fg hover:underline disabled:opacity-40" disabled={disabled || tracks.every((t) => chosen.has(t.index))}
+            onClick={() => commit(new Set(tracks.map((t) => t.index)))} data-testid="tracks-all">{i18n.t('web.ws.tracks.selectAll')}</button>
+          <button type="button" className="hit text-muted underline-offset-2 hover:text-fg hover:underline disabled:opacity-40" disabled={disabled || !tracks.some((t) => chosen.has(t.index))}
+            onClick={() => commit(new Set())} data-testid="tracks-none">{i18n.t('web.ws.tracks.selectNone')}</button>
+        </div>
+        <ul className="space-y-0.5" onPointerDown={paint} data-testid="tracks-list">
+          {tracks.map((t) => (
+            <li key={t.index}>
+              <button type="button" role="checkbox" aria-checked={chosen.has(t.index)} disabled={disabled} data-paint="trk" data-paint-id={t.index}
+                onClick={(e) => { if (clickIsKeyboard(e)) { const n = new Set(chosen); if (n.has(t.index)) n.delete(t.index); else n.add(t.index); commit(n); } }}
+                className="flex min-h-[var(--hit)] w-full touch-none items-center gap-2 text-left text-xs text-muted hover:text-fg">
+                <span aria-hidden className={`grid h-3.5 w-3.5 shrink-0 place-items-center border border-control text-[10px] leading-none ${chosen.has(t.index) ? 'bg-accent text-on-accent' : 'bg-raised'}`}>{chosen.has(t.index) ? '✓' : ''}</span>
+                <span className="min-w-0 truncate">{t.name}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </>}
     </div>
   );
 }
 
-function WidgetSettingsBody({ widget, advanced, disabled, onProps }: SettingsProps) {
-  const { i18n } = useI18n();
-  const P = widget.properties as Obj, t = widget.type;
-  const T = (k: string) => i18n.t(`web.ws.${k}`);
-  const names = placeholderNames(t);
-  const hint = i18n.t('web.ws.placeholders', { list: names.map((k) => `{${k}}`).join(' ') });
-
-  const check = (label: string, on: boolean, set: (v: boolean) => void, id?: string) => (
-    <label className="flex items-center gap-2 text-xs text-muted" data-testid={id}><input type="checkbox" checked={on} disabled={disabled} onChange={(e) => set(e.target.checked)} />{label}</label>
-  );
-  const num = (label: string, value: number, spec: { min: number; max: number; step: number }, set: (v: number) => void, range?: [number, number]) => (
-    <div className={numRow}><span className="min-w-0 break-words leading-tight">{label}</span>
-      <NumberField label={label} value={value} spec={spec} range={range} disabled={disabled} onChange={set} /></div>
-  );
-  const choice = <V extends string>(label: string, value: V, options: readonly V[], prefix: string, set: (v: V) => void) => (
-    <div className="space-y-1.5"><span className="block text-xs text-muted">{label}</span>
-      <div className="seg w-full" role="radiogroup" aria-label={label} onKeyDown={radioKeys}>
-        {options.map((o) => <button key={o} type="button" role="radio" aria-checked={value === o} tabIndex={radioTab(value === o)} className="seg-btn flex-1" disabled={disabled} onClick={() => set(o)}>{i18n.t(`${prefix}${o}`)}</button>)}
-      </div></div>
-  );
-  const color = (label: string, value: string, set: (v: string) => void, allowNone = false) => (
-    <div className={numRow}><span className="min-w-0 break-words leading-tight">{label}</span>
-      <span className="flex items-center gap-1.5">
-        {allowNone && <input type="checkbox" aria-label={i18n.t('web.ws.show', { name: label })} checked={!!value} disabled={disabled} onChange={(e) => set(e.target.checked ? '#E4E4E4' : '')} />}
-        {(!allowNone || value) && <input type="color" aria-label={label} value={value || '#000000'} disabled={disabled} onChange={(e) => set(e.target.value.toUpperCase())} className="h-6 w-full" />}
-      </span></div>
-  );
-  const text = (label: string, value: string, set: (v: string) => void, opts: { placeholder?: string; title?: string; max?: number; multiline?: boolean } = {}) => (
-    <TextInput label={label} value={value} onCommit={set} disabled={disabled} placeholder={opts.placeholder} title={opts.title ?? hint} max={opts.max ?? 200} names={names} multiline={opts.multiline} />
-  );
-  const set = (k: string) => (v: unknown) => onProps({ [k]: v });
-  const sub = (k: string, f: string) => (v: unknown) => onProps({ [k]: { ...(P[k] as Obj), [f]: v } });
-
-  if (t === 'TEXT') return <div className="space-y-2.5" data-testid="widget-settings">
-    {text(T('boxText'), String(P.text ?? ''), set('text'), { max: 2000, multiline: true })}
-  </div>;
-
-  if (t === 'TRACK_INFO') return <div className="space-y-2.5" data-testid="widget-settings">
-    {text(T('title'), String(P.titleText ?? ''), set('titleText'), { placeholder: T('fromProject') })}
-    {text(T('artist'), String(P.artistText ?? ''), set('artistText'), { placeholder: T('fromProject') })}
-  </div>;
-
-  if (t === 'EVENT_COUNTER') {
-    const L = P.lines as Record<string, { enabled: boolean; template: string }>;
-    return <div className="space-y-2.5" data-testid="widget-settings">
-      {(['played', 'total', 'progress', 'tempo'] as const).map((k) => <div key={k} className="space-y-1.5">
-        {check(T(`line.${k}`), L[k].enabled, (v) => onProps({ lines: { ...L, [k]: { ...L[k], enabled: v } } }), `ws-line-${k}`)}
-        {advanced && L[k].enabled && text(T('template'), L[k].template, (v) => onProps({ lines: { ...L, [k]: { ...L[k], template: v } } }), { title: hint })}
-      </div>)}
-      {advanced && <>
-        {num(T('decimals'), Number(P.decimals), { min: 0, max: 4, step: 1 }, set('decimals'))}
-        {num(T('lineHeight'), Number(P.lineHeight), { min: 1, max: 3, step: 0.05 }, set('lineHeight'))}
-      </>}
-    </div>;
-  }
-
-  if (t === 'LIVE_TRIGGER') return <div className="space-y-2.5" data-testid="widget-settings">
-    {choice(T('layout'), P.mode as 'list' | 'inline', ['list', 'inline'] as const, 'web.ws.mode.', set('mode'))}
-    {P.mode === 'list' && num(T('maxLines'), Number(P.maxLines), { min: 1, max: 32, step: 1 }, set('maxLines'))}
-    {check(T('showTrack'), !!P.showTrack, set('showTrack'))}
-    {advanced && <>
-      {text(T('template'), String(P.template), set('template'), { title: hint })}
-      {!!P.showTrack && text(T('trackTemplate'), String(P.trackTemplate), set('trackTemplate'), { title: hint })}
-      {P.mode === 'inline' && text(T('separator'), String(P.separator), set('separator'), { max: 16 })}
-      {num(T('tailMs'), Number(P.tailMs), { min: 0, max: 1000, step: 10 }, set('tailMs'), [0, 1000])}
-      {P.mode === 'list' && num(T('lineHeight'), Number(P.lineHeight), { min: 1, max: 3, step: 0.05 }, set('lineHeight'))}
-    </>}
-  </div>;
-
-  if (t === 'TIME_BAR') {
-    const tm = P.time as { enabled: boolean; label: string; format: 'grouped' | 'clock' }, bt = P.beat as { enabled: boolean; label: string; format: 'grouped' | 'bbs' };
-    return <div className="space-y-2.5" data-testid="widget-settings">
-      {check(T('showTime'), tm.enabled, sub('time', 'enabled'))}
-      {tm.enabled && choice(T('timeFormat'), tm.format, ['grouped', 'clock'] as const, 'web.ws.format.', sub('time', 'format'))}
-      {check(T('showBeat'), bt.enabled, sub('beat', 'enabled'))}
-      {bt.enabled && choice(T('beatFormat'), bt.format, ['grouped', 'bbs'] as const, 'web.ws.format.', sub('beat', 'format'))}
-      {check(T('showBars'), !!P.showBars, set('showBars'))}
-      {advanced && <>
-        {tm.enabled && text(T('timeLabel'), tm.label, sub('time', 'label'), { max: 40 })}
-        {bt.enabled && text(T('beatLabel'), bt.label, sub('beat', 'label'), { max: 40 })}
-        {num(T('rowGap'), Number(P.rowGap), { min: 1, max: 5, step: 0.05 }, set('rowGap'))}
-        {!!P.showBars && <>
-          {num(T('barLength'), Number(P.barLength), { min: 4, max: 1000, step: 1 }, set('barLength'), [8, 400])}
-          {num(T('barThickness'), Number(P.barThickness), { min: 0.5, max: 40, step: 0.5 }, set('barThickness'), [0.5, 10])}
-          {color(T('barColor'), String(P.barColor), set('barColor'))}
-          {color(T('barTrackColor'), String(P.barTrackColor), set('barTrackColor'), true)}
-        </>}
-      </>}
-    </div>;
-  }
-
-  if (t === 'CHORD_DETECTION') return <div className="space-y-2.5" data-testid="widget-settings">
-    {choice(T('chordMode'), P.mode as 'sustained' | 'strike', ['sustained', 'strike'] as const, 'web.ws.chordMode.', set('mode'))}
-    {check(T('alwaysShowNotes'), !!P.alwaysShowNotes, set('alwaysShowNotes'), 'ws-always-notes')}
-    <label className={row}><span>{T('unrecognized')}</span>
-      <Select value={String(P.unrecognized)} disabled={disabled} onChange={(e) => onProps({ unrecognized: e.target.value })} className="py-1 pl-2" wrapClassName="min-w-0">
-        {(['nc', 'notes'] as const).map((o) => <option key={o} value={o}>{T(`unrecognized.${o}`)}</option>)}
-      </Select></label>
-    {advanced && <>
-      {P.unrecognized === 'nc' && text(T('noChordText'), String(P.noChordText), set('noChordText'), { max: 20 })}
-      {text(T('notesTemplate'), String(P.notesTemplate), set('notesTemplate'), { title: hint })}
-    </>}
-  </div>;
-
-  if (t === 'PROGRESS_BAR') return <div className="space-y-2.5" data-testid="widget-settings">
-    {choice(T('orientation'), P.orientation as 'HORIZONTAL' | 'VERTICAL', ['HORIZONTAL', 'VERTICAL'] as const, 'web.ws.orientation.', set('orientation'))}
-    {num(T('thickness'), Number(P.thickness), { min: 1, max: 200, step: 1 }, set('thickness'), [1, 40])}
-    {color(T('progressColor'), String(P.progressColor), set('progressColor'))}
-    {P.orientation === 'HORIZONTAL' && check(T('showTimeText'), !!P.showTime, set('showTime'))}
-    {advanced && <>
-      {color(T('trackColor'), String(P.trackColor), set('trackColor'), true)}
-      {num(T('radius'), Number(P.radius), { min: 0, max: 100, step: 1 }, set('radius'), [0, 20])}
-      {P.orientation === 'HORIZONTAL' && !!P.showTime && text(T('template'), String(P.timeTemplate), set('timeTemplate'), { title: hint })}
-    </>}
-  </div>;
-  return null;
-}
+/** Chỗ giữ hay dùng nhất, có nút chèn sẵn dưới ô chữ (chỉ hiện nếu widget hỗ trợ tên đó). */
+const QUICK_PLACEHOLDERS = ['bpm', 'title'] as const;
 
 /** Ô chữ: gõ thoải mái, Enter (ô một dòng) hoặc rời ô mới áp (một bước hoàn tác); Esc trả về chữ cũ.
- *  Gõ `{` thì hiện gợi ý tên chỗ giữ (T-73): bấm một tên để điền nốt `{tên}`. */
-function TextInput({ label, value, onCommit, disabled, placeholder, title, max, names, multiline }: { label: string; value: string; onCommit(v: string): void; disabled?: boolean; placeholder?: string; title?: string; max: number; names?: readonly string[]; multiline?: boolean }) {
+ *  Gõ `{` thì hiện gợi ý tên chỗ giữ (T-73): bấm một tên để điền nốt `{tên}`. Nút ↺ nằm cạnh nhãn. */
+function TextInput({ label, aria, value, onCommit, disabled, placeholder, title, max, names, multiline, reset }: { label: string; aria?: string; value: string; onCommit(v: string): void; disabled?: boolean; placeholder?: string; title?: string; max: number; names?: readonly string[]; multiline?: boolean; reset?: React.ReactNode }) {
+  const { i18n } = useI18n();
+  const id = useId();
   const [v, setV] = useState(value);
   const [caret, setCaret] = useState(0);
   const ref = useRef<HTMLInputElement & HTMLTextAreaElement>(null);
@@ -194,8 +185,14 @@ function TextInput({ label, value, onCommit, disabled, placeholder, title, max, 
     const start = caret - open![0].length, ins = `{${n}}`, next = (v.slice(0, start) + ins + v.slice(caret)).slice(0, max);
     pending.current = Math.min(next.length, start + ins.length); setV(next); setCaret(pending.current);
   };
+  const quick = disabled ? [] : QUICK_PLACEHOLDERS.filter((n) => names?.includes(n)); // chèn một chạm: người dùng không phải biết cú pháp `{…}`
+  const insert = (n: string) => {
+    const el = ref.current, s = el?.selectionStart ?? v.length, e = el?.selectionEnd ?? s, ins = `{${n}}`;
+    const next = (v.slice(0, s) + ins + v.slice(e)).slice(0, max);
+    pending.current = Math.min(next.length, s + ins.length); setV(next); setCaret(pending.current); onCommit(next); el?.focus();
+  };
   const common = {
-    ref, className: 'w-full border border-control bg-raised px-2 py-1 text-xs text-fg', value: v, maxLength: max, disabled, placeholder, title,
+    ref, id, 'aria-label': aria, className: 'w-full border border-control bg-raised px-2 py-1 text-xs text-fg', value: v, maxLength: max, disabled, placeholder, title,
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => { setV(e.target.value); setCaret(e.target.selectionStart ?? e.target.value.length); },
     onSelect: (e: React.SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>) => setCaret(e.currentTarget.selectionStart ?? 0),
     onBlur: commit,
@@ -204,12 +201,15 @@ function TextInput({ label, value, onCommit, disabled, placeholder, title, max, 
     },
   };
   return (
-    <label className="block space-y-1 text-xs text-muted">
-      <span className="block">{label}</span>
+    <div className="space-y-1 text-xs text-muted">
+      <div className="flex items-center justify-between gap-2"><label htmlFor={id}>{label}</label>{reset}</div>
       {multiline ? <textarea {...common} rows={4} className={`${common.className} resize-y`} /> : <input {...common} />}
-      {hits.length > 0 && <span className="flex flex-wrap gap-1" data-testid="placeholder-hints">
-        {hits.map((n) => <button key={n} type="button" className="border border-control px-1.5 py-0.5 text-[11px] text-fg hover:bg-raised" onMouseDown={(e) => e.preventDefault()} onClick={() => pick(n)}>{`{${n}}`}</button>)}
+      {quick.length > 0 && <span className="flex flex-wrap gap-1" data-testid="placeholder-quick">
+        {quick.map((n) => <button key={n} type="button" className="min-h-[var(--hit)] border border-control px-1.5 text-xs text-fg hover:bg-raised" aria-label={i18n.t('web.ws.insert', { name: `{${n}}` })} title={i18n.t('web.ws.insert', { name: `{${n}}` })} onMouseDown={(e) => e.preventDefault()} onClick={() => insert(n)}>{`{${n}}`}</button>)}
       </span>}
-    </label>
+      {hits.length > 0 && <span className="flex flex-wrap gap-1" data-testid="placeholder-hints">
+        {hits.map((n) => <button key={n} type="button" className="min-h-[var(--hit)] border border-control px-1.5 text-xs text-fg hover:bg-raised" onMouseDown={(e) => e.preventDefault()} onClick={() => pick(n)}>{`{${n}}`}</button>)}
+      </span>}
+    </div>
   );
 }

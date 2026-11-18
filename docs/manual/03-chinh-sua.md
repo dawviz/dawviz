@@ -9,7 +9,9 @@ Màn hình chia ba phần: danh sách **Lớp** bên trái, khung video ở gi�
 ## Chọn widget
 
 - Bấm vào widget trên khung, hoặc bấm tên nó trong danh sách Lớp.
-- Giữ Shift khi bấm để chọn thêm widget khác.
+- Giữ Shift (hoặc Ctrl/⌘) khi bấm để chọn thêm widget khác.
+- Bấm giữ trên tên một lớp rồi kéo lên hoặc xuống để chọn cả dãy lớp đi qua. Giữ Shift khi bắt đầu kéo để cộng thêm vào những lớp đang chọn.
+- **Chọn tất cả** ở đầu danh sách Lớp, hoặc Ctrl+A (⌘A trên Mac), chọn mọi lớp.
 - Kéo chuột trên chỗ trống của khung để vẽ một khung chọn: mọi widget chạm khung đó đều được chọn. Giữ Shift để cộng thêm vào những widget đang chọn.
 - Bấm Esc để bỏ chọn.
 
@@ -66,6 +68,7 @@ Muốn tạm tắt bắt dính: giữ Alt khi kéo để di chuyển, giữ Ctrl
 Danh sách **Lớp** cho biết widget nào nằm trên widget nào: dòng trên cùng được vẽ trên cùng.
 
 - **Đổi thứ tự:** kéo tay nắm sáu chấm (chỉ kéo tay nắm mới đổi thứ tự, kéo chỗ khác trên dòng thì không), hoặc chọn dòng rồi bấm Alt+Lên / Alt+Xuống. Ở mục **Sắp xếp** bên phải còn có bốn nút: đưa lên trên cùng, lên một bậc, xuống một bậc, xuống dưới cùng (phím tắt Ctrl+] và Ctrl+[, thêm Shift để đưa hẳn lên trên cùng hoặc xuống dưới cùng).
+- **Đổi tên:** bấm đúp vào tên lớp (hoặc chọn lớp rồi nhấn F2), gõ tên mới, nhấn Enter. Esc để bỏ. Để trống rồi Enter thì lớp quay về tên theo loại (ví dụ Hợp âm 2). Tên tối đa 60 ký tự và không được trùng với lớp khác (hoa/thường coi như nhau). Nếu trùng, tên cũ được giữ nguyên và ứng dụng báo lý do. Tên lớp chỉ để bạn dễ tìm, không hiện trong video; được lưu trong preset. Bản nhân bản không mang tên của bản gốc.
 - **Mắt:** ẩn hoặc hiện widget trong video (giống ô **Hiện trong video**).
 - **Ổ khoá:** khoá widget để không lỡ tay kéo nó. Widget đã khoá vẫn chọn được trong danh sách Lớp để xem số liệu hoặc mở khoá.
 - Hàng trên cùng ẩn/hiện hoặc khoá/mở khoá mọi lớp cùng lúc.
@@ -78,12 +81,14 @@ Widget chữ có mục **Thiết lập** cho những gì riêng của nó:
 - **Tên bài và nghệ sĩ:** gõ tên bài, tên nghệ sĩ. Để trống thì lấy từ dự án.
 - **Bộ đếm nốt:** bật hoặc tắt từng dòng (số nốt đã phát, tổng số nốt, tiến độ, tempo). Nâng cao: sửa chữ của từng dòng, số chữ số thập phân, khoảng cách dòng.
 - **Nốt đang phát:** mỗi nốt một dòng hoặc tất cả trên một dòng, số dòng tối đa, hiện tên track. Nâng cao: sửa chữ, thời gian mờ dần sau khi nhả nốt.
-- **Thời gian và ô nhịp:** bật hoặc tắt từng hàng, kiểu hiện số (nhóm số hay đồng hồ, ô nhịp.phách.tick), vạch tiến độ dưới số. Nâng cao: nhãn, khoảng cách hàng, độ dài, độ dày và màu vạch.
+- **Thời gian và ô nhịp:** bật hoặc tắt từng hàng, kiểu hiện số (nhóm số hay đồng hồ, ô nhịp.phách.tick), vạch tiến độ dưới số. Nâng cao: nhãn, số chữ số của từng nhóm (phút, giây, mili giây; ô nhịp, phách, tick), khoảng cách hàng, độ dài, độ dày và màu vạch.
 - **Hợp âm:** đọc hợp âm theo nốt đang giữ hay khi dập, luôn hiện danh sách nốt, khi không nhận ra hợp âm thì hiện chữ "không hợp âm" hay hiện các nốt.
 - **Thanh tiến độ:** ngang hoặc dọc, độ dày, màu, hiện thời gian. Nâng cao: nền thanh, bo góc, chữ thời gian.
 - **Ô chữ:** gõ nội dung nhiều dòng, xen số liệu như `{bpm}` hay `{title}`; chọn track mà số liệu đọc. Xem [Chèn số liệu vào chữ](08-cho-giu.md).
 
-Khi sửa chữ của một dòng, những chỗ trong ngoặc nhọn như `{played}` hay `{bpm}` sẽ được thay bằng số thật, dùng được ở mọi chữ. Gõ `{` để xem gợi ý tên, hoặc rê chuột lên ô chữ. Danh sách đầy đủ và cách chọn kiểu hiện số ở trang [Chèn số liệu vào chữ](08-cho-giu.md). Gõ xong bấm Enter, hoặc bấm ra ngoài ô; bấm Esc để bỏ.
+Mọi thiết lập trong mục này đều có nút ↺ khi khác giá trị gốc (kể cả ô tick, nhóm nút, màu, ô chữ và mục **Track**), và Alt+nhấp (Option+nhấp trên Mac) vào nhãn để khôi phục nhanh.
+
+Khi sửa chữ của một dòng, những chỗ trong ngoặc nhọn như `{played}` hay `{bpm}` sẽ được thay bằng số thật, dùng được ở mọi chữ. Bấm `{bpm}` hoặc `{title}` dưới ô để chèn ngay, hoặc gõ `{` để xem gợi ý tên, hoặc rê chuột lên ô chữ. Danh sách đầy đủ và cách chọn kiểu hiện số ở trang [Chèn số liệu vào chữ](08-cho-giu.md). Gõ xong bấm Enter, hoặc bấm ra ngoài ô; bấm Esc để bỏ.
 
 ## Chữ
 

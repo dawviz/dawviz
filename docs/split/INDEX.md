@@ -127,7 +127,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)](TECHNICAL-DESIGN/5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md) · 5390 ký tự
 - [5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp 🟢 (đã dùng ở T-69)](TECHNICAL-DESIGN/5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md) · 925 ký tự
 - [5.9 Kiểu chữ cho mọi chữ trong video 🟢 (T-72, SRS REQ-GRAPHICS-18, D-58)](TECHNICAL-DESIGN/5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md) · 6552 ký tự
-- [5.10 Chỗ giữ trong chữ và Ô chữ 🟢 (T-73, SRS REQ-GRAPHICS-19, D-60/OI-18)](TECHNICAL-DESIGN/5-10-cho-giu-trong-chu-va-o-chu-t-73-srs-req-gra.md) · 1789 ký tự
+- [5.10 Chỗ giữ trong chữ và Ô chữ 🟢 (T-73, SRS REQ-GRAPHICS-19, D-60/OI-18)](TECHNICAL-DESIGN/5-10-cho-giu-trong-chu-va-o-chu-t-73-srs-req-gra.md) · 2966 ký tự
 - [6.1 Trạng thái](TECHNICAL-DESIGN/6-1-trang-thai.md) · 1256 ký tự
 - [6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh)](TECHNICAL-DESIGN/6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md) · 233 ký tự
 - [6.2.1 Nạp tệp âm thanh (mix)](TECHNICAL-DESIGN/6-2-1-nap-tep-am-thanh-mix.md) · 3263 ký tự
@@ -140,7 +140,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [6.2.8 Kiểm thử (thuần, không cần trình duyệt)](TECHNICAL-DESIGN/6-2-8-kiem-thu-thuan-khong-can-trinh-duyet.md) · 1014 ký tự
 - [6.2.9 Quyết định đã duyệt](TECHNICAL-DESIGN/6-2-9-quyet-dinh-da-duyet.md) · 672 ký tự
 - [6.3 Danh sách track 🟢](TECHNICAL-DESIGN/6-3-danh-sach-track.md) · 1860 ký tự
-- [6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)](TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) · 18818 ký tự
+- [6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)](TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) · 19139 ký tự
 - [7.1 Trình tự](TECHNICAL-DESIGN/7-1-trinh-tu.md) · 1019 ký tự
 - [7.2 Quyết định kỹ thuật](TECHNICAL-DESIGN/7-2-quyet-dinh-ky-thuat.md) · 947 ký tự
 - [7.3 Phần lõi thuần đã làm (T-09, 2026-11-14)](TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md) · 1745 ký tự
