@@ -5,7 +5,7 @@ section: "REQ-GRAPHICS-19: Ô chữ người dùng thêm và chỗ giữ dùng c
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-19: Ô chữ người dùng thêm và chỗ giữ dùng chung (D-60; đã chốt hướng, chưa làm)"
 chunk: req-graphics-19-o-chu-nguoi-dung-them-va-cho-giu.md
 source_lines: 537-545
-source_sha1: 38e49d98aa
+source_sha1: 3ec9c28927
 ids: [D-60, OI-18, P-04, REQ-GRAPHICS-01, REQ-GRAPHICS-05, REQ-GRAPHICS-12, REQ-GRAPHICS-13, REQ-GRAPHICS-18, REQ-GRAPHICS-19, REQ-UI-13, REQ-WIDGET-03]
 ---
 #### REQ-GRAPHICS-19: Ô chữ người dùng thêm và chỗ giữ dùng chung (D-60; đã chốt hướng, chưa làm)
@@ -15,4 +15,4 @@ ids: [D-60, OI-18, P-04, REQ-GRAPHICS-01, REQ-GRAPHICS-05, REQ-GRAPHICS-12, REQ-
 * **Không lẫn với biểu thức:** chỗ giữ chỉ thay chữ, không tính toán; biểu thức (REQ-GRAPHICS-13, tiền tố `=`) vẫn dành cho thuộc tính số/màu.
 * **Tất định:** giá trị chỗ giữ là hàm của `t` và dữ liệu tính trước (REQ-GRAPHICS-05); chữ số đều bề rộng mặc định cho chỗ giữ là số.
 * **Lược đồ:** thêm loại widget làm preset lên 0.6.0; giới hạn độ dài chữ của ô chữ lớn hơn 200 ký tự của mẫu chữ hiện nay.
-* **Còn mở (OI-18):** widget có sẵn mở mẫu chữ cho mọi dòng hay không; cách ghi định dạng số (`{bpm:0.0}`…); chỗ giữ theo nốt trong ô chữ.
+* **Đã chốt (OI-18, 2026-11-18):** (a) Nâng cao mở ô mẫu chữ cho mọi dòng chữ của widget có sẵn, Cơ bản giữ nguyên. (b) Định dạng `{tên:định_dạng}` (tách ở dấu `:` đầu tiên): số `{bpm:0.0}`, đệm `{bar:000}`, thời gian `{time:m:ss}`/`{time:m:ss.SSS}`; sai định dạng thì giữ nguyên chữ và cảnh báo. Mặc định khi không nhập: `{bpm}` tối đa 1 chữ số thập phân (bỏ số 0 thừa), `{pct}` số nguyên, mọi chỗ giữ thời gian `m:ss`, `{bar}`/`{beat}`/`{played}`/`{total}` số nguyên không đệm, chữ nguyên văn cho `{title}`, `{artist}`, `{chord}`. (c) Chỗ giữ theo nốt trong ô chữ chỉ có `{notes}`: mọi nốt đang vang của các track đã chọn, xếp thấp → cao, cách nhau bằng khoảng trắng (đổi bằng `{notes:, }`), rỗng khi không có nốt. Không có `{name}`/`{velocity}` trong ô chữ; hai tên này chỉ dùng ở mẫu Live Note Trigger.

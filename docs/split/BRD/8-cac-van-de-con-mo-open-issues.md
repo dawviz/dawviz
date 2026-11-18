@@ -5,7 +5,7 @@ section: "8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)"
 path: "8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)"
 chunk: 8-cac-van-de-con-mo-open-issues.md
 source_lines: 271-292
-source_sha1: bdfba51959
+source_sha1: 463b8e497e
 ids: [D-01, D-05, D-39, D-40, D-41, D-42, D-43, D-44, D-45, D-60, KPI-01, KPI-06, OI-01, OI-02, OI-03, OI-04, OI-05, OI-06, OI-07, OI-08, OI-09, OI-10, OI-11, OI-12, OI-13, OI-14, OI-15, OI-16, OI-17, OI-18, P-01, P-13]
 ---
 ## 8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)
@@ -29,4 +29,4 @@ ids: [D-01, D-05, D-39, D-40, D-41, D-42, D-43, D-44, D-45, D-60, KPI-01, KPI-06
 | **OI-15** | **Đã đóng 2026-11-12:** không nhập storyboard osu! (`.osb`), không làm giống mô hình osu!; tập trung tùy biến nhiều hơn và dễ dùng hơn (`docs/design/CUSTOMIZATION.md` mục 2). | Product |
 | **OI-16** | **Đã chốt một phần 2026-11-12:** có ngôn ngữ biểu thức (D-39, `docs/design/EXPRESSIONS.md`). Còn mở: có làm morph giữa đường SVG tự do không. **Đã đóng v1.1:** morph SVG tự do ở 1.2 (D-44). | Product/Dev |
 | **OI-17** | Chọn origin để host ứng dụng: tên miền riêng hay tài khoản/tổ chức GitHub riêng (không dùng `tên-cá-nhân.github.io/dawviz` vì dùng chung origin với các repo khác). Phải chốt trước khi lưu dữ liệu người dùng trên site công khai. **Đã đóng v1.1 (D-41):** tổ chức GitHub riêng. | Product |
-| **OI-18** | Chỗ giữ dùng chung (D-60): (a) ở Nâng cao, các widget có sẵn có mở ô mẫu chữ cho **mọi** dòng (tên bài, nhãn "time"/"beat", tên hợp âm…) hay chỉ ô chữ mới; (b) cách ghi định dạng số trong ngoặc (đề xuất `{bpm:0.0}`, `{time:m:ss}`); (c) chỗ giữ theo nốt (`{name}`, `{velocity}`) đặt trong ô chữ thì hiện gì (nốt cao nhất đang vang? danh sách?). Chốt trước khi làm T-73. | Product |
+| ~~**OI-18**~~ | **ĐÃ CHỐT 2026-11-18 (chủ dự án)** — chỗ giữ dùng chung (D-60): (a) ở Nâng cao, widget có sẵn mở ô mẫu chữ cho **mọi** dòng chữ; Cơ bản giữ các ô hiện có; mẫu mặc định tương đương chuỗi cứng hiện tại nên preset cũ vẽ như cũ. (b) định dạng `{tên:định_dạng}`, tách ở dấu `:` đầu tiên; bộ định dạng nhỏ và đóng (số: `0.0`, đệm `000`; thời gian: `m:ss`, `m:ss.SSS`; `{notes:, }` đổi dấu phân cách); định dạng sai thì giữ nguyên chữ và cảnh báo; không nhập thì dùng mặc định theo từng chỗ giữ (`{bpm}` tối đa 1 số thập phân bỏ số 0 thừa, `{pct}` số nguyên, thời gian `m:ss`, `{bar}`/`{beat}`/`{played}`/`{total}` số nguyên không đệm). (c) chỗ giữ theo nốt trong ô chữ chỉ có `{notes}`: mọi nốt đang vang của các track đã chọn, xếp thấp → cao, cách nhau bằng khoảng trắng, không có nốt thì rỗng; **không** có `{name}`/`{velocity}` riêng lẻ trong ô chữ (hai tên này chỉ dùng ở mẫu Live Note Trigger, nơi mỗi dòng là một nốt). | Product |

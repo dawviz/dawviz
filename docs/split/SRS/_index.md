@@ -1,6 +1,6 @@
 # Chỉ mục SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
-nguồn: `SRS.md` (sha1 38e49d98aa)
+nguồn: `SRS.md` (sha1 3ec9c28927)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -36,7 +36,7 @@ nguồn: `SRS.md` (sha1 38e49d98aa)
 | 29 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-05: Render Core dùng chung (ARC-01, D-20) | [req-graphics-05-render-core-dung-chung-arc-01-d.md](req-graphics-05-render-core-dung-chung-arc-01-d.md) | 1021 | ARC-01, D-20, REQ-GRAPHICS-05 |
 | 30 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-17: Phát sáng động khi chạm (D-50, 1.0) | [req-graphics-17-phat-sang-dong-khi-cham-d-50-1-0.md](req-graphics-17-phat-sang-dong-khi-cham-d-50-1-0.md) | 2766 | D-50, REQ-AST-02, REQ-AUDIO-01, REQ-GRAPHICS-06, REQ-GRAPHICS-07, REQ-GRAPHICS-10… |
 | 31 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-18: Kiểu chữ cho mọi chữ trong video (D-58) | [req-graphics-18-kieu-chu-cho-moi-chu-trong-video.md](req-graphics-18-kieu-chu-cho-moi-chu-trong-video.md) | 5095 | D-57, D-58, REQ-GRAPHICS-00, REQ-GRAPHICS-03, REQ-GRAPHICS-05, REQ-GRAPHICS-07… |
-| 32 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-19: Ô chữ người dùng thêm và chỗ giữ dùng chung (D-60; đã chốt hướng, chưa làm) | [req-graphics-19-o-chu-nguoi-dung-them-va-cho-giu.md](req-graphics-19-o-chu-nguoi-dung-them-va-cho-giu.md) | 1710 | D-60, OI-18, P-04, REQ-GRAPHICS-01, REQ-GRAPHICS-05, REQ-GRAPHICS-12… |
+| 32 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-19: Ô chữ người dùng thêm và chỗ giữ dùng chung (D-60; đã chốt hướng, chưa làm) | [req-graphics-19-o-chu-nguoi-dung-them-va-cho-giu.md](req-graphics-19-o-chu-nguoi-dung-them-va-cho-giu.md) | 2378 | D-60, OI-18, P-04, REQ-GRAPHICS-01, REQ-GRAPHICS-05, REQ-GRAPHICS-12… |
 | 33 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-AST-02: Automation tổng quát (D-50; 1.0 cho Reaper track + MIDI CC, các nguồn khác theo tệp mẫu) | [req-ast-02-automation-tong-quat-d-50-1-0-cho-rea.md](req-ast-02-automation-tong-quat-d-50-1-0-cho-rea.md) | 2214 | D-50, REQ-AST-02, REQ-AUDIO-01, REQ-GRAPHICS-06, REQ-GRAPHICS-13, REQ-GRAPHICS-17… |
 | 34 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) | [3-4-dac-ta-8-widget-hud-br-02-br-03-br-04.md](3-4-dac-ta-8-widget-hud-br-02-br-03-br-04.md) | 368 | BR-02, BR-03, BR-04 |
 | 35 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-01: Piano Roll | [req-widget-01-piano-roll.md](req-widget-01-piano-roll.md) | 1411 | D-15, NFR-PERF-02, REQ-GRAPHICS-09, REQ-GRAPHICS-15, REQ-WIDGET-01 |

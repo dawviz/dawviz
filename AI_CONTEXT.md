@@ -89,8 +89,8 @@ Nguồn: `docs/product/BRD.md` · [thứ tự đọc](docs/split/BRD/_index.md)
 - [4. PHẠM VI DỰ ÁN (PROJECT SCOPE) › 4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](docs/split/BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1.2k
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](docs/split/BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4.3k
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](docs/split/BRD/6-gia-dinh-assumptions.md) · 0.6k
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 25.9k
-- [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](docs/split/BRD/8-cac-van-de-con-mo-open-issues.md) · 5.0k
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 26.0k
+- [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](docs/split/BRD/8-cac-van-de-con-mo-open-issues.md) · 5.6k
 
 ### SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
@@ -128,7 +128,7 @@ Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-05: Render Core dùng chung (ARC-01, D-20)](docs/split/SRS/req-graphics-05-render-core-dung-chung-arc-01-d.md) · 1.0k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-17: Phát sáng động khi chạm (D-50, 1.0)](docs/split/SRS/req-graphics-17-phat-sang-dong-khi-cham-d-50-1-0.md) · 2.8k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-18: Kiểu chữ cho mọi chữ trong video (D-58)](docs/split/SRS/req-graphics-18-kieu-chu-cho-moi-chu-trong-video.md) · 5.1k
-- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-19: Ô chữ người dùng thêm và chỗ giữ dùng chung (D-60; đã chốt hướng, chưa làm)](docs/split/SRS/req-graphics-19-o-chu-nguoi-dung-them-va-cho-giu.md) · 1.7k
+- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-19: Ô chữ người dùng thêm và chỗ giữ dùng chung (D-60; đã chốt hướng, chưa làm)](docs/split/SRS/req-graphics-19-o-chu-nguoi-dung-them-va-cho-giu.md) · 2.4k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-AST-02: Automation tổng quát (D-50; 1.0 cho Reaper track + MIDI CC, các nguồn khác theo tệp mẫu)](docs/split/SRS/req-ast-02-automation-tong-quat-d-50-1-0-cho-rea.md) · 2.2k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04)](docs/split/SRS/3-4-dac-ta-8-widget-hud-br-02-br-03-br-04.md) · 0.4k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-WIDGET-01: Piano Roll](docs/split/SRS/req-widget-01-piano-roll.md) · 1.4k

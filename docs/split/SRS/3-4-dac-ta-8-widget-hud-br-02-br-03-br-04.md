@@ -5,7 +5,7 @@ section: "3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04)"
 chunk: 3-4-dac-ta-8-widget-hud-br-02-br-03-br-04.md
 source_lines: 559-562
-source_sha1: 38e49d98aa
+source_sha1: 3ec9c28927
 ids: [BR-02, BR-03, BR-04]
 ---
 ### 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04)

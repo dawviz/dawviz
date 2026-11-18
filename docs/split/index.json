@@ -4,7 +4,7 @@
  "docs": {
   "BRD.md": {
    "title": "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)",
-   "sha1": "bdfba51959",
+   "sha1": "463b8e497e",
    "chunks": [
     {
      "n": 0,
@@ -292,7 +292,7 @@
      "path": [
       "7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)"
      ],
-     "chars": 25947,
+     "chars": 25977,
      "lines": [
       201,
       270
@@ -405,7 +405,7 @@
      "path": [
       "8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)"
      ],
-     "chars": 5029,
+     "chars": 5583,
      "lines": [
       271,
       292
@@ -449,7 +449,7 @@
   },
   "SRS.md": {
    "title": "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)",
-   "sha1": "38e49d98aa",
+   "sha1": "3ec9c28927",
    "chunks": [
     {
      "n": 0,
@@ -1323,7 +1323,7 @@
       "3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02)",
       "REQ-GRAPHICS-19: Ô chữ người dùng thêm và chỗ giữ dùng chung (D-60; đã chốt hướng, chưa làm)"
      ],
-     "chars": 1710,
+     "chars": 2378,
      "lines": [
       537,
       545
