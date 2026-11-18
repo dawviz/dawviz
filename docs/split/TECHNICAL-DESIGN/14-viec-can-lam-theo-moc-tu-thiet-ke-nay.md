@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "14. Việc cần làm theo mốc (từ thiết kế này)"
 path: "14. Việc cần làm theo mốc (từ thiết kế này)"
 chunk: 14-viec-can-lam-theo-moc-tu-thiet-ke-nay.md
-source_lines: 483-490
-source_sha1: 9b40736009
+source_lines: 484-491
+source_sha1: 95f47009aa
 ids: []
 ---
 ## 14. Việc cần làm theo mốc (từ thiết kế này)

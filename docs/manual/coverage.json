@@ -32,11 +32,13 @@
         "locales/en.json#web.drop.",
         "locales/en.json#web.missing.",
         "locales/en.json#web.notices.",
-        "locales/en.json#web.sample"
+        "locales/en.json#web.sample",
+        "apps/web/src/components/SchemaPanel.tsx",
+        "locales/en.json#web.schema."
       ],
-      "uiHash": "1ffc11ab18c5",
-      "viHash": "d63406a68746",
-      "enHash": "251b73e642eb",
+      "uiHash": "92f59cdc0fbe",
+      "viHash": "35447ad4cb39",
+      "enHash": "1756e37dbc99",
       "coverHashes": {
         "apps/web/src/components/FileDrop.tsx": "79f582ef4296",
         "apps/web/src/components/MissingMidiPanel.tsx": "e23f856f4d3c",
@@ -44,7 +46,9 @@
         "locales/en.json#web.drop.": "0281a3609725",
         "locales/en.json#web.missing.": "1fb211bdffa6",
         "locales/en.json#web.notices.": "7eea093650ff",
-        "locales/en.json#web.sample": "4febfe1aa8cf"
+        "locales/en.json#web.sample": "4febfe1aa8cf",
+        "apps/web/src/components/SchemaPanel.tsx": "062b30243126",
+        "locales/en.json#web.schema.": "51dcff28e83b"
       }
     },
     "02-xem-truoc": {
@@ -61,11 +65,13 @@
         "locales/en.json#web.brightness.",
         "locales/en.json#web.styles.",
         "locales/en.json#web.song.",
-        "locales/en.json#web.loop"
+        "locales/en.json#web.loop",
+        "apps/web/src/components/TempoPanel.tsx",
+        "locales/en.json#web.tempo."
       ],
-      "uiHash": "7911599318bc",
-      "viHash": "a4e88ec94023",
-      "enHash": "4c17265e0b3c",
+      "uiHash": "7f4e4f534ffb",
+      "viHash": "8c0fdbb64641",
+      "enHash": "3fe3316c71ef",
       "coverHashes": {
         "apps/web/src/components/Transport.tsx": "81e2194963a6",
         "apps/web/src/components/VideoStyles.tsx": "4aa9c99f4358",
@@ -76,8 +82,10 @@
         "locales/en.json#web.track": "e06c4e497fcd",
         "locales/en.json#web.brightness.": "0cf9c6022fb9",
         "locales/en.json#web.styles.": "62927052e6df",
-        "locales/en.json#web.song.": "4df0603530e2",
-        "locales/en.json#web.loop": "8c94626e4227"
+        "locales/en.json#web.song.": "450cd586901d",
+        "locales/en.json#web.loop": "8c94626e4227",
+        "apps/web/src/components/TempoPanel.tsx": "32ea85e734b1",
+        "locales/en.json#web.tempo.": "79aed77bb06f"
       }
     },
     "03-chinh-sua": {
@@ -97,13 +105,13 @@
         "apps/web/src/components/WidgetSettings.tsx",
         "locales/en.json#web.ws."
       ],
-      "uiHash": "5efc9bfbf311",
-      "viHash": "9e7ceaed0648",
-      "enHash": "995f4ca7687d",
+      "uiHash": "b21ea3423f4e",
+      "viHash": "38f8444a79cb",
+      "enHash": "b13dc23172e5",
       "coverHashes": {
         "apps/web/src/components/Editor.tsx": "3c2efcd6169b",
         "apps/web/src/components/EditorOverlay.tsx": "3f83719e6d7e",
-        "apps/web/src/components/StylePanel.tsx": "e1783387a989",
+        "apps/web/src/components/StylePanel.tsx": "136a12f57f45",
         "locales/en.json#web.editor.": "24216caff19e",
         "locales/en.json#web.style.": "3f579d231537",
         "locales/en.json#web.glow.": "a02382b4889a",
@@ -123,17 +131,21 @@
         "apps/web/src/components/PresetSettings.tsx",
         "locales/en.json#web.settings.",
         "locales/en.json#web.theme.",
-        "locales/en.json#web.preset."
+        "locales/en.json#web.preset.",
+        "apps/web/src/components/SessionSettings.tsx",
+        "locales/en.json#web.session."
       ],
-      "uiHash": "af7b2b242dbd",
-      "viHash": "f2e807909438",
-      "enHash": "2d4759e06bf9",
+      "uiHash": "0629d40ebd0c",
+      "viHash": "549014ac1026",
+      "enHash": "2c5b92905e77",
       "coverHashes": {
         "apps/web/src/components/ThemeSelect.tsx": "f9b2c3746fbe",
         "apps/web/src/components/PresetSettings.tsx": "d88d3a829f7b",
         "locales/en.json#web.settings.": "41590aa5a512",
         "locales/en.json#web.theme.": "05a823a18b7d",
-        "locales/en.json#web.preset.": "1f83f333908b"
+        "locales/en.json#web.preset.": "1f83f333908b",
+        "apps/web/src/components/SessionSettings.tsx": "8711419ab156",
+        "locales/en.json#web.session.": "4240dbb1e528"
       }
     },
     "05-phim-tat": {

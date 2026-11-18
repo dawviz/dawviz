@@ -672,6 +672,7 @@ Nguyên tắc: mỗi widget mới chỉ phụ thuộc `t` và dữ liệu AST/ph
 * **Suy thoái khi thiếu dung lượng**: kiểm tra `navigator.storage.estimate()` định kỳ. Còn trống < 50 MB hoặc gặp `QuotaExceededError` thì chỉ lưu JSON trạng thái, bỏ Blob lớn và báo: "Bộ nhớ trình duyệt gần đầy: tệp âm thanh/dự án sẽ cần nạp lại ở phiên sau."
 * Khi mở lại, nếu phục hồi được Blob thì tự dựng lại phiên; nếu thiếu Blob thì hiển thị danh sách file cần nạp lại.
 * Ghi theo giao dịch; lỗi ghi không được làm mất bản lưu cuối còn hợp lệ.
+* **Đã làm (T-10, 2026-11-18):** bảng `workspace_state` (một bản `current`) và `blobs` (`source`, `audio`, `extra:<n>` cho `.mid` phụ). Blob chỉ ghi lại khi tập tệp đổi (chữ ký id+tên+cỡ); thay đổi chỉ ở bố cục thì chỉ ghi JSON. AST không lưu, luôn parse lại từ nguồn khi mở lại. Mở lại tự dựng phiên nếu còn Blob `source`; thiếu Blob thì nêu tên tệp cần nạp lại. `workspace` JSON gồm phong cách video, độ sáng, thứ tự/ẩn/solo track, offset âm thanh, bảng tempo gõ, schema nhị phân đã nạp; nạp lại luôn qua `sanitizeScene`/`sanitizeBrightness` và bỏ id track không còn.
 
 #### REQ-STORAGE-02: Preset giao diện (`.json`)
 Preset phải có `schemaVersion` và được kiểm tra schema khi nhập (kiểu, khoảng giá trị, danh sách `type` hợp lệ); trường lạ bị bỏ qua, giá trị sai bị đưa về mặc định kèm cảnh báo, preset không đọc được thì báo `ERR_PRESET_INVALID`. Ví dụ:
@@ -730,6 +731,8 @@ ProjectPack/
 ├── audio_track.*         # nếu có
 └── assets/               # ảnh nền, font (nếu có)
 ```
+
+**Đã làm (T-10, `apps/web/src/lib/projectPack.ts`):** `manifest.json` (`schemaVersion` **1.0.0**, `generator`, `createdAt`, `title`, `source.name`, `tempoOverride`, `audio {name, offsetMs}`, `files[] {path, size, sha256, role}`), `workspace_preset.json` (Scene), `workspace.json` (phần còn lại của tài liệu, kèm bảng tempo gõ), `overrides.json` (`{}` giữ chỗ cho hợp âm sửa tay), `source/<tên>`, `audio/<tên>`, `assets/<tên>`: `.mid` phụ của Reaper và schema nhị phân (`*.schema.json`). Nhập: kiểm cỡ tệp, số entry (400), tổng cỡ khai báo trước khi giải nén (600 MB), tỉ lệ (60:1), đường dẫn an toàn (không `..`, `/`, `\`, ổ đĩa, ký tự điều khiển), băm SHA-256 từng tệp khớp manifest, tệp ngoài manifest bị bỏ kèm `WARN_PACK_UNLISTED_FILE`. Phiên bản **chính** mới hơn → `ERR_SCHEMA_NEWER`; phụ/vá mới hơn → đọc được kèm `WARN_PACK_NEWER_MINOR`. Thiếu manifest/nguồn → `ERR_PACK_INVALID`; băm lệch → `ERR_PACK_HASH`.
 
 #### REQ-STORAGE-04: Phiên bản lược đồ và di trú
 Mỗi dữ liệu lưu (workspace, Preset, Project Pack) mang `schemaVersion`. Phiên bản mới hơn ứng dụng hiểu thì báo `ERR_SCHEMA_NEWER`; phiên bản cũ hơn thì tự di trú, giữ bản gốc đến khi di trú thành công.
@@ -1154,7 +1157,10 @@ Phiên bản đạt nghiệm thu khi vượt qua toàn bộ các kiểm thử sa
 | `ERR_AUDIO_TOO_MANY` | Số stem hoặc tổng thời lượng stem vượt giới hạn (REQ-AUDIO-01) | Gộp bớt stem (theo nhóm nhạc cụ) hoặc chỉ nạp stem của track cần hiện. |
 | `ERR_PRESET_INVALID` | Preset hỏng hoặc sai lược đồ: không phải JSON, không phải đối tượng, thiếu `schemaVersion`/`canvas`, phiên bản quá cũ (< 0.3), vượt giới hạn độ sâu (12), số nút (20 000), widget (64), độ dài chuỗi (4096) hoặc mảng (1024) | Dùng preset khác. |
 | `ERR_PRESET_TOO_LARGE` | Tệp preset lớn hơn 1 MiB (kiểm trước khi đọc, NFR-SEC-04) | Dùng preset nhỏ hơn. |
-| `ERR_SCHEMA_NEWER` | Dữ liệu từ phiên bản mới hơn (preset: phiên bản chính.phụ lớn hơn 0.4) | Cập nhật ứng dụng. |
+| `ERR_SCHEMA_NEWER` | Dữ liệu từ phiên bản mới hơn (preset: phiên bản chính.phụ lớn hơn 0.4; Project Pack: phiên bản chính lớn hơn 1) | Cập nhật ứng dụng. |
+| `ERR_PACK_INVALID` | Project Pack thiếu `manifest.json`, thiếu tệp dự án nguồn, manifest sai dạng hoặc nêu tệp không có trong gói | Xuất lại gói từ ứng dụng. |
+| `ERR_PACK_HASH` | Một tệp trong Project Pack không khớp băm SHA-256 trong manifest (gói hỏng hoặc bị sửa) | Lấy lại bản gốc của gói. |
+| `ERR_STORAGE_FAILED` | Không ghi được phiên vào IndexedDB (lỗi khác ngoài hết dung lượng) | Lưu Project Pack để giữ công việc. |
 | `ERR_NO_SUPPORTED_ENCODER` | Không có bộ mã hóa phù hợp (Tier 4) | Dùng Chrome/Edge bản mới trên Windows/macOS. |
 | `ERR_EXPORT_FAILED` | Export Worker lỗi bất ngờ | Thử lại; hạ độ phân giải hoặc dùng Export Range. |
 
@@ -1168,6 +1174,10 @@ Mọi cảnh báo có `details.path` (đường dẫn JSON, ví dụ `$.widgets[
 | `WARN_PRESET_WIDGET_UNKNOWN` | `type` không thuộc 8 loại hợp lệ | Bỏ widget đó |
 | `WARN_PRESET_UNSUPPORTED` | Tính năng chưa có ở bản này (ví dụ ảnh nền khi chưa có tài nguyên phiên, biến đổi 3D trước 1.1). Trong mã hiện tại còn gồm hướng dọc/góc tự do của Piano Roll (T-59) | Bỏ qua tính năng, vẽ như mặc định |
 | `WARN_PRESET_VERSION` | Phiên bản hiện tại (0.4) nhưng khác bản vá | Đọc theo phiên bản hiện tại |
+| `WARN_PACK_NEWER_MINOR` | Project Pack do bản mới hơn (cùng phiên bản chính) tạo ra; trường lạ bị bỏ | Cập nhật ứng dụng nếu thiếu tính năng. |
+| `WARN_PACK_UNLISTED_FILE` | Tệp trong gói không có trong manifest nên bị bỏ qua; `details.path` | Không cần làm gì. |
+| `WARN_PACK_AUDIO_MISSING` | Manifest nêu âm thanh nhưng gói không có tệp đó | Nạp lại âm thanh. |
+| `WARN_STORAGE_LOW` | Còn trống < 50 MB hoặc `QuotaExceededError`: chỉ lưu JSON, Blob cần nạp lại ở phiên sau | Giải phóng bộ nhớ hoặc lưu Project Pack. |
 | `WARN_PRESET_MIGRATED` | Preset 0.3.x được di trú lên 0.4.0 (thêm `layout.anchor` = tâm); `details.from`, `details.to` | Dùng bản đã di trú; lưu lại để giữ. Preset dựng sẵn đã ở 0.4.0 nên không báo |
 | `WARN_PRESET_UNSAFE_KEY` | Có khoá `__proto__`, `constructor` hoặc `prototype` ở bất kỳ độ sâu nào (NFR-SEC-04) | Bỏ khoá đó, giữ phần còn lại |
 

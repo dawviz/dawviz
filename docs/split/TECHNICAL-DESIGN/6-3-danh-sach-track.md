@@ -5,7 +5,7 @@ section: "6.3 Danh sách track 🟢"
 path: "6. Ứng dụng web và phát lại 🟡 > 6.3 Danh sách track 🟢"
 chunk: 6-3-danh-sach-track.md
 source_lines: 326-335
-source_sha1: 9b40736009
+source_sha1: 95f47009aa
 ids: [D-50, REQ-UI-14]
 ---
 ### 6.3 Danh sách track 🟢

@@ -45,6 +45,10 @@ Warnings don't stop you from working. Common ones:
 - **Some automation isn't read yet:** the picture is still right; only brightness that follows automation may be missing.
 - Warnings marked **[to be verified]** are places where the app had to guess how to read the file. If notes look off exactly there, please tell us, with the file if you can.
 
+## Formats that need a schema
+
+A file with an unknown extension, or a binary format with no built-in reader (for example `.flp`, `.bwproject`), shows the **This format needs a schema** box. Press **Load schema** and choose a `.json` file that describes your file's structure ([how to write a schema](https://github.com/dawviz/dawviz/blob/main/schemas/README.md)). The schema is checked before use; if it doesn't match, the app says so and the file isn't read. Press **Remove** to unload a schema. Schemas travel with the project pack when you save one.
+
 ## No notes at all
 
 If the file opens but no notes are found:

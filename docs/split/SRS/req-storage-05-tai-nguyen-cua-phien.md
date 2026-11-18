@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-STORAGE-05: Tài nguyên của phiên"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) > REQ-STORAGE-05: Tài nguyên của phiên"
 chunk: req-storage-05-tai-nguyen-cua-phien.md
-source_lines: 886-888
-source_sha1: 70383ef52c
+source_lines: 889-891
+source_sha1: b0fe5ff302
 ids: [ERR_ASSET_DECODE, ERR_ASSET_TOO_LARGE, REQ-STORAGE-05]
 ---
 #### REQ-STORAGE-05: Tài nguyên của phiên

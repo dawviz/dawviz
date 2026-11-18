@@ -64,7 +64,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [REQ-AUDIO-01: Âm thanh theo track (stem), bản 1.2](SRS/req-audio-01-am-thanh-theo-track-stem-ban-1-2.md) · 3254 ký tự
 - [REQ-WIDGET-08: Progress Bar (D-27)](SRS/req-widget-08-progress-bar-d-27.md) · 822 ký tự
 - [3.4b. Đề xuất widget và dữ liệu hiển thị bổ sung (D-32, OI-11) **[ĐỀ XUẤT, chưa cam kết v1.0]**](SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md) · 2994 ký tự
-- [3.5. Lưu trữ, cấu hình & đóng gói (BR-05, D-11)](SRS/3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md) · 3208 ký tự
+- [3.5. Lưu trữ, cấu hình & đóng gói (BR-05, D-11)](SRS/3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md) · 4696 ký tự
 - [REQ-CAP-01: Phát hiện khả năng của trình duyệt (R-06, D-05)](SRS/req-cap-01-phat-hien-kha-nang-cua-trinh-duyet-r.md) · 413 ký tự
 - [REQ-EXPORT-00: Pre-flight (R-01, D-17)](SRS/req-export-00-pre-flight-r-01-d-17.md) · 2606 ký tự
 - [REQ-EXPORT-01: Xung nhịp khung hình độc lập](SRS/req-export-01-xung-nhip-khung-hinh-doc-lap.md) · 502 ký tự
@@ -93,8 +93,8 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [6. MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU](SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md) · 1419 ký tự
 - [7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO](SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md) · 6665 ký tự
 - [8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS](SRS/8-cac-van-de-con-mo-cua-srs.md) · 4032 ký tự
-- [Phụ lục A: Mã lỗi](SRS/phu-luc-a-ma-loi.md) · 2383 ký tự
-- [Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)](SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md) · 1151 ký tự
+- [Phụ lục A: Mã lỗi](SRS/phu-luc-a-ma-loi.md) · 2854 ký tự
+- [Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)](SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md) · 1673 ký tự
 - [Phụ lục A2: Mã cảnh báo của Parser Library](SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md) · 1331 ký tự
 - [Phụ lục B: Ghi chú rà soát](SRS/phu-luc-b-ghi-chu-ra-soat.md) · 2889 ký tự
 
@@ -145,7 +145,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [7.2 Quyết định kỹ thuật](TECHNICAL-DESIGN/7-2-quyet-dinh-ky-thuat.md) · 947 ký tự
 - [7.3 Phần lõi thuần đã làm (T-09, 2026-11-14)](TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md) · 1745 ký tự
 - [7.4 Export Worker và giao diện (T-09, 2026-11-14)](TECHNICAL-DESIGN/7-4-export-worker-va-giao-dien-t-09-2026-11-14.md) · 8203 ký tự
-- [8. Lưu trữ ⚪ (M4)](TECHNICAL-DESIGN/8-luu-tru-m4.md) · 1035 ký tự
+- [8. Lưu trữ 🟢 (M4, T-10)](TECHNICAL-DESIGN/8-luu-tru-m4-t-10.md) · 1704 ký tự
 - [9. Đa ngôn ngữ 🟢](TECHNICAL-DESIGN/9-da-ngon-ngu.md) · 492 ký tự
 - [10. Lỗi, ghi nhật ký, quan sát](TECHNICAL-DESIGN/10-loi-ghi-nhat-ky-quan-sat.md) · 470 ký tự
 - [11. Hiệu năng và bộ nhớ (ngân sách)](TECHNICAL-DESIGN/11-hieu-nang-va-bo-nho-ngan-sach.md) · 885 ký tự

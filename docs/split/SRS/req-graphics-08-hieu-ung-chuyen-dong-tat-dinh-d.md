@@ -5,7 +5,7 @@ section: "REQ-GRAPHICS-08: Hiệu ứng chuyển động tất định (D-37)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-08: Hiệu ứng chuyển động tất định (D-37)"
 chunk: req-graphics-08-hieu-ung-chuyen-dong-tat-dinh-d.md
 source_lines: 485-489
-source_sha1: 70383ef52c
+source_sha1: b0fe5ff302
 ids: [D-37, REQ-GRAPHICS-08]
 ---
 #### REQ-GRAPHICS-08: Hiệu ứng chuyển động tất định (D-37)

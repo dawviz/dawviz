@@ -11,6 +11,6 @@ export interface ProjectTrack {
 }
 export interface TempoPoint { tick: number; timeSeconds: number; bpm: number; timeSigNumerator?: number; timeSigDenominator?: number }
 export interface UnifiedProjectAST {
-  meta: { title: string; artist?: string; totalDurationSeconds: number; totalTicks: number; internalPPQ: number };
+  meta: { title: string; artist?: string; totalDurationSeconds: number; totalTicks: number; internalPPQ: number; /** Nguồn tempo (REQ-PARSER-07): 'file' | 'midi-default' | 'fallback' | 'user'. */ tempoSource?: string };
   tempoMap: TempoPoint[]; tracks: ProjectTrack[];
 }

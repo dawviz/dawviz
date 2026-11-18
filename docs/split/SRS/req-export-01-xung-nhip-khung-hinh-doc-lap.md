@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-EXPORT-01: Xung nhịp khung hình độc lập"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-EXPORT-01: Xung nhịp khung hình độc lập"
 chunk: req-export-01-xung-nhip-khung-hinh-doc-lap.md
-source_lines: 765-770
-source_sha1: 70383ef52c
+source_lines: 768-773
+source_sha1: b0fe5ff302
 ids: [REQ-EXPORT-01, REQ-GRAPHICS-05]
 ---
 #### REQ-EXPORT-01: Xung nhịp khung hình độc lập

@@ -66,11 +66,11 @@ export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], a
           <TickField label={i18n.t('web.playhead.show')} checked={playhead.visible} onChange={playhead.onVisible} reference={playhead.visibleRef} testId="playhead-visible" />
           {/* Bàn phím bật: vạch phát ghim ở mép bàn phím (Render Core bỏ qua tỉ lệ), nên khoá ô và nói lý do ngay bên dưới. Giá trị vẫn giữ để dùng lại khi tắt bàn phím. */}
           {/* Lý do khoá: chú thích khi rê chuột + chữ ẩn cho trình đọc màn hình (giải thích dài nằm trong hướng dẫn sử dụng). */}
-          <div title={keyboard.enabled ? i18n.t('web.playhead.locked') : undefined}>
+          {playhead.visible && <div title={keyboard.enabled ? i18n.t('web.playhead.locked') : undefined}>
             <Slider id="st-playhead" label={i18n.t('web.playhead.position')} value={Math.round(playhead.ratio * 100)} min={5} max={95} step={1} reset={playhead.reference === undefined ? undefined : Math.round(playhead.reference * 100)}
               disabled={keyboard.enabled} describedBy={keyboard.enabled ? lockId : undefined} onChange={(v) => playhead.onChange(v / 100)} />
-          </div>
-          {keyboard.enabled && <p id={lockId} className="sr-only" data-testid="playhead-locked">{i18n.t('web.playhead.locked')}</p>}
+          </div>}
+          {playhead.visible && keyboard.enabled && <p id={lockId} className="sr-only" data-testid="playhead-locked">{i18n.t('web.playhead.locked')}</p>}
         </>}
       </div>
     </div>

@@ -13,6 +13,14 @@ import { AppearanceSettings, ThemeToggle, useTheme } from './components/ThemeSel
 import { FileDrop, type Picked } from './components/FileDrop.tsx';
 import { Notices } from './components/Notices.tsx';
 import { MissingMidiPanel } from './components/MissingMidiPanel.tsx';
+import { TempoPanel } from './components/TempoPanel.tsx';
+import { SchemaPanel } from './components/SchemaPanel.tsx';
+import { sanitizeDraft, type TempoDraft, type TempoOverride } from './lib/tempoRows.ts';
+import { SessionSettings, type SaveState } from './components/SessionSettings.tsx';
+import { AUTOSAVE_DELAY_MS, createDebounced, createSaver, dexieBackend, restoreWorkspace, type Backend } from './lib/workspaceStore.ts';
+import { applyWorkspace, toWorkspaceJson } from './lib/docSnapshot.ts';
+import { downloadBytes, packOf, sessionFromPack, snapshotOf, type SessionData, type SessionParts } from './lib/session.ts';
+import { PACK_LIMITS, PackError } from './lib/projectPack.ts';
 import { Stage } from './components/Stage.tsx';
 import { Transport } from './components/Transport.tsx';
 import { TrackPanel, TrackLayoutBar, DEFAULT_TRACK_LAYOUT, isShown, type TrackLayout } from './components/TrackPanel.tsx';
@@ -34,7 +42,7 @@ import { peaksInWorker } from './lib/audioWorkers.ts';
 import { CUSTOM_STYLE, initialDoc, pianoOf, type Doc } from './lib/commands.ts';
 import { GestureContext, useStoreState } from './lib/storeReact.ts';
 import { bindUndoKeys, shortcutLabels } from './lib/undoKeys.ts';
-import { downloadPreset, readPresetFile } from './lib/presetFile.ts';
+import { downloadPreset, presetFileName, readPresetFile } from './lib/presetFile.ts';
 import { useFontsStatus } from './lib/fonts.ts';
 import { projectKey, styleThumbnail } from './lib/thumbnails.ts';
 import { Facts, InspectorSection } from './components/Inspector.tsx';
@@ -101,6 +109,7 @@ export function App() {
 
   // T-08: tệp âm thanh mix là tài nguyên của phiên (không nằm trong Doc/lịch sử); offset thì thuộc dự án (Doc.audioOffsetMs, hoàn tác được).
   const [audio, setAudio] = useState<AudioAsset | null>(null);
+  const [audioFile, setAudioFile] = useState<File | null>(null); // tệp gốc: để lưu phiên/Project Pack (asset đã giải mã không ghi lại được)
   const [peaks, setPeaks] = useState<Float32Array | null>(null);
   const [audioBusy, setAudioBusy] = useState(false);
   const [audioError, setAudioError] = useState<{ code: string; message: string; details?: Record<string, unknown> } | null>(null);
@@ -110,7 +119,7 @@ export function App() {
   const playDuration = Math.max(duration, audio ? Math.max(0, offsetMs / 1000 + audio.durationSec) : 0);
   useEffect(() => { playback.setDuration(playDuration); }, [playback, playDuration]);
   useEffect(() => { playback.setAudioOffset(offsetMs); }, [playback, offsetMs]);
-  const dropAudio = useCallback(() => { audioGate.begin(); playback.attachAudio(null); setAudio(null); setPeaks(null); setAudioBusy(false); }, [audioGate, playback]);
+  const dropAudio = useCallback(() => { audioGate.begin(); playback.attachAudio(null); setAudio(null); setAudioFile(null); setPeaks(null); setAudioBusy(false); }, [audioGate, playback]);
   const onLoadAudio = useCallback(async (file: File) => {
     const ticket = audioGate.begin();
     // Bỏ buffer cũ TRƯỚC khi giải mã tệp mới (đỉnh bộ nhớ, §6.2.1).
@@ -118,7 +127,7 @@ export function App() {
     try {
       const asset = await loadAudioAsset(file, browserDeps);
       if (!audioGate.isLatest(ticket)) return;
-      setAudio(asset); playback.attachAudio(asset.buffer);
+      setAudio(asset); setAudioFile(file); playback.attachAudio(asset.buffer);
       void peaksInWorker(asset.id, asset.buffer).then((p) => { if (audioGate.isLatest(ticket)) setPeaks(p); }).catch(() => {}); // không có sóng âm vẫn phát được
     } catch (e) {
       if (!audioGate.isLatest(ticket)) return;
@@ -169,29 +178,132 @@ export function App() {
 
   // T-02: chọn tệp mới khi tệp cũ đang parse -> chỉ kết quả của lần chọn mới nhất được áp dụng; busy chỉ tắt khi lần mới nhất xong.
   const gate = useRef(createLatestGate()).current;
-  const onPick = useCallback(async ({ main, extras }: Picked) => {
+  // `opts.keep`: phân tích lại cùng dự án vì đổi tempo/schema: giữ nguyên tài liệu (ẩn/solo, độ sáng, âm thanh, lịch sử), id track không đổi.
+  // Không có `opts` (chọn tệp mới) thì xoá ghi đè tempo và schema của dự án cũ.
+  const [tempo, setTempo] = useState<{ override: TempoOverride; draft: TempoDraft } | null>(null);
+  const [schemas, setSchemas] = useState<{ name: string; schema: object }[]>([]);
+  const [needsSchema, setNeedsSchema] = useState(false);
+  const load = useCallback(async ({ main, extras }: Picked, opts?: { keep?: boolean; tempo?: TempoOverride | null; schemas?: { name: string; schema: object }[]; restore?: (ast: UnifiedProjectAST) => void }) => {
     const ticket = gate.begin();
-    setBusy(true); setFailure(null); setSource({ main, extras });
+    setBusy(true); setFailure(null); setSource({ main, extras }); setNeedsSchema(false);
+    let ok = false;
+    const sch = opts?.schemas ?? [];
+    if (!opts) { setTempo(null); setSchemas([]); }
     try {
       const files: Record<string, ArrayBuffer> = {};
       for (const f of extras) files[f.name] = await f.arrayBuffer();
-      const r = await parseInWorker({ name: main.name, buffer: await main.arrayBuffer(), files });
-      if (!gate.isLatest(ticket)) return;
+      const r = await parseInWorker({ name: main.name, buffer: await main.arrayBuffer(), files, ...(opts?.tempo != null ? { tempoOverride: opts.tempo } : {}), ...(sch.length ? { schemas: sch.map((x) => x.schema) } : {}) });
+      if (!gate.isLatest(ticket)) return false;
       setLoaded({ name: main.name, ast: r.ast, warnings: r.warnings, format: r.format, ms: r.ms }); setMidi(r.midi);
+      ok = true;
+      if (opts?.keep) return true;
       // Nạp dự án mới: lịch sử hoàn tác bắt đầu trống (id track đổi nên lệnh cũ hết nghĩa). Scene và thiết lập đã lưu giữ nguyên trong store.
       dropAudio();
-      store.reset({ ...store.get(), audioOffsetMs: 0, brightness: Object.fromEntries(r.ast.tracks.map((t) => [t.id, { ...DEFAULT_BRIGHTNESS } as BrightnessConfig])), order: r.ast.tracks.map((t) => t.id), hidden: [], solo: [] });
+      if (opts?.restore) opts.restore(r.ast);
+      else store.reset({ ...store.get(), audioOffsetMs: 0, brightness: Object.fromEntries(r.ast.tracks.map((t) => [t.id, { ...DEFAULT_BRIGHTNESS } as BrightnessConfig])), order: r.ast.tracks.map((t) => t.id), hidden: [], solo: [] });
       setNotice(null);
       playback.reset(r.ast.meta.totalDurationSeconds);
       setTab('preview');
     } catch (e) {
-      if (!gate.isLatest(ticket)) return;
+      if (!gate.isLatest(ticket)) return false;
       // Nạp lỗi khi đang mở một dự án: giữ dự án đó (không mất ẩn/hiện, solo, thứ tự), chỉ báo lỗi phía trên sân khấu.
       const f = e as ParseFailure; setMidi(f.midi);
       setFailure({ code: f.code ?? 'ERR_UNKNOWN', message: f.message, details: f.details });
+      // Đuôi lạ hoặc nhị phân chưa hỗ trợ: mời nạp schema (probeProject.needs.schema). Lỗi từ chính schema đã nạp thì vẫn để người dùng đổi schema.
+      setNeedsSchema(f.code === 'ERR_UNSUPPORTED_FORMAT' || f.code === 'ERR_SCHEMA_INVALID' || sch.length > 0);
       setLoaded((prev) => { if (!prev) playback.reset(0); return prev; });
     } finally { if (gate.isLatest(ticket)) setBusy(false); }
+    return ok;
   }, [gate, playback, store, dropAudio]);
+  const onPick = useCallback((p: Picked) => { void load(p); }, [load]);
+  const reparse = useCallback((next: { tempo?: { override: TempoOverride; draft: TempoDraft } | null; schemas?: { name: string; schema: object }[] }) => {
+    if (!source) return;
+    const t = next.tempo === undefined ? tempo : next.tempo, sc = next.schemas ?? schemas;
+    setTempo(t); setSchemas(sc);
+    void load(source, { keep: !!loaded, tempo: t?.override ?? null, schemas: sc });
+  }, [source, tempo, schemas, loaded, load]);
+
+  // ── Phiên làm việc (T-10): tự lưu IndexedDB (REQ-STORAGE-01), mở lại phiên, Project Pack (REQ-STORAGE-03) ──
+  const [sessionProblems, setSessionProblems] = useState<Problem[]>([]);
+  const [saveState, setSaveState] = useState<SaveState>({ kind: 'idle' });
+  const [missingFiles, setMissingFiles] = useState<string[]>([]);
+  const backend = useMemo<Backend | null>(() => (typeof indexedDB === 'undefined' ? null : dexieBackend()), []);
+  const saver = useMemo(() => (backend ? createSaver(backend) : null), [backend]);
+  const parts: SessionParts | null = useMemo(() => (loaded && source ? {
+    title: loaded.ast.meta.title || loaded.name, source: source.main, extras: source.extras, schemas, tempo, scene: doc.scene,
+    workspace: toWorkspaceJson(doc, tempo?.draft), audio: audioFile, audioOffsetMs: doc.audioOffsetMs,
+  } : null), [loaded, source, schemas, tempo, doc, audioFile]);
+  const debounced = useRef<ReturnType<typeof createDebounced<SessionParts>> | null>(null);
+  useEffect(() => {
+    if (!saver) return;
+    const d = createDebounced<SessionParts>(async (p) => {
+      try {
+        const est = await navigator.storage?.estimate?.().catch(() => null);
+        const r = await saver.save(await snapshotOf(p), est);
+        setSaveState(r.ok ? (r.degraded ? { kind: 'degraded' } : { kind: 'saved', at: Date.now() }) : { kind: 'failed' });
+      } catch { setSaveState({ kind: 'failed' }); }
+    }, AUTOSAVE_DELAY_MS);
+    debounced.current = d;
+    return () => { void d.flush(); debounced.current = null; };
+  }, [saver]);
+  useEffect(() => { if (parts) debounced.current?.push(parts); }, [parts]);
+
+  const openSession = useCallback(async (s: SessionData) => {
+    setSessionProblems([]);
+    setTempo(s.tempo); setSchemas(s.schemas);
+    const ok = await load({ main: s.source, extras: s.extras }, { tempo: s.tempo?.override ?? null, schemas: s.schemas, restore: (ast) => {
+      try {
+        const a = applyWorkspace(store.get(), s.scene, s.workspace, ast.tracks.map((t) => t.id));
+        store.reset(a.doc);
+        setPresetProblems(a.warnings.map((w) => describeProblem(i18n, 'warning', w.code, w.message, w.details as Record<string, unknown>)));
+        setPresetOpened(null);
+      } catch (e) {
+        const f = e as { code?: string; message?: string; details?: Record<string, unknown> };
+        setSessionProblems([describeProblem(i18n, 'error', f.code?.startsWith('ERR_') ? f.code : 'ERR_PRESET_INVALID', f.message, f.details)]);
+      }
+    } });
+    if (ok && s.audio) { await onLoadAudio(s.audio.file); }
+    return ok;
+  }, [load, store, i18n, onLoadAudio]);
+
+  // openSession đổi theo ngôn ngữ (i18n): giữ bản mới nhất trong ref để hiệu ứng khôi phục chỉ chạy một lần.
+  const openRef = useRef(openSession); openRef.current = openSession;
+  // Mở lại trang: dựng lại phiên từ kho nếu còn tệp dự án; thiếu Blob thì nêu tệp cần nạp lại. AST không lưu: luôn parse lại từ nguồn.
+  useEffect(() => {
+    if (!backend) return;
+    let live = true;
+    void (async () => {
+      const r = await restoreWorkspace(backend);
+      if (!live || !r) return;
+      const src = r.blobs.find((b) => b.id === 'source');
+      setMissingFiles(r.missing.map((m) => m.name));
+      if (!src) return;
+      const file = (b: { name: string; data: Uint8Array }) => new File([b.data.slice().buffer as ArrayBuffer], b.name);
+      const ws = (r.state.workspace ?? {}) as { schemas?: unknown; tempoDraft?: unknown };
+      const schemasIn = (Array.isArray(ws.schemas) ? ws.schemas : []).filter((x): x is { name: string; schema: object } => !!x && typeof (x as { schema?: unknown }).schema === 'object' && (x as { schema?: unknown }).schema !== null).slice(0, 8);
+      const audioBlob = r.blobs.find((b) => b.id === 'audio');
+      await openRef.current({
+        source: file(src), extras: r.blobs.filter((b) => b.id.startsWith('extra:')).map(file), schemas: schemasIn,
+        tempo: r.state.tempoOverride !== undefined ? { override: r.state.tempoOverride, draft: sanitizeDraft(ws.tempoDraft) } : null,
+        scene: r.state.scene, workspace: r.state.workspace, ...(audioBlob ? { audio: { file: file(audioBlob), offsetMs: r.state.audioOffsetMs } } : {}),
+      });
+    })().catch(() => { /* kho hỏng hoặc bị chặn: dùng như phiên mới */ });
+    return () => { live = false; };
+  }, [backend]);
+
+  const onSavePack = useCallback(async () => { if (parts) downloadBytes(await packOf(parts, new Date()), `${presetFileName(parts.title).replace(/\.json$/, '')}.dawviz.zip`); }, [parts]);
+  const onOpenPack = useCallback(async (file: File) => {
+    try {
+      if (file.size > PACK_LIMITS.maxFileBytes) throw new PackError('ERR_ARCHIVE_TOO_LARGE', `${file.size} > ${PACK_LIMITS.maxFileBytes}`);
+      const { data, warnings } = await sessionFromPack(new Uint8Array(await file.arrayBuffer()));
+      const ok = await openSession(data);
+      if (ok) setSessionProblems((p) => [...p, ...warnings.map((w) => describeProblem(i18n, 'warning', w.code, w.message, w.details))]);
+    } catch (e) {
+      const f = e as { code?: string; message?: string; details?: Record<string, unknown> };
+      setSessionProblems([describeProblem(i18n, 'error', f.code?.startsWith('ERR_') ? f.code : 'ERR_PACK_INVALID', f.message, f.details)]);
+    }
+  }, [openSession, i18n]);
+  const onDiscard = useCallback(async () => { try { await backend?.clear(); saver?.reset(); setSaveState({ kind: 'idle' }); setMissingFiles([]); } catch { /* không xoá được: bỏ qua */ } }, [backend, saver]);
   // Dự án mẫu đi kèm bản demo (tự tạo, công khai): để người xem thử ngay không cần có sẵn tệp DAW.
   const onSample = useCallback(async () => {
     try {
@@ -202,7 +314,7 @@ export function App() {
   }, [onPick]);
 
   const midiLevel = missingMidiLevel(midi, !!failure);
-  const addMidi = useCallback((files: File[]) => { if (source) void onPick({ main: source.main, extras: mergeExtras(source.extras, files) }); }, [source, onPick]);
+  const addMidi = useCallback((files: File[]) => { if (source) void load({ main: source.main, extras: mergeExtras(source.extras, files) }, { tempo: tempo?.override ?? null, schemas }); }, [source, load, tempo, schemas]);
 
   const [presetProblems, setPresetProblems] = useState<Problem[]>([]);
   const [presetOpened, setPresetOpened] = useState<string | null>(null);
@@ -214,7 +326,7 @@ export function App() {
       const p = describeProblem(i18n, 'error', failure.code, failure.message, failure.details);
       out.push(loaded ? { ...p, text: `${i18n.t('web.failedKeep')} ${p.text}` } : p);
     }
-    out.push(...presetProblems);
+    out.push(...presetProblems, ...sessionProblems);
     if (audioError) out.push(describeProblem(i18n, 'error', audioError.code, audioError.message, audioError.details));
     if (audio && loaded) {
       const c = audioLengthCheck(audio.durationSec, duration, offsetMs / 1000);
@@ -225,7 +337,7 @@ export function App() {
     }
     for (const w of loaded?.warnings ?? []) if (!covered(w.code)) out.push(describeProblem(i18n, 'warning', w.code, w.message, w.details));
     return out;
-  }, [failure, loaded, i18n, midi, presetProblems, audioError, audio, duration, offsetMs]);
+  }, [failure, loaded, i18n, midi, presetProblems, sessionProblems, audioError, audio, duration, offsetMs]);
 
   const patchBrightness = useCallback((id: string, patch: Partial<BrightnessConfig>) => run((d) => {
     // Một trường được sửa thì giữ trường đó, đẩy trường đối diện (sàn/trần dB, min/max độ sáng).
@@ -317,12 +429,14 @@ export function App() {
     playback, tempoMap: loaded.ast.tempoMap, layout: trackLayout, advanced: showAdv('tracks'), view,
     onToggleHidden, onToggleSolo, onMove, onToggleAllHidden, onClearSolo, onPaint, gesture,
   };
+  const tempoSource = (loaded?.ast.meta.tempoSource ?? 'file');
   const tempoText = (() => {
     const bpms = loaded?.ast.tempoMap.map((p) => p.bpm) ?? [];
     if (!bpms.length) return i18n.t('web.stage.noTempo');
     const f = (v: number) => i18n.number(v, { maximumFractionDigits: 2 });
     const lo = Math.min(...bpms), hi = Math.max(...bpms);
-    return lo === hi ? i18n.t('web.song.tempo.one', { bpm: f(lo) }) : i18n.t('web.song.tempo.range', { min: f(lo), max: f(hi) });
+    const txt = lo === hi ? i18n.t('web.song.tempo.one', { bpm: f(lo) }) : i18n.t('web.song.tempo.range', { min: f(lo), max: f(hi) });
+    return tempoSource === 'user' ? i18n.t('web.song.tempo.user', { tempo: txt }) : txt;
   })();
 
   // Chiều rộng khung xem trước theo chỗ còn lại thật trong vùng cuộn giữa (lib/useStageWidth.ts).
@@ -384,6 +498,10 @@ export function App() {
           [i18n.t('web.song.notes'), i18n.number(loaded.ast.tracks.reduce((n2, t) => n2 + t.notes.length, 0))],
           ...(advanced ? [[i18n.t('web.song.read'), i18n.t('web.song.readValue', { ms: Math.round(loaded.ms) })] as [string, React.ReactNode]] : []),
         ]} />
+        {(advanced || tempoSource !== 'file') && (
+          <TempoPanel key={`${loaded.name}:${tempo ? 1 : 0}`} source={tempoSource} draft={tempo?.draft ?? null} overridden={!!tempo} busy={busy} advanced={advanced}
+            onApply={(override, draft) => reparse({ tempo: { override, draft } })} onClear={() => reparse({ tempo: null })} />
+        )}
         <AudioPanel audio={audio ? { name: audio.name, durationSec: audio.durationSec } : null} busy={audioBusy} offsetMs={offsetMs} showOffset={showAdv('song')}
           onLoad={onLoadAudio} onRemove={dropAudio} onOffset={(ms) => run((d) => Cmds.setAudioOffset(d, ms))} />
       </InspectorSection>
@@ -409,6 +527,7 @@ export function App() {
       <div ref={scrollerRef} className="relative min-h-0 min-w-0 overflow-y-auto bg-page p-6">
         <div className={`space-y-4 ${loaded ? '' : 'mx-auto max-w-2xl pt-10'}`}>
           {midi && midiLevel && <MissingMidiPanel info={midi} level={midiLevel} busy={busy} onAdd={addMidi} />}
+          {needsSchema && source && <SchemaPanel schemas={schemas} busy={busy} onAdd={(schema) => reparse({ schemas: [...schemas, { name: String((schema as { name?: unknown; id?: unknown }).name ?? (schema as { id?: unknown }).id ?? 'schema').slice(0, 60), schema }] })} onRemove={(i) => reparse({ schemas: schemas.filter((_, k) => k !== i) })} />}
           {!loaded && <FileDrop onPick={onPick} busy={busy} slim={!!(midi && midiLevel)} onSample={onSample} />}
           <Notices problems={problems} basic={!advanced} />
         </div>
@@ -459,6 +578,9 @@ export function App() {
             </InspectorSection>
             <InspectorSection n={3} id="preset" title={i18n.t('web.settings.preset')}>
               <PresetSettings onOpen={onOpenPreset} onSave={() => downloadPreset(scene)} problems={presetProblems} opened={presetOpened} />
+            </InspectorSection>
+            <InspectorSection n={4} id="session" title={i18n.t('web.session.title')}>
+              <SessionSettings hasProject={!!parts} busy={busy} state={saveState} missing={missingFiles} onSavePack={() => void onSavePack()} onOpenPack={(f) => void onOpenPack(f)} onDiscard={() => void onDiscard()} />
             </InspectorSection>
           </div>
         </div>

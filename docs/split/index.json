@@ -449,7 +449,7 @@
   },
   "SRS.md": {
    "title": "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)",
-   "sha1": "70383ef52c",
+   "sha1": "b0fe5ff302",
    "chunks": [
     {
      "n": 0,
@@ -1626,21 +1626,25 @@
       "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS)",
       "3.5. Lưu trữ, cấu hình & đóng gói (BR-05, D-11)"
      ],
-     "chars": 3208,
+     "chars": 4696,
      "lines": [
       667,
-      736
+      739
      ],
      "ids": [
       "BR-05",
       "D-11",
+      "ERR_PACK_HASH",
+      "ERR_PACK_INVALID",
       "ERR_PRESET_INVALID",
       "ERR_SCHEMA_NEWER",
       "REQ-PARSER-00",
       "REQ-STORAGE-01",
       "REQ-STORAGE-02",
       "REQ-STORAGE-03",
-      "REQ-STORAGE-04"
+      "REQ-STORAGE-04",
+      "WARN_PACK_NEWER_MINOR",
+      "WARN_PACK_UNLISTED_FILE"
      ]
     },
     {
@@ -1654,8 +1658,8 @@
      ],
      "chars": 413,
      "lines": [
-      739,
-      741
+      742,
+      744
      ],
      "ids": [
       "D-05",
@@ -1674,8 +1678,8 @@
      ],
      "chars": 2606,
      "lines": [
-      742,
-      764
+      745,
+      767
      ],
      "ids": [
       "D-17",
@@ -1697,8 +1701,8 @@
      ],
      "chars": 502,
      "lines": [
-      765,
-      770
+      768,
+      773
      ],
      "ids": [
       "REQ-EXPORT-01",
@@ -1716,8 +1720,8 @@
      ],
      "chars": 192,
      "lines": [
-      771,
-      773
+      774,
+      776
      ],
      "ids": [
       "REQ-EXPORT-02"
@@ -1734,8 +1738,8 @@
      ],
      "chars": 1276,
      "lines": [
-      774,
-      779
+      777,
+      782
      ],
      "ids": [
       "AT-03",
@@ -1756,8 +1760,8 @@
      ],
      "chars": 845,
      "lines": [
-      780,
-      784
+      783,
+      787
      ],
      "ids": [
       "D-04",
@@ -1776,8 +1780,8 @@
      ],
      "chars": 466,
      "lines": [
-      785,
-      787
+      788,
+      790
      ],
      "ids": [
       "REQ-EXPORT-05"
@@ -1794,8 +1798,8 @@
      ],
      "chars": 1793,
      "lines": [
-      788,
-      814
+      791,
+      817
      ],
      "ids": [
       "D-05",
@@ -1816,8 +1820,8 @@
      ],
      "chars": 2121,
      "lines": [
-      815,
-      826
+      818,
+      829
      ],
      "ids": [
       "D-47",
@@ -1835,8 +1839,8 @@
      ],
      "chars": 946,
      "lines": [
-      827,
-      836
+      830,
+      839
      ],
      "ids": [
       "ARC-02",
@@ -1856,8 +1860,8 @@
      ],
      "chars": 2714,
      "lines": [
-      837,
-      851
+      840,
+      854
      ],
      "ids": [
       "BR-09",
@@ -1876,8 +1880,8 @@
      ],
      "chars": 328,
      "lines": [
-      852,
-      855
+      855,
+      858
      ],
      "ids": [
       "AD-08",
@@ -1902,8 +1906,8 @@
      ],
      "chars": 844,
      "lines": [
-      856,
-      859
+      859,
+      862
      ],
      "ids": [
       "REQ-GRAPHICS-09"
@@ -1920,8 +1924,8 @@
      ],
      "chars": 467,
      "lines": [
-      860,
-      862
+      863,
+      865
      ],
      "ids": [
       "AD-11",
@@ -1941,8 +1945,8 @@
      ],
      "chars": 327,
      "lines": [
-      863,
-      865
+      866,
+      868
      ],
      "ids": [
       "REQ-GRAPHICS-11"
@@ -1959,8 +1963,8 @@
      ],
      "chars": 529,
      "lines": [
-      866,
-      868
+      869,
+      871
      ],
      "ids": [
       "REQ-GRAPHICS-12"
@@ -1977,8 +1981,8 @@
      ],
      "chars": 339,
      "lines": [
-      869,
-      871
+      872,
+      874
      ],
      "ids": [
       "REQ-GRAPHICS-13"
@@ -1995,8 +1999,8 @@
      ],
      "chars": 759,
      "lines": [
-      872,
-      876
+      875,
+      879
      ],
      "ids": [
       "P-04",
@@ -2019,8 +2023,8 @@
      ],
      "chars": 1874,
      "lines": [
-      877,
-      885
+      880,
+      888
      ],
      "ids": [
       "D-47",
@@ -2040,8 +2044,8 @@
      ],
      "chars": 322,
      "lines": [
-      886,
-      888
+      889,
+      891
      ],
      "ids": [
       "ERR_ASSET_DECODE",
@@ -2060,8 +2064,8 @@
      ],
      "chars": 444,
      "lines": [
-      889,
-      891
+      892,
+      894
      ],
      "ids": [
       "D-14",
@@ -2079,8 +2083,8 @@
      ],
      "chars": 5167,
      "lines": [
-      892,
-      938
+      895,
+      941
      ],
      "ids": [
       "ARC-07",
@@ -2131,8 +2135,8 @@
      ],
      "chars": 4893,
      "lines": [
-      941,
-      978
+      944,
+      981
      ],
      "ids": [
       "D-57",
@@ -2149,8 +2153,8 @@
      ],
      "chars": 364,
      "lines": [
-      979,
-      983
+      982,
+      986
      ],
      "ids": [
       "REQ-GRAPHICS-05"
@@ -2166,8 +2170,8 @@
      ],
      "chars": 18674,
      "lines": [
-      984,
-      1057
+      987,
+      1060
      ],
      "ids": [
       "ARC-05",
@@ -2230,8 +2234,8 @@
      ],
      "chars": 1419,
      "lines": [
-      1058,
-      1073
+      1061,
+      1076
      ],
      "ids": [
       "BR-01",
@@ -2291,8 +2295,8 @@
      ],
      "chars": 6665,
      "lines": [
-      1074,
-      1108
+      1077,
+      1111
      ],
      "ids": [
       "ARC-01",
@@ -2358,8 +2362,8 @@
      ],
      "chars": 4032,
      "lines": [
-      1109,
-      1135
+      1112,
+      1138
      ],
      "ids": [
       "D-20",
@@ -2411,10 +2415,10 @@
       "9. PHỤ LỤC",
       "Phụ lục A: Mã lỗi"
      ],
-     "chars": 2383,
+     "chars": 2854,
      "lines": [
-      1138,
-      1160
+      1141,
+      1166
      ],
      "ids": [
       "ERR_ARCHIVE_INVALID",
@@ -2429,11 +2433,14 @@
       "ERR_NO_NOTES",
       "ERR_NO_SUPPORTED_ENCODER",
       "ERR_NO_SUPPORTED_ENV",
+      "ERR_PACK_HASH",
+      "ERR_PACK_INVALID",
       "ERR_PARSER_TIMEOUT",
       "ERR_PRESET_INVALID",
       "ERR_PRESET_TOO_LARGE",
       "ERR_SCHEMA_INVALID",
       "ERR_SCHEMA_NEWER",
+      "ERR_STORAGE_FAILED",
       "ERR_UNSUPPORTED_FORMAT",
       "NFR-SEC-04",
       "REQ-AUDIO-01"
@@ -2447,20 +2454,24 @@
       "9. PHỤ LỤC",
       "Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)"
      ],
-     "chars": 1151,
+     "chars": 1673,
      "lines": [
-      1161,
-      1173
+      1167,
+      1183
      ],
      "ids": [
       "NFR-SEC-04",
       "REQ-STORAGE-02",
+      "WARN_PACK_AUDIO_MISSING",
+      "WARN_PACK_NEWER_MINOR",
+      "WARN_PACK_UNLISTED_FILE",
       "WARN_PRESET_MIGRATED",
       "WARN_PRESET_UNSAFE_KEY",
       "WARN_PRESET_UNSUPPORTED",
       "WARN_PRESET_VALUE",
       "WARN_PRESET_VERSION",
-      "WARN_PRESET_WIDGET_UNKNOWN"
+      "WARN_PRESET_WIDGET_UNKNOWN",
+      "WARN_STORAGE_LOW"
      ]
     },
     {
@@ -2473,8 +2484,8 @@
      ],
      "chars": 1331,
      "lines": [
-      1174,
-      1179
+      1184,
+      1189
      ],
      "ids": [
       "REQ-AUDIO-01",
@@ -2521,8 +2532,8 @@
      ],
      "chars": 2889,
      "lines": [
-      1180,
-      1211
+      1190,
+      1221
      ],
      "ids": [
       "D-20",
@@ -2705,7 +2716,7 @@
   },
   "TECHNICAL-DESIGN.md": {
    "title": "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER",
-   "sha1": "9b40736009",
+   "sha1": "95f47009aa",
    "chunks": [
     {
      "n": 0,
@@ -3346,15 +3357,15 @@
     },
     {
      "n": 33,
-     "file": "TECHNICAL-DESIGN/8-luu-tru-m4.md",
-     "title": "8. Lưu trữ ⚪ (M4)",
+     "file": "TECHNICAL-DESIGN/8-luu-tru-m4-t-10.md",
+     "title": "8. Lưu trữ 🟢 (M4, T-10)",
      "path": [
-      "8. Lưu trữ ⚪ (M4)"
+      "8. Lưu trữ 🟢 (M4, T-10)"
      ],
-     "chars": 1035,
+     "chars": 1704,
      "lines": [
       449,
-      454
+      455
      ],
      "ids": [
       "ERR_PRESET_INVALID",
@@ -3371,8 +3382,8 @@
      ],
      "chars": 492,
      "lines": [
-      455,
-      457
+      456,
+      458
      ],
      "ids": []
     },
@@ -3385,8 +3396,8 @@
      ],
      "chars": 470,
      "lines": [
-      458,
-      462
+      459,
+      463
      ],
      "ids": [
       "D-13"
@@ -3401,8 +3412,8 @@
      ],
      "chars": 885,
      "lines": [
-      463,
-      472
+      464,
+      473
      ],
      "ids": [
       "NFR-PERF-04",
@@ -3418,8 +3429,8 @@
      ],
      "chars": 728,
      "lines": [
-      473,
-      475
+      474,
+      476
      ],
      "ids": [
       "OI-07"
@@ -3434,8 +3445,8 @@
      ],
      "chars": 906,
      "lines": [
-      476,
-      482
+      477,
+      483
      ],
      "ids": [
       "D-12",
@@ -3452,8 +3463,8 @@
      ],
      "chars": 760,
      "lines": [
-      483,
-      490
+      484,
+      491
      ],
      "ids": []
     }
@@ -7397,7 +7408,7 @@
    "SRS/phu-luc-a-ma-loi.md",
    "TECHNICAL-DESIGN/5-1-giao-dien-chinh.md",
    "TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md",
-   "TECHNICAL-DESIGN/8-luu-tru-m4.md"
+   "TECHNICAL-DESIGN/8-luu-tru-m4-t-10.md"
   ],
   "ERR_PRESET_TOO_LARGE": [
    "SRS/lich-su-phien-ban.md",
@@ -7409,7 +7420,7 @@
    "SRS/3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md",
    "SRS/phu-luc-a-ma-loi.md",
    "TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md",
-   "TECHNICAL-DESIGN/8-luu-tru-m4.md"
+   "TECHNICAL-DESIGN/8-luu-tru-m4-t-10.md"
   ],
   "NFR-COMP-03": [
    "SRS/lich-su-phien-ban.md",
@@ -7703,7 +7714,7 @@
    "SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md",
    "TECHNICAL-DESIGN/5-10-cho-giu-trong-chu-va-o-chu-t-73-srs-req-gra.md",
    "TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md",
-   "TECHNICAL-DESIGN/8-luu-tru-m4.md"
+   "TECHNICAL-DESIGN/8-luu-tru-m4-t-10.md"
   ],
   "WARN_PRESET_UNSAFE_KEY": [
    "SRS/lich-su-phien-ban.md",
@@ -8090,6 +8101,14 @@
   "P-11": [
    "SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md"
   ],
+  "ERR_PACK_HASH": [
+   "SRS/3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md",
+   "SRS/phu-luc-a-ma-loi.md"
+  ],
+  "ERR_PACK_INVALID": [
+   "SRS/3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md",
+   "SRS/phu-luc-a-ma-loi.md"
+  ],
   "REQ-STORAGE-03": [
    "SRS/3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md",
    "CUSTOMIZATION/6-tai-nguyen-assets-cua-phien-va-cua-cong-dong-a.md"
@@ -8100,6 +8119,14 @@
    "SRS/phu-luc-b-ghi-chu-ra-soat.md",
    "TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md",
    "CUSTOMIZATION/6-tai-nguyen-assets-cua-phien-va-cua-cong-dong-a.md"
+  ],
+  "WARN_PACK_NEWER_MINOR": [
+   "SRS/3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md",
+   "SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md"
+  ],
+  "WARN_PACK_UNLISTED_FILE": [
+   "SRS/3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md",
+   "SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md"
   ],
   "SOI-05": [
    "SRS/req-export-00-pre-flight-r-01-d-17.md",
@@ -8293,9 +8320,18 @@
   "SOI-15": [
    "SRS/8-cac-van-de-con-mo-cua-srs.md"
   ],
+  "ERR_STORAGE_FAILED": [
+   "SRS/phu-luc-a-ma-loi.md"
+  ],
+  "WARN_PACK_AUDIO_MISSING": [
+   "SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md"
+  ],
   "WARN_PRESET_WIDGET_UNKNOWN": [
    "SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md",
    "TECHNICAL-DESIGN/5-1-giao-dien-chinh.md"
+  ],
+  "WARN_STORAGE_LOW": [
+   "SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md"
   ],
   "WARN_CLIP_SKIPPED": [
    "SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md",

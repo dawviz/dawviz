@@ -46,7 +46,7 @@ DAW Visualizer: trình duyệt đọc tệp dự án DAW (Ableton `.als/.alp`, R
 | Tùy biến: storyboard, chuyển cảnh nốt, easing, hạt, tài nguyên phiên, preset cộng đồng | [CUSTOMIZATION](docs/design/CUSTOMIZATION.md) (đề xuất, AD-08…AD-12) · [ANIMATION](docs/design/ANIMATION.md) · [COMMUNITY-CONTENT](docs/COMMUNITY-CONTENT.md) | `packages/render-core/src/style.ts`, `presets/` (motion/particles: chưa có — T-17…T-20) |
 | Biểu thức người dùng, bảo mật, kiểm duyệt preset cộng đồng | [EXPRESSIONS](docs/design/EXPRESSIONS.md) (đề xuất, AD-13…AD-15) · [ANIMATION-CATALOG](docs/design/ANIMATION-CATALOG.md) · SRS NFR-SEC | (chưa có — T-29…T-31; package `@dawviz/expr` dự kiến) |
 | Xuất video | [Technical Design §7](docs/split/TECHNICAL-DESIGN/7-1-trinh-tu.md) · [REQ-EXPORT-00](docs/split/SRS/req-export-00-pre-flight-r-01-d-17.md#req-export-00-pre-flight-r-01-d-17)…[07](docs/split/SRS/req-export-07-thuc-thi-trong-worker-arc-02-d-21.md#req-export-07-thực-thi-trong-worker-arc-02-d-21) | `apps/web/src/lib/exportPlan.ts` (phần lõi thuần, T-09); Export Worker: chưa có — M3 |
-| Lưu trữ, Preset, Project Pack | [Technical Design §8](docs/split/TECHNICAL-DESIGN/8-luu-tru-m4.md#8-lưu-trữ--m4) · [SRS §3.5](docs/split/SRS/3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md#35-lưu-trữ-cấu-hình--đóng-gói-br-05-d-11) | (chưa có — M4) |
+| Lưu trữ, Preset, Project Pack | [Technical Design §8](docs/split/TECHNICAL-DESIGN/8-luu-tru-m4-t-10.md) · [SRS §3.5](docs/split/SRS/3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md#35-lưu-trữ-cấu-hình--đóng-gói-br-05-d-11) | `apps/web/src/lib/workspaceStore.ts`, `projectPack.ts`, `docSnapshot.ts`, `session.ts`, `tempoRows.ts` (T-10) |
 | Đa ngôn ngữ / dịch | [I18N §1](docs/split/I18N/1-them-mot-ngon-ngu-moi-how-to-add-a-language.md#1-thêm-một-ngôn-ngữ-mới-how-to-add-a-language) · [§4](docs/split/I18N/4-quy-uoc-cho-nha-phat-trien-developer-rules.md#4-quy-ước-cho-nhà-phát-triển-developer-rules) · [SRS §3.7](docs/split/SRS/3-7-da-ngon-ngu-va-cong-dong-dich-br-09-d-30-kpi.md#37-đa-ngôn-ngữ-và-cộng-đồng-dịch-br-09-d-30-kpi-08) | `packages/i18n`, `locales/` |
 | Viết/chạy test | [TDD §1](docs/split/TDD/1-chien-luoc.md#1-chiến-lược) · [PARSER-TDD §1](docs/split/PARSER-TDD/1-chien-luoc.md#1-chiến-lược) · [§7](docs/split/PARSER-TDD/7-quy-uoc-viet-test-moi.md#7-quy-ước-viết-test-mới) | `test/`, `packages/render-core/test/`, `apps/web/src/lib/*.test.ts` |
 | Mã lỗi / cảnh báo | [SRS Phụ lục A](docs/split/SRS/phu-luc-a-ma-loi.md#phụ-lục-a-mã-lỗi) · [A2](docs/split/SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md#phụ-lục-a2-mã-cảnh-báo-của-parser-library) · [PARSER-SRS §4](docs/split/PARSER-SRS/4-ma-loi.md#4-mã-lỗi) | `locales/en.json` (`errors.*`, `warn.*`) |
@@ -141,7 +141,7 @@ Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-AUDIO-01: Âm thanh theo track (stem), bản 1.2](docs/split/SRS/req-audio-01-am-thanh-theo-track-stem-ban-1-2.md) · 3.3k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-WIDGET-08: Progress Bar (D-27)](docs/split/SRS/req-widget-08-progress-bar-d-27.md) · 0.8k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4b. Đề xuất widget và dữ liệu hiển thị bổ sung (D-32, OI-11) **[ĐỀ XUẤT, chưa cam kết v1.0]**](docs/split/SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md) · 3.0k
-- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.5. Lưu trữ, cấu hình & đóng gói (BR-05, D-11)](docs/split/SRS/3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md) · 3.2k
+- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.5. Lưu trữ, cấu hình & đóng gói (BR-05, D-11)](docs/split/SRS/3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md) · 4.7k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) › REQ-CAP-01: Phát hiện khả năng của trình duyệt (R-06, D-05)](docs/split/SRS/req-cap-01-phat-hien-kha-nang-cua-trinh-duyet-r.md) · 0.4k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) › REQ-EXPORT-00: Pre-flight (R-01, D-17)](docs/split/SRS/req-export-00-pre-flight-r-01-d-17.md) · 2.6k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) › REQ-EXPORT-01: Xung nhịp khung hình độc lập](docs/split/SRS/req-export-01-xung-nhip-khung-hinh-doc-lap.md) · 0.5k
@@ -170,8 +170,8 @@ Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 - [6. MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU](docs/split/SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md) · 1.4k
 - [7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO](docs/split/SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md) · 6.7k
 - [8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS](docs/split/SRS/8-cac-van-de-con-mo-cua-srs.md) · 4.0k
-- [9. PHỤ LỤC › Phụ lục A: Mã lỗi](docs/split/SRS/phu-luc-a-ma-loi.md) · 2.4k
-- [9. PHỤ LỤC › Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)](docs/split/SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md) · 1.2k
+- [9. PHỤ LỤC › Phụ lục A: Mã lỗi](docs/split/SRS/phu-luc-a-ma-loi.md) · 2.9k
+- [9. PHỤ LỤC › Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)](docs/split/SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md) · 1.7k
 - [9. PHỤ LỤC › Phụ lục A2: Mã cảnh báo của Parser Library](docs/split/SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md) · 1.3k
 - [9. PHỤ LỤC › Phụ lục B: Ghi chú rà soát](docs/split/SRS/phu-luc-b-ghi-chu-ra-soat.md) · 2.9k
 
@@ -226,7 +226,7 @@ Nguồn: `docs/design/TECHNICAL-DESIGN.md` · [thứ tự đọc](docs/split/TEC
 - [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) › 7.2 Quyết định kỹ thuật](docs/split/TECHNICAL-DESIGN/7-2-quyet-dinh-ky-thuat.md) · 0.9k
 - [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) › 7.3 Phần lõi thuần đã làm (T-09, 2026-11-14)](docs/split/TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md) · 1.7k
 - [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) › 7.4 Export Worker và giao diện (T-09, 2026-11-14)](docs/split/TECHNICAL-DESIGN/7-4-export-worker-va-giao-dien-t-09-2026-11-14.md) · 8.2k
-- [8. Lưu trữ ⚪ (M4)](docs/split/TECHNICAL-DESIGN/8-luu-tru-m4.md) · 1.0k
+- [8. Lưu trữ 🟢 (M4, T-10)](docs/split/TECHNICAL-DESIGN/8-luu-tru-m4-t-10.md) · 1.7k
 - [9. Đa ngôn ngữ 🟢](docs/split/TECHNICAL-DESIGN/9-da-ngon-ngu.md) · 0.5k
 - [10. Lỗi, ghi nhật ký, quan sát](docs/split/TECHNICAL-DESIGN/10-loi-ghi-nhat-ky-quan-sat.md) · 0.5k
 - [11. Hiệu năng và bộ nhớ (ngân sách)](docs/split/TECHNICAL-DESIGN/11-hieu-nang-va-bo-nho-ngan-sach.md) · 0.9k

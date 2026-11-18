@@ -4,9 +4,9 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "3.5. Lưu trữ, cấu hình & đóng gói (BR-05, D-11)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.5. Lưu trữ, cấu hình & đóng gói (BR-05, D-11)"
 chunk: 3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md
-source_lines: 667-736
-source_sha1: 70383ef52c
-ids: [BR-05, D-11, ERR_PRESET_INVALID, ERR_SCHEMA_NEWER, REQ-PARSER-00, REQ-STORAGE-01, REQ-STORAGE-02, REQ-STORAGE-03, REQ-STORAGE-04]
+source_lines: 667-739
+source_sha1: b0fe5ff302
+ids: [BR-05, D-11, ERR_PACK_HASH, ERR_PACK_INVALID, ERR_PRESET_INVALID, ERR_SCHEMA_NEWER, REQ-PARSER-00, REQ-STORAGE-01, REQ-STORAGE-02, REQ-STORAGE-03, REQ-STORAGE-04, WARN_PACK_NEWER_MINOR, WARN_PACK_UNLISTED_FILE]
 ---
 ### 3.5. Lưu trữ, cấu hình & đóng gói (BR-05, D-11)
 
@@ -16,6 +16,7 @@ ids: [BR-05, D-11, ERR_PRESET_INVALID, ERR_SCHEMA_NEWER, REQ-PARSER-00, REQ-STOR
 * **Suy thoái khi thiếu dung lượng**: kiểm tra `navigator.storage.estimate()` định kỳ. Còn trống < 50 MB hoặc gặp `QuotaExceededError` thì chỉ lưu JSON trạng thái, bỏ Blob lớn và báo: "Bộ nhớ trình duyệt gần đầy: tệp âm thanh/dự án sẽ cần nạp lại ở phiên sau."
 * Khi mở lại, nếu phục hồi được Blob thì tự dựng lại phiên; nếu thiếu Blob thì hiển thị danh sách file cần nạp lại.
 * Ghi theo giao dịch; lỗi ghi không được làm mất bản lưu cuối còn hợp lệ.
+* **Đã làm (T-10, 2026-11-18):** bảng `workspace_state` (một bản `current`) và `blobs` (`source`, `audio`, `extra:<n>` cho `.mid` phụ). Blob chỉ ghi lại khi tập tệp đổi (chữ ký id+tên+cỡ); thay đổi chỉ ở bố cục thì chỉ ghi JSON. AST không lưu, luôn parse lại từ nguồn khi mở lại. Mở lại tự dựng phiên nếu còn Blob `source`; thiếu Blob thì nêu tên tệp cần nạp lại. `workspace` JSON gồm phong cách video, độ sáng, thứ tự/ẩn/solo track, offset âm thanh, bảng tempo gõ, schema nhị phân đã nạp; nạp lại luôn qua `sanitizeScene`/`sanitizeBrightness` và bỏ id track không còn.
 
 #### REQ-STORAGE-02: Preset giao diện (`.json`)
 Preset phải có `schemaVersion` và được kiểm tra schema khi nhập (kiểu, khoảng giá trị, danh sách `type` hợp lệ); trường lạ bị bỏ qua, giá trị sai bị đưa về mặc định kèm cảnh báo, preset không đọc được thì báo `ERR_PRESET_INVALID`. Ví dụ:
@@ -74,6 +75,8 @@ ProjectPack/
 ├── audio_track.*         # nếu có
 └── assets/               # ảnh nền, font (nếu có)
 ```
+
+**Đã làm (T-10, `apps/web/src/lib/projectPack.ts`):** `manifest.json` (`schemaVersion` **1.0.0**, `generator`, `createdAt`, `title`, `source.name`, `tempoOverride`, `audio {name, offsetMs}`, `files[] {path, size, sha256, role}`), `workspace_preset.json` (Scene), `workspace.json` (phần còn lại của tài liệu, kèm bảng tempo gõ), `overrides.json` (`{}` giữ chỗ cho hợp âm sửa tay), `source/<tên>`, `audio/<tên>`, `assets/<tên>`: `.mid` phụ của Reaper và schema nhị phân (`*.schema.json`). Nhập: kiểm cỡ tệp, số entry (400), tổng cỡ khai báo trước khi giải nén (600 MB), tỉ lệ (60:1), đường dẫn an toàn (không `..`, `/`, `\`, ổ đĩa, ký tự điều khiển), băm SHA-256 từng tệp khớp manifest, tệp ngoài manifest bị bỏ kèm `WARN_PACK_UNLISTED_FILE`. Phiên bản **chính** mới hơn → `ERR_SCHEMA_NEWER`; phụ/vá mới hơn → đọc được kèm `WARN_PACK_NEWER_MINOR`. Thiếu manifest/nguồn → `ERR_PACK_INVALID`; băm lệch → `ERR_PACK_HASH`.
 
 #### REQ-STORAGE-04: Phiên bản lược đồ và di trú
 Mỗi dữ liệu lưu (workspace, Preset, Project Pack) mang `schemaVersion`. Phiên bản mới hơn ứng dụng hiểu thì báo `ERR_SCHEMA_NEWER`; phiên bản cũ hơn thì tự di trú, giữ bản gốc đến khi di trú thành công.

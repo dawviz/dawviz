@@ -1,6 +1,6 @@
 # Chỉ mục SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
-nguồn: `SRS.md` (sha1 70383ef52c)
+nguồn: `SRS.md` (sha1 b0fe5ff302)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -49,7 +49,7 @@ nguồn: `SRS.md` (sha1 70383ef52c)
 | 42 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-AUDIO-01: Âm thanh theo track (stem), bản 1.2 | [req-audio-01-am-thanh-theo-track-stem-ban-1-2.md](req-audio-01-am-thanh-theo-track-stem-ban-1-2.md) | 3254 | ERR_AUDIO_TOO_MANY, P-02, P-13, REQ-AUDIO-01, REQ-EXPORT-00, REQ-GRAPHICS-12… |
 | 43 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-08: Progress Bar (D-27) | [req-widget-08-progress-bar-d-27.md](req-widget-08-progress-bar-d-27.md) | 822 | D-27, REQ-EXPORT-00, REQ-GRAPHICS-05, REQ-WIDGET-08 |
 | 44 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4b. Đề xuất widget và dữ liệu hiển thị bổ sung (D-32, OI-11) **[ĐỀ XUẤT, chưa cam kết v1.0]** | [3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md](3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md) | 2994 | D-32, D-40, OI-11, P-01, P-02, P-03… |
-| 45 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.5. Lưu trữ, cấu hình & đóng gói (BR-05, D-11) | [3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md](3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md) | 3208 | BR-05, D-11, ERR_PRESET_INVALID, ERR_SCHEMA_NEWER, REQ-PARSER-00, REQ-STORAGE-01… |
+| 45 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.5. Lưu trữ, cấu hình & đóng gói (BR-05, D-11) | [3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md](3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md) | 4696 | BR-05, D-11, ERR_PACK_HASH, ERR_PACK_INVALID, ERR_PRESET_INVALID, ERR_SCHEMA_NEWER… |
 | 46 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-CAP-01: Phát hiện khả năng của trình duyệt (R-06, D-05) | [req-cap-01-phat-hien-kha-nang-cua-trinh-duyet-r.md](req-cap-01-phat-hien-kha-nang-cua-trinh-duyet-r.md) | 413 | D-05, REQ-CAP-01, REQ-EXPORT-06 |
 | 47 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-EXPORT-00: Pre-flight (R-01, D-17) | [req-export-00-pre-flight-r-01-d-17.md](req-export-00-pre-flight-r-01-d-17.md) | 2606 | D-17, D-26, KPI-05, REQ-EXPORT-00, REQ-GRAPHICS-04, SOI-05 |
 | 48 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-EXPORT-01: Xung nhịp khung hình độc lập | [req-export-01-xung-nhip-khung-hinh-doc-lap.md](req-export-01-xung-nhip-khung-hinh-doc-lap.md) | 502 | REQ-EXPORT-01, REQ-GRAPHICS-05 |
@@ -78,7 +78,7 @@ nguồn: `SRS.md` (sha1 70383ef52c)
 | 71 | 6. MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU | [6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md](6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md) | 1419 | BR-01, BR-02, BR-03, BR-04, BR-05, BR-06… |
 | 72 | 7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO | [7-dieu-kien-nghiem-thu-va-ban-giao.md](7-dieu-kien-nghiem-thu-va-ban-giao.md) | 6665 | ARC-01, AT-01, AT-02, AT-03, AT-04, AT-05… |
 | 73 | 8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS | [8-cac-van-de-con-mo-cua-srs.md](8-cac-van-de-con-mo-cua-srs.md) | 4032 | D-20, D-21, D-22, D-31, D-44, D-45… |
-| 74 | 9. PHỤ LỤC > Phụ lục A: Mã lỗi | [phu-luc-a-ma-loi.md](phu-luc-a-ma-loi.md) | 2383 | ERR_ARCHIVE_INVALID, ERR_ARCHIVE_TOO_LARGE, ERR_AST_INVALID, ERR_AST_TOO_LARGE, ERR_AUDIO_DECODE, ERR_AUDIO_TOO_LONG… |
-| 75 | 9. PHỤ LỤC > Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02) | [phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md](phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md) | 1151 | NFR-SEC-04, REQ-STORAGE-02, WARN_PRESET_MIGRATED, WARN_PRESET_UNSAFE_KEY, WARN_PRESET_UNSUPPORTED, WARN_PRESET_VALUE… |
+| 74 | 9. PHỤ LỤC > Phụ lục A: Mã lỗi | [phu-luc-a-ma-loi.md](phu-luc-a-ma-loi.md) | 2854 | ERR_ARCHIVE_INVALID, ERR_ARCHIVE_TOO_LARGE, ERR_AST_INVALID, ERR_AST_TOO_LARGE, ERR_AUDIO_DECODE, ERR_AUDIO_TOO_LONG… |
+| 75 | 9. PHỤ LỤC > Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02) | [phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md](phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md) | 1673 | NFR-SEC-04, REQ-STORAGE-02, WARN_PACK_AUDIO_MISSING, WARN_PACK_NEWER_MINOR, WARN_PACK_UNLISTED_FILE, WARN_PRESET_MIGRATED… |
 | 76 | 9. PHỤ LỤC > Phụ lục A2: Mã cảnh báo của Parser Library | [phu-luc-a2-ma-canh-bao-cua-parser-library.md](phu-luc-a2-ma-canh-bao-cua-parser-library.md) | 1331 | REQ-AUDIO-01, REQ-WIDGET-07, WARN_ALP_MULTIPLE_ALS, WARN_AUDIO_LENGTH, WARN_CLIP_SKIPPED, WARN_DAWPROJECT_NO_ARRANGEMENT… |
 | 77 | 9. PHỤ LỤC > Phụ lục B: Ghi chú rà soát | [phu-luc-b-ghi-chu-ra-soat.md](phu-luc-b-ghi-chu-ra-soat.md) | 2889 | D-20, D-22, KPI-01, NFR-ACC-02, NFR-COMP-01, OI-02… |

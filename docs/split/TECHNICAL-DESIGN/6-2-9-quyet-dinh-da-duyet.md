@@ -5,7 +5,7 @@ section: "6.2.9 Quyết định đã duyệt"
 path: "6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.9 Quyết định đã duyệt"
 chunk: 6-2-9-quyet-dinh-da-duyet.md
 source_lines: 318-325
-source_sha1: 9b40736009
+source_sha1: 95f47009aa
 ids: []
 ---
 #### 6.2.9 Quyết định đã duyệt

@@ -13,6 +13,15 @@ Hai mục này chỉ đổi giao diện của ứng dụng. Màu trong video do 
 
 **Khung bản in thử quanh khung xem trước:** bật để có dấu cắt ở bốn góc và dòng ghi kích thước quanh khung xem trước, giống bản in thử. Những thứ này không bao giờ có trong video xuất ra.
 
+## Phiên làm việc
+
+Ứng dụng tự lưu công việc trong trình duyệt này, khoảng nửa giây sau thao tác cuối. Lần sau mở lại trang, bài, âm thanh, tempo, bố cục và phong cách video trở lại như lúc bạn dừng. Không có gì được gửi đi đâu cả.
+
+- **Lưu gói dự án** tải về một tệp `.zip` chứa mọi thứ của phiên: tệp dự án, tệp `.mid` phụ, âm thanh, tempo bạn đặt, schema đã nạp và bố cục. Mở gói trên máy khác là có lại đúng phiên đó.
+- **Mở gói dự án** nạp một gói như vậy. Gói bị hỏng, bị sửa hoặc do bản ứng dụng mới hơn tạo ra thì ứng dụng báo và không mở.
+- **Xoá phiên đã lưu** xoá bản lưu trong trình duyệt (không đụng tới tệp của bạn).
+- Khi bộ nhớ trình duyệt gần đầy, ứng dụng chỉ lưu bố cục và thiết lập; lần sau bạn phải nạp lại tệp dự án và âm thanh. Ứng dụng báo rõ tệp nào cần nạp lại.
+
 ## Preset
 
 Preset là một tệp `.json` lưu cách bày video: phong cách, vị trí các widget, hình thức nốt, kiểu chữ. Preset không chứa dự án hay âm thanh của bạn, nên gửi cho người khác thoải mái.

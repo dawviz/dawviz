@@ -5,7 +5,7 @@ section: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUAL
 path: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER (mở đầu)"
 chunk: thiet-ke-ky-thuat-chi-tiet-technical-design-daw.md
 source_lines: 1-6
-source_sha1: 9b40736009
+source_sha1: 95f47009aa
 ids: []
 ---
 # THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER

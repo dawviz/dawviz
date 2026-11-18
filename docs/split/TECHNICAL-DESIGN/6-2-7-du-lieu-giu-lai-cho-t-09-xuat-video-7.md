@@ -5,7 +5,7 @@ section: "6.2.7 Dữ liệu giữ lại cho T-09 (xuất video, §7)"
 path: "6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.7 Dữ liệu giữ lại cho T-09 (xuất video, §7)"
 chunk: 6-2-7-du-lieu-giu-lai-cho-t-09-xuat-video-7.md
 source_lines: 304-314
-source_sha1: 9b40736009
+source_sha1: 95f47009aa
 ids: [AT-03, REQ-EXPORT-03]
 ---
 #### 6.2.7 Dữ liệu giữ lại cho T-09 (xuất video, §7)

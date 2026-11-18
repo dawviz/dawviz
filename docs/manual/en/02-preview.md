@@ -30,6 +30,12 @@ Above the frame you can see its size and shape (for example `1,080 × 1,080 · 1
 
 The **Song** section on the right shows the file name, format, length, tempo, number of tracks and number of notes.
 
+### Tempo
+
+If the file has no tempo (some MIDI files), the app uses 120 BPM for now and says so in the **Song** section; type the real tempo in the **BPM** box and press **Apply tempo**. The song is read again with the new tempo and your other settings stay. **Use the file's tempo** removes the tempo you set.
+
+Advanced mode has a tempo table for songs that change tempo or meter: each row is a position, a BPM and a time signature (for example `3/4`, `6/8`). Type positions as **Time** (`1:30.5`), **Reaper** (`5.3.50`) or **Bar.beat.sixteenth** (`5.3.2`). The tempo you set replaces the tempo in the file entirely.
+
 ### Load audio
 
 Click **Load audio** and choose the mix of the song (WAV, MP3, OGG, FLAC or M4A). It plays along with the video. This is optional: without audio the video still plays.

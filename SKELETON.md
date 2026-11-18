@@ -40,11 +40,14 @@ dawviz/
 │     │  │  ├─ NumberField.tsx
 │     │  │  ├─ PresetSettings.tsx
 │     │  │  ├─ SceneCanvas.tsx
+│     │  │  ├─ SchemaPanel.tsx
 │     │  │  ├─ Select.tsx
+│     │  │  ├─ SessionSettings.tsx
 │     │  │  ├─ SliderField.tsx
 │     │  │  ├─ Stage.tsx
 │     │  │  ├─ StatusIcon.tsx
 │     │  │  ├─ StylePanel.tsx
+│     │  │  ├─ TempoPanel.tsx
 │     │  │  ├─ TextPanel.tsx
 │     │  │  ├─ ThemeSelect.tsx
 │     │  │  ├─ TrackPanel.tsx
@@ -72,6 +75,8 @@ dawviz/
 │     │  │  ├─ commands.ts
 │     │  │  ├─ csp.test.ts
 │     │  │  ├─ csp.ts
+│     │  │  ├─ docSnapshot.test.ts
+│     │  │  ├─ docSnapshot.ts
 │     │  │  ├─ editorGeometry.test.ts
 │     │  │  ├─ editorGeometry.ts
 │     │  │  ├─ exportClient.test.ts
@@ -113,9 +118,15 @@ dawviz/
 │     │  │  ├─ presetFile.ts
 │     │  │  ├─ problems.test.ts
 │     │  │  ├─ problems.ts
+│     │  │  ├─ projectPack.test.ts
+│     │  │  ├─ projectPack.ts
+│     │  │  ├─ session.test.ts
+│     │  │  ├─ session.ts
 │     │  │  ├─ store.test.ts
 │     │  │  ├─ store.ts
 │     │  │  ├─ storeReact.ts
+│     │  │  ├─ tempoRows.test.ts
+│     │  │  ├─ tempoRows.ts
 │     │  │  ├─ textRef.test.ts
 │     │  │  ├─ textRef.ts
 │     │  │  ├─ theme.test.ts
@@ -130,7 +141,9 @@ dawviz/
 │     │  │  ├─ useStageWidth.ts
 │     │  │  ├─ videoScenes.ts
 │     │  │  ├─ widgetFields.test.ts
-│     │  │  └─ widgetFields.ts
+│     │  │  ├─ widgetFields.ts
+│     │  │  ├─ workspaceStore.test.ts
+│     │  │  └─ workspaceStore.ts
 │     │  ├─ types/
 │     │  │  └─ dawviz.d.ts
 │     │  ├─ workers/
@@ -1156,12 +1169,31 @@ Canvas xem trước: chỉ lo kích thước điểm ảnh/DPR và gọi renderF
 function SceneCanvas({ scene, derived, ast, t, blocked = false }: { scene: SceneDocument; derived: Derived; ast: UnifiedProjectAST; t: number; blocked?: boolean })   // `blocked`: phông chưa nạp xong nên không vẽ khung (không vẽ khung có chữ bằng phông dự phòng).
 ```
 
+#### `apps/web/src/components/SchemaPanel.tsx`
+
+Nạp schema nhị phân (T-10, REQ-PARSER-05, D-28): hiện khi định dạng không có parser dựng sẵn (`probeProject().needs.schema`).
+
+```text
+type SchemaRead
+function readSchemaText(text: string, size = text.length): SchemaRead   // Đọc và kiểm một tệp schema. Thuần theo đầu vào chữ (tách khỏi File để test).
+function SchemaPanel({ schemas, busy, onAdd, onRemove }: { schemas: { name: string }[]; busy: boolean; onAdd(schema: object): void; onRemove(index: number): void })
+```
+
 #### `apps/web/src/components/Select.tsx`
 
 Ô chọn dùng chung: <select> gốc của trình duyệt (bàn phím, trình đọc màn hình giữ nguyên) bọc trong khung vẽ mũi tên
 
 ```text
 function Select({ wrapClassName = '', className = '', ...props }: SelectHTMLAttributes<HTMLSelectElement> & { wrapClassName?: string })
+```
+
+#### `apps/web/src/components/SessionSettings.tsx`
+
+Thẻ Cài đặt, mục "Phiên làm việc" (T-10): lưu/mở Project Pack, xoá phiên đã lưu trong trình duyệt, trạng thái tự lưu.
+
+```text
+type SaveState
+function SessionSettings({ hasProject, busy, state, missing, onSavePack, onOpenPack, onDiscard }: { hasProject: boolean; busy: boolean; state: SaveState; missing: string[]; onSavePack(): void; onOpenPack(file: File): void; onDiscard(): void; })
 ```
 
 #### `apps/web/src/components/SliderField.tsx`
@@ -1197,6 +1229,14 @@ Mục "Hình thức" của inspector: kiểu dáng nốt (toàn cục) và bàn 
 ```text
 const ADVANCED_STYLE_KEYS   // Trường chỉ có ở Nâng cao (REQ-UI-13). Dùng để biết phần nâng cao đang khác mặc định hay không.
 function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset, playhead, reference, keyboardRef }: { reference?: NoteStyle; /** Bàn phím bật/tắt của bộ dựng sẵn áp gần nhất (đích của ↺ ở ô tick Bàn phím). */ keyboardRef?: boolean; playhead?: { ratio: number; visible: boolean; /** Vạch phát hiện/ẩn của bộ dựng sẵn áp gần nhất. */ visibleRef?: boolean; reference?: number; onChange(ratio: number): void; onVisible(visible: boolean): void }; notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean })   // `lanes`: tên lane automation có trong dự án đang mở (cho nguồn phát sáng "automation"). `playhead`: vị trí vạ…
+```
+
+#### `apps/web/src/components/TempoPanel.tsx`
+
+Ghi đè tempo (T-10, REQ-PARSER-07, D-24). Cơ bản: một ô BPM. Nâng cao: bảng điểm tempo (vị trí theo giây / Reaper / sixteenth, dấu nhịp).
+
+```text
+function TempoPanel({ source, draft, overridden, busy, advanced, onApply, onClear }: { source: string; draft: TempoDraft | null; overridden: boolean; busy: boolean; advanced: boolean; onApply(override: TempoOverride, draft: TempoDraft): void; onClear(): void; })
 ```
 
 #### `apps/web/src/components/TextPanel.tsx`
@@ -1453,6 +1493,17 @@ Chính sách CSP của ứng dụng (NFR-SEC-03 + NFR-SEC-06). Chèn vào index.
 ```text
 const CSP_DIRECTIVES
 const CSP
+```
+
+#### `apps/web/src/lib/docSnapshot.ts`
+
+Tài liệu (Doc) ⇄ JSON để lưu phiên và Project Pack (T-10). Nạp lại luôn kiểm: scene qua `sanitizeScene`, id track phải có trong dự án,
+
+```text
+interface WorkspaceJson
+const toWorkspaceJson = (d: Doc, tempoDraft?: TempoDraft | null) =>
+interface Applied
+function applyWorkspace(base: Doc, sceneRaw: unknown, wsRaw: unknown, trackIds: string[]): Applied   // Dựng Doc từ JSON đã lưu. `base` cho các giá trị mặc định (store hiện tại); `trackIds` là track của dự án vừa …
 ```
 
 #### `apps/web/src/lib/editorGeometry.ts`
@@ -1804,6 +1855,45 @@ const COSMETIC_WARNINGS   // Cảnh báo KHÔNG làm đổi hình người dùng
 function describeProblem(i18n: Pick<I18n, 'has' | 't'>, kind: 'error' | 'warning', code: string, message?: string, details?: Record<string, unknown>): Problem
 ```
 
+#### `apps/web/src/lib/projectPack.ts`
+
+Project Pack `.zip` (T-10, REQ-STORAGE-03/04): đóng gói và mở lại một phiên làm việc.
+
+```text
+const PACK_SCHEMA_VERSION
+const PACK_LIMITS   // Giới hạn khi nhập pack [PROVISIONAL]; lấy theo REQ-PARSER-00 nhưng chặt hơn vì pack do ứng dụng tạo.
+type PackLimits
+type PackErrorCode
+class PackError extends Error
+  constructor(code: PackErrorCode, message: string, details?: Record<string, unknown>)
+type PackRole
+interface PackFileEntry
+interface PackManifest
+interface PackInput
+interface PackContents
+function safeName(name: string, fallback: string): string   // Chuẩn hoá tên tệp người dùng thành một thành phần đường dẫn an toàn (không `/`, `\`, `..`, ký tự điều khiển).
+function isSafePackPath(p: string): boolean   // Đường dẫn trong ZIP có an toàn không (REQ-PARSER-00).
+async function sha256Hex(bytes: Uint8Array): Promise<string>
+async function buildPack(input: PackInput): Promise<Uint8Array>
+async function readPack(bytes: Uint8Array, limitsIn: Partial<PackLimits> = {}): Promise<PackContents>
+```
+
+#### `apps/web/src/lib/session.ts`
+
+Keo dán giữa App, kho IndexedDB và Project Pack (T-10): đọc byte tệp (có nhớ), dựng Snapshot/Pack, đọc Pack thành dữ liệu mở phiên.
+
+```text
+interface SchemaItem
+interface SessionData
+interface SessionParts
+const bytesOf = (f: Blob) =>   // Byte của tệp, đọc một lần cho mỗi đối tượng File (tự lưu mỗi 500 ms không được đọc lại tệp hàng chục MB).
+async function blobsOf(p: SessionParts): Promise<StoredBlob[]>
+async function snapshotOf(p: SessionParts): Promise<Snapshot>
+async function packOf(p: SessionParts, now: Date): Promise<Uint8Array>
+async function sessionFromPack(bytes: Uint8Array): Promise<
+function downloadBytes(bytes: Uint8Array, fileName: string, type = 'application/zip'): void   // Tải xuống một khối byte bằng Blob + liên kết (không cần quyền).
+```
+
 #### `apps/web/src/lib/store.ts`
 
 Store có hoàn tác (T-07, Technical Design §6.4). TypeScript thuần, không React, không đọc đồng hồ thật (đồng hồ truyền vào để test).
@@ -1827,6 +1917,26 @@ function useStoreState<D>(store: Store<D>): StoreState<D>
 interface Gesture   // Một cử chỉ kéo = một bước hoàn tác. Mặc định là no-op để thành phần dùng được ngoài App (test, storybook).
 const GestureContext
 function useGesturePointer():    // Cho thanh trượt: `onPointerDown` mở cử chỉ, đóng ở pointerup/pointercancel bất kể con trỏ thả ở đâu (cũng đón…
+```
+
+#### `apps/web/src/lib/tempoRows.ts`
+
+Ghi đè tempo từ bảng dòng người dùng gõ (T-10, REQ-PARSER-07, D-24/D-29). Thuần: dùng chung với Project Pack.
+
+```text
+type TempoPoint
+type TempoOverride
+type TempoUnit
+interface TempoRow
+interface TempoDraft
+const emptyDraft = () =>
+const BPM_MIN
+const readBpm = (t: string) =>   // BPM có thể gõ dấu phẩy (vi) hoặc chấm.
+const bpmOk = (b: number) =>
+type DraftResult
+function draftToOverride(d: TempoDraft): DraftResult   // Một dòng chỉ có BPM (không vị trí, không dấu nhịp) → số BPM; nhiều dòng → mảng điểm đã đổi vị trí.
+function sanitizeDraft(v: unknown): TempoDraft   // Bảng gõ được lưu nguyên (đơn vị + dòng) trong phiên/Project Pack để mở lại đúng như người dùng nhập; `overrid…
+const sourceNeedsTempo = (source: string | undefined) =>
 ```
 
 #### `apps/web/src/lib/textRef.ts`
@@ -1980,6 +2090,35 @@ function advancedEdited(widget: Pick<WidgetSpec, 'type' | 'trackMappingMode'>, P
 const TRACK_WIDGETS   // Widget đọc số liệu từ các track nên có mục chọn track (Ô chữ ở Cơ bản, còn lại ở Nâng cao).
 ```
 
+#### `apps/web/src/lib/workspaceStore.ts`
+
+Tự lưu phiên (T-10, REQ-STORAGE-01): bảng `workspace_state` (JSON) + bảng `blobs` (tệp dự án, âm thanh, ảnh nền, phông).
+
+```text
+const WORKSPACE_SCHEMA_VERSION
+const LOW_STORAGE_BYTES
+const AUTOSAVE_DELAY_MS
+const CURRENT_ID
+interface BlobRef
+interface WorkspaceState
+interface StoredBlob
+type BlobWrite   // `keep` = không đụng tới Blob đã lưu; mảng = thay toàn bộ; `null` = xoá hết (chỉ giữ JSON).
+interface Backend
+interface StorageEstimate
+const isQuotaError = (e: unknown) =>
+const freeBytes = (e: StorageEstimate | null | undefined) =>   // Còn trống bao nhiêu byte theo `navigator.storage.estimate()`; không biết thì `Infinity` (không chặn).
+const blobSignature = (blobs: BlobRef[]) =>   // Chữ ký của tập Blob: đổi khi thêm/bỏ/đổi tệp. Cùng chữ ký thì không ghi lại Blob (tránh ghi lại âm thanh hàng…
+interface Snapshot
+interface SaveResult
+interface Saver
+function createSaver(backend: Backend, now: () => number = Date.now): Saver   // Bộ ghi có nhớ chữ ký Blob đã ghi và quy tắc suy thoái.
+interface Restored
+async function restoreWorkspace(backend: Backend): Promise<Restored | null>
+interface Timers   // Debounce có đồng hồ nhúng vào: `push` hẹn ghi sau `delay` ms kể từ lần gọi cuối; `flush` ghi ngay (đóng thẻ).
+function createDebounced<T>(run: (v: T) => void | Promise<unknown>, delay = AUTOSAVE_DELAY_MS, timers: Timers = { set: (f, m) => setTimeout(f, m), clear: (h) => clearTimeout(h as ReturnType<typeof setTimeout>) })
+function dexieBackend(dbName?: string): Backend
+```
+
 #### `apps/web/src/main.tsx`
 
 Điểm vào của ứng dụng web: dựng React root với I18nProvider.
@@ -2030,6 +2169,7 @@ type ParseResponse
 - `apps/web/src/lib/audioPeaks.test.ts`
 - `apps/web/src/lib/clock.test.ts`
 - `apps/web/src/lib/csp.test.ts`
+- `apps/web/src/lib/docSnapshot.test.ts`
 - `apps/web/src/lib/editorGeometry.test.ts`
 - `apps/web/src/lib/exportClient.test.ts`
 - `apps/web/src/lib/exportDiagnostics.test.ts`
@@ -2047,11 +2187,15 @@ type ParseResponse
 - `apps/web/src/lib/prefs.test.ts`
 - `apps/web/src/lib/presetFile.test.ts`
 - `apps/web/src/lib/problems.test.ts`
+- `apps/web/src/lib/projectPack.test.ts`
+- `apps/web/src/lib/session.test.ts`
 - `apps/web/src/lib/store.test.ts`
+- `apps/web/src/lib/tempoRows.test.ts`
 - `apps/web/src/lib/textRef.test.ts`
 - `apps/web/src/lib/theme.test.ts`
 - `apps/web/src/lib/undoKeys.test.ts`
 - `apps/web/src/lib/widgetFields.test.ts`
+- `apps/web/src/lib/workspaceStore.test.ts`
 - `apps/web/test/app.test.tsx`
 - `apps/web/test/components.test.tsx`
 - `packages/render-core/test/fonts.test.ts`
@@ -2075,4 +2219,4 @@ type ParseResponse
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 826 ký hiệu công khai -->
+<!-- 10 thư mục src, 896 ký hiệu công khai -->

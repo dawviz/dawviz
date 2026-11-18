@@ -8,6 +8,10 @@ declare module '@dawviz/parser' {
   /** Khoá so tên .mid ngoài (không phân biệt hoa/thường, khoảng trắng ≡ gạch dưới) — cùng quy tắc parser dùng khi ghép tệp. */
   export function externalMidiKey(name: string): string;
   export const SUPPORTED: unknown[];
+  export function parsePositionText(text: string, o?: { unit?: 'time' | 'reaper' | 'sixteenth'; numerator?: number; denominator?: number }): { timeSeconds?: number; beat?: number };
+  export function parseTimeSignature(text: string): { num: number; den: number };
+  export function resolveTempoRows(rows: { pos?: string; bpm: number | string; sig?: string }[], o?: { unit?: 'time' | 'reaper' | 'sixteenth'; base?: { num: number; den: number } }): { bpm: number; num: number; den: number; beat?: number; timeSeconds?: number }[];
+  export function validateSchema(schema: unknown): unknown;
 }
 declare module '@dawviz/i18n' {
   export interface I18n { locale: string; dir: 'ltr' | 'rtl'; setLocale(l: string): void; has(key: string): boolean; t(key: string, params?: Record<string, unknown>): string; number(n: number, o?: Intl.NumberFormatOptions): string; duration(sec: number): string }

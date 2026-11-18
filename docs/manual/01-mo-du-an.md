@@ -45,6 +45,10 @@ Cảnh báo không chặn bạn làm việc. Một số cảnh báo hay gặp:
 - **Một số automation chưa đọc được:** phần hình vẫn đúng, chỉ độ sáng theo automation có thể thiếu.
 - Cảnh báo có ghi **[cần kiểm chứng]** là chỗ ứng dụng đã đoán cách đọc. Nếu thấy nốt lệch ở đúng chỗ đó, hãy báo lại cho chúng tôi kèm tệp nếu được.
 
+## Định dạng cần schema
+
+Tệp có đuôi lạ hoặc là định dạng nhị phân chưa có bộ đọc dựng sẵn (ví dụ `.flp`, `.bwproject`) thì ứng dụng hiện khung **Định dạng này cần một schema**. Bấm **Nạp schema** và chọn tệp `.json` mô tả cấu trúc tệp của bạn ([cách viết schema](https://github.com/dawviz/dawviz/blob/main/schemas/README.md)). Schema được kiểm tra trước khi dùng; không khớp thì ứng dụng báo và tệp không được đọc. Bấm **Bỏ** để gỡ schema. Schema đi cùng gói dự án khi bạn lưu.
+
 ## Không thấy nốt nào
 
 Nếu tệp mở được nhưng báo không có nốt:

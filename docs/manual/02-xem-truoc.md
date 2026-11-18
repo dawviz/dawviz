@@ -30,6 +30,12 @@ Phía trên khung có dòng ghi kích thước và tỉ lệ khung (ví dụ `1,
 
 Mục **Bài** ở cột phải cho biết tên tệp, định dạng, độ dài, tempo, số track và số nốt.
 
+### Tempo
+
+Nếu tệp không có tempo (một số tệp MIDI) thì ứng dụng tạm dùng 120 BPM và nói rõ ở mục **Bài**; gõ tempo thật vào ô **BPM** rồi bấm **Áp dụng tempo**. Bài được đọc lại với tempo mới, các thiết lập khác của bạn giữ nguyên. **Dùng tempo của tệp** bỏ tempo bạn đặt.
+
+Chế độ Nâng cao có bảng điểm tempo cho bài đổi tempo hoặc nhịp giữa chừng: mỗi dòng là một vị trí, BPM và dấu nhịp (ví dụ `3/4`, `6/8`). Vị trí gõ theo **Thời gian** (`1:30.5`), **Reaper** (`5.3.50`) hoặc **Bar.beat.sixteenth** (`5.3.2`). Tempo bạn đặt thay hoàn toàn tempo trong tệp.
+
 ### Nạp âm thanh
 
 Bấm **Nạp âm thanh** để chọn bản mix của bài (WAV, MP3, OGG, FLAC hoặc M4A). Âm thanh phát cùng video khi bạn bấm phát. Không bắt buộc: không có âm thanh thì video vẫn chạy bình thường.
