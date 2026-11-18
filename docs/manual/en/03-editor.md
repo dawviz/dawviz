@@ -122,7 +122,7 @@ Select the Piano roll widget (or click **Edit note look** when nothing is select
 - **Presets:** Neon, Soft bars, Flat, Outline. Pick one and adjust from there.
 - **Colour:** track colour, one custom colour, by pitch, or by velocity.
 - **Opacity**, **Note thickness**, **Corner radius**, **Outline width** (Advanced), **Idle opacity** (Advanced: opacity of notes that haven't played yet or have passed).
-- **Show piano keyboard:** draws a keyboard on the left edge; keys light up as notes reach them. With the keyboard on, the playhead sits at the keyboard's edge, so **Playhead position** is locked. Turn the keyboard off to move the playhead.
+- **Show piano keyboard:** draws a keyboard on the left edge; keys light up as notes reach them. With the keyboard on, the playhead sits at the keyboard's edge, so both **Show playhead** and **Playhead position** are hidden. Turn the keyboard off to adjust the playhead.
 - **Show playhead:** when hidden, notes still play at the same place; the line just isn't drawn. While the line is hidden, **Playhead position** is hidden too; show the line again to adjust it.
 
 ### Glow

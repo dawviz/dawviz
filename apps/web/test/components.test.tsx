@@ -68,22 +68,21 @@ describe('StylePanel', () => {
     expect(screen.queryAllByTitle(/Advanced setting|Thiết lập nâng cao/).length).toBe(0);
   });
 });
-describe('StylePanel: vị trí vạch phát khoá khi bật bàn phím (T-71)', () => {
-  it('bàn phím tắt: chỉnh được, gửi tỉ lệ 0..1; bàn phím bật: ô số bị khoá, có chú thích nối bằng aria-describedby', () => {
+describe('StylePanel: ô vạch phát ẩn khi bật bàn phím (T-71)', () => {
+  it('bàn phím tắt: chỉnh được, gửi tỉ lệ 0..1; bàn phím bật: cả ô Hiện vạch phát và Vị trí vạch phát đều ẩn', () => {
     let ratio = 0.3, visible = true;
     const props = { style: defaultStyleConfig(), onStyle: () => {}, onKeyboard: () => {}, playhead: { ratio, visible, onChange: (r: number) => (ratio = r), onVisible: (v: boolean) => (visible = v) } };
     const v = wrap(<StylePanel {...props} keyboard={{ ...DEFAULT_KEYBOARD_STYLE, enabled: false }} />);
-    const slider = () => document.getElementById('st-playhead') as HTMLInputElement;
-    expect(slider().disabled).toBe(false);
-    expect(screen.queryByTestId('playhead-locked')).toBeNull();
-    typeIn(slider(), '45');
+    const slider = () => document.getElementById('st-playhead') as HTMLInputElement | null;
+    expect(slider()!.disabled).toBe(false);
+    typeIn(slider()!, '45');
     expect(ratio).toBe(0.45);
     fireEvent.click(screen.getByTestId('playhead-visible'));
     expect(visible).toBe(false);
     v.rerender(<I18nProvider><StylePanel {...props} keyboard={{ ...DEFAULT_KEYBOARD_STYLE, enabled: true }} /></I18nProvider>);
-    const note = screen.getByTestId('playhead-locked');
-    expect(slider().disabled).toBe(true);
-    expect(slider().getAttribute('aria-describedby')).toContain(note.id);
+    expect(slider()).toBeNull();
+    expect(screen.queryByTestId('playhead-visible')).toBeNull();
+    expect(screen.queryByTestId('playhead-locked')).toBeNull();
   });
 });
 

@@ -122,7 +122,7 @@ Chọn widget Piano roll (hoặc bấm **Chỉnh hình thức nốt** khi chưa 
 - **Bộ dựng sẵn:** Neon, Thanh bo tròn, Phẳng, Chỉ viền. Chọn một bộ rồi chỉnh tiếp nếu muốn.
 - **Màu:** theo màu track, một màu tuỳ chọn, theo cao độ, hoặc theo cường độ đánh.
 - **Độ đục**, **Độ dày nốt**, **Bo góc**, **Độ dày viền** (Nâng cao), **Độ đục khi chờ** (Nâng cao: độ đục của nốt chưa tới hoặc đã qua).
-- **Hiện bàn phím piano:** vẽ bàn phím ở mép trái; phím sáng lên khi nốt chạm tới. Khi bật bàn phím, vạch phát nằm đúng mép bàn phím nên ô **Vị trí vạch phát** bị khoá. Tắt bàn phím để dời vạch phát.
+- **Hiện bàn phím piano:** vẽ bàn phím ở mép trái; phím sáng lên khi nốt chạm tới. Khi bật bàn phím, vạch phát nằm đúng mép bàn phím nên hai ô **Hiện vạch phát** và **Vị trí vạch phát** đều ẩn. Tắt bàn phím để chỉnh lại vạch phát.
 - **Hiện vạch phát:** ẩn vạch thì nốt vẫn phát ở đúng chỗ đó, chỉ không vẽ vạch. Khi vạch đang ẩn, ô **Vị trí vạch phát** cũng ẩn theo; bật lại vạch để chỉnh vị trí.
 
 ### Phát sáng

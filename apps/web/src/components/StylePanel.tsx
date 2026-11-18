@@ -1,7 +1,6 @@
 // Mục "Hình thức" của inspector: kiểu dáng nốt (toàn cục) và bàn phím. Chỉ sửa dữ liệu StyleConfig; việc vẽ nằm ở Render Core.
 // Phân bổ Cơ bản / Nâng cao theo SRS REQ-UI-13 (dòng "Kiểu nốt", "Bàn phím"). Phong cách dựng sẵn chọn ở cột Video styles.
 import { GLOW_SOURCES, type StyleConfig, type NoteStyle, type ColorMode, type KeyboardStyle, type GlowSource, type GlowPanMode } from '@dawviz/render-core';
-import { useId } from 'react';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { radioKeys, radioTab } from '../lib/a11y.ts';
 import { matchNotePreset } from '../lib/videoScenes.ts';
@@ -16,14 +15,13 @@ export const ADVANCED_STYLE_KEYS: readonly (keyof NoteStyle)[] = ['inactiveOpaci
 const row = 'grid grid-cols-[minmax(0,1fr)_minmax(0,9.5rem)_1.5rem] items-center gap-2 text-xs text-muted';
 
 /** `lanes`: tên lane automation có trong dự án đang mở (cho nguồn phát sáng "automation").
- *  `playhead`: vị trí vạch phát (0..1) và hàm đổi; bàn phím bật thì ô bị khoá kèm chú thích (T-71).
+ *  `playhead`: vị trí vạch phát (0..1) và hàm đổi; bàn phím bật thì cả hai ô vạch phát bị ẩn (T-71).
  *  `advanced`: hiện cả dòng nâng cao (chế độ Nâng cao, hoặc "Thêm tuỳ chọn" của mục đang mở).
  *  `reference`: kiểu nốt của bộ dựng sẵn đang chọn; thông số khác nó thì có nút ↺ đưa về (D-57). */
 export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset, playhead, reference, keyboardRef }: { reference?: NoteStyle; /** Bàn phím bật/tắt của bộ dựng sẵn áp gần nhất (đích của ↺ ở ô tick Bàn phím). */ keyboardRef?: boolean; playhead?: { ratio: number; visible: boolean; /** Vạch phát hiện/ẩn của bộ dựng sẵn áp gần nhất. */ visibleRef?: boolean; reference?: number; onChange(ratio: number): void; onVisible(visible: boolean): void }; notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean }) {
   const { i18n } = useI18n();
   const b = style.base;
   const set = (patch: Partial<NoteStyle>) => onStyle({ ...style, base: { ...b, ...patch } });
-  const lockId = useId();
   const ref = (k: keyof NoteStyle) => { const v = reference?.[k]; return typeof v === 'number' ? v : undefined; };
   return (
     <div className="space-y-2.5" data-testid="style-panel">
@@ -62,15 +60,11 @@ export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], a
       {advanced && <TickField label={i18n.t('web.style.glowActiveOnly')} checked={b.glowActiveOnly} onChange={(v) => set({ glowActiveOnly: v })} reference={reference?.glowActiveOnly} />}
       <div className="space-y-2 border-t border-line pt-2.5">
         <TickField label={i18n.t('web.keyboard.show')} checked={keyboard.enabled} onChange={(v) => onKeyboard({ ...keyboard, enabled: v })} reference={keyboardRef} />
-        {playhead && <>
+        {/* Bàn phím bật: vạch phát ghim ở mép bàn phím (Render Core bỏ qua tỉ lệ và nốt phát đúng lúc chạm phím) nên không còn gì để chỉnh: ẩn cả hai ô thay vì khoá. Giá trị vẫn giữ để dùng lại khi tắt bàn phím. */}
+        {playhead && !keyboard.enabled && <>
           <TickField label={i18n.t('web.playhead.show')} checked={playhead.visible} onChange={playhead.onVisible} reference={playhead.visibleRef} testId="playhead-visible" />
-          {/* Bàn phím bật: vạch phát ghim ở mép bàn phím (Render Core bỏ qua tỉ lệ), nên khoá ô và nói lý do ngay bên dưới. Giá trị vẫn giữ để dùng lại khi tắt bàn phím. */}
-          {/* Lý do khoá: chú thích khi rê chuột + chữ ẩn cho trình đọc màn hình (giải thích dài nằm trong hướng dẫn sử dụng). */}
-          {playhead.visible && <div title={keyboard.enabled ? i18n.t('web.playhead.locked') : undefined}>
-            <Slider id="st-playhead" label={i18n.t('web.playhead.position')} value={Math.round(playhead.ratio * 100)} min={5} max={95} step={1} reset={playhead.reference === undefined ? undefined : Math.round(playhead.reference * 100)}
-              disabled={keyboard.enabled} describedBy={keyboard.enabled ? lockId : undefined} onChange={(v) => playhead.onChange(v / 100)} />
-          </div>}
-          {playhead.visible && keyboard.enabled && <p id={lockId} className="sr-only" data-testid="playhead-locked">{i18n.t('web.playhead.locked')}</p>}
+          {playhead.visible && <Slider id="st-playhead" label={i18n.t('web.playhead.position')} value={Math.round(playhead.ratio * 100)} min={5} max={95} step={1} reset={playhead.reference === undefined ? undefined : Math.round(playhead.reference * 100)}
+            onChange={(v) => playhead.onChange(v / 100)} />}
         </>}
       </div>
     </div>

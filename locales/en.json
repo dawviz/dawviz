@@ -160,7 +160,6 @@
   "web.playhead.position": "Playhead position (%)",
   "web.playhead.show": "Show playhead",
   "web.cmd.playheadVisible": "playhead visibility",
-  "web.playhead.locked": "The piano keyboard is on, so the playhead sits at the keyboard's edge and notes play as they reach the keys. Turn the keyboard off to move the playhead.",
   "web.cmd.playhead": "playhead change",
   "web.track.color": "Track colour",
   "web.track.colorReset": "Use project colour",
