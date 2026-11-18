@@ -201,7 +201,8 @@ const REAL = [
   ['HOUSE, TRANCE (SB, KS10, SIR)_21_NEW.flp', '26.1.7.5654', 122, 9, 1618],
 ];
 for (const [name, ver, bpm, tracks, notes] of REAL) {
-  test(`FLP tệp thật FL ${ver} (${name})`, async () => {
+  // tên tệp nằm trong biến nên test() không tự nhận ra: bỏ qua tường minh khi thiếu tệp bên thứ ba (CI không có)
+  test(`FLP tệp thật FL ${ver} (${name})`, { skip: fx(name).length === 0 && 'thiếu tệp mẫu bên thứ ba (test/fixtures/third-party/)' }, async () => {
     const r = await parseProject(name, fx(name), { showMuted: true });
     assert.equal(r.ast.meta.sourceVersion, ver); assert.equal(r.ast.tempoMap[0].bpm, bpm);
     assert.equal(r.ast.tracks.length, tracks); assert.equal(r.ast.tracks.reduce((s, t) => s + t.notes.length, 0), notes);
