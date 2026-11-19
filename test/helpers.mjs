@@ -7,7 +7,7 @@ import { test as nodeTest } from 'node:test';
 // Tệp mẫu của bên thứ ba (chưa xác nhận quyền phân phối) KHÔNG được commit: chúng nằm trong
 // test/fixtures/third-party/ (bị .gitignore). Thiếu tệp -> fx() trả Buffer rỗng và test dùng tệp đó bị bỏ qua.
 export const THIRD_PARTY = ['Demo.als', 'Oboe_MIDI_001.mid', 'ode_to_zb.RPP', 'prutypils.rpp', 'siderite_oneD-8.RPP',
-  'tmf-small.RPP', 'youdreamarked-midi.RPP', 'big roar.flp', '11-7-26 ambient vocal.flp', 'yawwapsy.zip', '3x OSC Abuse.flp', 'Ction_35.flp', 'HOUSE, TRANCE (SB, KS10, SIR)_21_NEW.flp', 'fun song.flp', 'TS404 Template_v20.8.flp', 'Promise.flp', 'TRANCECRAFTER_37.flp', 'bitwig-5.0-example.project.xml', 'reaper-doc-sample.txt'];
+  'tmf-small.RPP', 'youdreamarked-midi.RPP', 'big roar.flp', '11-7-26 ambient vocal.flp', 'yawwapsy.zip', '3x OSC Abuse.flp', 'Ction_35.flp', 'HOUSE, TRANCE (SB, KS10, SIR)_21_NEW.flp', 'fun song.flp', 'TS404 Template_v20.8.flp', 'Promise.flp', 'TRANCECRAFTER_37.flp', 'mixer_vol_auto.flp', 'looped_pattern.flp', '1barpattern.flp', '4barpattern.flp', 'mixer_vol_auto2.flp', 'tempo_auto_2.flp', 'bitwig-5.0-example.project.xml', 'reaper-doc-sample.txt'];
 const tpDir = path.join(FIX, 'third-party');
 const missing = new Set(THIRD_PARTY.filter((n) => !fs.existsSync(path.join(tpDir, n))));
 export const fx = (n) => {
@@ -37,7 +37,8 @@ export const flpNote = ({ pos, rack = 0, dur = 24, key = 60, vel = 100 }) => { c
 /** clip Playlist 32 byte (FL < 20.99): pat = số pattern; so = startoffset. */
 export const flpClip = ({ pos, len = 384, pat = 1, lane = 499, so = 0xffffffff, flags = 64 }) => { const b = Buffer.alloc(32); b.writeUInt32LE(pos, 0); b.writeUInt16LE(20480, 4); b.writeUInt16LE(20480 + pat, 6); b.writeUInt32LE(len, 8); b.writeUInt32LE(lane, 12); b.writeUInt16LE(flags, 18); b.writeUInt32LE(so, 24); b.writeUInt32LE(0xffffffff, 28); return b; };
 /** điểm automation (sự kiện 234): pts = [[delta_beat, giá_trị 0..1]] */
-export const flpAuto = (pts) => { const b = Buffer.alloc(21 + pts.length * 24); b.writeUInt32LE(1, 0); b.writeUInt32LE(pts.length, 17); pts.forEach(([dt, v], i) => { b.writeDoubleLE(dt, 21 + i * 24); b.writeDoubleLE(v, 29 + i * 24); }); return b; };
+/** điểm automation: [dt (beat), giá trị, kiểu?] kiểu: 'curve' (b3=1, tension 0,3) | 'linear' (b3=2) | 'hold' (b0=2); mặc định để 0 */
+export const flpAuto = (pts) => { const b = Buffer.alloc(21 + pts.length * 24); b.writeUInt32LE(1, 0); b.writeUInt32LE(pts.length, 17); pts.forEach(([dt, v, shape], i) => { const o = 21 + i * 24; b.writeDoubleLE(dt, o); b.writeDoubleLE(v, o + 8); if (shape === 'curve') { b.writeFloatLE(0.3, o + 16); b[o + 23] = 1; } else if (shape === 'linear') b[o + 23] = 2; else if (shape === 'hold') b[o + 20] = 2; }); return b; };
 /** điều khiển từ xa (sự kiện 227): chan = kênh automation, group/ctl = đích (xem schemas/flp.schema.json) */
 export const flpRemote = (chan, group, ctl) => { const b = Buffer.alloc(20); b.writeUInt32LE(chan, 2); b.writeUInt32LE(((group << 16) | ctl) >>> 0, 8); b.writeUInt32LE(8, 12); return b; };
 /** clip Playlist của kênh (âm thanh/automation): idx = số kênh, stride = 32 (FL < 20.99) hoặc 60/80 */

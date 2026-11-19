@@ -95,7 +95,7 @@
   "warn.WARN_TEMPO_SHAPE": "Envelope tempo cong được xấp xỉ bằng đường thẳng.",
   "warn.WARN_TIMESIG_DEFAULT": "Không thấy dấu nhịp; dùng 4/4.",
   "warn.WARN_TIME_UNIT_MIXED": "Dự án trộn đơn vị thời gian beat và giây.",
-  "warn.WARN_FLP_CLIPS_SKIPPED": "Clip âm thanh và clip automation trên Playlist của FL Studio chưa được đọc, trừ automation âm lượng và pan của track (nốt của Pattern vẫn được đọc).",
+  "warn.WARN_FLP_CLIPS_SKIPPED": "Clip âm thanh và clip automation trên Playlist của FL Studio chưa được đọc, trừ automation âm lượng, pan của track và tempo (nốt của Pattern vẫn được đọc).",
   "warn.WARN_ZERO_LENGTH_NOTES": "Các nốt dài 0 được nâng lên 1 tick.",
   "warn.WARN_RPP_ENVELOPES_IGNORED": "Một số envelope tự động hoá chưa được đọc (trong item/take, trước FX, độ rộng stereo, hoặc trùng loại đã đọc).",
   "th.automation": "Automation",

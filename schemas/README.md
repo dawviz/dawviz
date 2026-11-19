@@ -32,7 +32,7 @@ Dùng: `parseProject('x.dbin', buf, { schemas: [schemaJson] })` — schema đư�
 | `switch` | `on` (biểu thức), `cases` {giá trị: kiểu}, `default` |
 | `{ "assert": "expr", "message": "..." }` | dừng với lỗi nếu sai (kiểm version, v.v.) |
 
-Trong biểu thức dùng được: biến đã đọc (từ trong ra ngoài), `parent`, `root`, `$index`, `$pos`, `$remaining`, `$last` (phần tử liền trước của cùng mảng, `undefined` ở phần tử đầu), `.` và `[]`, toán tử số học/bit/so sánh/logic/`?:`, hàm `min max floor ceil round abs len beatsToTicks clamp splitNum basename` (`splitNum("12.3.0.72", ".", 1)` = 3; `basename("C:\\a\\kick.wav")` = `"kick"`). **Không** có eval/Function; tên `__proto__ constructor prototype` bị cấm; có giới hạn số phép tính, số nút, độ sâu.
+Trong biểu thức dùng được: biến đã đọc (từ trong ra ngoài), `parent`, `root`, `$index`, `$pos`, `$remaining`, `$last` (phần tử liền trước của cùng mảng, `undefined` ở phần tử đầu), `.` và `[]`, toán tử số học/bit/so sánh/logic/`?:`, hàm `min max floor ceil round abs len beatsToTicks clamp exp range splitNum basename` (`range(n)` = `[0 … n-1]`, kẹp 0–4096, để sinh mẫu nội suy) (`splitNum("12.3.0.72", ".", 1)` = 3; `basename("C:\\a\\kick.wav")` = `"kick"`). **Không** có eval/Function; tên `__proto__ constructor prototype` bị cấm; có giới hạn số phép tính, số nút, độ sâu.
 
 ## Ánh xạ AST (`ast`)
 

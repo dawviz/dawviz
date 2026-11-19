@@ -359,13 +359,59 @@
           "type": "f64"
         },
         {
-          "type": "skip",
-          "length": "8"
+          "name": "tn",
+          "type": "f32"
+        },
+        {
+          "name": "b0",
+          "type": "u8"
+        },
+        {
+          "name": "b1",
+          "type": "u8"
+        },
+        {
+          "name": "b2",
+          "type": "u8"
+        },
+        {
+          "name": "b3",
+          "type": "u8"
         },
         {
           "name": "t",
           "type": "computed",
           "expr": "($last.t || 0) + dt"
+        },
+        {
+          "name": "t0",
+          "type": "computed",
+          "expr": "$last.t || 0"
+        },
+        {
+          "name": "v0",
+          "type": "computed",
+          "expr": "$last.val || 0"
+        },
+        {
+          "name": "first",
+          "type": "computed",
+          "expr": "$index == 0"
+        },
+        {
+          "name": "hold",
+          "type": "computed",
+          "expr": "b0 == 2 && b3 == 0"
+        },
+        {
+          "name": "ns",
+          "type": "computed",
+          "expr": "(first || hold) ? 0 : max(1, min(256, ceil((t - t0) * 2)))"
+        },
+        {
+          "name": "cnt",
+          "type": "computed",
+          "expr": "(first || hold) ? 1 : ns + 1"
         }
       ]
     },
@@ -423,7 +469,7 @@
         {
           "name": "kind",
           "type": "computed",
-          "expr": "(isChan && (ctl >> 8) == 0) ? ((ctl & 255) == 0 ? 'chvol' : (ctl & 255) == 1 ? 'chpan' : '') : (fxn >= 0 && (ctl >> 15) == 0 && (ctl & 255) >= 192) ? ((ctl & 63) == 0 ? 'fxvol' : (ctl & 63) == 1 ? 'fxpan' : '') : ''"
+          "expr": "(g == 16384 && ctl == 5) ? 'tempo' : (isChan && (ctl >> 8) == 0) ? ((ctl & 255) == 0 ? 'chvol' : (ctl & 255) == 1 ? 'chpan' : '') : (fxn >= 0 && (ctl >> 15) == 0 && (ctl & 255) >= 192) ? ((ctl & 63) == 0 ? 'fxvol' : (ctl & 63) == 1 ? 'fxpan' : '') : ''"
         },
         {
           "name": "tgt",
@@ -585,17 +631,61 @@
         },
         "list": true,
         "value": "c"
+      },
+      "tempoCurves": {
+        "each": "otherClips",
+        "as": "c",
+        "filter": "rcKind[c.idx] == 'tempo'",
+        "inner": {
+          "each": "autoPts[c.idx]",
+          "as": "p",
+          "filter": "p.t * ppq <= c.len + 0.5 && p.b3 == 1"
+        },
+        "list": true,
+        "value": "p.t"
+      },
+      "tempoRamps": {
+        "each": "otherClips",
+        "as": "c",
+        "filter": "rcKind[c.idx] == 'tempo'",
+        "inner": {
+          "each": "autoPts[c.idx]",
+          "as": "p",
+          "filter": "p.t * ppq <= c.len + 0.5 && !p.first && !p.hold && p.val != p.v0"
+        },
+        "list": true,
+        "value": "p.t"
       }
     },
-    "tempo": {
-      "each": "events",
-      "as": "e",
-      "filter": "e.id == 156",
-      "tick": "0",
-      "bpm": "e.v / 1000",
-      "num": "sigNum[0] || 4",
-      "den": "sigDen[0] || 4"
-    },
+    "tempo": [
+      {
+        "each": "events",
+        "as": "e",
+        "filter": "e.id == 156",
+        "tick": "0",
+        "bpm": "e.v / 1000",
+        "num": "sigNum[0] || 4",
+        "den": "sigDen[0] || 4"
+      },
+      {
+        "each": "otherClips",
+        "as": "c",
+        "filter": "rcKind[c.idx] == 'tempo'",
+        "inner": {
+          "each": "autoPts[c.idx]",
+          "as": "p",
+          "filter": "p.t * ppq <= c.len + 0.5",
+          "inner": {
+            "each": "range(p.cnt)",
+            "as": "k"
+          }
+        },
+        "tick": "c.pos + ((p.first || p.hold || k >= p.ns) ? p.t : p.t0 + (p.t - p.t0) * k / p.ns) * ppq",
+        "bpm": "60 + 120 * ((p.first || p.hold || k >= p.ns) ? p.val : p.v0 + (p.val - p.v0) * ((k + 0.5) / p.ns))",
+        "num": "sigNum[0] || 4",
+        "den": "sigDen[0] || 4"
+      }
+    ],
     "tracks": {
       "each": "chans",
       "as": "ch",
@@ -627,10 +717,10 @@
           "inner": {
             "each": "autoPts[c.idx]",
             "as": "p",
-            "filter": "p.t * ppq < c.len"
+            "filter": "p.t * ppq <= c.len + 0.5"
           },
-          "tick": "c.pos + p.t * ppq",
-          "value": "(p.val / 0.8) * (p.val / 0.8) * (p.val / 0.8)"
+          "tick": "c.pos + min(p.t * ppq, c.len)",
+          "value": "rcKind[c.idx] == 'fxvol' ? (exp(3 * p.val) - 1) / (exp(2.4) - 1) : (p.val / 0.8) * (p.val / 0.8) * (p.val / 0.8)"
         },
         {
           "kind": "pan",
@@ -640,9 +730,9 @@
           "inner": {
             "each": "autoPts[c.idx]",
             "as": "p",
-            "filter": "p.t * ppq < c.len"
+            "filter": "p.t * ppq <= c.len + 0.5"
           },
-          "tick": "c.pos + p.t * ppq",
+          "tick": "c.pos + min(p.t * ppq, c.len)",
           "value": "p.val * 2 - 1"
         }
       ]
@@ -652,6 +742,16 @@
         "when": "len(skippedClips) > 0",
         "code": "WARN_FLP_CLIPS_SKIPPED",
         "message": "Audio clips and automation other than track volume/pan are not read."
+      },
+      {
+        "when": "len(tempoCurves) > 0",
+        "code": "WARN_TEMPO_SHAPE",
+        "message": "A curved tempo envelope was approximated with straight lines."
+      },
+      {
+        "when": "len(tempoRamps) > 0",
+        "code": "WARN_TEMPO_RAMP",
+        "message": "A tempo ramp was approximated with small steps."
       }
     ]
   }

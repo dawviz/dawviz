@@ -12,7 +12,9 @@ const sbad = (m, p) => fail('ERR_SCHEMA_INVALID', p ? `${m} (tại ${p})` : m);
 
 // ======================= biểu thức =======================
 const FUNCS = {
-  min: Math.min, max: Math.max, floor: Math.floor, ceil: Math.ceil, round: Math.round, abs: Math.abs,
+  min: Math.min, max: Math.max, floor: Math.floor, ceil: Math.ceil, round: Math.round, abs: Math.abs, exp: Math.exp,
+  // range(n) -> [0, 1, ..., n-1] (n làm tròn xuống, kẹp 0..4096); dùng để sinh mẫu nội suy (vd. tempo automation)
+  range: (n) => Array.from({ length: Math.max(0, Math.min(4096, Math.floor(Number(n) || 0))) }, (_, i) => i),
   len: (a) => (a && typeof a.length === 'number' ? a.length : 0),
   beatsToTicks: (b) => b * PPQ,
   clamp: (x, lo, hi) => Math.min(hi, Math.max(lo, x)),

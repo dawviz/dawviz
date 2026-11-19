@@ -5,7 +5,7 @@ section: "REQ-WIDGET-04: Live Note Trigger"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-04: Live Note Trigger"
 chunk: req-widget-04-live-note-trigger.md
 source_lines: 597-603
-source_sha1: 4a4e62e7ba
+source_sha1: be43325ca4
 ids: [REQ-WIDGET-04]
 ---
 #### REQ-WIDGET-04: Live Note Trigger

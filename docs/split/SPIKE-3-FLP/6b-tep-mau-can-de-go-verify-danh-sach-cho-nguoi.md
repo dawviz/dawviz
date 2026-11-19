@@ -5,7 +5,7 @@ section: "6b. Tệp mẫu cần để gỡ [VERIFY] (danh sách cho người th�
 path: "6b. Tệp mẫu cần để gỡ [VERIFY] (danh sách cho người thử)"
 chunk: 6b-tep-mau-can-de-go-verify-danh-sach-cho-nguoi.md
 source_lines: 83-96
-source_sha1: a703402bcf
+source_sha1: 5bf69b7604
 ids: [ERR_NO_NOTES]
 ---
 ## 6b. Tệp mẫu cần để gỡ [VERIFY] (danh sách cho người thử)
@@ -15,9 +15,9 @@ Mỗi tệp là một dự án ngắn, kèm một dòng ghi lại giá trị đ�
 | # | Cần | Gỡ được | Mục |
 |---|---|---|---|
 | 1 | Tệp **FL 20.9.x/20.99**, 22, 23 (đã có 20.8, 21.2, 24.1, 25.x, 26.x) | ranh giới clip 32 → 60 byte (ở đúng 20.99?); 22–23 gần như chắc đúng | FLP-L8 |
-| 2 | **Pattern 1 bar có 4 nốt khác cao độ, kéo clip dài 4 bar** + ảnh Playlist | FL có lặp nội dung pattern không (nguy cơ hiển thị sai lớn nhất: hiện nốt chỉ vẽ một lần) | FLP-L1 |
-| 3 | **Automation volume insert** 0 dB → −12 dB và 0 dB → +5,6 dB; **pan insert** trái → phải; **volume/pan kênh** 100 % → 50 %; ghi lại giá trị đầu và cuối trên fader. Làm ở FL 12–24 **và** FL 25/26; ở FL 25/26 cho nhạc cụ đi insert **tên khác** tên kênh | gain `(v/0,8)³`, chiều âm/dương của pan, nơi FL 25/26 lưu liên kết kênh → insert (không còn sự kiện `22`, hiện ghép theo tên) | §6 |
-| 4 | **Tempo automation** 120 → 140 → 90 BPM tại các bar đã biết | công thức giá trị → BPM (10 + 512·v cho 300 BPM trên `big roar.flp` với tempo 128, nên chưa dùng) và cách nội suy | FLP-L2 |
+| 2 | ~~Hai tệp độ dài pattern~~ **đã có** (`1barpattern.flp`, `4barpattern.flp`), đã chốt FLP-L1 | | FLP-L1 |
+| 3 | ~~Volume insert nhiều điểm~~ **đã có** (`mixer_vol_auto2.flp`). Còn cần: **volume/pan của chính kênh** (nhiều mức, ghi cả % và dB hiển thị), **pan insert** trái → phải; làm ở FL 25/26 cho nhạc cụ đi insert **tên khác** tên kênh | đường cong volume kênh, chiều âm/dương của pan, nơi FL 25/26 lưu liên kết kênh → insert (hiện ghép theo tên) | §6 |
+| 4 | ~~Tempo automation 3 điểm~~ **đã có** (`tempo_auto_2.flp`, xem FLP-L2). Còn cần: **đoạn cong** (nhiều hệ số cong khác nhau, ghi BPM ở giữa đoạn), **đoạn giữ** thêm vài mẫu, và tempo cao (ví dụ 200, 300 BPM) để xem v có vượt 1 không | công thức đoạn cong; giới hạn thang tempo | FLP-L2 |
 | 5 | **Hai arrangement** (cho biết cái nào đang chọn); **kênh Layer** có nốt; **kênh tắt** ở Channel Rack; dự án **chế độ Pattern** chưa kéo lên Playlist | chọn arrangement, nhân bản nốt Layer, ngữ nghĩa sự kiện `0`, `ERR_NO_NOTES` có hợp lý không | FLP-L3–L6 |
 
-Nếu chỉ làm được hai thứ: (2) pattern lặp, (3) automation volume insert. Mục (1) giờ chỉ còn là kiểm chi tiết ranh giới 20.99.
+Nếu chỉ làm được một thứ: volume/pan **của kênh** (không phải insert) với các mức đã biết, và insert khác tên kênh ở FL 25/26 (volume insert đã khớp, xem §6). Mục (1) giờ chỉ còn là kiểm chi tiết ranh giới 20.99.

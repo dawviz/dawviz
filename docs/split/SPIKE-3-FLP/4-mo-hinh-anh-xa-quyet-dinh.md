@@ -5,7 +5,7 @@ section: "4. Mô hình ánh xạ (quyết định)"
 path: "4. Mô hình ánh xạ (quyết định)"
 chunk: 4-mo-hinh-anh-xa-quyet-dinh.md
 source_lines: 33-40
-source_sha1: a703402bcf
+source_sha1: 5bf69b7604
 ids: [D-44, ERR_AST_INVALID]
 ---
 ## 4. Mô hình ánh xạ (quyết định)

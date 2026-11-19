@@ -15,7 +15,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4347 ký tự
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](BRD/6-gia-dinh-assumptions.md) · 554 ký tự
 - [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 27431 ký tự
-- [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](BRD/8-cac-van-de-con-mo-open-issues.md) · 6307 ký tự
+- [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](BRD/8-cac-van-de-con-mo-open-issues.md) · 6716 ký tự
 
 ## SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
@@ -36,7 +36,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [REQ-PARSER-03: DAWproject (`.dawproject`, D-03)](SRS/req-parser-03-dawproject-dawproject-d-03.md) · 1203 ký tự
 - [REQ-PARSER-04: Standard MIDI File (`.mid`, format 0/1)](SRS/req-parser-04-standard-midi-file-mid-format-0-1.md) · 924 ký tự
 - [REQ-PARSER-05: Parser JSON khai báo (D-18, D-28, R-05)](SRS/req-parser-05-parser-json-khai-bao-d-18-d-28-r-0.md) · 1825 ký tự
-- [REQ-PARSER-08: FL Studio (`.flp`, D-62)](SRS/req-parser-08-fl-studio-flp-d-62.md) · 1979 ký tự
+- [REQ-PARSER-08: FL Studio (`.flp`, D-62)](SRS/req-parser-08-fl-studio-flp-d-62.md) · 2378 ký tự
 - [REQ-PARSER-06: Ableton Live Pack (`.alp`)](SRS/req-parser-06-ableton-live-pack-alp.md) · 1100 ký tự
 - [REQ-PARSER-07: Tempo không đoán ngầm và ghi đè (D-24, D-29)](SRS/req-parser-07-tempo-khong-doan-ngam-va-ghi-de-d.md) · 1665 ký tự
 - [3.2. Cấu trúc dữ liệu chuẩn hóa (Unified AST, D-08, D-09)](SRS/3-2-cau-truc-du-lieu-chuan-hoa-unified-ast-d-08.md) · 3457 ký tự
@@ -370,9 +370,9 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [2. Vì sao TLV vẫn vừa JSON schema](SPIKE-3-FLP/2-vi-sao-tlv-van-vua-json-schema.md) · 907 ký tự
 - [3. Điều JSON chưa làm được và bốn bổ sung cho engine](SPIKE-3-FLP/3-dieu-json-chua-lam-duoc-va-bon-bo-sung-cho-eng.md) · 1304 ký tự
 - [4. Mô hình ánh xạ (quyết định)](SPIKE-3-FLP/4-mo-hinh-anh-xa-quyet-dinh.md) · 1131 ký tự
-- [5. Giới hạn đã biết (cần tệp mẫu hoặc quyết định để mở)](SPIKE-3-FLP/5-gioi-han-da-biet-can-tep-mau-hoac-quyet-dinh-d.md) · 3739 ký tự
-- [6. Automation (volume, pan của track)](SPIKE-3-FLP/6-automation-volume-pan-cua-track.md) · 1804 ký tự
-- [6b. Tệp mẫu cần để gỡ [VERIFY] (danh sách cho người thử)](SPIKE-3-FLP/6b-tep-mau-can-de-go-verify-danh-sach-cho-nguoi.md) · 1612 ký tự
+- [5. Giới hạn đã biết (cần tệp mẫu hoặc quyết định để mở)](SPIKE-3-FLP/5-gioi-han-da-biet-can-tep-mau-hoac-quyet-dinh-d.md) · 5709 ký tự
+- [6. Automation (volume, pan của track)](SPIKE-3-FLP/6-automation-volume-pan-cua-track.md) · 2201 ký tự
+- [6b. Tệp mẫu cần để gỡ [VERIFY] (danh sách cho người thử)](SPIKE-3-FLP/6b-tep-mau-can-de-go-verify-danh-sach-cho-nguoi.md) · 1686 ký tự
 - [7. Phương án đã cân nhắc](SPIKE-3-FLP/7-phuong-an-da-can-nhac.md) · 603 ký tự
 - [8. Nguồn và giấy phép](SPIKE-3-FLP/8-nguon-va-giay-phep.md) · 634 ký tự
 

@@ -5,7 +5,7 @@ section: "7. Phương án đã cân nhắc"
 path: "7. Phương án đã cân nhắc"
 chunk: 7-phuong-an-da-can-nhac.md
 source_lines: 97-104
-source_sha1: a703402bcf
+source_sha1: 5bf69b7604
 ids: [D-28]
 ---
 ## 7. Phương án đã cân nhắc

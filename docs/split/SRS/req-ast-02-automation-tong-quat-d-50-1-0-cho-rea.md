@@ -5,7 +5,7 @@ section: "REQ-AST-02: Automation tổng quát (D-50; 1.0 cho Reaper track + MIDI
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-AST-02: Automation tổng quát (D-50; 1.0 cho Reaper track + MIDI CC, các nguồn khác theo tệp mẫu)"
 chunk: req-ast-02-automation-tong-quat-d-50-1-0-cho-rea.md
 source_lines: 558-571
-source_sha1: 4a4e62e7ba
+source_sha1: be43325ca4
 ids: [D-50, REQ-AST-02, REQ-AUDIO-01, REQ-GRAPHICS-06, REQ-GRAPHICS-13, REQ-GRAPHICS-17, REQ-PARSER-08, SOI-18]
 ---
 #### REQ-AST-02: Automation tổng quát (D-50; 1.0 cho Reaper track + MIDI CC, các nguồn khác theo tệp mẫu)
