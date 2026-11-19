@@ -52,3 +52,5 @@ export const DistributeH = (p: P) => <S {...p}><path d="M2 2v12M14 2v12" /><rect
 export const DistributeV = (p: P) => <S {...p}><path d="M2 2h12M2 14h12" /><rect x="4.5" y="6.5" width="7" height="3" rx=".5" /></S>;
 export const Duplicate = (p: P) => <S {...p}><rect x="5.5" y="5.5" width="8" height="8" rx="1" /><path d="M10.5 3.5v-1a.5.5 0 0 0-.5-.5H3a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .5.5h1" /></S>;
 export const Trash = (p: P) => <S {...p}><path d="M2.5 4h11M6 4V2.5h4V4M4 4l.7 9.5h6.6L12 4M6.75 6.5v4.5M9.25 6.5v4.5" /></S>;
+export const Download = (p: P) => <S {...p}><path d="M8 2.5v8m0 0L5.25 7.75M8 10.5l2.75-2.75" /><path d="M2.5 13.5h11" /></S>;
+export const Close = (p: P) => <S {...p}><path d="m4 4 8 8M12 4l-8 8" /></S>;

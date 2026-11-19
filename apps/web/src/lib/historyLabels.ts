@@ -1,6 +1,7 @@
 // Nhãn danh sách lịch sử (T-07 bước 2b). Dựng LÚC HIỂN THỊ từ loại lệnh + tham số + giá trị trước/sau, qua locales/,
 // nên đổi ngôn ngữ thì nhãn đổi theo (không lưu chuỗi đã dịch trong lịch sử). Ví dụ: "Độ đục 0,70 → 0,85".
 import type { I18n } from '@dawviz/i18n';
+import { pitchName } from '@dawviz/render-core';
 import type { Cmd } from './commands.ts';
 import type { History } from './store.ts';
 
@@ -102,6 +103,10 @@ export function describeCommand(cmd: Cmd, c: LabelCtx): string {
     case 'setPlayheadRatio': {
       const pct = (v: unknown) => i18n.number(Math.round(Number(v) * 100));
       return i18n.t('web.hist.change', { name: i18n.t('web.playhead.position'), from: `${pct(cmd.before)}%`, to: `${pct(cmd.after)}%` });
+    }
+    case 'setPitchRange': {
+      const r = (v: unknown) => { const x = v as { mode: string; min: number; max: number }; return x.mode === 'CUSTOM' ? `${pitchName(x.min)}–${pitchName(x.max)}` : i18n.t('web.pitch.fit'); };
+      return i18n.t('web.hist.change', { name: i18n.t('web.pitch.title'), from: r(cmd.before), to: r(cmd.after) });
     }
     case 'setPlayheadVisible': return i18n.t('web.hist.change', { name: i18n.t('web.playhead.show'), from: fmt(c, '', cmd.before), to: fmt(c, '', cmd.after) });
     case 'setAudioOffset': return i18n.t('web.hist.audioOffset', { from: fmt(c, 'ms', cmd.before), to: fmt(c, 'ms', cmd.after) });

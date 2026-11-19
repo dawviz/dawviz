@@ -5,7 +5,7 @@ section: "REQ-WIDGET-03: Event Counter"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-03: Event Counter"
 chunk: req-widget-03-event-counter.md
 source_lines: 590-596
-source_sha1: be43325ca4
+source_sha1: 4e115a15c2
 ids: [D-60, REQ-GRAPHICS-19, REQ-WIDGET-02, REQ-WIDGET-03, WARN_PRESET_VALUE]
 ---
 #### REQ-WIDGET-03: Event Counter

@@ -30,8 +30,7 @@ import { WidgetSettings, hasWidgetSettings } from './components/WidgetSettings.t
 import { advancedEdited } from './lib/widgetFields.ts';
 import { textSlots } from './lib/textRef.ts';
 import { VideoStyles, isEdited } from './components/VideoStyles.tsx';
-import { PresetSettings } from './components/PresetSettings.tsx';
-import { NOTE_PRESETS, VIDEO_STYLES, noteStylePreset, sceneForStyle, videoStyleBase, videoStyleKeyboard } from './lib/videoScenes.ts';
+import { NOTE_PRESETS, VIDEO_STYLES, noteStylePreset, pristineScene, sceneForStyle, videoStyleBase, videoStyleKeyboard, withoutTrackOverrides } from './lib/videoScenes.ts';
 import { createStore, type History } from './lib/store.ts';
 import * as Cmds from './lib/commands.ts';
 import { AudioPanel } from './components/AudioPanel.tsx';
@@ -43,6 +42,7 @@ import { CUSTOM_STYLE, initialDoc, pianoOf, type Doc } from './lib/commands.ts';
 import { GestureContext, useStoreState } from './lib/storeReact.ts';
 import { bindUndoKeys, shortcutLabels } from './lib/undoKeys.ts';
 import { downloadPreset, presetFileName, readPresetFile } from './lib/presetFile.ts';
+import { addUserPreset, loadUserPresets, matchUserPreset, removeUserPreset, saveUserPresets, type UserPreset } from './lib/userPresets.ts';
 import { useFontsStatus } from './lib/fonts.ts';
 import { projectKey, styleThumbnail } from './lib/thumbnails.ts';
 import { Facts, InspectorSection } from './components/Inspector.tsx';
@@ -163,6 +163,17 @@ export function App() {
   const hud = useMemo(() => (renderAst && index ? buildSceneHud(scene, renderAst, index) : undefined), [renderAst, index, chordSig]);
   const derived: Derived | null = useMemo(() => (index ? { index, brightness, hud, fontsReady: fonts === 'ready' } : null), [index, brightness, hud, fonts]);
 
+  // Preset của người dùng (cột Video styles): lưu theo trình duyệt. `activeUser` = ô đang áp khi scene đã bị chỉnh nên không còn khớp từng chữ.
+  const [userPresets, setUserPresets] = useState<UserPreset[]>(loadUserPresets);
+  const [activeUser, setActiveUser] = useState<string | null>(null);
+  useEffect(() => saveUserPresets(userPresets), [userPresets]);
+  // Ô preset đang áp: scene khớp từng chữ với một preset đã lưu, hoặc ô vừa chọn nhưng đã chỉnh thêm. Phong cách dựng sẵn "đã chỉnh" tính trên cả scene (bố cục, dải cao độ...).
+  const userMatch = doc.videoStyle === CUSTOM_STYLE ? matchUserPreset(userPresets, scene) : undefined;
+  const userActiveId = doc.videoStyle !== CUSTOM_STYLE ? undefined : userMatch?.id ?? (userPresets.some((x) => x.id === activeUser) ? activeUser ?? undefined : undefined);
+  const sceneEdited = useMemo(() => doc.videoStyle !== CUSTOM_STYLE && JSON.stringify(withoutTrackOverrides(pristineScene(doc.videoStyle))) !== JSON.stringify(withoutTrackOverrides(scene)), [doc.videoStyle, scene]);
+  // Ô đang chọn (dựng sẵn hoặc của người dùng) và đã chỉnh so với bản gốc của nó chưa.
+  const tileId = doc.videoStyle !== CUSTOM_STYLE ? doc.videoStyle : userActiveId;
+  const tileEdited = doc.videoStyle !== CUSTOM_STYLE ? sceneEdited : !!userActiveId && !userMatch;
   // Ảnh thu nhỏ cột "Video styles": mỗi phong cách một khung nhỏ của dự án đang mở (Render Core, có bộ đệm). Cần phông xong cho scene có chữ.
   const pkey = loaded ? projectKey(loaded.name, loaded.ast) : '';
   const thumbs = useMemo(() => {
@@ -173,8 +184,9 @@ export function App() {
       const url = styleThumbnail(id, sc, loaded.ast, pkey, 240);
       if (url) out[id] = url;
     }
+    for (const u of userPresets) { const url = styleThumbnail(u.id, u.scene, loaded.ast, pkey, 240); if (url) out[u.id] = url; }
     return out;
-  }, [loaded, pkey, fonts]);
+  }, [loaded, pkey, fonts, userPresets]);
 
   // T-02: chọn tệp mới khi tệp cũ đang parse -> chỉ kết quả của lần chọn mới nhất được áp dụng; busy chỉ tắt khi lần mới nhất xong.
   const gate = useRef(createLatestGate()).current;
@@ -201,7 +213,6 @@ export function App() {
       dropAudio();
       if (opts?.restore) opts.restore(r.ast);
       else store.reset({ ...store.get(), audioOffsetMs: 0, brightness: Object.fromEntries(r.ast.tracks.map((t) => [t.id, { ...DEFAULT_BRIGHTNESS } as BrightnessConfig])), order: r.ast.tracks.map((t) => t.id), hidden: [], solo: [] });
-      setNotice(null);
       playback.reset(r.ast.meta.totalDurationSeconds);
       setTab('preview');
     } catch (e) {
@@ -346,7 +357,6 @@ export function App() {
   }), [run]);
   const patchTrackStyle = useCallback((id: string, patch: Partial<NoteStyle> | null) => run((d) => Cmds.patchTrackStyle(d, id, patch)), [run]);
   // Đổi phong cách là một lệnh hoàn tác được. Nếu nó làm mất chỉnh tay (kiểu nốt hoặc bố cục) thì báo nhỏ, không chặn, cho tới khi tài liệu đổi tiếp.
-  const [notice, setNotice] = useState<{ doc: Doc } | null>(null);
   const shortcuts = useMemo(() => shortcutLabels(), []);
   // Nhãn lịch sử dựng lúc hiển thị (đổi ngôn ngữ thì đổi theo) và thông báo cho trình đọc màn hình sau mỗi lần hoàn tác/làm lại/nhảy bước.
   const widgetName = useWidgetNames(doc.scene.widgets);
@@ -366,11 +376,22 @@ export function App() {
     store.jumpTo(position); say(i18n.t('web.history.arrived', { label: stepLabel(store.state().history, position) }));
   }, [store, i18n, stepLabel, say]);
   useEffect(() => bindUndoKeys(window, { undo: doUndo, redo: doRedo }), [doUndo, doRedo]);
+  // Mỗi ô (phong cách dựng sẵn hoặc preset của người dùng) giữ bản chỉnh dở của riêng nó: rời ô thì cất bản đang chỉnh, trở lại thì lấy ra.
+  // Muốn về nguyên gốc thì bấm × trên ô. Chỉ lưu trong phiên (kiểu nốt và bàn phím của phong cách đang chọn vẫn nhớ theo trình duyệt như trước).
+  const [working, setWorking] = useState<Record<string, SceneDocument>>({});
+  const originalOf = (tile: string): SceneDocument | undefined => (VIDEO_STYLES.includes(tile) ? pristineScene(tile) : userPresets.find((x) => x.id === tile)?.scene);
+  const sameEdit = (tile: string, a: SceneDocument, b: SceneDocument) => JSON.stringify(VIDEO_STYLES.includes(tile) ? withoutTrackOverrides(a) : a) === JSON.stringify(VIDEO_STYLES.includes(tile) ? withoutTrackOverrides(b) : b);
+  const stashCurrent = () => {
+    if (!tileId) return;
+    const orig = originalOf(tileId), cur = store.get().scene;
+    if (!orig) return;
+    setWorking((w) => { const n = { ...w }; if (sameEdit(tileId, cur, orig)) delete n[tileId]; else n[tileId] = cur; return n; });
+  };
+  const takeWorking = (tile: string) => { const w = working[tile]; if (w) setWorking((x) => { const n = { ...x }; delete n[tile]; return n; }); return w; };
   const pickVideoStyle = (id: string) => {
-    const lost = Cmds.handEdited(store.get());
-    const cmd = Cmds.setVideoStyle(store.get(), id);
-    store.dispatch(cmd);
-    setNotice(cmd && lost ? { doc: store.get() } : null);
+    if (id === tileId) return;
+    stashCurrent(); setActiveUser(null);
+    store.dispatch(Cmds.setVideoStyle(store.get(), id, takeWorking(id)));
   };
   const pickNotePreset = (id: string) => run((d) => Cmds.applyNotePreset(d, noteStylePreset(id), id));
 
@@ -378,14 +399,36 @@ export function App() {
   const onOpenPreset = useCallback(async (file: File) => {
     try {
       const r = await readPresetFile(file);
-      run((d) => Cmds.loadPreset(d, r.scene));
+      stashCurrent();
+      const added = addUserPreset(userPresets, r.scene.presetName || r.fileName.replace(/\.json$/i, ''), r.scene);
+      setUserPresets(added.list); setActiveUser(added.preset.id);
+      run((d) => Cmds.loadPreset(d, added.preset.scene));
       setPresetProblems(r.warnings.map((w) => describeProblem(i18n, 'warning', w.code, w.message, w.details as Record<string, unknown>)));
       setPresetOpened(r.scene.presetName || r.fileName);
     } catch (e) {
       const f = e as { code?: string; message?: string; details?: Record<string, unknown> };
       setPresetProblems([describeProblem(i18n, 'error', f.code?.startsWith('ERR_') ? f.code : 'ERR_PRESET_INVALID', f.message, f.details)]); setPresetOpened(null);
     }
-  }, [run, i18n]);
+  }, [run, i18n, userPresets, tileId, working]);
+  const onPickUserPreset = (id: string) => {
+    const pr = userPresets.find((x) => x.id === id); if (!pr) return;
+    if (id === tileId) return;
+    stashCurrent(); setActiveUser(id); setPresetProblems([]); setPresetOpened(null);
+    const w = takeWorking(id);
+    run((d) => Cmds.loadPreset(d, pr.scene, w));
+  };
+  const onRevert = (id: string) => {
+    setWorking((w) => { const n = { ...w }; delete n[id]; return n; });
+    if (id !== tileId) return;
+    if (VIDEO_STYLES.includes(id)) store.dispatch(Cmds.setVideoStyle(store.get(), id));
+    else { const pr = userPresets.find((x) => x.id === id); if (pr) run((d) => Cmds.loadPreset(d, pr.scene)); }
+  };
+  const onDownloadTile = (id: string) => {
+    const pr = userPresets.find((x) => x.id === id);
+    const sc = (id === tileId ? store.get().scene : working[id]) ?? originalOf(id); if (!sc) return;
+    downloadPreset({ ...sc, presetName: pr ? pr.name : i18n.t(`web.style.video.${id}`) });
+  };
+  const onDeleteUserPreset = (id: string) => { setUserPresets((l) => removeUserPreset(l, id)); setActiveUser((a) => (a === id ? null : a)); setWorking((w) => { const n = { ...w }; delete n[id]; return n; }); };
 
   // Phím tắt kiểu DAW (Space phát/dừng, Home về đầu) ở thẻ Preview. Space chỉ thuộc về thanh phát khi nút/radio đang focus
   // do chuột; focus do bàn phím thì Space bấm nút như chuẩn; ô gõ chữ giữ nguyên (lib/transportKeys.ts).
@@ -449,10 +492,12 @@ export function App() {
 
   // Inspector của Preview: Bài, Track (D-57). Mục Hình thức chỉ còn ở bảng Thuộc tính của Editor khi chọn Piano Roll
   // (chủ dự án chốt 2026-11-14): Preview giữ phong cách video, bài và track để chỉnh nhanh.
+  const pianoRef = piano ? (doc.propsRef[piano.id] as Record<string, unknown> | undefined) : undefined;
   const lookSection = (n: number) => (
     <InspectorSection key="look" n={n} id="look" title={i18n.t('web.section.look')} more={more('look', lookEdited)}>
       {piano
         ? <StylePanel style={style} keyboard={keyboard} onStyle={(n2) => run((d) => Cmds.patchNoteStyle(d, n2.base))} onKeyboard={(n2) => run((d) => Cmds.patchKeyboard(d, n2))} lanes={lanes} advanced={showAdv('look')} notePresets={NOTE_PRESETS} onNotePreset={pickNotePreset}
+            pitchRange={{ value: Cmds.pitchRangeOf(piano.properties), reference: pianoRef && typeof pianoRef.pitchRangeMode === 'string' ? { mode: pianoRef.pitchRangeMode as 'FIT_CONTENT' | 'CUSTOM', min: Number(pianoRef.pitchMin), max: Number(pianoRef.pitchMax) } : undefined, onChange: (v) => run((d) => Cmds.setPitchRange(d, v)) }}
             reference={ref} keyboardRef={(doc.propsRef[piano.id] as { keyboard?: { enabled?: boolean } } | undefined)?.keyboard?.enabled}
             playhead={{ ratio: piano.properties.playheadPositionRatio, visible: piano.properties.playheadVisible, visibleRef: (doc.propsRef[piano.id] as { playheadVisible?: boolean } | undefined)?.playheadVisible, reference: playheadRef, onChange: (r) => run((d) => Cmds.setPlayheadRatio(d, r)), onVisible: (v) => run((d) => Cmds.setPlayheadVisible(d, v)) }} />
         : <p className="text-xs text-muted">{i18n.t('web.look.noPiano')}</p>}
@@ -521,7 +566,9 @@ export function App() {
     <div className={`grid h-full min-h-0 ${loaded ? 'lg:grid-cols-[10.5rem_minmax(0,1fr)_20rem] min-[1440px]:grid-cols-[10.5rem_minmax(0,1fr)_22rem]' : ''}`}>
       {loaded && (
         <aside className="relative min-h-0 overflow-y-auto border-b border-line bg-surface lg:border-b-0 lg:border-r">
-          <VideoStyles value={doc.videoStyle} edited={styleEdited} onPick={pickVideoStyle} notice={notice?.doc === doc ? i18n.t('web.styles.changed', { shortcut: shortcuts.undo }) : undefined} thumb={(id) => thumbs[id]} />
+          <VideoStyles value={doc.videoStyle} edited={tileEdited} onPick={pickVideoStyle} thumb={(id) => thumbs[id]}
+            presets={{ items: userPresets.map(({ id, name }) => ({ id, name })), active: userActiveId, dirty: Object.keys(working).filter((k) => k !== tileId), onPick: onPickUserPreset, onAddFile: (f) => void onOpenPreset(f),
+              onDownload: onDownloadTile, onRevert, onDelete: onDeleteUserPreset, problems: [], status: presetOpened ? i18n.t('web.preset.opened', { name: presetOpened }) : undefined }} />
         </aside>
       )}
       <div ref={scrollerRef} className="relative min-h-0 min-w-0 overflow-y-auto bg-page p-6">
@@ -576,10 +623,7 @@ export function App() {
                 <span>{i18n.t('web.settings.proof')}</span>
               </label>
             </InspectorSection>
-            <InspectorSection n={3} id="preset" title={i18n.t('web.settings.preset')}>
-              <PresetSettings onOpen={onOpenPreset} onSave={() => downloadPreset(scene)} problems={presetProblems} opened={presetOpened} />
-            </InspectorSection>
-            <InspectorSection n={4} id="session" title={i18n.t('web.session.title')}>
+            <InspectorSection n={3} id="session" title={i18n.t('web.session.title')}>
               <SessionSettings hasProject={!!parts} busy={busy} state={saveState} missing={missingFiles} onSavePack={() => void onSavePack()} onOpenPack={(f) => void onOpenPack(f)} onDiscard={() => void onDiscard()} />
             </InspectorSection>
           </div>

@@ -7,6 +7,8 @@ import { matchNotePreset } from '../lib/videoScenes.ts';
 import { Select } from './Select.tsx';
 import { ResetButton, TickField } from './Inspector.tsx';
 import { SliderField as Slider } from './SliderField.tsx';
+import { PitchField } from './PitchField.tsx';
+import type { PitchRange } from '../lib/commands.ts';
 
 const MODES: ColorMode[] = ['track', 'custom', 'pitch', 'velocity'];
 /** Trường chỉ có ở Nâng cao (REQ-UI-13). Dùng để biết phần nâng cao đang khác mặc định hay không. */
@@ -18,7 +20,7 @@ const row = 'grid grid-cols-[minmax(0,1fr)_minmax(0,9.5rem)_1.5rem] items-center
  *  `playhead`: vị trí vạch phát (0..1) và hàm đổi; bàn phím bật thì cả hai ô vạch phát bị ẩn (T-71).
  *  `advanced`: hiện cả dòng nâng cao (chế độ Nâng cao, hoặc "Thêm tuỳ chọn" của mục đang mở).
  *  `reference`: kiểu nốt của bộ dựng sẵn đang chọn; thông số khác nó thì có nút ↺ đưa về (D-57). */
-export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset, playhead, reference, keyboardRef }: { reference?: NoteStyle; /** Bàn phím bật/tắt của bộ dựng sẵn áp gần nhất (đích của ↺ ở ô tick Bàn phím). */ keyboardRef?: boolean; playhead?: { ratio: number; visible: boolean; /** Vạch phát hiện/ẩn của bộ dựng sẵn áp gần nhất. */ visibleRef?: boolean; reference?: number; onChange(ratio: number): void; onVisible(visible: boolean): void }; notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean }) {
+export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset, playhead, reference, keyboardRef, pitchRange }: { /** Dải cao độ Piano Roll: Fit content hoặc Custom (nhập theo tên nốt). */ pitchRange?: { value: PitchRange; reference?: PitchRange; onChange(next: PitchRange): void }; reference?: NoteStyle; /** Bàn phím bật/tắt của bộ dựng sẵn áp gần nhất (đích của ↺ ở ô tick Bàn phím). */ keyboardRef?: boolean; playhead?: { ratio: number; visible: boolean; /** Vạch phát hiện/ẩn của bộ dựng sẵn áp gần nhất. */ visibleRef?: boolean; reference?: number; onChange(ratio: number): void; onVisible(visible: boolean): void }; notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean }) {
   const { i18n } = useI18n();
   const b = style.base;
   const set = (patch: Partial<NoteStyle>) => onStyle({ ...style, base: { ...b, ...patch } });
@@ -52,6 +54,7 @@ export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], a
       <Slider id="st-height" label={i18n.t('web.style.heightScale')} value={b.heightScale} min={0.1} max={1.5} step={0.05} reset={ref('heightScale')} onChange={(v) => set({ heightScale: v })} />
       <Slider id="st-radius" label={i18n.t('web.style.cornerRadius')} value={b.cornerRadius} min={0} max={20} hardMax={999} step={1} reset={ref('cornerRadius')} onChange={(v) => set({ cornerRadius: v })} />
       {advanced && <Slider id="st-border" label={i18n.t('web.style.borderWidth')} value={b.borderWidth} min={0} max={6} hardMax={8} step={0.5} reset={ref('borderWidth')} onChange={(v) => set({ borderWidth: v })} />}
+      {pitchRange && <PitchRangeRows {...pitchRange} />}
       <div className="border-t border-line" />
       <h3 className="pt-1 text-xs font-medium text-fg">{i18n.t('web.look.glow')}</h3>
       <Slider id="st-glow" label={i18n.t('web.style.glow')} value={b.glow} min={0} max={1} step={0.05} reset={ref('glow')} onChange={(v) => set({ glow: v })} />
@@ -127,6 +130,33 @@ function GlowSection({ b, set, lanes, advanced, reference }: { b: NoteStyle; set
         </>}
       </>}
       {advanced && <Slider id="st-grel" label={i18n.t('web.glow.release')} value={b.glowRelease} min={0} max={2} hardMax={4} step={0.05} reset={ref('glowRelease')} onChange={(v) => set({ glowRelease: v })} />}
+    </div>
+  );
+}
+
+/** Dải cao độ: "Fit content" (theo nốt của track) hoặc "Custom" (hai ô tên nốt: thấp nhất, cao nhất). */
+function PitchRangeRows({ value, reference, onChange }: { value: PitchRange; reference?: PitchRange; onChange(next: PitchRange): void }) {
+  const { i18n } = useI18n();
+  const custom = value.mode === 'CUSTOM';
+  return (
+    <div className="space-y-2" data-testid="pitch-range">
+      <div className="flex items-center justify-between gap-2 text-xs text-muted">
+        <span>{i18n.t('web.pitch.title')}</span>
+        <ResetButton label={i18n.t('web.pitch.title')} changed={!!reference && JSON.stringify(reference) !== JSON.stringify(value)} onReset={() => onChange(reference!)} />
+      </div>
+      <div className="seg w-full" role="radiogroup" aria-label={i18n.t('web.pitch.title')} onKeyDown={radioKeys}>
+        {(['FIT_CONTENT', 'CUSTOM'] as const).map((m) => (
+          <button key={m} type="button" role="radio" aria-checked={value.mode === m} tabIndex={radioTab(value.mode === m)} onClick={() => onChange({ ...value, mode: m })} className="seg-btn flex-1" data-testid={`pitch-mode-${m}`}>
+            {i18n.t(m === 'CUSTOM' ? 'web.pitch.custom' : 'web.pitch.fit')}
+          </button>
+        ))}
+      </div>
+      {custom && (
+        <div className="grid grid-cols-2 gap-2 text-xs text-muted">
+          <PitchField id="st-pitch-min" label={i18n.t('web.pitch.min')} value={value.min} onChange={(v) => onChange({ ...value, min: v, max: Math.max(v, value.max) })} />
+          <PitchField id="st-pitch-max" label={i18n.t('web.pitch.max')} value={value.max} onChange={(v) => onChange({ ...value, max: v, min: Math.min(v, value.min) })} />
+        </div>
+      )}
     </div>
   );
 }

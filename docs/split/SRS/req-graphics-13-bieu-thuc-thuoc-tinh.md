@@ -5,7 +5,7 @@ section: "REQ-GRAPHICS-13: Biểu thức thuộc tính"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) > REQ-GRAPHICS-13: Biểu thức thuộc tính"
 chunk: req-graphics-13-bieu-thuc-thuoc-tinh.md
 source_lines: 885-887
-source_sha1: be43325ca4
+source_sha1: 4e115a15c2
 ids: [REQ-GRAPHICS-13]
 ---
 #### REQ-GRAPHICS-13: Biểu thức thuộc tính

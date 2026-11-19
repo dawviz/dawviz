@@ -127,9 +127,10 @@ test('tracksFor + tầm cao độ: MANUAL theo chỉ số track; FIT_CONTENT ±1
   const w = pianoRollWidget({ x: 0, y: 0, width: 10, height: 10, rotation: 0 });
   assert.equal(tracksFor({ ...w, trackMappingMode: 'MANUAL', assignedTrackIndices: [99] }, derived.index).length, 0);
   assert.equal(tracksFor(w, derived.index).length, derived.index.tracks.length);
-  assert.deepEqual(pianoRollPitchRange(w.properties, derived.index.tracks), [20, 106]);
+  assert.deepEqual(pianoRollPitchRange({ ...w.properties, pitchRangeMode: 'FIT_CONTENT' }, derived.index.tracks), [20, 106]);
   assert.deepEqual(pianoRollPitchRange({ ...w.properties, pitchRangeMode: 'CUSTOM', pitchMin: 36, pitchMax: 72 }, []), [36, 72]);
-  assert.deepEqual(pianoRollPitchRange(w.properties, []), [48, 84]);
+  assert.deepEqual(pianoRollPitchRange({ ...w.properties, pitchRangeMode: 'FIT_CONTENT' }, []), [48, 84]);
+  assert.deepEqual(pianoRollPitchRange(w.properties, []), [21, 108]); // mặc định: hiện đủ 88 phím
 });
 
 test('sanitizeScene: preset mẫu trong SRS đọc được; trường lạ bị bỏ, giá trị sai về mặc định kèm cảnh báo; hỏng → ERR_PRESET_INVALID', () => {

@@ -17,10 +17,11 @@ function rec() { // cùng định dạng với lúc lấy mã băm cũ
 const hash = (s: string) => crypto.createHash('sha256').update(s).digest('hex').slice(0, 16);
 // T-71 đổi chủ ý ba điều nên mã băm lấy lại: (1) bàn phím bật (mặc định) → vạch phát ở mép bàn phím; (2) nốt đang phát vẽ sau cùng;
 // (3) tỉ lệ thời gian = bề rộng widget / visibleSeconds, không trừ bề rộng bàn phím.
+// Lấy lại lần nữa khi dải cao độ mặc định đổi từ FIT_CONTENT sang CUSTOM 21–108 (hiện đủ 88 phím): chỉ đổi vị trí dọc của nốt/phím.
 // Đã kiểm khi tắt bàn phím: mã trước và sau T-71 vẽ cùng tập lệnh, chỉ khác thứ tự. In mã băm mới: PRINT_HASH=1.
 const GOLDEN: Record<string, string> = {
-  'default@0': '029e1707a2958a2b', 'default@3.3': '8dd6ab8cc67542ee', 'default@10': 'cd3c97b628b38349', 'default@25': 'a382c07956646c48',
-  'style:neon@10': 'd5d6f082c08f26e9', 'style:soft@10': '7a74e9471d825802', 'style:flat@10': 'ccb573f6e204ceeb', 'style:outline@10': '083b13140edaf24c',
+  'default@0': '89515fe266159688', 'default@3.3': '1393d9bea3cc6274', 'default@10': '37cbe2121a4032a0', 'default@25': '694f6d7ead2438f8',
+  'style:neon@10': 'aaf82025d8511e54', 'style:soft@10': '23320d79bc47d207', 'style:flat@10': 'a8b0441c855cdd10', 'style:outline@10': 'dfe80ea1c452f893',
 };
 
 test('preset cũ và bốn kiểu dựng sẵn vẽ ra đúng chuỗi lệnh như trước T-69 (màu theo trạng thái = null)', async () => {

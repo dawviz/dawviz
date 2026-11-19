@@ -122,6 +122,7 @@ Select the Piano roll widget (or click **Edit note look** when nothing is select
 - **Presets:** Neon, Soft bars, Flat, Outline. Pick one and adjust from there.
 - **Colour:** track colour, one custom colour, by pitch, or by velocity.
 - **Opacity**, **Note thickness**, **Corner radius**, **Outline width** (Advanced), **Idle opacity** (Advanced: opacity of notes that haven't played yet or have passed).
+- **Pitch range:** **Fit content** follows the lowest and highest notes of the tracks (so a track with few notes is zoomed in); **Custom** (the default, A0–C8, all 88 keys) lets you type the lowest and highest note by name, such as `C2`, `C#3`, `Db4`. Notes outside the range are cut off. Preset files store the range as MIDI numbers (`pitchMin`, `pitchMax`).
 - **Show piano keyboard:** draws a keyboard on the left edge; keys light up as notes reach them. With the keyboard on, the playhead sits at the keyboard's edge, so both **Show playhead** and **Playhead position** are hidden. Turn the keyboard off to adjust the playhead.
 - **Show playhead:** when hidden, notes still play at the same place; the line just isn't drawn. While the line is hidden, **Playhead position** is hidden too; show the line again to adjust it.
 

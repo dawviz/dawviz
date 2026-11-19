@@ -35,9 +35,9 @@
       "assignedTrackIndices": [],
       "properties": {
         "orientation": "HORIZONTAL",
-        "pitchRangeMode": "FIT_CONTENT",
-        "pitchMin": 48,
-        "pitchMax": 84,
+        "pitchRangeMode": "CUSTOM",
+        "pitchMin": 21,
+        "pitchMax": 108,
         "lookaheadSeconds": 1,
         "playheadPositionRatio": 0.84,
         "visibleSeconds": 6.25,

@@ -16,7 +16,7 @@
       "layout": { "x": 80, "y": 150, "width": 690, "height": 770, "rotation": 0, "anchor": { "x": 0.5, "y": 0.5 } },
       "trackMappingMode": "ALL", "assignedTrackIndices": [],
       "properties": {
-        "orientation": "HORIZONTAL", "pitchRangeMode": "FIT_CONTENT", "pitchMin": 48, "pitchMax": 84,
+        "orientation": "HORIZONTAL", "pitchRangeMode": "CUSTOM", "pitchMin": 21, "pitchMax": 108,
         "lookaheadSeconds": 1, "playheadPositionRatio": 0.84, "visibleSeconds": 6.25,
         "noteStyle": {
           "base": {

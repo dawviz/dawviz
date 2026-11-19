@@ -82,20 +82,25 @@ describe('hoàn tác trong ứng dụng (T-07)', () => {
     expect(select.value).toBe('neon');
   });
 
-  it('đổi phong cách khi đang chỉnh tay: có thông báo nhỏ kèm phím tắt, không chặn; hoàn tác trả lại chỉnh tay và thông báo biến mất', async () => {
+  it('mỗi phong cách giữ bản chỉnh dở của riêng nó: sang ô khác rồi quay lại vẫn còn; × về gốc; bấm lại ô đang chọn không mất gì', async () => {
     await openProject();
-    expect(screen.queryByTestId('style-notice')).toBeNull();
+    const before = val(OPACITY);
+    expect(screen.queryByTestId('edited-paper')).toBeNull();
     setVal(OPACITY, '0.3');
+    expect(screen.getByTestId('edited-paper')).toBeInTheDocument();
+    fireEvent.click(radios()[0]); // bấm lại ô đang chọn: không đổi gì
+    expect(val(OPACITY)).toBe('0.3');
     fireEvent.click(radios()[1]);
-    expect(screen.getByTestId('style-notice').textContent).toMatch(/Ctrl\+Z|⌘Z/);
-    expect(screen.getByTestId('style-notice')).not.toHaveTextContent(/undefined|web\./);
-    expect(screen.queryByRole('dialog')).toBeNull();
-    ctrlZ();
-    expect(screen.queryByTestId('style-notice')).toBeNull();
+    expect(checked()).toBe(1);
+    expect(val(OPACITY)).not.toBe('0.3');
+    expect(screen.getByTestId('edited-paper')).toBeInTheDocument(); // ô không chọn vẫn nhớ đã chỉnh
+    expect(screen.getByTestId('preset-revert-paper')).toBeInTheDocument();
+    fireEvent.click(radios()[0]);
     expect(checked()).toBe(0); expect(val(OPACITY)).toBe('0.3');
-    // đổi khi chưa chỉnh gì: không có thông báo
-    ctrlZ(); fireEvent.click(radios()[1]);
-    expect(screen.queryByTestId('style-notice')).toBeNull();
+    fireEvent.click(screen.getByTestId('preset-revert-paper')); // × = về bản gốc
+    expect(val(OPACITY)).toBe(before);
+    expect(screen.queryByTestId('edited-paper')).toBeNull();
+    ctrlZ(); expect(val(OPACITY)).toBe('0.3'); // hoàn tác vẫn được
   });
 
   it('kéo trên ô số (pointerdown → nhiều lần di chuyển → pointerup) là MỘT bước hoàn tác', async () => {
@@ -300,59 +305,98 @@ describe('danh sách lịch sử (T-07 bước 2b)', () => {
   });
 });
 
-describe('preset .json trong ứng dụng (T-07)', () => {
-  const openSettings = async () => { fireEvent.click(screen.getByRole('tab', { name: /^(Settings|Cài đặt)/ })); await screen.findByTestId('preset-settings'); };
+describe('preset .json trong cột Video styles (T-07)', () => {
   const feed = async (text: string, size = text.length) => {
     const f = new File([text], 'p.json', { type: 'application/json' }); Object.defineProperty(f, 'size', { value: size });
     await act(async () => { fireEvent.change(screen.getByTestId('preset-input'), { target: { files: [f] } }); });
   };
   const valid = (extra: object = {}) => JSON.stringify({ schemaVersion: SCENE_SCHEMA_VERSION, presetName: 'Test X', canvas: { designWidth: 1280, designHeight: 720 }, widgets: [], ...extra });
+  const page = () => document.body.textContent ?? '';
+  beforeEach(() => { try { localStorage.removeItem('dawviz.prefs.v1.userPresets'); } catch { /* bỏ qua */ } });
 
-  it('preset hợp lệ: nạp được, báo đã mở, hoàn tác được; lưu tạo tệp tải xuống', async () => {
-    await openProject(); await openSettings();
+  it('ô dấu cộng: nạp preset hợp lệ thành ô mới, báo đã mở, hoàn tác được; ô có nút tải xuống', async () => {
+    await openProject();
+    expect(screen.getByTestId('preset-add')).toBeInTheDocument();
     await feed(valid());
     await waitFor(() => expect(screen.getByTestId('preset-status').textContent).toMatch(/Test X/));
+    expect(screen.getByRole('radio', { name: /Test X/ })).toBeChecked();
     expect(screen.queryByText(/WARN_|ERR_/)).toBeNull();
     expect(undoBtn()).toBeEnabled();
     ctrlZ();
-    expect(screen.getByTestId('preset-status')).toBeInTheDocument();
-    // lưu
+    await waitFor(() => expect(screen.getByRole('radio', { name: /Test X/ })).not.toBeChecked());
+    // tải xuống từ chính ô đó
     const created: Blob[] = [];
     (URL as any).createObjectURL = (b: Blob) => { created.push(b); return 'blob:x'; }; (URL as any).revokeObjectURL = () => {};
     const names: string[] = [];
     const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (this: HTMLAnchorElement) { names.push(this.download); });
-    fireEvent.click(screen.getByTestId('preset-save'));
+    fireEvent.click(screen.getByRole('button', { name: /(Download|Tải xuống) “Test X”/ }));
     click.mockRestore();
-    expect(created).toHaveLength(1); expect(names).toEqual(['paper.json']) // đã hoàn tác về Paper;
+    expect(created).toHaveLength(1); expect(names).toEqual(['test-x.json']);
     const saved = JSON.parse(await created[0].text());
-    expect(saved.schemaVersion).toBe(SCENE_SCHEMA_VERSION); expect(saved.widgets.length).toBeGreaterThan(0);
+    expect(saved.schemaVersion).toBe(SCENE_SCHEMA_VERSION); expect(saved.canvas.designWidth).toBe(1280);
+  });
+
+  it('preset đã thêm nhớ theo trình duyệt; xoá khỏi ô thì mất', async () => {
+    await openProject();
+    await feed(valid());
+    await waitFor(() => expect(screen.getByRole('radio', { name: /Test X/ })).toBeInTheDocument());
+    expect(JSON.parse(localStorage.getItem('dawviz.prefs.v1.userPresets')!).items).toHaveLength(1);
+    fireEvent.click(screen.getByRole('button', { name: /(Delete|Xoá) “Test X”/ }));
+    await waitFor(() => expect(screen.queryByRole('radio', { name: /Test X/ })).toBeNull());
+    expect(JSON.parse(localStorage.getItem('dawviz.prefs.v1.userPresets')!).items).toHaveLength(0);
+  });
+
+  it('preset của người dùng cũng giữ bản chỉnh dở; × về bản đã lưu; ↓ tải đúng bản đang thấy', async () => {
+    await openProject();
+    await feed(valid({ widgets: [{ type: 'PIANO_ROLL', id: 'pr', layout: { x: 0, y: 0, width: 1280, height: 720, rotation: 0 } }] }));
+    await waitFor(() => expect(screen.getByTestId(/^user-preset-/)).toBeInTheDocument());
+    // Sau khi chỉnh ta ở thẻ Editor (cột còn trong DOM nhưng ẩn): truy cập theo testid, không theo vai trò.
+    const li = () => screen.getByTestId(/^user-preset-/);
+    const radio = () => li().querySelector<HTMLElement>('[role="radio"]')!;
+    const btn = (re: RegExp) => [...li().querySelectorAll<HTMLButtonElement>('button:not([role="radio"])')].find((b) => re.test(b.getAttribute('aria-label') ?? ''))!;
+    expect(radio().getAttribute('aria-checked')).toBe('true');
+    const before = val(OPACITY);
+    setVal(OPACITY, '0.4');
+    expect(within(li()).getByTestId(/^edited-/)).toBeInTheDocument();
+    fireEvent.click(radios()[0]); // sang Paper
+    expect(radio().getAttribute('aria-checked')).toBe('false');
+    fireEvent.click(radio()); // quay lại: còn nguyên chỉnh sửa
+    expect(val(OPACITY)).toBe('0.4');
+    const created: Blob[] = [];
+    (URL as any).createObjectURL = (b: Blob) => { created.push(b); return 'blob:x'; }; (URL as any).revokeObjectURL = () => {};
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+    fireEvent.click(btn(/Download|Tải xuống/));
+    click.mockRestore();
+    expect(JSON.parse(await created[0].text()).widgets[0].properties.noteStyle.base.opacity).toBe(0.4);
+    fireEvent.click(btn(/Revert|Về bản gốc/));
+    expect(val(OPACITY)).toBe(before);
   });
 
   it('preset cũ 0.3.0: nạp và hiện cảnh báo đã nâng phiên bản', async () => {
-    await openProject(); await openSettings();
+    await openProject();
     await feed(valid({ schemaVersion: '0.3.0' }));
-    const box = await screen.findByTestId('preset-settings');
-    await waitFor(() => expect(box.textContent).toMatch(/0\.3\.0/));
-    expect(box.textContent).toMatch(new RegExp(SCENE_SCHEMA_VERSION.replace(/\./g, '\\.')));
+    await waitFor(() => expect(page()).toMatch(new RegExp(SCENE_SCHEMA_VERSION.replace(/\./g, '\\.'))));
   });
 
-  it('preset hỏng, quá lớn, mới hơn: hiện lỗi đã dịch, không đổi scene, không thêm bước hoàn tác', async () => {
-    await openProject(); await openSettings();
+  it('preset hỏng, quá lớn, mới hơn: hiện lỗi đã dịch, không đổi scene, không thêm ô, không thêm bước hoàn tác', async () => {
+    await openProject();
+    const before = screen.getAllByRole('radio').length;
     for (const [text, size, re] of [
       ['{ không phải json', undefined, /(damaged|hỏng)/i],
       [valid(), PRESET_LIMITS.maxBytes + 1, /(larger|lớn hơn)/i],
       [valid({ schemaVersion: '0.9.0' }), undefined, /(newer|mới hơn)/i],
     ] as [string, number | undefined, RegExp][]) {
       await feed(text, size);
-      await waitFor(() => expect(screen.getByTestId('preset-settings').textContent).toMatch(re));
+      await waitFor(() => expect(page()).toMatch(re));
     }
+    expect(screen.getAllByRole('radio')).toHaveLength(before);
     expect(undoBtn()).toBeDisabled();
   });
 
   it('preset độc hại: khoá __proto__ bị bỏ và có cảnh báo; không làm bẩn Object.prototype', async () => {
-    await openProject(); await openSettings();
+    await openProject();
     await feed(`{"schemaVersion":"${SCENE_SCHEMA_VERSION}","__proto__":{"polluted":1},"canvas":{},"widgets":[]}`);
-    await waitFor(() => expect(screen.getByTestId('preset-settings').textContent).toMatch(/(not allowed|không được phép)/));
+    await waitFor(() => expect(page()).toMatch(/(not allowed|không được phép)/));
     expect(({} as any).polluted).toBeUndefined();
   });
 });

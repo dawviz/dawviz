@@ -38,7 +38,7 @@ dawviz/
 │     │  │  ├─ MissingMidiPanel.tsx
 │     │  │  ├─ Notices.tsx
 │     │  │  ├─ NumberField.tsx
-│     │  │  ├─ PresetSettings.tsx
+│     │  │  ├─ PitchField.tsx
 │     │  │  ├─ SceneCanvas.tsx
 │     │  │  ├─ SchemaPanel.tsx
 │     │  │  ├─ Select.tsx
@@ -110,6 +110,8 @@ dawviz/
 │     │  │  ├─ parserClient.test.ts
 │     │  │  ├─ parserClient.ts
 │     │  │  ├─ peaksClient.ts
+│     │  │  ├─ pitchText.test.ts
+│     │  │  ├─ pitchText.ts
 │     │  │  ├─ playback.test.ts
 │     │  │  ├─ playback.ts
 │     │  │  ├─ prefs.test.ts
@@ -138,6 +140,7 @@ dawviz/
 │     │  │  ├─ undoKeys.test.ts
 │     │  │  ├─ undoKeys.ts
 │     │  │  ├─ usePref.ts
+│     │  │  ├─ userPresets.ts
 │     │  │  ├─ useStageWidth.ts
 │     │  │  ├─ videoScenes.ts
 │     │  │  ├─ widgetFields.test.ts
@@ -806,7 +809,7 @@ interface CanvasGradientLike
 interface DrawEnv   // Phép biến đổi đang áp khi vẽ một widget: cần cho đổ bóng chữ, vì shadowOffset/shadowBlur của Canvas tính theo…
 interface RenderTarget   // `width`/`height` theo điểm ảnh thật của đích vẽ.
 function tracksFor(spec: WidgetSpec<unknown>, index: TimelineIndex): TrackIndex[]   // Chọn track cho widget theo trackMappingMode (SRS REQ-STORAGE-02).
-function pianoRollPitchRange(p: PianoRollProps, tracks: TrackIndex[]): [number, number]   // Tầm cao độ của Piano Roll: FIT_CONTENT lấy min/max của track được gán (±1), rỗng thì C3–C6.
+function pianoRollPitchRange(p: PianoRollProps, tracks: TrackIndex[]): [number, number]   // Tầm cao độ của Piano Roll (mặc định CUSTOM 21–108): FIT_CONTENT lấy min/max của track được gán (±1), rỗng thì…
 function pianoRollGeometry(p: Pick<PianoRollProps, 'keyboard' | 'playheadPositionRatio' | 'visibleSeconds'>, width: number)   // Hình học trục thời gian của Piano Roll (T-71). Tỉ lệ thời gian cố định: pt/giây = width / visibleSeconds, KHÔ…
 const pianoRollRenderer
 const WIDGET_RENDERERS   // Bảng renderer theo loại. Widget chưa có renderer được bỏ qua khi vẽ (vẫn giữ trong Scene).
@@ -1121,6 +1124,8 @@ const DistributeH = (p: P) =>
 const DistributeV = (p: P) =>
 const Duplicate = (p: P) =>
 const Trash = (p: P) =>
+const Download = (p: P) =>
+const Close = (p: P) =>
 ```
 
 #### `apps/web/src/components/Inspector.tsx`
@@ -1166,12 +1171,12 @@ function Notices({ problems, basic = false }: { problems: Problem[]; basic?: boo
 function NumberField({ id, label, value, onChange, spec, className = '', disabled, describedBy, range, scrub = true }: { id?: string; label: string; value: number; onChange(v: number): void; spec: NumberSpec; className?: string; disabled?: boolean; describedBy?: string; range?: [number, number]; scrub?: boolean })   // `disabled`: ô bị khoá (vd. vạch phát khi bật bàn phím, T-71); `describedBy`: id đoạn chú thích giải thích lý …
 ```
 
-#### `apps/web/src/components/PresetSettings.tsx`
+#### `apps/web/src/components/PitchField.tsx`
 
-Mục "Preset" ở thẻ Settings (T-07, REQ-STORAGE-02): mở và lưu preset .json. Cảnh báo WARN_PRESET_* và lỗi hiện ngay tại đây.
+Ô nhập cao độ theo tên nốt (C1, C#3, Db2) cho dải cao độ. Gõ xong Enter hoặc rời ô để áp; sai cú pháp thì trả về giá trị cũ, Esc huỷ.
 
 ```text
-function PresetSettings({ onOpen, onSave, problems, opened }: { onOpen(file: File): void; onSave(): void; problems: Problem[]; opened: string | null })
+function PitchField({ id, label, value, onChange }: { id: string; label: string; value: number; onChange(v: number): void })
 ```
 
 #### `apps/web/src/components/SceneCanvas.tsx`
@@ -1241,7 +1246,7 @@ Mục "Hình thức" của inspector: kiểu dáng nốt (toàn cục) và bàn 
 
 ```text
 const ADVANCED_STYLE_KEYS   // Trường chỉ có ở Nâng cao (REQ-UI-13). Dùng để biết phần nâng cao đang khác mặc định hay không.
-function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset, playhead, reference, keyboardRef }: { reference?: NoteStyle; /** Bàn phím bật/tắt của bộ dựng sẵn áp gần nhất (đích của ↺ ở ô tick Bàn phím). */ keyboardRef?: boolean; playhead?: { ratio: number; visible: boolean; /** Vạch phát hiện/ẩn của bộ dựng sẵn áp gần nhất. */ visibleRef?: boolean; reference?: number; onChange(ratio: number): void; onVisible(visible: boolean): void }; notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean })   // `lanes`: tên lane automation có trong dự án đang mở (cho nguồn phát sáng "automation"). `playhead`: vị trí vạ…
+function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset, playhead, reference, keyboardRef, pitchRange }: { /** Dải cao độ Piano Roll: Fit content hoặc Custom (nhập theo tên nốt). */ pitchRange?: { value: PitchRange; reference?: PitchRange; onChange(next: PitchRange): void }; reference?: NoteStyle; /** Bàn phím bật/tắt của bộ dựng sẵn áp gần nhất (đích của ↺ ở ô tick Bàn phím). */ keyboardRef?: boolean; playhead?: { ratio: number; visible: boolean; /** Vạch phát hiện/ẩn của bộ dựng sẵn áp gần nhất. */ visibleRef?: boolean; reference?: number; onChange(ratio: number): void; onVisible(visible: boolean): void }; notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean })   // `lanes`: tên lane automation có trong dự án đang mở (cho nguồn phát sáng "automation"). `playhead`: vị trí vạ…
 ```
 
 #### `apps/web/src/components/TempoPanel.tsx`
@@ -1305,7 +1310,8 @@ Cột "Video styles" / "Phong cách video" (UI-DIRECTION 5.3): chọn phong các
 ```text
 re-export { VIDEO_STYLES, videoStyleBase }
 function isEdited(id: string, base: NoteStyle): boolean   // Kiểu nốt hiện tại còn đúng như phong cách đã chọn không (để hiện "đã chỉnh").
-function VideoStyles({ value, edited, onPick, notice, thumb }: { value: string; edited: boolean; onPick(id: string): void; notice?: string; thumb?(id: string): string | undefined })   // `notice`: thông báo nhỏ không chặn sau khi đổi phong cách làm mất chỉnh tay (hoàn tác bằng Ctrl+Z hoặc nút ở …
+interface UserPresets   // Cột phong cách + preset của người dùng. Mỗi ô (dựng sẵn hay của người dùng) giữ bản chỉnh dở của riêng nó khi…
+function VideoStyles({ value, edited, onPick, thumb, presets }: { value: string; edited: boolean; onPick(id: string): void; thumb?(id: string): string | undefined; presets?: UserPresets })   // `edited`: ô đang chọn đã được chỉnh so với bản gốc.
 ```
 
 #### `apps/web/src/components/WidgetSettings.tsx`
@@ -1464,10 +1470,13 @@ const patchNoteStyle = (d: Doc, next: NoteStyle) =>   // Đổi kiểu nốt to�
 const applyNotePreset = (d: Doc, base: NoteStyle, presetId?: string) =>   // Chọn bộ kiểu nốt dựng sẵn: thay cả `base`; hoàn tác trả lại đủ các chỉnh tay trước đó. Không gộp.
 const patchKeyboard = (d: Doc, next: KeyboardStyle) =>
 const setPlayheadRatio = (d: Doc, ratio: number) =>   // Vị trí vạch phát của Piano Roll (0,05–0,95 bề rộng, REQ-GRAPHICS-16). Kéo/gõ liên tiếp gộp thành một bước. Kh…
+interface PitchRange   // Dải cao độ của Piano Roll: Fit content hoặc Custom (pitchMin/pitchMax là số MIDI, min ≤ max). Gõ liên tiếp gộ…
+const pitchRangeOf = (p: PianoRollProps) =>
+const setPitchRange = (d: Doc, next: PitchRange) =>
 const setPlayheadVisible = (d: Doc, visible: boolean) =>   // Hiện/ẩn vạch phát (REQ-GRAPHICS-16). Ẩn chỉ bỏ nét vẽ; nốt vẫn phát tại vị trí vạch.
 const patchTrackStyle = (d: Doc, id: TrackId, patch: Partial<NoteStyle> | null) =>   // Ghi đè kiểu nốt của một track (`patch` = null: bỏ ghi đè).
-const setVideoStyle = (d: Doc, id: string) =>   // Thay cả scene bằng scene của phong cách `id`, giữ ghi đè theo track (hành vi cũ). Kiểu nốt tay chỉnh và bố cụ…
-const loadPreset = (d: Doc, scene: SceneDocument) =>   // Mở preset: thay scene (và đánh dấu phong cách 'custom'). Một bước hoàn tác.
+const setVideoStyle = (d: Doc, id: string, working?: SceneDocument) =>   // Thay cả scene bằng scene của phong cách `id`, giữ ghi đè theo track (hành vi cũ). Kiểu nốt tay chỉnh và bố cụ…
+const loadPreset = (d: Doc, scene: SceneDocument, working?: SceneDocument) =>   // Mở preset: thay scene (và đánh dấu phong cách 'custom'). Một bước hoàn tác. `working`: bản đã chỉnh dở của pr…
 const patchBrightness = (d: Doc, id: TrackId, next: BrightnessConfig) =>   // ── độ sáng nền theo track ──
 const toggleHidden = (d: Doc, id: TrackId) =>
 const toggleSolo = (d: Doc, id: TrackId) =>
@@ -1825,6 +1834,14 @@ function computePeaksSync(buf: PcmBuffer, chunk = CHUNK_SAMPLES): Float32Array  
 async function peaksFor(id: string, buf: PcmBuffer, makeWorker: () => PeaksWorkerLike): Promise<Float32Array>   // Bộ đệm ≤ 1 tệp (≈ 0,9 MB cho 20 phút).
 ```
 
+#### `apps/web/src/lib/pitchText.ts`
+
+Đọc/ghi tên nốt cho ô "Dải cao độ" (C1, C#3, Db2). Tệp JSON vẫn lưu số MIDI (pitchMin/pitchMax); chỉ giao diện dùng tên nốt.
+
+```text
+function parsePitch(text: string): number | null   // "C4" → 60, "c#3" → 49, "Db2" → 37, "60" → 60. Ngoài 0–127 hoặc sai cú pháp → null.
+```
+
 #### `apps/web/src/lib/playback.ts`
 
 Kho đồng hồ phát nằm ngoài state của React (T-70): vòng requestAnimationFrame chỉ cập nhật kho này, và chỉ các phần
@@ -2058,6 +2075,21 @@ const DEFAULT_UI
 function sanitizeUi(r: Partial<UiPrefs>): UiPrefs
 ```
 
+#### `apps/web/src/lib/userPresets.ts`
+
+Preset do người dùng thêm (mở từ tệp .json hoặc "Lưu thành preset" từ phong cách đang chỉnh): lưu theo trình duyệt (localStorage),
+
+```text
+interface UserPreset
+const MAX_USER_PRESETS
+const cleanPresetName = (s: string, fallback = 'Preset') =>
+function loadUserPresets(): UserPreset[]
+const saveUserPresets = (items: UserPreset[]) =>
+function addUserPreset(list: UserPreset[], name: string, scene: SceneDocument):    // Thêm một preset; cùng tên và cùng nội dung với mục có sẵn thì dùng lại mục đó. Đầy thì bỏ mục cũ nhất.
+const removeUserPreset = (list: UserPreset[], id: string) =>
+const matchUserPreset = (list: UserPreset[], scene: SceneDocument) =>   // Preset có scene đúng bằng scene hiện tại (để đánh dấu ô đang chọn), nếu có.
+```
+
 #### `apps/web/src/lib/useStageWidth.ts`
 
 Chiều rộng khung xem trước (px), tính theo chỗ còn lại thực sự trong vùng cuộn giữa: khung + dòng thông số + thanh phát
@@ -2083,6 +2115,9 @@ function matchNotePreset(base: NoteStyle): string   // Bộ kiểu nốt dựng 
 function videoStyleBase(id: string): NoteStyle   // Kiểu nốt gốc của một phong cách (để biết "đã chỉnh").
 const videoStyleKeyboard = (id: string) =>   // Bàn phím piano có bật sẵn không (Paper không có bàn phím).
 function sceneForStyle(id: string, style: StyleConfig, keyboard: Partial<Pick<KeyboardStyle, 'enabled'>> = {}): SceneDocument   // Scene của phong cách `id` với kiểu nốt và bàn phím hiện tại. Trả bản sao mới, không đụng PAPER_SCENE.
+const pristineScene = (id: string) =>   // Scene gốc của một phong cách dựng sẵn (không ghi đè theo track): mốc để biết "đã chỉnh" và để quay về gốc.
+function withoutTrackOverrides(s: SceneDocument): SceneDocument   // Bản sao scene mà Piano Roll không còn ghi đè theo track. Ghi đè theo track đi theo dự án, không tính là chỉnh…
+function withTrackOverrides(s: SceneDocument, tracks: StyleConfig['tracks']): SceneDocument   // Scene `s` mang ghi đè theo track của `tracks` (dùng khi trở lại một phong cách đã chỉnh dở).
 ```
 
 #### `apps/web/src/lib/widgetFields.ts`
@@ -2197,6 +2232,7 @@ type ParseResponse
 - `apps/web/src/lib/masterClock.test.ts`
 - `apps/web/src/lib/numberInput.test.ts`
 - `apps/web/src/lib/parserClient.test.ts`
+- `apps/web/src/lib/pitchText.test.ts`
 - `apps/web/src/lib/playback.test.ts`
 - `apps/web/src/lib/prefs.test.ts`
 - `apps/web/src/lib/presetFile.test.ts`
@@ -2234,4 +2270,4 @@ type ParseResponse
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 899 ký hiệu công khai -->
+<!-- 10 thư mục src, 917 ký hiệu công khai -->

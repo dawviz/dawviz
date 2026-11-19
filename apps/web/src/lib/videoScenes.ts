@@ -32,3 +32,18 @@ export function sceneForStyle(id: string, style: StyleConfig, keyboard: Partial<
   w.properties = { ...w.properties, noteStyle: style, keyboard: { ...w.properties.keyboard, enabled: keyboard.enabled ?? videoStyleKeyboard(id) } };
   return s;
 }
+
+/** Scene gốc của một phong cách dựng sẵn (không ghi đè theo track): mốc để biết "đã chỉnh" và để quay về gốc. */
+export const pristineScene = (id: string): SceneDocument => sceneForStyle(id, { base: videoStyleBase(id), tracks: {} }, {});
+/** Bản sao scene mà Piano Roll không còn ghi đè theo track. Ghi đè theo track đi theo dự án, không tính là chỉnh của phong cách. */
+export function withoutTrackOverrides(s: SceneDocument): SceneDocument {
+  const c = structuredClone(s); const w = pianoOf(c);
+  if (w) w.properties.noteStyle = { ...w.properties.noteStyle, tracks: {} };
+  return c;
+}
+/** Scene `s` mang ghi đè theo track của `tracks` (dùng khi trở lại một phong cách đã chỉnh dở). */
+export function withTrackOverrides(s: SceneDocument, tracks: StyleConfig['tracks']): SceneDocument {
+  const c = structuredClone(s); const w = pianoOf(c);
+  if (w) w.properties.noteStyle = { ...w.properties.noteStyle, tracks: structuredClone(tracks) };
+  return c;
+}

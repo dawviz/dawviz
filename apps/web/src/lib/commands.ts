@@ -4,7 +4,7 @@ import type { BrightnessConfig, NoteStyle, KeyboardStyle, PianoRollProps, SceneD
 import { widgetDefaults } from '@dawviz/render-core';
 import type { Command } from './store.ts';
 import { clampOffsetMs } from './audioMap.ts';
-import { sceneForStyle, videoStyleBase, videoStyleKeyboard } from './videoScenes.ts';
+import { sceneForStyle, videoStyleBase, videoStyleKeyboard, withTrackOverrides } from './videoScenes.ts';
 
 export type TrackId = string;
 export interface Doc {
@@ -87,6 +87,15 @@ export const setPlayheadRatio = (d: Doc, ratio: number): Cmd | null => {
   const v = Math.round(Math.min(0.95, Math.max(0.05, ratio)) * 100) / 100;
   return slice(d, 'setPlayheadRatio', 'web.cmd.playhead', (x) => pianoOf(x.scene)!.properties.playheadPositionRatio, (x, r) => withPiano(x, (p) => ({ ...p, playheadPositionRatio: r })), v, 'playhead.ratio');
 };
+/** Dải cao độ của Piano Roll: Fit content hoặc Custom (pitchMin/pitchMax là số MIDI, min ≤ max). Gõ liên tiếp gộp một bước. */
+export interface PitchRange { mode: 'FIT_CONTENT' | 'CUSTOM'; min: number; max: number }
+export const pitchRangeOf = (p: PianoRollProps): PitchRange => ({ mode: p.pitchRangeMode, min: p.pitchMin, max: p.pitchMax });
+export const setPitchRange = (d: Doc, next: PitchRange): Cmd | null => {
+  if (!pianoOf(d.scene)) return null;
+  const lo = Math.max(0, Math.min(127, Math.round(Math.min(next.min, next.max)))), hi = Math.max(0, Math.min(127, Math.round(Math.max(next.min, next.max))));
+  return slice(d, 'setPitchRange', 'web.cmd.pitchRange', (x) => pitchRangeOf(pianoOf(x.scene)!.properties),
+    (x, v) => withPiano(x, (p) => ({ ...p, pitchRangeMode: v.mode, pitchMin: v.min, pitchMax: v.max })), { mode: next.mode, min: lo, max: hi }, 'pitch.range');
+};
 /** Hiện/ẩn vạch phát (REQ-GRAPHICS-16). Ẩn chỉ bỏ nét vẽ; nốt vẫn phát tại vị trí vạch. */
 export const setPlayheadVisible = (d: Doc, visible: boolean): Cmd | null => {
   if (!pianoOf(d.scene)) return null;
@@ -109,17 +118,19 @@ export const patchTrackStyle = (d: Doc, id: TrackId, patch: Partial<NoteStyle> |
 
 // ── phong cách video ──
 /** Thay cả scene bằng scene của phong cách `id`, giữ ghi đè theo track (hành vi cũ). Kiểu nốt tay chỉnh và bố cục widget cũ nằm trong lịch sử. */
-export const setVideoStyle = (d: Doc, id: string): Cmd | null => {
+export const setVideoStyle = (d: Doc, id: string, working?: SceneDocument): Cmd | null => {
   const tracks = pianoOf(d.scene)?.properties.noteStyle.tracks ?? {};
-  const scene = sceneForStyle(id, { base: videoStyleBase(id), tracks }, {});
-  const before = { videoStyle: d.videoStyle, scene: d.scene, lookRef: d.lookRef, layoutRef: d.layoutRef, propsRef: d.propsRef }, after = { videoStyle: id, scene, lookRef: videoStyleBase(id), layoutRef: layoutsOf(scene), propsRef: propsOf(scene) };
+  // `working`: bản đã chỉnh dở của phong cách này (lúc rời đi được giữ lại); ghi đè theo track vẫn là của hiện tại. Nút ↺ vẫn về gốc của phong cách.
+  const orig = sceneForStyle(id, { base: videoStyleBase(id), tracks }, {});
+  const scene = working ? withTrackOverrides(working, tracks) : orig;
+  const before = { videoStyle: d.videoStyle, scene: d.scene, lookRef: d.lookRef, layoutRef: d.layoutRef, propsRef: d.propsRef }, after = { videoStyle: id, scene, lookRef: videoStyleBase(id), layoutRef: layoutsOf(orig), propsRef: propsOf(orig) };
   if (d.videoStyle === id && same(before.scene, scene)) return null;
   return { type: 'setVideoStyle', label: 'web.cmd.videoStyle', before, after, redo: (x) => ({ ...x, ...after }), undo: (x) => ({ ...x, ...before }) };
 };
-/** Mở preset: thay scene (và đánh dấu phong cách 'custom'). Một bước hoàn tác. */
-export const loadPreset = (d: Doc, scene: SceneDocument): Cmd | null => {
+/** Mở preset: thay scene (và đánh dấu phong cách 'custom'). Một bước hoàn tác. `working`: bản đã chỉnh dở của preset này; nút ↺ vẫn về bản gốc `scene`. */
+export const loadPreset = (d: Doc, scene: SceneDocument, working?: SceneDocument): Cmd | null => {
   const base = pianoOf(scene)?.properties.noteStyle.base;
-  const before = { videoStyle: d.videoStyle, scene: d.scene, lookRef: d.lookRef, layoutRef: d.layoutRef, propsRef: d.propsRef }, after = { videoStyle: CUSTOM_STYLE, scene, lookRef: base ? { ...base } : d.lookRef, layoutRef: layoutsOf(scene), propsRef: propsOf(scene) };
+  const before = { videoStyle: d.videoStyle, scene: d.scene, lookRef: d.lookRef, layoutRef: d.layoutRef, propsRef: d.propsRef }, after = { videoStyle: CUSTOM_STYLE, scene: working ?? scene, lookRef: base ? { ...base } : d.lookRef, layoutRef: layoutsOf(scene), propsRef: propsOf(scene) };
   return { type: 'loadPreset', label: 'web.cmd.loadPreset', before, after, redo: (x) => ({ ...x, ...after }), undo: (x) => ({ ...x, ...before }) };
 };
 

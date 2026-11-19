@@ -5,7 +5,7 @@ section: "5.10 Chỗ giữ trong chữ và Ô chữ 🟢 (T-73, SRS REQ-GRAPHICS
 path: "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.10 Chỗ giữ trong chữ và Ô chữ 🟢 (T-73, SRS REQ-GRAPHICS-19, D-60/OI-18)"
 chunk: 5-10-cho-giu-trong-chu-va-o-chu-t-73-srs-req-gra.md
 source_lines: 213-223
-source_sha1: 925424465c
+source_sha1: 6f6a5c27ab
 ids: [D-60, OI-18, REQ-GRAPHICS-19, WARN_PRESET_MIGRATED, WARN_PRESET_VALUE]
 ---
 ### 5.10 Chỗ giữ trong chữ và Ô chữ 🟢 (T-73, SRS REQ-GRAPHICS-19, D-60/OI-18)

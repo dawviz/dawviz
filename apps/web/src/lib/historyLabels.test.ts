@@ -126,3 +126,18 @@ test('patchLayouts: nhãn theo thao tác (dời, đổi cỡ, xoay, điểm neo 
   // một lệnh cho nhiều widget là MỘT bước hoàn tác
   if (other) { const before = s.state().history.position; s.undo(); assert.equal(s.state().history.position, before - 1); }
 });
+
+test('dải cao độ: Fit/Custom, min ≤ max, kẹp 0–127, không đổi thì null, nhãn dùng tên nốt, hoàn tác được', () => {
+  const s = createStore<C.Doc>(doc());
+  const p0 = C.pitchRangeOf(C.pianoOf(s.get().scene)!.properties);
+  assert.deepEqual(p0, { mode: 'CUSTOM', min: 21, max: 108 }); // mặc định: đủ 88 phím
+  assert.equal(C.setPitchRange(s.get(), p0), null);
+  s.dispatch(C.setPitchRange(s.get(), { mode: 'CUSTOM', min: 72, max: 36 })); // đảo → sắp lại
+  assert.deepEqual(C.pitchRangeOf(C.pianoOf(s.get().scene)!.properties), { mode: 'CUSTOM', min: 36, max: 72 });
+  s.dispatch(C.setPitchRange(s.get(), { mode: 'FIT_CONTENT', min: 36, max: 72 }));
+  const items = s.state().history.timeline;
+  i18n.setLocale('en'); assert.equal(describeCommand(items[items.length - 1], ctx), 'Pitch range A0–C8 → Fit content'); // hai lần chỉnh liên tiếp gộp một bước (mergeKey)
+  assert.equal(items.length, 1);
+  s.undo();
+  assert.deepEqual(C.pitchRangeOf(C.pianoOf(s.get().scene)!.properties), p0);
+});

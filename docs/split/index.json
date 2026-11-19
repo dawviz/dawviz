@@ -457,7 +457,7 @@
   },
   "SRS.md": {
    "title": "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)",
-   "sha1": "be43325ca4",
+   "sha1": "4e115a15c2",
    "chunks": [
     {
      "n": 0,
@@ -1432,7 +1432,7 @@
       "3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04)",
       "REQ-WIDGET-01: Piano Roll"
      ],
-     "chars": 1411,
+     "chars": 1546,
      "lines": [
       576,
       584
@@ -2757,7 +2757,7 @@
   },
   "TECHNICAL-DESIGN.md": {
    "title": "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER",
-   "sha1": "925424465c",
+   "sha1": "6f6a5c27ab",
    "chunks": [
     {
      "n": 0,
@@ -2867,7 +2867,7 @@
       "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại",
       "5.1 Giao diện chính 🟢"
      ],
-     "chars": 5650,
+     "chars": 6341,
      "lines": [
       110,
       130

@@ -57,7 +57,7 @@ export function tracksFor(spec: WidgetSpec<unknown>, index: TimelineIndex): Trac
   return index.tracks;
 }
 
-/** Tầm cao độ của Piano Roll: FIT_CONTENT lấy min/max của track được gán (±1), rỗng thì C3–C6. */
+/** Tầm cao độ của Piano Roll (mặc định CUSTOM 21–108): FIT_CONTENT lấy min/max của track được gán (±1), rỗng thì C3–C6. */
 export function pianoRollPitchRange(p: PianoRollProps, tracks: TrackIndex[]): [number, number] {
   if (p.pitchRangeMode === 'CUSTOM') return [p.pitchMin, p.pitchMax];
   let lo = 127, hi = 0;

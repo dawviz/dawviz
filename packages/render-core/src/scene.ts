@@ -72,7 +72,7 @@ export interface SceneDocument {
 }
 
 export const DEFAULT_PIANO_ROLL: Readonly<PianoRollProps> = Object.freeze({
-  orientation: 'HORIZONTAL', pitchRangeMode: 'FIT_CONTENT', pitchMin: 48, pitchMax: 84,
+  orientation: 'HORIZONTAL', pitchRangeMode: 'CUSTOM', pitchMin: 21, pitchMax: 108, // mặc định hiện đủ 88 phím (A0–C8); FIT_CONTENT là lựa chọn
   lookaheadSeconds: 3, playheadPositionRatio: 0.3, visibleSeconds: 3 / 0.7,
   noteStyle: { base: { ...DEFAULT_NOTE_STYLE }, tracks: {} }, keyboard: { ...DEFAULT_KEYBOARD_STYLE, width: 96 }, // 96 pt ≈ 5% bề rộng 1920
   playheadColor: '#ffffff', playheadWidth: 2, playheadVisible: true,

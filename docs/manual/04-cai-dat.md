@@ -22,12 +22,16 @@ Hai mục này chỉ đổi giao diện của ứng dụng. Màu trong video do 
 - **Xoá phiên đã lưu** xoá bản lưu trong trình duyệt (không đụng tới tệp của bạn).
 - Khi bộ nhớ trình duyệt gần đầy, ứng dụng chỉ lưu bố cục và thiết lập; lần sau bạn phải nạp lại tệp dự án và âm thanh. Ứng dụng báo rõ tệp nào cần nạp lại.
 
-## Preset
+## Preset (cột Phong cách video)
 
 Preset là một tệp `.json` lưu cách bày video: phong cách, vị trí các widget, hình thức nốt, kiểu chữ. Preset không chứa dự án hay âm thanh của bạn, nên gửi cho người khác thoải mái.
 
-- **Lưu preset…** tải về tệp preset của video đang chỉnh.
-- **Mở preset…** áp một preset lên bài đang mở. Hoàn tác được nếu không ưng.
+Preset nằm ở cột **Phong cách video** của thẻ Xem trước, ngay dưới Bản in và Tối, không còn ở Cài đặt.
+
+- **Ô dấu cộng** (khung nét đứt): chọn một tệp preset `.json`. Preset được thêm thành ô mới, áp lên bài đang mở và nhớ trong trình duyệt này. Hoàn tác được nếu không ưng.
+- **Mỗi ô giữ bản chỉnh dở của riêng nó.** Chỉnh Bản in rồi chuyển sang Tối, khi quay lại Bản in thì các chỉnh sửa vẫn còn, ô hiện nhãn "đã chỉnh". Ghi đè màu theo track thì đi theo dự án, không tính là chỉnh của ô.
+- Rê chuột vào một ô để thấy nút: **↓ tải xuống** tệp `.json` đúng như đang thấy (kể cả phần đã chỉnh), **×** (chỉ hiện khi ô đã chỉnh) đưa ô về **bản gốc**, và với preset của bạn có thêm **thùng rác** để xoá khỏi danh sách. Về gốc vẫn hoàn tác được bằng Ctrl+Z.
+- Chỉnh dở chỉ nhớ trong phiên làm việc; tải lại trang thì mất, trừ kiểu nốt và bàn phím của phong cách đang chọn (nhớ theo trình duyệt như trước).
 - Preset từ bản cũ hơn vẫn mở được; ứng dụng báo đã nâng phiên bản. Lưu lại để giữ bản đã nâng.
 - Preset từ bản mới hơn thì cần cập nhật ứng dụng mới mở được.
 - Preset dùng phông không có sẵn trong ứng dụng thì ứng dụng báo và vẽ chữ bằng phông mặc định. Tên phông vẫn giữ trong preset.

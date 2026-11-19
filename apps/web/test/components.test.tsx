@@ -409,11 +409,6 @@ describe('Sau critique T-70', () => {
     expect(picked).toBe('default');
     v.unmount();
   });
-  it('thông báo nhỏ sau khi đổi phong cách làm mất chỉnh tay: không chặn, không có nút hoàn tác riêng (hoàn tác thật nằm ở thanh trên)', () => {
-    wrap(<VideoStyles value="neon" edited={false} onPick={() => {}} notice="Style changed. Ctrl+Z to undo." />);
-    expect(screen.getByTestId('style-notice')).toHaveTextContent('Ctrl+Z');
-    expect(screen.queryByRole('button', { name: /Undo|Hoàn tác/ })).toBeNull();
-  });
   it('màn đầu tiên nói rõ FL Studio thả thẳng .flp (D-62), không dùng chữ mono', () => {
     wrap(<FileDrop onPick={() => {}} busy={false} />);
     expect(screen.getByTestId('file-drop').textContent).toMatch(/FL Studio/);

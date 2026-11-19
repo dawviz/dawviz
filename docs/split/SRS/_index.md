@@ -1,6 +1,6 @@
 # Chỉ mục SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
-nguồn: `SRS.md` (sha1 be43325ca4)
+nguồn: `SRS.md` (sha1 4e115a15c2)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -40,7 +40,7 @@ nguồn: `SRS.md` (sha1 be43325ca4)
 | 33 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-19: Ô chữ người dùng thêm và chỗ giữ dùng chung (D-60; đã làm 2026-11-18, T-73) | [req-graphics-19-o-chu-nguoi-dung-them-va-cho-giu.md](req-graphics-19-o-chu-nguoi-dung-them-va-cho-giu.md) | 2854 | D-60, OI-18, P-04, REQ-GRAPHICS-01, REQ-GRAPHICS-05, REQ-GRAPHICS-12… |
 | 34 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-AST-02: Automation tổng quát (D-50; 1.0 cho Reaper track + MIDI CC, các nguồn khác theo tệp mẫu) | [req-ast-02-automation-tong-quat-d-50-1-0-cho-rea.md](req-ast-02-automation-tong-quat-d-50-1-0-cho-rea.md) | 2371 | D-50, REQ-AST-02, REQ-AUDIO-01, REQ-GRAPHICS-06, REQ-GRAPHICS-13, REQ-GRAPHICS-17… |
 | 35 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) | [3-4-dac-ta-8-widget-hud-br-02-br-03-br-04.md](3-4-dac-ta-8-widget-hud-br-02-br-03-br-04.md) | 368 | BR-02, BR-03, BR-04 |
-| 36 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-01: Piano Roll | [req-widget-01-piano-roll.md](req-widget-01-piano-roll.md) | 1411 | D-15, NFR-PERF-02, REQ-GRAPHICS-09, REQ-GRAPHICS-15, REQ-WIDGET-01 |
+| 36 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-01: Piano Roll | [req-widget-01-piano-roll.md](req-widget-01-piano-roll.md) | 1546 | D-15, NFR-PERF-02, REQ-GRAPHICS-09, REQ-GRAPHICS-15, REQ-WIDGET-01 |
 | 37 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-02: Track Info | [req-widget-02-track-info.md](req-widget-02-track-info.md) | 1101 | NFR-SEC-03, REQ-GRAPHICS-18, REQ-WIDGET-02, REQ-WIDGET-03 |
 | 38 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-03: Event Counter | [req-widget-03-event-counter.md](req-widget-03-event-counter.md) | 1220 | D-60, REQ-GRAPHICS-19, REQ-WIDGET-02, REQ-WIDGET-03, WARN_PRESET_VALUE |
 | 39 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-04: Live Note Trigger | [req-widget-04-live-note-trigger.md](req-widget-04-live-note-trigger.md) | 935 | REQ-WIDGET-04 |

@@ -578,7 +578,7 @@ Mỗi widget có thuộc tính hình học `(x, y, width, height, zIndex, rotati
   * **Góc tự do (bổ sung tài liệu v1.1, bản phát hành 1.0):** ngoài 4 hướng, chọn **góc dòng chảy** bất kỳ 0–360° (bắt dính mỗi 15° khi kéo, giữ Shift để tự do; nhập số). Quy ước: 0° = nốt chạy từ phải sang trái (mặc định), 90° = nốt rơi từ trên xuống. Toàn bộ làn nốt, vạch phát và bàn phím xoay theo; làn tự kéo dài để phủ kín khung widget ở mọi góc (không lộ góc trống); tên nốt trên phím có tuỳ chọn luôn đứng thẳng. Đây là thuộc tính bên trong Piano Roll nên không phụ thuộc D-15 (xoay khung widget); góc có keyframe được từ REQ-GRAPHICS-09. Nghiêng trong không gian 3D là REQ-GRAPHICS-15 (1.1).
 * **Đa track**: gán một hoặc nhiều track; mỗi track vẽ bằng `track.color`.
 * **Thanh nốt**: hình chữ nhật bo góc, độ dài tỉ lệ với `durationSeconds`; vẽ nốt đang phát sáng hơn nốt chưa phát.
-* **Pitch Range**: *Fit to Content* (mặc định) lấy min/max pitch của track được gán; *Custom Octave Range* cho chọn khoảng (ví dụ C2–C6), nốt ngoài khoảng bị cắt.
+* **Pitch Range**: *Custom Octave Range* (mặc định, 21–108 = A0–C8, đủ 88 phím) cho chọn khoảng (ví dụ C2–C6), nốt ngoài khoảng bị cắt; *Fit to Content* lấy min/max pitch của track được gán (±1 bán cung). Giao diện nhập khoảng bằng tên nốt (C1, C#3), tệp JSON lưu số MIDI (`pitchMin`, `pitchMax`).
 * **Lookahead**: 1.0 đến 8.0 giây (mặc định 3.0).
 * **Hiệu năng**: chỉ vẽ nốt giao với cửa sổ thời gian hiển thị (tìm bằng chỉ mục theo `startTick`), không duyệt toàn bộ nốt mỗi khung (NFR-PERF-02).
 

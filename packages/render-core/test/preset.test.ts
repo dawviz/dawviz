@@ -40,8 +40,11 @@ test('di trú 0.3.0 → 0.6.0: thêm anchor = tâm, báo WARN_PRESET_MIGRATED, k
   // Bản cũ ghi chữ đầy đủ {font,size,weight,color} (thành ghi đè), bản 0.5.0 trỏ styleId cùng giá trị: cấu trúc khác, khung vẽ phải giống hệt.
   const cur = sanitizeScene(read(new URL('paper-1x1.json', dir))).scene;
   assert.deepEqual({ ...scene, widgets: scene.widgets.map((w) => w.layout) }, { ...cur, widgets: cur.widgets.map((w) => w.layout) });
+  // Bản 0.3.0 ghi rõ FIT_CONTENT 48–84; preset dựng sẵn hiện nay mặc định CUSTOM 21–108, nên đặt cùng dải cao độ trước khi so khung vẽ.
+  const cur2 = structuredClone(cur);
+  cur2.widgets.forEach((w, i) => { if (w.type === 'PIANO_ROLL') Object.assign(w.properties, { pitchRangeMode: (scene.widgets[i].properties as any).pitchRangeMode, pitchMin: (scene.widgets[i].properties as any).pitchMin, pitchMax: (scene.widgets[i].properties as any).pitchMax }); });
   const ast = synthAst(), d = derivedOf(ast);
-  for (const t of [0, 0.7, 1.9, 2.6]) assert.deepEqual(layoutFrame(scene, d, ast, t).map((x) => x.prims), layoutFrame(cur, d, ast, t).map((x) => x.prims), `t=${t}`);
+  for (const t of [0, 0.7, 1.9, 2.6]) assert.deepEqual(layoutFrame(scene, d, ast, t).map((x) => x.prims), layoutFrame(cur2, d, ast, t).map((x) => x.prims), `t=${t}`);
   // bản vá 0.3.x cũng di trú; giữ anchor đã có
   const p = V03(); p.schemaVersion = '0.3.7'; p.widgets[0].layout.anchor = { x: 0, y: 1 };
   const r = sanitizeScene(p);
