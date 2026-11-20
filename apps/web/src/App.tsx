@@ -42,6 +42,7 @@ import { CUSTOM_STYLE, initialDoc, pianoOf, type Doc } from './lib/commands.ts';
 import { GestureContext, useStoreState } from './lib/storeReact.ts';
 import { bindUndoKeys, shortcutLabels } from './lib/undoKeys.ts';
 import { downloadPreset, presetFileName, readPresetFile } from './lib/presetFile.ts';
+import { loadWorkspaceStyles, saveWorkspaceStyles } from './lib/workspaceStyles.ts';
 import { addUserPreset, loadUserPresets, matchUserPreset, removeUserPreset, saveUserPresets, type UserPreset } from './lib/userPresets.ts';
 import { useFontsStatus } from './lib/fonts.ts';
 import { projectKey, styleThumbnail } from './lib/thumbnails.ts';
@@ -79,8 +80,17 @@ export function App() {
   const [midi, setMidi] = useState<ExternalMidiInfo | undefined>(undefined);
   // Store có hoàn tác. Thiết lập đã lưu (phong cách video, kiểu nốt, ghi đè theo track, bàn phím) nạp vào tài liệu ban đầu; lịch sử bắt đầu trống.
   // Lần đầu (chưa có tuỳ chọn lưu) kiểu nốt và bàn phím lấy theo phong cách mặc định "Paper" (D-51).
-  const [store] = useState(() => createStore<Doc>(initialDoc(sanitizeUi(loadPref<Partial<UiPrefs>>('ui', {})).videoStyle,
-    { style: loadPref<Partial<StyleConfig>>('style', {}), keyboard: loadPref<Partial<KeyboardStyle>>('keyboard', {}) })));
+  const [store] = useState(() => {
+    let d = initialDoc(sanitizeUi(loadPref<Partial<UiPrefs>>('ui', {})).videoStyle, { style: loadPref<Partial<StyleConfig>>('style', {}), keyboard: loadPref<Partial<KeyboardStyle>>('keyboard', {}) });
+    // Tải lại trang: ô đang chọn quay lại đúng bản đã chỉnh dở (bố cục, dải cao độ...), không thêm bước vào lịch sử.
+    const ups = loadUserPresets(), ws = loadWorkspaceStyles((t) => VIDEO_STYLES.includes(t) || ups.some((u) => u.id === t));
+    if (ws.active) {
+      const t = ws.active.tile, orig = ups.find((u) => u.id === t)?.scene;
+      const cmd = VIDEO_STYLES.includes(t) ? Cmds.setVideoStyle(d, t, ws.active.scene) : orig ? Cmds.loadPreset(d, orig, ws.active.scene) : null;
+      if (cmd) d = cmd.redo(d);
+    }
+    return createStore<Doc>(d);
+  });
   const { doc, history } = useStoreState(store);
   const run = useCallback((make: (d: Doc) => ReturnType<typeof Cmds.toggleHidden>) => store.dispatch(make(store.get())), [store]);
   const gesture = useMemo(() => ({ begin: store.beginGesture, end: store.endGesture }), [store]);
@@ -165,7 +175,7 @@ export function App() {
 
   // Preset của người dùng (cột Video styles): lưu theo trình duyệt. `activeUser` = ô đang áp khi scene đã bị chỉnh nên không còn khớp từng chữ.
   const [userPresets, setUserPresets] = useState<UserPreset[]>(loadUserPresets);
-  const [activeUser, setActiveUser] = useState<string | null>(null);
+  const [activeUser, setActiveUser] = useState<string | null>(() => { const t = loadWorkspaceStyles((x) => loadUserPresets().some((u) => u.id === x)).active?.tile; return t && !VIDEO_STYLES.includes(t) ? t : null; });
   useEffect(() => saveUserPresets(userPresets), [userPresets]);
   // Ô preset đang áp: scene khớp từng chữ với một preset đã lưu, hoặc ô vừa chọn nhưng đã chỉnh thêm. Phong cách dựng sẵn "đã chỉnh" tính trên cả scene (bố cục, dải cao độ...).
   const userMatch = doc.videoStyle === CUSTOM_STYLE ? matchUserPreset(userPresets, scene) : undefined;
@@ -378,7 +388,12 @@ export function App() {
   useEffect(() => bindUndoKeys(window, { undo: doUndo, redo: doRedo }), [doUndo, doRedo]);
   // Mỗi ô (phong cách dựng sẵn hoặc preset của người dùng) giữ bản chỉnh dở của riêng nó: rời ô thì cất bản đang chỉnh, trở lại thì lấy ra.
   // Muốn về nguyên gốc thì bấm × trên ô. Chỉ lưu trong phiên (kiểu nốt và bàn phím của phong cách đang chọn vẫn nhớ theo trình duyệt như trước).
-  const [working, setWorking] = useState<Record<string, SceneDocument>>({});
+  const [working, setWorking] = useState<Record<string, SceneDocument>>(() => loadWorkspaceStyles((t) => VIDEO_STYLES.includes(t) || loadUserPresets().some((u) => u.id === t)).working);
+  // Nhớ theo trình duyệt (gộp ghi 400 ms để kéo ô số không ghi liên tục): các ô đã chỉnh dở và ô đang chọn kèm scene hiện tại.
+  useEffect(() => {
+    const id = setTimeout(() => saveWorkspaceStyles({ working, active: tileId ? { tile: tileId, scene } : null }), 400);
+    return () => clearTimeout(id);
+  }, [working, tileId, scene]);
   const originalOf = (tile: string): SceneDocument | undefined => (VIDEO_STYLES.includes(tile) ? pristineScene(tile) : userPresets.find((x) => x.id === tile)?.scene);
   const sameEdit = (tile: string, a: SceneDocument, b: SceneDocument) => JSON.stringify(VIDEO_STYLES.includes(tile) ? withoutTrackOverrides(a) : a) === JSON.stringify(VIDEO_STYLES.includes(tile) ? withoutTrackOverrides(b) : b);
   const stashCurrent = () => {
@@ -422,6 +437,16 @@ export function App() {
     if (id !== tileId) return;
     if (VIDEO_STYLES.includes(id)) store.dispatch(Cmds.setVideoStyle(store.get(), id));
     else { const pr = userPresets.find((x) => x.id === id); if (pr) run((d) => Cmds.loadPreset(d, pr.scene)); }
+  };
+  // Nhân bản thành preset mới từ bản đang thấy của ô (kể cả phần đã chỉnh). Ô nguồn về nguyên gốc, phần chỉnh chuyển sang ô mới; ô nguồn đang chọn thì ô mới được chọn thay.
+  const onDuplicate = (id: string) => {
+    const src = userPresets.find((x) => x.id === id);
+    const sc = (id === tileId ? store.get().scene : working[id]) ?? originalOf(id); if (!sc) return;
+    const base = src ? src.name : i18n.t(`web.style.video.${id}`);
+    const added = addUserPreset(userPresets, i18n.t('web.preset.copyName', { name: base }), sc);
+    setUserPresets(added.list);
+    setWorking((w) => { const n = { ...w }; delete n[id]; return n; });
+    if (id === tileId) { setActiveUser(added.preset.id); setPresetProblems([]); setPresetOpened(added.preset.name); run((d) => Cmds.loadPreset(d, added.preset.scene)); }
   };
   const onDownloadTile = (id: string) => {
     const pr = userPresets.find((x) => x.id === id);
@@ -499,7 +524,7 @@ export function App() {
         ? <StylePanel style={style} keyboard={keyboard} onStyle={(n2) => run((d) => Cmds.patchNoteStyle(d, n2.base))} onKeyboard={(n2) => run((d) => Cmds.patchKeyboard(d, n2))} lanes={lanes} advanced={showAdv('look')} notePresets={NOTE_PRESETS} onNotePreset={pickNotePreset}
             pitchRange={{ value: Cmds.pitchRangeOf(piano.properties), reference: pianoRef && typeof pianoRef.pitchRangeMode === 'string' ? { mode: pianoRef.pitchRangeMode as 'FIT_CONTENT' | 'CUSTOM', min: Number(pianoRef.pitchMin), max: Number(pianoRef.pitchMax) } : undefined, onChange: (v) => run((d) => Cmds.setPitchRange(d, v)) }}
             reference={ref} keyboardRef={(doc.propsRef[piano.id] as { keyboard?: { enabled?: boolean } } | undefined)?.keyboard?.enabled}
-            playhead={{ ratio: piano.properties.playheadPositionRatio, visible: piano.properties.playheadVisible, visibleRef: (doc.propsRef[piano.id] as { playheadVisible?: boolean } | undefined)?.playheadVisible, reference: playheadRef, onChange: (r) => run((d) => Cmds.setPlayheadRatio(d, r)), onVisible: (v) => run((d) => Cmds.setPlayheadVisible(d, v)) }} />
+            playhead={{ scrollMode: piano.properties.scrollMode, scrollModeRef: pianoRef?.scrollMode as 'SCROLL' | 'PAGE' | undefined, onScrollMode: (m) => run((d) => Cmds.setScrollMode(d, m)), visibleSeconds: piano.properties.visibleSeconds, visibleSecondsRef: typeof pianoRef?.visibleSeconds === 'number' ? pianoRef.visibleSeconds : undefined, onVisibleSeconds: (v) => run((d) => Cmds.setVisibleSeconds(d, v)), ratio: piano.properties.playheadPositionRatio, visible: piano.properties.playheadVisible, visibleRef: (doc.propsRef[piano.id] as { playheadVisible?: boolean } | undefined)?.playheadVisible, reference: playheadRef, onChange: (r) => run((d) => Cmds.setPlayheadRatio(d, r)), onVisible: (v) => run((d) => Cmds.setPlayheadVisible(d, v)) }} />
         : <p className="text-xs text-muted">{i18n.t('web.look.noPiano')}</p>}
     </InspectorSection>
   );
@@ -568,7 +593,7 @@ export function App() {
         <aside className="relative min-h-0 overflow-y-auto border-b border-line bg-surface lg:border-b-0 lg:border-r">
           <VideoStyles value={doc.videoStyle} edited={tileEdited} onPick={pickVideoStyle} thumb={(id) => thumbs[id]}
             presets={{ items: userPresets.map(({ id, name }) => ({ id, name })), active: userActiveId, dirty: Object.keys(working).filter((k) => k !== tileId), onPick: onPickUserPreset, onAddFile: (f) => void onOpenPreset(f),
-              onDownload: onDownloadTile, onRevert, onDelete: onDeleteUserPreset, problems: [], status: presetOpened ? i18n.t('web.preset.opened', { name: presetOpened }) : undefined }} />
+              onDownload: onDownloadTile, onDuplicate, onRevert, onDelete: onDeleteUserPreset, problems: [], status: presetOpened ? i18n.t('web.preset.opened', { name: presetOpened }) : undefined }} />
         </aside>
       )}
       <div ref={scrollerRef} className="relative min-h-0 min-w-0 overflow-y-auto bg-page p-6">

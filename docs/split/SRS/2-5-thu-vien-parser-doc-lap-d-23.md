@@ -5,7 +5,7 @@ section: "2.5. Thư viện parser độc lập (D-23)"
 path: "2. KIẾN TRÚC KỸ THUẬT, LUỒNG DỮ LIỆU & ĐÁNH GIÁ KIẾN TRÚC > 2.5. Thư viện parser độc lập (D-23)"
 chunk: 2-5-thu-vien-parser-doc-lap-d-23.md
 source_lines: 232-247
-source_sha1: 4e115a15c2
+source_sha1: 3ea818ffe0
 ids: [ARC-04, D-23]
 ---
 ### 2.5. Thư viện parser độc lập (D-23)

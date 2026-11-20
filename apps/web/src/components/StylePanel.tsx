@@ -20,7 +20,7 @@ const row = 'grid grid-cols-[minmax(0,1fr)_minmax(0,9.5rem)_1.5rem] items-center
  *  `playhead`: vị trí vạch phát (0..1) và hàm đổi; bàn phím bật thì cả hai ô vạch phát bị ẩn (T-71).
  *  `advanced`: hiện cả dòng nâng cao (chế độ Nâng cao, hoặc "Thêm tuỳ chọn" của mục đang mở).
  *  `reference`: kiểu nốt của bộ dựng sẵn đang chọn; thông số khác nó thì có nút ↺ đưa về (D-57). */
-export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset, playhead, reference, keyboardRef, pitchRange }: { /** Dải cao độ Piano Roll: Fit content hoặc Custom (nhập theo tên nốt). */ pitchRange?: { value: PitchRange; reference?: PitchRange; onChange(next: PitchRange): void }; reference?: NoteStyle; /** Bàn phím bật/tắt của bộ dựng sẵn áp gần nhất (đích của ↺ ở ô tick Bàn phím). */ keyboardRef?: boolean; playhead?: { ratio: number; visible: boolean; /** Vạch phát hiện/ẩn của bộ dựng sẵn áp gần nhất. */ visibleRef?: boolean; reference?: number; onChange(ratio: number): void; onVisible(visible: boolean): void }; notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean }) {
+export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset, playhead, reference, keyboardRef, pitchRange }: { /** Dải cao độ Piano Roll: Fit content hoặc Custom (nhập theo tên nốt). */ pitchRange?: { value: PitchRange; reference?: PitchRange; onChange(next: PitchRange): void }; reference?: NoteStyle; /** Bàn phím bật/tắt của bộ dựng sẵn áp gần nhất (đích của ↺ ở ô tick Bàn phím). */ keyboardRef?: boolean; playhead?: { ratio: number; visible: boolean; scrollMode: 'SCROLL' | 'PAGE'; scrollModeRef?: 'SCROLL' | 'PAGE'; onScrollMode(m: 'SCROLL' | 'PAGE'): void; visibleSeconds: number; visibleSecondsRef?: number; onVisibleSeconds(v: number): void; /** Vạch phát hiện/ẩn của bộ dựng sẵn áp gần nhất. */ visibleRef?: boolean; reference?: number; onChange(ratio: number): void; onVisible(visible: boolean): void }; notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean }) {
   const { i18n } = useI18n();
   const b = style.base;
   const set = (patch: Partial<NoteStyle>) => onStyle({ ...style, base: { ...b, ...patch } });
@@ -64,9 +64,24 @@ export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], a
       <div className="space-y-2 border-t border-line pt-2.5">
         <TickField label={i18n.t('web.keyboard.show')} checked={keyboard.enabled} onChange={(v) => onKeyboard({ ...keyboard, enabled: v })} reference={keyboardRef} />
         {/* Bàn phím bật: vạch phát ghim ở mép bàn phím (Render Core bỏ qua tỉ lệ và nốt phát đúng lúc chạm phím) nên không còn gì để chỉnh: ẩn cả hai ô thay vì khoá. Giá trị vẫn giữ để dùng lại khi tắt bàn phím. */}
-        {playhead && !keyboard.enabled && <>
-          <TickField label={i18n.t('web.playhead.show')} checked={playhead.visible} onChange={playhead.onVisible} reference={playhead.visibleRef} testId="playhead-visible" />
-          {playhead.visible && <Slider id="st-playhead" label={i18n.t('web.playhead.position')} value={Math.round(playhead.ratio * 100)} min={5} max={95} step={1} reset={playhead.reference === undefined ? undefined : Math.round(playhead.reference * 100)}
+        {playhead && <>
+          <div className="space-y-1.5" data-testid="scroll-mode">
+            <div className="flex items-center justify-between gap-2 text-xs text-muted">
+              <span>{i18n.t('web.scroll.title')}</span>
+              <ResetButton label={i18n.t('web.scroll.title')} changed={playhead.scrollModeRef !== undefined && playhead.scrollModeRef !== playhead.scrollMode} onReset={() => playhead.onScrollMode(playhead.scrollModeRef!)} />
+            </div>
+            <div className="seg w-full" role="radiogroup" aria-label={i18n.t('web.scroll.title')} onKeyDown={radioKeys}>
+              {(['SCROLL', 'PAGE'] as const).map((m) => (
+                <button key={m} type="button" role="radio" aria-checked={playhead.scrollMode === m} tabIndex={radioTab(playhead.scrollMode === m)} onClick={() => playhead.onScrollMode(m)} className="seg-btn flex-1" data-testid={`scroll-${m}`}>
+                  {i18n.t(`web.scroll.${m}`)}
+                </button>
+              ))}
+            </div>
+          </div>
+          <Slider id="st-visible" label={i18n.t(playhead.scrollMode === 'PAGE' ? 'web.visible.page' : 'web.visible.label')} value={playhead.visibleSeconds} min={0.5} max={20} hardMax={60} step={0.1} reset={playhead.visibleSecondsRef} onChange={playhead.onVisibleSeconds} />
+          {/* Chế độ cuộn + bàn phím: vạch ghim ở mép bàn phím, không còn gì để chỉnh. Chế độ trang: vạch chạy nên chỉ còn ô hiện/ẩn. */}
+          {(!keyboard.enabled || playhead.scrollMode === 'PAGE') && <TickField label={i18n.t('web.playhead.show')} checked={playhead.visible} onChange={playhead.onVisible} reference={playhead.visibleRef} testId="playhead-visible" />}
+          {playhead.scrollMode === 'SCROLL' && !keyboard.enabled && playhead.visible && <Slider id="st-playhead" label={i18n.t('web.playhead.position')} value={Math.round(playhead.ratio * 100)} min={5} max={95} step={1} reset={playhead.reference === undefined ? undefined : Math.round(playhead.reference * 100)}
             onChange={(v) => playhead.onChange(v / 100)} />}
         </>}
       </div>

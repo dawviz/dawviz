@@ -108,6 +108,8 @@ export function describeCommand(cmd: Cmd, c: LabelCtx): string {
       const r = (v: unknown) => { const x = v as { mode: string; min: number; max: number }; return x.mode === 'CUSTOM' ? `${pitchName(x.min)}–${pitchName(x.max)}` : i18n.t('web.pitch.fit'); };
       return i18n.t('web.hist.change', { name: i18n.t('web.pitch.title'), from: r(cmd.before), to: r(cmd.after) });
     }
+    case 'setScrollMode': return i18n.t('web.hist.change', { name: i18n.t('web.scroll.title'), from: i18n.t(`web.scroll.${cmd.before}`), to: i18n.t(`web.scroll.${cmd.after}`) });
+    case 'setVisibleSeconds': return i18n.t('web.hist.change', { name: i18n.t('web.visible.label'), from: `${i18n.number(Number(cmd.before))} s`, to: `${i18n.number(Number(cmd.after))} s` });
     case 'setPlayheadVisible': return i18n.t('web.hist.change', { name: i18n.t('web.playhead.show'), from: fmt(c, '', cmd.before), to: fmt(c, '', cmd.after) });
     case 'setAudioOffset': return i18n.t('web.hist.audioOffset', { from: fmt(c, 'ms', cmd.before), to: fmt(c, 'ms', cmd.after) });
     case 'patchSnapping': return changeLabel(c, i18n.t('web.hist.what.snapping'), {}, cmd);

@@ -124,6 +124,7 @@ Chọn widget Piano roll (hoặc bấm **Chỉnh hình thức nốt** khi chưa 
 - **Độ đục**, **Độ dày nốt**, **Bo góc**, **Độ dày viền** (Nâng cao), **Độ đục khi chờ** (Nâng cao: độ đục của nốt chưa tới hoặc đã qua).
 - **Dải cao độ:** **Vừa nội dung** lấy theo nốt thấp nhất và cao nhất của các track (nên một track ít nốt sẽ được phóng to); **Tuỳ chọn** (mặc định, A0–C8, đủ 88 phím) cho gõ nốt thấp nhất và cao nhất theo tên nốt như `C2`, `C#3`, `Db4`. Nốt nằm ngoài khoảng bị cắt. Tệp preset lưu dải này bằng số MIDI (`pitchMin`, `pitchMax`).
 - **Hiện bàn phím piano:** vẽ bàn phím ở mép trái; phím sáng lên khi nốt chạm tới. Khi bật bàn phím, vạch phát nằm đúng mép bàn phím nên hai ô **Hiện vạch phát** và **Vị trí vạch phát** đều ẩn. Tắt bàn phím để chỉnh lại vạch phát.
+- **Cách nốt chạy:** **Cuộn** (mặc định) nốt trôi qua vạch phát đứng yên; **Trang** nốt đứng yên theo từng trang, vạch phát chạy từ trái sang phải, hết trang thì về đầu và hiện trang nốt mới (nốt kéo dài qua ranh giới trang bị cắt ở mép trang; nốt đã phát đậm, nốt sắp tới nhạt theo **Độ đục khi chờ**). Ô **Thời gian hiển thị** là tỉ lệ thời gian ở chế độ Cuộn và độ dài một trang ở chế độ Trang. Ở chế độ Trang ô **Vị trí vạch phát** không còn tác dụng nên bị ẩn.
 - **Hiện vạch phát:** ẩn vạch thì nốt vẫn phát ở đúng chỗ đó, chỉ không vẽ vạch. Khi vạch đang ẩn, ô **Vị trí vạch phát** cũng ẩn theo; bật lại vạch để chỉnh vị trí.
 
 ### Phát sáng

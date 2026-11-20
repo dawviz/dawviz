@@ -146,7 +146,8 @@ dawviz/
 │     │  │  ├─ widgetFields.test.ts
 │     │  │  ├─ widgetFields.ts
 │     │  │  ├─ workspaceStore.test.ts
-│     │  │  └─ workspaceStore.ts
+│     │  │  ├─ workspaceStore.ts
+│     │  │  └─ workspaceStyles.ts
 │     │  ├─ types/
 │     │  │  └─ dawviz.d.ts
 │     │  ├─ workers/
@@ -810,7 +811,7 @@ interface DrawEnv   // Phép biến đổi đang áp khi vẽ một widget: cầ
 interface RenderTarget   // `width`/`height` theo điểm ảnh thật của đích vẽ.
 function tracksFor(spec: WidgetSpec<unknown>, index: TimelineIndex): TrackIndex[]   // Chọn track cho widget theo trackMappingMode (SRS REQ-STORAGE-02).
 function pianoRollPitchRange(p: PianoRollProps, tracks: TrackIndex[]): [number, number]   // Tầm cao độ của Piano Roll (mặc định CUSTOM 21–108): FIT_CONTENT lấy min/max của track được gán (±1), rỗng thì…
-function pianoRollGeometry(p: Pick<PianoRollProps, 'keyboard' | 'playheadPositionRatio' | 'visibleSeconds'>, width: number)   // Hình học trục thời gian của Piano Roll (T-71). Tỉ lệ thời gian cố định: pt/giây = width / visibleSeconds, KHÔ…
+function pianoRollGeometry(p: Pick<PianoRollProps, 'keyboard' | 'playheadPositionRatio' | 'visibleSeconds'> & { scrollMode?: PianoRollProps['scrollMode'] }, width: number, t = 0)   // Hình học trục thời gian của Piano Roll (T-71). Tỉ lệ thời gian cố định: pt/giây = width / visibleSeconds, KHÔ…
 const pianoRollRenderer
 const WIDGET_RENDERERS   // Bảng renderer theo loại. Widget chưa có renderer được bỏ qua khi vẽ (vẫn giữ trong Scene).
 const buildSceneHud = (scene: SceneDocument, ast: UnifiedProjectAST, index: TimelineIndex) =>   // HudData cho một scene: số đếm, lưới ô nhịp và hợp âm của mọi widget Chord Detection. Gọi ở bước derived (một …
@@ -1246,7 +1247,7 @@ Mục "Hình thức" của inspector: kiểu dáng nốt (toàn cục) và bàn 
 
 ```text
 const ADVANCED_STYLE_KEYS   // Trường chỉ có ở Nâng cao (REQ-UI-13). Dùng để biết phần nâng cao đang khác mặc định hay không.
-function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset, playhead, reference, keyboardRef, pitchRange }: { /** Dải cao độ Piano Roll: Fit content hoặc Custom (nhập theo tên nốt). */ pitchRange?: { value: PitchRange; reference?: PitchRange; onChange(next: PitchRange): void }; reference?: NoteStyle; /** Bàn phím bật/tắt của bộ dựng sẵn áp gần nhất (đích của ↺ ở ô tick Bàn phím). */ keyboardRef?: boolean; playhead?: { ratio: number; visible: boolean; /** Vạch phát hiện/ẩn của bộ dựng sẵn áp gần nhất. */ visibleRef?: boolean; reference?: number; onChange(ratio: number): void; onVisible(visible: boolean): void }; notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean })   // `lanes`: tên lane automation có trong dự án đang mở (cho nguồn phát sáng "automation"). `playhead`: vị trí vạ…
+function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset, playhead, reference, keyboardRef, pitchRange }: { /** Dải cao độ Piano Roll: Fit content hoặc Custom (nhập theo tên nốt). */ pitchRange?: { value: PitchRange; reference?: PitchRange; onChange(next: PitchRange): void }; reference?: NoteStyle; /** Bàn phím bật/tắt của bộ dựng sẵn áp gần nhất (đích của ↺ ở ô tick Bàn phím). */ keyboardRef?: boolean; playhead?: { ratio: number; visible: boolean; scrollMode: 'SCROLL' | 'PAGE'; scrollModeRef?: 'SCROLL' | 'PAGE'; onScrollMode(m: 'SCROLL' | 'PAGE'): void; visibleSeconds: number; visibleSecondsRef?: number; onVisibleSeconds(v: number): void; /** Vạch phát hiện/ẩn của bộ dựng sẵn áp gần nhất. */ visibleRef?: boolean; reference?: number; onChange(ratio: number): void; onVisible(visible: boolean): void }; notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean })   // `lanes`: tên lane automation có trong dự án đang mở (cho nguồn phát sáng "automation"). `playhead`: vị trí vạ…
 ```
 
 #### `apps/web/src/components/TempoPanel.tsx`
@@ -1473,6 +1474,8 @@ const setPlayheadRatio = (d: Doc, ratio: number) =>   // Vị trí vạch phát 
 interface PitchRange   // Dải cao độ của Piano Roll: Fit content hoặc Custom (pitchMin/pitchMax là số MIDI, min ≤ max). Gõ liên tiếp gộ…
 const pitchRangeOf = (p: PianoRollProps) =>
 const setPitchRange = (d: Doc, next: PitchRange) =>
+const setScrollMode = (d: Doc, mode: PianoRollProps['scrollMode']) =>   // Cách nốt chạy: cuộn qua vạch cố định (SCROLL) hoặc theo trang với vạch phát chạy ngang (PAGE).
+const setVisibleSeconds = (d: Doc, sec: number) =>   // Số giây trải trên bề rộng Piano Roll: tỉ lệ thời gian ở chế độ cuộn, độ dài một trang ở chế độ trang. Kéo liê…
 const setPlayheadVisible = (d: Doc, visible: boolean) =>   // Hiện/ẩn vạch phát (REQ-GRAPHICS-16). Ẩn chỉ bỏ nét vẽ; nốt vẫn phát tại vị trí vạch.
 const patchTrackStyle = (d: Doc, id: TrackId, patch: Partial<NoteStyle> | null) =>   // Ghi đè kiểu nốt của một track (`patch` = null: bỏ ghi đè).
 const setVideoStyle = (d: Doc, id: string, working?: SceneDocument) =>   // Thay cả scene bằng scene của phong cách `id`, giữ ghi đè theo track (hành vi cũ). Kiểu nốt tay chỉnh và bố cụ…
@@ -2167,6 +2170,16 @@ function createDebounced<T>(run: (v: T) => void | Promise<unknown>, delay = AUTO
 function dexieBackend(dbName?: string): Backend
 ```
 
+#### `apps/web/src/lib/workspaceStyles.ts`
+
+Bản chỉnh dở của từng ô trong cột Video styles, nhớ theo trình duyệt (localStorage) để tải lại trang không mất.
+
+```text
+interface WorkspaceStyles
+function loadWorkspaceStyles(valid: (tile: string) => boolean): WorkspaceStyles   // `valid(tile)`: ô còn tồn tại (preset đã xoá thì bỏ bản chỉnh dở của nó).
+const saveWorkspaceStyles = (w: WorkspaceStyles) =>
+```
+
 #### `apps/web/src/main.tsx`
 
 Điểm vào của ứng dụng web: dựng React root với I18nProvider.
@@ -2270,4 +2283,4 @@ type ParseResponse
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 917 ký hiệu công khai -->
+<!-- 10 thư mục src, 922 ký hiệu công khai -->

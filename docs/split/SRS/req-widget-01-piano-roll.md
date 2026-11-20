@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-WIDGET-01: Piano Roll"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-01: Piano Roll"
 chunk: req-widget-01-piano-roll.md
-source_lines: 576-584
-source_sha1: 4e115a15c2
+source_lines: 576-585
+source_sha1: 3ea818ffe0
 ids: [D-15, NFR-PERF-02, REQ-GRAPHICS-09, REQ-GRAPHICS-15, REQ-WIDGET-01]
 ---
 #### REQ-WIDGET-01: Piano Roll
@@ -14,5 +14,6 @@ ids: [D-15, NFR-PERF-02, REQ-GRAPHICS-09, REQ-GRAPHICS-15, REQ-WIDGET-01]
 * **Đa track**: gán một hoặc nhiều track; mỗi track vẽ bằng `track.color`.
 * **Thanh nốt**: hình chữ nhật bo góc, độ dài tỉ lệ với `durationSeconds`; vẽ nốt đang phát sáng hơn nốt chưa phát.
 * **Pitch Range**: *Custom Octave Range* (mặc định, 21–108 = A0–C8, đủ 88 phím) cho chọn khoảng (ví dụ C2–C6), nốt ngoài khoảng bị cắt; *Fit to Content* lấy min/max pitch của track được gán (±1 bán cung). Giao diện nhập khoảng bằng tên nốt (C1, C#3), tệp JSON lưu số MIDI (`pitchMin`, `pitchMax`).
+* **Scroll Mode**: *Scroll* (mặc định) nốt cuộn qua vạch phát cố định; *Page* nốt đứng yên theo trang dài `visibleSeconds`, vạch phát chạy ngang rồi sang trang mới, nốt qua biên trang bị cắt ở mép trang.
 * **Lookahead**: 1.0 đến 8.0 giây (mặc định 3.0).
 * **Hiệu năng**: chỉ vẽ nốt giao với cửa sổ thời gian hiển thị (tìm bằng chỉ mục theo `startTick`), không duyệt toàn bộ nốt mỗi khung (NFR-PERF-02).

@@ -96,6 +96,17 @@ export const setPitchRange = (d: Doc, next: PitchRange): Cmd | null => {
   return slice(d, 'setPitchRange', 'web.cmd.pitchRange', (x) => pitchRangeOf(pianoOf(x.scene)!.properties),
     (x, v) => withPiano(x, (p) => ({ ...p, pitchRangeMode: v.mode, pitchMin: v.min, pitchMax: v.max })), { mode: next.mode, min: lo, max: hi }, 'pitch.range');
 };
+/** Cách nốt chạy: cuộn qua vạch cố định (SCROLL) hoặc theo trang với vạch phát chạy ngang (PAGE). */
+export const setScrollMode = (d: Doc, mode: PianoRollProps['scrollMode']): Cmd | null => {
+  if (!pianoOf(d.scene)) return null;
+  return slice(d, 'setScrollMode', 'web.cmd.scrollMode', (x) => pianoOf(x.scene)!.properties.scrollMode, (x, v) => withPiano(x, (p) => ({ ...p, scrollMode: v })), mode);
+};
+/** Số giây trải trên bề rộng Piano Roll: tỉ lệ thời gian ở chế độ cuộn, độ dài một trang ở chế độ trang. Kéo liên tiếp gộp một bước. */
+export const setVisibleSeconds = (d: Doc, sec: number): Cmd | null => {
+  if (!pianoOf(d.scene)) return null;
+  const v = Math.round(Math.min(60, Math.max(0.5, sec)) * 100) / 100;
+  return slice(d, 'setVisibleSeconds', 'web.cmd.visibleSeconds', (x) => pianoOf(x.scene)!.properties.visibleSeconds, (x, r) => withPiano(x, (p) => ({ ...p, visibleSeconds: r })), v, 'visible.seconds');
+};
 /** Hiện/ẩn vạch phát (REQ-GRAPHICS-16). Ẩn chỉ bỏ nét vẽ; nốt vẫn phát tại vị trí vạch. */
 export const setPlayheadVisible = (d: Doc, visible: boolean): Cmd | null => {
   if (!pianoOf(d.scene)) return null;

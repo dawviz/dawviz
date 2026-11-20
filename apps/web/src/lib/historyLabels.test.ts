@@ -141,3 +141,16 @@ test('dải cao độ: Fit/Custom, min ≤ max, kẹp 0–127, không đổi th�
   s.undo();
   assert.deepEqual(C.pitchRangeOf(C.pianoOf(s.get().scene)!.properties), p0);
 });
+
+test('cách nốt chạy và thời gian hiển thị: hoàn tác được, nhãn đủ thông tin, kẹp 0,5–60 s', () => {
+  const s = createStore<C.Doc>(doc());
+  assert.equal(C.pianoOf(s.get().scene)!.properties.scrollMode, 'SCROLL');
+  assert.equal(C.setScrollMode(s.get(), 'SCROLL'), null);
+  s.dispatch(C.setScrollMode(s.get(), 'PAGE'));
+  s.dispatch(C.setVisibleSeconds(s.get(), 999));
+  assert.equal(C.pianoOf(s.get().scene)!.properties.visibleSeconds, 60);
+  const items = s.state().history.timeline;
+  i18n.setLocale('en'); assert.equal(describeCommand(items[0], ctx), 'Note motion Scroll → Page');
+  s.undo(); s.undo();
+  assert.equal(C.pianoOf(s.get().scene)!.properties.scrollMode, 'SCROLL');
+});

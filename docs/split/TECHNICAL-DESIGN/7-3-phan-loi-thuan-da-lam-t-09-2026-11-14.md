@@ -5,7 +5,7 @@ section: "7.3 Phần lõi thuần đã làm (T-09, 2026-11-14)"
 path: "7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) > 7.3 Phần lõi thuần đã làm (T-09, 2026-11-14)"
 chunk: 7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md
 source_lines: 424-433
-source_sha1: 6f6a5c27ab
+source_sha1: b601c66aca
 ids: [D-26, ERR_NO_SUPPORTED_ENCODER, REQ-EXPORT-00, REQ-EXPORT-01, REQ-EXPORT-02, REQ-EXPORT-03, REQ-EXPORT-05, REQ-EXPORT-06, SOI-05]
 ---
 ### 7.3 Phần lõi thuần đã làm (T-09, 2026-11-14)

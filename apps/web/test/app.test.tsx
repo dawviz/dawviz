@@ -1,6 +1,6 @@
 // T-07: kiểm thử cấp ứng dụng cho hoàn tác. Dựng App thật (Render Core, store, phím tắt), chỉ giả phần tải tệp (Worker) và phông.
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor, act, within } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act, within, cleanup } from '@testing-library/react';
 
 vi.mock('../src/lib/parseInWorker.ts', async () => {
   const { synthAst } = await import('../../../packages/render-core/test/helpers.ts');
@@ -370,6 +370,30 @@ describe('preset .json trong cột Video styles (T-07)', () => {
     expect(JSON.parse(await created[0].text()).widgets[0].properties.noteStyle.base.opacity).toBe(0.4);
     fireEvent.click(btn(/Revert|Về bản gốc/));
     expect(val(OPACITY)).toBe(before);
+  });
+
+  it('nhân bản thành preset: ô mới nhận bản đã chỉnh và được chọn, ô nguồn về nguyên gốc', async () => {
+    await openProject();
+    toLook(); fireEvent.click(screen.getByTestId('scroll-PAGE'));
+    expect(screen.getByTestId('edited-paper')).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('preset-duplicate-paper'));
+    const li = await waitFor(() => screen.getByTestId(/^user-preset-/));
+    expect(li.querySelector('[role="radio"]')!.getAttribute('aria-checked')).toBe('true');
+    expect(screen.queryByTestId('edited-paper')).toBeNull();
+    expect(JSON.parse(localStorage.getItem('dawviz.prefs.v1.userPresets')!).items[0].scene.widgets[0].properties.scrollMode).toBe('PAGE');
+    expect(li.textContent).toMatch(/copy|bản sao/);
+  });
+
+  it('tải lại trang: bản chỉnh dở của ô đang chọn và của ô khác vẫn còn (localStorage)', async () => {
+    await openProject();
+    toLook(); fireEvent.click(screen.getByTestId('scroll-PAGE')); // chỉnh Paper (không nằm trong tuỳ chọn kiểu nốt đã nhớ từ trước)
+    fireEvent.click(radios()[1]); // sang Tối: Paper được cất lại
+    await act(async () => { await new Promise((r) => setTimeout(r, 450)); });
+    cleanup();
+    await openProject();
+    expect(screen.getByTestId('edited-paper')).toBeInTheDocument(); // Paper vẫn nhớ là đã chỉnh
+    fireEvent.click(radios()[0]);
+    toLook(); expect(screen.getByTestId('scroll-PAGE').getAttribute('aria-checked')).toBe('true');
   });
 
   it('preset cũ 0.3.0: nạp và hiện cảnh báo đã nâng phiên bản', async () => {

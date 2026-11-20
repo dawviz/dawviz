@@ -22,7 +22,7 @@ The current time is on the left of the seek bar, the song length on the right.
 
 The left column lists the video styles. Each thumbnail is drawn from your own song. Click one to switch. A style sets the background colour, the note look, the text and where each block sits on the frame.
 
-Once you change something, the style name shows "edited". Each style keeps its own work in progress: switch to another style and back and your changes are still there. To return a style to its original, hover its tile and press **×**; Ctrl+Z still undoes it. The plus tile below the list adds a preset from a `.json` file (see [Settings](04-settings.md)).
+Once you change something, the style name shows "edited". Each style keeps its own work in progress: switch to another style and back and your changes are still there. To return a style to its original, hover its tile and press **×**; Ctrl+Z still undoes it. Work in progress on every tile is remembered in this browser (it survives a reload). The duplicate button on a tile makes a new preset from what you see. The plus tile below the list adds a preset from a `.json` file (see [Settings](04-settings.md)).
 
 Above the frame you can see its size and shape (for example `1,080 × 1,080 · 1:1`) and the name of the style in use.
 

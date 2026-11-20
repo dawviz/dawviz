@@ -22,7 +22,7 @@ Bên trái thanh tua là vị trí hiện tại, bên phải là độ dài bài
 
 Cột bên trái liệt kê các phong cách video có sẵn, mỗi phong cách có ảnh nhỏ vẽ từ chính bài của bạn. Bấm để đổi. Phong cách quyết định màu nền, kiểu nốt, chữ và vị trí các khối trên khung.
 
-Khi bạn đã chỉnh gì đó, tên phong cách có thêm chữ "đã chỉnh". Mỗi phong cách giữ bản chỉnh dở của riêng nó: đổi sang phong cách khác rồi quay lại vẫn còn nguyên. Muốn về bản gốc thì rê chuột vào ô và bấm **×**; vẫn hoàn tác được bằng Ctrl+Z. Dấu cộng dưới danh sách thêm preset từ tệp `.json` (xem [Cài đặt](04-cai-dat.md)).
+Khi bạn đã chỉnh gì đó, tên phong cách có thêm chữ "đã chỉnh". Mỗi phong cách giữ bản chỉnh dở của riêng nó: đổi sang phong cách khác rồi quay lại vẫn còn nguyên. Muốn về bản gốc thì rê chuột vào ô và bấm **×**; vẫn hoàn tác được bằng Ctrl+Z. Bản chỉnh dở của mọi ô được nhớ theo trình duyệt (tải lại trang vẫn còn). Nút nhân bản trên ô tạo preset mới từ bản đang thấy. Dấu cộng dưới danh sách thêm preset từ tệp `.json` (xem [Cài đặt](04-cai-dat.md)).
 
 Phía trên khung có dòng ghi kích thước và tỉ lệ khung (ví dụ `1,080 × 1,080 · 1:1`) và tên phong cách đang dùng.
 

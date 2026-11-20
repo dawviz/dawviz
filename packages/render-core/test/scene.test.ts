@@ -200,3 +200,25 @@ test('T-68: createWidget cho mọi loại thêm được: id không trùng, nằ
   assert.deepEqual([d.layout.x - sc.widgets[1].layout.x, d.type, d.id === sc.widgets[1].id], [16, sc.widgets[1].type, false]);
   d.properties = 'x'; assert.notEqual(sc.widgets[1].properties, 'x'); // bản sao sâu
 });
+
+test('Piano Roll chế độ trang (PAGE): nốt đứng yên theo trang, vạch phát chạy rồi về đầu, nốt qua biên bị cắt', () => {
+  const kbOff = { enabled: false, width: 96 } as any;
+  const props = { keyboard: kbOff, playheadPositionRatio: 0.3, visibleSeconds: 4, scrollMode: 'PAGE' as const };
+  const g = (t: number) => pianoRollGeometry(props, 1000, t);
+  assert.equal(g(0).playX, 0); assert.equal(g(1).playX, 250); assert.equal(g(3.99).pageStart, 0);
+  assert.equal(g(4).pageStart, 4); assert.equal(g(4).playX, 0); assert.equal(g(6).playX, 500); // trang 2
+  assert.equal(g(6).pxPerSec, 250); assert.equal(g(6).windowSeconds, 4);
+  const kb = pianoRollGeometry({ ...props, keyboard: { enabled: true, width: 100 } as any }, 1000, 2);
+  assert.equal(kb.kb, 100); assert.equal(kb.playX, 100 + 2 * (900 / 4)); // trang phủ vùng nốt [kb, width]
+  assert.equal(pianoRollGeometry({ ...props, scrollMode: 'SCROLL' }, 1000, 5).pageStart, undefined);
+  // bố cục: nốt không trượt theo t; nốt kéo dài từ trang trước bị cắt ở mép trái; nốt bắt đầu đúng biên thuộc trang sau
+  const mk = (id: string, s: number, e: number) => ({ id, pitch: 60, velocity: 100, startTick: 0, durationTick: 0, startTimeSeconds: s, endTimeSeconds: e });
+  const tr = { id: 't', name: 't', color: '#f00', isVisible: true, isMuted: false, pitchRange: { min: 60, max: 60 }, notes: [mk('a', 3, 6), mk('b', 5, 6), mk('c', 8, 9)], automation: [] } as any;
+  const index = buildIndex([tr], 10);
+  const run = (t: number, pageStart: number) => layoutPianoRoll(index, [{ tick: 0, bpm: 120 } as any], t, { width: 1000, height: 100, windowSeconds: 4, playheadRatio: 0.3, pitchMin: 60, pitchMax: 60, pageStart });
+  const p2a = run(5, 4), p2b = run(7, 4);
+  assert.deepEqual(p2a.map((r) => [r.id, r.x, r.w]), [['a', 0, 500], ['b', 250, 250]]); // a bị cắt ở mép trang (từ 4 s); b dài 1 s
+  assert.deepEqual(p2b.map((r) => [r.id, r.x, r.w]), p2a.map((r) => [r.id, r.x, r.w])); // đổi t trong cùng trang: nốt không dời
+  assert.deepEqual(run(1, 0).map((r) => r.id), ['a']); // trang 1: c ở trang 3, b bắt đầu ở 5 ≥ biên 4
+  assert.equal(run(5, 4).find((r) => r.id === 'b')!.active, true);
+});

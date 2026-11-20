@@ -13,12 +13,15 @@ export interface PianoRollOptions {
   brightness?: Record<string, BrightnessConfig>; // theo track.id; thiếu thì dùng mặc định
   style?: StyleConfig;         // kiểu dáng nốt; thiếu thì dùng mặc định
   left?: number;               // chừa bên trái (px) cho bàn phím; vùng cuộn nốt là [left, width]
+  /** Chế độ trang: cửa sổ nhìn bắt đầu đúng tại đây (giây) và KHÔNG trượt theo t; nốt cắt theo biên trang. `playheadRatio` bị bỏ qua. */
+  pageStart?: number;
 }
 export interface NoteRect { id: string; trackId: string; x: number; y: number; w: number; h: number; color: string; brightness: number; active: boolean; velocity: number;
   pitch: number; opacity: number; radius: number; glow: number; glowRadius: number; borderWidth: number; borderColor: string }
 
 export function layoutPianoRoll(index: TimelineIndex, tempoMap: TempoPoint[], t: number, o: PianoRollOptions): NoteRect[] {
-  const t0 = t - o.windowSeconds * o.playheadRatio, t1 = t0 + o.windowSeconds;
+  const paged = o.pageStart !== undefined;
+  const t0 = paged ? o.pageStart! : t - o.windowSeconds * o.playheadRatio, t1 = t0 + o.windowSeconds;
   const left = o.left ?? 0, pxPerSec = (o.width - left) / o.windowSeconds;
   const rows = o.pitchMax - o.pitchMin + 1, rowH = o.height / rows;
   const rects: NoteRect[] = [];
@@ -29,10 +32,12 @@ export function layoutPianoRoll(index: TimelineIndex, tempoMap: TempoPoint[], t:
     const cfg = o.brightness?.[ti.track.id] ?? DEFAULT_BRIGHTNESS;
     for (const n of notesInRange(ti, t0, t1)) {
       if (n.pitch < o.pitchMin || n.pitch > o.pitchMax) continue;
+      if (paged && n.startTimeSeconds >= t1) continue; // nốt bắt đầu đúng biên trang thuộc trang sau
       const st = resolveNoteStyle(o.style, ti.track.id);
-      const x = left + (n.startTimeSeconds - t0) * pxPerSec, h = Math.max(1, rowH * st.heightScale);
+      const s0 = paged ? Math.max(n.startTimeSeconds, t0) : n.startTimeSeconds, e0 = paged ? Math.min(n.endTimeSeconds, t1) : n.endTimeSeconds; // chế độ trang: cắt theo biên trang
+      const x = left + (s0 - t0) * pxPerSec, h = Math.max(1, rowH * st.heightScale);
       const active = n.startTimeSeconds <= t && t < n.endTimeSeconds;
-      const color = stateColor(st, noteState(n.startTimeSeconds, n.endTimeSeconds, t), noteColor(st, ti.track.color, n.pitch, n.velocity)), w = Math.max(1, (n.endTimeSeconds - n.startTimeSeconds) * pxPerSec);
+      const color = stateColor(st, noteState(n.startTimeSeconds, n.endTimeSeconds, t), noteColor(st, ti.track.color, n.pitch, n.velocity)), w = Math.max(1, (e0 - s0) * pxPerSec);
       rects.push({
         id: n.id, trackId: ti.track.id, x, w, y: (o.pitchMax - n.pitch) * rowH + (rowH - h) / 2, h, color,
         brightness: trackBrightness(ti.track, tempoMap, Math.max(0, n.startTimeSeconds), cfg),

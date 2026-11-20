@@ -69,12 +69,12 @@
         "apps/web/src/components/TempoPanel.tsx",
         "locales/en.json#web.tempo."
       ],
-      "uiHash": "85ba2bdeb759",
-      "viHash": "2d1e33f5ab78",
-      "enHash": "e4f943bbffa7",
+      "uiHash": "56386b2cbf21",
+      "viHash": "122dbfafc1d7",
+      "enHash": "3bde1fadeedc",
       "coverHashes": {
         "apps/web/src/components/Transport.tsx": "81e2194963a6",
-        "apps/web/src/components/VideoStyles.tsx": "fa8948c9af32",
+        "apps/web/src/components/VideoStyles.tsx": "e26744383f8b",
         "apps/web/src/components/AudioPanel.tsx": "11547f9d52e7",
         "apps/web/src/components/TrackPanel.tsx": "bbbc451578ce",
         "apps/web/src/components/Stage.tsx": "010dfe525aed",
@@ -105,13 +105,13 @@
         "apps/web/src/components/WidgetSettings.tsx",
         "locales/en.json#web.ws."
       ],
-      "uiHash": "c660f8f3f2f3",
-      "viHash": "0cec01af7da5",
-      "enHash": "f3bcba16e8cf",
+      "uiHash": "8a6dfc28689a",
+      "viHash": "3acfbe3adb4d",
+      "enHash": "c4ccafad2668",
       "coverHashes": {
         "apps/web/src/components/Editor.tsx": "3c2efcd6169b",
         "apps/web/src/components/EditorOverlay.tsx": "3f83719e6d7e",
-        "apps/web/src/components/StylePanel.tsx": "38ff40b6e77f",
+        "apps/web/src/components/StylePanel.tsx": "bedf93632133",
         "locales/en.json#web.editor.": "24216caff19e",
         "locales/en.json#web.style.": "3f579d231537",
         "locales/en.json#web.glow.": "a02382b4889a",
@@ -135,15 +135,15 @@
         "apps/web/src/components/SessionSettings.tsx",
         "locales/en.json#web.session."
       ],
-      "uiHash": "44f804568b44",
-      "viHash": "c1d0376a5039",
-      "enHash": "543a8de98ad0",
+      "uiHash": "78af9ba28f02",
+      "viHash": "ff4e408a214e",
+      "enHash": "6673d3675d6a",
       "coverHashes": {
         "apps/web/src/components/ThemeSelect.tsx": "f9b2c3746fbe",
-        "apps/web/src/components/VideoStyles.tsx": "fa8948c9af32",
+        "apps/web/src/components/VideoStyles.tsx": "e26744383f8b",
         "locales/en.json#web.settings.": "6f3092d6a435",
         "locales/en.json#web.theme.": "05a823a18b7d",
-        "locales/en.json#web.preset.": "ef5e87f0b027",
+        "locales/en.json#web.preset.": "8fe4032611da",
         "apps/web/src/components/SessionSettings.tsx": "8711419ab156",
         "locales/en.json#web.session.": "4240dbb1e528"
       }

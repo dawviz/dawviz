@@ -5,7 +5,7 @@ section: "8. Nguồn và giấy phép"
 path: "8. Nguồn và giấy phép"
 chunk: 8-nguon-va-giay-phep.md
 source_lines: 105-107
-source_sha1: 5bf69b7604
+source_sha1: 2763624485
 ids: []
 ---
 ## 8. Nguồn và giấy phép

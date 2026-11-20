@@ -6,7 +6,7 @@ import { useI18n } from '../i18n/I18nProvider.tsx';
 import { radioKeys, radioTab } from '../lib/a11y.ts';
 import { VIDEO_STYLES, videoStyleBase } from '../lib/videoScenes.ts';
 import { Notices } from './Notices.tsx';
-import { Close, Download, Trash } from './Icons.tsx';
+import { Close, Download, Duplicate, Trash } from './Icons.tsx';
 import type { Problem } from '../lib/problems.ts';
 
 export { VIDEO_STYLES, videoStyleBase };
@@ -30,6 +30,8 @@ export interface UserPresets {
   onAddFile(file: File): void;
   /** Tải xuống tệp .json của ô, đúng như đang thấy (kể cả phần đã chỉnh). */
   onDownload(id: string): void;
+  /** Nhân bản bản đang thấy của ô (kể cả phần đã chỉnh) thành preset mới của người dùng; ô nguồn về nguyên gốc. */
+  onDuplicate(id: string): void;
   /** Bỏ mọi chỉnh sửa, về bản gốc của ô. */
   onRevert(id: string): void;
   /** Xoá hẳn ô preset của người dùng (phong cách dựng sẵn không có nút này). */
@@ -61,6 +63,7 @@ export function VideoStyles({ value, edited, onPick, thumb, presets }: { value: 
         {presets && (
           <span className="absolute right-4 top-3 flex gap-1 opacity-0 transition focus-within:opacity-100 group-hover:opacity-100">
             <button type="button" className={act} onClick={() => presets.onDownload(id)} aria-label={i18n.t('web.preset.download', { name: label })} title={i18n.t('web.preset.download', { name: label })} data-testid={`preset-download-${id}`}><Download className="h-3.5 w-3.5" /></button>
+            <button type="button" className={act} onClick={() => presets.onDuplicate(id)} aria-label={i18n.t('web.preset.duplicate', { name: label })} title={i18n.t('web.preset.duplicate', { name: label })} data-testid={`preset-duplicate-${id}`}><Duplicate className="h-3.5 w-3.5" /></button>
             {isEdited && <button type="button" className={act} onClick={() => presets.onRevert(id)} aria-label={i18n.t('web.preset.revert', { name: label })} title={i18n.t('web.preset.revert', { name: label })} data-testid={`preset-revert-${id}`}><Close className="h-3.5 w-3.5" /></button>}
             {removable && <button type="button" className={act} onClick={() => presets.onDelete(id)} aria-label={i18n.t('web.preset.delete', { name: label })} title={i18n.t('web.preset.delete', { name: label })} data-testid={`preset-delete-${id}`}><Trash className="h-3.5 w-3.5" /></button>}
           </span>

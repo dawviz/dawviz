@@ -71,7 +71,7 @@ describe('StylePanel', () => {
 describe('StylePanel: ô vạch phát ẩn khi bật bàn phím (T-71)', () => {
   it('bàn phím tắt: chỉnh được, gửi tỉ lệ 0..1; bàn phím bật: cả ô Hiện vạch phát và Vị trí vạch phát đều ẩn', () => {
     let ratio = 0.3, visible = true;
-    const props = { style: defaultStyleConfig(), onStyle: () => {}, onKeyboard: () => {}, playhead: { ratio, visible, onChange: (r: number) => (ratio = r), onVisible: (v: boolean) => (visible = v) } };
+    const props = { style: defaultStyleConfig(), onStyle: () => {}, onKeyboard: () => {}, playhead: { ratio, visible, scrollMode: 'SCROLL' as const, onScrollMode: () => {}, visibleSeconds: 4, onVisibleSeconds: () => {}, onChange: (r: number) => (ratio = r), onVisible: (v: boolean) => (visible = v) } };
     const v = wrap(<StylePanel {...props} keyboard={{ ...DEFAULT_KEYBOARD_STYLE, enabled: false }} />);
     const slider = () => document.getElementById('st-playhead') as HTMLInputElement | null;
     expect(slider()!.disabled).toBe(false);
@@ -83,6 +83,22 @@ describe('StylePanel: ô vạch phát ẩn khi bật bàn phím (T-71)', () => {
     expect(slider()).toBeNull();
     expect(screen.queryByTestId('playhead-visible')).toBeNull();
     expect(screen.queryByTestId('playhead-locked')).toBeNull();
+  });
+});
+
+describe('StylePanel: cách nốt chạy Cuộn/Trang', () => {
+  it('chọn Trang gửi PAGE; chế độ Trang: ô vị trí vạch phát ẩn, ô Hiện vạch phát còn kể cả khi bật bàn phím; ô thời gian đổi nhãn thành độ dài trang', () => {
+    let mode: 'SCROLL' | 'PAGE' = 'SCROLL', secs = 4;
+    const base = { ratio: 0.3, visible: true, onScrollMode: (m: 'SCROLL' | 'PAGE') => (mode = m), visibleSeconds: 4, onVisibleSeconds: (n: number) => (secs = n), onChange: () => {}, onVisible: () => {} };
+    const props = { style: defaultStyleConfig(), onStyle: () => {}, onKeyboard: () => {}, keyboard: { ...DEFAULT_KEYBOARD_STYLE, enabled: true } };
+    const v = wrap(<StylePanel {...props} playhead={{ ...base, scrollMode: 'SCROLL' }} />);
+    expect(screen.queryByTestId('playhead-visible')).toBeNull(); // cuộn + bàn phím: vạch ghim ở mép phím
+    fireEvent.click(screen.getByTestId('scroll-PAGE')); expect(mode).toBe('PAGE');
+    v.rerender(<I18nProvider><StylePanel {...props} playhead={{ ...base, scrollMode: 'PAGE' }} /></I18nProvider>);
+    expect(screen.getByTestId('playhead-visible')).toBeInTheDocument();
+    expect(document.getElementById('st-playhead')).toBeNull();
+    typeIn(document.getElementById('st-visible') as HTMLInputElement, '2.5'); expect(secs).toBe(2.5);
+    expect(screen.getByTestId('field-st-visible').textContent).toMatch(/Page length|Độ dài trang/);
   });
 });
 

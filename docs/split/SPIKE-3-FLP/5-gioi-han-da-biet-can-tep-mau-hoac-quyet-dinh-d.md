@@ -5,7 +5,7 @@ section: "5. Giới hạn đã biết (cần tệp mẫu hoặc quyết định 
 path: "5. Giới hạn đã biết (cần tệp mẫu hoặc quyết định để mở)"
 chunk: 5-gioi-han-da-biet-can-tep-mau-hoac-quyet-dinh-d.md
 source_lines: 41-72
-source_sha1: 5bf69b7604
+source_sha1: 2763624485
 ids: [ERR_AST_INVALID, ERR_NO_NOTES, WARN_FLP_CLIPS_SKIPPED, WARN_TEMPO_RAMP, WARN_TEMPO_SHAPE, WARN_ZERO_LENGTH_NOTES]
 ---
 ## 5. Giới hạn đã biết (cần tệp mẫu hoặc quyết định để mở)

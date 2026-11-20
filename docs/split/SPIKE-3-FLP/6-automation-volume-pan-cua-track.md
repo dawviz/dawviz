@@ -5,7 +5,7 @@ section: "6. Automation (volume, pan của track)"
 path: "6. Automation (volume, pan của track)"
 chunk: 6-automation-volume-pan-cua-track.md
 source_lines: 73-82
-source_sha1: 5bf69b7604
+source_sha1: 2763624485
 ids: [REQ-AST-02, REQ-GRAPHICS-06]
 ---
 ## 6. Automation (volume, pan của track)

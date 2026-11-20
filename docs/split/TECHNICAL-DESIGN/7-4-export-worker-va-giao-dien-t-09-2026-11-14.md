@@ -5,7 +5,7 @@ section: "7.4 Export Worker và giao diện (T-09, 2026-11-14)"
 path: "7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) > 7.4 Export Worker và giao diện (T-09, 2026-11-14)"
 chunk: 7-4-export-worker-va-giao-dien-t-09-2026-11-14.md
 source_lines: 434-448
-source_sha1: 6f6a5c27ab
+source_sha1: b601c66aca
 ids: [AT-03, AT-05, D-04, D-26, D-61, ERR_EXPORT_FAILED, REQ-EXPORT-02, REQ-GRAPHICS-05, SOI-10]
 ---
 ### 7.4 Export Worker và giao diện (T-09, 2026-11-14)

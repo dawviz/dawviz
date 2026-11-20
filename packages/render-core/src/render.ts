@@ -73,12 +73,17 @@ const a01 = (v: number) => Math.min(1, Math.max(0, v));
  * mép phải bàn phím, `playheadPositionRatio` không có tác dụng (giao diện khoá ô đó); nốt đã phát trượt xuống dưới bàn phím.
  * Trả `windowSeconds`/`ratio` theo vùng cuộn nốt [kb, width] để đưa thẳng vào layoutPianoRoll.
  */
-export function pianoRollGeometry(p: Pick<PianoRollProps, 'keyboard' | 'playheadPositionRatio' | 'visibleSeconds'>, width: number) {
+export function pianoRollGeometry(p: Pick<PianoRollProps, 'keyboard' | 'playheadPositionRatio' | 'visibleSeconds'> & { scrollMode?: PianoRollProps['scrollMode'] }, width: number, t = 0) {
+  if (p.scrollMode === 'PAGE') { // chế độ trang: trang dài visibleSeconds phủ đủ vùng nốt; vạch phát chạy trong trang, hết trang thì về đầu
+    const kb = p.keyboard.enabled ? Math.min(p.keyboard.width, width * 0.4) : 0, area = width - kb, pxPerSec = area / p.visibleSeconds;
+    const pageStart = Math.max(0, Math.floor(t / p.visibleSeconds + 1e-9)) * p.visibleSeconds;
+    return { kb, playX: kb + Math.min(area, Math.max(0, (t - pageStart) * pxPerSec)), pxPerSec, ratio: 0, windowSeconds: p.visibleSeconds, pageStart: pageStart as number | undefined };
+  }
   const kb = p.keyboard.enabled ? Math.min(p.keyboard.width, width * 0.4) : 0;
   const pxPerSec = width / p.visibleSeconds;
   const playX = kb > 0 ? kb : width * p.playheadPositionRatio;
   const area = width - kb;
-  return { kb, playX, pxPerSec, ratio: area > 0 ? (playX - kb) / area : 0, windowSeconds: area / pxPerSec };
+  return { kb, playX, pxPerSec, ratio: area > 0 ? (playX - kb) / area : 0, windowSeconds: area / pxPerSec, pageStart: undefined as number | undefined };
 }
 
 export const pianoRollRenderer: WidgetRenderer<PianoRollProps> = {
@@ -86,9 +91,9 @@ export const pianoRollRenderer: WidgetRenderer<PianoRollProps> = {
   layout({ ast, derived, tracks }, spec, t) {
     const p = spec.properties, { width, height } = spec.layout;
     const [pitchMin, pitchMax] = pianoRollPitchRange(p, tracks);
-    const { kb, ratio, playX, windowSeconds } = pianoRollGeometry(p, width);
+    const { kb, ratio, playX, windowSeconds, pageStart } = pianoRollGeometry(p, width, t);
     const rects = layoutPianoRoll({ tracks, duration: derived.index.duration }, ast.tempoMap, t,
-      { width, height, windowSeconds, playheadRatio: ratio, pitchMin, pitchMax, brightness: derived.brightness, style: p.noteStyle, left: kb });
+      { width, height, windowSeconds, playheadRatio: ratio, pitchMin, pitchMax, brightness: derived.brightness, style: p.noteStyle, left: kb, pageStart });
     const out: Primitive[] = [];
     for (const r of rects) {
       const alpha = a01(r.brightness * r.opacity);

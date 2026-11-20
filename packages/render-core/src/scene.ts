@@ -44,6 +44,9 @@ export interface PianoRollProps {
   /** Số giây trải trên toàn bề rộng widget = tỉ lệ thời gian (pt/giây = width / visibleSeconds). Không đổi theo vị trí vạch phát hay bàn phím. 0,5–60.
    *  Preset thiếu trường này: lấy lookahead / (1 − playheadPositionRatio), đúng cách tính cũ, nên preset cũ vẽ như trước. */
   visibleSeconds: number;
+  /** Cách nốt chạy: SCROLL (mặc định) nốt cuộn qua vạch phát cố định; PAGE nốt đứng yên theo trang dài `visibleSeconds`, vạch phát chạy từ trái sang phải
+   *  rồi sang trang mới (nốt kéo dài qua ranh giới trang bị cắt ở mép trang). `playheadPositionRatio` không có tác dụng ở PAGE. */
+  scrollMode: 'SCROLL' | 'PAGE';
   noteStyle: StyleConfig;
   keyboard: KeyboardStyle;
   playheadColor: string;
@@ -73,7 +76,7 @@ export interface SceneDocument {
 
 export const DEFAULT_PIANO_ROLL: Readonly<PianoRollProps> = Object.freeze({
   orientation: 'HORIZONTAL', pitchRangeMode: 'CUSTOM', pitchMin: 21, pitchMax: 108, // mặc định hiện đủ 88 phím (A0–C8); FIT_CONTENT là lựa chọn
-  lookaheadSeconds: 3, playheadPositionRatio: 0.3, visibleSeconds: 3 / 0.7,
+  lookaheadSeconds: 3, playheadPositionRatio: 0.3, visibleSeconds: 3 / 0.7, scrollMode: 'SCROLL',
   noteStyle: { base: { ...DEFAULT_NOTE_STYLE }, tracks: {} }, keyboard: { ...DEFAULT_KEYBOARD_STYLE, width: 96 }, // 96 pt ≈ 5% bề rộng 1920
   playheadColor: '#ffffff', playheadWidth: 2, playheadVisible: true,
 });
@@ -332,6 +335,7 @@ export function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] 
         pitchMin: pMin, pitchMax: pMax,
         lookaheadSeconds: look, playheadPositionRatio: ratio,
         visibleSeconds: num(P.visibleSeconds, Math.min(60, Math.max(0.5, Math.round(look / (1 - ratio) * 1e6) / 1e6)), 0.5, 60, `${p}.properties.visibleSeconds`),
+        scrollMode: oneOf(P.scrollMode, ['SCROLL', 'PAGE'] as const, d.scrollMode, `${p}.properties.scrollMode`),
         noteStyle: { base: sanitizeStyle(nsBase), tracks },
         keyboard: {
           enabled: bool(kb.enabled, d.keyboard.enabled, `${p}.properties.keyboard.enabled`),

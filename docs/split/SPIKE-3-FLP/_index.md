@@ -1,6 +1,6 @@
 # Chỉ mục SPIKE-3-FLP.md — Spike 3: đọc `.flp` (FL Studio) bằng JSON schema
 
-nguồn: `SPIKE-3-FLP.md` (sha1 5bf69b7604)
+nguồn: `SPIKE-3-FLP.md` (sha1 2763624485)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -11,6 +11,6 @@ nguồn: `SPIKE-3-FLP.md` (sha1 5bf69b7604)
 | 4 | 4. Mô hình ánh xạ (quyết định) | [4-mo-hinh-anh-xa-quyet-dinh.md](4-mo-hinh-anh-xa-quyet-dinh.md) | 1131 | D-44, ERR_AST_INVALID |
 | 5 | 5. Giới hạn đã biết (cần tệp mẫu hoặc quyết định để mở) | [5-gioi-han-da-biet-can-tep-mau-hoac-quyet-dinh-d.md](5-gioi-han-da-biet-can-tep-mau-hoac-quyet-dinh-d.md) | 5709 | ERR_AST_INVALID, ERR_NO_NOTES, WARN_FLP_CLIPS_SKIPPED, WARN_TEMPO_RAMP, WARN_TEMPO_SHAPE, WARN_ZERO_LENGTH_NOTES |
 | 6 | 6. Automation (volume, pan của track) | [6-automation-volume-pan-cua-track.md](6-automation-volume-pan-cua-track.md) | 2201 | REQ-AST-02, REQ-GRAPHICS-06 |
-| 7 | 6b. Tệp mẫu cần để gỡ [VERIFY] (danh sách cho người thử) | [6b-tep-mau-can-de-go-verify-danh-sach-cho-nguoi.md](6b-tep-mau-can-de-go-verify-danh-sach-cho-nguoi.md) | 1686 | ERR_NO_NOTES |
+| 7 | 6b. Tệp mẫu cần để gỡ [VERIFY] (danh sách cho người thử) | [6b-tep-mau-can-de-go-verify-danh-sach-cho-nguoi.md](6b-tep-mau-can-de-go-verify-danh-sach-cho-nguoi.md) | 1750 | ERR_NO_NOTES |
 | 8 | 7. Phương án đã cân nhắc | [7-phuong-an-da-can-nhac.md](7-phuong-an-da-can-nhac.md) | 603 | D-28 |
 | 9 | 8. Nguồn và giấy phép | [8-nguon-va-giay-phep.md](8-nguon-va-giay-phep.md) | 634 |  |

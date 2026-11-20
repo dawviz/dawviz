@@ -5,7 +5,7 @@ section: "1. Kết luận"
 path: "1. Kết luận"
 chunk: 1-ket-luan.md
 source_lines: 5-11
-source_sha1: 5bf69b7604
+source_sha1: 2763624485
 ids: [ERR_AST_TOO_LARGE]
 ---
 ## 1. Kết luận
