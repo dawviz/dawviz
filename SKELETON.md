@@ -157,6 +157,7 @@ dawviz/
 │     │  │  ├─ undoKeys.ts
 │     │  │  ├─ usePref.ts
 │     │  │  ├─ userPresets.ts
+│     │  │  ├─ useStageWidth.test.ts
 │     │  │  ├─ useStageWidth.ts
 │     │  │  ├─ videoScenes.ts
 │     │  │  ├─ widgetFields.test.ts
@@ -1172,6 +1173,7 @@ Bộ chọn tỉ lệ khung ở đầu sân khấu (REQ-GRAPHICS-04): 9:16 / 1:1
 
 ```text
 function AspectSwitch({ value, onChange, disabled }: { value: string; onChange(aspect: string): void; disabled?: boolean })
+function frameInfo(i18n: ReturnType<typeof useI18n>['i18n'], w: number, h: number, aspect: string): string   // Dòng thông số của khung: "1,080 × 1,920"; tỉ lệ chỉ ghi thêm khi không phải ba tỉ lệ dựng sẵn (đã có trên bộ …
 ```
 
 #### `apps/web/src/components/AudioPanel.tsx`
@@ -2393,6 +2395,7 @@ Chiều rộng khung xem trước (px), tính theo chỗ còn lại thực sự 
 ```text
 const STAGE_CHROME   // `proof`: Xem trước có khung bản in thử; `plain`: không có (dòng bộ chọn tỉ lệ riêng); `editor`: thẻ Chỉnh sửa…
 const STAGE_WEDGE   // Bề rộng thêm bên phải khi có dải xám: khe 16 px + dải 10 px.
+const TRANSPORT_WRAP   // Thanh phát xuống hai hàng khi khung hẹp hơn `below` px (container query 34 rem trong index.css); hàng thêm ca…
 function fitStageWidth(o: { availW: number; availH: number; aspect: number; chrome: number; extra: number }): number   // Hàm thuần: rộng nhất sao cho khối sân khấu vừa cả chiều ngang lẫn chiều dọc.
 function useStageWidth(scroller: RefObject<HTMLElement>, stage: RefObject<HTMLElement>, o: { aspect: number; chrome: number; extra: number; active: boolean; fallback?: number }): number   // `stage` là phần tử bọc khối sân khấu; chỗ còn lại theo chiều dọc = phần vùng cuộn dưới mép trên của nó (tự tí…
 ```
@@ -2564,6 +2567,7 @@ type SpectrumOut
 - `apps/web/src/lib/theme.test.ts`
 - `apps/web/src/lib/timeText.test.ts`
 - `apps/web/src/lib/undoKeys.test.ts`
+- `apps/web/src/lib/useStageWidth.test.ts`
 - `apps/web/src/lib/widgetFields.test.ts`
 - `apps/web/src/lib/workspaceStore.test.ts`
 - `apps/web/test/app.test.tsx`
@@ -2597,4 +2601,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 1068 ký hiệu công khai -->
+<!-- 10 thư mục src, 1070 ký hiệu công khai -->

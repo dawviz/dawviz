@@ -69,15 +69,15 @@
         "apps/web/src/components/TempoPanel.tsx",
         "locales/en.json#web.tempo."
       ],
-      "uiHash": "37c8a01fa90c",
-      "viHash": "369adbf79abd",
-      "enHash": "18c5a4c2a6ee",
+      "uiHash": "0363e60c573c",
+      "viHash": "267b604e38b2",
+      "enHash": "1dd47649da95",
       "coverHashes": {
-        "apps/web/src/components/Transport.tsx": "81e2194963a6",
+        "apps/web/src/components/Transport.tsx": "a6c07a39f7bb",
         "apps/web/src/components/VideoStyles.tsx": "df6f7d39635b",
         "apps/web/src/components/AudioPanel.tsx": "11547f9d52e7",
         "apps/web/src/components/TrackPanel.tsx": "bbbc451578ce",
-        "apps/web/src/components/Stage.tsx": "ff6f69b1968b",
+        "apps/web/src/components/Stage.tsx": "af98beb6a53e",
         "locales/en.json#web.audio.": "833abe622053",
         "locales/en.json#web.track": "e06c4e497fcd",
         "locales/en.json#web.brightness.": "0cf9c6022fb9",
@@ -113,11 +113,11 @@
         "locales/en.json#web.bg.",
         "locales/en.json#web.page."
       ],
-      "uiHash": "1c5cdf9fe4a8",
+      "uiHash": "bbab1c7fb6da",
       "viHash": "76e8a5802ca9",
       "enHash": "3772af8def46",
       "coverHashes": {
-        "apps/web/src/components/Editor.tsx": "55a879c548fb",
+        "apps/web/src/components/Editor.tsx": "89566b93a4d9",
         "apps/web/src/components/EditorOverlay.tsx": "c813801e06af",
         "apps/web/src/components/StylePanel.tsx": "26c35e084860",
         "locales/en.json#web.editor.": "7be8167cea49",
@@ -180,7 +180,7 @@
         "apps/web/src/lib/numberInput.ts",
         "apps/web/src/components/Editor.tsx"
       ],
-      "uiHash": "ffd5b31993b0",
+      "uiHash": "260675ba65a4",
       "viHash": "a4fc2ae2b94b",
       "enHash": "f0eff66dc8fc",
       "coverHashes": {
@@ -188,7 +188,7 @@
         "apps/web/src/lib/undoKeys.ts": "07c2c99f5cf4",
         "apps/web/src/components/EditorOverlay.tsx": "c813801e06af",
         "apps/web/src/lib/numberInput.ts": "8e27c53523c3",
-        "apps/web/src/components/Editor.tsx": "55a879c548fb"
+        "apps/web/src/components/Editor.tsx": "89566b93a4d9"
       }
     },
     "06-xuat-video": {

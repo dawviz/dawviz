@@ -16,7 +16,7 @@ import { STAGE_CHROME, useStageWidth } from '../lib/useStageWidth.ts';
 import { alignLayouts, distributeLayouts, hasCanvasFrame, intoFrame, outsideFrame, round, setAnchor, type AlignMode } from '../lib/editorGeometry.ts';
 import { LiveCanvas } from './Stage.tsx';
 import { EditorOverlay } from './EditorOverlay.tsx';
-import { AspectSwitch } from './AspectSwitch.tsx';
+import { AspectSwitch, frameInfo } from './AspectSwitch.tsx';
 import { Crop } from './Stage.tsx';
 import { InspectorSection, ResetButton, TickField } from './Inspector.tsx';
 import { NumberField } from './NumberField.tsx';
@@ -286,7 +286,7 @@ export function Editor({ styleName, scene, derived, ast, playback, fonts, advanc
         {derived && ast ? (
           <div ref={stageRef} className="mx-auto grid gap-y-2" style={{ width: width + 2 * PASTEBOARD, gridTemplateColumns: `${width + 2 * PASTEBOARD}px` }}>
             <div className="flex items-center justify-between gap-3 px-7 text-xs tabular-nums text-muted">
-              <span className="min-w-0 truncate" title={styleName ? i18n.t('web.stage.style', { name: styleName }) : undefined}>{i18n.t('web.stage.size', { w: W, h: H, aspect: scene.canvas.aspectRatio })}{styleName && <><span aria-hidden> · </span>{styleName}</>}</span>
+              <span className="min-w-0 truncate" title={styleName ? i18n.t('web.stage.style', { name: styleName }) : undefined}>{frameInfo(i18n, W, H, scene.canvas.aspectRatio)}{styleName && <><span aria-hidden> · </span>{styleName}</>}</span>
               <AspectSwitch value={scene.canvas.aspectRatio} onChange={actions.aspect} />
             </div>
             {/* Bàn đệm: tay nắm ra ngoài khung vẫn thấy được nhưng bị cắt ở mép bàn, không đè thanh phát. */}

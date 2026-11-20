@@ -25,34 +25,41 @@ export function Transport({ playback, duration, wave, offsetMs = 0 }: { playback
   const path = useMemo(() => (wave && duration > 0 ? peaksPath(placePeaks(wave.peaks, wave.durationSec, offsetMs / 1000, duration, WAVE_COLS), WAVE_H) : ''), [wave, duration, offsetMs]);
   const pct = duration > 0 ? (t / duration) * 100 : 0;
   return (
-    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 px-3 py-2" data-testid="transport">
-      <button type="button" className={iconBtn} onClick={() => playback.seek(0)} aria-label={i18n.t('web.toStart')} aria-keyshortcuts="Home" title={hint(i18n.t('web.toStart'), 'web.key.home')}><ToStart /></button>
-      <button type="button" className={iconBtn} onClick={() => playback.nudge(-STEP)} aria-label={i18n.t('web.back')} title={i18n.t('web.back')}><Back /></button>
-      <button type="button" onClick={() => playback.toggle()} aria-label={label} aria-keyshortcuts="Space" title={hint(label, 'web.key.space')}
-        className="grid h-9 w-9 shrink-0 place-items-center rounded bg-fg text-page transition hover:ring-1 hover:ring-line-strong hover:ring-offset-2 hover:ring-offset-surface active:scale-95">
-        {playing ? <Pause /> : <Play />}
-      </button>
-      <button type="button" className={iconBtn} onClick={() => playback.nudge(STEP)} aria-label={i18n.t('web.forward')} title={i18n.t('web.forward')}><Forward /></button>
-      <span className={`ml-1 w-[4.75rem] shrink-0 text-right text-[13px] font-medium tabular-nums ${playing ? 'text-accent' : 'text-fg'}`} data-testid="transport-time">{formatClock(t)}</span>
-      <div className="relative min-w-[9rem] flex-1">
-        <input aria-label={i18n.t('web.seek')} aria-valuetext={formatClock(t)} type="range" min={0} max={duration} step={0.01} value={t}
-          style={{ '--p': `${pct}%` } as React.CSSProperties}
-          onChange={(e) => playback.seek(Number(e.target.value))} className="w-full min-w-0" />
-        {loop && duration > 0 && (
-          <span aria-hidden data-testid="loop-region" className="pointer-events-none absolute top-1/2 h-6 -translate-y-1/2 rounded-sm bg-accent/15"
-            style={{ left: `${(loop.start / duration) * 100}%`, width: `${((loop.end - loop.start) / duration) * 100}%` }} />
-        )}
-        {path && (
-          <svg viewBox={`0 0 ${WAVE_COLS} ${WAVE_H}`} preserveAspectRatio="none" aria-hidden data-testid="waveform"
-            className="pointer-events-none absolute inset-x-0 top-1/2 h-6 w-full -translate-y-1/2 text-muted">
-            <path d={path} stroke="currentColor" strokeWidth="1" vectorEffect="non-scaling-stroke" fill="none" opacity="0.55" />
-            <g className="text-accent" style={{ clipPath: `inset(0 ${100 - pct}% 0 0)` }}><path d={path} stroke="currentColor" strokeWidth="1" vectorEffect="non-scaling-stroke" fill="none" /></g>
-          </svg>
-        )}
+    <div className="tp" data-testid="transport">
+      <div className="tp-in">
+        <div className="tp-btns">
+          <button type="button" className={iconBtn} onClick={() => playback.seek(0)} aria-label={i18n.t('web.toStart')} aria-keyshortcuts="Home" title={hint(i18n.t('web.toStart'), 'web.key.home')}><ToStart /></button>
+          <button type="button" className={iconBtn} onClick={() => playback.nudge(-STEP)} aria-label={i18n.t('web.back')} title={i18n.t('web.back')}><Back /></button>
+          <button type="button" onClick={() => playback.toggle()} aria-label={label} aria-keyshortcuts="Space" title={hint(label, 'web.key.space')}
+            className="grid h-9 w-9 shrink-0 place-items-center rounded bg-fg text-page transition hover:ring-1 hover:ring-line-strong hover:ring-offset-2 hover:ring-offset-surface active:scale-95">
+            {playing ? <Pause /> : <Play />}
+          </button>
+          <button type="button" className={iconBtn} onClick={() => playback.nudge(STEP)} aria-label={i18n.t('web.forward')} title={i18n.t('web.forward')}><Forward /></button>
+        </div>
+        {/* Thời gian hiện tại, thanh tua, độ dài bài luôn đi cùng nhau; khung hẹp thì cả cụm xuống hàng hai (index.css, .tp). */}
+        <div className="tp-seek">
+          <span className={`w-[4.75rem] shrink-0 text-[13px] font-medium tabular-nums ${playing ? 'text-accent' : 'text-fg'}`} data-testid="transport-time">{formatClock(t)}</span>
+          <div className="relative min-w-[6rem] flex-1">
+            <input aria-label={i18n.t('web.seek')} aria-valuetext={formatClock(t)} type="range" min={0} max={duration} step={0.01} value={t}
+              style={{ '--p': `${pct}%` } as React.CSSProperties}
+              onChange={(e) => playback.seek(Number(e.target.value))} className="w-full min-w-0" />
+            {loop && duration > 0 && (
+              <span aria-hidden data-testid="loop-region" className="pointer-events-none absolute top-1/2 h-6 -translate-y-1/2 rounded-sm bg-accent/15"
+                style={{ left: `${(loop.start / duration) * 100}%`, width: `${((loop.end - loop.start) / duration) * 100}%` }} />
+            )}
+            {path && (
+              <svg viewBox={`0 0 ${WAVE_COLS} ${WAVE_H}`} preserveAspectRatio="none" aria-hidden data-testid="waveform"
+                className="pointer-events-none absolute inset-x-0 top-1/2 h-6 w-full -translate-y-1/2 text-muted">
+                <path d={path} stroke="currentColor" strokeWidth="1" vectorEffect="non-scaling-stroke" fill="none" opacity="0.55" />
+                <g className="text-accent" style={{ clipPath: `inset(0 ${100 - pct}% 0 0)` }}><path d={path} stroke="currentColor" strokeWidth="1" vectorEffect="non-scaling-stroke" fill="none" /></g>
+              </svg>
+            )}
+          </div>
+          <span className="w-[4.75rem] shrink-0 text-right text-[13px] tabular-nums text-muted" data-testid="transport-duration">{formatClock(duration)}</span>
+        </div>
+        <button type="button" className={`${iconBtn} btn-toggle tp-loop`} aria-pressed={looping} aria-label={i18n.t('web.loop')} title={loopLabel}
+          onClick={() => playback.setLoop(looping ? null : 'all')} data-testid="loop"><Repeat /></button>
       </div>
-      <span className="w-[4.75rem] shrink-0 text-[13px] tabular-nums text-muted">{formatClock(duration)}</span>
-      <button type="button" className={`${iconBtn} btn-toggle`} aria-pressed={looping} aria-label={i18n.t('web.loop')} title={loopLabel}
-        onClick={() => playback.setLoop(looping ? null : 'all')} data-testid="loop"><Repeat /></button>
     </div>
   );
 }

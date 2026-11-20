@@ -19,3 +19,9 @@ export function AspectSwitch({ value, onChange, disabled }: { value: string; onC
     </div>
   );
 }
+
+/** Dòng thông số của khung: "1,080 × 1,920"; tỉ lệ chỉ ghi thêm khi không phải ba tỉ lệ dựng sẵn (đã có trên bộ chọn), ví dụ "1,000 × 1,250 · 4:5". */
+export function frameInfo(i18n: ReturnType<typeof useI18n>['i18n'], w: number, h: number, aspect: string): string {
+  const dims = i18n.t('web.stage.dims', { w, h });
+  return ORDER.some((a) => a === aspect) ? dims : `${dims} · ${aspect}`;
+}

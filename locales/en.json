@@ -248,7 +248,7 @@
   "web.style.preset.default": "Default",
   "web.styles.edited": "edited",
   "web.stage": "Video preview",
-  "web.stage.size": "{w} × {h} · {aspect}",
+  "web.stage.dims": "{w} × {h}",
   "web.stage.style": "Style: {name}",
   "web.stage.fontsLoading": "Loading video fonts…",
   "web.stage.fontsError": "The video fonts could not be loaded, so the frame isn't drawn. Reload the page to try again.",

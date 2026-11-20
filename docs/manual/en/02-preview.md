@@ -16,7 +16,7 @@ The transport sits under the preview.
 | Seek bar | Drag or click to jump |
 | ⟳ | Turn looping on or off |
 
-The current time is on the left of the seek bar, the song length on the right.
+The current time is on the left of the seek bar, the song length on the right. When the frame is narrow (for example the vertical 9:16 frame) the transport splits into two rows: the buttons and loop button on top, the current time, seek bar and song length below.
 
 ## Video styles
 

@@ -143,6 +143,18 @@
   .btn-toggle[aria-pressed='true']::before {
     content: ''; position: absolute; left: 50%; bottom: 3px; width: 4px; height: 4px; margin-left: -2px; border-radius: 9999px; background: currentColor;
   }
+  /* Thanh phát: một hàng khi đủ rộng; khung hẹp (vd. 9:16) thì hàng 1 là các nút + nút lặp, hàng 2 là giờ hiện tại, thanh tua, độ dài bài.
+     Dùng container query theo chính thanh (không theo cửa sổ). Ngưỡng 34 rem khớp TRANSPORT_WRAP trong lib/useStageWidth.ts. */
+  .tp { container-type: inline-size; }
+  .tp-in { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; }
+  .tp-btns { display: flex; flex-shrink: 0; align-items: center; gap: 0.5rem; }
+  .tp-seek { display: flex; min-width: 0; flex: 1; align-items: center; gap: 0.5rem; }
+  @container (max-width: 34rem) {
+    .tp-in { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 'btns loop' 'seek seek'; row-gap: 0.25rem; }
+    .tp-btns { grid-area: btns; }
+    .tp-seek { grid-area: seek; }
+    .tp-loop { grid-area: loop; }
+  }
   .disclosure { @apply flex min-h-[var(--hit)] cursor-pointer select-none items-center gap-1 text-muted transition hover:text-fg hover:underline hover:underline-offset-2; }
   .disclosure::before {
     content: ''; width: 0.75rem; height: 0.75rem; flex-shrink: 0; transition: transform 150ms;

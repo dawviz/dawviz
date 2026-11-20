@@ -16,7 +16,7 @@ Thanh phát nằm dưới khung xem trước.
 | Thanh tua | Kéo hoặc bấm để nhảy tới chỗ khác |
 | ⟳ | Bật hoặc tắt phát lặp |
 
-Bên trái thanh tua là vị trí hiện tại, bên phải là độ dài bài.
+Bên trái thanh tua là vị trí hiện tại, bên phải là độ dài bài. Khi khung hẹp (ví dụ khung dọc 9:16) thanh phát chia hai hàng: hàng trên là các nút và nút lặp, hàng dưới là vị trí hiện tại, thanh tua và độ dài bài.
 
 ## Phong cách video
 

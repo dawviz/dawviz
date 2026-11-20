@@ -248,7 +248,7 @@
   "web.style.preset.default": "Mặc định",
   "web.styles.edited": "đã chỉnh",
   "web.stage": "Khung xem trước video",
-  "web.stage.size": "{w} × {h} · {aspect}",
+  "web.stage.dims": "{w} × {h}",
   "web.stage.style": "Phong cách: {name}",
   "web.stage.fontsLoading": "Đang nạp phông chữ của video…",
   "web.stage.fontsError": "Không nạp được phông chữ của video nên chưa vẽ khung. Hãy tải lại trang để thử lại.",
