@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "6.2.2 Đồng hồ chủ"
 path: "6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.2 Đồng hồ chủ"
 chunk: 6-2-2-dong-ho-chu.md
-source_lines: 257-278
-source_sha1: b30e1aa694
+source_lines: 266-287
+source_sha1: 57493fb549
 ids: [REQ-AUDIO-02]
 ---
 #### 6.2.2 Đồng hồ chủ

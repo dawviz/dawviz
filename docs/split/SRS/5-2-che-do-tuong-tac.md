@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "5.2. Chế độ tương tác"
 path: "5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.2. Chế độ tương tác"
 chunk: 5-2-che-do-tuong-tac.md
-source_lines: 1011-1015
-source_sha1: e3907591de
+source_lines: 1035-1039
+source_sha1: 6d45847731
 ids: [REQ-GRAPHICS-05]
 ---
 ### 5.2. Chế độ tương tác

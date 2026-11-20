@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-GRAPHICS-09: Bộ máy keyframe, easing và Graph Editor"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) > REQ-GRAPHICS-09: Bộ máy keyframe, easing và Graph Editor"
 chunk: req-graphics-09-bo-may-keyframe-easing-va-graph.md
-source_lines: 885-888
-source_sha1: e3907591de
+source_lines: 909-912
+source_sha1: 6d45847731
 ids: [REQ-GRAPHICS-09]
 ---
 #### REQ-GRAPHICS-09: Bộ máy keyframe, easing và Graph Editor

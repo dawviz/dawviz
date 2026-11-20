@@ -224,6 +224,15 @@ Mã: `packages/render-core/src/typography.ts` (mô hình, dàn chữ, tràn khun
 
 - **Mục Thiết lập khai báo một lần (`apps/web/src/lib/widgetFields.ts`):** `WIDGET_FIELDS[loại]` liệt kê từng thiết lập (đường dẫn trong `properties`, kiểu điều khiển, nhãn, Cơ bản/Nâng cao, điều kiện hiện, giới hạn). `WidgetSettings` vẽ điều khiển, nút ↺ và dấu "đã chỉnh nâng cao" từ bảng này; test `widgetFields.test.ts` bắt thuộc tính có trong mặc định mà thiếu trong bảng (hoặc trong `SETTINGS_EXEMPT`), nên thiết lập mới tự có ↺. ↺ so với `Doc.propsRef` (xem 6.1). Alt+nhấp (Option+nhấp trên Mac) vào nhãn của dòng khôi phục: làm một lần trong `ResetButton` (pha bắt sự kiện trên phần tử cha của nút, bỏ qua nhấp vào ô nhập), nên có hiệu lực ở mọi bảng dùng `ResetButton`, kể cả ngoài Thiết lập.
 
+### 5.11 Bản nhạc (Notation) ⚪ (đề xuất D-63, SRS REQ-WIDGET-09 / REQ-NOTATION-01 / REQ-GRAPHICS-20; chờ Spike 4)
+- **Ba tầng, hai ranh giới.** (1) *Quantizer* thuần: `AST → ScoreModel` (ô nhịp → giọng → sự kiện; mỗi nốt giữ `noteId` và `startTick` thật). (2) *Engraver* dùng VexFlow với `RenderContext` tự viết ghi lại lệnh vẽ theo `id` phần tử → `NotationLayout` (JSON: trang → đường vẽ có `id`, hộp bao, bảng đơn điệu thời gian thật → x). (3) *Render Core* vẽ `NotationLayout` theo `t`. Tầng (1) và (2) **nằm ngoài `packages/render-core`** (apps/web hoặc `@dawviz/notation`, chốt ở S1) để giữ quy tắc 5 và 8.
+- **Primitive mới:** `path` (lệnh `M/L/C/Z`, nét/tô, nhóm theo `id`) và `group` (biến đổi quanh một điểm: phóng to, màu, độ đục). `Path2D` dựng từ lệnh được nhớ theo `id` để không phân tích lại mỗi khung.
+- **Vẽ mỗi khung:** lớp tĩnh của trang (khuông, dòng kẻ, nốt ở trạng thái "sắp tới/đã qua") cache thành bitmap theo `(trang, màu theo phase, độ rung)`, LRU vài trang; lớp động chỉ gồm nốt đang ngân/đang vào/ra (tra bằng chỉ mục nhị phân như `notes.ts`) vẽ đè, kèm sprite glow dựng sẵn (không `shadowBlur` mỗi khung, mục tiêu đo ở S3).
+- **Vạch phát:** `x(t)` nội suy tuyến tính đơn điệu trên bảng thời gian → x; nốt sáng theo `startTick` thật nên lượng tử sai không làm lệch tiếng.
+- **Nét tay:** nhiễu băm `(id, đỉnh, floor(t·boilFps), seed)` áp lên đường vẽ trước khi vẽ lớp động và khi dựng bitmap lớp tĩnh; kiểu *boil* buộc dựng lại bitmap mỗi bước `boilFps` (chi phí này cũng đo ở S3/S4).
+- **Xuất video:** pre-flight (REQ-EXPORT-00) engrave mọi trang và báo cảnh báo; Export Worker nhận `NotationLayout` qua `postMessage`, **không** nạp VexFlow và không nạp `FontFace` cho phông nhạc (tránh lỗi Firefox chậm dần, [FIREFOX-FONT-SLOWDOWN](FIREFOX-FONT-SLOWDOWN.md)). Cache engrave theo hash `(nốt, cài đặt lượng tử, phông)`.
+- **Kiểm thử:** quantizer: `node --test`, bất biến "tổng giá trị nốt mỗi giọng mỗi ô = độ dài ô"; engraver: snapshot `NotationLayout` (JSON, tất định); Render Core: hash khung hình Preview so với Export.
+
 ## 6. Ứng dụng web và phát lại 🟡
 
 ### 6.1 Trạng thái
@@ -422,6 +431,7 @@ Hủy: UI gửi cancel → reset()/close() encoder, abort() đích ghi (không �
 - **MP4 fast-start:** `MuxerAdapter` bọc Mediabunny với `fastStart: 'in-memory'` (đã đo cho `ftyp moov mdat`); ghi thẳng đĩa kèm fast-start còn [VERIFY] (SOI-10).
 - **Bậc dự phòng codec:** H.264+AAC/MP4 → H.264 video-only/MP4 → VP9(VP8)+Opus/WebM → `ERR_NO_SUPPORTED_ENCODER`. Silent AAC mặc định TẮT (D-01).
 - **Đồng bộ A/V:** mẫu audio đầu timestamp 0 trùng khung video đầu; bù priming AAC; kiểm bằng AT-03. Cam kết ±2 ms chỉ cho desktop (R-11).
+- **Bản nhạc (đề xuất D-63):** bước pre-flight có thêm "engrave trước" cho widget Bản nhạc (§5.11); Worker chỉ nhận dữ liệu đã dựng.
 - **Wake Lock** trong khi xuất; Worker lỗi → `ERR_EXPORT_FAILED`, giữ phiên, cho thử lại.
 - **Bộ nhớ:** mỗi `VideoFrame` phải `close()` ngay; `ImageBitmap`/`AudioData` cũng vậy; kiểm bằng test dài (xuất 90 s 1080p60 không tăng bộ nhớ tuyến tính).
 
@@ -472,6 +482,7 @@ Danh mục phẳng `locales/<mã>.json` (`{tham_số}`, `{n, plural, one {#…} 
 | Parse tệp điển hình | không chặn UI | Worker; trần 500.000 nốt |
 | Preview | ≥ 30 fps ở 1080p trên máy desktop điển hình **[PROVISIONAL]** | Chỉ vẽ nốt trong cửa sổ; không cấp phát trong vòng vẽ (tái dùng mảng) ⚪ |
 | Xuất | ≥ 1× thời gian thực ở 1080p30 **[PROVISIONAL]** | `encodeQueueSize` kiểm soát dòng chảy; render trong Worker |
+| Bản nhạc (đề xuất D-63) | vẽ/khung ≲ 5 ms ở 1080p với trang dày, không tăng theo số khung đã vẽ trên Firefox **[PROVISIONAL, đo ở Spike 4 S3]** | Engrave một lần, bitmap lớp tĩnh + lớp động, sprite glow |
 | Âm thanh (T-08) | PCM 48 kHz stereo ≤ 20 phút = 460,8 MB ≤ 25 % trần 2,0 GB của NFR-PERF-04; đỉnh tạm khi giải mã ≲ 1,2 GB, không chạy cùng lúc với xuất **[PROVISIONAL]** | Dò thời lượng trước khi giải mã, bỏ buffer cũ trước khi nạp mới, không giữ byte tệp nén, sóng âm tính theo khối (§6.2) |
 Cần đo thật ở M2–M3; số liệu thực ghi vào TDD mục khoảng trống.
 

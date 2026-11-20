@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-WIDGET-06: Chord Detection (D-09)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-06: Chord Detection (D-09)"
 chunk: req-widget-06-chord-detection-d-09.md
-source_lines: 618-627
-source_sha1: e3907591de
+source_lines: 619-628
+source_sha1: 6d45847731
 ids: [D-09, KPI-06, REQ-WIDGET-06, SOI-09, WARN_PRESET_]
 ---
 #### REQ-WIDGET-06: Chord Detection (D-09)

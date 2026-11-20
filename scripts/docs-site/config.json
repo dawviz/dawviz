@@ -216,6 +216,10 @@
         {
           "src": "docs/spikes/SPIKE-3-FLP.md",
           "title": "Spike 3: đọc .flp bằng JSON schema"
+        },
+        {
+          "src": "docs/spikes/SPIKE-4-NOTATION.md",
+          "title": "Spike 4: bản nhạc bằng VexFlow"
         }
       ]
     },

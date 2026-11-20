@@ -23,6 +23,10 @@ Dự án không liên kết với kênh. Nhạc của Usagin_P không có trong 
 
 - Cấu trúc byte của tệp FL Studio (`.flp`: id sự kiện, kích thước nốt và clip Playlist) được đối chiếu với mô tả công khai của [DAWVert](https://github.com/SatyrDiamond/DawVert) của SatyrDiamond (GPL-3.0-or-later) rồi kiểm lại bằng tệp thật. **Không sao chép mã**; schema `schemas/flp.schema.json` và engine do dự án tự viết. Chi tiết: [docs/spikes/SPIKE-3-FLP.md](docs/spikes/SPIKE-3-FLP.md).
 
+## Thư viện và phông dự kiến (chưa đóng gói)
+
+- VexFlow (MIT) và các phông nhạc SMuFL (Bravura, Petaluma, Leland…) cho widget Bản nhạc (đề xuất D-63): **chưa thêm vào mã**; giấy phép từng phông kiểm ở Spike 4 rồi ghi vào đây khi đóng gói.
+
 ## Phông chữ
 
 - Space Grotesk (chữ trong video) và Inter (giao diện): SIL Open Font License 1.1, giấy phép kèm trong `apps/web/public/fonts/`.

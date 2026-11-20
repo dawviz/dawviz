@@ -5,7 +5,7 @@ section: "2. Cấu trúc kho mã (D-35)"
 path: "2. Cấu trúc kho mã (D-35)"
 chunk: 2-cau-truc-kho-ma-d-35.md
 source_lines: 12-27
-source_sha1: b1d59a382a
+source_sha1: 7318e4095f
 ids: [D-35]
 ---
 ## 2. Cấu trúc kho mã (D-35)

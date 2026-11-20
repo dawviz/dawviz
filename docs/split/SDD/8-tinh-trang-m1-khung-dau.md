@@ -4,8 +4,8 @@ doc_title: "TÀI LIỆU THIẾT KẾ PHẦN MỀM (SDD) — ỨNG DỤNG DAW VIS
 section: "8. Tình trạng (M1 — khung đầu)"
 path: "8. Tình trạng (M1 — khung đầu)"
 chunk: 8-tinh-trang-m1-khung-dau.md
-source_lines: 79-81
-source_sha1: b1d59a382a
+source_lines: 81-83
+source_sha1: 7318e4095f
 ids: []
 ---
 ## 8. Tình trạng (M1 — khung đầu)

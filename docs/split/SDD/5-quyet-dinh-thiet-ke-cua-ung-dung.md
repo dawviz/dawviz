@@ -4,8 +4,8 @@ doc_title: "TÀI LIỆU THIẾT KẾ PHẦN MỀM (SDD) — ỨNG DỤNG DAW VIS
 section: "5. Quyết định thiết kế của ứng dụng"
 path: "5. Quyết định thiết kế của ứng dụng"
 chunk: 5-quyet-dinh-thiet-ke-cua-ung-dung.md
-source_lines: 55-66
-source_sha1: b1d59a382a
+source_lines: 57-68
+source_sha1: 7318e4095f
 ids: [AD-01, AD-02, AD-03, AD-04, AD-05, AD-06, AD-07, SOI-19]
 ---
 ## 5. Quyết định thiết kế của ứng dụng

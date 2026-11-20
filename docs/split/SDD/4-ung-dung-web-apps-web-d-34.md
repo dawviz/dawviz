@@ -4,8 +4,8 @@ doc_title: "TÀI LIỆU THIẾT KẾ PHẦN MỀM (SDD) — ỨNG DỤNG DAW VIS
 section: "4. Ứng dụng web (`apps/web`, D-34)"
 path: "4. Ứng dụng web (`apps/web`, D-34)"
 chunk: 4-ung-dung-web-apps-web-d-34.md
-source_lines: 40-54
-source_sha1: b1d59a382a
+source_lines: 42-56
+source_sha1: 7318e4095f
 ids: [D-34]
 ---
 ## 4. Ứng dụng web (`apps/web`, D-34)

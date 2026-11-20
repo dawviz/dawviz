@@ -5,7 +5,7 @@ section: "TÀI LIỆU THIẾT KẾ PHẦN MỀM (SDD) — ỨNG DỤNG DAW VISUA
 path: "TÀI LIỆU THIẾT KẾ PHẦN MỀM (SDD) — ỨNG DỤNG DAW VISUALIZER (mở đầu)"
 chunk: tai-lieu-thiet-ke-phan-mem-sdd-ung-dung-daw-visu.md
 source_lines: 1-4
-source_sha1: b1d59a382a
+source_sha1: 7318e4095f
 ids: []
 ---
 # TÀI LIỆU THIẾT KẾ PHẦN MỀM (SDD) — ỨNG DỤNG DAW VISUALIZER

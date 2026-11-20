@@ -45,6 +45,7 @@ DAW Visualizer: trình duyệt đọc tệp dự án DAW (Ableton `.als/.alp`, R
 | Giao diện, phát lại, chế độ chỉnh sửa | [Technical Design §6](docs/split/TECHNICAL-DESIGN/6-1-trang-thai.md#61-trạng-thái) · [SDD §4](docs/split/SDD/4-ung-dung-web-apps-web-d-34.md#4-ứng-dụng-web-appsweb-d-34) · [SRS §5.1](docs/split/SRS/5-1-bo-cuc-khong-gian-lam-viec.md#51-bố-cục-không-gian-làm-việc) | `apps/web/src/` |
 | Tùy biến: storyboard, chuyển cảnh nốt, easing, hạt, tài nguyên phiên, preset cộng đồng | [CUSTOMIZATION](docs/design/CUSTOMIZATION.md) (đề xuất, AD-08…AD-12) · [ANIMATION](docs/design/ANIMATION.md) · [COMMUNITY-CONTENT](docs/COMMUNITY-CONTENT.md) | `packages/render-core/src/style.ts`, `presets/` (motion/particles: chưa có — T-17…T-20) |
 | Biểu thức người dùng, bảo mật, kiểm duyệt preset cộng đồng | [EXPRESSIONS](docs/design/EXPRESSIONS.md) (đề xuất, AD-13…AD-15) · [ANIMATION-CATALOG](docs/design/ANIMATION-CATALOG.md) · SRS NFR-SEC | (chưa có — T-29…T-31; package `@dawviz/expr` dự kiến) |
+| Bản nhạc (notation), lượng tử hoá, nét tay (đề xuất D-63) | [SPIKE-4](docs/spikes/SPIKE-4-NOTATION.md) · SRS REQ-WIDGET-09 / REQ-NOTATION-01 / REQ-GRAPHICS-20 · [Technical Design §5.11](docs/design/TECHNICAL-DESIGN.md) | (chưa có — T-90…T-95) |
 | Xuất video | [Technical Design §7](docs/split/TECHNICAL-DESIGN/7-1-trinh-tu.md) · [REQ-EXPORT-00](docs/split/SRS/req-export-00-pre-flight-r-01-d-17.md#req-export-00-pre-flight-r-01-d-17)…[07](docs/split/SRS/req-export-07-thuc-thi-trong-worker-arc-02-d-21.md#req-export-07-thực-thi-trong-worker-arc-02-d-21) | `apps/web/src/lib/exportPlan.ts` (phần lõi thuần, T-09); Export Worker: chưa có — M3 |
 | Lưu trữ, Preset, Project Pack | [Technical Design §8](docs/split/TECHNICAL-DESIGN/8-luu-tru-m4-t-10.md) · [SRS §3.5](docs/split/SRS/3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md#35-lưu-trữ-cấu-hình--đóng-gói-br-05-d-11) | `apps/web/src/lib/workspaceStore.ts`, `projectPack.ts`, `docSnapshot.ts`, `session.ts`, `tempoRows.ts` (T-10) |
 | Đa ngôn ngữ / dịch | [I18N §1](docs/split/I18N/1-them-mot-ngon-ngu-moi-how-to-add-a-language.md#1-thêm-một-ngôn-ngữ-mới-how-to-add-a-language) · [§4](docs/split/I18N/4-quy-uoc-cho-nha-phat-trien-developer-rules.md#4-quy-ước-cho-nhà-phát-triển-developer-rules) · [SRS §3.7](docs/split/SRS/3-7-da-ngon-ngu-va-cong-dong-dich-br-09-d-30-kpi.md#37-đa-ngôn-ngữ-và-cộng-đồng-dịch-br-09-d-30-kpi-08) | `packages/i18n`, `locales/` |
@@ -73,13 +74,13 @@ node scripts/sync-docs.mjs --find "độ sáng"   # lấy liên kết mảnh#hea
 <!-- sync:begin docs-index -->
 <!-- Khối này do scripts/sync-docs.mjs sinh ra; đừng sửa tay. -->
 
-Có 20 tài liệu, 315 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
+Có 21 tài liệu, 328 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
 
 ### BRD.md — TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)
 
 Nguồn: `docs/product/BRD.md` · [thứ tự đọc](docs/split/BRD/_index.md)
 
-- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](docs/split/BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 5.5k
+- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](docs/split/BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 5.8k
 - [1. THÔNG TIN CHUNG & BỐI CẢNH DỰ ÁN](docs/split/BRD/1-thong-tin-chung-boi-canh-du-an.md) · 1.8k
 - [2. MỤC TIÊU KINH DOANH, CHỈ SỐ ĐO LƯỜNG & YÊU CẦU NGHIỆP VỤ](docs/split/BRD/2-muc-tieu-kinh-doanh-chi-so-do-luong-yeu-cau-ng.md) · 4.8k
 - [3. CHÂN DUNG NGƯỜI DÙNG MỤC TIÊU (USER PERSONAS)](docs/split/BRD/3-chan-dung-nguoi-dung-muc-tieu-user-personas.md) · 1.5k
@@ -89,15 +90,15 @@ Nguồn: `docs/product/BRD.md` · [thứ tự đọc](docs/split/BRD/_index.md)
 - [4. PHẠM VI DỰ ÁN (PROJECT SCOPE) › 4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](docs/split/BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1.2k
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](docs/split/BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4.3k
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](docs/split/BRD/6-gia-dinh-assumptions.md) · 0.6k
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 27.4k
-- [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](docs/split/BRD/8-cac-van-de-con-mo-open-issues.md) · 6.7k
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 28.8k
+- [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](docs/split/BRD/8-cac-van-de-con-mo-open-issues.md) · 7.2k
 
 ### SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
 Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 
 - [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](docs/split/SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 0.4k
-- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) › Lịch sử phiên bản](docs/split/SRS/lich-su-phien-ban.md) · 9.3k
+- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) › Lịch sử phiên bản](docs/split/SRS/lich-su-phien-ban.md) · 9.6k
 - [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) › Quy ước trong tài liệu](docs/split/SRS/quy-uoc-trong-tai-lieu.md) · 0.8k
 - [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) › Mục lục](docs/split/SRS/muc-luc.md) · 0.4k
 - [1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG](docs/split/SRS/1-gioi-thieu-muc-tieu-he-thong.md) · 4.8k
@@ -142,6 +143,9 @@ Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-AUDIO-02: Hiệu chỉnh độ trễ thiết bị cho Xem trước (T-82)](docs/split/SRS/req-audio-02-hieu-chinh-do-tre-thiet-bi-cho-xem.md) · 1.9k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-AUDIO-01: Âm thanh theo track (stem), bản 1.2](docs/split/SRS/req-audio-01-am-thanh-theo-track-stem-ban-1-2.md) · 3.3k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-WIDGET-08: Progress Bar (D-27)](docs/split/SRS/req-widget-08-progress-bar-d-27.md) · 0.8k
+- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-WIDGET-09: Bản nhạc (Notation) **[ĐỀ XUẤT, D-63, chờ Spike 4]**](docs/split/SRS/req-widget-09-ban-nhac-notation-de-xuat-d-63-cho.md) · 2.1k
+- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-NOTATION-01: Lượng tử hoá để vẽ bản nhạc **[ĐỀ XUẤT, D-63]**](docs/split/SRS/req-notation-01-luong-tu-hoa-de-ve-ban-nhac-de-x.md) · 1.2k
+- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-GRAPHICS-20: Nét tay tất định cho đường vẽ **[ĐỀ XUẤT, D-63]**](docs/split/SRS/req-graphics-20-net-tay-tat-dinh-cho-duong-ve-de.md) · 0.6k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4b. Đề xuất widget và dữ liệu hiển thị bổ sung (D-32, OI-11) **[ĐỀ XUẤT, chưa cam kết v1.0]**](docs/split/SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md) · 3.0k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.5. Lưu trữ, cấu hình & đóng gói (BR-05, D-11)](docs/split/SRS/3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md) · 4.7k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) › REQ-CAP-01: Phát hiện khả năng của trình duyệt (R-06, D-05)](docs/split/SRS/req-cap-01-phat-hien-kha-nang-cua-trinh-duyet-r.md) · 0.4k
@@ -184,7 +188,7 @@ Nguồn: `docs/design/SDD.md` · [thứ tự đọc](docs/split/SDD/_index.md)
 - [TÀI LIỆU THIẾT KẾ PHẦN MỀM (SDD) — ỨNG DỤNG DAW VISUALIZER (mở đầu)](docs/split/SDD/tai-lieu-thiet-ke-phan-mem-sdd-ung-dung-daw-visu.md) · 0.5k
 - [1. Phạm vi và nguyên tắc](docs/split/SDD/1-pham-vi-va-nguyen-tac.md) · 0.6k
 - [2. Cấu trúc kho mã (D-35)](docs/split/SDD/2-cau-truc-kho-ma-d-35.md) · 0.7k
-- [3. Render Core (`@dawviz/render-core`, D-36)](docs/split/SDD/3-render-core-dawviz-render-core-d-36.md) · 1.1k
+- [3. Render Core (`@dawviz/render-core`, D-36)](docs/split/SDD/3-render-core-dawviz-render-core-d-36.md) · 1.4k
 - [4. Ứng dụng web (`apps/web`, D-34)](docs/split/SDD/4-ung-dung-web-apps-web-d-34.md) · 1.3k
 - [5. Quyết định thiết kế của ứng dụng](docs/split/SDD/5-quyet-dinh-thiet-ke-cua-ung-dung.md) · 1.2k
 - [6. Tính tất định và an toàn](docs/split/SDD/6-tinh-tat-dinh-va-an-toan.md) · 0.3k
@@ -211,6 +215,7 @@ Nguồn: `docs/design/TECHNICAL-DESIGN.md` · [thứ tự đọc](docs/split/TEC
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp 🟢 (đã dùng ở T-69)](docs/split/TECHNICAL-DESIGN/5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md) · 0.9k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.9 Kiểu chữ cho mọi chữ trong video 🟢 (T-72, SRS REQ-GRAPHICS-18, D-58)](docs/split/TECHNICAL-DESIGN/5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md) · 6.6k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.10 Chỗ giữ trong chữ và Ô chữ 🟢 (T-73, SRS REQ-GRAPHICS-19, D-60/OI-18)](docs/split/TECHNICAL-DESIGN/5-10-cho-giu-trong-chu-va-o-chu-t-73-srs-req-gra.md) · 5.4k
+- [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.11 Bản nhạc (Notation) ⚪ (đề xuất D-63, SRS REQ-WIDGET-09 / REQ-NOTATION-01 / REQ-GRAPHICS-20; chờ Spike 4)](docs/split/TECHNICAL-DESIGN/5-11-ban-nhac-notation-de-xuat-d-63-srs-req-widg.md) · 2.0k
 - [6. Ứng dụng web và phát lại 🟡 › 6.1 Trạng thái](docs/split/TECHNICAL-DESIGN/6-1-trang-thai.md) · 1.3k
 - [6. Ứng dụng web và phát lại 🟡 › 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh)](docs/split/TECHNICAL-DESIGN/6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md) · 0.2k
 - [6. Ứng dụng web và phát lại 🟡 › 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) › 6.2.1 Nạp tệp âm thanh (mix)](docs/split/TECHNICAL-DESIGN/6-2-1-nap-tep-am-thanh-mix.md) · 3.3k
@@ -225,13 +230,13 @@ Nguồn: `docs/design/TECHNICAL-DESIGN.md` · [thứ tự đọc](docs/split/TEC
 - [6. Ứng dụng web và phát lại 🟡 › 6.3 Danh sách track 🟢](docs/split/TECHNICAL-DESIGN/6-3-danh-sach-track.md) · 1.9k
 - [6. Ứng dụng web và phát lại 🟡 › 6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)](docs/split/TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) · 19.1k
 - [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) › 7.1 Trình tự](docs/split/TECHNICAL-DESIGN/7-1-trinh-tu.md) · 1.0k
-- [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) › 7.2 Quyết định kỹ thuật](docs/split/TECHNICAL-DESIGN/7-2-quyet-dinh-ky-thuat.md) · 0.9k
+- [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) › 7.2 Quyết định kỹ thuật](docs/split/TECHNICAL-DESIGN/7-2-quyet-dinh-ky-thuat.md) · 1.1k
 - [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) › 7.3 Phần lõi thuần đã làm (T-09, 2026-11-14)](docs/split/TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md) · 1.7k
 - [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) › 7.4 Export Worker và giao diện (T-09, 2026-11-14)](docs/split/TECHNICAL-DESIGN/7-4-export-worker-va-giao-dien-t-09-2026-11-14.md) · 8.2k
 - [8. Lưu trữ 🟢 (M4, T-10)](docs/split/TECHNICAL-DESIGN/8-luu-tru-m4-t-10.md) · 1.7k
 - [9. Đa ngôn ngữ 🟢](docs/split/TECHNICAL-DESIGN/9-da-ngon-ngu.md) · 0.5k
 - [10. Lỗi, ghi nhật ký, quan sát](docs/split/TECHNICAL-DESIGN/10-loi-ghi-nhat-ky-quan-sat.md) · 0.5k
-- [11. Hiệu năng và bộ nhớ (ngân sách)](docs/split/TECHNICAL-DESIGN/11-hieu-nang-va-bo-nho-ngan-sach.md) · 0.9k
+- [11. Hiệu năng và bộ nhớ (ngân sách)](docs/split/TECHNICAL-DESIGN/11-hieu-nang-va-bo-nho-ngan-sach.md) · 1.1k
 - [12. Bảo mật và quyền riêng tư](docs/split/TECHNICAL-DESIGN/12-bao-mat-va-quyen-rieng-tu.md) · 0.7k
 - [13. Xây dựng, kiểm thử, phát hành](docs/split/TECHNICAL-DESIGN/13-xay-dung-kiem-thu-phat-hanh.md) · 0.9k
 - [14. Việc cần làm theo mốc (từ thiết kế này)](docs/split/TECHNICAL-DESIGN/14-viec-can-lam-theo-moc-tu-thiet-ke-nay.md) · 0.8k
@@ -489,5 +494,19 @@ Nguồn: `docs/spikes/SPIKE-3-FLP.md` · [thứ tự đọc](docs/split/SPIKE-3-
 - [6b. Tệp mẫu cần để gỡ [VERIFY] (danh sách cho người thử)](docs/split/SPIKE-3-FLP/6b-tep-mau-can-de-go-verify-danh-sach-cho-nguoi.md) · 1.8k
 - [7. Phương án đã cân nhắc](docs/split/SPIKE-3-FLP/7-phuong-an-da-can-nhac.md) · 0.6k
 - [8. Nguồn và giấy phép](docs/split/SPIKE-3-FLP/8-nguon-va-giay-phep.md) · 0.6k
+
+### SPIKE-4-NOTATION.md — Spike 4: bản nhạc (notation) bằng VexFlow, phát sáng từng nốt, nét tay
+
+Nguồn: `docs/spikes/SPIKE-4-NOTATION.md` · [thứ tự đọc](docs/split/SPIKE-4-NOTATION/_index.md)
+
+- [Spike 4: bản nhạc (notation) bằng VexFlow, phát sáng từng nốt, nét tay (mở đầu)](docs/split/SPIKE-4-NOTATION/spike-4-ban-nhac-notation-bang-vexflow-phat-sang.md) · 0.8k
+- [1. Điều quan sát từ video tham chiếu (đoạn 1:49–2:10)](docs/split/SPIKE-4-NOTATION/1-dieu-quan-sat-tu-video-tham-chieu-doan-1-49-2.md) · 0.5k
+- [2. Hiện trạng liên quan trong repo](docs/split/SPIKE-4-NOTATION/2-hien-trang-lien-quan-trong-repo.md) · 1.0k
+- [3. Kiến trúc đề xuất](docs/split/SPIKE-4-NOTATION/3-kien-truc-de-xuat.md) · 1.5k
+- [4. Các spike](docs/split/SPIKE-4-NOTATION/4-cac-spike.md) · 3.8k
+- [5. Khả năng tuỳ biến dự kiến](docs/split/SPIKE-4-NOTATION/5-kha-nang-tuy-bien-du-kien.md) · 0.9k
+- [6. Kết quả](docs/split/SPIKE-4-NOTATION/6-ket-qua.md) · 0.1k
+- [7. Điều kiện chốt D-63](docs/split/SPIKE-4-NOTATION/7-dieu-kien-chot-d-63.md) · 0.3k
+- [8. Việc kéo theo (không làm trong spike)](docs/split/SPIKE-4-NOTATION/8-viec-keo-theo-khong-lam-trong-spike.md) · 0.3k
 
 <!-- sync:end docs-index -->

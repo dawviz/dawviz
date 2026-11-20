@@ -35,6 +35,8 @@ Phụ thuộc một chiều: `apps/web → render-core → parser-core`; `apps/w
 | `pianoroll.ts` | `layoutPianoRoll(index, tempoMap, t, options)` → danh sách hình chữ nhật pixel (không vẽ). Cùng đầu vào cho cùng đầu ra | REQ-GRAPHICS-05 |
 | `draw.ts` | `drawPianoRoll(ctx, rects, size)`: lớp vẽ duy nhất lên Canvas 2D/OffscreenCanvas; `Ctx2D` là giao diện tối thiểu nên test được bằng đối tượng giả | ARC-01, D-06 |
 
+**Đề xuất (D-63, chưa làm):** widget Bản nhạc thêm primitive `path`/`group` vào Render Core; VexFlow và bộ lượng tử hoá **không** vào Render Core, chỉ đưa vào `NotationLayout` dữ liệu thuần (xem [Technical Design §5.11](TECHNICAL-DESIGN.md)).
+
 Độ sáng của nốt lấy tại thời điểm **bắt đầu nốt** (không đổi trong suốt nốt) để tránh nhấp nháy và giữ chi phí O(1) mỗi nốt. Phép nội suy lane volume/pan/mute và đổi gain → 0..1 dùng `sampleLane`/`volumeToUnit` của `@dawviz/parser-core` (nguồn sự thật duy nhất).
 
 ## 4. Ứng dụng web (`apps/web`, D-34)
