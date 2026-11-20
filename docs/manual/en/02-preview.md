@@ -20,17 +20,23 @@ The current time is on the left of the seek bar, the song length on the right.
 
 ## Video styles
 
-The left column lists the video styles. Each thumbnail is drawn from your own song. Click one to switch. A style sets the background colour, the note look, the text and where each block sits on the frame.
+The left column lists the video styles. Each thumbnail is drawn from your own song (all thumbnails share the same wide frame, whether the style is vertical, square or wide). Click one to switch. A style sets the background colour, the note look, the text and where each block sits on the frame.
 
 Once you change something, the style name shows "edited". Each style keeps its own work in progress: switch to another style and back and your changes are still there. To return a style to its original, hover its tile and press **×**; Ctrl+Z still undoes it. Work in progress on every tile is remembered in this browser (it survives a reload). The duplicate button on a tile makes a new preset from what you see. The plus tile below the list adds a preset from a `.json` file (see [Settings](04-settings.md)).
 
 Above the frame you can see its size and shape (for example `1,080 × 1,080 · 1:1`) and the name of the style in use.
+
+## Frame ratio
+
+The **9:16 · 1:1 · 16:9** switch at the top of the frame changes the video's shape: 9:16 for TikTok, Shorts and Reels, 1:1 for a square frame, 16:9 for widescreen. The blocks on the frame scale to the new shape; adjust their positions in the Editor tab if needed. Each video style remembers its own ratio. Press **Undo** to go back.
 
 ## Song
 
 The **Song** section on the right shows the file name, format, length, tempo, number of tracks and number of notes.
 
 ### Tempo
+
+In Advanced, the tempo table sits in the collapsible **Edit tempo** part of the **Song** section: click to open it. It opens by itself when the file has no tempo or you have set your own.
 
 If the file has no tempo (some MIDI files), the app uses 120 BPM for now and says so in the **Song** section; type the real tempo in the **BPM** box and press **Apply tempo**. The song is read again with the new tempo and your other settings stay. **Use the file's tempo** removes the tempo you set.
 

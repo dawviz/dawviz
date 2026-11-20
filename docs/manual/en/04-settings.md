@@ -31,7 +31,7 @@ The app saves your work in this browser about half a second after your last chan
 
 - **Save project pack** downloads a `.zip` with everything in the session: the project file, extra `.mid` files, audio, background image, the tempo you set, loaded schemas and the layout. Open the pack on another computer to get the same session.
 - **Open project pack** loads such a pack. A pack that is damaged, edited, or made by a newer version of the app is refused with a message.
-- **Discard saved session** deletes the copy kept in this browser (your own files are not touched).
+- **Discard saved session** deletes the copy kept in this browser (your own files are not touched). It asks once before deleting, because this cannot be undone.
 - When browser storage is almost full, the app saves only the layout and settings; next time you have to load the project file and audio again. The app says which files.
 
 ## Preset (Video styles column)

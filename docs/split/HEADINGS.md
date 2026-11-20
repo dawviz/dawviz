@@ -432,6 +432,7 @@
   - [16. Nhân bản và vệt](ANIMATION-CATALOG/16-nhan-ban-va-vet.md#16-nhân-bản-và-vệt)
 - [17. Hạt (bổ sung cho CUSTOMIZATION §5)](ANIMATION-CATALOG/17-hat-bo-sung-cho-customization-5.md)
   - [17. Hạt (bổ sung cho CUSTOMIZATION §5)](ANIMATION-CATALOG/17-hat-bo-sung-cho-customization-5.md#17-hạt-bổ-sung-cho-customization-5)
+    - [17.1 Hạt kiểu Ember (tham chiếu LyricWulf, đề xuất cho bản sau, chưa làm)](ANIMATION-CATALOG/17-hat-bo-sung-cho-customization-5.md#171-hạt-kiểu-ember-tham-chiếu-lyricwulf-đề-xuất-cho-bản-sau-chưa-làm)
 - [18. Riêng cho âm nhạc (điểm mạnh của DAW Visualizer)](ANIMATION-CATALOG/18-rieng-cho-am-nhac-diem-manh-cua-daw-visualize.md)
   - [18. Riêng cho âm nhạc (điểm mạnh của DAW Visualizer)](ANIMATION-CATALOG/18-rieng-cho-am-nhac-diem-manh-cua-daw-visualize.md#18-riêng-cho-âm-nhạc-điểm-mạnh-của-daw-visualizer)
 - [19. Thời gian (time controls)](ANIMATION-CATALOG/19-thoi-gian-time-controls.md)

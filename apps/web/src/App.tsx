@@ -3,7 +3,7 @@
 // Giữ trạng thái tệp đã nạp. Mọi thay đổi người dùng làm (kiểu nốt, ghi đè theo track, phong cách video, độ sáng, ẩn/solo/thứ tự track,
 // bố cục widget, mở preset) nằm trong store có hoàn tác (lib/store.ts, T-07). Đồng hồ phát nằm ở kho riêng (lib/playback.ts)
 // nên thành phần này không vẽ lại mỗi khung hình. Không có logic vẽ ở đây: khung hình = renderFrame của Render Core.
-import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
+import { Fragment, Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { LayoutGroup, MotionConfig } from 'framer-motion';
 import { usesChordPlaceholder, widgetDefaults, DEFAULT_BRIGHTNESS, DEFAULT_KEYBOARD_STYLE, defaultStyleConfig, sanitizeBrightness, buildIndex, buildSceneHud, type AudioFeatures, type Derived, type SceneDocument, type BrightnessConfig, type NoteStyle, type StyleConfig, type KeyboardStyle, type UnifiedProjectAST, type WidgetSpec, DEFAULT_TEXT_STYLES, createWidget, duplicateWidget } from '@dawviz/render-core';
 import type { ParseWarning } from '@dawviz/parser';
@@ -24,7 +24,7 @@ import { AUTOSAVE_DELAY_MS, createDebounced, createSaver, dexieBackend, restoreW
 import { applyWorkspace, toWorkspaceJson } from './lib/docSnapshot.ts';
 import { downloadBytes, packOf, sessionFromPack, snapshotOf, type SessionData, type SessionParts } from './lib/session.ts';
 import { PACK_LIMITS, PackError } from './lib/projectPack.ts';
-import { Stage } from './components/Stage.tsx';
+import { Crop, Stage } from './components/Stage.tsx';
 import { Transport } from './components/Transport.tsx';
 import { TrackPanel, TrackLayoutBar, DEFAULT_TRACK_LAYOUT, isShown, type TrackLayout } from './components/TrackPanel.tsx';
 import { ADVANCED_STYLE_KEYS, StylePanel } from './components/StylePanel.tsx';
@@ -37,7 +37,8 @@ import { NOTE_PRESETS, VIDEO_STYLES, noteStylePreset, pristineScene, sceneForSty
 import { createStore, type History } from './lib/store.ts';
 import * as Cmds from './lib/commands.ts';
 import { AudioPanel } from './components/AudioPanel.tsx';
-import { ExportDialog } from './components/ExportDialog.tsx';
+// Hộp thoại xuất chỉ cần khi bấm Xuất video: tách thành mảnh tải sau để bản đầu nhẹ hơn.
+const ExportDialog = lazy(() => import('./components/ExportDialog.tsx').then((m) => ({ default: m.ExportDialog })));
 import { AudioLoadError, browserDeps, loadAudioAsset, type AudioAsset } from './lib/audioAsset.ts';
 import { audioLengthCheck } from './lib/audioLength.ts';
 import { peaksInWorker, spectrumInWorker } from './lib/audioWorkers.ts';
@@ -487,6 +488,8 @@ export function App() {
   useEffect(() => (tab !== 'settings' && loaded ? bindTransportKeys(window, playback) : undefined), [tab, loaded, playback]);
   const editorActions: EditorActions = useMemo(() => ({
     layouts: (p) => run((d) => Cmds.patchLayouts(d, p)),
+    aspect: (a) => run((d) => Cmds.setAspect(d, a)),
+    canvasSize: (w, h) => run((d) => Cmds.setCanvasSize(d, w, h)),
     visible: (id, v) => run((d) => Cmds.setWidgetVisible(d, id, v)),
     paintVisible: (id, v) => run((d) => Cmds.paintWidgetVisible(d, id, v)),
     rename: (id, name) => run((d) => Cmds.renameWidget(d, id, name)),
@@ -545,6 +548,7 @@ export function App() {
     chrome: ui.proofFrame ? STAGE_CHROME.proof : STAGE_CHROME.plain, extra: ui.proofFrame ? STAGE_WEDGE : 0, active: !!loaded,
   });
   const aboveStage = !!(midi && midiLevel) || problems.length > 0;
+  const styleLabel = doc.videoStyle === CUSTOM_STYLE ? scene.presetName : `${i18n.t(`web.style.video.${doc.videoStyle}`)}${styleEdited ? ` (${i18n.t('web.styles.edited')})` : ''}`;
 
   // Inspector của Preview: Bài, Track (D-57). Mục Hình thức chỉ còn ở bảng Thuộc tính của Editor khi chọn Piano Roll
   // (chủ dự án chốt 2026-11-14): Preview giữ phong cách video, bài và track để chỉnh nhanh.
@@ -599,10 +603,19 @@ export function App() {
           [i18n.t('web.song.notes'), i18n.number(loaded.ast.tracks.reduce((n2, t) => n2 + t.notes.length, 0))],
           ...(advanced ? [[i18n.t('web.song.read'), i18n.t('web.song.readValue', { ms: Math.round(loaded.ms) })] as [string, React.ReactNode]] : []),
         ]} />
-        {(advanced || tempoSource !== 'file') && (
-          <TempoPanel key={`${loaded.name}:${tempo ? 1 : 0}`} source={tempoSource} draft={tempo?.draft ?? null} overridden={!!tempo} busy={busy} advanced={advanced}
-            onApply={(override, draft) => reparse({ tempo: { override, draft } })} onClear={() => reparse({ tempo: null })} />
-        )}
+        {(advanced || tempoSource !== 'file') && (() => {
+          const panel = (
+            <TempoPanel source={tempoSource} draft={tempo?.draft ?? null} overridden={!!tempo} busy={busy} advanced={advanced}
+              onApply={(override, draft) => reparse({ tempo: { override, draft } })} onClear={() => reparse({ tempo: null })} />
+          );
+          // Nâng cao: chỉnh tempo là việc hiếm (tempo đã đọc đúng từ tệp) nên gập lại; tự mở khi thiếu tempo hoặc đã ghi đè. Cơ bản chỉ hiện khi thiếu tempo, không gập.
+          return advanced
+            ? <details key={`${loaded.name}:${tempo ? 1 : 0}`} open={tempoSource !== 'file' || !!tempo} data-testid="tempo-fold">
+                <summary className="disclosure text-xs">{i18n.t('web.tempo.edit')}</summary>
+                <div className="pt-2">{panel}</div>
+              </details>
+            : <Fragment key={`${loaded.name}:${tempo ? 1 : 0}`}>{panel}</Fragment>;
+        })()}
         <AudioPanel audio={audio ? { name: audio.name, durationSec: audio.durationSec } : null} busy={audioBusy} offsetMs={offsetMs} showOffset={showAdv('song')}
           onLoad={onLoadAudio} onRemove={dropAudio} onOffset={(ms) => run((d) => Cmds.setAudioOffset(d, ms))} />
       </InspectorSection>
@@ -619,15 +632,15 @@ export function App() {
   // `relative` ở cả ba vùng cuộn: phần tử sr-only (position: absolute) bên trong phải neo vào vùng cuộn của nó,
   // nếu không nó thoát ra ngoài, làm cả trang cuộn theo và đẩy thanh trên đi.
   const preview = (
-    <div className={`grid h-full min-h-0 ${loaded ? 'lg:grid-cols-[10.5rem_minmax(0,1fr)_20rem] min-[1440px]:grid-cols-[10.5rem_minmax(0,1fr)_22rem]' : ''}`}>
+    <div className={`grid h-full min-h-0 max-lg:content-start max-lg:overflow-y-auto ${loaded ? 'lg:grid-cols-[10.5rem_minmax(0,1fr)_20rem] min-[1440px]:grid-cols-[10.5rem_minmax(0,1fr)_22rem]' : ''}`}>
       {loaded && (
-        <aside className="relative min-h-0 overflow-y-auto border-b border-line bg-surface lg:border-b-0 lg:border-r">
+        <aside className="relative min-h-0 overflow-y-auto border-b border-line bg-surface max-lg:order-2 max-lg:max-h-60 lg:border-b-0 lg:border-r">
           <VideoStyles value={doc.videoStyle} edited={tileEdited} onPick={pickVideoStyle} thumb={(id) => thumbs[id]}
             presets={{ items: userPresets.map(({ id, name }) => ({ id, name })), active: userActiveId, dirty: Object.keys(working).filter((k) => k !== tileId), onPick: onPickUserPreset, onAddFile: (f) => void onOpenPreset(f),
               onDownload: onDownloadTile, onDuplicate, onRevert, onDelete: onDeleteUserPreset, problems: [], status: presetOpened ? i18n.t('web.preset.opened', { name: presetOpened }) : undefined }} />
         </aside>
       )}
-      <div ref={scrollerRef} className="relative min-h-0 min-w-0 overflow-y-auto bg-page p-6">
+      <div ref={scrollerRef} className="relative min-h-0 min-w-0 overflow-y-auto bg-page p-3 max-lg:order-1 max-lg:h-[75svh] lg:p-6">
         <div className={`space-y-4 ${loaded ? '' : 'mx-auto max-w-2xl pt-10'}`}>
           {midi && midiLevel && <MissingMidiPanel info={midi} level={midiLevel} busy={busy} onAdd={addMidi} />}
           {needsSchema && source && <SchemaPanel schemas={schemas} busy={busy} onAdd={(schema) => reparse({ schemas: [...schemas, { name: String((schema as { name?: unknown; id?: unknown }).name ?? (schema as { id?: unknown }).id ?? 'schema').slice(0, 60), schema }] })} onRemove={(i) => reparse({ schemas: schemas.filter((_, k) => k !== i) })} />}
@@ -636,8 +649,8 @@ export function App() {
         </div>
         {loaded && derived && renderAst && (
           <div ref={stageRef} className={aboveStage ? 'mt-4' : ''}>
-            <Stage scene={scene} derived={derived} ast={renderAst} playback={playback} proof={ui.proofFrame} width={stageWidth} fonts={fonts}
-              styleName={doc.videoStyle === CUSTOM_STYLE ? scene.presetName : `${i18n.t(`web.style.video.${doc.videoStyle}`)}${styleEdited ? ` (${i18n.t('web.styles.edited')})` : ''}`}>
+            <Stage onAspect={(a) => run((d) => Cmds.setAspect(d, a))} scene={scene} derived={derived} ast={renderAst} playback={playback} proof={ui.proofFrame} width={stageWidth} fonts={fonts}
+              styleName={styleLabel}>
               <Transport playback={playback} duration={playDuration} offsetMs={offsetMs} wave={audio && peaks ? { peaks, durationSec: audio.durationSec } : null} />
             </Stage>
           </div>
@@ -647,7 +660,7 @@ export function App() {
         )}
       </div>
       {loaded && trackProps && (
-        <aside aria-label={i18n.t('web.inspector')} className="relative min-h-0 overflow-y-auto border-t border-line bg-surface lg:border-l lg:border-t-0" data-testid="inspector">
+        <aside aria-label={i18n.t('web.inspector')} className="relative min-h-0 overflow-y-auto border-t border-line bg-surface max-lg:order-3 max-lg:overflow-visible lg:border-l lg:border-t-0" data-testid="inspector">
           {sectionOrder.map((id, i) => sections[id](i + 1))}
         </aside>
       )}
@@ -663,13 +676,15 @@ export function App() {
       <main className="min-h-0 flex-1">
         <div role="tabpanel" id="panel-preview" aria-labelledby="tab-preview" hidden={tab !== 'preview'} className="h-full">{preview}</div>
         <div role="tabpanel" id="panel-editor" aria-labelledby="tab-editor" hidden={tab !== 'editor'} className="h-full">
-          <Editor scene={scene} derived={derived} ast={renderAst} playback={playback} fonts={fonts} advanced={advanced} actions={editorActions} active={tab === 'editor'}
+          <Editor styleName={styleLabel} scene={scene} derived={derived} ast={renderAst} playback={playback} fonts={fonts} advanced={advanced} actions={editorActions} active={tab === 'editor'}
             layoutRef={doc.layoutRef} background={{ name: bgFile?.name ?? null, busy: bgBusy, error: bgError }}
             widgetSections={(w, n, lk) => (w.type === 'PIANO_ROLL' ? [w.id === piano?.id ? lookSection(n) : null] : hasWidgetSettings(w.type) ? [settingsSection(w, n, lk), textSection(w, n + 1, lk)] : [textSection(w, n, lk)])}
             transport={loaded ? <Transport playback={playback} duration={playDuration} offsetMs={offsetMs} wave={audio && peaks ? { peaks, durationSec: audio.durationSec } : null} /> : undefined} />
         </div>
         <div role="tabpanel" id="panel-settings" aria-labelledby="tab-settings" hidden={tab !== 'settings'} className="h-full overflow-y-auto bg-page">
-          <div className="mx-auto max-w-3xl border-x border-line bg-surface lg:my-8 lg:border-y">
+          <div className="relative mx-auto max-w-3xl border-x border-line bg-surface lg:my-8 lg:border-y" data-testid="settings-sheet">
+            {/* Cùng ngôn ngữ "bản in thử" với khung video: dấu cắt ở bốn góc tờ cài đặt, ngoài nội dung. */}
+            <span aria-hidden className="max-lg:hidden"><Crop className="-left-5 -top-5" /><Crop className="-right-5 -top-5 -scale-x-100" /><Crop className="-bottom-5 -left-5 -scale-y-100" /><Crop className="-bottom-5 -right-5 -scale-100" /></span>
             <InspectorSection n={1} id="appearance" title={i18n.t('web.settings.appearance')}>
               <AppearanceSettings pref={theme} onChange={setTheme} />
             </InspectorSection>
@@ -689,7 +704,7 @@ export function App() {
         </div>
       </main>
     </div>
-    {exporting && derived && renderAst && <ExportDialog scene={scene} ast={renderAst} derived={derived} audio={audio} offsetMs={offsetMs} projectSec={duration} fileName={loaded?.name ?? 'dawviz'} advanced={advanced} styleId={doc.videoStyle} styleName={VIDEO_STYLES.includes(doc.videoStyle) ? i18n.t(`web.style.video.${doc.videoStyle}`) : undefined} onClose={() => setExporting(false)} />}
+    {exporting && derived && renderAst && <Suspense fallback={null}><ExportDialog scene={scene} ast={renderAst} derived={derived} audio={audio} offsetMs={offsetMs} projectSec={duration} fileName={loaded?.name ?? 'dawviz'} advanced={advanced} styleId={doc.videoStyle} styleName={VIDEO_STYLES.includes(doc.videoStyle) ? i18n.t(`web.style.video.${doc.videoStyle}`) : undefined} onClose={() => setExporting(false)} /></Suspense>}
     </LayoutGroup></MotionConfig></GestureContext.Provider>
   );
 }
@@ -707,10 +722,10 @@ function TopBar({ tab, onTab, fileName, onExport, mode, onMode, file, theme, his
   };
   return (
     <header className="shrink-0 border-b border-line bg-surface">
-      <div className="flex h-12 items-center gap-3 px-4">
+      <div className="flex min-h-12 flex-wrap items-center gap-x-3 gap-y-1 px-4 max-sm:py-1.5">
         <h1 className="flex shrink-0 items-center gap-2 text-[20px] font-semibold leading-none tracking-tight text-fg"><Mark className="h-5 w-5" />{i18n.t('web.title')}</h1>
         {fileName && <span className="hidden min-w-0 truncate text-[13px] text-muted md:block" title={fileName}><span className="text-faint" aria-hidden>/ </span>{fileName}</span>}
-        <div className="ml-auto flex shrink-0 items-center gap-2">
+        <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
           <div className="seg" role="radiogroup" aria-label={i18n.t('web.mode')} data-testid="mode-switch" onKeyDown={radioKeys}>
             {(['basic', 'advanced'] as const).map((m) => (
               <button key={m} type="button" role="radio" aria-checked={mode === m} tabIndex={radioTab(mode === m)} onClick={() => onMode(m)}
@@ -720,7 +735,7 @@ function TopBar({ tab, onTab, fileName, onExport, mode, onMode, file, theme, his
           {file}
           {/* Chưa mở dự án thì chưa có gì để xuất: nút giữ chỗ cho bố cục ổn định và nói rõ vì sao chưa bấm được. */}
           <button type="button" disabled={!onExport} onClick={onExport} aria-describedby={onExport ? undefined : 'export-why'} title={onExport ? undefined : i18n.t('web.export.needProject')}
-            className="rounded border border-accent px-3 py-1.5 text-[13px] font-medium text-accent disabled:cursor-not-allowed disabled:opacity-60" data-testid="export">
+            className="rounded border border-accent bg-accent px-3 py-1.5 text-[13px] font-semibold text-on-accent transition ring-offset-2 ring-offset-surface enabled:hover:ring-2 enabled:hover:ring-line-strong enabled:active:brightness-95 disabled:cursor-not-allowed disabled:opacity-60" data-testid="export">
             {i18n.t('web.export')}
           </button>
           {!onExport && <span id="export-why" className="sr-only">{i18n.t('web.export.needProject')}</span>}

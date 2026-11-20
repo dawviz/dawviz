@@ -6,7 +6,7 @@ import { useContext, useMemo, useRef, useState, type KeyboardEvent, type Pointer
 import { rotateGroup, rotatedBounds, snap, snapAngle, toWidgetLocal, type Guide, type SceneDocument, type Spacing, type WidgetLayout } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { GestureContext } from '../lib/storeReact.ts';
-import { HANDLES, hitTest, marqueeHits, pointerAngle, round, setAnchor, snapResize, toCanvas, type Handle } from '../lib/editorGeometry.ts';
+import { HANDLES, hasCanvasFrame, hitTest, marqueeHits, pointerAngle, round, setAnchor, snapResize, toCanvas, type Handle } from '../lib/editorGeometry.ts';
 
 type Patches = Record<string, Partial<WidgetLayout>>;
 interface Props {
@@ -54,7 +54,9 @@ export function EditorOverlay({ scene, cssWidth, selected, locked, onSelect, onL
   const [box, setBox] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
   const { designWidth: W, designHeight: H, snapping } = scene.canvas;
   const k = cssWidth > 0 ? W / cssWidth : 1; // pt trên mỗi px màn hình
-  const byId = useMemo(() => new Map(scene.widgets.map((w) => [w.id, w])), [scene.widgets]);
+  // Widget bị ẩn khung (hạt "Tại nốt") không tham gia vẽ khung, bấm chọn, quét chọn, bắt dính hay tay nắm.
+  const framed = useMemo(() => scene.widgets.filter(hasCanvasFrame), [scene.widgets]);
+  const byId = useMemo(() => new Map(framed.map((w) => [w.id, w])), [framed]);
   const sel = selected.map((id) => byId.get(id)).filter((w): w is NonNullable<typeof w> => !!w);
   const single = sel.length === 1 ? sel[0] : null;
 
@@ -81,7 +83,7 @@ export function EditorOverlay({ scene, cssWidth, selected, locked, onSelect, onL
     }
     if (handle === 'anchor' && single && advanced) { begin({ kind: 'anchor', id: single.id, start: single.layout }, e); return; }
     if (handle && single) { begin({ kind: 'resize', handle: handle as Handle, id: single.id, start: single.layout }, e); return; }
-    const hit = hitTest(scene.widgets, p, locked);
+    const hit = hitTest(framed, p, locked);
     if (!hit) {
       if (!e.shiftKey) onSelect([]);
       drag.current = { kind: 'marquee', p0: p, base: e.shiftKey ? [...selected] : [] }; setActive('marquee'); setBox(null);
@@ -95,12 +97,12 @@ export function EditorOverlay({ scene, cssWidth, selected, locked, onSelect, onL
 
   const onMove = (e: PointerEvent<SVGSVGElement>) => {
     const p = toPt(e), d = drag.current;
-    if (!d) { const h = hitTest(scene.widgets, p, locked); setHover(h ? h.id : null); return; }
+    if (!d) { const h = hitTest(framed, p, locked); setHover(h ? h.id : null); return; }
     if (d.kind === 'marquee') {
       const r = { x: Math.min(d.p0.x, p.x), y: Math.min(d.p0.y, p.y), width: Math.abs(p.x - d.p0.x), height: Math.abs(p.y - d.p0.y) };
       if (r.width < 3 * k && r.height < 3 * k) return;
       setBox(r);
-      const hits = marqueeHits(scene.widgets, r, locked);
+      const hits = marqueeHits(framed, r, locked);
       onSelect([...new Set([...d.base, ...hits])]);
       return;
     }
@@ -108,7 +110,7 @@ export function EditorOverlay({ scene, cssWidth, selected, locked, onSelect, onL
       if (!d.moved && Math.hypot(p.x - d.p0.x, p.y - d.p0.y) < 3 * k) return; // nhấp không phải kéo
       d.moved = true;
       const s0 = d.starts[d.primary];
-      const others = scene.widgets.filter((w) => w.visible && !(w.id in d.starts)).map((w) => w.layout);
+      const others = framed.filter((w) => w.visible && !(w.id in d.starts)).map((w) => w.layout);
       const r = snap({
         moving: s0, to: { x: s0.x + p.x - d.p0.x, y: s0.y + p.y - d.p0.y }, from: { x: s0.x, y: s0.y }, others, canvas: { width: W, height: H },
         grid: { enabled: snapping.gridEnabled, size: snapping.gridSize }, guides: snapping.smartGuidesEnabled, threshold: 5 * k, alt: e.altKey, shift: e.shiftKey,
@@ -118,7 +120,7 @@ export function EditorOverlay({ scene, cssWidth, selected, locked, onSelect, onL
       onLayouts(Object.fromEntries(Object.entries(d.starts).map(([id, l]) => [id, { x: l.x + dx, y: l.y + dy }])));
     } else if (d.kind === 'resize') {
       // Bắt dính khi đổi cỡ: Alt đã là "co giãn quanh tâm" nên Ctrl/⌘ mới tắt tạm bắt dính.
-      const others = scene.widgets.filter((w) => w.visible && w.id !== d.id).map((w) => w.layout);
+      const others = framed.filter((w) => w.visible && w.id !== d.id).map((w) => w.layout);
       const r = snapResize(d.start, d.handle, p, { shift: e.shiftKey, alt: e.altKey }, {
         others, canvas: { width: W, height: H }, grid: { enabled: snapping.gridEnabled, size: snapping.gridSize }, guides: snapping.smartGuidesEnabled,
         threshold: 5 * k, off: e.ctrlKey || e.metaKey,
@@ -180,7 +182,7 @@ export function EditorOverlay({ scene, cssWidth, selected, locked, onSelect, onL
         <g fill="none" stroke="rgb(var(--guide))" vectorEffect="non-scaling-stroke">
           {/* Khung mờ của mọi widget: widget chưa có dữ liệu vẫn thấy chỗ của nó ở Edit Mode (SRS 3.4). */}
           {/* Khung chờ: chấm mảnh, nhạt; rê chuột thì nét liền. Widget khoá: nét liền rất nhạt, không bao giờ nổi khi rê. */}
-          {scene.widgets.filter((w) => w.visible && !selected.includes(w.id)).map((w) => {
+          {framed.filter((w) => w.visible && !selected.includes(w.id)).map((w) => {
             const hot = w.id === hover && !active, lk = locked.has(w.id);
             return <rect key={w.id} transform={transform(w.layout)} width={w.layout.width} height={w.layout.height}
               strokeOpacity={hot ? 0.9 : lk ? 0.2 : 0.3} strokeWidth={hot ? 1.5 : 1} strokeDasharray={hot || lk ? undefined : '1 3'} strokeLinecap="round" vectorEffect="non-scaling-stroke" pointerEvents="none" />;

@@ -60,6 +60,8 @@ export interface LayoutCtx {
   textStyles?: TextStyleSet;
   /** Họ phông vẽ được (Derived.fonts); vắng = phông đóng gói. Họ khác được thay bằng phông mặc định. */
   fonts?: ReadonlySet<string>;
+  /** Điểm một nốt chạm vạch phát của Piano Roll đầu tiên đang hiện, theo toạ độ khung (pt); null = ngoài tầm. Vắng = không có Piano Roll. Cho hạt `NOTE`. */
+  emitter?: (pitch: number, startSec: number) => { x: number; y: number } | null;
 }
 
 export interface WidgetRenderer<P = unknown> {

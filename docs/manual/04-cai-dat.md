@@ -33,7 +33,7 @@ Kết quả là ước lượng: nó gồm cả độ chậm của bàn phím ho
 
 - **Lưu gói dự án** tải về một tệp `.zip` chứa mọi thứ của phiên: tệp dự án, tệp `.mid` phụ, âm thanh, ảnh nền, tempo bạn đặt, schema đã nạp và bố cục. Mở gói trên máy khác là có lại đúng phiên đó.
 - **Mở gói dự án** nạp một gói như vậy. Gói bị hỏng, bị sửa hoặc do bản ứng dụng mới hơn tạo ra thì ứng dụng báo và không mở.
-- **Xoá phiên đã lưu** xoá bản lưu trong trình duyệt (không đụng tới tệp của bạn).
+- **Xoá phiên đã lưu** xoá bản lưu trong trình duyệt (không đụng tới tệp của bạn). Nút hỏi lại một lần trước khi xoá vì không hoàn tác được.
 - Khi bộ nhớ trình duyệt gần đầy, ứng dụng chỉ lưu bố cục và thiết lập; lần sau bạn phải nạp lại tệp dự án và âm thanh. Ứng dụng báo rõ tệp nào cần nạp lại.
 
 ## Preset (cột Phong cách video)

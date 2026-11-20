@@ -1,7 +1,7 @@
 // Tài liệu có hoàn tác và các lệnh (T-07, Technical Design §6.4). Hàm dựng lệnh nhận `doc` hiện tại để lấy giá trị "trước";
 // trả null khi không có gì đổi (không ghi mục lịch sử rỗng). `redo`/`undo` là hàm thuần trên Doc bất biến.
 import type { BrightnessConfig, NoteStyle, KeyboardStyle, PianoRollProps, Phase, SceneDocument, TextRef, TextStyleSet, WidgetLayout, WidgetSpec, WidgetVisibility } from '@dawviz/render-core';
-import { DEFAULT_BACKGROUND, widgetDefaults, type BackgroundImageSpec } from '@dawviz/render-core';
+import { ASPECTS, DEFAULT_BACKGROUND, widgetDefaults, type BackgroundImageSpec } from '@dawviz/render-core';
 import type { Command } from './store.ts';
 import { clampOffsetMs } from './audioMap.ts';
 import { sceneForStyle, videoStyleBase, videoStyleKeyboard, withTrackOverrides } from './videoScenes.ts';
@@ -335,6 +335,37 @@ export const setTonic = (d: Doc, tonic: number | null): Cmd | null =>
 export const setBackgroundSpec = (d: Doc, patch: Partial<BackgroundImageSpec>): Cmd | null =>
   slice(d, 'setBackgroundSpec', 'web.cmd.background', (x) => x.scene.canvas.backgroundImage ?? DEFAULT_BACKGROUND, (x, v) => ({ ...x, scene: { ...x.scene, canvas: { ...x.scene.canvas, backgroundImage: v } } }),
     { ...(d.scene.canvas.backgroundImage ?? DEFAULT_BACKGROUND), ...patch }, `bg:${Object.keys(patch).join(',')}`, { keys: Object.keys(patch) });
+/**
+ * Đổi cỡ khung thiết kế (256–4096 pt mỗi cạnh; tỉ lệ dựng sẵn 9:16 / 1:1 / 16:9 qua `setAspect`): mọi widget co giãn theo tỉ lệ tương đối
+ * (x, rộng nhân bề rộng mới / cũ; y, cao nhân chiều cao mới / cũ; góc xoay và điểm neo giữ nguyên). Bố cục tham chiếu của ↺ co giãn cùng,
+ * nên ↺ về đúng bố cục dựng sẵn ở tỉ lệ mới. Một bước hoàn tác. Tỉ lệ không biết hoặc đang đúng tỉ lệ đó thì không làm gì.
+ */
+export const setCanvasSize = (d: Doc, width: number, height: number): Cmd | null => {
+  const w = Math.round(Math.min(4096, Math.max(256, width))), h = Math.round(Math.min(4096, Math.max(256, height)));
+  if (!Number.isFinite(w) || !Number.isFinite(h) || (w === d.scene.canvas.designWidth && h === d.scene.canvas.designHeight)) return null;
+  const sx = w / d.scene.canvas.designWidth, sy = h / d.scene.canvas.designHeight;
+  const r2 = (v: number) => Math.round(v * 100) / 100;
+  const scale = (l: WidgetLayout): WidgetLayout => ({ ...l, x: r2(l.x * sx), y: r2(l.y * sy), width: r2(l.width * sx), height: r2(l.height * sy) });
+  type S = { canvas: Pick<SceneDocument['canvas'], 'aspectRatio' | 'designWidth' | 'designHeight'>; layouts: Record<string, WidgetLayout>; ref: Record<string, WidgetLayout> };
+  const get = (x: Doc): S => ({ canvas: { aspectRatio: x.scene.canvas.aspectRatio, designWidth: x.scene.canvas.designWidth, designHeight: x.scene.canvas.designHeight }, layouts: layoutsOf(x.scene), ref: x.layoutRef });
+  const set = (x: Doc, v: S): Doc => ({
+    ...x, layoutRef: v.ref,
+    scene: { ...x.scene, canvas: { ...x.scene.canvas, ...v.canvas }, widgets: x.scene.widgets.map((q) => (v.layouts[q.id] ? { ...q, layout: v.layouts[q.id] } : q)) },
+  });
+  const g = gcd(w, h), ratio = `${w / g}:${h / g}`;
+  const after: S = {
+    canvas: { aspectRatio: ratio, designWidth: w, designHeight: h },
+    layouts: Object.fromEntries(Object.entries(layoutsOf(d.scene)).map(([id, l]) => [id, scale(l)])),
+    ref: Object.fromEntries(Object.entries(d.layoutRef).map(([id, l]) => [id, scale(l)])),
+  };
+  return slice(d, 'setAspect', 'web.cmd.aspect', get, set, after, undefined, { from: d.scene.canvas.aspectRatio, to: ratio, size: `${w} × ${h}` });
+};
+const gcd = (a: number, b: number): number => (b ? gcd(b, a % b) : a);
+/** Đổi sang một tỉ lệ dựng sẵn (9:16 / 1:1 / 16:9); tỉ lệ không biết hoặc đang đúng tỉ lệ đó thì không làm gì. */
+export const setAspect = (d: Doc, aspect: string): Cmd | null => {
+  const dims = ASPECTS[aspect];
+  return dims && d.scene.canvas.aspectRatio !== aspect ? setCanvasSize(d, dims[0], dims[1]) : null;
+};
 export const patchSnapping = (d: Doc, patch: Partial<SceneDocument['canvas']['snapping']>): Cmd | null =>
   slice(d, 'patchSnapping', 'web.cmd.snapping', (x) => x.scene.canvas.snapping, (x, v) => ({ ...x, scene: { ...x.scene, canvas: { ...x.scene.canvas, snapping: v } } }), { ...d.scene.canvas.snapping, ...patch }, `snap:${Object.keys(patch).join(',')}`);
 

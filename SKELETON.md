@@ -26,6 +26,7 @@ dawviz/
 │     │  └─ theme-boot.js
 │     ├─ src/
 │     │  ├─ components/
+│     │  │  ├─ AspectSwitch.tsx
 │     │  │  ├─ AudioPanel.tsx
 │     │  │  ├─ BackgroundSection.tsx
 │     │  │  ├─ DeviceLatency.tsx
@@ -849,8 +850,10 @@ const DEFAULT_PARTICLES
 function hash32(a: number, b: number, c: number): number   // Băm 32 bit (kiểu murmur/xorshift-multiply), thuần số nguyên nên giống nhau ở mọi trình duyệt.
 const unit = (a: number, b: number, c: number) =>   // Số "ngẫu nhiên" ổn định trong [0, 1).
 function strHash(s: string): number   // FNV-1a của chuỗi (định danh nốt → số).
-function particlePrims(p: ParticleProps, W: number, H: number, t: number, tracks: LayoutCtx['tracks']): Primitive[]
+type ParticleEmitter   // `emitter`: (cao độ, giây) → điểm xuất phát, hoặc null khi nốt nằm ngoài tầm của Piano Roll (không sinh hạt). …
+function particlePrims(p: ParticleProps, W: number, H: number, t: number, tracks: LayoutCtx['tracks'], emitter?: ParticleEmitter): Primitive[]
 const particleRenderer
+const particlesInCanvasSpace = (w: { type: string; properties: unknown }) =>   // Hạt `NOTE` vẽ thẳng trong toạ độ khung video: không dời, không xoay, không cắt theo khung widget.
 ```
 
 #### `packages/render-core/src/pianoroll.ts`
@@ -1163,6 +1166,14 @@ Thành phần gốc (T-70, UI-DIRECTION 5.3 cấu trúc D + A + E): thanh trên 
 function App()
 ```
 
+#### `apps/web/src/components/AspectSwitch.tsx`
+
+Bộ chọn tỉ lệ khung ở đầu sân khấu (REQ-GRAPHICS-04): 9:16 / 1:1 / 16:9. Mỗi phong cách video giữ tỉ lệ riêng vì tỉ lệ nằm trong scene của nó.
+
+```text
+function AspectSwitch({ value, onChange, disabled }: { value: string; onChange(aspect: string): void; disabled?: boolean })
+```
+
 #### `apps/web/src/components/AudioPanel.tsx`
 
 Âm thanh trong mục 01 Bài (T-08, TECHNICAL-DESIGN §6.2.3, D-53). Cơ bản: chỉ nạp tệp + tên tệp; offset ở "Thêm tuỳ chọn".
@@ -1197,7 +1208,7 @@ Thẻ Editor (T-68, UI-DIRECTION 5.3 mục 3, SRS 5.3 Edit Mode): bố cục wid
 ```text
 interface EditorActions
 function useWidgetNames(widgets: readonly WidgetSpec[]): (id: string) => string   // Tên hiển thị của widget: tên loại theo ngôn ngữ, đánh số khi có nhiều widget cùng loại.
-function Editor({ scene, derived, ast, playback, fonts, advanced, actions, transport, active, widgetSections, layoutRef, background }: Props)
+function Editor({ styleName, scene, derived, ast, playback, fonts, advanced, actions, transport, active, widgetSections, layoutRef, background }: Props)
 ```
 
 #### `apps/web/src/components/EditorOverlay.tsx`
@@ -1381,7 +1392,7 @@ Sân khấu (UI-DIRECTION 5.3, hướng E): khung video do Render Core vẽ, đ�
 ```text
 function LiveCanvas({ scene, derived, ast, playback, fonts = 'ready' }: Pick<Props, 'scene' | 'derived' | 'ast' | 'playback' | 'fonts'>)   // Canvas tự theo dõi `t`: chỉ phần này vẽ lại mỗi khung hình.
 const Crop = ({ className }: { className: string }) =>
-function Stage({ scene, derived, ast, playback, styleName, proof, width, fonts, children }: Props)
+function Stage({ scene, derived, ast, playback, styleName, proof, width, fonts, onAspect, children }: Props)
 ```
 
 #### `apps/web/src/components/StatusIcon.tsx`
@@ -1727,6 +1738,8 @@ const setWidgetVisibility = (d: Doc, widgetId: string, next: WidgetVisibility | 
 const setPhases = (d: Doc, phases: Phase[], key?: string) =>   // Đặt danh sách phase của bài (đã sắp theo `start`, tên không rỗng). Rỗng = bỏ hết.
 const setTonic = (d: Doc, tonic: number | null) =>   // Đặt nốt chủ của bài (0 = C … 11 = B); `null` = bỏ (chỗ giữ `{bass}` hiện tên nốt thay vì bậc).
 const setBackgroundSpec = (d: Doc, patch: Partial<BackgroundImageSpec>) =>   // Cách đặt ảnh nền (vừa khung, độ đục, làm tối). Ảnh là tài nguyên của phiên, không nằm trong scene. Kéo liên t…
+const setCanvasSize = (d: Doc, width: number, height: number) =>   // Đổi cỡ khung thiết kế (256–4096 pt mỗi cạnh; tỉ lệ dựng sẵn 9:16 / 1:1 / 16:9 qua `setAspect`): mọi widget co…
+const setAspect = (d: Doc, aspect: string) =>   // Đổi sang một tỉ lệ dựng sẵn (9:16 / 1:1 / 16:9); tỉ lệ không biết hoặc đang đúng tỉ lệ đó thì không làm gì.
 const patchSnapping = (d: Doc, patch: Partial<SceneDocument['canvas']['snapping']>) =>
 function handEdited(d: Doc): boolean   // Chỉnh tay (kiểu nốt hoặc bố cục) có bị mất nếu đổi sang phong cách khác không? Dùng để hiện thông báo nhỏ sau…
 function initialDoc(videoStyle: string, saved: { style?: Partial<{ base: Partial<NoteStyle>; tracks: Record<string, Partial<NoteStyle>> }>; keyboard?: Partial<KeyboardStyle> } = {}): Doc   // Tài liệu ban đầu từ thiết lập đã lưu (localStorage): phong cách video, kiểu nốt, ghi đè theo track, bàn phím …
@@ -1774,6 +1787,7 @@ type AlignMode   // ── căn chỉnh và chia đều (T-68) ──
 function alignLayouts(items: { id: string; layout: WidgetLayout }[], mode: AlignMode, frame: { width: number; height: number }): Record<string,   // Căn theo khung bao (đã xoay) của từng widget. Nhiều widget: căn theo khung bao chung của vùng chọn; một widge…
 function distributeLayouts(items: { id: string; layout: WidgetLayout }[], axis: 'x' | 'y'): Record<string,   // Chia đều khoảng trống giữa các widget theo trục (cần ≥ 3): hai widget ngoài cùng đứng yên, các widget giữa dờ…
 function marqueeHits(widgets: readonly { id: string; visible: boolean; layout: WidgetLayout }[], r: { x: number; y: number; width: number; height: number }, locked: ReadonlySet<string>): string[]   // Widget hiện, không khoá, có khung bao (đã xoay) giao với khung chọn.
+const hasCanvasFrame = (w: { type: string; properties: unknown }) =>   // Widget có khung chọn trên khung hình không? Hạt "Tại nốt, chỗ chạm vạch phát" sinh ra từ Piano Roll chứ không…
 ```
 
 #### `apps/web/src/lib/exportClient.ts`
@@ -2293,6 +2307,7 @@ function checkTheme(colors: Record<string, string>): ContrastFailure[]   // Tr�
 ```text
 const projectKey = (name: string, ast: UnifiedProjectAST) =>   // Khoá dự án cho bộ đệm: đổi tệp hoặc nội dung thì ảnh vẽ lại.
 const THUMB_ZOOM   // Phóng 2 lần quanh vạch phát: ảnh nhỏ thấy nốt và chữ rõ thay vì cả khung thu nhỏ.
+const THUMB_ASPECT   // Mọi ảnh thu nhỏ cùng một hình chữ nhật 16:9 dù phong cách là 9:16, 1:1 hay 16:9: cột Video styles giữ nhịp đề…
 function playheadCenter(scene: SceneDocument): Pt   // Tâm cắt (đơn vị thiết kế) = vạch phát của Piano Roll đầu tiên; không có Piano Roll thì giữa khung.
 function styleThumbnail(styleId: string, scene: SceneDocument, ast: UnifiedProjectAST, pkey: string, width: number): string | undefined
 ```
@@ -2376,7 +2391,7 @@ const matchUserPreset = (list: UserPreset[], scene: SceneDocument) =>   // Prese
 Chiều rộng khung xem trước (px), tính theo chỗ còn lại thực sự trong vùng cuộn giữa: khung + dòng thông số + thanh phát
 
 ```text
-const STAGE_CHROME   // Chiều cao cố định (px) của phần quanh canvas trong khối sân khấu: dòng thông số, dòng thời gian, khoảng cách,…
+const STAGE_CHROME   // `proof`: Xem trước có khung bản in thử; `plain`: không có (dòng bộ chọn tỉ lệ riêng); `editor`: thẻ Chỉnh sửa…
 const STAGE_WEDGE   // Bề rộng thêm bên phải khi có dải xám: khe 16 px + dải 10 px.
 function fitStageWidth(o: { availW: number; availH: number; aspect: number; chrome: number; extra: number }): number   // Hàm thuần: rộng nhất sao cho khối sân khấu vừa cả chiều ngang lẫn chiều dọc.
 function useStageWidth(scroller: RefObject<HTMLElement>, stage: RefObject<HTMLElement>, o: { aspect: number; chrome: number; extra: number; active: boolean; fallback?: number }): number   // `stage` là phần tử bọc khối sân khấu; chỗ còn lại theo chiều dọc = phần vùng cuộn dưới mép trên của nó (tự tí…
@@ -2582,4 +2597,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 1061 ký hiệu công khai -->
+<!-- 10 thư mục src, 1068 ký hiệu công khai -->

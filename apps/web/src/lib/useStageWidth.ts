@@ -3,7 +3,8 @@
 import { useLayoutEffect, useState, type RefObject } from 'react';
 
 /** Chiều cao cố định (px) của phần quanh canvas trong khối sân khấu: dòng thông số, dòng thời gian, khoảng cách, thanh phát. */
-export const STAGE_CHROME = { proof: 112, plain: 64 } as const;
+/** `proof`: Xem trước có khung bản in thử; `plain`: không có (dòng bộ chọn tỉ lệ riêng); `editor`: thẻ Chỉnh sửa (chưa tính bàn đệm và dòng chữ phụ). */
+export const STAGE_CHROME = { proof: 135, plain: 134, editor: 88 } as const;
 /** Bề rộng thêm bên phải khi có dải xám: khe 16 px + dải 10 px. */
 export const STAGE_WEDGE = 26;
 const MIN_WIDTH = 280;

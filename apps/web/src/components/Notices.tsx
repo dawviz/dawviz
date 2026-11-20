@@ -40,7 +40,7 @@ export function Notices({ problems, basic = false }: { problems: Problem[]; basi
       ))}
       {warnings.length > 0 && (
         <details className="group rounded border border-warning/60 bg-warning/10 text-sm text-fg" data-testid="notices-warnings">
-          <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-1.5">
+          <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-1.5 transition hover:bg-fg/5">
             <StatusIcon kind="warning" className="h-4 w-4 shrink-0 text-warning" />
             <span className="min-w-0 flex-1 truncate">{i18n.t('web.notices.summary', { n: warnings.length })}<span className="text-muted group-open:hidden"> · {warnings[0].text}</span></span>
             <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted transition-transform group-open:rotate-90" />
@@ -52,7 +52,7 @@ export function Notices({ problems, basic = false }: { problems: Problem[]; basi
       )}
       {notes.length > 0 && (
         <details className="group rounded border border-line bg-surface text-sm text-fg" data-testid="notices-notes">
-          <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-1.5 text-muted">
+          <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-1.5 text-muted transition hover:bg-fg/5 hover:text-fg">
             <Info className="h-4 w-4 shrink-0" />
             <span className="min-w-0 flex-1 truncate">{i18n.t('web.notices.notes', { n: notes.length })}<span className="text-faint group-open:hidden"> · {notes[0].text}</span></span>
             <ChevronRight className="h-3.5 w-3.5 shrink-0 transition-transform group-open:rotate-90" />

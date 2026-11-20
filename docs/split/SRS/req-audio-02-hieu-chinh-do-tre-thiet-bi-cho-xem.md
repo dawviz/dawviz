@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-AUDIO-02: Hiệu chỉnh độ trễ thiết bị cho Xem trước (T-82)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-AUDIO-02: Hiệu chỉnh độ trễ thiết bị cho Xem trước (T-82)"
 chunk: req-audio-02-hieu-chinh-do-tre-thiet-bi-cho-xem.md
-source_lines: 639-646
-source_sha1: 06902f4c4f
+source_lines: 642-649
+source_sha1: e3907591de
 ids: [REQ-AUDIO-02]
 ---
 #### REQ-AUDIO-02: Hiệu chỉnh độ trễ thiết bị cho Xem trước (T-82)

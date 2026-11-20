@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-EXPORT-02: Kiểm soát dòng chảy (R-01)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-EXPORT-02: Kiểm soát dòng chảy (R-01)"
 chunk: req-export-02-kiem-soat-dong-chay-r-01.md
-source_lines: 797-799
-source_sha1: 06902f4c4f
+source_lines: 800-802
+source_sha1: e3907591de
 ids: [REQ-EXPORT-02]
 ---
 #### REQ-EXPORT-02: Kiểm soát dòng chảy (R-01)

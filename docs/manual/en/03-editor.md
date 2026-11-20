@@ -13,7 +13,7 @@ The screen has three parts: **Layers** on the left, the frame in the middle, and
 - Press and hold on a layer's name and drag up or down to select the whole run of layers you pass over. Hold Shift when you start the drag to add to the layers already selected.
 - **Select all** at the top of the Layers list, or Ctrl+A (⌘A on Mac), selects every layer.
 - Drag on an empty part of the frame to draw a selection box: every widget it touches is selected. Hold Shift to add to the current selection.
-- Press Esc to clear the selection.
+- **Deselect:** press **Deselect** at the top of the right-hand panel (while something is selected), or press Esc, or click the background around the frame. Once everything is selected, **Select all** in Layers turns into **Deselect**. This works even when a widget covers the whole frame, where clicking on the frame cannot clear the selection.
 
 ## Add, duplicate, delete
 
@@ -22,6 +22,12 @@ The screen has three parts: **Layers** on the left, the frame in the middle, and
 - **Delete:** the bin button, or the Delete key. Locked widgets can't be deleted.
 
 All three can be undone with Ctrl+Z.
+
+## Frame ratio
+
+The **9:16 · 1:1 · 16:9** switch sits above the frame, the same one as in the Preview tab. Changing the ratio scales every block; then fine-tune their positions here. It is a single Undo step.
+
+In Advanced, with nothing selected, the **Frame size** part lets you type any **Width** and **Height** (256–4096 points) for other shapes such as 4:5 or 21:9; none of the switch buttons is marked then.
 
 ## Move, resize, rotate
 
@@ -50,8 +56,26 @@ The **Particles** widget throws out small particles whenever a note starts. Part
 
 - **Particles per note**, **Lifetime**, **Speed**, **Direction** (0° is up, increasing clockwise), **Spread** (width of the fan), **Gravity** (positive falls, negative rises), **Start size** and **End size**.
 - **Colour:** the colour of the track that plays the note, or **One colour**.
-- In Advanced: harder notes give more particles, speed variation, circle or square, opacity, fade out, glow, **Start position** (by pitch across the widget's width, centre, or spread evenly) and start height, **Random seed** (change it for a different scatter), **Most particles at once** (beyond it the oldest are dropped).
+- In Advanced: harder notes give more particles, speed variation, circle or square, opacity, fade out, glow, **Start position** (**At the note, where it meets the playhead**: particles fly out from the exact spot a note touches the Piano Roll's playhead, like sparks; by pitch across the widget's width; centre; or spread evenly. With "At the note", the Particles widget's frame is hidden on the picture (select the layer from Layers), and particles are not clipped to the widget: they fly across the whole video frame; with no Piano Roll there are no particles) and start height, **Random seed** (change it for a different scatter), **Most particles at once** (beyond it the oldest are dropped).
 - Choose the tracks for the widget in the **Track** part of **Settings**, like other widgets.
+
+**Example: sparks rising from notes at the playhead.** Add a Particles widget, then set:
+
+| Setting | Value |
+|---|---|
+| Start position | At the note, where it meets the playhead |
+| Particles per note | 8 |
+| Lifetime | 1.8 |
+| Speed | 200 |
+| Direction | 0 (up) |
+| Spread | 70 |
+| Gravity | −140 (negative keeps them rising) |
+| Start size / End size | 8 / 0 (shrink away) |
+| Colour | One colour, pick orange (for example `#ff7a1a`) |
+| Glow (Advanced) | 0.9 |
+| Speed variation (Advanced) | 0.6 |
+
+For slow, plentiful embers: raise Particles per note and Lifetime, lower Speed. For fast sparks: raise Speed, lower Lifetime. On a light style such as Paper, pick a dark colour, because the default of "One colour" is white. Ready-made particle sets (fire, smoke, mist, snow…) are planned for a later version, so you will not have to pick the settings yourself.
 
 ## Background image
 

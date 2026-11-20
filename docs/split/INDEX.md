@@ -45,7 +45,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [REQ-GRAPHICS-02: Bắt dính thông minh](SRS/req-graphics-02-bat-dinh-thong-minh.md) · 1248 ký tự
 - [REQ-GRAPHICS-16: Thanh phát (playhead) tuỳ chỉnh](SRS/req-graphics-16-thanh-phat-playhead-tuy-chinh.md) · 1489 ký tự
 - [REQ-GRAPHICS-03: Xoay widget tự do (D-54, thay D-15)](SRS/req-graphics-03-xoay-widget-tu-do-d-54-thay-d-15.md) · 1998 ký tự
-- [REQ-GRAPHICS-04: Preset dựng sẵn và đổi tỉ lệ khung](SRS/req-graphics-04-preset-dung-san-va-doi-ti-le-khu.md) · 673 ký tự
+- [REQ-GRAPHICS-04: Preset dựng sẵn và đổi tỉ lệ khung](SRS/req-graphics-04-preset-dung-san-va-doi-ti-le-khu.md) · 1907 ký tự
 - [REQ-GRAPHICS-06: Độ sáng track theo automation (D-33)](SRS/req-graphics-06-do-sang-track-theo-automation-d.md) · 2443 ký tự
 - [REQ-GRAPHICS-07: Kiểu dáng nốt tuỳ chỉnh và bàn phím](SRS/req-graphics-07-kieu-dang-not-tuy-chinh-va-ban-p.md) · 3425 ký tự
 - [REQ-GRAPHICS-08: Hiệu ứng chuyển động tất định (D-37)](SRS/req-graphics-08-hieu-ung-chuyen-dong-tat-dinh-d.md) · 442 ký tự
@@ -81,7 +81,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)](SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md) · 328 ký tự
 - [REQ-GRAPHICS-09: Bộ máy keyframe, easing và Graph Editor](SRS/req-graphics-09-bo-may-keyframe-easing-va-graph.md) · 844 ký tự
 - [REQ-GRAPHICS-10: Template chuyển cảnh nốt](SRS/req-graphics-10-template-chuyen-canh-not.md) · 467 ký tự
-- [REQ-GRAPHICS-11: Hạt không trạng thái](SRS/req-graphics-11-hat-khong-trang-thai.md) · 836 ký tự
+- [REQ-GRAPHICS-11: Hạt không trạng thái](SRS/req-graphics-11-hat-khong-trang-thai.md) · 1821 ký tự
 - [REQ-GRAPHICS-12: Storyboard, hiệu ứng và chữ động](SRS/req-graphics-12-storyboard-hieu-ung-va-chu-dong.md) · 529 ký tự
 - [REQ-GRAPHICS-13: Biểu thức thuộc tính](SRS/req-graphics-13-bieu-thuc-thuoc-tinh.md) · 339 ký tự
 - [REQ-GRAPHICS-14: Khoảng hiển thị theo thời gian và theo track](SRS/req-graphics-14-khoang-hien-thi-theo-thoi-gian-v.md) · 1148 ký tự
@@ -210,7 +210,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [14. Chuyển cảnh (giữa hai cảnh hoặc hai đoạn)](ANIMATION-CATALOG/14-chuyen-canh-giua-hai-canh-hoac-hai-doan.md) · 701 ký tự
 - [15. Camera](ANIMATION-CATALOG/15-camera.md) · 597 ký tự
 - [16. Nhân bản và vệt](ANIMATION-CATALOG/16-nhan-ban-va-vet.md) · 403 ký tự
-- [17. Hạt (bổ sung cho CUSTOMIZATION §5)](ANIMATION-CATALOG/17-hat-bo-sung-cho-customization-5.md) · 476 ký tự
+- [17. Hạt (bổ sung cho CUSTOMIZATION §5)](ANIMATION-CATALOG/17-hat-bo-sung-cho-customization-5.md) · 2481 ký tự
 - [18. Riêng cho âm nhạc (điểm mạnh của DAW Visualizer)](ANIMATION-CATALOG/18-rieng-cho-am-nhac-diem-manh-cua-daw-visualize.md) · 910 ký tự
 - [19. Thời gian (time controls)](ANIMATION-CATALOG/19-thoi-gian-time-controls.md) · 665 ký tự
 - [20. Hoà trộn và tổng hợp lớp](ANIMATION-CATALOG/20-hoa-tron-va-tong-hop-lop.md) · 500 ký tự

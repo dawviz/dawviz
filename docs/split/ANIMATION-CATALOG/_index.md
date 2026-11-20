@@ -1,6 +1,6 @@
 # Chỉ mục ANIMATION-CATALOG.md — Danh mục hiệu ứng chuyển động và đường cong nội suy
 
-nguồn: `ANIMATION-CATALOG.md` (sha1 94903865f6)
+nguồn: `ANIMATION-CATALOG.md` (sha1 31fc7a72b4)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -22,7 +22,7 @@ nguồn: `ANIMATION-CATALOG.md` (sha1 94903865f6)
 | 15 | 14. Chuyển cảnh (giữa hai cảnh hoặc hai đoạn) | [14-chuyen-canh-giua-hai-canh-hoac-hai-doan.md](14-chuyen-canh-giua-hai-canh-hoac-hai-doan.md) | 701 |  |
 | 16 | 15. Camera | [15-camera.md](15-camera.md) | 597 | REQ-GRAPHICS-15 |
 | 17 | 16. Nhân bản và vệt | [16-nhan-ban-va-vet.md](16-nhan-ban-va-vet.md) | 403 |  |
-| 18 | 17. Hạt (bổ sung cho CUSTOMIZATION §5) | [17-hat-bo-sung-cho-customization-5.md](17-hat-bo-sung-cho-customization-5.md) | 476 |  |
+| 18 | 17. Hạt (bổ sung cho CUSTOMIZATION §5) | [17-hat-bo-sung-cho-customization-5.md](17-hat-bo-sung-cho-customization-5.md) | 2481 | REQ-STORAGE-05 |
 | 19 | 18. Riêng cho âm nhạc (điểm mạnh của DAW Visualizer) | [18-rieng-cho-am-nhac-diem-manh-cua-daw-visualize.md](18-rieng-cho-am-nhac-diem-manh-cua-daw-visualize.md) | 910 | OI-11 |
 | 20 | 19. Thời gian (time controls) | [19-thoi-gian-time-controls.md](19-thoi-gian-time-controls.md) | 665 |  |
 | 21 | 20. Hoà trộn và tổng hợp lớp | [20-hoa-tron-va-tong-hop-lop.md](20-hoa-tron-va-tong-hop-lop.md) | 500 |  |

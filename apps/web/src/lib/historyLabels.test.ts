@@ -154,3 +154,35 @@ test('cách nốt chạy và thời gian hiển thị: hoàn tác được, nhã
   s.undo(); s.undo();
   assert.equal(C.pianoOf(s.get().scene)!.properties.scrollMode, 'SCROLL');
 });
+
+test('setAspect: khung đổi cỡ, widget và bố cục ↺ co giãn theo tỉ lệ, nhãn lịch sử, hoàn tác về đúng như cũ', () => {
+  const d0 = doc(); const d: C.Doc = { ...d0, layoutRef: Object.fromEntries(d0.scene.widgets.map((w) => [w.id, w.layout])) }; const before = JSON.stringify(d);
+  const s = createStore<C.Doc>(d);
+  const [w0, h0] = [d.scene.canvas.designWidth, d.scene.canvas.designHeight];
+  s.dispatch(C.setAspect(s.get(), '9:16'));
+  const n = s.get(), [w1, h1] = [1080, 1920];
+  assert.equal(n.scene.canvas.aspectRatio, '9:16');
+  assert.deepEqual([n.scene.canvas.designWidth, n.scene.canvas.designHeight], [w1, h1]);
+  const a = d.scene.widgets[0].layout, b = n.scene.widgets[0].layout;
+  assert.ok(Math.abs(b.width - a.width * w1 / w0) < 0.01 && Math.abs(b.height - a.height * h1 / h0) < 0.01 && b.rotation === a.rotation);
+  const id = d.scene.widgets[0].id;
+  assert.ok(Math.abs(n.layoutRef[id].y - d.layoutRef[id].y * h1 / h0) < 0.01);
+  assert.equal(describeCommand(s.state().history.timeline[0], ctx), 'Frame ratio 1:1 → 9:16');
+  assert.equal(C.setAspect(n, '9:16'), null);   // đang đúng tỉ lệ đó: không ghi mục rỗng
+  assert.equal(C.setAspect(n, '4:3'), null);    // tỉ lệ không có trong danh sách
+  s.undo();
+  assert.equal(JSON.stringify(s.get()), before);
+});
+
+test('setCanvasSize: cỡ tuỳ ý kẹp 256–4096, tỉ lệ rút gọn, trùng cỡ thì null, hoàn tác về đúng như cũ', () => {
+  const d0 = doc(); const d: C.Doc = { ...d0, layoutRef: Object.fromEntries(d0.scene.widgets.map((w) => [w.id, w.layout])) }; const before = JSON.stringify(d);
+  const s = createStore<C.Doc>(d);
+  s.dispatch(C.setCanvasSize(s.get(), 1000, 1250));
+  assert.deepEqual([s.get().scene.canvas.designWidth, s.get().scene.canvas.designHeight, s.get().scene.canvas.aspectRatio], [1000, 1250, '4:5']);
+  s.dispatch(C.setCanvasSize(s.get(), 99999, 10));
+  assert.deepEqual([s.get().scene.canvas.designWidth, s.get().scene.canvas.designHeight], [4096, 256]);
+  assert.equal(C.setCanvasSize(s.get(), 4096, 256), null);
+  assert.equal(C.setCanvasSize(s.get(), NaN, 500), null);
+  s.undo(); s.undo();
+  assert.equal(JSON.stringify(s.get()), before);
+});

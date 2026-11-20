@@ -21,8 +21,9 @@ export interface ParticleProps {
   shape: 'CIRCLE' | 'SQUARE';
   colorMode: 'TRACK' | 'SOLID'; color: string;
   opacity: number; fade: boolean; glow: number;
-  /** Nơi hạt sinh ra: theo cao độ nốt trải trên bề rộng widget, giữa widget, hoặc rải đều ngẫu nhiên; độ cao theo tỉ lệ chiều cao (0 = trên, 1 = dưới). */
-  originX: 'PITCH' | 'CENTER' | 'SPREAD'; originY: number;
+  /** Nơi hạt sinh ra: theo cao độ nốt trải trên bề rộng widget, giữa widget, rải đều ngẫu nhiên, hoặc `NOTE` = tại điểm nốt chạm vạch phát của Piano Roll
+   * (cao độ theo hàng của nốt, ngang theo vạch phát lúc nốt bắt đầu; không có Piano Roll thì như CENTER); độ cao theo tỉ lệ chiều cao (0 = trên, 1 = dưới). */
+  originX: 'PITCH' | 'CENTER' | 'SPREAD' | 'NOTE'; originY: number;
   pitchMin: number; pitchMax: number;
   seed: number; maxParticles: number;
 }
@@ -50,9 +51,13 @@ export function strHash(s: string): number {
 const lerp = (a: number, b: number, k: number) => a + (b - a) * k;
 const countFor = (p: ParticleProps, n: ASTNote) => Math.max(1, Math.round(p.perNote * (p.velocityScale ? 0.3 + 0.7 * Math.min(1, Math.max(0, n.velocity / 127)) : 1)));
 
-export function particlePrims(p: ParticleProps, W: number, H: number, t: number, tracks: LayoutCtx['tracks']): Primitive[] {
+/** `emitter`: (cao độ, giây) → điểm xuất phát, hoặc null khi nốt nằm ngoài tầm của Piano Roll (không sinh hạt). Toạ độ theo widget; riêng `NOTE` theo KHUNG VIDEO. */
+export type ParticleEmitter = (pitch: number, startSec: number) => { x: number; y: number } | null;
+
+export function particlePrims(p: ParticleProps, W: number, H: number, t: number, tracks: LayoutCtx['tracks'], emitter?: ParticleEmitter): Primitive[] {
   const out: RectPrim[] = [];
   if (t < 0) return out;
+  if (p.originX === 'NOTE' && !emitter) return out; // không có Piano Roll để chạm: không có hạt
   const born: { n: ASTNote; color: string }[] = [];
   for (const ti of tracks) {
     if (!ti.track.isVisible) continue;
@@ -63,11 +68,13 @@ export function particlePrims(p: ParticleProps, W: number, H: number, t: number,
   const span = Math.max(1, p.pitchMax - p.pitchMin), rad = Math.PI / 180;
   for (const { n, color } of born) {
     if (budget <= 0) break;
+    const at = p.originX === 'NOTE' && emitter ? emitter(n.pitch, n.startTimeSeconds) : undefined;
+    if (at === null) continue; // nốt ngoài tầm Piano Roll: không có điểm chạm
     const cnt = Math.min(budget, countFor(p, n)); budget -= cnt;
     const nid = strHash(n.id), age = t - n.startTimeSeconds, u = age / p.life;
     const size = lerp(p.sizeStart, p.sizeEnd, u), alpha = p.opacity * (p.fade ? 1 - u : 1);
     if (size < 0.3 || alpha < 0.004) continue;
-    const x0 = p.originX === 'CENTER' ? W / 2 : p.originX === 'PITCH' ? Math.min(1, Math.max(0, (n.pitch - p.pitchMin) / span)) * W : -1, y0 = p.originY * H;
+    const x0 = at ? at.x : p.originX === 'CENTER' || p.originX === 'NOTE' ? W / 2 : p.originX === 'PITCH' ? Math.min(1, Math.max(0, (n.pitch - p.pitchMin) / span)) * W : -1, y0 = at ? at.y : p.originY * H;
     const fill = p.colorMode === 'TRACK' ? color : p.color;
     for (let k = 0; k < cnt; k++) {
       const th = (p.angle + (unit(p.seed, nid, k * 4) - 0.5) * p.spread) * rad, sp = p.speed * (1 + (unit(p.seed, nid, k * 4 + 1) - 0.5) * 2 * p.speedSpread);
@@ -82,5 +89,11 @@ export function particlePrims(p: ParticleProps, W: number, H: number, t: number,
 
 export const particleRenderer: WidgetRenderer<ParticleProps> = {
   type: 'PARTICLES',
-  layout({ tracks }: LayoutCtx, spec: WidgetSpec<ParticleProps>, t: number) { return particlePrims(spec.properties, spec.layout.width, spec.layout.height, t, tracks); },
+  layout({ tracks, emitter }: LayoutCtx, spec: WidgetSpec<ParticleProps>, t: number) {
+    // `NOTE`: điểm chạm và hạt đều ở toạ độ khung video (renderFrame không dời/xoay/cắt theo khung widget); khung widget chỉ để sắp xếp.
+    return particlePrims(spec.properties, spec.layout.width, spec.layout.height, t, tracks, emitter);
+  },
 };
+
+/** Hạt `NOTE` vẽ thẳng trong toạ độ khung video: không dời, không xoay, không cắt theo khung widget. */
+export const particlesInCanvasSpace = (w: { type: string; properties: unknown }): boolean => w.type === 'PARTICLES' && (w.properties as ParticleProps).originX === 'NOTE';

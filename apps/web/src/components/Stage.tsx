@@ -7,6 +7,7 @@ import type { Derived, SceneDocument, UnifiedProjectAST } from '@dawviz/render-c
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { usePlayback, type Playback } from '../lib/playback.ts';
 import { SceneCanvas } from './SceneCanvas.tsx';
+import { AspectSwitch } from './AspectSwitch.tsx';
 import type { FontsStatus } from '../lib/fonts.ts';
 
 interface Props {
@@ -15,6 +16,8 @@ interface Props {
   fonts?: FontsStatus;
   /** Chiều rộng của khung (px), từ useStageWidth. */
   width: number;
+  /** Đổi tỉ lệ khung (bộ chọn 9:16 / 1:1 / 16:9 ở đầu sân khấu); thiếu thì không hiện bộ chọn. */
+  onAspect?(aspect: string): void;
   /** Thanh phát, đặt ngay dưới khung. */
   children?: ReactNode;
 }
@@ -40,7 +43,7 @@ export const Crop = ({ className }: { className: string }) => (
 );
 const GREYS = [0.95, 0.8, 0.65, 0.5, 0.35, 0.2, 0.08];
 
-export function Stage({ scene, derived, ast, playback, styleName, proof, width, fonts, children }: Props) {
+export function Stage({ scene, derived, ast, playback, styleName, proof, width, fonts, onAspect, children }: Props) {
   const { i18n } = useI18n();
   const { designWidth: w, designHeight: h, aspectRatio } = scene.canvas;
   const canvas = <LiveCanvas scene={scene} derived={derived} ast={ast} playback={playback} fonts={fonts} />;
@@ -48,6 +51,7 @@ export function Stage({ scene, derived, ast, playback, styleName, proof, width, 
   if (!proof) {
     return (
       <div className="mx-auto grid gap-y-2" style={{ width, gridTemplateColumns: `${width}px` }}>
+        {onAspect && <div className="flex justify-end"><AspectSwitch value={aspectRatio} onChange={onAspect} /></div>}
         <figure aria-label={i18n.t('web.stage')} className="border border-line">{canvas}</figure>
         {bar}
       </div>
@@ -55,10 +59,11 @@ export function Stage({ scene, derived, ast, playback, styleName, proof, width, 
   }
   return (
     <div className="mx-auto grid gap-x-4 gap-y-2" style={{ width: width + 26, gridTemplateColumns: `${width}px 0.625rem` }} data-testid="stage-proof">
-      <p className="flex justify-between gap-3 text-xs tabular-nums text-muted" style={{ gridColumn: 1 }}>
-        <span>{i18n.t('web.stage.size', { w, h, aspect: aspectRatio })}</span>
-        <span className="truncate">{i18n.t('web.stage.style', { name: styleName })}</span>
-      </p>
+      {/* Một dòng cố định (STAGE_CHROME đã tính chiều cao này): thông số và tên phong cách rút gọn bên trái, bộ chọn tỉ lệ bên phải. */}
+      <div className="flex items-center justify-between gap-3 text-xs tabular-nums text-muted" style={{ gridColumn: 1 }}>
+        <span className="min-w-0 truncate" title={`${i18n.t('web.stage.size', { w, h, aspect: aspectRatio })} · ${i18n.t('web.stage.style', { name: styleName })}`}>{i18n.t('web.stage.size', { w, h, aspect: aspectRatio })}<span aria-hidden> · </span>{styleName}</span>
+        {onAspect && <AspectSwitch value={aspectRatio} onChange={onAspect} />}
+      </div>
       <figure aria-label={i18n.t('web.stage')} className="relative outline outline-1 outline-line" style={{ gridColumn: 1, gridRow: 2 }}>
         {/* Dấu cắt nằm ngoài mép khung, cách 4 px, như trên tờ in thử. */}
         <Crop className="-left-5 -top-5" /><Crop className="-right-5 -top-5 -scale-x-100" />

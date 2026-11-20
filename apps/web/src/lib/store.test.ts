@@ -50,6 +50,7 @@ roundTrip('toggleAllHidden', (d) => C.toggleAllHidden(d));
 roundTrip('moveLayer (lên trên cùng)', (d) => C.moveLayer(d, C.layerOrder(d.scene).at(-1)!, 0));
 roundTrip('moveLayer (xuống một bậc)', (d) => C.moveLayer(d, C.layerOrder(d.scene)[0], 1));
 roundTrip('toggleAllWidgetsVisible', (d) => C.toggleAllWidgetsVisible(d));
+roundTrip('setAspect (1:1 → 9:16, hoàn tác được)', (d) => C.setAspect(d, '9:16'));
 roundTrip('patchSnapping', (d) => C.patchSnapping(d, { gridSize: 16, smartGuidesEnabled: false }));
 
 test('patchTrackStyle: bỏ ghi đè (null) hoàn tác được; không đổi thì không ghi mục', () => {
@@ -317,4 +318,11 @@ test('layoutRef: đổi phong cách / mở preset đặt bố cục tham chiếu
   assert.deepEqual(s.get().layoutRef, Object.fromEntries(s.get().scene.widgets.map((w) => [w.id, w.layout])));
   s.undo(); assert.deepEqual(s.get().layoutRef, ref0);
   assert.ok(Object.keys(C.initialDoc('paper').layoutRef).length > 0);
+});
+
+import { hasCanvasFrame } from './editorGeometry.ts';
+test('hasCanvasFrame: chỉ hạt "Tại nốt" bị ẩn khung trên khung hình', () => {
+  assert.equal(hasCanvasFrame({ type: 'PARTICLES', properties: { originX: 'NOTE' } }), false);
+  assert.equal(hasCanvasFrame({ type: 'PARTICLES', properties: { originX: 'PITCH' } }), true);
+  assert.equal(hasCanvasFrame({ type: 'PIANO_ROLL', properties: { originX: 'NOTE' } }), true);
 });

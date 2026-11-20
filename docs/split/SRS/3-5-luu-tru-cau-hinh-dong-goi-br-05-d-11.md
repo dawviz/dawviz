@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "3.5. Lưu trữ, cấu hình & đóng gói (BR-05, D-11)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.5. Lưu trữ, cấu hình & đóng gói (BR-05, D-11)"
 chunk: 3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md
-source_lines: 690-762
-source_sha1: 06902f4c4f
+source_lines: 693-765
+source_sha1: e3907591de
 ids: [BR-05, D-11, ERR_PACK_HASH, ERR_PACK_INVALID, ERR_PRESET_INVALID, ERR_SCHEMA_NEWER, REQ-PARSER-00, REQ-STORAGE-01, REQ-STORAGE-02, REQ-STORAGE-03, REQ-STORAGE-04, WARN_PACK_NEWER_MINOR, WARN_PACK_UNLISTED_FILE]
 ---
 ### 3.5. Lưu trữ, cấu hình & đóng gói (BR-05, D-11)

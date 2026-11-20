@@ -79,6 +79,8 @@
     font-feature-settings: 'cv11', 'ss01';
   }
   :focus-visible { outline: 2px solid rgb(var(--focus)); outline-offset: 2px; }
+  input::placeholder, textarea::placeholder { color: rgb(var(--text-faint)); opacity: 1; } /* mặc định của trình duyệt (#9ca3af) chỉ 2,5:1 trên nền sáng */
+  p, li { text-wrap: pretty; } /* tránh một chữ mồ côi ở dòng cuối */
   ::selection { background: rgb(var(--selection)); color: rgb(var(--text)); }
   * { scrollbar-color: rgb(var(--line-control)) transparent; }
 
@@ -141,7 +143,7 @@
   .btn-toggle[aria-pressed='true']::before {
     content: ''; position: absolute; left: 50%; bottom: 3px; width: 4px; height: 4px; margin-left: -2px; border-radius: 9999px; background: currentColor;
   }
-  .disclosure { @apply flex min-h-[var(--hit)] cursor-pointer select-none items-center gap-1 text-muted transition hover:text-fg; }
+  .disclosure { @apply flex min-h-[var(--hit)] cursor-pointer select-none items-center gap-1 text-muted transition hover:text-fg hover:underline hover:underline-offset-2; }
   .disclosure::before {
     content: ''; width: 0.75rem; height: 0.75rem; flex-shrink: 0; transition: transform 150ms;
     background: currentColor;

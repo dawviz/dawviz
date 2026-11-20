@@ -615,7 +615,7 @@ const HUD_SANITIZERS = {
       gravity: S.num(P.gravity, d.gravity, -3000, 3000, `${p}.gravity`), sizeStart: S.num(P.sizeStart, d.sizeStart, 0, 200, `${p}.sizeStart`), sizeEnd: S.num(P.sizeEnd, d.sizeEnd, 0, 200, `${p}.sizeEnd`),
       shape: S.oneOf(P.shape, ['CIRCLE', 'SQUARE'] as const, d.shape, `${p}.shape`), colorMode: S.oneOf(P.colorMode, ['TRACK', 'SOLID'] as const, d.colorMode, `${p}.colorMode`), color: S.str(P.color, d.color, `${p}.color`, (s) => HEX.test(s)),
       opacity: S.num(P.opacity, d.opacity, 0, 1, `${p}.opacity`), fade: S.bool(P.fade, d.fade, `${p}.fade`), glow: S.num(P.glow, d.glow, 0, 1, `${p}.glow`),
-      originX: S.oneOf(P.originX, ['PITCH', 'CENTER', 'SPREAD'] as const, d.originX, `${p}.originX`), originY: S.num(P.originY, d.originY, 0, 1, `${p}.originY`), pitchMin: lo, pitchMax: hi,
+      originX: S.oneOf(P.originX, ['PITCH', 'CENTER', 'SPREAD', 'NOTE'] as const, d.originX, `${p}.originX`), originY: S.num(P.originY, d.originY, 0, 1, `${p}.originY`), pitchMin: lo, pitchMax: hi,
       seed: Math.round(S.num(P.seed, d.seed, 0, 999999, `${p}.seed`)), maxParticles: Math.round(S.num(P.maxParticles, d.maxParticles, 50, 4000, `${p}.maxParticles`)) };
   },
   PROGRESS_BAR(P: Obj, p: string, S: Sanitizer): ProgressBarProps {

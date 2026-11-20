@@ -13,9 +13,11 @@ import { useI18n } from '../i18n/I18nProvider.tsx';
 import type { Playback } from '../lib/playback.ts';
 import type { FontsStatus } from '../lib/fonts.ts';
 import { STAGE_CHROME, useStageWidth } from '../lib/useStageWidth.ts';
-import { alignLayouts, distributeLayouts, intoFrame, outsideFrame, round, setAnchor, type AlignMode } from '../lib/editorGeometry.ts';
+import { alignLayouts, distributeLayouts, hasCanvasFrame, intoFrame, outsideFrame, round, setAnchor, type AlignMode } from '../lib/editorGeometry.ts';
 import { LiveCanvas } from './Stage.tsx';
 import { EditorOverlay } from './EditorOverlay.tsx';
+import { AspectSwitch } from './AspectSwitch.tsx';
+import { Crop } from './Stage.tsx';
 import { InspectorSection, ResetButton, TickField } from './Inspector.tsx';
 import { NumberField } from './NumberField.tsx';
 import { AlignBottom, AlignHCenter, AlignLeft, AlignRight, AlignTop, AlignVCenter, DistributeH, DistributeV, Duplicate, Eye, EyeOff, Grip, LayerDown, LayerUp, Lock, Plus, ToBack, ToFront, Trash, Unlock } from './Icons.tsx';
@@ -39,6 +41,10 @@ type Patches = Record<string, Partial<WidgetLayout>>;
 const LAYER_SPRING = { type: 'spring', stiffness: 420, damping: 38, mass: 0.8 } as const;
 export interface EditorActions {
   layouts(p: Patches): void;
+  /** Đổi tỉ lệ khung (9:16 / 1:1 / 16:9): widget co giãn theo tỉ lệ, một bước hoàn tác. */
+  aspect(aspect: string): void;
+  /** Đặt cỡ khung tuỳ ý (pt, 256–4096 mỗi cạnh); widget co giãn theo tỉ lệ, một bước hoàn tác. */
+  canvasSize(width: number, height: number): void;
   /** Đổi tên lớp; null = bỏ tên riêng (dùng tên theo loại). Tên đã được kiểm không trùng. */
   rename(id: string, name: string | null): void;
   visible(id: string, v: boolean): void;
@@ -65,6 +71,8 @@ export interface EditorActions {
   remove(ids: string[]): void;
 }
 interface Props {
+  /** Tên phong cách video đang dùng (dòng thông số trên khung, như thẻ Xem trước). */
+  styleName?: string;
   scene: SceneDocument; derived: Derived | null; ast: UnifiedProjectAST | null; playback: Playback; fonts: FontsStatus;
   advanced: boolean; actions: EditorActions;
   /** Thanh phát (dùng chung với Preview), đặt ngay dưới khung. */
@@ -95,7 +103,7 @@ export function useWidgetNames(widgets: readonly WidgetSpec[]): (id: string) => 
   }, [widgets, i18n]);
 }
 
-export function Editor({ scene, derived, ast, playback, fonts, advanced, actions, transport, active, widgetSections, layoutRef, background }: Props) {
+export function Editor({ styleName, scene, derived, ast, playback, fonts, advanced, actions, transport, active, widgetSections, layoutRef, background }: Props) {
   const { i18n } = useI18n();
   const [selected, setSelected] = useState<string[]>([]);
   const [locked, setLocked] = useState<ReadonlySet<string>>(new Set());
@@ -119,7 +127,7 @@ export function Editor({ scene, derived, ast, playback, fonts, advanced, actions
   });
 
   const scrollerRef = useRef<HTMLDivElement>(null), stageRef = useRef<HTMLDivElement>(null);
-  const width = useStageWidth(scrollerRef, stageRef, { aspect: scene.canvas.designWidth / scene.canvas.designHeight, chrome: STAGE_CHROME.plain + 48 + 2 * PASTEBOARD, extra: 2 * PASTEBOARD, active: active && !!derived });
+  const width = useStageWidth(scrollerRef, stageRef, { aspect: scene.canvas.designWidth / scene.canvas.designHeight, chrome: STAGE_CHROME.editor + 48 + 2 * PASTEBOARD, extra: 2 * PASTEBOARD, active: active && !!derived });
 
   // Danh sách lớp: trên cùng trước (zIndex giảm dần; cùng zIndex thì đứng sau trong tài liệu được vẽ sau, nên đứng trước ở đây).
   const order = useMemo(() => layerOrder(scene), [scene]);
@@ -159,6 +167,7 @@ export function Editor({ scene, derived, ast, playback, fonts, advanced, actions
   // Delete/Backspace: xoá; Ctrl/⌘+D: nhân bản (lớp khoá không bị xoá/nhân bản).
   const removeSel = () => { const ids = live.filter((id) => !locked.has(id)); if (ids.length) { actions.remove(ids); setSelected(live.filter((id) => locked.has(id))); setSay(i18n.t('web.editor.removed', { n: ids.length })); } };
   const duplicateSel = () => { const ids = live.filter((id) => !locked.has(id)); if (ids.length) setSelected(actions.duplicate(ids)); };
+  const deselect = () => { setSelected([]); setSay(i18n.t('web.editor.deselected')); };
   const selectAll = () => { setSelected(order); setSay(i18n.t('web.editor.selectedAll', { n: order.length })); };
   // Đổi tên lớp (nhấp đúp hoặc F2): Enter/rời ô thì áp, Esc bỏ. Trống = về tên theo loại. Trùng tên lớp khác: giữ tên cũ và báo lý do.
   const [editing, setEditing] = useState<string | null>(null);
@@ -206,6 +215,7 @@ export function Editor({ scene, derived, ast, playback, fonts, advanced, actions
     if ((e.key === 'Delete' || e.key === 'Backspace') && !e.ctrlKey && !e.metaKey && live.length) { e.preventDefault(); removeSel(); return; }
     if ((e.ctrlKey || e.metaKey) && e.code === 'KeyD' && live.length) { e.preventDefault(); duplicateSel(); return; }
     if ((e.ctrlKey || e.metaKey) && e.code === 'KeyA' && !e.shiftKey) { e.preventDefault(); selectAll(); return; }
+    if (e.key === 'Escape' && live.length) { e.preventDefault(); deselect(); return; }
     if (e.key === 'F2' && live.length === 1) { e.preventDefault(); setEditing(live[0]); return; }
     if (!(e.ctrlKey || e.metaKey) || live.length !== 1) return;
     const k = e.code === 'BracketRight' ? 1 : e.code === 'BracketLeft' ? -1 : 0;
@@ -216,12 +226,15 @@ export function Editor({ scene, derived, ast, playback, fonts, advanced, actions
   };
 
   return (
-    <div className="grid h-full min-h-0 lg:grid-cols-[13rem_minmax(0,1fr)_20rem] min-[1440px]:grid-cols-[14rem_minmax(0,1fr)_22rem]" data-testid="editor" onKeyDown={onKeys}>
-      <aside aria-labelledby="layers-h" className="relative min-h-0 overflow-y-auto border-b border-line bg-surface py-3 lg:border-b-0 lg:border-r">
+    <div className="grid h-full min-h-0 max-lg:content-start max-lg:overflow-y-auto lg:grid-cols-[13rem_minmax(0,1fr)_20rem] min-[1440px]:grid-cols-[14rem_minmax(0,1fr)_22rem]" data-testid="editor" onKeyDown={onKeys}>
+      <aside aria-labelledby="layers-h" className="relative min-h-0 overflow-y-auto border-b border-line bg-surface py-3 max-lg:order-2 max-lg:max-h-60 lg:border-b-0 lg:border-r">
         <div className="flex items-baseline justify-between gap-2 px-4 pb-2">
           <h2 id="layers-h" className="text-[15px] font-semibold text-fg">{i18n.t('web.editor.layers')}</h2>
-          <button type="button" className="text-xs text-muted underline-offset-2 hover:text-fg hover:underline disabled:opacity-40" disabled={!order.length || live.length === order.length}
-            onClick={selectAll} title={i18n.t('web.editor.selectAllHint')} data-testid="layers-select-all">{i18n.t('web.editor.selectAll')}</button>
+          {/* Chọn hết rồi thì nút này thành "Bỏ chọn" (khi một widget phủ kín khung, bấm lên khung không bỏ chọn được). */}
+          {order.length > 0 && live.length === order.length
+            ? <button type="button" className="text-xs text-muted underline-offset-2 hover:text-fg hover:underline" onClick={deselect} title={i18n.t('web.editor.deselectHint')} data-testid="layers-deselect">{i18n.t('web.editor.deselect')}</button>
+            : <button type="button" className="text-xs text-muted underline-offset-2 hover:text-fg hover:underline disabled:opacity-40" disabled={!order.length}
+              onClick={selectAll} title={i18n.t('web.editor.selectAllHint')} data-testid="layers-select-all">{i18n.t('web.editor.selectAll')}</button>}
         </div>
         <LayersHead widgets={scene.widgets} locked={locked} onAllVisible={actions.allVisible} onLockAll={lockAll} onAdd={addWidget} />
         <ul aria-labelledby="layers-h" data-testid="layers" onPointerDown={paintLayers}>
@@ -268,20 +281,25 @@ export function Editor({ scene, derived, ast, playback, fonts, advanced, actions
         <span className="sr-only" role="status" aria-live="polite">{say}</span>
       </aside>
 
-      <div ref={scrollerRef} className="relative min-h-0 min-w-0 overflow-y-auto bg-page p-6">
+      <div ref={scrollerRef} className="relative min-h-0 min-w-0 overflow-y-auto bg-page p-3 max-lg:order-1 max-lg:h-[75svh] lg:p-6"
+        onPointerDown={(e) => { if (live.length && !(e.target as HTMLElement).closest('figure, button, [role="radiogroup"], input, select, [data-testid="editor-transport"]')) setSelected([]); }}>
         {derived && ast ? (
           <div ref={stageRef} className="mx-auto grid gap-y-2" style={{ width: width + 2 * PASTEBOARD, gridTemplateColumns: `${width + 2 * PASTEBOARD}px` }}>
-            <p className="flex justify-between gap-3 px-7 text-xs tabular-nums text-muted">
-              <span>{i18n.t('web.stage.size', { w: W, h: H, aspect: scene.canvas.aspectRatio })}</span>
-            </p>
+            <div className="flex items-center justify-between gap-3 px-7 text-xs tabular-nums text-muted">
+              <span className="min-w-0 truncate" title={styleName ? i18n.t('web.stage.style', { name: styleName }) : undefined}>{i18n.t('web.stage.size', { w: W, h: H, aspect: scene.canvas.aspectRatio })}{styleName && <><span aria-hidden> · </span>{styleName}</>}</span>
+              <AspectSwitch value={scene.canvas.aspectRatio} onChange={actions.aspect} />
+            </div>
             {/* Bàn đệm: tay nắm ra ngoài khung vẫn thấy được nhưng bị cắt ở mép bàn, không đè thanh phát. */}
             <div className="overflow-hidden" style={{ padding: PASTEBOARD }} data-testid="editor-pasteboard">
               <figure aria-label={i18n.t('web.stage')} className="relative outline outline-1 outline-line">
+                {/* Dấu cắt như bản in thử ở thẻ Xem trước: nằm ngoài khung (trong bàn đệm), không vào video xuất. */}
+                <Crop className="-left-5 -top-5" /><Crop className="-right-5 -top-5 -scale-x-100" />
+                <Crop className="-bottom-5 -left-5 -scale-y-100" /><Crop className="-bottom-5 -right-5 -scale-100" />
                 <LiveCanvas scene={scene} derived={derived} ast={ast} playback={playback} fonts={fonts} />
                 <EditorOverlay scene={scene} cssWidth={width} selected={live} locked={locked} onSelect={setSelected} onLayouts={actions.layouts} name={name} advanced={advanced} />
               </figure>
             </div>
-            {transport && <div className="mx-7 border border-line bg-surface">{transport}</div>}
+            {transport && <div className="mx-7 border border-line bg-surface" data-testid="editor-transport">{transport}</div>}
             {/* Cách thao tác bằng chuột/bàn phím: chỉ cho trình đọc màn hình (khung có aria-describedby); người xem đọc trong hướng dẫn sử dụng. */}
             <p id="editor-keys" className="sr-only">{i18n.t(advanced ? 'web.editor.keysAdv' : 'web.editor.keys')}</p>
           </div>
@@ -290,9 +308,9 @@ export function Editor({ scene, derived, ast, playback, fonts, advanced, actions
         )}
       </div>
 
-      <aside aria-label={i18n.t('web.editor.properties')} className="relative min-h-0 overflow-y-auto border-t border-line bg-surface lg:border-l lg:border-t-0" data-testid="editor-props">
+      <aside aria-label={i18n.t('web.editor.properties')} className="relative min-h-0 overflow-y-auto border-t border-line bg-surface max-lg:order-3 max-lg:overflow-visible lg:border-l lg:border-t-0" data-testid="editor-props">
         <Properties background={background} duration={derived?.index.duration ?? 0} scene={scene} selected={live} locked={locked} name={name} advanced={advanced} actions={actions} onLock={toggleLock} order={order} move={move} widgetSections={widgetSections} onPick={(id) => setSelected([id])} layoutRef={layoutRef}
-          onDuplicate={duplicateSel} onRemove={removeSel} />
+          onDuplicate={duplicateSel} onRemove={removeSel} onDeselect={deselect} />
       </aside>
     </div>
   );
@@ -343,8 +361,8 @@ function AddMenu({ onAdd }: { onAdd(type: WidgetType): void }) {
         if (e.key === 'Escape' && open) { e.stopPropagation(); setOpen(false); box.current?.querySelector<HTMLButtonElement>('button')?.focus(); }
         if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && open) { e.preventDefault(); const l = items(), i = l.indexOf(document.activeElement as HTMLButtonElement); l[(i + (e.key === 'ArrowDown' ? 1 : -1) + l.length) % l.length]?.focus(); }
       }}>
-      <button type="button" className="tog flex items-center gap-1 px-1.5 text-xs" aria-haspopup="menu" aria-expanded={open} onClick={() => { setOpen((o) => !o); requestAnimationFrame(() => items()[0]?.focus()); }}
-        title={i18n.t('web.editor.add')} data-testid="layers-add"><Plus className="h-3.5 w-3.5" />{i18n.t('web.editor.add')}</button>
+      <button type="button" className="btn-ghost flex items-center gap-1" aria-haspopup="menu" aria-expanded={open} onClick={() => { setOpen((o) => !o); requestAnimationFrame(() => items()[0]?.focus()); }}
+        data-testid="layers-add"><Plus className="h-3.5 w-3.5" />{i18n.t('web.editor.add')}</button>
       {open && (
         <div role="menu" aria-label={i18n.t('web.editor.add')} className="absolute left-0 top-full z-20 mt-1 min-w-[11rem] border border-line bg-surface py-1 shadow-sm" data-testid="add-menu">
           {ADDABLE_WIDGETS.map((t) => (
@@ -383,7 +401,7 @@ function AlignSection({ n, items, frame, onLayouts, locked }: { n: number; items
 
 const btn = 'flex min-h-[var(--hit)] items-center gap-1.5 rounded border border-control bg-raised px-2.5 text-xs font-medium text-fg transition hover:border-line-strong disabled:cursor-not-allowed disabled:opacity-50';
 
-function Properties({ background, duration, scene, selected, locked, name, advanced, actions, onLock, order, move, widgetSections, onPick, layoutRef, onDuplicate, onRemove }: { background?: BackgroundState; duration: number; onDuplicate(): void; onRemove(): void; layoutRef?: Record<string, WidgetLayout>; onPick(id: string): void; scene: SceneDocument; selected: string[]; locked: ReadonlySet<string>; name(id: string): string; advanced: boolean; actions: EditorActions; onLock(id: string): void; order: string[]; move(id: string, to: number): void; widgetSections?: Props['widgetSections'] }) {
+function Properties({ background, duration, scene, selected, locked, name, advanced, actions, onLock, order, move, widgetSections, onPick, layoutRef, onDuplicate, onRemove, onDeselect }: { onDeselect(): void; background?: BackgroundState; duration: number; onDuplicate(): void; onRemove(): void; layoutRef?: Record<string, WidgetLayout>; onPick(id: string): void; scene: SceneDocument; selected: string[]; locked: ReadonlySet<string>; name(id: string): string; advanced: boolean; actions: EditorActions; onLock(id: string): void; order: string[]; move(id: string, to: number): void; widgetSections?: Props['widgetSections'] }) {
   const { i18n } = useI18n();
   const ws = selected.map((id) => scene.widgets.find((w) => w.id === id)!).filter(Boolean);
   const { designWidth: W, designHeight: H } = scene.canvas;
@@ -414,17 +432,21 @@ function Properties({ background, duration, scene, selected, locked, name, advan
         {/* Hình thức nốt chỉ còn ở Editor (D-57): lối tắt chọn Piano Roll để người mới không phải đoán. */}
         {piano && <button type="button" className={btn} onClick={() => onPick(piano.id)} data-testid="editor-open-look">{i18n.t('web.editor.openLook')}</button>}
       </InspectorSection>
-      <PhasesSection n={2} phases={scene.phases ?? []} duration={duration} onChange={actions.phases} />
-      <KeySection n={3} tonic={scene.tonic} onChange={actions.tonic} />
-      {background && <BackgroundSection n={4} state={background} spec={scene.canvas.backgroundImage} onPick={actions.background.pick} onRemove={actions.background.remove} onSpec={actions.background.spec} />}
-      {snapping(background ? 5 : 4)}
+      {advanced && <FrameSection n={2} width={W} height={H} onSize={actions.canvasSize} />}
+      <PhasesSection n={advanced ? 3 : 2} phases={scene.phases ?? []} duration={duration} onChange={actions.phases} />
+      <KeySection n={advanced ? 4 : 3} tonic={scene.tonic} onChange={actions.tonic} />
+      {background && <BackgroundSection n={advanced ? 5 : 4} state={background} spec={scene.canvas.backgroundImage} onPick={actions.background.pick} onRemove={actions.background.remove} onSpec={actions.background.spec} />}
+      {snapping((advanced ? 1 : 0) + (background ? 5 : 4))}
     </>
   );
 
   if (ws.length > 1) return (
     <>
       <InspectorSection n={1} id="selection" title={i18n.t('web.editor.selectedMany', { n: ws.length })}>
-        <p className="text-xs leading-snug text-muted">{ws.map((w) => name(w.id)).join(', ')}</p>
+        <div className="flex items-start justify-between gap-2">
+          <p className="min-w-0 text-xs leading-snug text-muted">{ws.map((w) => name(w.id)).join(', ')}</p>
+          <button type="button" className="btn-ghost shrink-0 border border-control" onClick={onDeselect} title={i18n.t('web.editor.deselectHint')} data-testid="deselect">{i18n.t('web.editor.deselect')}</button>
+        </div>
         <NumRow label={i18n.t('web.editor.rotateBy')}>
           <NumberField label={i18n.t('web.editor.rotateBy')} value={0} spec={{ min: -360, max: 360, step: 1 }}
             onChange={(d) => { const out = rotateGroup(ws.map((w) => w.layout), d); actions.layouts(Object.fromEntries(ws.map((w, i) => [w.id, round(out[i])]))); }} />
@@ -458,10 +480,14 @@ function Properties({ background, duration, scene, selected, locked, name, advan
   return (
     <>
       {/* Tên widget đang chọn đứng riêng ở đầu bảng; mục 01 là "Vị trí và kích thước" như các mục khác. */}
-      <header className="border-b border-line px-4 py-3" data-testid="editor-selected">
-        <p className="text-xs text-muted">{i18n.t('web.editor.selectedLabel')}</p>
-        <h2 className="truncate text-[17px] font-semibold text-fg" title={name(w.id)}>{name(w.id)}</h2>
+      <header className="flex items-start justify-between gap-2 border-b border-line px-4 py-3" data-testid="editor-selected">
+        <div className="min-w-0">
+          <p className="text-xs text-muted">{i18n.t('web.editor.selectedLabel')}</p>
+          <h2 className="truncate text-[17px] font-semibold text-fg" title={name(w.id)}>{name(w.id)}</h2>
+        </div>
+        <button type="button" className="btn-ghost shrink-0 border border-control" onClick={onDeselect} title={i18n.t('web.editor.deselectHint')} data-testid="deselect">{i18n.t('web.editor.deselect')}</button>
       </header>
+      {!hasCanvasFrame(w) && <p className="border-b border-line px-4 py-2 text-xs leading-snug text-muted" data-testid="frame-hidden-note">{i18n.t('web.editor.frameHidden')}</p>}
       <InspectorSection n={1} id="transform" title={i18n.t('web.editor.positionSize')}>
         {lk && (
           <div className="flex items-center justify-between gap-2 text-xs leading-snug text-muted" data-testid="editor-locked">
@@ -537,6 +563,22 @@ function Properties({ background, duration, scene, selected, locked, name, advan
 }
 
 /** Dòng số cùng lưới với SliderField (nhãn | ô 4,5rem | ↺ 1,5rem): các ô của Xoay, Neo và Hình thức thẳng một cột. */
+/** Cỡ khung tuỳ ý (Nâng cao): 9:16 / 1:1 / 16:9 đã có bộ chọn ở đầu khung; mục này cho mọi cỡ khác (4:5, 21:9, 1280×720…). */
+function FrameSection({ n, width, height, onSize }: { n: number; width: number; height: number; onSize(w: number, h: number): void }) {
+  const { i18n } = useI18n();
+  const spec = { min: 256, max: 4096, step: 1 };
+  return (
+    <InspectorSection n={n} id="frame" title={i18n.t('web.editor.frame')}>
+      <NumRow label={i18n.t('web.editor.frameW')}>
+        <NumberField label={i18n.t('web.editor.frameW')} value={width} spec={spec} onChange={(v) => onSize(v, height)} />
+      </NumRow>
+      <NumRow label={i18n.t('web.editor.frameH')}>
+        <NumberField label={i18n.t('web.editor.frameH')} value={height} spec={spec} onChange={(v) => onSize(width, v)} />
+      </NumRow>
+    </InspectorSection>
+  );
+}
+
 function NumRow({ label, reset, children }: { label: string; reset?: ReactNode; children: ReactNode }) {
   return (
     <div className="grid grid-cols-[minmax(0,1fr)_4.5rem_1.5rem] items-center gap-2 text-xs text-muted">

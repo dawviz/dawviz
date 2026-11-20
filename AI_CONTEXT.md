@@ -122,7 +122,7 @@ Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-02: Bắt dính thông minh](docs/split/SRS/req-graphics-02-bat-dinh-thong-minh.md) · 1.2k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-16: Thanh phát (playhead) tuỳ chỉnh](docs/split/SRS/req-graphics-16-thanh-phat-playhead-tuy-chinh.md) · 1.5k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-03: Xoay widget tự do (D-54, thay D-15)](docs/split/SRS/req-graphics-03-xoay-widget-tu-do-d-54-thay-d-15.md) · 2.0k
-- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-04: Preset dựng sẵn và đổi tỉ lệ khung](docs/split/SRS/req-graphics-04-preset-dung-san-va-doi-ti-le-khu.md) · 0.7k
+- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-04: Preset dựng sẵn và đổi tỉ lệ khung](docs/split/SRS/req-graphics-04-preset-dung-san-va-doi-ti-le-khu.md) · 1.9k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-06: Độ sáng track theo automation (D-33)](docs/split/SRS/req-graphics-06-do-sang-track-theo-automation-d.md) · 2.4k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-07: Kiểu dáng nốt tuỳ chỉnh và bàn phím](docs/split/SRS/req-graphics-07-kieu-dang-not-tuy-chinh-va-ban-p.md) · 3.4k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-08: Hiệu ứng chuyển động tất định (D-37)](docs/split/SRS/req-graphics-08-hieu-ung-chuyen-dong-tat-dinh-d.md) · 0.4k
@@ -158,7 +158,7 @@ Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)](docs/split/SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md) · 0.3k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) › REQ-GRAPHICS-09: Bộ máy keyframe, easing và Graph Editor](docs/split/SRS/req-graphics-09-bo-may-keyframe-easing-va-graph.md) · 0.8k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) › REQ-GRAPHICS-10: Template chuyển cảnh nốt](docs/split/SRS/req-graphics-10-template-chuyen-canh-not.md) · 0.5k
-- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) › REQ-GRAPHICS-11: Hạt không trạng thái](docs/split/SRS/req-graphics-11-hat-khong-trang-thai.md) · 0.8k
+- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) › REQ-GRAPHICS-11: Hạt không trạng thái](docs/split/SRS/req-graphics-11-hat-khong-trang-thai.md) · 1.8k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) › REQ-GRAPHICS-12: Storyboard, hiệu ứng và chữ động](docs/split/SRS/req-graphics-12-storyboard-hieu-ung-va-chu-dong.md) · 0.5k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) › REQ-GRAPHICS-13: Biểu thức thuộc tính](docs/split/SRS/req-graphics-13-bieu-thuc-thuoc-tinh.md) · 0.3k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) › REQ-GRAPHICS-14: Khoảng hiển thị theo thời gian và theo track](docs/split/SRS/req-graphics-14-khoang-hien-thi-theo-thoi-gian-v.md) · 1.1k
@@ -299,7 +299,7 @@ Nguồn: `docs/design/ANIMATION-CATALOG.md` · [thứ tự đọc](docs/split/AN
 - [14. Chuyển cảnh (giữa hai cảnh hoặc hai đoạn)](docs/split/ANIMATION-CATALOG/14-chuyen-canh-giua-hai-canh-hoac-hai-doan.md) · 0.7k
 - [15. Camera](docs/split/ANIMATION-CATALOG/15-camera.md) · 0.6k
 - [16. Nhân bản và vệt](docs/split/ANIMATION-CATALOG/16-nhan-ban-va-vet.md) · 0.4k
-- [17. Hạt (bổ sung cho CUSTOMIZATION §5)](docs/split/ANIMATION-CATALOG/17-hat-bo-sung-cho-customization-5.md) · 0.5k
+- [17. Hạt (bổ sung cho CUSTOMIZATION §5)](docs/split/ANIMATION-CATALOG/17-hat-bo-sung-cho-customization-5.md) · 2.5k
 - [18. Riêng cho âm nhạc (điểm mạnh của DAW Visualizer)](docs/split/ANIMATION-CATALOG/18-rieng-cho-am-nhac-diem-manh-cua-daw-visualize.md) · 0.9k
 - [19. Thời gian (time controls)](docs/split/ANIMATION-CATALOG/19-thoi-gian-time-controls.md) · 0.7k
 - [20. Hoà trộn và tổng hợp lớp](docs/split/ANIMATION-CATALOG/20-hoa-tron-va-tong-hop-lop.md) · 0.5k

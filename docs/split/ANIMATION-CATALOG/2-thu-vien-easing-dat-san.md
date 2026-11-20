@@ -5,7 +5,7 @@ section: "2. Thư viện easing đặt sẵn"
 path: "2. Thư viện easing đặt sẵn"
 chunk: 2-thu-vien-easing-dat-san.md
 source_lines: 38-56
-source_sha1: 94903865f6
+source_sha1: 31fc7a72b4
 ids: [AD-13]
 ---
 ## 2. Thư viện easing đặt sẵn

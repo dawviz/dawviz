@@ -211,3 +211,6 @@ export function marqueeHits(widgets: readonly { id: string; visible: boolean; la
     return b.x < r.x + r.width && b.x + b.width > r.x && b.y < r.y + r.height && b.y + b.height > r.y;
   }).map((w) => w.id);
 }
+
+/** Widget có khung chọn trên khung hình không? Hạt "Tại nốt, chỗ chạm vạch phát" sinh ra từ Piano Roll chứ không từ khung của nó, nên khung bị ẩn (không vẽ, không bấm/quét chọn được, không có tay nắm); chọn qua danh sách Lớp. */
+export const hasCanvasFrame = (w: { type: string; properties: unknown }): boolean => !(w.type === 'PARTICLES' && (w.properties as { originX?: string }).originX === 'NOTE');

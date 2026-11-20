@@ -20,17 +20,23 @@ Bên trái thanh tua là vị trí hiện tại, bên phải là độ dài bài
 
 ## Phong cách video
 
-Cột bên trái liệt kê các phong cách video có sẵn, mỗi phong cách có ảnh nhỏ vẽ từ chính bài của bạn. Bấm để đổi. Phong cách quyết định màu nền, kiểu nốt, chữ và vị trí các khối trên khung.
+Cột bên trái liệt kê các phong cách video có sẵn, mỗi phong cách có ảnh nhỏ vẽ từ chính bài của bạn (mọi ảnh nhỏ cùng khung ngang, dù phong cách là dọc, vuông hay ngang). Bấm để đổi. Phong cách quyết định màu nền, kiểu nốt, chữ và vị trí các khối trên khung.
 
 Khi bạn đã chỉnh gì đó, tên phong cách có thêm chữ "đã chỉnh". Mỗi phong cách giữ bản chỉnh dở của riêng nó: đổi sang phong cách khác rồi quay lại vẫn còn nguyên. Muốn về bản gốc thì rê chuột vào ô và bấm **×**; vẫn hoàn tác được bằng Ctrl+Z. Bản chỉnh dở của mọi ô được nhớ theo trình duyệt (tải lại trang vẫn còn). Nút nhân bản trên ô tạo preset mới từ bản đang thấy. Dấu cộng dưới danh sách thêm preset từ tệp `.json` (xem [Cài đặt](04-cai-dat.md)).
 
 Phía trên khung có dòng ghi kích thước và tỉ lệ khung (ví dụ `1,080 × 1,080 · 1:1`) và tên phong cách đang dùng.
+
+## Tỉ lệ khung
+
+Bộ chọn **9:16 · 1:1 · 16:9** ở đầu khung đổi tỉ lệ video: 9:16 cho TikTok, Shorts, Reels; 1:1 là khung vuông; 16:9 là khung ngang. Các khối trên khung co giãn theo tỉ lệ mới, rồi bạn chỉnh lại vị trí ở thẻ Chỉnh sửa nếu cần. Mỗi phong cách video nhớ tỉ lệ riêng của nó. Bấm **Hoàn tác** để về tỉ lệ cũ.
 
 ## Bài
 
 Mục **Bài** ở cột phải cho biết tên tệp, định dạng, độ dài, tempo, số track và số nốt.
 
 ### Tempo
+
+Ở Nâng cao, bảng tempo nằm trong mục gập **Chỉnh tempo** của mục **Bài**: bấm vào để mở. Mục này tự mở khi tệp thiếu tempo hoặc bạn đã đặt tempo riêng.
 
 Nếu tệp không có tempo (một số tệp MIDI) thì ứng dụng tạm dùng 120 BPM và nói rõ ở mục **Bài**; gõ tempo thật vào ô **BPM** rồi bấm **Áp dụng tempo**. Bài được đọc lại với tempo mới, các thiết lập khác của bạn giữ nguyên. **Dùng tempo của tệp** bỏ tempo bạn đặt.
 

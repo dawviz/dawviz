@@ -5,7 +5,7 @@ section: "11. Màu và ánh sáng"
 path: "11. Màu và ánh sáng"
 chunk: 11-mau-va-anh-sang.md
 source_lines: 173-187
-source_sha1: 94903865f6
+source_sha1: 31fc7a72b4
 ids: []
 ---
 ## 11. Màu và ánh sáng

@@ -5,7 +5,7 @@ section: "1. Kiểu nội suy keyframe (theo thời gian)"
 path: "1. Kiểu nội suy keyframe (theo thời gian)"
 chunk: 1-kieu-noi-suy-keyframe-theo-thoi-gian.md
 source_lines: 19-37
-source_sha1: 94903865f6
+source_sha1: 31fc7a72b4
 ids: []
 ---
 ## 1. Kiểu nội suy keyframe (theo thời gian)

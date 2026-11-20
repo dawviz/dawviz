@@ -54,7 +54,7 @@ export function VideoStyles({ value, edited, onPick, thumb, presets }: { value: 
         <button type="button" role="radio" aria-checked={on} tabIndex={radioTab(on, id === first, selected !== undefined)} onClick={pick}
           className={`relative flex w-full flex-col gap-1.5 py-2 pl-4 pr-3 text-left text-[13px] transition ${on ? 'bg-raised font-medium text-fg' : 'text-muted hover:bg-raised hover:text-fg'}`}>
           {on && <span aria-hidden className="absolute inset-y-0 left-0 w-0.5 bg-accent" />}
-          {src && <img src={src} alt="" aria-hidden width={thumbW} data-testid={`style-thumb-${id}`} className="block w-full border border-line" />}
+          {src && <img src={src} alt="" aria-hidden width={thumbW} data-testid={`style-thumb-${id}`} className="block aspect-video w-full border border-line object-cover" />}
           <span className="flex w-full items-baseline justify-between gap-2">
             <span className="truncate">{label}</span>
             {isEdited && <span className="shrink-0 text-xs font-normal text-muted" data-testid={`edited-${id}`}>{i18n.t('web.styles.edited')}</span>}
@@ -82,8 +82,9 @@ export function VideoStyles({ value, edited, onPick, thumb, presets }: { value: 
       {presets && (
         <div className="space-y-2 px-4 pt-2">
           <button type="button" onClick={() => input.current?.click()} data-testid="preset-add" aria-label={i18n.t('web.preset.add')} title={i18n.t('web.preset.add')}
-            className="flex aspect-video w-full items-center justify-center rounded border border-dashed border-line-strong text-2xl leading-none text-muted transition hover:border-accent hover:text-fg">
-            <span aria-hidden>+</span>
+            className="flex aspect-video w-full flex-col items-center justify-center gap-1 rounded border border-dashed border-line-strong px-2 text-center text-muted transition hover:border-accent hover:text-fg">
+            <span aria-hidden className="text-2xl leading-none">+</span>
+            <span className="text-xs leading-tight">{i18n.t('web.preset.add')}</span>
           </button>
           <input ref={input} type="file" accept=".json,application/json" className="hidden" tabIndex={-1} data-testid="preset-input"
             onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) presets.onAddFile(f); }} />

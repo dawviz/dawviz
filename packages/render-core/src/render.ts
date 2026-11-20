@@ -6,14 +6,14 @@ import type { UnifiedProjectAST } from './types.ts';
 import { layoutPianoRoll, layoutKeyboard } from './pianoroll.ts';
 import { DEFAULT_KEYBOARD_STYLE } from './style.ts';
 import type { PianoRollProps, SceneDocument, WidgetSpec } from './scene.ts';
-import type { Derived, Primitive, RectPrim, TextPrim, WidgetRenderer } from './prims.ts';
+import type { Derived, LayoutCtx, Primitive, RectPrim, TextPrim, WidgetRenderer } from './prims.ts';
 import { HUD_RENDERERS, barPageAt, buildHud, hudOf, usesChordPlaceholder, type ChordProps, type HudData } from './hud.ts';
 import { measureText } from './text.ts';
 import { DEFAULT_TEXT_STYLES, TEXT_METRICS, type PlacedRun, type RichText, type TextGradient } from './typography.ts';
 import { normalizeAngle } from './snap.ts';
 import { visibilityAlpha } from './visibility.ts';
 import { spectrumRenderer } from './spectrum.ts';
-import { particleRenderer } from './particles.ts';
+import { particleRenderer, particlesInCanvasSpace } from './particles.ts';
 import { DEFAULT_BACKGROUND, placeImage, type BackgroundImage } from './background.ts';
 
 /** Ngữ cảnh vẽ đủ cho renderFrame (Canvas 2D và OffscreenCanvas đều có). */
@@ -149,10 +149,19 @@ export function layoutFrame(scene: SceneDocument, derived0: Derived, ast: Unifie
     .sort((a, b) => a.w.zIndex - b.w.zIndex || a.i - b.i); // cùng zIndex: giữ thứ tự trong tài liệu
   const measure = derived.measure ?? measureText, textStyles = scene.textStyles ?? DEFAULT_TEXT_STYLES;
   const out: { widget: WidgetSpec; prims: Primitive[] }[] = [];
+  // Điểm chạm vạch phát của nốt (hạt `NOTE`): cùng hình học với Piano Roll nên khớp ở Preview và Export.
+  const roll = order.map(({ w }) => w).find((w): w is WidgetSpec<PianoRollProps> => w.type === 'PIANO_ROLL');
+  const emitter: LayoutCtx['emitter'] | undefined = roll && ((pitch, ts) => {
+    const p = roll.properties, { x, y, width, height } = roll.layout, [lo, hi] = pianoRollPitchRange(p, tracksFor(roll, derived.index));
+    if (pitch < lo || pitch > hi) return null;
+    const page = p.scrollMode === 'PAGE' && p.pageUnit === 'BARS' ? barPageAt(hudOf(derived, ast).bars, p.pageBars, ts) : undefined;
+    const rowH = height / (hi - lo + 1);
+    return { x: x + pianoRollGeometry(p, width, ts, page).playX, y: y + (hi - pitch) * rowH + rowH / 2 };
+  });
   for (const { w } of order) {
     const k = visibilityAlpha(w.visibility, t, dur);
     if (k <= 0) continue; // ngoài khoảng hiển thị: không dựng gì
-    const prims = renderers[w.type]!.layout({ ast, derived, tracks: tracksFor(w, derived.index), measure, textStyles, fonts: derived.fonts }, w, t);
+    const prims = renderers[w.type]!.layout({ ast, derived, tracks: tracksFor(w, derived.index), measure, textStyles, fonts: derived.fonts, emitter }, w, t);
     out.push({ widget: w, prims: k >= 1 ? prims : prims.map((p) => fadePrim(p, k)) });
   }
   return out;
@@ -175,6 +184,7 @@ export function renderFrame(scene: SceneDocument, derived: Derived, ast: Unified
   for (const { widget, prims } of layoutFrame(scene, derived, ast, t, renderers)) {
     const L = widget.layout;
     g.save();
+    if (particlesInCanvasSpace(widget)) { drawPrimitives(g, prims, { scale, rotation: 0 }); g.restore(); continue; }
     const rot = normalizeAngle(L.rotation);
     if (rot === 0) g.translate(L.x, L.y); // góc 0: đúng chuỗi lệnh trước T-68
     else { // dời tới điểm neo, xoay (chiều kim đồng hồ, trục y xuống), dời ngược: toạ độ trong widget giữ nguyên, không co nội dung

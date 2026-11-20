@@ -73,3 +73,23 @@ test('sanitizeScene + layoutFrame: mặc định, kẹp số, pitchMin ≥ pitch
   const a = ast([[60, 0, 1, 100]]), fr = layoutFrame(ok.scene, derivedOf(a), a, 0.5)[0];
   assert.ok(fr.prims.length >= 1 && fr.prims.every((r) => r.kind === 'rect'));
 });
+
+test('originX NOTE: hạt xuất phát đúng chỗ nốt chạm vạch phát của Piano Roll (cao độ → hàng, ngang → vạch phát), ngoài tầm thì không sinh hạt', () => {
+  const a = ast([[60, 1, 2, 100], [30, 1, 2, 100]]);
+  const scene = sanitizeScene({
+    schemaVersion: SCENE_SCHEMA_VERSION, presetName: 't', author: 't',
+    canvas: { aspectRatio: '16:9', designWidth: 1000, designHeight: 500 },
+    widgets: [
+      { id: 'roll', type: 'PIANO_ROLL', zIndex: 0, visible: true, layout: { x: 100, y: 50, width: 800, height: 400, rotation: 0, anchor: { x: 0.5, y: 0.5 } },
+        properties: { pitchRangeMode: 'CUSTOM', pitchMin: 48, pitchMax: 71, playheadPositionRatio: 0.25, visibleSeconds: 4, keyboard: { enabled: false } } },
+      { id: 'fx', type: 'PARTICLES', zIndex: 1, visible: true, layout: { x: 700, y: 300, width: 50, height: 50, rotation: 30, anchor: { x: 0.5, y: 0.5 } }, // khung widget nhỏ, xa, xoay: không ảnh hưởng vị trí hạt
+        properties: { ...FLAT, originX: 'NOTE', speed: 0 } },
+    ],
+  }).scene;
+  const fx = layoutFrame(scene, derivedOf(a), a, 1).find((w) => w.widget.id === 'fx')!.prims as RectPrim[];
+  assert.equal(fx.length, 1, 'chỉ nốt 60 trong tầm 48–71; nốt 30 ngoài tầm');
+  // vạch phát: 100 + 800 × 0,25 = 300; hàng: (71 − 60) × (400 / 24) + nửa hàng = 183,33 + 8,33 → y = 50 + 191,67
+  near(fx[0].x + fx[0].w / 2, 300, 1e-6); near(fx[0].y + fx[0].h / 2, 50 + 11 * (400 / 24) + 400 / 24 / 2, 1e-6);
+  const noRoll = { ...scene, widgets: scene.widgets.filter((w) => w.type !== 'PIANO_ROLL') };
+  assert.equal((layoutFrame(noRoll, derivedOf(a), a, 1)[0].prims as RectPrim[]).length, 0); // không có Piano Roll: không có hạt
+});

@@ -13,7 +13,7 @@ Màn hình chia ba phần: danh sách **Lớp** bên trái, khung video ở gi�
 - Bấm giữ trên tên một lớp rồi kéo lên hoặc xuống để chọn cả dãy lớp đi qua. Giữ Shift khi bắt đầu kéo để cộng thêm vào những lớp đang chọn.
 - **Chọn tất cả** ở đầu danh sách Lớp, hoặc Ctrl+A (⌘A trên Mac), chọn mọi lớp.
 - Kéo chuột trên chỗ trống của khung để vẽ một khung chọn: mọi widget chạm khung đó đều được chọn. Giữ Shift để cộng thêm vào những widget đang chọn.
-- Bấm Esc để bỏ chọn.
+- **Bỏ chọn:** bấm **Bỏ chọn** ở đầu bảng bên phải (khi đang chọn), hoặc bấm Esc, hoặc bấm vào vùng nền xung quanh khung. Khi đã chọn hết, nút **Chọn tất cả** ở danh sách Lớp đổi thành **Bỏ chọn**. Cách này dùng được cả khi một widget phủ kín khung, lúc bấm lên khung không bỏ chọn được.
 
 ## Thêm, nhân bản, xoá
 
@@ -22,6 +22,12 @@ Màn hình chia ba phần: danh sách **Lớp** bên trái, khung video ở gi�
 - **Xoá:** nút thùng rác, hoặc phím Delete. Widget đang khoá không xoá được.
 
 Cả ba việc đều hoàn tác được bằng Ctrl+Z.
+
+## Tỉ lệ khung
+
+Bộ chọn **9:16 · 1:1 · 16:9** nằm phía trên khung, cùng bộ chọn với thẻ Xem trước. Đổi tỉ lệ thì mọi khối co giãn theo; sau đó chỉnh lại vị trí ở đây. Là một bước Hoàn tác.
+
+Ở Nâng cao, khi không chọn widget nào, mục **Cỡ khung** cho nhập **Rộng** và **Cao** tuỳ ý (256–4096 điểm). Dùng cho các cỡ khác như 4:5 hay 21:9; lúc đó không ô nào trong bộ chọn được đánh dấu.
 
 ## Di chuyển, đổi cỡ, xoay
 
@@ -50,8 +56,26 @@ Widget **Hạt** phát ra các hạt nhỏ mỗi khi có nốt. Hạt chỉ ph�
 
 - **Số hạt mỗi nốt**, **Tuổi thọ**, **Tốc độ**, **Hướng bay** (0° là lên trên, tăng theo chiều kim đồng hồ), **Độ toả** (độ rộng quạt bay), **Trọng lực** (dương là rơi xuống, âm là bay lên), **Cỡ lúc đầu** và **Cỡ lúc cuối**.
 - **Màu:** theo màu của track phát nốt, hoặc **Một màu**.
-- Ở Nâng cao: nốt mạnh sinh nhiều hạt hơn, độ biến thiên tốc độ, hình tròn hay vuông, độ đục, mờ dần, phát sáng, **Vị trí xuất phát** (theo cao độ trải trên bề rộng widget, giữa, hoặc rải đều) và độ cao xuất phát, **Hạt giống ngẫu nhiên** (đổi để có kiểu rải khác), **Số hạt tối đa cùng lúc** (quá số này thì bỏ hạt cũ nhất).
+- Ở Nâng cao: nốt mạnh sinh nhiều hạt hơn, độ biến thiên tốc độ, hình tròn hay vuông, độ đục, mờ dần, phát sáng, **Vị trí xuất phát** (**Tại nốt, chỗ chạm vạch phát**: hạt bay ra từ đúng chỗ nốt chạm vạch phát của Piano Roll, như tia lửa; theo cao độ trải trên bề rộng widget; giữa; hoặc rải đều. Với "Tại nốt", khung widget Hạt được ẩn trên khung hình (chọn lớp từ danh sách Lớp), và hạt không bị cắt theo khung widget: chúng bay trong toàn khung video; không có Piano Roll thì không có hạt) và độ cao xuất phát, **Hạt giống ngẫu nhiên** (đổi để có kiểu rải khác), **Số hạt tối đa cùng lúc** (quá số này thì bỏ hạt cũ nhất).
 - Chọn track cho widget ở mục **Track** của **Thiết lập** như các widget khác.
+
+**Ví dụ: tia lửa bay lên từ nốt chạm vạch phát.** Thêm widget Hạt, rồi đặt:
+
+| Thiết lập | Giá trị |
+|---|---|
+| Vị trí xuất phát | Tại nốt, chỗ chạm vạch phát |
+| Số hạt mỗi nốt | 8 |
+| Tuổi thọ | 1,8 |
+| Tốc độ | 200 |
+| Hướng bay | 0 (lên trên) |
+| Độ toả | 70 |
+| Trọng lực | −140 (âm để hạt tiếp tục bay lên) |
+| Cỡ lúc đầu / Cỡ lúc cuối | 8 / 0 (nhỏ dần rồi tắt) |
+| Màu | Một màu, chọn cam (ví dụ `#ff7a1a`) |
+| Phát sáng (Nâng cao) | 0,9 |
+| Độ biến thiên tốc độ (Nâng cao) | 0,6 |
+
+Muốn tàn lửa chậm và nhiều hơn: tăng Số hạt và Tuổi thọ, giảm Tốc độ. Muốn tia lửa nhanh: tăng Tốc độ, giảm Tuổi thọ. Trên nền sáng như phong cách Paper, nhớ chọn màu đậm vì mặc định của "Một màu" là trắng. Các bộ hạt dựng sẵn (lửa, khói, sương, tuyết…) sẽ có ở bản sau để bạn khỏi phải tự đặt thông số.
 
 ## Ảnh nền
 

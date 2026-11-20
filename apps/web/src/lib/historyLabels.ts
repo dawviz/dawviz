@@ -117,6 +117,7 @@ export function describeCommand(cmd: Cmd, c: LabelCtx): string {
     }
     case 'setPlayheadVisible': return i18n.t('web.hist.change', { name: i18n.t('web.playhead.show'), from: fmt(c, '', cmd.before), to: fmt(c, '', cmd.after) });
     case 'setAudioOffset': return i18n.t('web.hist.audioOffset', { from: fmt(c, 'ms', cmd.before), to: fmt(c, 'ms', cmd.after) });
+    case 'setAspect': return i18n.t('web.hist.change', { name: i18n.t('web.aspect.title'), from: String(p.from), to: String(p.to) });
     case 'patchSnapping': return changeLabel(c, i18n.t('web.hist.what.snapping'), {}, cmd);
     case 'addWidget': return i18n.t('web.hist.addWidget', { widget: i18n.has(`web.widget.${String(p.type)}`) ? i18n.t(`web.widget.${String(p.type)}`) : String(p.type) });
     case 'duplicateWidgets': return i18n.t('web.hist.duplicate', { n: Number(p.n) });

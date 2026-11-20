@@ -6,6 +6,7 @@ import { Transport } from '../src/components/Transport.tsx';
 import { Notices } from '../src/components/Notices.tsx';
 import { LanguageSelect } from '../src/components/LanguageSelect.tsx';
 import { AppearanceSettings, ThemeToggle, useTheme } from '../src/components/ThemeSelect.tsx';
+import { AspectSwitch } from '../src/components/AspectSwitch.tsx';
 import { VideoStyles } from '../src/components/VideoStyles.tsx';
 import { NOTE_PRESETS, PAPER_SCENE } from '../src/lib/videoScenes.ts';
 import { createPlayback } from '../src/lib/playback.ts';
@@ -699,5 +700,19 @@ describe('Ảnh nền (T-21)', () => {
   it('lỗi: báo bằng chữ đã dịch theo mã', () => {
     mount({ name: null, busy: false, error: 'ERR_ASSET_TOO_LARGE' });
     expect(screen.getByTestId('bg-error').textContent).toMatch(/(20 MB)/);
+  });
+});
+
+describe('AspectSwitch', () => {
+  it('đánh dấu tỉ lệ hiện tại, bấm tỉ lệ khác gọi onChange; kích thước tuỳ biến thì không ô nào được chọn nhưng vẫn Tab vào được', () => {
+    const calls: string[] = [];
+    const v = wrap(<AspectSwitch value="1:1" onChange={(a) => calls.push(a)} />);
+    expect(screen.getByTestId('aspect-1:1')).toHaveAttribute('aria-checked', 'true');
+    expect(screen.getByTestId('aspect-9:16')).toHaveAttribute('aria-checked', 'false');
+    fireEvent.click(screen.getByTestId('aspect-9:16'));
+    expect(calls).toEqual(['9:16']);
+    v.rerender(<I18nProvider><AspectSwitch value="1000:700" onChange={() => {}} /></I18nProvider>);
+    expect(['9:16', '1:1', '16:9'].map((a) => screen.getByTestId(`aspect-${a}`).getAttribute('aria-checked'))).toEqual(['false', 'false', 'false']);
+    expect(screen.getByTestId('aspect-9:16')).toHaveAttribute('tabindex', '0');
   });
 });
