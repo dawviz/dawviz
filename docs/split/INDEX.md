@@ -61,7 +61,8 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [REQ-WIDGET-04: Live Note Trigger](SRS/req-widget-04-live-note-trigger.md) · 935 ký tự
 - [REQ-WIDGET-05: Time & Bar Counter](SRS/req-widget-05-time-bar-counter.md) · 1520 ký tự
 - [REQ-WIDGET-06: Chord Detection (D-09)](SRS/req-widget-06-chord-detection-d-09.md) · 2250 ký tự
-- [REQ-WIDGET-07: Audio Spectrum & Meter (D-10, ARC-03, ARC-06)](SRS/req-widget-07-audio-spectrum-meter-d-10-arc-03-a.md) · 2473 ký tự
+- [REQ-WIDGET-07: Audio Spectrum & Meter (D-10, ARC-03, ARC-06)](SRS/req-widget-07-audio-spectrum-meter-d-10-arc-03-a.md) · 3470 ký tự
+- [REQ-AUDIO-02: Hiệu chỉnh độ trễ thiết bị cho Xem trước (T-82)](SRS/req-audio-02-hieu-chinh-do-tre-thiet-bi-cho-xem.md) · 1882 ký tự
 - [REQ-AUDIO-01: Âm thanh theo track (stem), bản 1.2](SRS/req-audio-01-am-thanh-theo-track-stem-ban-1-2.md) · 3254 ký tự
 - [REQ-WIDGET-08: Progress Bar (D-27)](SRS/req-widget-08-progress-bar-d-27.md) · 822 ký tự
 - [3.4b. Đề xuất widget và dữ liệu hiển thị bổ sung (D-32, OI-11) **[ĐỀ XUẤT, chưa cam kết v1.0]**](SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md) · 2994 ký tự
@@ -80,12 +81,12 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)](SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md) · 328 ký tự
 - [REQ-GRAPHICS-09: Bộ máy keyframe, easing và Graph Editor](SRS/req-graphics-09-bo-may-keyframe-easing-va-graph.md) · 844 ký tự
 - [REQ-GRAPHICS-10: Template chuyển cảnh nốt](SRS/req-graphics-10-template-chuyen-canh-not.md) · 467 ký tự
-- [REQ-GRAPHICS-11: Hạt không trạng thái](SRS/req-graphics-11-hat-khong-trang-thai.md) · 327 ký tự
+- [REQ-GRAPHICS-11: Hạt không trạng thái](SRS/req-graphics-11-hat-khong-trang-thai.md) · 836 ký tự
 - [REQ-GRAPHICS-12: Storyboard, hiệu ứng và chữ động](SRS/req-graphics-12-storyboard-hieu-ung-va-chu-dong.md) · 529 ký tự
 - [REQ-GRAPHICS-13: Biểu thức thuộc tính](SRS/req-graphics-13-bieu-thuc-thuoc-tinh.md) · 339 ký tự
-- [REQ-GRAPHICS-14: Khoảng hiển thị theo thời gian và theo track](SRS/req-graphics-14-khoang-hien-thi-theo-thoi-gian-v.md) · 759 ký tự
+- [REQ-GRAPHICS-14: Khoảng hiển thị theo thời gian và theo track](SRS/req-graphics-14-khoang-hien-thi-theo-thoi-gian-v.md) · 1148 ký tự
 - [REQ-GRAPHICS-15: Không gian 2.5D: xoay X/Y/Z và camera phối cảnh (D-47), bản 1.1](SRS/req-graphics-15-khong-gian-2-5d-xoay-x-y-z-va-ca.md) · 1874 ký tự
-- [REQ-STORAGE-05: Tài nguyên của phiên](SRS/req-storage-05-tai-nguyen-cua-phien.md) · 322 ký tự
+- [REQ-STORAGE-05: Tài nguyên của phiên](SRS/req-storage-05-tai-nguyen-cua-phien.md) · 967 ký tự
 - [REQ-STORAGE-06: Preset mới và chia sẻ](SRS/req-storage-06-preset-moi-va-chia-se.md) · 444 ký tự
 - [4. YÊU CẦU PHI CHỨC NĂNG (NON-FUNCTIONAL REQUIREMENTS)](SRS/4-yeu-cau-phi-chuc-nang-non-functional-requireme.md) · 5167 ký tự
 - [5.1. Bố cục không gian làm việc](SRS/5-1-bo-cuc-khong-gian-lam-viec.md) · 4893 ký tự
@@ -128,11 +129,11 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)](TECHNICAL-DESIGN/5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md) · 5390 ký tự
 - [5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp 🟢 (đã dùng ở T-69)](TECHNICAL-DESIGN/5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md) · 925 ký tự
 - [5.9 Kiểu chữ cho mọi chữ trong video 🟢 (T-72, SRS REQ-GRAPHICS-18, D-58)](TECHNICAL-DESIGN/5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md) · 6552 ký tự
-- [5.10 Chỗ giữ trong chữ và Ô chữ 🟢 (T-73, SRS REQ-GRAPHICS-19, D-60/OI-18)](TECHNICAL-DESIGN/5-10-cho-giu-trong-chu-va-o-chu-t-73-srs-req-gra.md) · 2966 ký tự
+- [5.10 Chỗ giữ trong chữ và Ô chữ 🟢 (T-73, SRS REQ-GRAPHICS-19, D-60/OI-18)](TECHNICAL-DESIGN/5-10-cho-giu-trong-chu-va-o-chu-t-73-srs-req-gra.md) · 5437 ký tự
 - [6.1 Trạng thái](TECHNICAL-DESIGN/6-1-trang-thai.md) · 1256 ký tự
 - [6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh)](TECHNICAL-DESIGN/6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md) · 233 ký tự
 - [6.2.1 Nạp tệp âm thanh (mix)](TECHNICAL-DESIGN/6-2-1-nap-tep-am-thanh-mix.md) · 3263 ký tự
-- [6.2.2 Đồng hồ chủ](TECHNICAL-DESIGN/6-2-2-dong-ho-chu.md) · 4556 ký tự
+- [6.2.2 Đồng hồ chủ](TECHNICAL-DESIGN/6-2-2-dong-ho-chu.md) · 5451 ký tự
 - [6.2.3 Offset âm thanh so với dự án](TECHNICAL-DESIGN/6-2-3-offset-am-thanh-so-voi-du-an.md) · 1992 ký tự
 - [6.2.4 Phát / dừng / tua / lặp / về đầu](TECHNICAL-DESIGN/6-2-4-phat-dung-tua-lap-ve-dau.md) · 1439 ký tự
 - [6.2.5 Sóng âm cho thanh tua (việc để dành từ T-70)](TECHNICAL-DESIGN/6-2-5-song-am-cho-thanh-tua-viec-de-danh-tu-t-70.md) · 1211 ký tự

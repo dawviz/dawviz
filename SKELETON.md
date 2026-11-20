@@ -27,6 +27,8 @@ dawviz/
 │     ├─ src/
 │     │  ├─ components/
 │     │  │  ├─ AudioPanel.tsx
+│     │  │  ├─ BackgroundSection.tsx
+│     │  │  ├─ DeviceLatency.tsx
 │     │  │  ├─ Editor.tsx
 │     │  │  ├─ EditorOverlay.tsx
 │     │  │  ├─ ExportDialog.tsx
@@ -50,6 +52,8 @@ dawviz/
 │     │  │  ├─ TempoPanel.tsx
 │     │  │  ├─ TextPanel.tsx
 │     │  │  ├─ ThemeSelect.tsx
+│     │  │  ├─ TimeField.tsx
+│     │  │  ├─ TimeSections.tsx
 │     │  │  ├─ TrackPanel.tsx
 │     │  │  ├─ Transport.tsx
 │     │  │  ├─ VideoStyles.tsx
@@ -70,6 +74,11 @@ dawviz/
 │     │  │  ├─ audioPeaks.test.ts
 │     │  │  ├─ audioPeaks.ts
 │     │  │  ├─ audioWorkers.ts
+│     │  │  ├─ backgroundImage.test.ts
+│     │  │  ├─ backgroundImage.ts
+│     │  │  ├─ calibrationRunner.test.ts
+│     │  │  ├─ calibrationRunner.ts
+│     │  │  ├─ calibrationSounds.ts
 │     │  │  ├─ clock.test.ts
 │     │  │  ├─ clock.ts
 │     │  │  ├─ commands.ts
@@ -99,6 +108,8 @@ dawviz/
 │     │  │  ├─ fonts.ts
 │     │  │  ├─ historyLabels.test.ts
 │     │  │  ├─ historyLabels.ts
+│     │  │  ├─ latencyCalibration.test.ts
+│     │  │  ├─ latencyCalibration.ts
 │     │  │  ├─ layerName.test.ts
 │     │  │  ├─ layerName.ts
 │     │  │  ├─ masterClock.test.ts
@@ -124,6 +135,8 @@ dawviz/
 │     │  │  ├─ projectPack.ts
 │     │  │  ├─ session.test.ts
 │     │  │  ├─ session.ts
+│     │  │  ├─ spectrumClient.test.ts
+│     │  │  ├─ spectrumClient.ts
 │     │  │  ├─ store.test.ts
 │     │  │  ├─ store.ts
 │     │  │  ├─ storeReact.ts
@@ -135,6 +148,8 @@ dawviz/
 │     │  │  ├─ theme.ts
 │     │  │  ├─ thumbnails.ts
 │     │  │  ├─ timeFormat.ts
+│     │  │  ├─ timeText.test.ts
+│     │  │  ├─ timeText.ts
 │     │  │  ├─ transportKeys.ts
 │     │  │  ├─ trustedTypes.ts
 │     │  │  ├─ undoKeys.test.ts
@@ -153,7 +168,8 @@ dawviz/
 │     │  ├─ workers/
 │     │  │  ├─ audioPeaks.worker.ts
 │     │  │  ├─ export.worker.ts
-│     │  │  └─ parser.worker.ts
+│     │  │  ├─ parser.worker.ts
+│     │  │  └─ spectrum.worker.ts
 │     │  ├─ App.tsx
 │     │  ├─ index.css
 │     │  └─ main.tsx
@@ -226,6 +242,8 @@ dawviz/
 │  │  └─ package.json
 │  ├─ render-core/   # @dawviz/render-core: khung hình = hàm của t
 │  │  ├─ src/
+│  │  │  ├─ audioFeatures.ts
+│  │  │  ├─ background.ts
 │  │  │  ├─ brightness.ts
 │  │  │  ├─ draw.ts
 │  │  │  ├─ fontMetrics.generated.ts
@@ -234,29 +252,38 @@ dawviz/
 │  │  │  ├─ hud.ts
 │  │  │  ├─ index.ts
 │  │  │  ├─ music.ts
+│  │  │  ├─ musicAnalysis.ts
 │  │  │  ├─ notes.ts
 │  │  │  ├─ parser-core.d.ts
+│  │  │  ├─ particles.ts
 │  │  │  ├─ pianoroll.ts
 │  │  │  ├─ placeholders.ts
 │  │  │  ├─ prims.ts
 │  │  │  ├─ render.ts
 │  │  │  ├─ scene.ts
 │  │  │  ├─ snap.ts
+│  │  │  ├─ spectrum.ts
 │  │  │  ├─ style.ts
 │  │  │  ├─ text.ts
 │  │  │  ├─ thumbnail.ts
 │  │  │  ├─ types.ts
-│  │  │  └─ typography.ts
+│  │  │  ├─ typography.ts
+│  │  │  └─ visibility.ts
 │  │  ├─ test/
 │  │  │  ├─ fixtures/   # tệp mẫu
 │  │  │  ├─ golden/
 │  │  │  │  └─ paper-1x1.json
+│  │  │  ├─ audioFeatures.test.ts
+│  │  │  ├─ background.test.ts
+│  │  │  ├─ barpages.test.ts
 │  │  │  ├─ fonts.test.ts
 │  │  │  ├─ glow.test.ts
 │  │  │  ├─ helpers.ts
 │  │  │  ├─ hud.test.ts
 │  │  │  ├─ legacy.test.ts
+│  │  │  ├─ musicAnalysis.test.ts
 │  │  │  ├─ paper.test.ts
+│  │  │  ├─ particles.test.ts
 │  │  │  ├─ placeholders.test.ts
 │  │  │  ├─ preset.test.ts
 │  │  │  ├─ presets.test.ts
@@ -264,7 +291,9 @@ dawviz/
 │  │  │  ├─ rotate.test.ts
 │  │  │  ├─ scene.test.ts
 │  │  │  ├─ snap.test.ts
-│  │  │  └─ typography.test.ts
+│  │  │  ├─ spectrum.test.ts
+│  │  │  ├─ typography.test.ts
+│  │  │  └─ visibility.test.ts
 │  │  ├─ package.json
 │  │  └─ tsconfig.json
 │  ├─ rpp/   # @dawviz/parser-rpp: Reaper .rpp
@@ -596,6 +625,38 @@ async function parseProject(name, buffer, options = {})
 
 ### packages/render-core — @dawviz/render-core: khung hình = hàm của t
 
+#### `packages/render-core/src/audioFeatures.ts`
+
+Phân tích âm thanh cho widget phổ (T-53, REQ-WIDGET-07). Hàm thuần, không DOM, không Web Audio: nhận PCM mono, trả bảng đặc trưng
+
+```text
+const FFT_SIZE
+const DB_FLOOR
+interface AudioFeatures
+interface AnalysisOptions
+const DEFAULT_ANALYSIS
+const dbToU8 = (db: number) =>   // dBFS → 0..255 (kẹp).
+const u8ToDb = (v: number) =>
+function fft(re: Float64Array, im: Float64Array): void   // FFT cơ số 2 tại chỗ (re, im cùng độ dài, luỹ thừa của 2).
+interface SpectralAccumulator
+function createSpectralAccumulator(sampleRate: number, opt: AnalysisOptions = {}): SpectralAccumulator   // Bộ cộng dồn theo khối: kết quả KHÔNG phụ thuộc cách chia khối (khung `i` luôn dùng mẫu [i·hop − N/2, i·hop + …
+const analyzeMono = (mono: Float32Array, sampleRate: number, opt?: AnalysisOptions) =>   // Chạy một lần trên cả bài (test, so sánh bit).
+const frameAt = (f: AudioFeatures, sec: number) =>   // Chỉ số khung ứng với thời điểm `sec` của TỆP ÂM THANH (kẹp trong bảng); −1 khi `sec` < 0 hoặc bảng rỗng.
+```
+
+#### `packages/render-core/src/background.ts`
+
+Ảnh nền của khung (T-21, REQ-GRAPHICS-xx): hàm thuần tính cách đặt ảnh vào khung và phần tô tối. Ảnh thật là TÀI NGUYÊN CỦA PHIÊN
+
+```text
+type BackgroundFit   // Ảnh nền của khung (T-21, REQ-GRAPHICS-xx): hàm thuần tính cách đặt ảnh vào khung và phần tô tối. Ảnh thật là …
+interface BackgroundImageSpec
+const DEFAULT_BACKGROUND
+interface BackgroundImage   // Ảnh đã giải mã: `image` là ImageBitmap/CanvasImageSource (Render Core không biết kiểu, chỉ chuyển cho `drawIm…
+interface ImagePlacement
+function placeImage(fit: BackgroundFit, iw: number, ih: number, W: number, H: number): ImagePlacement   // Cách vẽ ảnh `iw × ih` vào khung `W × H`: COVER phủ kín khung và cắt phần thừa ở giữa; CONTAIN nằm gọn trong k…
+```
+
 #### `packages/render-core/src/brightness.ts`
 
 Độ sáng track theo automation (SRS REQ-GRAPHICS-06, BRD D-33). Hàm thuần của (track, t, cấu hình): tất định giữa Preview và Export.
@@ -688,6 +749,8 @@ interface ChordSeg
 interface BarPos
 function buildBarGrid(tempoMap: TempoPoint[], ppq = 960): BarGrid
 function barPosAt(g: BarGrid, t: number): BarPos   // Vị trí nhạc tại t (giây). Bar, Beat đếm từ 1; Sub là tick lẻ trong beat. Một beat dài ppq×4/den tick.
+function barStartSec(g: BarGrid, bar0: number): number   // Giây của đầu ô nhịp thứ `bar0` (đếm từ 0, ô đầu = 0). Ngược của `barPosAt`: dùng để canh trang Piano Roll the…
+function barPageAt(g: BarGrid, bars: number, t: number):    // Trang gồm `bars` ô nhịp liền nhau chứa thời điểm `t`: trang 0 là ô 1…bars, trang 1 là ô bars+1… Trả [start, e…
 interface ChordGroup   // Nhóm track + chế độ của một widget Chord Detection.
 function buildHud(ast: UnifiedProjectAST, index: TimelineIndex, chordGroups: ChordGroup[] = []): HudData   // `chordGroups`: các nhóm track mà widget Chord Detection sẽ đọc; dò hợp âm (
 function hudOf(derived: Derived, ast: UnifiedProjectAST): HudData   // HudData của derived. `layoutFrame` bảo đảm `derived.hud` có sẵn (dựng ở bước derived); thiếu thì chỉ còn số đ…
@@ -732,6 +795,12 @@ re-export * from './hud.ts'
 re-export * from './thumbnail.ts'
 re-export * from './typography.ts'
 re-export * from './placeholders.ts'
+re-export * from './visibility.ts'
+re-export * from './audioFeatures.ts'
+re-export * from './spectrum.ts'
+re-export * from './musicAnalysis.ts'
+re-export * from './background.ts'
+re-export * from './particles.ts'
 ```
 
 #### `packages/render-core/src/music.ts`
@@ -740,6 +809,22 @@ Tiện ích âm nhạc dùng chung cho giao diện và widget (không phụ thu�
 
 ```text
 function pitchName(pitch: number, middleCOctave = 4): string   // Tên nốt của số MIDI 0–127. Quy ước mặc định C4 = 60 (Yamaha dùng C3 = 60: truyền `middleCOctave = 3`). Cách g…
+```
+
+#### `packages/render-core/src/musicAnalysis.ts`
+
+Phân tích nhạc từ nốt (T-83): nhóm nhịp tính bằng móc kép (16 ghi), bậc của nốt bass so với nốt chủ, độ dài theo phân số nốt đen, tên cao độ.
+
+```text
+const RECENT_ONSETS
+interface Onset   // Một thời điểm có nốt bắt đầu (các nốt cùng tick gộp một): nốt thấp nhất và độ dài lớn nhất (tick).
+function recentOnsets(tracks: readonly TrackIndex[], t: number, count = RECENT_ONSETS + 1): Onset[]   // Tối đa `count` thời điểm có nốt bắt đầu gần nhất tại hoặc trước `t`, thứ tự thời gian tăng dần. Gộp mọi track…
+const ioiSixteenths = (onsets: readonly Onset[], ppq: number) =>   // Khoảng cách giữa các thời điểm liên tiếp, đơn vị móc kép (1/16 ô nhịp 4/4 = ppq/4 tick). Rỗng nếu dưới 2 thời…
+const formatUnits = (u: number) =>   // Số móc kép dạng chữ: nguyên khi khớp lưới (sai số < 0,05), còn lại một chữ số thập phân (nhạc lệch lưới).
+const PITCH_CLASSES
+const degreeName = (pitch: number, tonic: number) =>   // Bậc của `pitch` (MIDI) so với nốt chủ `tonic` (0 = C … 11 = B): 1, ♭2, 2, ♭3, 3, 4, ♭5, 5, ♭6, 6, ♭7, 7.
+const pitchClassName = (pitch: number) =>
+function quarterFraction(ticks: number, ppq: number): string   // Độ dài `ticks` theo phân số nốt đen: "1/2", "3/4", "1", "3/2", "1/3"; không biểu diễn đúng bằng mẫu số thường…
 ```
 
 #### `packages/render-core/src/notes.ts`
@@ -752,6 +837,20 @@ interface TimelineIndex
 function buildIndex(tracks: ProjectTrack[], duration: number): TimelineIndex
 function notesInRange(ti: TrackIndex, t0: number, t1: number): ASTNote[]   // Các nốt trong [t0, t1] (giao với khoảng), theo thứ tự bắt đầu. Dùng cho cửa sổ nhìn của Piano Roll.
 function activeNotes(ti: TrackIndex, t: number): ASTNote[]   // Nốt đang vang tại t: start <= t < end.
+```
+
+#### `packages/render-core/src/particles.ts`
+
+Widget Particles (T-20, AD-10): hạt KHÔNG TRẠNG THÁI. Mỗi nốt bắt đầu trong `life` giây gần nhất sinh `perNote` hạt; vị trí và độ đục của mỗi hạt là
+
+```text
+interface ParticleProps
+const DEFAULT_PARTICLES
+function hash32(a: number, b: number, c: number): number   // Băm 32 bit (kiểu murmur/xorshift-multiply), thuần số nguyên nên giống nhau ở mọi trình duyệt.
+const unit = (a: number, b: number, c: number) =>   // Số "ngẫu nhiên" ổn định trong [0, 1).
+function strHash(s: string): number   // FNV-1a của chuỗi (định danh nốt → số).
+function particlePrims(p: ParticleProps, W: number, H: number, t: number, tracks: LayoutCtx['tracks']): Primitive[]
+const particleRenderer
 ```
 
 #### `packages/render-core/src/pianoroll.ts`
@@ -811,7 +910,7 @@ interface DrawEnv   // Phép biến đổi đang áp khi vẽ một widget: cầ
 interface RenderTarget   // `width`/`height` theo điểm ảnh thật của đích vẽ.
 function tracksFor(spec: WidgetSpec<unknown>, index: TimelineIndex): TrackIndex[]   // Chọn track cho widget theo trackMappingMode (SRS REQ-STORAGE-02).
 function pianoRollPitchRange(p: PianoRollProps, tracks: TrackIndex[]): [number, number]   // Tầm cao độ của Piano Roll (mặc định CUSTOM 21–108): FIT_CONTENT lấy min/max của track được gán (±1), rỗng thì…
-function pianoRollGeometry(p: Pick<PianoRollProps, 'keyboard' | 'playheadPositionRatio' | 'visibleSeconds'> & { scrollMode?: PianoRollProps['scrollMode'] }, width: number, t = 0)   // Hình học trục thời gian của Piano Roll (T-71). Tỉ lệ thời gian cố định: pt/giây = width / visibleSeconds, KHÔ…
+function pianoRollGeometry(p: Pick<PianoRollProps, 'keyboard' | 'playheadPositionRatio' | 'visibleSeconds'> & { scrollMode?: PianoRollProps['scrollMode'] }, width: number, t = 0, page?: { start: number; end: number })   // Hình học trục thời gian của Piano Roll (T-71). Tỉ lệ thời gian cố định: pt/giây = width / visibleSeconds, KHÔ…
 const pianoRollRenderer
 const WIDGET_RENDERERS   // Bảng renderer theo loại. Widget chưa có renderer được bỏ qua khi vẽ (vẫn giữ trong Scene).
 const buildSceneHud = (scene: SceneDocument, ast: UnifiedProjectAST, index: TimelineIndex) =>   // HudData cho một scene: số đếm, lưới ô nhịp và hợp âm của mọi widget Chord Detection. Gọi ở bước derived (một …
@@ -839,7 +938,7 @@ const DEFAULT_PIANO_ROLL
 const ASPECTS
 function defaultScene(aspect: keyof typeof ASPECTS = '16:9'): SceneDocument   // Scene mặc định: một Piano Roll phủ kín khung. Bố cục mặc định theo nền tảng (9:16 cho người mới, KPI-04) chốt…
 function pianoRollWidget(layout: Omit<WidgetLayout, 'anchor'> & { anchor?: WidgetLayout['anchor'] }, props: Partial<PianoRollProps> = {}, id = 'piano-roll-main'): WidgetSpec<PianoRollProps>
-const ADDABLE_WIDGETS   // Loại widget người dùng thêm được từ Editor (có renderer). AUDIO_SPECTRUM chờ T-53.
+const ADDABLE_WIDGETS   // Loại widget người dùng thêm được từ Editor (có renderer).
 function widgetDefaults(type: WidgetType): Record<string, unknown>   // Thuộc tính mặc định của một loại widget (bản sao sâu): mốc tham chiếu của nút ↺ khi widget chưa có bộ dựng sẵ…
 const MAX_WIDGET_NAME   // Độ dài tối đa của tên lớp.
 const normalizeWidgetName = (s: string) =>   // Tên lớp chuẩn hoá: bỏ khoảng trắng đầu/cuối, gộp khoảng trắng liền nhau, bỏ ký tự điều khiển.
@@ -858,6 +957,8 @@ const UNSAFE_KEYS   // Khoá có thể làm bẩn nguyên mẫu đối tượng:
 function migrateScene(raw: unknown):    // Di trú theo từng bậc phiên bản, trên một bản sao (đối tượng vào không bị sửa). Trả bản đã lên `SCENE_SCHEMA_V…
 function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] } = {}):    // Đọc một preset/scene từ JSON thô. Trả scene hợp lệ + cảnh báo. `opts.fonts`: họ phông vẽ được (mặc định phông…
 interface Sanitizer   // Bộ kiểm giá trị dùng chung (đóng gói từ sanitizeScene để mỗi widget kiểm theo đường dẫn riêng).
+function sanitizeVisibility(S: Sanitizer, v: unknown, path: string): WidgetVisibility | undefined   // Khoảng hiển thị: danh sách khoảng (≤ MAX_RANGES), mỗi khoảng from ≥ 0, to > from hoặc null (tới hết bài); kho…
+function sanitizePhases(S: Sanitizer, v: unknown, path: string): Phase[]   // Phase: mảng {name, start}; tên 1–60 ký tự, start ≥ 0; sắp theo start; hai phase cùng start thì giữ phase đầu.
 ```
 
 #### `packages/render-core/src/snap.ts`
@@ -878,6 +979,21 @@ interface SnapInput
 interface Spacing   // Khoảng cách đều (Equal Spacing): ba khung bao thẳng hàng theo `axis`, hai khoảng hở `gaps` (từng cặp [đầu, cu…
 interface SnapResult
 function snap(i: SnapInput): SnapResult   // Thứ tự (mỗi trục độc lập): Smart Guides trước (cạnh/tâm của khung bao so với mép/tâm canvas và khung bao các …
+```
+
+#### `packages/render-core/src/spectrum.ts`
+
+Widget Audio Spectrum (T-53, REQ-WIDGET-07): MỘT widget, hai hình dạng — LINE (cột xếp thẳng theo một đường, xoay mọi góc 0–360°)
+
+```text
+interface SpectrumProps
+const DEFAULT_SPECTRUM
+interface DerivedAudio   // Bảng đặc trưng trong `Derived` + offset (giây; dương = âm thanh trễ so với dự án, như audioOffsetMs).
+function smoothedBands(ft: AudioFeatures, f: number, attackMs: number, releaseMs: number): Float64Array   // Giá trị mượt (0..255, kiểu số thực) của mọi dải tại khung `f`: bám lên theo attack, xuống theo release; đọc n…
+function poolBands(bands: Float64Array, ft: Pick<AudioFeatures, 'minHz' | 'maxHz' | 'bands'>, n: number, minHz: number, maxHz: number): Float64Array   // Gộp các dải log của bảng thành `n` cột trong [minHz, maxHz]: lấy lớn nhất trong khoảng; khoảng hẹp hơn một dả…
+function spectrumLevels(p: SpectrumProps, audio: Derived['audio'], t: number): Float64Array   // Mức 0..1 của từng cột tại `t` (trục thời gian dự án). Không có âm thanh → toàn 0.
+function spectrumPrims(p: SpectrumProps, W: number, H: number, levels: ArrayLike<number>): Primitive[]
+const spectrumRenderer
 ```
 
 #### `packages/render-core/src/style.ts`
@@ -995,6 +1111,24 @@ function textWidth(content: string | readonly TextSpan[], style: TextStyle, meas
 function templateSpans(template: string, values: Readonly<Record<string, PV>>, valueStyle?: TextRef): TextSpan[]   // Mẫu chữ → các đoạn: chữ cố định theo kiểu dòng, giá trị của chỗ giữ theo `valueStyle` (vắng/rỗng = cùng kiểu)…
 ```
 
+#### `packages/render-core/src/visibility.ts`
+
+Khoảng hiển thị theo thời gian của widget và phase của bài (T-81, SRS REQ-GRAPHICS-14). Hàm thuần, không phụ thuộc DOM/AST.
+
+```text
+interface TimeRange   // Một khoảng hiện: từ `from` tới `to` (giây); `to = null` = tới hết bài.
+interface WidgetVisibility   // Danh sách khoảng hiện + thời gian hiện dần/ẩn dần. Vắng ở widget = hiện suốt bài. Danh sách rỗng = không bao …
+interface Phase   // Một phase của bài: bắt đầu tại `start` giây, kéo dài tới phase kế (phase cuối: tới hết bài).
+const MAX_RANGES
+const MAX_PHASES
+const MAX_PHASE_NAME
+const MAX_FADE
+function visibilityAlpha(v: WidgetVisibility | undefined, t: number, duration: number): number   // Độ đục (0..1) của widget tại `t`: lớn nhất trong các khoảng. Trong khoảng [from, to]: hiện dần trong `fadeIn`…
+function phaseIndexAt(phases: readonly Phase[] | undefined, t: number): number   // Phase đang diễn ra tại `t`: chỉ số trong danh sách đã sắp theo `start`, hoặc −1 khi chưa tới phase đầu.
+interface PhaseInfo
+function phaseInfoAt(phases: readonly Phase[] | undefined, t: number, duration: number): PhaseInfo
+```
+
 ### packages/rpp — @dawviz/parser-rpp: Reaper .rpp
 
 #### `packages/rpp/src/index.js`
@@ -1039,6 +1173,23 @@ function offsetSummary(i18n: { t(k: string, p?: Record<string, unknown>): string
 function AudioPanel({ audio, busy, offsetMs, showOffset, onLoad, onRemove, onOffset }: { audio: AudioInfo | null; busy: boolean; offsetMs: number; showOffset: boolean; onLoad(file: File): void; onRemove(): void; onOffset(ms: number): void; })
 ```
 
+#### `apps/web/src/components/BackgroundSection.tsx`
+
+Mục "Ảnh nền" của bảng Thuộc tính khi không chọn widget (T-21): nạp/bỏ ảnh của phiên và cách đặt. Ảnh không nằm trong preset.
+
+```text
+interface BackgroundState
+function BackgroundSection({ n, state, spec, onPick, onRemove, onSpec }: { n: number; state: BackgroundState; spec: BackgroundImageSpec | undefined; onPick(f: File): void; onRemove(): void; onSpec(p: Partial<BackgroundImageSpec>): void })
+```
+
+#### `apps/web/src/components/DeviceLatency.tsx`
+
+Thẻ Cài đặt, mục "Độ trễ thiết bị" (T-82): hồ sơ thiết bị có tên, bài đo gõ theo nhịp, nhập/xuất tệp.
+
+```text
+function DeviceLatency({ prefs, onChange, makeCalibration = () => createCalibration(browserDeps) }: { prefs: DevicePrefs; onChange(p: DevicePrefs): void; makeCalibration?(): Calibration })
+```
+
 #### `apps/web/src/components/Editor.tsx`
 
 Thẻ Editor (T-68, UI-DIRECTION 5.3 mục 3, SRS 5.3 Edit Mode): bố cục widget trên khung video.
@@ -1046,7 +1197,7 @@ Thẻ Editor (T-68, UI-DIRECTION 5.3 mục 3, SRS 5.3 Edit Mode): bố cục wid
 ```text
 interface EditorActions
 function useWidgetNames(widgets: readonly WidgetSpec[]): (id: string) => string   // Tên hiển thị của widget: tên loại theo ngôn ngữ, đánh số khi có nhiều widget cùng loại.
-function Editor({ scene, derived, ast, playback, fonts, advanced, actions, transport, active, widgetSections, layoutRef }: Props)
+function Editor({ scene, derived, ast, playback, fonts, advanced, actions, transport, active, widgetSections, layoutRef, background }: Props)
 ```
 
 #### `apps/web/src/components/EditorOverlay.tsx`
@@ -1247,7 +1398,7 @@ Mục "Hình thức" của inspector: kiểu dáng nốt (toàn cục) và bàn 
 
 ```text
 const ADVANCED_STYLE_KEYS   // Trường chỉ có ở Nâng cao (REQ-UI-13). Dùng để biết phần nâng cao đang khác mặc định hay không.
-function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset, playhead, reference, keyboardRef, pitchRange }: { /** Dải cao độ Piano Roll: Fit content hoặc Custom (nhập theo tên nốt). */ pitchRange?: { value: PitchRange; reference?: PitchRange; onChange(next: PitchRange): void }; reference?: NoteStyle; /** Bàn phím bật/tắt của bộ dựng sẵn áp gần nhất (đích của ↺ ở ô tick Bàn phím). */ keyboardRef?: boolean; playhead?: { ratio: number; visible: boolean; scrollMode: 'SCROLL' | 'PAGE'; scrollModeRef?: 'SCROLL' | 'PAGE'; onScrollMode(m: 'SCROLL' | 'PAGE'): void; visibleSeconds: number; visibleSecondsRef?: number; onVisibleSeconds(v: number): void; /** Vạch phát hiện/ẩn của bộ dựng sẵn áp gần nhất. */ visibleRef?: boolean; reference?: number; onChange(ratio: number): void; onVisible(visible: boolean): void }; notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean })   // `lanes`: tên lane automation có trong dự án đang mở (cho nguồn phát sáng "automation"). `playhead`: vị trí vạ…
+function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset, playhead, reference, keyboardRef, pitchRange }: { /** Dải cao độ Piano Roll: Fit content hoặc Custom (nhập theo tên nốt). */ pitchRange?: { value: PitchRange; reference?: PitchRange; onChange(next: PitchRange): void }; reference?: NoteStyle; /** Bàn phím bật/tắt của bộ dựng sẵn áp gần nhất (đích của ↺ ở ô tick Bàn phím). */ keyboardRef?: boolean; playhead?: { ratio: number; visible: boolean; scrollMode: 'SCROLL' | 'PAGE'; scrollModeRef?: 'SCROLL' | 'PAGE'; onScrollMode(m: 'SCROLL' | 'PAGE'): void; visibleSeconds: number; visibleSecondsRef?: number; onVisibleSeconds(v: number): void; /** Chế độ trang: đơn vị trang, số ô nhịp mỗi trang, thời gian nốt hiện trước (T-84). */ page?: { unit: 'SECONDS' | 'BARS'; bars: number; reveal: number; unitRef?: 'SECONDS' | 'BARS'; barsRef?: number; revealRef?: number; onUnit(u: 'SECONDS' | 'BARS'): void; onBars(n: number): void; onReveal(s: number): void }; /** Vạch phát hiện/ẩn của bộ dựng sẵn áp gần nhất. */ visibleRef?: boolean; reference?: number; onChange(ratio: number): void; onVisible(visible: boolean): void }; notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean })   // `lanes`: tên lane automation có trong dự án đang mở (cho nguồn phát sáng "automation"). `playhead`: vị trí vạ…
 ```
 
 #### `apps/web/src/components/TempoPanel.tsx`
@@ -1275,6 +1426,24 @@ function TextPanel({ widget, styles, advanced, disabled, onRef, onStyles, onProp
 function useTheme(): [ThemePref, (p: ThemePref) => void]
 function ThemeToggle({ pref, onChange }: { pref: ThemePref; onChange(p: ThemePref): void })   // Nút sáng/tối ở thanh trên: đổi sang chế độ ngược với chế độ đang thấy (kể cả khi đang "Theo hệ thống").
 function AppearanceSettings({ pref, onChange }: { pref: ThemePref; onChange(p: ThemePref): void })   // Thẻ Settings: sáng/tối/theo hệ thống và bảng màu nhấn.
+```
+
+#### `apps/web/src/components/TimeField.tsx`
+
+Ô nhập thời gian `m:ss` / `m:ss.s` / giây (T-81). Enter hoặc rời ô để áp; sai cú pháp thì trả về giá trị cũ; Esc huỷ.
+
+```text
+function TimeField({ id, label, value, onChange, emptyText, min = 0, max = 86400, className = '' }: { id?: string; label: string; value: number | null; onChange(v: number | null): void; /** Có thì cho phép ô trống (= null) và hiện chữ này làm gợi ý. */ emptyText?: string; min?: number; max?: number; className?: string; })
+```
+
+#### `apps/web/src/components/TimeSections.tsx`
+
+Hai mục của bảng Thuộc tính (T-81): "Khoảng hiển thị" của widget đang chọn (REQ-GRAPHICS-14) và "Phase" của cả bài.
+
+```text
+function VisibilitySection({ n, widgetId, value, disabled, onChange }: { n: number; widgetId: string; value: WidgetVisibility | undefined; disabled?: boolean; onChange(v: WidgetVisibility | null, key?: string): void })   // Mục "Khoảng hiển thị": tắt = hiện suốt bài; bật = danh sách khoảng (mốc kết thúc trống = hết bài) + thời gian…
+function PhasesSection({ n, phases, duration, onChange }: { n: number; phases: readonly Phase[]; duration: number; onChange(p: Phase[], key?: string): void })   // Mục "Phase": mỗi dòng là tên + thời điểm bắt đầu; phase kéo dài tới phase kế. Dùng cho chỗ giữ `{phase}`, `{n…
+function KeySection({ n, tonic, onChange }: { n: number; tonic: number | undefined; onChange(t: number | null): void })   // Mục "Nốt chủ": chọn nốt chủ của bài để `{bass}` hiện bậc (1, ♭2, … 7) thay vì tên nốt.
 ```
 
 #### `apps/web/src/components/TrackPanel.tsx`
@@ -1442,6 +1611,52 @@ Tạo Worker sóng âm qua chính sách Trusted Types (NFR-SEC-06), như parseIn
 
 ```text
 const peaksInWorker = (id: string, buf: PcmBuffer) =>
+const spectrumInWorker = (id: string, buf: PcmBuffer) =>   // Bảng đặc trưng phổ cho widget Audio Spectrum (T-53); tính trong Worker, đệm theo định danh tệp.
+```
+
+#### `apps/web/src/lib/backgroundImage.ts`
+
+Nạp ảnh nền (T-21, AD-12): tài nguyên của phiên. Kiểm kích thước và định dạng TRƯỚC khi giải mã; ảnh quá lớn về điểm ảnh được thu nhỏ khi giải mã
+
+```text
+const MAX_BACKGROUND_BYTES   // Nạp ảnh nền (T-21, AD-12): tài nguyên của phiên. Kiểm kích thước và định dạng TRƯỚC khi giải mã; ảnh quá lớn …
+const MAX_BACKGROUND_EDGE
+const BACKGROUND_ACCEPT
+type BackgroundErrorCode
+class BackgroundError extends Error
+  constructor(code: BackgroundErrorCode, message: string, details: Record<string, unknown> = {})
+const hasImageExtension = (name: string) =>
+const imageExt = (name: string) =>   // Phần mở rộng chuẩn hoá (png, jpg, webp, gif) để đặt tên tệp trong Project Pack.
+function targetSize(w: number, h: number, max = MAX_BACKGROUND_EDGE):    // Cỡ giải mã: giữ tỉ lệ, cạnh dài không quá `max`; không đổi nếu đã nhỏ hơn.
+interface BitmapLike
+interface DecodeDeps
+const browserDecode
+async function loadBackground(file: File, deps: DecodeDeps = browserDecode): Promise<BitmapLike>
+```
+
+#### `apps/web/src/lib/calibrationRunner.ts`
+
+Chạy bài đo độ trễ thiết bị (T-82): lên lịch tiếng trên một AudioContext riêng, ghi lần gõ theo "giờ nghe được", tính kết quả.
+
+```text
+interface CalBuffer
+interface CalSource
+interface CalCtx
+interface CalDeps
+const LEAD   // Đệm từ lúc resume tới tiếng đầu tiên (giây).
+type CalPhase
+interface CalStatus
+interface Calibration
+function createCalibration(deps: CalDeps): Calibration
+```
+
+#### `apps/web/src/lib/calibrationSounds.ts`
+
+Tiếng kick và snare tổng hợp cho bài đo độ trễ (T-82). Hàm thuần, tất định (không Math.random): cùng tần số lấy mẫu → cùng mẫu.
+
+```text
+function synthKick(sampleRate: number): Float32Array   // Kick: sin quét từ 150 Hz xuống 50 Hz, tắt theo hàm mũ, ~180 ms.
+function synthSnare(sampleRate: number): Float32Array   // Snare: nhiễu trắng (LCG cố định) trộn âm 190 Hz, tắt nhanh, ~140 ms. Sắc hơn kick để dễ nghe ra phách 3.
 ```
 
 #### `apps/web/src/lib/clock.ts`
@@ -1476,6 +1691,8 @@ const pitchRangeOf = (p: PianoRollProps) =>
 const setPitchRange = (d: Doc, next: PitchRange) =>
 const setScrollMode = (d: Doc, mode: PianoRollProps['scrollMode']) =>   // Cách nốt chạy: cuộn qua vạch cố định (SCROLL) hoặc theo trang với vạch phát chạy ngang (PAGE).
 const setVisibleSeconds = (d: Doc, sec: number) =>   // Số giây trải trên bề rộng Piano Roll: tỉ lệ thời gian ở chế độ cuộn, độ dài một trang ở chế độ trang. Kéo liê…
+type PageKey   // Thuộc tính của chế độ trang (T-84): đơn vị trang, số ô nhịp mỗi trang, thời gian nốt hiện trước. Kéo liên tiế…
+const setPageProp
 const setPlayheadVisible = (d: Doc, visible: boolean) =>   // Hiện/ẩn vạch phát (REQ-GRAPHICS-16). Ẩn chỉ bỏ nét vẽ; nốt vẫn phát tại vị trí vạch.
 const patchTrackStyle = (d: Doc, id: TrackId, patch: Partial<NoteStyle> | null) =>   // Ghi đè kiểu nốt của một track (`patch` = null: bỏ ghi đè).
 const setVideoStyle = (d: Doc, id: string, working?: SceneDocument) =>   // Thay cả scene bằng scene của phong cách `id`, giữ ghi đè theo track (hành vi cũ). Kiểu nốt tay chỉnh và bố cụ…
@@ -1506,6 +1723,10 @@ const toggleAllWidgetsVisible = (d: Doc) =>   // Ô mắt ở hàng đầu danh 
 const reorderZ = (d: Doc, widgetId: string, where: 'front' | 'back') =>   // Đưa widget lên trên cùng / xuống dưới cùng bằng cách đổi zIndex của nó.
 const layerOrder = (s: SceneDocument) =>   // Thứ tự lớp như danh sách Lớp hiển thị: trên cùng trước (zIndex giảm dần; cùng zIndex thì widget đứng sau tron…
 const moveLayer = (d: Doc, widgetId: string, to: number) =>   // Đưa lớp `widgetId` tới vị trí `to` trong danh sách Lớp (0 = trên cùng): kéo thả, lên/xuống một bậc, lên trên/…
+const setWidgetVisibility = (d: Doc, widgetId: string, next: WidgetVisibility | null, key?: string) =>   // Đặt khoảng hiển thị theo thời gian của widget (REQ-GRAPHICS-14); `null` = bỏ (hiện suốt bài). `key` gộp các l…
+const setPhases = (d: Doc, phases: Phase[], key?: string) =>   // Đặt danh sách phase của bài (đã sắp theo `start`, tên không rỗng). Rỗng = bỏ hết.
+const setTonic = (d: Doc, tonic: number | null) =>   // Đặt nốt chủ của bài (0 = C … 11 = B); `null` = bỏ (chỗ giữ `{bass}` hiện tên nốt thay vì bậc).
+const setBackgroundSpec = (d: Doc, patch: Partial<BackgroundImageSpec>) =>   // Cách đặt ảnh nền (vừa khung, độ đục, làm tối). Ảnh là tài nguyên của phiên, không nằm trong scene. Kéo liên t…
 const patchSnapping = (d: Doc, patch: Partial<SceneDocument['canvas']['snapping']>) =>
 function handEdited(d: Doc): boolean   // Chỉnh tay (kiểu nốt hoặc bố cục) có bị mất nếu đổi sang phong cách khác không? Dùng để hiện thông báo nhỏ sau…
 function initialDoc(videoStyle: string, saved: { style?: Partial<{ base: Partial<NoteStyle>; tracks: Record<string, Partial<NoteStyle>> }>; keyboard?: Partial<KeyboardStyle> } = {}): Doc   // Tài liệu ban đầu từ thiết lập đã lưu (localStorage): phong cách video, kiểu nốt, ghi đè theo track, bàn phím …
@@ -1751,6 +1972,43 @@ interface HistoryItem
 function historyItems(h: Pick<History<unknown>, 'timeline' | 'position'>, label: (i: number) => string, origin: string): HistoryItem[]   // Dòng danh sách từ dòng thời gian: mới nhất trước, mốc đầu ở cuối.
 ```
 
+#### `apps/web/src/lib/latencyCalibration.ts`
+
+Hiệu chỉnh độ trễ thiết bị bằng cách gõ theo nhịp (T-82). Hàm thuần: không đọc đồng hồ, không biết Web Audio.
+
+```text
+const CAL
+const BEAT_SEC
+const BAR_SEC
+const DEVICE_OFFSET_LIMIT_MS   // Độ lệch thiết bị kẹp trong ±500 ms (cùng mức trần của độ trễ ước lượng ở masterClock.ts).
+const clampDeviceOffset = (ms: number) =>
+type ClickKind
+interface ClickEvent
+function buildSchedule(start: number):    // Lịch phát từ giờ `start` (giây): kick ở phách 1, 2; tiếng snare ở phách 3 (mốc đo); phách 4 lặng. Có `warmupB…
+function matchTaps(snares: readonly number[], taps: readonly number[]): (number | null)[]   // Với mỗi snare đo, chọn lần gõ gần nó nhất trong cửa sổ và trả độ lệch (ms) = gõ − snare; không có thì null. M…
+const median = (xs: readonly number[]) =>
+type CalibrationStatus
+interface CalibrationResult
+function summarize(offsets: readonly (number | null)[]): CalibrationResult
+interface DeviceProfile   // Hồ sơ độ trễ của một thiết bị (tai nghe, loa, giao diện âm thanh…). Chỉ có hiệu lực ở Xem trước trên máy này;…
+interface DevicePrefs
+const MAX_PROFILES
+const MAX_PROFILE_NAME
+const DEFAULT_DEVICE_PREFS
+const normalizeProfileName = (s: string) =>
+function sanitizeDevicePrefs(raw: unknown): DevicePrefs   // Đọc tuỳ chọn từ localStorage: bỏ mục sai, tên trùng, quá số lượng; `activeId` không còn hồ sơ thì về null.
+const activeOffsetMs = (p: DevicePrefs) =>   // Độ lệch đang áp (ms): của hồ sơ đang chọn, không chọn thì 0 (chỉ dùng độ trễ trình duyệt báo).
+function uniqueProfileName(profiles: readonly DeviceProfile[], base: string, exceptId?: string): string   // Tên chưa dùng: `base`, rồi `base 2`, `base 3`… (không phân biệt hoa/thường).
+function addProfile(p: DevicePrefs, name: string, offsetMs: number, id: string): DevicePrefs | null   // Thêm hồ sơ (tên được làm duy nhất); đầy thì trả null. Hồ sơ mới thành hồ sơ đang chọn.
+const updateProfile = (p: DevicePrefs, id: string, patch: Partial<Pick<DeviceProfile, 'name' | 'offsetMs'>>) =>
+const removeProfile = (p: DevicePrefs, id: string) =>
+const PROFILE_FORMAT   // ── tệp JSON của một hồ sơ (chia sẻ giữa máy) ──
+const MAX_PROFILE_FILE_BYTES
+const serializeProfile = (p: Pick<DeviceProfile, 'name' | 'offsetMs'>) =>
+type ProfileParse
+function parseProfile(text: string): ProfileParse   // Đọc tệp hồ sơ: kiểm cỡ TRƯỚC khi parse, JSON.parse (không eval), kiểm định dạng/phiên bản/giá trị; không đọc …
+```
+
 #### `apps/web/src/lib/layerName.ts`
 
 Đổi tên lớp (widget) trong danh sách Lớp: chuẩn hoá, kiểm độ dài và trùng tên. Hàm thuần.
@@ -1927,6 +2185,17 @@ async function sessionFromPack(bytes: Uint8Array): Promise<
 function downloadBytes(bytes: Uint8Array, fileName: string, type = 'application/zip'): void   // Tải xuống một khối byte bằng Blob + liên kết (không cần quyền).
 ```
 
+#### `apps/web/src/lib/spectrumClient.ts`
+
+Client phân tích phổ (T-53): gửi PCM mono sang Worker từng khối (chờ ack, bộ nhớ tạm ~4 MB), có bộ đệm theo định danh tệp (SHA-256).
+
+```text
+interface SpectrumWorkerLike
+function computeSpectrumViaWorker(buf: PcmBuffer, makeWorker: () => SpectrumWorkerLike, chunk = CHUNK_SAMPLES): Promise<AudioFeatures>
+function computeSpectrumSync(buf: PcmBuffer): AudioFeatures   // Cùng kết quả, chạy ngay trên luồng gọi (test).
+async function spectrumFor(id: string, buf: PcmBuffer, makeWorker: () => SpectrumWorkerLike): Promise<AudioFeatures>   // Bộ đệm một tệp (≈ 3 MB cho 5 phút: 100 khung/s × 128 dải).
+```
+
 #### `apps/web/src/lib/store.ts`
 
 Store có hoàn tác (T-07, Technical Design §6.4). TypeScript thuần, không React, không đọc đồng hồ thật (đồng hồ truyền vào để test).
@@ -2035,6 +2304,15 @@ function styleThumbnail(styleId: string, scene: SceneDocument, ast: UnifiedProje
 ```text
 function formatClock(sec: number): string   // `m:ss.mmm`, ví dụ 95.0834 → "1:35.083". Số âm hoặc không hữu hạn → "0:00.000".
 function bpmAt(tempoMap: readonly TempoPoint[], t: number): number | null   // BPM đang có hiệu lực tại thời điểm t (mốc tempo cuối cùng có timeSeconds ≤ t); không có mốc → null.
+```
+
+#### `apps/web/src/lib/timeText.ts`
+
+Đọc/ghi thời gian người dùng gõ cho khoảng hiển thị và phase (T-81): "90", "90.5", "1:30", "1:30.25", "1:02:03".
+
+```text
+function parseTime(text: string): number | null   // Chuỗi → giây, hoặc null nếu không đọc được.
+function formatTime(sec: number): string   // Giây → `m:ss`, thêm phần lẻ (tối đa 3 chữ số, bỏ số 0 cuối) khi có; từ 1 giờ: `h:mm:ss`.
 ```
 
 #### `apps/web/src/lib/transportKeys.ts`
@@ -2206,6 +2484,15 @@ interface ParseRequest
 type ParseResponse
 ```
 
+#### `apps/web/src/workers/spectrum.worker.ts`
+
+Worker phân tích phổ (T-53): nhận PCM mono theo khối, cộng dồn bảng đặc trưng (FFT 2048, dải log) rồi trả về một lần. Không giữ PCM.
+
+```text
+type SpectrumIn
+type SpectrumOut
+```
+
 ## 3. Công cụ dòng lệnh và script
 
 - `bin/dawparse.mjs` — CLI kiểm chứng: node bin/dawparse.mjs <file> [--json] [--inventory] [--tempo 128] [--show-muted] [--schema s.json]... [--files dir] [--ref ref.mid]
@@ -2229,6 +2516,8 @@ type ParseResponse
 - `apps/web/src/lib/audioLength.test.ts`
 - `apps/web/src/lib/audioMap.test.ts`
 - `apps/web/src/lib/audioPeaks.test.ts`
+- `apps/web/src/lib/backgroundImage.test.ts`
+- `apps/web/src/lib/calibrationRunner.test.ts`
 - `apps/web/src/lib/clock.test.ts`
 - `apps/web/src/lib/csp.test.ts`
 - `apps/web/src/lib/docSnapshot.test.ts`
@@ -2241,6 +2530,7 @@ type ParseResponse
 - `apps/web/src/lib/exportStats.test.ts`
 - `apps/web/src/lib/externalMidi.test.ts`
 - `apps/web/src/lib/historyLabels.test.ts`
+- `apps/web/src/lib/latencyCalibration.test.ts`
 - `apps/web/src/lib/layerName.test.ts`
 - `apps/web/src/lib/masterClock.test.ts`
 - `apps/web/src/lib/numberInput.test.ts`
@@ -2252,20 +2542,27 @@ type ParseResponse
 - `apps/web/src/lib/problems.test.ts`
 - `apps/web/src/lib/projectPack.test.ts`
 - `apps/web/src/lib/session.test.ts`
+- `apps/web/src/lib/spectrumClient.test.ts`
 - `apps/web/src/lib/store.test.ts`
 - `apps/web/src/lib/tempoRows.test.ts`
 - `apps/web/src/lib/textRef.test.ts`
 - `apps/web/src/lib/theme.test.ts`
+- `apps/web/src/lib/timeText.test.ts`
 - `apps/web/src/lib/undoKeys.test.ts`
 - `apps/web/src/lib/widgetFields.test.ts`
 - `apps/web/src/lib/workspaceStore.test.ts`
 - `apps/web/test/app.test.tsx`
 - `apps/web/test/components.test.tsx`
+- `packages/render-core/test/audioFeatures.test.ts`
+- `packages/render-core/test/background.test.ts`
+- `packages/render-core/test/barpages.test.ts`
 - `packages/render-core/test/fonts.test.ts`
 - `packages/render-core/test/glow.test.ts`
 - `packages/render-core/test/hud.test.ts`
 - `packages/render-core/test/legacy.test.ts`
+- `packages/render-core/test/musicAnalysis.test.ts`
 - `packages/render-core/test/paper.test.ts`
+- `packages/render-core/test/particles.test.ts`
 - `packages/render-core/test/placeholders.test.ts`
 - `packages/render-core/test/preset.test.ts`
 - `packages/render-core/test/presets.test.ts`
@@ -2273,7 +2570,9 @@ type ParseResponse
 - `packages/render-core/test/rotate.test.ts`
 - `packages/render-core/test/scene.test.ts`
 - `packages/render-core/test/snap.test.ts`
+- `packages/render-core/test/spectrum.test.ts`
 - `packages/render-core/test/typography.test.ts`
+- `packages/render-core/test/visibility.test.ts`
 - `test/als.test.js`
 - `test/binary.test.js`
 - `test/dawproject.test.js`
@@ -2283,4 +2582,4 @@ type ParseResponse
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 922 ký hiệu công khai -->
+<!-- 10 thư mục src, 1061 ký hiệu công khai -->

@@ -5,7 +5,7 @@
 // nên thành phần này không vẽ lại mỗi khung hình. Không có logic vẽ ở đây: khung hình = renderFrame của Render Core.
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { LayoutGroup, MotionConfig } from 'framer-motion';
-import { usesChordPlaceholder, widgetDefaults, DEFAULT_BRIGHTNESS, DEFAULT_KEYBOARD_STYLE, defaultStyleConfig, sanitizeBrightness, buildIndex, buildSceneHud, type Derived, type SceneDocument, type BrightnessConfig, type NoteStyle, type StyleConfig, type KeyboardStyle, type UnifiedProjectAST, type WidgetSpec, DEFAULT_TEXT_STYLES, createWidget, duplicateWidget } from '@dawviz/render-core';
+import { usesChordPlaceholder, widgetDefaults, DEFAULT_BRIGHTNESS, DEFAULT_KEYBOARD_STYLE, defaultStyleConfig, sanitizeBrightness, buildIndex, buildSceneHud, type AudioFeatures, type Derived, type SceneDocument, type BrightnessConfig, type NoteStyle, type StyleConfig, type KeyboardStyle, type UnifiedProjectAST, type WidgetSpec, DEFAULT_TEXT_STYLES, createWidget, duplicateWidget } from '@dawviz/render-core';
 import type { ParseWarning } from '@dawviz/parser';
 import { useI18n } from './i18n/I18nProvider.tsx';
 import { LanguageSelect } from './components/LanguageSelect.tsx';
@@ -17,6 +17,9 @@ import { TempoPanel } from './components/TempoPanel.tsx';
 import { SchemaPanel } from './components/SchemaPanel.tsx';
 import { sanitizeDraft, type TempoDraft, type TempoOverride } from './lib/tempoRows.ts';
 import { SessionSettings, type SaveState } from './components/SessionSettings.tsx';
+import { DeviceLatency } from './components/DeviceLatency.tsx';
+import { BackgroundError, loadBackground, type BitmapLike } from './lib/backgroundImage.ts';
+import { DEFAULT_DEVICE_PREFS, activeOffsetMs, sanitizeDevicePrefs, type DevicePrefs } from './lib/latencyCalibration.ts';
 import { AUTOSAVE_DELAY_MS, createDebounced, createSaver, dexieBackend, restoreWorkspace, type Backend } from './lib/workspaceStore.ts';
 import { applyWorkspace, toWorkspaceJson } from './lib/docSnapshot.ts';
 import { downloadBytes, packOf, sessionFromPack, snapshotOf, type SessionData, type SessionParts } from './lib/session.ts';
@@ -37,7 +40,7 @@ import { AudioPanel } from './components/AudioPanel.tsx';
 import { ExportDialog } from './components/ExportDialog.tsx';
 import { AudioLoadError, browserDeps, loadAudioAsset, type AudioAsset } from './lib/audioAsset.ts';
 import { audioLengthCheck } from './lib/audioLength.ts';
-import { peaksInWorker } from './lib/audioWorkers.ts';
+import { peaksInWorker, spectrumInWorker } from './lib/audioWorkers.ts';
 import { CUSTOM_STYLE, initialDoc, pianoOf, type Doc } from './lib/commands.ts';
 import { GestureContext, useStoreState } from './lib/storeReact.ts';
 import { bindUndoKeys, shortcutLabels } from './lib/undoKeys.ts';
@@ -106,6 +109,7 @@ export function App() {
     columns: p.columns === 'auto' || (typeof p.columns === 'number' && p.columns >= 1) ? p.columns : DEFAULT_TRACK_LAYOUT.columns,
   }));
   const [ui, setUi] = usePref('ui', DEFAULT_UI, sanitizeUi);
+  const [device, setDevice] = usePref<DevicePrefs>('deviceLatency', DEFAULT_DEVICE_PREFS, sanitizeDevicePrefs);
   useEffect(() => { if (VIDEO_STYLES.includes(doc.videoStyle)) setUi((u) => (u.videoStyle === doc.videoStyle ? u : { ...u, videoStyle: doc.videoStyle })); }, [doc.videoStyle, setUi]);
   const [theme, setTheme] = useTheme();
   const [tab, setTab] = useState<Tab>('preview');
@@ -114,6 +118,8 @@ export function App() {
 
   // Đồng hồ phát ngoài React state (PROGRESS T-70): chỉ canvas, thanh phát và số đo đăng ký theo dõi.
   const playback = useRef(createPlayback()).current;
+  const deviceOffset = activeOffsetMs(device);
+  useEffect(() => playback.setDeviceOffset(deviceOffset), [playback, deviceOffset]); // chỉ dời hình so với tiếng ở Xem trước (T-82)
   useEffect(() => () => playback.dispose(), [playback]);
   const duration = loaded?.ast.meta.totalDurationSeconds ?? 0;
 
@@ -121,6 +127,25 @@ export function App() {
   const [audio, setAudio] = useState<AudioAsset | null>(null);
   const [audioFile, setAudioFile] = useState<File | null>(null); // tệp gốc: để lưu phiên/Project Pack (asset đã giải mã không ghi lại được)
   const [peaks, setPeaks] = useState<Float32Array | null>(null);
+  // Ảnh nền của phiên (T-21): tệp gốc để lưu phiên/Project Pack, ImageBitmap để vẽ. Không nằm trong preset.
+  const [bgFile, setBgFile] = useState<File | null>(null);
+  const [bgBitmap, setBgBitmap] = useState<BitmapLike | null>(null);
+  const [bgBusy, setBgBusy] = useState(false);
+  const [bgError, setBgError] = useState<string | null>(null);
+  const bgGate = useRef(createLatestGate()).current;
+  const onBackground = useCallback(async (file: File): Promise<boolean> => {
+    const ticket = bgGate.begin(); setBgBusy(true); setBgError(null);
+    try {
+      const bmp = await loadBackground(file);
+      if (!bgGate.isLatest(ticket)) { bmp.close?.(); return false; }
+      setBgBitmap((old) => { old?.close?.(); return bmp; }); setBgFile(file); return true;
+    } catch (e) {
+      if (bgGate.isLatest(ticket)) setBgError((e as BackgroundError).code ?? 'ERR_ASSET_DECODE');
+      return false;
+    } finally { if (bgGate.isLatest(ticket)) setBgBusy(false); }
+  }, [bgGate]);
+  const dropBackground = useCallback(() => { bgGate.begin(); setBgBitmap((old) => { old?.close?.(); return null; }); setBgFile(null); setBgBusy(false); setBgError(null); }, [bgGate]);
+  const [features, setFeatures] = useState<AudioFeatures | null>(null); // bảng phổ cho widget Audio Spectrum (T-53); null khi chưa có âm thanh hoặc đang tính
   const [audioBusy, setAudioBusy] = useState(false);
   const [audioError, setAudioError] = useState<{ code: string; message: string; details?: Record<string, unknown> } | null>(null);
   const audioGate = useRef(createLatestGate()).current;
@@ -129,16 +154,17 @@ export function App() {
   const playDuration = Math.max(duration, audio ? Math.max(0, offsetMs / 1000 + audio.durationSec) : 0);
   useEffect(() => { playback.setDuration(playDuration); }, [playback, playDuration]);
   useEffect(() => { playback.setAudioOffset(offsetMs); }, [playback, offsetMs]);
-  const dropAudio = useCallback(() => { audioGate.begin(); playback.attachAudio(null); setAudio(null); setAudioFile(null); setPeaks(null); setAudioBusy(false); }, [audioGate, playback]);
+  const dropAudio = useCallback(() => { audioGate.begin(); playback.attachAudio(null); setAudio(null); setAudioFile(null); setPeaks(null); setFeatures(null); setAudioBusy(false); }, [audioGate, playback]);
   const onLoadAudio = useCallback(async (file: File) => {
     const ticket = audioGate.begin();
     // Bỏ buffer cũ TRƯỚC khi giải mã tệp mới (đỉnh bộ nhớ, §6.2.1).
-    playback.attachAudio(null); setAudio(null); setPeaks(null); setAudioError(null); setAudioBusy(true);
+    playback.attachAudio(null); setAudio(null); setPeaks(null); setFeatures(null); setAudioError(null); setAudioBusy(true);
     try {
       const asset = await loadAudioAsset(file, browserDeps);
       if (!audioGate.isLatest(ticket)) return;
       setAudio(asset); setAudioFile(file); playback.attachAudio(asset.buffer);
       void peaksInWorker(asset.id, asset.buffer).then((p) => { if (audioGate.isLatest(ticket)) setPeaks(p); }).catch(() => {}); // không có sóng âm vẫn phát được
+      void spectrumInWorker(asset.id, asset.buffer).then((f) => { if (audioGate.isLatest(ticket)) setFeatures(f); }).catch(() => {}); // không có phổ thì widget vẽ cột thấp nhất
     } catch (e) {
       if (!audioGate.isLatest(ticket)) return;
       const f = e as AudioLoadError;
@@ -171,7 +197,7 @@ export function App() {
   const chordSig = JSON.stringify(scene.widgets.filter((w) => w.type === 'CHORD_DETECTION' || usesChordPlaceholder(w)).map((w) => [w.id, w.trackMappingMode, w.assignedTrackIndices, (w.properties as { mode?: string }).mode, usesChordPlaceholder(w)]));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const hud = useMemo(() => (renderAst && index ? buildSceneHud(scene, renderAst, index) : undefined), [renderAst, index, chordSig]);
-  const derived: Derived | null = useMemo(() => (index ? { index, brightness, hud, fontsReady: fonts === 'ready' } : null), [index, brightness, hud, fonts]);
+  const derived: Derived | null = useMemo(() => (index ? { index, brightness, hud, fontsReady: fonts === 'ready', ...(features ? { audio: { features, offsetSec: offsetMs / 1000 } } : {}), ...(bgBitmap ? { background: { image: bgBitmap, width: bgBitmap.width, height: bgBitmap.height } } : {}) } : null), [index, brightness, hud, fonts, features, offsetMs, bgBitmap]);
 
   // Preset của người dùng (cột Video styles): lưu theo trình duyệt. `activeUser` = ô đang áp khi scene đã bị chỉnh nên không còn khớp từng chữ.
   const [userPresets, setUserPresets] = useState<UserPreset[]>(loadUserPresets);
@@ -252,8 +278,8 @@ export function App() {
   const saver = useMemo(() => (backend ? createSaver(backend) : null), [backend]);
   const parts: SessionParts | null = useMemo(() => (loaded && source ? {
     title: loaded.ast.meta.title || loaded.name, source: source.main, extras: source.extras, schemas, tempo, scene: doc.scene,
-    workspace: toWorkspaceJson(doc, tempo?.draft), audio: audioFile, audioOffsetMs: doc.audioOffsetMs,
-  } : null), [loaded, source, schemas, tempo, doc, audioFile]);
+    workspace: toWorkspaceJson(doc, tempo?.draft), audio: audioFile, audioOffsetMs: doc.audioOffsetMs, background: bgFile,
+  } : null), [loaded, source, schemas, tempo, doc, audioFile, bgFile]);
   const debounced = useRef<ReturnType<typeof createDebounced<SessionParts>> | null>(null);
   useEffect(() => {
     if (!saver) return;
@@ -284,8 +310,9 @@ export function App() {
       }
     } });
     if (ok && s.audio) { await onLoadAudio(s.audio.file); }
+    if (ok && s.background) { await onBackground(s.background); }
     return ok;
-  }, [load, store, i18n, onLoadAudio]);
+  }, [load, store, i18n, onLoadAudio, onBackground]);
 
   // openSession đổi theo ngôn ngữ (i18n): giữ bản mới nhất trong ref để hiệu ứng khôi phục chỉ chạy một lần.
   const openRef = useRef(openSession); openRef.current = openSession;
@@ -302,11 +329,11 @@ export function App() {
       const file = (b: { name: string; data: Uint8Array }) => new File([b.data.slice().buffer as ArrayBuffer], b.name);
       const ws = (r.state.workspace ?? {}) as { schemas?: unknown; tempoDraft?: unknown };
       const schemasIn = (Array.isArray(ws.schemas) ? ws.schemas : []).filter((x): x is { name: string; schema: object } => !!x && typeof (x as { schema?: unknown }).schema === 'object' && (x as { schema?: unknown }).schema !== null).slice(0, 8);
-      const audioBlob = r.blobs.find((b) => b.id === 'audio');
+      const audioBlob = r.blobs.find((b) => b.id === 'audio'), bgBlob = r.blobs.find((b) => b.id === 'background');
       await openRef.current({
         source: file(src), extras: r.blobs.filter((b) => b.id.startsWith('extra:')).map(file), schemas: schemasIn,
         tempo: r.state.tempoOverride !== undefined ? { override: r.state.tempoOverride, draft: sanitizeDraft(ws.tempoDraft) } : null,
-        scene: r.state.scene, workspace: r.state.workspace, ...(audioBlob ? { audio: { file: file(audioBlob), offsetMs: r.state.audioOffsetMs } } : {}),
+        scene: r.state.scene, workspace: r.state.workspace, ...(audioBlob ? { audio: { file: file(audioBlob), offsetMs: r.state.audioOffsetMs } } : {}), ...(bgBlob ? { background: file(bgBlob) } : {}),
       });
     })().catch(() => { /* kho hỏng hoặc bị chặn: dùng như phiên mới */ });
     return () => { live = false; };
@@ -467,6 +494,10 @@ export function App() {
     z: (id, where) => run((d) => Cmds.reorderZ(d, id, where)),
     moveLayer: (id, to) => run((d) => Cmds.moveLayer(d, id, to)),
     snapping: (p) => run((d) => Cmds.patchSnapping(d, p)),
+    visibility: (id, v, key) => run((d) => Cmds.setWidgetVisibility(d, id, v, key)),
+    phases: (list, key) => run((d) => Cmds.setPhases(d, list, key)),
+    tonic: (t) => run((d) => Cmds.setTonic(d, t)),
+    background: { pick: (f) => void onBackground(f), remove: dropBackground, spec: (p) => run((d) => Cmds.setBackgroundSpec(d, p)) },
     add: (type) => { const w = createWidget(store.get().scene, type); run((d) => Cmds.addWidget(d, w)); return w.id; },
     duplicate: (ids) => {
       let sc = store.get().scene; const out: WidgetSpec[] = [];
@@ -476,7 +507,7 @@ export function App() {
       run((d) => Cmds.addWidgets(d, out, refs)); return out.map((w) => w.id);
     },
     remove: (ids) => run((d) => Cmds.removeWidgets(d, ids)),
-  }), [run, store]);
+  }), [run, store, onBackground, dropBackground]);
 
   // Lane automation có trong dự án (nguồn phát sáng "automation", REQ-GRAPHICS-17).
   const lanes = useMemo(() => [...new Set((loaded?.ast.tracks ?? []).flatMap((tr) => Object.entries(tr.automation ?? {}).filter(([, l]) => l?.points.length).map(([k]) => k)))], [loaded]);
@@ -524,7 +555,7 @@ export function App() {
         ? <StylePanel style={style} keyboard={keyboard} onStyle={(n2) => run((d) => Cmds.patchNoteStyle(d, n2.base))} onKeyboard={(n2) => run((d) => Cmds.patchKeyboard(d, n2))} lanes={lanes} advanced={showAdv('look')} notePresets={NOTE_PRESETS} onNotePreset={pickNotePreset}
             pitchRange={{ value: Cmds.pitchRangeOf(piano.properties), reference: pianoRef && typeof pianoRef.pitchRangeMode === 'string' ? { mode: pianoRef.pitchRangeMode as 'FIT_CONTENT' | 'CUSTOM', min: Number(pianoRef.pitchMin), max: Number(pianoRef.pitchMax) } : undefined, onChange: (v) => run((d) => Cmds.setPitchRange(d, v)) }}
             reference={ref} keyboardRef={(doc.propsRef[piano.id] as { keyboard?: { enabled?: boolean } } | undefined)?.keyboard?.enabled}
-            playhead={{ scrollMode: piano.properties.scrollMode, scrollModeRef: pianoRef?.scrollMode as 'SCROLL' | 'PAGE' | undefined, onScrollMode: (m) => run((d) => Cmds.setScrollMode(d, m)), visibleSeconds: piano.properties.visibleSeconds, visibleSecondsRef: typeof pianoRef?.visibleSeconds === 'number' ? pianoRef.visibleSeconds : undefined, onVisibleSeconds: (v) => run((d) => Cmds.setVisibleSeconds(d, v)), ratio: piano.properties.playheadPositionRatio, visible: piano.properties.playheadVisible, visibleRef: (doc.propsRef[piano.id] as { playheadVisible?: boolean } | undefined)?.playheadVisible, reference: playheadRef, onChange: (r) => run((d) => Cmds.setPlayheadRatio(d, r)), onVisible: (v) => run((d) => Cmds.setPlayheadVisible(d, v)) }} />
+            playhead={{ scrollMode: piano.properties.scrollMode, scrollModeRef: pianoRef?.scrollMode as 'SCROLL' | 'PAGE' | undefined, onScrollMode: (m) => run((d) => Cmds.setScrollMode(d, m)), visibleSeconds: piano.properties.visibleSeconds, visibleSecondsRef: typeof pianoRef?.visibleSeconds === 'number' ? pianoRef.visibleSeconds : undefined, onVisibleSeconds: (v) => run((d) => Cmds.setVisibleSeconds(d, v)), page: { unit: piano.properties.pageUnit, bars: piano.properties.pageBars, reveal: piano.properties.revealAhead, unitRef: pianoRef?.pageUnit as 'SECONDS' | 'BARS' | undefined, barsRef: typeof pianoRef?.pageBars === 'number' ? pianoRef.pageBars : undefined, revealRef: typeof pianoRef?.revealAhead === 'number' ? pianoRef.revealAhead : undefined, onUnit: (u) => run((d) => Cmds.setPageProp(d, 'pageUnit', u)), onBars: (n) => run((d) => Cmds.setPageProp(d, 'pageBars', n)), onReveal: (s) => run((d) => Cmds.setPageProp(d, 'revealAhead', s)) }, ratio: piano.properties.playheadPositionRatio, visible: piano.properties.playheadVisible, visibleRef: (doc.propsRef[piano.id] as { playheadVisible?: boolean } | undefined)?.playheadVisible, reference: playheadRef, onChange: (r) => run((d) => Cmds.setPlayheadRatio(d, r)), onVisible: (v) => run((d) => Cmds.setPlayheadVisible(d, v)) }} />
         : <p className="text-xs text-muted">{i18n.t('web.look.noPiano')}</p>}
     </InspectorSection>
   );
@@ -633,7 +664,7 @@ export function App() {
         <div role="tabpanel" id="panel-preview" aria-labelledby="tab-preview" hidden={tab !== 'preview'} className="h-full">{preview}</div>
         <div role="tabpanel" id="panel-editor" aria-labelledby="tab-editor" hidden={tab !== 'editor'} className="h-full">
           <Editor scene={scene} derived={derived} ast={renderAst} playback={playback} fonts={fonts} advanced={advanced} actions={editorActions} active={tab === 'editor'}
-            layoutRef={doc.layoutRef}
+            layoutRef={doc.layoutRef} background={{ name: bgFile?.name ?? null, busy: bgBusy, error: bgError }}
             widgetSections={(w, n, lk) => (w.type === 'PIANO_ROLL' ? [w.id === piano?.id ? lookSection(n) : null] : hasWidgetSettings(w.type) ? [settingsSection(w, n, lk), textSection(w, n + 1, lk)] : [textSection(w, n, lk)])}
             transport={loaded ? <Transport playback={playback} duration={playDuration} offsetMs={offsetMs} wave={audio && peaks ? { peaks, durationSec: audio.durationSec } : null} /> : undefined} />
         </div>
@@ -648,7 +679,10 @@ export function App() {
                 <span>{i18n.t('web.settings.proof')}</span>
               </label>
             </InspectorSection>
-            <InspectorSection n={3} id="session" title={i18n.t('web.session.title')}>
+            <InspectorSection n={3} id="device-latency" title={i18n.t('web.latency.title')}>
+              <DeviceLatency prefs={device} onChange={setDevice} />
+            </InspectorSection>
+            <InspectorSection n={4} id="session" title={i18n.t('web.session.title')}>
               <SessionSettings hasProject={!!parts} busy={busy} state={saveState} missing={missingFiles} onSavePack={() => void onSavePack()} onOpenPack={(f) => void onOpenPack(f)} onDiscard={() => void onDiscard()} />
             </InspectorSection>
           </div>

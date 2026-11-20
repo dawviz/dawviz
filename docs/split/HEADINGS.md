@@ -134,6 +134,8 @@
       - [REQ-WIDGET-06: Chord Detection (D-09)](SRS/req-widget-06-chord-detection-d-09.md#req-widget-06-chord-detection-d-09)
 - [REQ-WIDGET-07: Audio Spectrum & Meter (D-10, ARC-03, ARC-06)](SRS/req-widget-07-audio-spectrum-meter-d-10-arc-03-a.md)
       - [REQ-WIDGET-07: Audio Spectrum & Meter (D-10, ARC-03, ARC-06)](SRS/req-widget-07-audio-spectrum-meter-d-10-arc-03-a.md#req-widget-07-audio-spectrum--meter-d-10-arc-03-arc-06)
+- [REQ-AUDIO-02: Hiệu chỉnh độ trễ thiết bị cho Xem trước (T-82)](SRS/req-audio-02-hieu-chinh-do-tre-thiet-bi-cho-xem.md)
+      - [REQ-AUDIO-02: Hiệu chỉnh độ trễ thiết bị cho Xem trước (T-82)](SRS/req-audio-02-hieu-chinh-do-tre-thiet-bi-cho-xem.md#req-audio-02-hiệu-chỉnh-độ-trễ-thiết-bị-cho-xem-trước-t-82)
 - [REQ-AUDIO-01: Âm thanh theo track (stem), bản 1.2](SRS/req-audio-01-am-thanh-theo-track-stem-ban-1-2.md)
       - [REQ-AUDIO-01: Âm thanh theo track (stem), bản 1.2](SRS/req-audio-01-am-thanh-theo-track-stem-ban-1-2.md#req-audio-01-âm-thanh-theo-track-stem-bản-12)
 - [REQ-WIDGET-08: Progress Bar (D-27)](SRS/req-widget-08-progress-bar-d-27.md)

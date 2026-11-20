@@ -372,6 +372,21 @@ describe('preset .json trong cột Video styles (T-07)', () => {
     expect(val(OPACITY)).toBe(before);
   });
 
+  it('T-84: chế độ trang: chọn Ô nhịp thì đổi ô số giây thành số ô nhịp mỗi trang; hiện nốt trước; hoàn tác', async () => {
+    await openProject();
+    toLook();
+    expect(screen.queryByTestId('page-unit')).toBeNull();               // chế độ cuộn: không có
+    fireEvent.click(screen.getByTestId('scroll-PAGE'));
+    expect(screen.getByTestId('page-unit')).toBeInTheDocument();
+    expect(screen.getByRole('spinbutton', { name: /(Page length|Độ dài trang)/ })).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('page-unit-BARS'));
+    await waitFor(() => expect(screen.getByRole('spinbutton', { name: /(Bars per page|Số ô nhịp mỗi trang)/ })).toBeInTheDocument());
+    expect(screen.queryByRole('spinbutton', { name: /(Page length|Độ dài trang)/ })).toBeNull();
+    setVal(/(Show notes ahead|Hiện nốt trước)/, '2'); expect(val(/(Show notes ahead|Hiện nốt trước)/)).toBe('2');
+    ctrlZ(); await waitFor(() => expect(val(/(Show notes ahead|Hiện nốt trước)/)).toBe('0'));
+    ctrlZ(); await waitFor(() => expect(screen.getByRole('spinbutton', { name: /(Page length|Độ dài trang)/ })).toBeInTheDocument());
+  });
+
   it('nhân bản thành preset: ô mới nhận bản đã chỉnh và được chọn, ô nguồn về nguyên gốc', async () => {
     await openProject();
     toLook(); fireEvent.click(screen.getByTestId('scroll-PAGE'));
@@ -422,6 +437,59 @@ describe('preset .json trong cột Video styles (T-07)', () => {
     await feed(`{"schemaVersion":"${SCENE_SCHEMA_VERSION}","__proto__":{"polluted":1},"canvas":{},"widgets":[]}`);
     await waitFor(() => expect(page()).toMatch(/(not allowed|không được phép)/));
     expect(({} as any).polluted).toBeUndefined();
+  });
+});
+
+describe('khoảng hiển thị và phase (T-81)', () => {
+  const layerBtn = (re: RegExp) => [...screen.getByTestId('layers').querySelectorAll<HTMLButtonElement>('button[aria-pressed]')].find((b) => re.test(b.textContent ?? '') && !b.getAttribute('aria-label'))!;
+  /** Ô thời gian của mục Khoảng hiển thị (id widget không cố định theo preset). */
+  const visMaybe = (k: string) => document.querySelector<HTMLInputElement>(`[data-testid^="vis-"][data-testid$="-${k}"]`);
+  const vis = (k: string): HTMLInputElement => { const el = visMaybe(k); if (!el) throw new Error(`không có ô ${k}`); return el; };
+  const typeIn = (el: HTMLElement, v: string) => { fireEvent.change(el, { target: { value: v } }); fireEvent.keyDown(el, { key: 'Enter' }); };
+  it('bật khoảng hiển thị, sửa mốc, thêm/xoá khoảng; mỗi thao tác một bước hoàn tác; hoàn tác trả về hiện suốt bài', async () => {
+    await openProject();
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    fireEvent.click(layerBtn(/Piano roll/));
+    expect(screen.queryByTestId('vis-ranges')).toBeNull();
+    fireEvent.click(screen.getByTestId('vis-limit'));
+    await waitFor(() => expect(screen.getByTestId('vis-ranges')).toBeInTheDocument());
+    typeIn(vis('from-0'), '0:05');
+    typeIn(vis('to-0'), '0:20');
+    expect(vis('from-0').value).toBe('0:05');
+    expect((vis('to-0') as HTMLInputElement).value).toBe('0:20');
+    fireEvent.click(screen.getByTestId('vis-add'));
+    await waitFor(() => expect(vis('from-1')).toBeInTheDocument());
+    typeIn(vis('to-0'), 'abc'); // sai cú pháp: giữ giá trị cũ
+    expect((vis('to-0') as HTMLInputElement).value).toBe('0:20');
+    fireEvent.click(screen.getByTestId('vis-remove-1'));
+    await waitFor(() => expect(visMaybe('from-1')).toBeNull());
+    ctrlZ(); await waitFor(() => expect(vis('from-1')).toBeInTheDocument());
+    for (let i = 0; i < 6 && screen.queryByTestId('vis-ranges'); i++) ctrlZ();
+    await waitFor(() => expect(screen.queryByTestId('vis-ranges')).toBeNull());
+  });
+  it('nốt chủ: chọn một nốt, hoàn tác về chưa đặt', async () => {
+    await openProject();
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    const sel = screen.getByTestId('tonic-select') as HTMLSelectElement; expect(sel.value).toBe('');
+    fireEvent.change(sel, { target: { value: '7' } });
+    await waitFor(() => expect((screen.getByTestId('tonic-select') as HTMLSelectElement).value).toBe('7'));
+    expect(undoBtn().title).toMatch(/G|Sol|nốt chủ|key/i);
+    ctrlZ(); await waitFor(() => expect((screen.getByTestId('tonic-select') as HTMLSelectElement).value).toBe(''));
+  });
+  it('thêm phase: tên và thời điểm, sắp theo thời điểm, xoá được; hoàn tác', async () => {
+    await openProject();
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    expect(screen.getByTestId('phase-none')).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('phase-add'));
+    await waitFor(() => expect(screen.getByTestId('phase-name-0')).toBeInTheDocument());
+    fireEvent.click(screen.getByTestId('phase-add'));
+    await waitFor(() => expect(screen.getByTestId('phase-name-1')).toBeInTheDocument());
+    typeIn(screen.getByTestId('phase-start-0'), '0:02'); // phase đầu dời ra sau phase thứ hai: danh sách sắp lại
+    await waitFor(() => expect((screen.getByTestId('phase-start-0') as HTMLInputElement).value).toBe('0:01'));
+    expect((screen.getByTestId('phase-start-1') as HTMLInputElement).value).toBe('0:02');
+    fireEvent.click(screen.getByTestId('phase-remove-1'));
+    await waitFor(() => expect(screen.queryByTestId('phase-name-1')).toBeNull());
+    ctrlZ(); await waitFor(() => expect(screen.getByTestId('phase-name-1')).toBeInTheDocument());
   });
 });
 
@@ -578,6 +646,35 @@ describe('thẻ Editor (T-68)', () => {
     fireEvent.keyDown(screen.getByTestId('editor'), { key: 'Delete' });
     expect(count()).toBe(n0 + 1);
     ctrlZ(); await waitFor(() => expect(count()).toBe(n0 + 2));
+  });
+  it('T-53: thêm Phổ tần: có mục Thiết lập; đổi sang Tròn thì hiện Bán kính và ẩn Góc; hoàn tác trả lại hình thẳng', async () => {
+    await openProject();
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    fireEvent.click(screen.getByTestId('layers-add'));
+    fireEvent.click(screen.getByRole('menuitem', { name: /^(Spectrum|Phổ tần)$/ }));
+    await waitFor(() => expect(screen.getByTestId('editor-selected').textContent).toMatch(/(Spectrum|Phổ tần)/));
+    const ids = [...screen.getByTestId('editor-props').querySelectorAll('section')].map((x) => x.getAttribute('data-testid'));
+    expect(ids.slice(0, 2)).toEqual(['section-transform', 'section-settings']);
+    const num = (re: RegExp) => screen.queryByRole('spinbutton', { name: re });
+    expect(num(/^(Angle|Góc) \(°\)$/)).toBeInTheDocument(); expect(num(/^(Circle radius|Bán kính vòng)$/)).toBeNull();
+    fireEvent.click(within(screen.getByTestId('editor-props')).getByRole('radio', { name: /^(Circle|Tròn)$/ }));
+    await waitFor(() => expect(num(/^(Circle radius|Bán kính vòng)$/)).toBeInTheDocument());
+    expect(num(/^(Angle|Góc) \(°\)$/)).toBeNull();
+    ctrlZ(); await waitFor(() => expect(num(/^(Angle|Góc) \(°\)$/)).toBeInTheDocument());
+  });
+  it('T-20: thêm Hạt: có mục Thiết lập, đổi màu sang Một màu thì hiện ô màu; hoàn tác', async () => {
+    await openProject();
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    fireEvent.click(screen.getByTestId('layers-add'));
+    fireEvent.click(screen.getByRole('menuitem', { name: /^(Particles|Hạt)$/ }));
+    await waitFor(() => expect(screen.getByTestId('editor-selected').textContent).toMatch(/(Particles|Hạt)/));
+    const ids = [...screen.getByTestId('editor-props').querySelectorAll('section')].map((x) => x.getAttribute('data-testid'));
+    expect(ids.slice(0, 2)).toEqual(['section-transform', 'section-settings']);
+    expect(screen.getByRole('spinbutton', { name: /^(Particles per note|Số hạt mỗi nốt)$/ })).toBeInTheDocument();
+    expect(screen.queryByLabelText(/^(Particle colour|Màu hạt)/)).toBeNull();
+    fireEvent.click(within(screen.getByTestId('editor-props')).getByRole('radio', { name: /^(One colour|Một màu)$/ }));
+    await waitFor(() => expect(screen.getAllByText(/^(Particle colour|Màu hạt)$/).length).toBeGreaterThan(0));
+    ctrlZ(); await waitFor(() => expect(screen.queryAllByText(/^(Particle colour|Màu hạt)$/)).toHaveLength(0));
   });
   it('T-73: thêm Ô chữ, gõ { hiện gợi ý chỗ giữ, bấm gợi ý điền {tên}; Enter ở ô nhiều dòng không áp, rời ô mới áp (một bước hoàn tác)', async () => {
     await openProject();

@@ -103,15 +103,23 @@
         "apps/web/src/components/TextPanel.tsx",
         "locales/en.json#web.text.",
         "apps/web/src/components/WidgetSettings.tsx",
-        "locales/en.json#web.ws."
+        "locales/en.json#web.ws.",
+        "apps/web/src/components/TimeSections.tsx",
+        "apps/web/src/components/TimeField.tsx",
+        "locales/en.json#web.vis.",
+        "locales/en.json#web.phase.",
+        "locales/en.json#web.tonic.",
+        "apps/web/src/components/BackgroundSection.tsx",
+        "locales/en.json#web.bg.",
+        "locales/en.json#web.page."
       ],
-      "uiHash": "8a6dfc28689a",
-      "viHash": "3acfbe3adb4d",
-      "enHash": "c4ccafad2668",
+      "uiHash": "d9aa9d4d4c0b",
+      "viHash": "70831881fafc",
+      "enHash": "e50d85fead8e",
       "coverHashes": {
-        "apps/web/src/components/Editor.tsx": "3c2efcd6169b",
+        "apps/web/src/components/Editor.tsx": "83151a720610",
         "apps/web/src/components/EditorOverlay.tsx": "3f83719e6d7e",
-        "apps/web/src/components/StylePanel.tsx": "bedf93632133",
+        "apps/web/src/components/StylePanel.tsx": "26c35e084860",
         "locales/en.json#web.editor.": "24216caff19e",
         "locales/en.json#web.style.": "3f579d231537",
         "locales/en.json#web.glow.": "a02382b4889a",
@@ -120,7 +128,15 @@
         "apps/web/src/components/TextPanel.tsx": "1d72815804e3",
         "locales/en.json#web.text.": "1dcb3963c82b",
         "apps/web/src/components/WidgetSettings.tsx": "b00c094606de",
-        "locales/en.json#web.ws.": "9a4b0529a052"
+        "locales/en.json#web.ws.": "26f233ad9a07",
+        "apps/web/src/components/TimeSections.tsx": "28dca7a5dd70",
+        "apps/web/src/components/TimeField.tsx": "d02e439b7844",
+        "locales/en.json#web.vis.": "8bbfd1495bf1",
+        "locales/en.json#web.phase.": "dafcbfbf2bf9",
+        "locales/en.json#web.tonic.": "2b1a6b41c82b",
+        "apps/web/src/components/BackgroundSection.tsx": "6cd36993d2b7",
+        "locales/en.json#web.bg.": "ddb0f8fad7f2",
+        "locales/en.json#web.page.": "0a9b9e917e7c"
       }
     },
     "04-cai-dat": {
@@ -133,11 +149,14 @@
         "locales/en.json#web.theme.",
         "locales/en.json#web.preset.",
         "apps/web/src/components/SessionSettings.tsx",
-        "locales/en.json#web.session."
+        "locales/en.json#web.session.",
+        "apps/web/src/components/DeviceLatency.tsx",
+        "locales/en.json#web.latency.",
+        "apps/web/src/lib/session.ts"
       ],
-      "uiHash": "78af9ba28f02",
-      "viHash": "ff4e408a214e",
-      "enHash": "6673d3675d6a",
+      "uiHash": "2dd91420f33f",
+      "viHash": "04de4e40cbe8",
+      "enHash": "f9594033fd7c",
       "coverHashes": {
         "apps/web/src/components/ThemeSelect.tsx": "f9b2c3746fbe",
         "apps/web/src/components/VideoStyles.tsx": "e26744383f8b",
@@ -145,7 +164,10 @@
         "locales/en.json#web.theme.": "05a823a18b7d",
         "locales/en.json#web.preset.": "8fe4032611da",
         "apps/web/src/components/SessionSettings.tsx": "8711419ab156",
-        "locales/en.json#web.session.": "4240dbb1e528"
+        "locales/en.json#web.session.": "4240dbb1e528",
+        "apps/web/src/components/DeviceLatency.tsx": "051c45822abf",
+        "locales/en.json#web.latency.": "fcb231e3ca77",
+        "apps/web/src/lib/session.ts": "7f3d1bc16b89"
       }
     },
     "05-phim-tat": {
@@ -158,7 +180,7 @@
         "apps/web/src/lib/numberInput.ts",
         "apps/web/src/components/Editor.tsx"
       ],
-      "uiHash": "68b3c164a7f1",
+      "uiHash": "22cdada8d63b",
       "viHash": "a4fc2ae2b94b",
       "enHash": "f0eff66dc8fc",
       "coverHashes": {
@@ -166,7 +188,7 @@
         "apps/web/src/lib/undoKeys.ts": "07c2c99f5cf4",
         "apps/web/src/components/EditorOverlay.tsx": "3f83719e6d7e",
         "apps/web/src/lib/numberInput.ts": "8e27c53523c3",
-        "apps/web/src/components/Editor.tsx": "3c2efcd6169b"
+        "apps/web/src/components/Editor.tsx": "83151a720610"
       }
     },
     "06-xuat-video": {
@@ -176,11 +198,11 @@
         "apps/web/src/components/ExportDialog.tsx",
         "locales/en.json#web.export"
       ],
-      "uiHash": "64b703e6e284",
+      "uiHash": "ae1d0483bef6",
       "viHash": "a2255a66e3ed",
       "enHash": "b47064672654",
       "coverHashes": {
-        "apps/web/src/components/ExportDialog.tsx": "474f28ab8c15",
+        "apps/web/src/components/ExportDialog.tsx": "e1954bf99bb2",
         "locales/en.json#web.export": "5241df5d5c8d"
       }
     },
@@ -207,15 +229,17 @@
       "covers": [
         "apps/web/src/components/WidgetSettings.tsx",
         "locales/en.json#web.ws.",
-        "locales/en.json#web.widget."
+        "locales/en.json#web.widget.",
+        "locales/en.json#web.tonic."
       ],
-      "uiHash": "0fada4b10379",
-      "viHash": "1e8b5a03af71",
-      "enHash": "492d2df11cd0",
+      "uiHash": "bc2450f688bd",
+      "viHash": "2ec8a571cc5d",
+      "enHash": "b30c5d7c2349",
       "coverHashes": {
         "apps/web/src/components/WidgetSettings.tsx": "b00c094606de",
-        "locales/en.json#web.ws.": "9a4b0529a052",
-        "locales/en.json#web.widget.": "70b8b49ee4f7"
+        "locales/en.json#web.ws.": "26f233ad9a07",
+        "locales/en.json#web.widget.": "2e4aede3a66b",
+        "locales/en.json#web.tonic.": "2b1a6b41c82b"
       }
     }
   }

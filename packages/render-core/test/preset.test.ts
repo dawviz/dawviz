@@ -99,7 +99,7 @@ test('preset độc hại: __proto__, constructor, prototype bị bỏ ở mọi
     assert.ok(paths.includes(p), p);
   const pr: any = r.scene.widgets[0].properties;
   assert.deepEqual(Object.keys(pr.noteStyle.tracks), ['t1']);
-  assert.deepEqual(r.scene.widgets[1].properties, { bars: 8, deep: {} });
+  assert.equal((r.scene.widgets[1].properties as { bars: number }).bars, 8); assert.ok(!('deep' in (r.scene.widgets[1].properties as object)));
   assert.equal(Object.getPrototypeOf(r.scene.widgets[1].properties), Object.prototype);
   assert.ok(!JSON.stringify(r.scene).includes('polluted'));
 });

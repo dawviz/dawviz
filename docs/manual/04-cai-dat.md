@@ -13,11 +13,25 @@ Hai mục này chỉ đổi giao diện của ứng dụng. Màu trong video do 
 
 **Khung bản in thử quanh khung xem trước:** bật để có dấu cắt ở bốn góc và dòng ghi kích thước quanh khung xem trước, giống bản in thử. Những thứ này không bao giờ có trong video xuất ra.
 
+## Độ trễ thiết bị
+
+Tiếng đi qua loa hoặc tai nghe luôn chậm hơn một chút, và trình duyệt chỉ đoán được độ chậm đó. Nếu hình trong Xem trước lệch tiếng (hay gặp với tai nghe không dây), hãy đo độ lệch của thiết bị bạn đang dùng.
+
+- Chọn **Đo**, đeo thiết bị bạn đang nghe, rồi **gõ vào nút lớn (hoặc bấm Space) ở phách 3 của mỗi ô**. Bài đo chạy ở 110 BPM, bốn ô, mỗi ô là kick, kick, một tiếng snare ở phách 3, rồi lặng. Gõ thêm theo kick cũng được, ứng dụng chỉ lấy lần gõ gần phách 3 nhất.
+- Kết quả là trung vị của bốn lần đo, cần ít nhất ba lần hợp lệ. Nếu các lần gõ chênh nhau quá 30 ms, ứng dụng báo kết quả có thể lệch và nên đo lại.
+- **Lưu thành thiết bị mới** đặt tên cho kết quả (ví dụ "Tai nghe Sony"). Nếu đã chọn một thiết bị, **Cập nhật** ghi kết quả vào thiết bị đó. Có thể sửa tên và độ lệch (ms) bằng tay bất cứ lúc nào.
+- Ở ô **Thiết bị**, chọn thiết bị đang dùng. **Tự động** là không bù thêm gì. Ứng dụng không tự nhận biết thiết bị, nên đổi tai nghe thì đổi lựa chọn này.
+- **Lưu tệp thiết bị** và **Mở tệp thiết bị** chuyển một thiết bị giữa các máy. Lưu được tối đa 16 thiết bị.
+
+Độ lệch này chỉ dời hình so với tiếng khi xem trước trên máy này. Nó không đổi âm thanh, không nằm trong **Offset âm thanh** của dự án, và không có trong preset, gói dự án hay video xuất.
+
+Kết quả là ước lượng: nó gồm cả độ chậm của bàn phím hoặc chuột và thói quen gõ sớm hay muộn của bạn. Nếu thấy hình vẫn lệch, chỉnh tay thêm vài mili giây.
+
 ## Phiên làm việc
 
-Ứng dụng tự lưu công việc trong trình duyệt này, khoảng nửa giây sau thao tác cuối. Lần sau mở lại trang, bài, âm thanh, tempo, bố cục và phong cách video trở lại như lúc bạn dừng. Không có gì được gửi đi đâu cả.
+Ứng dụng tự lưu công việc trong trình duyệt này, khoảng nửa giây sau thao tác cuối. Lần sau mở lại trang, bài, âm thanh, ảnh nền, tempo, bố cục và phong cách video trở lại như lúc bạn dừng. Không có gì được gửi đi đâu cả.
 
-- **Lưu gói dự án** tải về một tệp `.zip` chứa mọi thứ của phiên: tệp dự án, tệp `.mid` phụ, âm thanh, tempo bạn đặt, schema đã nạp và bố cục. Mở gói trên máy khác là có lại đúng phiên đó.
+- **Lưu gói dự án** tải về một tệp `.zip` chứa mọi thứ của phiên: tệp dự án, tệp `.mid` phụ, âm thanh, ảnh nền, tempo bạn đặt, schema đã nạp và bố cục. Mở gói trên máy khác là có lại đúng phiên đó.
 - **Mở gói dự án** nạp một gói như vậy. Gói bị hỏng, bị sửa hoặc do bản ứng dụng mới hơn tạo ra thì ứng dụng báo và không mở.
 - **Xoá phiên đã lưu** xoá bản lưu trong trình duyệt (không đụng tới tệp của bạn).
 - Khi bộ nhớ trình duyệt gần đầy, ứng dụng chỉ lưu bố cục và thiết lập; lần sau bạn phải nạp lại tệp dự án và âm thanh. Ứng dụng báo rõ tệp nào cần nạp lại.

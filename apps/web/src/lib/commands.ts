@@ -1,7 +1,7 @@
 // Tài liệu có hoàn tác và các lệnh (T-07, Technical Design §6.4). Hàm dựng lệnh nhận `doc` hiện tại để lấy giá trị "trước";
 // trả null khi không có gì đổi (không ghi mục lịch sử rỗng). `redo`/`undo` là hàm thuần trên Doc bất biến.
-import type { BrightnessConfig, NoteStyle, KeyboardStyle, PianoRollProps, SceneDocument, TextRef, TextStyleSet, WidgetLayout, WidgetSpec } from '@dawviz/render-core';
-import { widgetDefaults } from '@dawviz/render-core';
+import type { BrightnessConfig, NoteStyle, KeyboardStyle, PianoRollProps, Phase, SceneDocument, TextRef, TextStyleSet, WidgetLayout, WidgetSpec, WidgetVisibility } from '@dawviz/render-core';
+import { DEFAULT_BACKGROUND, widgetDefaults, type BackgroundImageSpec } from '@dawviz/render-core';
 import type { Command } from './store.ts';
 import { clampOffsetMs } from './audioMap.ts';
 import { sceneForStyle, videoStyleBase, videoStyleKeyboard, withTrackOverrides } from './videoScenes.ts';
@@ -106,6 +106,13 @@ export const setVisibleSeconds = (d: Doc, sec: number): Cmd | null => {
   if (!pianoOf(d.scene)) return null;
   const v = Math.round(Math.min(60, Math.max(0.5, sec)) * 100) / 100;
   return slice(d, 'setVisibleSeconds', 'web.cmd.visibleSeconds', (x) => pianoOf(x.scene)!.properties.visibleSeconds, (x, r) => withPiano(x, (p) => ({ ...p, visibleSeconds: r })), v, 'visible.seconds');
+};
+/** Thuộc tính của chế độ trang (T-84): đơn vị trang, số ô nhịp mỗi trang, thời gian nốt hiện trước. Kéo liên tiếp cùng một thuộc tính gộp một bước. */
+export type PageKey = 'pageUnit' | 'pageBars' | 'revealAhead';
+export const setPageProp = <K extends PageKey>(d: Doc, key: K, value: PianoRollProps[K]): Cmd | null => {
+  if (!pianoOf(d.scene)) return null;
+  const v = (key === 'revealAhead' ? Math.round(Math.min(30, Math.max(0, Number(value))) * 10) / 10 : key === 'pageBars' ? Math.round(Math.min(32, Math.max(1, Number(value)))) : value) as PianoRollProps[K];
+  return slice(d, 'setPageProp', 'web.cmd.pageProp', (x) => pianoOf(x.scene)!.properties[key], (x, r) => withPiano(x, (p) => ({ ...p, [key]: r })), v, `page:${key}`, { key });
 };
 /** Hiện/ẩn vạch phát (REQ-GRAPHICS-16). Ẩn chỉ bỏ nét vẽ; nốt vẫn phát tại vị trí vạch. */
 export const setPlayheadVisible = (d: Doc, visible: boolean): Cmd | null => {
@@ -308,6 +315,26 @@ export const moveLayer = (d: Doc, widgetId: string, to: number): Cmd | null => {
   const set = (x: Doc, v: Record<string, number>) => ({ ...x, scene: { ...x.scene, widgets: x.scene.widgets.map((w) => (w.id in v && w.zIndex !== v[w.id] ? { ...w, zIndex: v[w.id] } : w)) } });
   return slice(d, 'moveLayer', 'web.cmd.moveLayer', get, set, z, undefined, { widget: widgetId, from: from + 1, to: dest + 1 });
 };
+/**
+ * Đặt khoảng hiển thị theo thời gian của widget (REQ-GRAPHICS-14); `null` = bỏ (hiện suốt bài). `key` gộp các lần gõ/kéo liên tiếp
+ * cùng một ô (vd. thời gian hiện dần) thành một bước hoàn tác.
+ */
+export const setWidgetVisibility = (d: Doc, widgetId: string, next: WidgetVisibility | null, key?: string): Cmd | null => {
+  if (!d.scene.widgets.some((x) => x.id === widgetId)) return null;
+  const get = (x: Doc): WidgetVisibility | null => x.scene.widgets.find((q) => q.id === widgetId)!.visibility ?? null;
+  const set = (x: Doc, v: WidgetVisibility | null) => withWidget(x, widgetId, (q) => { const { visibility: _v, ...rest } = q; return v ? { ...rest, visibility: v } : rest; });
+  return slice(d, 'setWidgetVisibility', 'web.cmd.visibility', get, set, next, key ? `vis:${widgetId}:${key}` : undefined, { widget: widgetId });
+};
+/** Đặt danh sách phase của bài (đã sắp theo `start`, tên không rỗng). Rỗng = bỏ hết. */
+export const setPhases = (d: Doc, phases: Phase[], key?: string): Cmd | null =>
+  slice(d, 'setPhases', 'web.cmd.phases', (x) => x.scene.phases ?? [], (x, v) => { const { phases: _p, ...rest } = x.scene; return { ...x, scene: v.length ? { ...rest, phases: v } : rest }; }, phases, key ? `phases:${key}` : undefined, { n: phases.length });
+/** Đặt nốt chủ của bài (0 = C … 11 = B); `null` = bỏ (chỗ giữ `{bass}` hiện tên nốt thay vì bậc). */
+export const setTonic = (d: Doc, tonic: number | null): Cmd | null =>
+  slice(d, 'setTonic', 'web.cmd.tonic', (x) => x.scene.tonic ?? null, (x, v) => { const { tonic: _t, ...rest } = x.scene; return { ...x, scene: v === null ? rest : { ...rest, tonic: v } }; }, tonic, undefined, {});
+/** Cách đặt ảnh nền (vừa khung, độ đục, làm tối). Ảnh là tài nguyên của phiên, không nằm trong scene. Kéo liên tiếp cùng một thuộc tính gộp một bước. */
+export const setBackgroundSpec = (d: Doc, patch: Partial<BackgroundImageSpec>): Cmd | null =>
+  slice(d, 'setBackgroundSpec', 'web.cmd.background', (x) => x.scene.canvas.backgroundImage ?? DEFAULT_BACKGROUND, (x, v) => ({ ...x, scene: { ...x.scene, canvas: { ...x.scene.canvas, backgroundImage: v } } }),
+    { ...(d.scene.canvas.backgroundImage ?? DEFAULT_BACKGROUND), ...patch }, `bg:${Object.keys(patch).join(',')}`, { keys: Object.keys(patch) });
 export const patchSnapping = (d: Doc, patch: Partial<SceneDocument['canvas']['snapping']>): Cmd | null =>
   slice(d, 'patchSnapping', 'web.cmd.snapping', (x) => x.scene.canvas.snapping, (x, v) => ({ ...x, scene: { ...x.scene, canvas: { ...x.scene.canvas, snapping: v } } }), { ...d.scene.canvas.snapping, ...patch }, `snap:${Object.keys(patch).join(',')}`);
 

@@ -4,11 +4,12 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-GRAPHICS-14: Khoảng hiển thị theo thời gian và theo track"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) > REQ-GRAPHICS-14: Khoảng hiển thị theo thời gian và theo track"
 chunk: req-graphics-14-khoang-hien-thi-theo-thoi-gian-v.md
-source_lines: 889-893
-source_sha1: 3ea818ffe0
+source_lines: 899-904
+source_sha1: 06902f4c4f
 ids: [P-04, P-09, P-10, REQ-GRAPHICS-09, REQ-GRAPHICS-14, REQ-UI-03, REQ-WIDGET-07]
 ---
 #### REQ-GRAPHICS-14: Khoảng hiển thị theo thời gian và theo track
 * **1.0:** mọi widget và phần tử cảnh có danh sách **khoảng hiển thị** (`from`–`to`), nhập bằng giây, `bar.beat` hoặc chọn **marker** của dự án (P-10); có thời gian hiện dần/ẩn dần và easing (REQ-GRAPHICS-09). Mặc định: hiện suốt bài. Kéo hai đầu khoảng trực tiếp trên timeline (REQ-UI-03).
 * **Gán track:** widget dùng dữ liệu nốt (Piano Roll, Track Info, Live Trigger, Event Counter, bàn phím, P-04…P-09) chọn một, nhiều hoặc tất cả track. Có thể **đổi tập track theo khoảng thời gian** (ví dụ đoạn verse chỉ hiện piano, đoạn điệp khúc hiện thêm dây), khai báo như một khoảng hiển thị kèm danh sách track.
 * Spectrum/waveform: khoảng hiển thị như trên; chọn nguồn audio theo REQ-WIDGET-07.
+* **Hiện trạng (T-81):** đã có khoảng hiển thị theo giây cho mọi widget (nhập `m:ss` hoặc giây, mốc cuối trống = hết bài, hiện dần/ẩn dần làm mượt), danh sách phase của bài và chỗ giữ `{phase}`, `{next_phase}`, `{phase_elapsed}`, `{phase_remaining}`, `{phase_no}`. Chưa có: nhập theo `bar.beat` hoặc marker (chờ T-42), kéo hai đầu trên timeline, đổi tập track theo đoạn, easing chọn được.

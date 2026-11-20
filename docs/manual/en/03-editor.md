@@ -44,6 +44,62 @@ The **Align** section has six buttons: align left, centre or right edges, and to
 
 Rotated widgets line up by the box around them. Locked widgets stay put.
 
+## Particles
+
+The **Particles** widget throws out small particles whenever a note starts. Particles depend only on the moment you are looking at, so jumping anywhere shows exactly what continuous playback would, and exported video matches.
+
+- **Particles per note**, **Lifetime**, **Speed**, **Direction** (0° is up, increasing clockwise), **Spread** (width of the fan), **Gravity** (positive falls, negative rises), **Start size** and **End size**.
+- **Colour:** the colour of the track that plays the note, or **One colour**.
+- In Advanced: harder notes give more particles, speed variation, circle or square, opacity, fade out, glow, **Start position** (by pitch across the widget's width, centre, or spread evenly) and start height, **Random seed** (change it for a different scatter), **Most particles at once** (beyond it the oldest are dropped).
+- Choose the tracks for the widget in the **Track** part of **Settings**, like other widgets.
+
+## Background image
+
+When no widget is selected, the **Background image** section lets you pick a PNG, JPEG, WebP or GIF (up to 20 MB; very large images are scaled down to 4096 pixels on the long side, GIFs use the first frame). The image sits under every widget.
+
+- **Fit:** **Fill** (crops the extra in the middle), **Fit inside** (whole image, background colour around it) or **Stretch** (may distort).
+- **Opacity** and **Darken** (a black layer over the image so text and notes read well).
+- The image is saved with the session and the project pack. **Presets don't contain the image**, only how it is placed, so someone who opens your preset picks their own image.
+
+## Spectrum
+
+The **Spectrum** widget draws bars that jump with the sound. You need to load audio in the Preview tab (after loading, the app takes a few seconds to analyse it; until then, and when there is no audio, the bars rest at their lowest height so you can still see where the widget is). The spectrum follows the project's **Audio offset**.
+
+There are two shapes, chosen with **Shape** in the **Settings** section:
+
+- **Line:** the bars sit along a line, low frequencies at its start. **Angle** turns the line to any angle from -360° to 360° (0° is horizontal, increasing clockwise; 90° is upright with low frequencies on top). **Line length** and **Bar height** are the size of the shape; the whole shape always sits in the middle of the widget's frame.
+- **Circle:** the bars radiate from the centre of the frame. **Circle radius** is the radius of the inner ring and **Bar height** is the longest a bar can be. **Start angle** (Advanced) turns the first bar's position, measured from the top, clockwise.
+
+For both: **Bars** (8 to 128) and **Colour**. In Advanced there is also:
+
+- **Mirror:** on the line, bars grow on both sides of it; on the circle, the left and right halves are mirror images.
+- **Reverse frequencies**, **Gradient by frequency** (from **Colour** to **High-frequency colour**), bar width, roundness, **Quiet height**.
+- **Lowest/Highest frequency** (log scale): only show part of the range.
+- **Attack** and **Release** (milliseconds): bars rise fast and fall slowly to look smooth. Set 0 for instant jumps.
+- **Floor** and **Ceiling** (dB): sounds quieter than the floor give the lowest bar, louder than the ceiling the tallest. For quiet music raise the floor or lower the ceiling so the bars move more.
+- **Opacity** and **Glow**.
+
+To get a shape at some other angle you can also drag the rotate handle of the whole widget; **Angle** here turns the line without turning the frame.
+
+## Key
+
+When no widget is selected, the **Key** section lets you pick the song's key note (C to B). With a key set, `{bass}` shows the **scale degree** of the bass note (1, ♭2, 2, … 7); without one it shows note names.
+
+## Display range
+
+By default a widget is shown for the whole song. Select a widget and turn on **Show only in these ranges** in the **Display range** section to limit when it appears, for example showing the title only for the first 10 seconds.
+
+- Each row is a range: **Show from** and **Show until**. Type seconds (`90`, `90.5`) or minutes:seconds (`1:30`, `1:30.5`). Leave **Show until** empty to show it until the end of the song.
+- **Add range** adds a row; the × button removes one. With no range left the widget is never shown.
+- **Fade in** and **Fade out** (seconds) make the widget fade in when a range starts and fade out when it ends. If a range is shorter than the two times together, both shrink in proportion.
+- Turn the tick off again to show it for the whole song.
+
+The display range only affects the video and Preview; in the Editor you can still select and drag the widget as usual.
+
+## Phases
+
+Phases are the parts of a song (verse, chorus…). When no widget is selected, the **Phases** section on the right lets you add them: each row has a name and a start time. A phase lasts until the next one; the last phase lasts to the end of the song. The values `{phase}`, `{next_phase}`, `{phase_remaining}`… work in any text (see [Placeholders](08-placeholders.md)).
+
 ## Anchor (Advanced)
 
 The anchor is the point a widget turns around. By default it is the centre.
@@ -125,6 +181,8 @@ Select the Piano roll widget (or click **Edit note look** when nothing is select
 - **Pitch range:** **Fit content** follows the lowest and highest notes of the tracks (so a track with few notes is zoomed in); **Custom** (the default, A0–C8, all 88 keys) lets you type the lowest and highest note by name, such as `C2`, `C#3`, `Db4`. Notes outside the range are cut off. Preset files store the range as MIDI numbers (`pitchMin`, `pitchMax`).
 - **Show piano keyboard:** draws a keyboard on the left edge; keys light up as notes reach them. With the keyboard on, the playhead sits at the keyboard's edge, so both **Show playhead** and **Playhead position** are hidden. Turn the keyboard off to adjust the playhead.
 - **Note motion:** **Scroll** (default) notes flow past a fixed playhead; **Page** notes stay still page by page, the playhead sweeps left to right, and at the end of the page it returns to the start and shows the next page of notes (notes that cross a page boundary are cut at the page edge; played notes are solid, upcoming notes are faded by **Idle opacity**). **Visible time** is the time scale in Scroll mode and the length of one page in Page mode. In Page mode the **Playhead position** field has no effect, so it is hidden.
+- **Page length (Page mode):** **Seconds** or **Bars**. With **Bars**, each page holds exactly the number of bars you set (**Bars per page**); pages start on the first beat of a bar and turn exactly when a new bar begins, even when the song changes tempo or time signature (pages then differ in length).
+- **Show notes ahead (Page mode):** 0 shows the whole page. Set some seconds (for example 2) and a note only appears when it is that close to the playhead; played notes stay until the end of the page. This gives the "notes appear as you go" look of many videos.
 - **Show playhead:** when hidden, notes still play at the same place; the line just isn't drawn. While the line is hidden, **Playhead position** is hidden too; show the line again to adjust it.
 
 ### Glow

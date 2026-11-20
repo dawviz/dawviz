@@ -15,6 +15,8 @@ export interface PianoRollOptions {
   left?: number;               // chừa bên trái (px) cho bàn phím; vùng cuộn nốt là [left, width]
   /** Chế độ trang: cửa sổ nhìn bắt đầu đúng tại đây (giây) và KHÔNG trượt theo t; nốt cắt theo biên trang. `playheadRatio` bị bỏ qua. */
   pageStart?: number;
+  /** Chế độ trang: chỉ hiện nốt đã phát hoặc sẽ bắt đầu trong `revealAhead` giây tới (nốt xa hơn chưa hiện). Vắng/0 = hiện cả trang. */
+  revealAhead?: number;
 }
 export interface NoteRect { id: string; trackId: string; x: number; y: number; w: number; h: number; color: string; brightness: number; active: boolean; velocity: number;
   pitch: number; opacity: number; radius: number; glow: number; glowRadius: number; borderWidth: number; borderColor: string }
@@ -33,6 +35,7 @@ export function layoutPianoRoll(index: TimelineIndex, tempoMap: TempoPoint[], t:
     for (const n of notesInRange(ti, t0, t1)) {
       if (n.pitch < o.pitchMin || n.pitch > o.pitchMax) continue;
       if (paged && n.startTimeSeconds >= t1) continue; // nốt bắt đầu đúng biên trang thuộc trang sau
+      if (paged && o.revealAhead !== undefined && n.startTimeSeconds > t + o.revealAhead) continue; // chưa tới lúc hiện
       const st = resolveNoteStyle(o.style, ti.track.id);
       const s0 = paged ? Math.max(n.startTimeSeconds, t0) : n.startTimeSeconds, e0 = paged ? Math.min(n.endTimeSeconds, t1) : n.endTimeSeconds; // chế độ trang: cắt theo biên trang
       const x = left + (s0 - t0) * pxPerSec, h = Math.max(1, rowH * st.heightScale);

@@ -1,5 +1,5 @@
 // T-09: thông điệp giữa giao diện và Export Worker (Technical Design §7.1, REQ-EXPORT-07).
-import type { Derived, SceneDocument, UnifiedProjectAST } from '@dawviz/render-core';
+import type { BackgroundImage, Derived, DerivedAudio, SceneDocument, UnifiedProjectAST } from '@dawviz/render-core';
 import type { CodecChoice, ProgressInfo } from './exportPlan.ts';
 import type { ExportReport, ExportStats } from './exportStats.ts';
 
@@ -19,6 +19,10 @@ export interface ExportJob {
   duration: number;
   /** PCM đã cắt theo khoảng xuất (sliceAudioForRange); thiếu thì video không tiếng */
   audio?: { channels: Float32Array[]; sampleRate: number; offsetMs: number };
+  /** Bảng phổ đã tính ở Xem trước (T-53) + offset âm thanh của dự án: Export vẽ widget Audio Spectrum từ đúng bảng đó (Preview = Export). Vắng = chưa có âm thanh. */
+  spectrum?: DerivedAudio;
+  /** Ảnh nền của phiên (T-21): ImageBitmap riêng cho lần xuất này, được chuyển (transfer) sang Worker. */
+  background?: BackgroundImage;
 }
 /** Tay cầm tệp từ showSaveFilePicker: clone được sang Worker (FileSystemWritableFileStream thì KHÔNG, Chrome ném DataCloneError). */
 export interface FileTarget { createWritable(): Promise<WritableStream<{ type: 'write'; data: Uint8Array; position: number }>> }

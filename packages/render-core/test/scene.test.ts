@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { parseProject } from '@dawviz/parser';
-import { DEFAULT_CHORD, buildIndex, defaultScene, sanitizeScene, renderFrame, layoutFrame, pianoRollWidget, tracksFor, pianoRollPitchRange,
+import { DEFAULT_CHORD, DEFAULT_SPECTRUM, WIDGET_RENDERERS, buildIndex, defaultScene, sanitizeScene, renderFrame, layoutFrame, pianoRollWidget, tracksFor, pianoRollPitchRange,
   DEFAULT_BRIGHTNESS, SCENE_SCHEMA_VERSION, pianoRollGeometry, layoutPianoRoll, layoutKeyboard, type Derived, type Primitive, type RectPrim } from '../src/index.ts';
 
 const fixtures = new URL('../../../test/fixtures/', import.meta.url);
@@ -55,9 +55,11 @@ test('layoutFrame: sắp theo zIndex, widget ẩn và widget chưa có renderer 
     { ...pianoRollWidget({ x: 0, y: 540, width: 960, height: 540, rotation: 0 }, {}, 'c'), visible: false },
     { id: 'spectrum', type: 'AUDIO_SPECTRUM', zIndex: 99, visible: true, layout: { x: 0, y: 0, width: 10, height: 10, rotation: 0 }, trackMappingMode: 'ALL', assignedTrackIndices: [], properties: {} },
   ];
-  assert.deepEqual(layoutFrame(s, derived, ast, 3).map((x) => x.widget.id), ['b', 'a']);
+  const onlyPiano = { PIANO_ROLL: WIDGET_RENDERERS.PIANO_ROLL! }; // mọi loại widget nay đều có renderer: giả lập loại chưa có bằng bảng renderer thiếu
+  assert.deepEqual(layoutFrame(s, derived, ast, 3, onlyPiano).map((x) => x.widget.id), ['b', 'a']);
+  assert.deepEqual(layoutFrame(s, derived, ast, 3).map((x) => x.widget.id), ['b', 'a', 'spectrum']);
   const { ctx, log } = recCtx();
-  renderFrame(s, derived, ast, 3, { ctx, width: 1920, height: 1080 }, 1);
+  renderFrame(s, derived, ast, 3, { ctx, width: 1920, height: 1080 }, 1, onlyPiano);
   assert.ok(log.includes('translate(960,0)') && log.includes('rect(0,0,960,540)') && log.filter((l) => l === 'clip()').length === 2);
 });
 
@@ -150,8 +152,8 @@ test('sanitizeScene: preset mẫu trong SRS đọc được; trường lạ bị
   assert.equal(pr.lookaheadSeconds, 3.5); assert.equal(pr.noteStyle.base.cornerRadius, 4);
   // Chord Detection nay có renderer (T-69): khoá cũ của ví dụ SRS không còn nghĩa nên bị bỏ (không cảnh báo), thuộc tính mới lấy mặc định.
   const ch: any = scene.widgets[1].properties; assert.deepEqual(ch, DEFAULT_CHORD); assert.ok(!('detectionMode' in ch));
-  const spec = sanitizeScene({ schemaVersion: SCENE_SCHEMA_VERSION, canvas: {}, widgets: [{ type: 'AUDIO_SPECTRUM', properties: { bars: 64 } }] }); // widget chưa có renderer: giữ nguyên dữ liệu
-  assert.deepEqual(spec.scene.widgets[0].properties, { bars: 64 });
+  const spec = sanitizeScene({ schemaVersion: SCENE_SCHEMA_VERSION, canvas: {}, widgets: [{ type: 'AUDIO_SPECTRUM', properties: { bars: 64, lạ: 1 } }] }); // Audio Spectrum có renderer (T-53): trường lạ bị bỏ, thiếu thì lấy mặc định
+  assert.deepEqual(spec.scene.widgets[0].properties, { ...DEFAULT_SPECTRUM, bars: 64 });
 
   const bad = sanitizeScene({ schemaVersion: '0.6.1', junk: 1, canvas: { designWidth: 99999, backgroundColor: 'red' },
     widgets: [{ type: 'NOPE' }, { type: 'PIANO_ROLL', id: 'x', properties: { lookaheadSeconds: 'fast', orientation: 'VERTICAL', pitchMin: 90, pitchMax: 40 }, layout: { rotation: 15 } }, { type: 'PIANO_ROLL', id: 'x' }] });

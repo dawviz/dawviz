@@ -91,6 +91,23 @@ test('offset dương: tiếng vào trễ; offset âm: cắt phần đầu tệp;
   near(b.p.get().t, t, 0.02);                       // hình không nhảy
   const s = b.ctx.sources.at(-1)!; near(s.starts[0][1], t - 0.2, 0.03);  // buffer = t − offset
 });
+test('độ lệch thiết bị (T-82): dời hình so với tiếng, không đổi lịch phát; dương = hình chậm lại, âm = hình đi trước', () => {
+  const base = rig(); base.p.reset(30); base.p.attachAudio(buf(20)); base.p.toggle(); base.step(1000); near(base.p.get().t, 0.92);
+  const a = rig(); a.p.reset(30); a.p.attachAudio(buf(20)); a.p.setDeviceOffset(100); a.p.toggle(); a.step(1000);
+  near(a.p.get().t, 0.82); assert.deepEqual(a.ctx.sources[0].starts[0], [0.03, 0, 20]); // âm thanh vẫn lên lịch y hệt
+  const b = rig(); b.p.reset(30); b.p.attachAudio(buf(20)); b.p.setDeviceOffset(-100); b.p.toggle(); b.step(1000);
+  near(b.p.get().t, 1.02);
+});
+test('độ lệch thiết bị đổi lúc đang phát: hình không nhảy, rồi chạy tiếp với độ lệch mới; offset dự án không đổi', () => {
+  const r = rig(); r.p.reset(30); r.p.attachAudio(buf(20)); r.p.setAudioOffset(200); r.p.toggle(); r.step(2030);
+  const t = r.p.get().t; r.p.setDeviceOffset(150);
+  near(r.p.get().t, t, 0.02);
+  const s = r.ctx.sources.at(-1)!; near(s.starts[0][1], t - 0.2, 0.03); // buffer = t − offset dự án; độ lệch thiết bị không lọt vào đây
+  r.step(80 + 1000); near(r.p.get().t, t + 1.0 - 0.15, 0.03);          // chậm thêm 150 ms khi nghe được dời đi
+});
+test('độ lệch thiết bị không hữu hạn coi như 0', () => {
+  const r = rig(); r.p.reset(30); r.p.attachAudio(buf(20)); r.p.setDeviceOffset(NaN); r.p.toggle(); r.step(1000); near(r.p.get().t, 0.92);
+});
 test('lặp: nguồn kế đặt trước trên trục ngữ cảnh; t quay lại đầu vòng', () => {
   const r = rig(); r.p.reset(10); r.p.attachAudio(buf(10)); r.p.setLoop({ start: 1, end: 2 }); r.p.seek(1.5); r.p.toggle();
   near(r.ctx.sources[0].starts[0][0], 0.03);  near(r.ctx.sources[0].starts[0][1], 1.5); near(r.ctx.sources[0].starts[0][2], 0.5);

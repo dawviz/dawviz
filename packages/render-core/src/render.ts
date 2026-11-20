@@ -7,10 +7,14 @@ import { layoutPianoRoll, layoutKeyboard } from './pianoroll.ts';
 import { DEFAULT_KEYBOARD_STYLE } from './style.ts';
 import type { PianoRollProps, SceneDocument, WidgetSpec } from './scene.ts';
 import type { Derived, Primitive, RectPrim, TextPrim, WidgetRenderer } from './prims.ts';
-import { HUD_RENDERERS, buildHud, usesChordPlaceholder, type ChordProps, type HudData } from './hud.ts';
+import { HUD_RENDERERS, barPageAt, buildHud, hudOf, usesChordPlaceholder, type ChordProps, type HudData } from './hud.ts';
 import { measureText } from './text.ts';
 import { DEFAULT_TEXT_STYLES, TEXT_METRICS, type PlacedRun, type RichText, type TextGradient } from './typography.ts';
 import { normalizeAngle } from './snap.ts';
+import { visibilityAlpha } from './visibility.ts';
+import { spectrumRenderer } from './spectrum.ts';
+import { particleRenderer } from './particles.ts';
+import { DEFAULT_BACKGROUND, placeImage, type BackgroundImage } from './background.ts';
 
 /** Ngữ cảnh vẽ đủ cho renderFrame (Canvas 2D và OffscreenCanvas đều có). */
 export interface RenderCtx extends Ctx2D {
@@ -27,6 +31,8 @@ export interface RenderCtx extends Ctx2D {
   lineJoin: string; shadowOffsetX: number; shadowOffsetY: number;
   createLinearGradient(x0: number, y0: number, x1: number, y1: number): CanvasGradientLike;
   createRadialGradient(x0: number, y0: number, r0: number, x1: number, y1: number, r1: number): CanvasGradientLike;
+  /** Ảnh nền (T-21): `image` là ImageBitmap/CanvasImageSource. */
+  drawImage(image: unknown, sx: number, sy: number, sw: number, sh: number, dx: number, dy: number, dw: number, dh: number): void;
 }
 export interface CanvasGradientLike { addColorStop(offset: number, color: string): void }
 /** Phép biến đổi đang áp khi vẽ một widget: cần cho đổ bóng chữ, vì shadowOffset/shadowBlur của Canvas tính theo điểm ảnh thiết bị, không theo transform. */
@@ -73,11 +79,13 @@ const a01 = (v: number) => Math.min(1, Math.max(0, v));
  * mép phải bàn phím, `playheadPositionRatio` không có tác dụng (giao diện khoá ô đó); nốt đã phát trượt xuống dưới bàn phím.
  * Trả `windowSeconds`/`ratio` theo vùng cuộn nốt [kb, width] để đưa thẳng vào layoutPianoRoll.
  */
-export function pianoRollGeometry(p: Pick<PianoRollProps, 'keyboard' | 'playheadPositionRatio' | 'visibleSeconds'> & { scrollMode?: PianoRollProps['scrollMode'] }, width: number, t = 0) {
+export function pianoRollGeometry(p: Pick<PianoRollProps, 'keyboard' | 'playheadPositionRatio' | 'visibleSeconds'> & { scrollMode?: PianoRollProps['scrollMode'] }, width: number, t = 0, page?: { start: number; end: number }) {
   if (p.scrollMode === 'PAGE') { // chế độ trang: trang dài visibleSeconds phủ đủ vùng nốt; vạch phát chạy trong trang, hết trang thì về đầu
-    const kb = p.keyboard.enabled ? Math.min(p.keyboard.width, width * 0.4) : 0, area = width - kb, pxPerSec = area / p.visibleSeconds;
-    const pageStart = Math.max(0, Math.floor(t / p.visibleSeconds + 1e-9)) * p.visibleSeconds;
-    return { kb, playX: kb + Math.min(area, Math.max(0, (t - pageStart) * pxPerSec)), pxPerSec, ratio: 0, windowSeconds: p.visibleSeconds, pageStart: pageStart as number | undefined };
+    // `page`: trang do người gọi tính (canh theo ô nhịp); vắng thì trang dài visibleSeconds bắt đầu từ 0.
+    const len = page ? Math.max(1e-6, page.end - page.start) : p.visibleSeconds;
+    const kb = p.keyboard.enabled ? Math.min(p.keyboard.width, width * 0.4) : 0, area = width - kb, pxPerSec = area / len;
+    const pageStart = page ? page.start : Math.max(0, Math.floor(t / len + 1e-9)) * len;
+    return { kb, playX: kb + Math.min(area, Math.max(0, (t - pageStart) * pxPerSec)), pxPerSec, ratio: 0, windowSeconds: len, pageStart: pageStart as number | undefined };
   }
   const kb = p.keyboard.enabled ? Math.min(p.keyboard.width, width * 0.4) : 0;
   const pxPerSec = width / p.visibleSeconds;
@@ -91,9 +99,10 @@ export const pianoRollRenderer: WidgetRenderer<PianoRollProps> = {
   layout({ ast, derived, tracks }, spec, t) {
     const p = spec.properties, { width, height } = spec.layout;
     const [pitchMin, pitchMax] = pianoRollPitchRange(p, tracks);
-    const { kb, ratio, playX, windowSeconds, pageStart } = pianoRollGeometry(p, width, t);
+    const page = p.scrollMode === 'PAGE' && p.pageUnit === 'BARS' ? barPageAt(hudOf(derived, ast).bars, p.pageBars, t) : undefined;
+    const { kb, ratio, playX, windowSeconds, pageStart } = pianoRollGeometry(p, width, t, page);
     const rects = layoutPianoRoll({ tracks, duration: derived.index.duration }, ast.tempoMap, t,
-      { width, height, windowSeconds, playheadRatio: ratio, pitchMin, pitchMax, brightness: derived.brightness, style: p.noteStyle, left: kb, pageStart });
+      { width, height, windowSeconds, playheadRatio: ratio, pitchMin, pitchMax, brightness: derived.brightness, style: p.noteStyle, left: kb, pageStart, revealAhead: p.scrollMode === 'PAGE' && p.revealAhead > 0 ? p.revealAhead : undefined });
     const out: Primitive[] = [];
     for (const r of rects) {
       const alpha = a01(r.brightness * r.opacity);
@@ -118,7 +127,7 @@ export const pianoRollRenderer: WidgetRenderer<PianoRollProps> = {
 const rect = (x: number, y: number, w: number, h: number, fill: string): RectPrim => ({ kind: 'rect', x, y, w, h, fill, alpha: 1, radius: 0, glowColor: '', glowBlur: 0, stroke: '', strokeWidth: 0 });
 
 /** Bảng renderer theo loại. Widget chưa có renderer được bỏ qua khi vẽ (vẫn giữ trong Scene). */
-export const WIDGET_RENDERERS: Partial<Record<WidgetSpec['type'], WidgetRenderer<any>>> = { PIANO_ROLL: pianoRollRenderer, ...HUD_RENDERERS };
+export const WIDGET_RENDERERS: Partial<Record<WidgetSpec['type'], WidgetRenderer<any>>> = { PIANO_ROLL: pianoRollRenderer, AUDIO_SPECTRUM: spectrumRenderer, PARTICLES: particleRenderer, ...HUD_RENDERERS };
 
 /** Bố cục toàn khung (thuần): danh sách widget đã sắp theo zIndex kèm primitive của từng widget. Dùng để test tất định. */
 /** HudData cho một scene: số đếm, lưới ô nhịp và hợp âm của mọi widget Chord Detection. Gọi ở bước derived (một lần cho mỗi dự án × scene). */
@@ -134,12 +143,22 @@ function withHud(scene: SceneDocument, derived: Derived, ast: UnifiedProjectAST)
   return { ...derived, hud: h };
 }
 export function layoutFrame(scene: SceneDocument, derived0: Derived, ast: UnifiedProjectAST, t: number, renderers = WIDGET_RENDERERS) {
-  const derived = withHud(scene, derived0, ast);
+  const derived: Derived = { ...withHud(scene, derived0, ast), phases: scene.phases, tonic: scene.tonic }; // phase thuộc scene: gắn mỗi khung (đối tượng nhỏ, không đệm)
+  const dur = derived.index.duration;
   const order = scene.widgets.map((w, i) => ({ w, i })).filter(({ w }) => w.visible && renderers[w.type])
     .sort((a, b) => a.w.zIndex - b.w.zIndex || a.i - b.i); // cùng zIndex: giữ thứ tự trong tài liệu
   const measure = derived.measure ?? measureText, textStyles = scene.textStyles ?? DEFAULT_TEXT_STYLES;
-  return order.map(({ w }) => ({ widget: w, prims: renderers[w.type]!.layout({ ast, derived, tracks: tracksFor(w, derived.index), measure, textStyles, fonts: derived.fonts }, w, t) }));
+  const out: { widget: WidgetSpec; prims: Primitive[] }[] = [];
+  for (const { w } of order) {
+    const k = visibilityAlpha(w.visibility, t, dur);
+    if (k <= 0) continue; // ngoài khoảng hiển thị: không dựng gì
+    const prims = renderers[w.type]!.layout({ ast, derived, tracks: tracksFor(w, derived.index), measure, textStyles, fonts: derived.fonts }, w, t);
+    out.push({ widget: w, prims: k >= 1 ? prims : prims.map((p) => fadePrim(p, k)) });
+  }
+  return out;
 }
+/** Nhân độ đục của primitive với hệ số làm mờ `k` (0..1); phát sáng co theo để không còn quầng khi gần ẩn. */
+const fadePrim = (p: Primitive, k: number): Primitive => (p.kind === 'rect' ? { ...p, alpha: p.alpha * k, glowBlur: p.glowBlur * k } : { ...p, alpha: p.alpha * k });
 
 /**
  * Vẽ một khung hình. `scale` = điểm ảnh đích / pt (Preview: bề rộng canvas × DPR / designWidth; Export: W_export / designWidth).
@@ -152,6 +171,7 @@ export function renderFrame(scene: SceneDocument, derived: Derived, ast: Unified
   g.clearRect(0, 0, target.width, target.height);
   g.setTransform(scale, 0, 0, scale, 0, 0);
   g.fillStyle = scene.canvas.backgroundColor; g.fillRect(0, 0, W, H);
+  if (derived.background) drawBackground(g, scene, derived.background, W, H);
   for (const { widget, prims } of layoutFrame(scene, derived, ast, t, renderers)) {
     const L = widget.layout;
     g.save();
@@ -167,6 +187,14 @@ export function renderFrame(scene: SceneDocument, derived: Derived, ast: Unified
   }
 }
 
+/** Ảnh nền rồi lớp làm tối, trước mọi widget. */
+function drawBackground(g: RenderCtx, scene: SceneDocument, bg: BackgroundImage, W: number, H: number): void {
+  const spec = scene.canvas.backgroundImage ?? DEFAULT_BACKGROUND, pl = placeImage(spec.fit, bg.width, bg.height, W, H);
+  if (pl.dw > 0 && spec.opacity > 0) { g.globalAlpha = spec.opacity; g.drawImage(bg.image, pl.sx, pl.sy, pl.sw, pl.sh, pl.dx, pl.dy, pl.dw, pl.dh); }
+  if (spec.dim > 0) { g.globalAlpha = spec.dim; g.fillStyle = '#000000'; g.fillRect(0, 0, W, H); }
+  g.globalAlpha = 1;
+}
+
 function roundedPath(g: Ctx2D, x: number, y: number, w: number, h: number, r: number) {
   g.beginPath(); g.moveTo(x + r, y);
   g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r);
@@ -179,10 +207,14 @@ export function drawPrimitives(g: RenderCtx, prims: Primitive[], env0: DrawEnv =
   for (const p of prims) {
     if (p.kind === 'text') { if (p.rich) drawRichText(g, p, p.rich, env); else drawText(g, p, env); continue; }
     g.globalAlpha = p.alpha; g.fillStyle = p.fill;
+    const rot = p.rotation ? p.rotation * Math.PI / 180 : 0;
+    if (rot) { g.save(); g.translate(p.x + p.w / 2, p.y + p.h / 2); g.rotate(rot); } // xoay quanh tâm hình; vẽ như hộp đặt tại gốc
+    const x = rot ? -p.w / 2 : p.x, y = rot ? -p.h / 2 : p.y;
     if (p.glowBlur > 0) { g.shadowColor = p.glowColor; g.shadowBlur = p.glowBlur; }
-    if (p.radius > 0) { roundedPath(g, p.x, p.y, p.w, p.h, p.radius); g.fill(); } else g.fillRect(p.x, p.y, p.w, p.h);
+    if (p.radius > 0) { roundedPath(g, x, y, p.w, p.h, p.radius); g.fill(); } else g.fillRect(x, y, p.w, p.h);
     g.shadowBlur = 0;
-    if (p.strokeWidth > 0) { g.strokeStyle = p.stroke; g.lineWidth = p.strokeWidth; roundedPath(g, p.x, p.y, p.w, p.h, p.radius); g.stroke(); }
+    if (p.strokeWidth > 0) { g.strokeStyle = p.stroke; g.lineWidth = p.strokeWidth; roundedPath(g, x, y, p.w, p.h, p.radius); g.stroke(); }
+    if (rot) g.restore();
   }
   g.globalAlpha = 1;
 }

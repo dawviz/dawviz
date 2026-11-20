@@ -20,7 +20,7 @@ const row = 'grid grid-cols-[minmax(0,1fr)_minmax(0,9.5rem)_1.5rem] items-center
  *  `playhead`: vị trí vạch phát (0..1) và hàm đổi; bàn phím bật thì cả hai ô vạch phát bị ẩn (T-71).
  *  `advanced`: hiện cả dòng nâng cao (chế độ Nâng cao, hoặc "Thêm tuỳ chọn" của mục đang mở).
  *  `reference`: kiểu nốt của bộ dựng sẵn đang chọn; thông số khác nó thì có nút ↺ đưa về (D-57). */
-export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset, playhead, reference, keyboardRef, pitchRange }: { /** Dải cao độ Piano Roll: Fit content hoặc Custom (nhập theo tên nốt). */ pitchRange?: { value: PitchRange; reference?: PitchRange; onChange(next: PitchRange): void }; reference?: NoteStyle; /** Bàn phím bật/tắt của bộ dựng sẵn áp gần nhất (đích của ↺ ở ô tick Bàn phím). */ keyboardRef?: boolean; playhead?: { ratio: number; visible: boolean; scrollMode: 'SCROLL' | 'PAGE'; scrollModeRef?: 'SCROLL' | 'PAGE'; onScrollMode(m: 'SCROLL' | 'PAGE'): void; visibleSeconds: number; visibleSecondsRef?: number; onVisibleSeconds(v: number): void; /** Vạch phát hiện/ẩn của bộ dựng sẵn áp gần nhất. */ visibleRef?: boolean; reference?: number; onChange(ratio: number): void; onVisible(visible: boolean): void }; notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean }) {
+export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset, playhead, reference, keyboardRef, pitchRange }: { /** Dải cao độ Piano Roll: Fit content hoặc Custom (nhập theo tên nốt). */ pitchRange?: { value: PitchRange; reference?: PitchRange; onChange(next: PitchRange): void }; reference?: NoteStyle; /** Bàn phím bật/tắt của bộ dựng sẵn áp gần nhất (đích của ↺ ở ô tick Bàn phím). */ keyboardRef?: boolean; playhead?: { ratio: number; visible: boolean; scrollMode: 'SCROLL' | 'PAGE'; scrollModeRef?: 'SCROLL' | 'PAGE'; onScrollMode(m: 'SCROLL' | 'PAGE'): void; visibleSeconds: number; visibleSecondsRef?: number; onVisibleSeconds(v: number): void; /** Chế độ trang: đơn vị trang, số ô nhịp mỗi trang, thời gian nốt hiện trước (T-84). */ page?: { unit: 'SECONDS' | 'BARS'; bars: number; reveal: number; unitRef?: 'SECONDS' | 'BARS'; barsRef?: number; revealRef?: number; onUnit(u: 'SECONDS' | 'BARS'): void; onBars(n: number): void; onReveal(s: number): void }; /** Vạch phát hiện/ẩn của bộ dựng sẵn áp gần nhất. */ visibleRef?: boolean; reference?: number; onChange(ratio: number): void; onVisible(visible: boolean): void }; notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean }) {
   const { i18n } = useI18n();
   const b = style.base;
   const set = (patch: Partial<NoteStyle>) => onStyle({ ...style, base: { ...b, ...patch } });
@@ -78,7 +78,25 @@ export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], a
               ))}
             </div>
           </div>
-          <Slider id="st-visible" label={i18n.t(playhead.scrollMode === 'PAGE' ? 'web.visible.page' : 'web.visible.label')} value={playhead.visibleSeconds} min={0.5} max={20} hardMax={60} step={0.1} reset={playhead.visibleSecondsRef} onChange={playhead.onVisibleSeconds} />
+          {playhead.scrollMode === 'PAGE' && playhead.page && (
+            <div className="space-y-1.5" data-testid="page-unit">
+              <div className="flex items-center justify-between gap-2 text-xs text-muted">
+                <span>{i18n.t('web.page.pageUnit')}</span>
+                <ResetButton label={i18n.t('web.page.pageUnit')} changed={playhead.page.unitRef !== undefined && playhead.page.unitRef !== playhead.page.unit} onReset={() => playhead.page!.onUnit(playhead.page!.unitRef!)} />
+              </div>
+              <div className="seg w-full" role="radiogroup" aria-label={i18n.t('web.page.pageUnit')} onKeyDown={radioKeys}>
+                {(['SECONDS', 'BARS'] as const).map((u) => (
+                  <button key={u} type="button" role="radio" aria-checked={playhead.page!.unit === u} tabIndex={radioTab(playhead.page!.unit === u)} onClick={() => playhead.page!.onUnit(u)} className="seg-btn flex-1" data-testid={`page-unit-${u}`}>
+                    {i18n.t(`web.page.unit.${u}`)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          {playhead.scrollMode === 'PAGE' && playhead.page?.unit === 'BARS'
+            ? <Slider id="st-page-bars" label={i18n.t('web.page.pageBars')} value={playhead.page.bars} min={1} max={16} hardMax={32} step={1} reset={playhead.page.barsRef} onChange={playhead.page.onBars} />
+            : <Slider id="st-visible" label={i18n.t(playhead.scrollMode === 'PAGE' ? 'web.visible.page' : 'web.visible.label')} value={playhead.visibleSeconds} min={0.5} max={20} hardMax={60} step={0.1} reset={playhead.visibleSecondsRef} onChange={playhead.onVisibleSeconds} />}
+          {playhead.scrollMode === 'PAGE' && playhead.page && <Slider id="st-reveal" label={i18n.t('web.page.revealAhead')} value={playhead.page.reveal} min={0} max={8} hardMax={30} step={0.1} reset={playhead.page.revealRef} onChange={playhead.page.onReveal} />}
           {/* Chế độ cuộn + bàn phím: vạch ghim ở mép bàn phím, không còn gì để chỉnh. Chế độ trang: vạch chạy nên chỉ còn ô hiện/ẩn. */}
           {(!keyboard.enabled || playhead.scrollMode === 'PAGE') && <TickField label={i18n.t('web.playhead.show')} checked={playhead.visible} onChange={playhead.onVisible} reference={playhead.visibleRef} testId="playhead-visible" />}
           {playhead.scrollMode === 'SCROLL' && !keyboard.enabled && playhead.visible && <Slider id="st-playhead" label={i18n.t('web.playhead.position')} value={Math.round(playhead.ratio * 100)} min={5} max={95} step={1} reset={playhead.reference === undefined ? undefined : Math.round(playhead.reference * 100)}

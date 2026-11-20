@@ -1,6 +1,6 @@
 # Chỉ mục TECHNICAL-DESIGN.md — THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER
 
-nguồn: `TECHNICAL-DESIGN.md` (sha1 b601c66aca)
+nguồn: `TECHNICAL-DESIGN.md` (sha1 b30e1aa694)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -19,11 +19,11 @@ nguồn: `TECHNICAL-DESIGN.md` (sha1 b601c66aca)
 | 12 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02) | [5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md](5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md) | 5390 | ERR_FONT_LOAD, NFR-SEC-03, REQ-STORAGE-05, REQ-WIDGET-02 |
 | 13 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp 🟢 (đã dùng ở T-69) | [5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md](5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md) | 925 | REQ-WIDGET-05 |
 | 14 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.9 Kiểu chữ cho mọi chữ trong video 🟢 (T-72, SRS REQ-GRAPHICS-18, D-58) | [5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md](5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md) | 6552 | D-58, REQ-GRAPHICS-18, REQ-STORAGE-05, WARN_PRESET_FONT_MISSING, WARN_PRESET_VALUE |
-| 15 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.10 Chỗ giữ trong chữ và Ô chữ 🟢 (T-73, SRS REQ-GRAPHICS-19, D-60/OI-18) | [5-10-cho-giu-trong-chu-va-o-chu-t-73-srs-req-gra.md](5-10-cho-giu-trong-chu-va-o-chu-t-73-srs-req-gra.md) | 2966 | D-60, OI-18, REQ-GRAPHICS-19, WARN_PRESET_MIGRATED, WARN_PRESET_VALUE |
+| 15 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.10 Chỗ giữ trong chữ và Ô chữ 🟢 (T-73, SRS REQ-GRAPHICS-19, D-60/OI-18) | [5-10-cho-giu-trong-chu-va-o-chu-t-73-srs-req-gra.md](5-10-cho-giu-trong-chu-va-o-chu-t-73-srs-req-gra.md) | 5437 | D-60, OI-18, REQ-GRAPHICS-19, WARN_PRESET_MIGRATED, WARN_PRESET_VALUE |
 | 16 | 6. Ứng dụng web và phát lại 🟡 > 6.1 Trạng thái | [6-1-trang-thai.md](6-1-trang-thai.md) | 1256 | REQ-UI-14 |
 | 17 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) | [6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md](6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md) | 233 | NFR-SEC-04, REQ-EXPORT-03, REQ-PARSER-00, REQ-STORAGE-05, REQ-UI-03, REQ-WIDGET-07 |
 | 18 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.1 Nạp tệp âm thanh (mix) | [6-2-1-nap-tep-am-thanh-mix.md](6-2-1-nap-tep-am-thanh-mix.md) | 3263 | ARC-03, ERR_AUDIO_DECODE, ERR_AUDIO_TOO_LONG, ERR_FILE_TOO_LARGE, NFR-PERF-04, REQ-AUDIO-01… |
-| 19 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.2 Đồng hồ chủ | [6-2-2-dong-ho-chu.md](6-2-2-dong-ho-chu.md) | 4556 |  |
+| 19 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.2 Đồng hồ chủ | [6-2-2-dong-ho-chu.md](6-2-2-dong-ho-chu.md) | 5451 | REQ-AUDIO-02 |
 | 20 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.3 Offset âm thanh so với dự án | [6-2-3-offset-am-thanh-so-voi-du-an.md](6-2-3-offset-am-thanh-so-voi-du-an.md) | 1992 | REQ-UI-15, REQ-WIDGET-07 |
 | 21 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.4 Phát / dừng / tua / lặp / về đầu | [6-2-4-phat-dung-tua-lap-ve-dau.md](6-2-4-phat-dung-tua-lap-ve-dau.md) | 1439 | REQ-UI-03 |
 | 22 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.5 Sóng âm cho thanh tua (việc để dành từ T-70) | [6-2-5-song-am-cho-thanh-tua-viec-de-danh-tu-t-70.md](6-2-5-song-am-cho-thanh-tua-viec-de-danh-tu-t-70.md) | 1211 | REQ-WIDGET-07 |

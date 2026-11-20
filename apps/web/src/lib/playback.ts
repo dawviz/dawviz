@@ -26,6 +26,8 @@ export interface Playback {
   attachAudio(buffer: BufferLike | null): void;
   /** Đổi offset âm thanh (ms); đang phát thì neo lại tại t hiện tại. */
   setAudioOffset(ms: number): void;
+  /** Độ lệch thiết bị (ms, T-82): chỉ dời hình so với tiếng ở Xem trước, không đổi âm thanh phát ra, offset dự án hay bản xuất. Đang phát thì neo lại, hình không nhảy. */
+  setDeviceOffset(ms: number): void;
   dispose(): void;
 }
 
@@ -112,6 +114,12 @@ export function createPlayback(frame: Frame = browserFrame, engine: AudioEngine 
       notify();
     },
     setAudioOffset(ms) { engine.setOffset(ms); if (engine.active) engine.rearm(frame.now(), duration, loopRange()); },
+    setDeviceOffset(ms) {
+      if (!engine.active) { engine.setDeviceOffset(ms); return; }
+      syncFromAudio(frame.now()); // đọc bằng độ lệch cũ, rồi neo lại tại đúng t đó với độ lệch mới
+      engine.setDeviceOffset(ms);
+      restartAudio();
+    },
     dispose() { if (raf) frame.cancel(raf); raf = 0; subs.clear(); engine.dispose(); },
   };
 }

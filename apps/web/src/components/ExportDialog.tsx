@@ -135,9 +135,12 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
       : null;
     setPhase('running'); setProgress(null); setStats(null); setFinalReport(null); setCopiedRun(false); points.current = []; startedAt.current = performance.now(); lastProgress.current = null;
     try { lock.current = await (navigator as unknown as { wakeLock?: { request(t: 'screen'): Promise<{ release(): Promise<void> }> } }).wakeLock?.request('screen') ?? null; } catch { lock.current = null; }
+    // Ảnh nền: bản sao riêng cho Worker (bản của Xem trước vẫn dùng tiếp, vì chuyển quyền sở hữu sẽ làm nó rỗng).
+    let background: NonNullable<typeof derived.background> | undefined;
+    try { if (derived.background) background = { image: await createImageBitmap(derived.background.image as ImageBitmap), width: derived.background.width, height: derived.background.height }; } catch { background = undefined; }
     let h: ExportHandle;
     try { h = startExport({
-      ast, scene, brightness: derived.brightness, width: size.width, height: size.height, fps, bitrate: pre.bitrate, choice,
+      ast, scene, brightness: derived.brightness, spectrum: derived.audio, background, width: size.width, height: size.height, fps, bitrate: pre.bitrate, choice,
       start: range.start, duration: range.duration, style: styleId,
       audio: slice ? { channels: slice.channels, sampleRate: audio!.buffer.sampleRate, offsetMs: slice.offsetMs } : undefined,
     }, makeExportWorker, {

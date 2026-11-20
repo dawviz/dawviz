@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "8. Lưu trữ 🟢 (M4, T-10)"
 path: "8. Lưu trữ 🟢 (M4, T-10)"
 chunk: 8-luu-tru-m4-t-10.md
-source_lines: 449-455
-source_sha1: b601c66aca
+source_lines: 453-459
+source_sha1: b30e1aa694
 ids: [ERR_PRESET_INVALID, ERR_SCHEMA_NEWER, WARN_PRESET_MIGRATED]
 ---
 ## 8. Lưu trữ 🟢 (M4, T-10)

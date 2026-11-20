@@ -41,6 +41,7 @@ export function startExport(
   });
   const transfer: Transferable[] = [];
   if (job.audio) transfer.push(...job.audio.channels.map((c) => c.buffer as ArrayBuffer));
+  if (job.background) transfer.push(job.background.image as ImageBitmap);
   try { w.postMessage({ type: 'start', job, file: opts.file }, transfer); } catch (e) { w.terminate(); if (timer) clearTimeout(timer); throw e; }
   return {
     result,

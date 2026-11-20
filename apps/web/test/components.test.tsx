@@ -1,6 +1,6 @@
 // Kiểm thử thành phần bằng Vitest + Testing Library (chạy: npm run test:components -w @dawviz/web; cần đã `npm install`).
 import { describe, it, expect } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import { I18nProvider } from '../src/i18n/I18nProvider.tsx';
 import { Transport } from '../src/components/Transport.tsx';
 import { Notices } from '../src/components/Notices.tsx';
@@ -13,6 +13,10 @@ import { NumberField } from '../src/components/NumberField.tsx';
 import { StylePanel } from '../src/components/StylePanel.tsx';
 import { TextPanel } from '../src/components/TextPanel.tsx';
 import { ExportDialog } from '../src/components/ExportDialog.tsx';
+import { DeviceLatency } from '../src/components/DeviceLatency.tsx';
+import { BackgroundSection } from '../src/components/BackgroundSection.tsx';
+import { summarize, addProfile, DEFAULT_DEVICE_PREFS, serializeProfile, type DevicePrefs } from '../src/lib/latencyCalibration.ts';
+import type { Calibration, CalStatus } from '../src/lib/calibrationRunner.ts';
 import { synthAst } from '../../../packages/render-core/test/helpers.ts';
 import { defaultStyleConfig, DEFAULT_KEYBOARD_STYLE, STYLE_PRESETS } from '@dawviz/render-core';
 
@@ -590,5 +594,110 @@ describe('ExportDialog (T-09)', () => {
     wrap(<ExportDialog scene={PAPER_SCENE} ast={ast} derived={derived} audio={null} offsetMs={0} projectSec={30} fileName="a.rpp" onClose={() => { closed++; }} />);
     fireEvent.keyDown(window, { key: 'Escape' });
     expect(closed).toBe(1);
+  });
+});
+
+describe('Độ trễ thiết bị (T-82)', () => {
+  /** Bộ đo giả: ghi các lần gõ; `finish` cho `poll()` trả kết quả ở lần gọi kế. */
+  function fake(result: ReturnType<typeof summarize>) {
+    const f = { taps: [] as number[], aborted: false, done: false, phase: 'idle' as CalStatus['phase'] };
+    const cal: Calibration = {
+      async start() { f.phase = 'running'; }, tap(ms) { f.taps.push(ms); return true; },
+      status: () => ({ phase: f.phase, bar: 2, taps: f.taps.length }),
+      poll: () => { if (!f.done) return null; f.phase = 'done'; return result; }, result: () => null, abort() { f.aborted = true; f.phase = 'idle'; },
+    };
+    return { f, cal };
+  }
+  function host(initial: DevicePrefs, make: () => Calibration) {
+    let prefs = initial; const calls: DevicePrefs[] = [];
+    const ui = () => <DeviceLatency prefs={prefs} onChange={(p) => { prefs = p; calls.push(p); view.rerender(<I18nProvider>{ui()}</I18nProvider>); }} makeCalibration={make} />;
+    const view = render(<I18nProvider>{ui()}</I18nProvider>);
+    return { get prefs() { return prefs; }, calls };
+  }
+  const OK = summarize([18, 20, 22, 21]);
+
+  it('đo xong thì lưu thành thiết bị mới có tên; thiết bị đó thành thiết bị đang chọn', async () => {
+    const { f, cal } = fake(OK); const h = host(DEFAULT_DEVICE_PREFS, () => cal);
+    fireEvent.click(screen.getByTestId('latency-start'));
+    await screen.findByTestId('latency-pad');
+    fireEvent.pointerDown(screen.getByTestId('latency-pad')); expect(f.taps).toHaveLength(1);
+    f.done = true;
+    await screen.findByTestId('latency-result', undefined, { timeout: 2000 });
+    fireEvent.change(screen.getByTestId('latency-name'), { target: { value: 'Tai nghe' } });
+    fireEvent.click(screen.getByTestId('latency-save'));
+    await waitFor(() => expect(h.prefs.profiles).toHaveLength(1));
+    expect(h.prefs.profiles[0]).toMatchObject({ name: 'Tai nghe', offsetMs: 21 }); expect(h.prefs.activeId).toBe(h.prefs.profiles[0].id);
+    expect(screen.queryByTestId('latency-result')).toBeNull();
+  });
+
+  it('kết quả không ổn định hoặc thiếu lần đo: có cảnh báo; thiếu lần đo thì không cho lưu', async () => {
+    const few = fake(summarize([10, null, null, 12])); host(DEFAULT_DEVICE_PREFS, () => few.cal);
+    fireEvent.click(screen.getByTestId('latency-start')); await screen.findByTestId('latency-pad'); few.f.done = true;
+    const r = await screen.findByTestId('latency-result', undefined, { timeout: 2000 });
+    expect(r.textContent).toMatch(/2.*4/); expect(screen.queryByTestId('latency-save')).toBeNull();
+  });
+
+  it('có thiết bị đang chọn: kết quả cập nhật chính thiết bị đó (thay hẳn, không cộng dồn)', async () => {
+    const start = addProfile(DEFAULT_DEVICE_PREFS, 'Loa', 100, 'a')!;
+    const { f, cal } = fake(OK); const h = host(start, () => cal);
+    fireEvent.click(screen.getByTestId('latency-start')); await screen.findByTestId('latency-pad'); f.done = true;
+    await screen.findByTestId('latency-result', undefined, { timeout: 2000 });
+    fireEvent.click(screen.getByTestId('latency-apply'));
+    await waitFor(() => expect(h.prefs.profiles[0].offsetMs).toBe(21)); expect(h.prefs.profiles).toHaveLength(1);
+  });
+
+  it('huỷ giữa chừng: dừng bộ đo, không đổi gì', async () => {
+    const { f, cal } = fake(OK); const h = host(DEFAULT_DEVICE_PREFS, () => cal);
+    fireEvent.click(screen.getByTestId('latency-start')); await screen.findByTestId('latency-pad');
+    fireEvent.click(screen.getByTestId('latency-cancel'));
+    expect(f.aborted).toBe(true); expect(screen.queryByTestId('latency-run')).toBeNull(); expect(h.calls).toHaveLength(0);
+  });
+
+  it('sửa tên và độ lệch bằng tay; chọn "Tự động" thì ẩn mục sửa; xoá thiết bị', () => {
+    const start = addProfile(DEFAULT_DEVICE_PREFS, 'Loa', 100, 'a')!;
+    const h = host(start, () => fake(OK).cal);
+    const off = screen.getByRole('spinbutton', { name: /^(Offset|Độ lệch)/ }) as HTMLInputElement;
+    typeIn(off, '55'); expect(h.prefs.profiles[0].offsetMs).toBe(55);
+    const name = screen.getByTestId('device-name') as HTMLInputElement; fireEvent.change(name, { target: { value: 'Loa bàn' } }); fireEvent.blur(name);
+    expect(h.prefs.profiles[0].name).toBe('Loa bàn');
+    fireEvent.change(screen.getByTestId('device-select'), { target: { value: '' } });
+    expect(h.prefs.activeId).toBeNull(); expect(screen.queryByTestId('device-edit')).toBeNull();
+    fireEvent.change(screen.getByTestId('device-select'), { target: { value: 'a' } });
+    fireEvent.click(screen.getByTestId('device-delete')); expect(h.prefs.profiles).toHaveLength(0);
+  });
+
+  it('mở tệp thiết bị: hợp lệ thì thêm; hỏng thì báo lý do đã dịch', async () => {
+    const h = host(DEFAULT_DEVICE_PREFS, () => fake(OK).cal);
+    const input = screen.getByTestId('device-file');
+    await act(async () => { fireEvent.change(input, { target: { files: [new File([serializeProfile({ name: 'Tai nghe BT', offsetMs: 170 })], 'a.json')] } }); });
+    await waitFor(() => expect(h.prefs.profiles).toHaveLength(1)); expect(h.prefs.profiles[0]).toMatchObject({ name: 'Tai nghe BT', offsetMs: 170 });
+    await act(async () => { fireEvent.change(input, { target: { files: [new File(['{ không phải json'], 'b.json')] } }); });
+    await waitFor(() => expect(screen.getByTestId('latency-note').textContent).toMatch(/(damaged|hỏng)/i)); expect(h.prefs.profiles).toHaveLength(1);
+  });
+});
+
+describe('Ảnh nền (T-21)', () => {
+  const mount = (state: { name: string | null; busy: boolean; error: string | null }, spec?: { fit: 'COVER' | 'CONTAIN' | 'STRETCH'; opacity: number; dim: number }) => {
+    const calls = { pick: [] as File[], removed: 0, spec: [] as object[] };
+    wrap(<BackgroundSection n={4} state={state} spec={spec} onPick={(f) => calls.pick.push(f)} onRemove={() => { calls.removed++; }} onSpec={(p) => calls.spec.push(p)} />);
+    return calls;
+  };
+  it('chưa có ảnh: chỉ có nút chọn ảnh; chọn tệp gọi onPick; chưa hiện cách đặt', () => {
+    const c = mount({ name: null, busy: false, error: null });
+    expect(screen.queryByTestId('bg-fit')).toBeNull(); expect(screen.queryByTestId('bg-remove')).toBeNull();
+    const f = new File(['x'], 'a.png'); fireEvent.change(screen.getByTestId('bg-input'), { target: { files: [f] } });
+    expect(c.pick).toEqual([f]);
+  });
+  it('có ảnh: hiện tên, cách đặt, độ đục, làm tối; đổi cách đặt/độ đục/làm tối gửi bản vá; bỏ ảnh', () => {
+    const c = mount({ name: 'nen.jpg', busy: false, error: null });
+    expect(screen.getByTestId('bg-name').textContent).toBe('nen.jpg');
+    fireEvent.click(screen.getByTestId('bg-fit-CONTAIN')); expect(c.spec.at(-1)).toEqual({ fit: 'CONTAIN' });
+    typeIn(screen.getByRole('spinbutton', { name: /^(Darken|Làm tối)$/ }), '40'); expect(c.spec.at(-1)).toEqual({ dim: 0.4 });
+    typeIn(screen.getByRole('spinbutton', { name: /^(Opacity|Độ đục)$/ }), '75'); expect(c.spec.at(-1)).toEqual({ opacity: 0.75 });
+    fireEvent.click(screen.getByTestId('bg-remove')); expect(c.removed).toBe(1);
+  });
+  it('lỗi: báo bằng chữ đã dịch theo mã', () => {
+    mount({ name: null, busy: false, error: 'ERR_ASSET_TOO_LARGE' });
+    expect(screen.getByTestId('bg-error').textContent).toMatch(/(20 MB)/);
   });
 });

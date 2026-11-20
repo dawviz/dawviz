@@ -28,8 +28,16 @@ Built-in widgets look the same as before. In **Advanced** mode, the text of ever
 | `{bpm}` | tempo at that moment (up to two decimal places, trailing zeros dropped) |
 | `{sig}` | time signature, like `4/4` |
 | `{bar}`, `{beat}` | current bar and beat |
+| `{phase}`, `{next_phase}` | name of the current phase and of the next one (empty when none) |
+| `{phase_remaining}` | time until the next phase starts (last phase: until the end of the song) |
+| `{phase_elapsed}` | time spent in the current phase |
+| `{phase_no}` | phase number (1 is the first phase, 0 means before the first one) |
 | `{chord}` | the chord being read; empty when there is none |
 | `{notes}` | every note sounding now, low to high, like `C4 E4 G4` |
+| `{rhythm}` | gaps between the most recent note onsets, in **sixteenth notes** (a sixteenth of a 4/4 bar), like `3 3 2`. Notes off the grid show a decimal (`2.5`) |
+| `{bass}` | the lowest note of each recent onset: the degree against the **key note** (`1 1 4 ♭2`) when you set the key in the Editor, otherwise note names (`C2 C2 F2`) |
+| `{lengths}` | lengths of the most recent notes as **fractions of a quarter note**, like `1/2 1/8 3/2` |
+| `{pitch_classes}` | names of the notes sounding now, without octave, low to high: `C E G` |
 | `{played}`, `{total}` | notes played so far, all notes |
 | `{pct}` | share of notes played, whole number |
 
@@ -45,11 +53,11 @@ Add a colon and a pattern: `{name:pattern}`.
 
 - **Numbers.** The zeros after the dot are the decimal places. The zeros before the dot are the minimum digits; shorter numbers get zeros in front.
   - `{bpm:0}` gives `120`, `{bpm:0.00}` gives `120.50`, `{bar:000}` gives `007`.
-  - For `{bpm}`, `{tempo}`, `{bar}`, `{beat}`, `{played}`, `{total}`, `{pct}`.
+  - For `{bpm}`, `{tempo}`, `{bar}`, `{beat}`, `{played}`, `{total}`, `{pct}`, `{phase_no}`.
 - **Time.** `m` is minutes, `ss` seconds, `S` thousandths of a second (1 to 3 letters).
   - `{time:m:ss}` gives `2:05`, `{time:mm:ss}` gives `02:05`, `{time:m:ss.SSS}` gives `2:05.789`, `{time:h:mm:ss}` gives `1:02:05`.
-  - For `{time}`, `{elapsed}`, `{remaining}`, `{total_time}`.
-- **Note list.** What follows the colon goes between the notes: `{notes:, }` gives `C4, E4, G4`; `{notes:-}` gives `C4-E4-G4`.
+  - For `{time}`, `{elapsed}`, `{remaining}`, `{total_time}`, `{phase_elapsed}`, `{phase_remaining}`.
+- **Note list.** What follows the colon goes between the notes: `{notes:, }` gives `C4, E4, G4`; `{notes:-}` gives `C4-E4-G4`. Works for `{notes}`, `{rhythm}`, `{bass}`, `{lengths}`, `{pitch_classes}`; for example `{bass: → }` gives `1 → 1 → 4 → ♭2`. These values use the 8 most recent note onsets of the visible tracks (or the tracks chosen for the widget).
 
 With no pattern, the default look in the table above is used.
 

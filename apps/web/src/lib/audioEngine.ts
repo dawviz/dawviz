@@ -39,6 +39,8 @@ export interface AudioEngine {
   readonly active: boolean;
   setBuffer(b: BufferLike | null): void;
   setOffset(ms: number): void;
+  /** Độ lệch thiết bị (ms, T-82): trừ khỏi giờ nghe được khi ĐỌC đồng hồ (chỉ Xem trước). Khác `setOffset`: không ảnh hưởng việc lên lịch phát hay đường xuất. Gọi lúc đang phát thì người gọi tự neo lại (xem Playback). */
+  setDeviceOffset(ms: number): void;
   /** Phải gọi trong sự kiện người dùng (lần đầu tạo/resume AudioContext). */
   start(t0: number, duration: number, loop: LoopRange | null): void;
   stop(): void;
@@ -52,7 +54,7 @@ export interface AudioEngine {
 }
 
 export function createAudioEngine(deps: EngineDeps): AudioEngine {
-  let ctx: AudioContextLike | null = null, buffer: BufferLike | null = null, offsetMs = 0;
+  let ctx: AudioContextLike | null = null, buffer: BufferLike | null = null, offsetMs = 0, deviceOffsetMs = 0;
   let playing = false, anchor: Anchor = { t0: 0, s0: 0, rate: 1 }, latency = 0, last = 0;
   let cur = { duration: 0, loop: null as LoopRange | null };
   let timer: unknown = null, unDevice: (() => void) | null = null, wasRunning = false, interrupted: (() => void) | null = null;
@@ -97,7 +99,7 @@ export function createAudioEngine(deps: EngineDeps): AudioEngine {
   const sample = (frameMs: number) => {
     const c = ctx!;
     const stamp = c.state === 'running' && c.getOutputTimestamp ? c.getOutputTimestamp() : null;
-    return heardContextTime({ currentTime: c.currentTime, running: c.state === 'running', baseLatency: c.baseLatency, outputLatency: c.outputLatency, stamp }, frameMs, latency);
+    return heardContextTime({ currentTime: c.currentTime, running: c.state === 'running', baseLatency: c.baseLatency, outputLatency: c.outputLatency, stamp }, frameMs, latency) - deviceOffsetMs / 1000;
   };
 
   const ensureContext = () => {
@@ -120,6 +122,7 @@ export function createAudioEngine(deps: EngineDeps): AudioEngine {
     get active() { return playing; },
     setBuffer(b) { killAll(true); buffer = b; if (!b) self.stop(); },
     setOffset(ms) { offsetMs = ms; },
+    setDeviceOffset(ms) { deviceOffsetMs = Number.isFinite(ms) ? ms : 0; },
     start(t0, duration, loop) {
       if (!buffer) return;
       ensureContext();

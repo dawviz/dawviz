@@ -1,7 +1,7 @@
 // Nhãn danh sách lịch sử (T-07 bước 2b). Dựng LÚC HIỂN THỊ từ loại lệnh + tham số + giá trị trước/sau, qua locales/,
 // nên đổi ngôn ngữ thì nhãn đổi theo (không lưu chuỗi đã dịch trong lịch sử). Ví dụ: "Độ đục 0,70 → 0,85".
 import type { I18n } from '@dawviz/i18n';
-import { pitchName } from '@dawviz/render-core';
+import { pitchName, pitchClassName } from '@dawviz/render-core';
 import type { Cmd } from './commands.ts';
 import type { History } from './store.ts';
 
@@ -110,6 +110,11 @@ export function describeCommand(cmd: Cmd, c: LabelCtx): string {
     }
     case 'setScrollMode': return i18n.t('web.hist.change', { name: i18n.t('web.scroll.title'), from: i18n.t(`web.scroll.${cmd.before}`), to: i18n.t(`web.scroll.${cmd.after}`) });
     case 'setVisibleSeconds': return i18n.t('web.hist.change', { name: i18n.t('web.visible.label'), from: `${i18n.number(Number(cmd.before))} s`, to: `${i18n.number(Number(cmd.after))} s` });
+    case 'setPageProp': {
+      const k = String(p.key), name = i18n.t(`web.page.${k}`);
+      const v = (x: unknown) => (k === 'pageUnit' ? i18n.t(`web.page.unit.${String(x)}`) : k === 'revealAhead' ? `${i18n.number(Number(x))} s` : i18n.number(Number(x)));
+      return i18n.t('web.hist.change', { name, from: v(cmd.before), to: v(cmd.after) });
+    }
     case 'setPlayheadVisible': return i18n.t('web.hist.change', { name: i18n.t('web.playhead.show'), from: fmt(c, '', cmd.before), to: fmt(c, '', cmd.after) });
     case 'setAudioOffset': return i18n.t('web.hist.audioOffset', { from: fmt(c, 'ms', cmd.before), to: fmt(c, 'ms', cmd.after) });
     case 'patchSnapping': return changeLabel(c, i18n.t('web.hist.what.snapping'), {}, cmd);
@@ -117,6 +122,10 @@ export function describeCommand(cmd: Cmd, c: LabelCtx): string {
     case 'duplicateWidgets': return i18n.t('web.hist.duplicate', { n: Number(p.n) });
     case 'removeWidgets': return i18n.t('web.hist.removeWidget', { n: Number(p.n) });
     case 'renameWidget': return cmd.after === null ? i18n.t('web.hist.renameReset') : i18n.t('web.hist.rename', { name: String(cmd.after) });
+    case 'setWidgetVisibility': return i18n.t(cmd.after ? 'web.hist.visibility' : 'web.hist.visibilityOff', { widget });
+    case 'setBackgroundSpec': return changeLabel(c, i18n.t('web.hist.what.background'), { fit: 'web.bg.fit', opacity: 'web.bg.opacity', dim: 'web.bg.dim' }, cmd);
+    case 'setTonic': return cmd.after === null ? i18n.t('web.hist.tonicOff') : i18n.t('web.hist.tonic', { note: pitchClassName(Number(cmd.after)) });
+    case 'setPhases': return i18n.t('web.hist.phases', { n: Number(p.n) });
     case 'patchTextRef': return i18n.t('web.hist.text', { widget });
     case 'setTextStyles': return i18n.t(p.kind === 'save' ? 'web.hist.textStyleSave' : 'web.hist.textStyleUpdate', { widget });
     default: return i18n.has(cmd.label) ? i18n.t(cmd.label) : cmd.type;

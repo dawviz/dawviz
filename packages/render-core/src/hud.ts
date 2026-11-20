@@ -7,6 +7,8 @@ import type { ASTNote, TempoPoint, UnifiedProjectAST } from './types.ts';
 import type { Derived, Primitive, RectPrim, WidgetRenderer } from './prims.ts';
 import { fixed, groupDigits, pad, type Measure } from './text.ts';
 import { pitchName } from './music.ts';
+import { phaseInfoAt, type PhaseInfo } from './visibility.ts';
+import { RECENT_ONSETS, degreeName, formatUnits, ioiSixteenths, pitchClassName, quarterFraction, recentOnsets } from './musicAnalysis.ts';
 import { listV, numV, timeV, type PV } from './placeholders.ts';
 import { DEFAULT_TEXT_STYLES, resolveTextStyle, templateSpans, textPrims, textWidth, type Align, type TextRef, type TextSpan, type TextStyle, type TextStyleSet } from './typography.ts';
 
@@ -116,6 +118,19 @@ export function barPosAt(g: BarGrid, t: number): BarPos {
   return { bar: sg.barStart + bar + 1, beat: beat + 1, sub: Math.floor(inBeat), beatPhase: inBeat / perBeat, barPhase: inBar / perBar, bpm: tp.bpm, num: sg.num, den: sg.den };
 }
 
+/** Giây của đầu ô nhịp thứ `bar0` (đếm từ 0, ô đầu = 0). Ngược của `barPosAt`: dùng để canh trang Piano Roll theo ô nhịp. */
+export function barStartSec(g: BarGrid, bar0: number): number {
+  const b = Math.max(0, bar0), sg = lastLE(g.sigs, (x) => x.barStart, b);
+  const tick = sg.tick + (b - sg.barStart) * (g.ppq * 4 / sg.den * sg.num);
+  const tp = lastLE(g.tempo, (x) => x.tick, tick);
+  return tp.sec + (tick - tp.tick) / g.ppq * 60 / tp.bpm;
+}
+/** Trang gồm `bars` ô nhịp liền nhau chứa thời điểm `t`: trang 0 là ô 1…bars, trang 1 là ô bars+1… Trả [start, end) theo giây (đổi nhịp/tempo giữa bài thì độ dài trang khác nhau). */
+export function barPageAt(g: BarGrid, bars: number, t: number): { start: number; end: number } {
+  const n = Math.max(1, Math.round(bars)), page = Math.floor((barPosAt(g, Math.max(0, t) + 1e-9).bar - 1) / n);
+  return { start: barStartSec(g, page * n), end: barStartSec(g, (page + 1) * n) };
+}
+
 /** Nhóm track + chế độ của một widget Chord Detection. */
 export interface ChordGroup { tracks: TrackIndex[]; mode: ChordMode }
 /** `chordGroups`: các nhóm track mà widget Chord Detection sẽ đọc; dò hợp âm (@tonaljs/chord-detect) chạy ở ĐÂY, ở bước derived, không chạy khi vẽ khung. */
@@ -217,6 +232,9 @@ export function globalValues(src: PlaceholderSource, t: number): Record<string, 
   const { ast, derived, tracks } = src, memo = new Map<string, PV>();
   const hud = () => hudOf(derived, ast), tt = Math.max(0, t), dur = derived.index.duration;
   let pos: BarPos | null = null; const bar = () => (pos ??= barPosAt(hud().bars, t));
+  const ppq = ast.meta.internalPPQ || 960;
+  let on: ReturnType<typeof recentOnsets> | null = null; const onsets = () => (on ??= recentOnsets(shown(tracks), t, RECENT_ONSETS + 1));
+  let ph: PhaseInfo | null = null; const phase = () => (ph ??= phaseInfoAt(derived.phases, t, dur));
   let counts: { played: number; total: number } | null = null;
   const count = () => {
     if (counts) return counts;
@@ -224,14 +242,20 @@ export function globalValues(src: PlaceholderSource, t: number): Record<string, 
     for (const ti of shown(tracks)) { const s = hud().starts.get(ti.track.id); if (!s) continue; total += s.length; played += upperBound(s, t); }
     return (counts = { played, total });
   };
-  const active = () => { // mọi nốt đang vang của các track đã chọn, thấp → cao
+  const activePitches = () => { // mọi cao độ đang vang của các track đã chọn, thấp → cao
     const set = new Set<number>();
     for (const ti of shown(tracks)) for (const n of notesInRange(ti, t, t)) if (n.startTimeSeconds <= t && t < n.endTimeSeconds) set.add(n.pitch);
-    return [...set].sort((a, b) => a - b).map((p) => pitchName(p));
+    return [...set].sort((a, b) => a - b);
   };
+  const active = () => activePitches().map((p) => pitchName(p));
   const make: Record<string, () => PV> = {
     time: () => timeV(tt), elapsed: () => timeV(tt), remaining: () => timeV(Math.max(0, dur - t)), total_time: () => timeV(dur),
     bpm: () => numV(bar().bpm, String(Math.round(bar().bpm * 100) / 100)), tempo: () => numV(bar().bpm, String(Math.round(bar().bpm * 100) / 100)), // tempo = tên cũ của bpm
+    rhythm: () => listV(ioiSixteenths(onsets(), ppq).slice(-RECENT_ONSETS).map(formatUnits)),
+    bass: () => listV(onsets().slice(-RECENT_ONSETS).map((o) => (derived.tonic === undefined ? pitchName(o.bass) : degreeName(o.bass, derived.tonic)))),
+    lengths: () => listV(onsets().slice(-RECENT_ONSETS).map((o) => quarterFraction(o.len, ppq))),
+    pitch_classes: () => listV([...new Set(activePitches())].sort((a, b) => a - b).map(pitchClassName)),
+    phase: () => phase().name, next_phase: () => phase().next, phase_elapsed: () => timeV(phase().elapsed), phase_remaining: () => timeV(phase().remaining), phase_no: () => phase().index,
     bar: () => bar().bar, beat: () => bar().beat, sig: () => `${bar().num}/${bar().den}`,
     title: () => ast.meta.title ?? '', artist: () => (ast.meta as { artist?: string }).artist ?? '',
     chord: () => chordAt(hud().chords.get(chordKey(shown(tracks))) ?? [], t)?.name ?? '', notes: () => listV(active()),

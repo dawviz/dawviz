@@ -4,9 +4,9 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "6.2.2 Đồng hồ chủ"
 path: "6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.2 Đồng hồ chủ"
 chunk: 6-2-2-dong-ho-chu.md
-source_lines: 254-274
-source_sha1: b601c66aca
-ids: []
+source_lines: 257-278
+source_sha1: b30e1aa694
+ids: [REQ-AUDIO-02]
 ---
 #### 6.2.2 Đồng hồ chủ
 Một mô hình duy nhất cho cả hai chế độ: **neo + thời gian trôi qua**, `t = t0 + rate · max(0, s − s0)`, với `s` là giờ của *nguồn* tại khung đang vẽ và `s0` là giờ nguồn lúc neo (`t = t0`). Hai chế độ chỉ khác `s`:
@@ -16,6 +16,7 @@ Một mô hình duy nhất cho cả hai chế độ: **neo + thời gian trôi q
 | Có âm thanh | **giờ nghe được** trên trục `AudioContext` (bên dưới) | đã nằm trong `s` |
 
 - **Độ trễ thiết bị tách hẳn khỏi offset (chỉnh 1).** Độ trễ chỉ có ở *đồng hồ xem trước*, ở một chỗ duy nhất: `heardContextTime` trong `lib/masterClock.ts`. `audioOffsetMs` là lựa chọn của người dùng, lưu trong dự án. `mapToBuffer` và đường xuất (§7) **không nhận và không import** độ trễ: xuất là offline, không có thiết bị. Test bắt buộc: (a) `lib/audioMap.ts` không chứa chữ `latency` và không import `masterClock`; (b) kế hoạch cắt âm thanh để xuất (`exportSegments`) cho cùng kết quả từng bit với mọi cấu hình độ trễ dựng ra trong test.
+- **Độ lệch thiết bị do người dùng đo (T-82, REQ-AUDIO-02).** `AudioEngine.setDeviceOffset(ms)` trừ `ms/1000` khỏi giờ nghe được ở `sample()`, tức chỉ khi *đọc* đồng hồ; lịch phát (`planSegment`), `audioOffsetMs` và đường xuất không đổi. `Playback.setDeviceOffset` đang phát thì đọc `t` bằng độ lệch cũ, đặt độ lệch mới rồi neo lại tại đúng `t` đó (hình không nhảy). Bài đo ở `lib/latencyCalibration.ts` (hàm thuần: `buildSchedule`, `matchTaps`, `summarize`, hồ sơ, tệp JSON), `lib/calibrationRunner.ts` (AudioContext riêng qua giao diện `CalCtx`, quy mỗi lần gõ `event.timeStamp` về giờ nghe được bằng chính `heardContextTime`, bù độ trễ xử lý sự kiện ở nhánh dự phòng), `lib/calibrationSounds.ts` (kick/snare tất định). Phép đo tương đối với ước lượng của trình duyệt nên kết quả **thay hẳn**, không cộng dồn với độ lệch cũ. Test dùng lần gõ giả; độ chính xác trên thiết bị thật phải thử tay.
 - **Giờ nghe được `heardContextTime(sample, frameMs)`, mỗi khung (chỉnh 3):**
   1. *Có `getOutputTimestamp()`* và cho cặp hợp lệ (`performanceTime > 0`, hữu hạn, `contextTime ≥ 0`, ngữ cảnh đang `running`): `heard = ts.contextTime + (frameMs − ts.performanceTime)/1000`. Quy đổi `performance.now` ↔ trục `AudioContext` này nội suy mượt **từng khung** (không bị bậc thang ≈ 2,7 ms của `currentTime`). Theo đặc tả, `contextTime` của hàm này là mẫu *đang phát ra loa*, nên độ trễ đầu ra **đã nằm trong đó**, không trừ thêm (trừ lần nữa là đếm đôi).
   2. *Dự phòng* (không có hàm, cặp không hợp lệ, hoặc ngữ cảnh chưa chạy): `heard = currentTime − L`, `L = clamp(baseLatency + outputLatency, 0, 0,5)` (`undefined` coi là 0). `L` lấy mẫu **một lần mỗi lần neo**, không đọc mỗi khung vì ước lượng dao động làm `t` rung.

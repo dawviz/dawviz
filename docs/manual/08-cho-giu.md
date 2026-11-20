@@ -28,8 +28,16 @@ Chữ của widget có sẵn vẫn như cũ. Ở chế độ **Nâng cao**, ô c
 | `{bpm}` | tempo tại thời điểm đó (tối đa hai chữ số thập phân, bỏ số 0 thừa) |
 | `{sig}` | nhịp, ví dụ `4/4` |
 | `{bar}`, `{beat}` | ô nhịp và phách hiện tại |
+| `{phase}`, `{next_phase}` | tên phase đang diễn ra và phase kế tiếp (trống nếu chưa có) |
+| `{phase_remaining}` | thời gian còn tới khi phase kế bắt đầu (phase cuối: tới hết bài) |
+| `{phase_elapsed}` | thời gian đã qua trong phase hiện tại |
+| `{phase_no}` | số thứ tự phase (1 là phase đầu, 0 là chưa tới phase đầu) |
 | `{chord}` | tên hợp âm đang đọc được; trống nếu không có |
 | `{notes}` | mọi nốt đang vang, từ thấp lên cao, ví dụ `C4 E4 G4` |
+| `{rhythm}` | khoảng cách giữa các lần có nốt vang lên gần nhất, tính bằng **móc kép** (một phần mười sáu ô nhịp 4/4), ví dụ `3 3 2`. Nốt lệch lưới hiện số lẻ (`2.5`) |
+| `{bass}` | nốt thấp nhất của từng lần vang gần nhất: bậc so với **nốt chủ** (`1 1 4 ♭2`) khi đã đặt nốt chủ ở Editor, không thì tên nốt (`C2 C2 F2`) |
+| `{lengths}` | độ dài của các nốt gần nhất theo **phân số nốt đen**, ví dụ `1/2 1/8 3/2` |
+| `{pitch_classes}` | tên các nốt đang vang, không kèm quãng tám, thấp đến cao: `C E G` |
 | `{played}`, `{total}` | số nốt đã phát, tổng số nốt |
 | `{pct}` | phần trăm nốt đã phát, số nguyên |
 
@@ -45,11 +53,11 @@ Thêm dấu hai chấm và một mẫu: `{tên:mẫu}`.
 
 - **Số.** Số chữ số 0 sau dấu chấm là số chữ số thập phân. Số chữ số 0 trước dấu chấm là số chữ số tối thiểu, thiếu thì thêm 0 phía trước.
   - `{bpm:0}` ra `120`, `{bpm:0.00}` ra `120.50`, `{bar:000}` ra `007`.
-  - Dùng cho `{bpm}`, `{tempo}`, `{bar}`, `{beat}`, `{played}`, `{total}`, `{pct}`.
+  - Dùng cho `{bpm}`, `{tempo}`, `{bar}`, `{beat}`, `{played}`, `{total}`, `{pct}`, `{phase_no}`.
 - **Thời gian.** `m` là phút, `ss` là giây, `S` là phần nghìn giây (1 đến 3 chữ).
   - `{time:m:ss}` ra `2:05`, `{time:mm:ss}` ra `02:05`, `{time:m:ss.SSS}` ra `2:05.789`, `{time:h:mm:ss}` ra `1:02:05`.
-  - Dùng cho `{time}`, `{elapsed}`, `{remaining}`, `{total_time}`.
-- **Danh sách nốt.** Phần sau dấu hai chấm là chữ nối giữa các nốt: `{notes:, }` ra `C4, E4, G4`; `{notes:-}` ra `C4-E4-G4`.
+  - Dùng cho `{time}`, `{elapsed}`, `{remaining}`, `{total_time}`, `{phase_elapsed}`, `{phase_remaining}`.
+- **Danh sách nốt.** Phần sau dấu hai chấm là chữ nối giữa các nốt: `{notes:, }` ra `C4, E4, G4`; `{notes:-}` ra `C4-E4-G4`. Dùng cho `{notes}`, `{rhythm}`, `{bass}`, `{lengths}`, `{pitch_classes}`; ví dụ `{bass: → }` ra `1 → 1 → 4 → ♭2`. Các số liệu này tính theo 8 lần nốt vang lên gần nhất của các track đang hiện (hoặc track đã chọn cho widget).
 
 Không gõ mẫu thì dùng cách hiện mặc định như bảng trên.
 

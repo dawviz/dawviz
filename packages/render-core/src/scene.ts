@@ -9,11 +9,15 @@ import {
 import { BASE_TEXT_STYLE, BUNDLED_TEXT_FAMILIES, DEFAULT_TEXT_STYLES, TEXT_DEFAULT_FONT, applyOverride, cloneStyle, type NamedTextStyle, type TextRef, type TextStyle, type TextStyleSet } from './typography.ts';
 import { ALIAS_KEYS, GLOBAL_KEYS, checkTemplate } from './placeholders.ts';
 import { normalizeAngle } from './snap.ts';
+import { DEFAULT_BACKGROUND, type BackgroundImageSpec } from './background.ts';
+import { DEFAULT_PARTICLES, type ParticleProps } from './particles.ts';
+import { DEFAULT_SPECTRUM, type SpectrumProps } from './spectrum.ts';
+import { MAX_FADE, MAX_PHASES, MAX_PHASE_NAME, MAX_RANGES, type Phase, type TimeRange, type WidgetVisibility } from './visibility.ts';
 import { DEFAULT_KEYBOARD_STYLE, DEFAULT_NOTE_STYLE, sanitizeStyle, type KeyboardStyle, type NoteStyle, type StyleConfig } from './style.ts';
 
 export const SCENE_SCHEMA_VERSION = '0.6.0';
 
-export const WIDGET_TYPES = ['TRACK_INFO', 'PIANO_ROLL', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'AUDIO_SPECTRUM', 'PROGRESS_BAR', 'TEXT'] as const;
+export const WIDGET_TYPES = ['TRACK_INFO', 'PIANO_ROLL', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'AUDIO_SPECTRUM', 'PROGRESS_BAR', 'TEXT', 'PARTICLES'] as const;
 export type WidgetType = typeof WIDGET_TYPES[number];
 
 /** `rotation`: độ, (−180, 180]. `anchor`: điểm neo xoay theo tỉ lệ khung widget (0..1), mặc định tâm (REQ-GRAPHICS-03). */
@@ -29,6 +33,8 @@ export interface WidgetSpec<P = unknown> {
   layout: WidgetLayout;
   /** Tên lớp do người dùng đặt (chỉ để hiển thị trong ứng dụng, không vào video). Vắng = tên theo loại (`Chord`, `Chord 2`…). Không trùng nhau (so không phân biệt hoa/thường). */
   name?: string;
+  /** Khoảng hiển thị theo thời gian (REQ-GRAPHICS-14). Vắng = hiện suốt bài. */
+  visibility?: WidgetVisibility;
   trackMappingMode: TrackMappingMode;
   /** Chỉ số track trong AST (khớp `ProjectTrack.index`), dùng khi `trackMappingMode = MANUAL`. */
   assignedTrackIndices: number[];
@@ -47,6 +53,12 @@ export interface PianoRollProps {
   /** Cách nốt chạy: SCROLL (mặc định) nốt cuộn qua vạch phát cố định; PAGE nốt đứng yên theo trang dài `visibleSeconds`, vạch phát chạy từ trái sang phải
    *  rồi sang trang mới (nốt kéo dài qua ranh giới trang bị cắt ở mép trang). `playheadPositionRatio` không có tác dụng ở PAGE. */
   scrollMode: 'SCROLL' | 'PAGE';
+  /** Chế độ trang: độ dài trang tính bằng giây (`visibleSeconds`) hay bằng số ô nhịp (`pageBars`; trang bắt đầu đúng đầu ô nhịp, theo tempo và nhịp của bài). */
+  pageUnit: 'SECONDS' | 'BARS';
+  /** Số ô nhịp mỗi trang khi `pageUnit = BARS`, 1–32. */
+  pageBars: number;
+  /** Chế độ trang: chỉ hiện nốt sắp tới trong ngần này giây tính từ vạch phát (nốt đã phát vẫn ở lại tới hết trang). 0 = hiện cả trang. */
+  revealAhead: number;
   noteStyle: StyleConfig;
   keyboard: KeyboardStyle;
   playheadColor: string;
@@ -59,7 +71,9 @@ export interface CanvasSpec {
   aspectRatio: string;
   designWidth: number; designHeight: number; // pt logic, 256–4096 (REQ-GRAPHICS-00)
   backgroundColor: string;
-  backgroundImageData: null;          // ảnh nền: T-21 (tài nguyên phiên)
+  backgroundImageData: null;          // luôn null: ảnh nền là tài nguyên của phiên, không nằm trong preset (xem `backgroundImage`)
+  /** Cách đặt ảnh nền khi phiên có ảnh (T-21). Vắng = mặc định (phủ kín, độ đục 1, không làm tối). */
+  backgroundImage?: BackgroundImageSpec;
   snapping: { gridEnabled: boolean; gridSize: number; smartGuidesEnabled: boolean };
 }
 
@@ -70,13 +84,17 @@ export interface SceneDocument {
   canvas: CanvasSpec;
   /** Bộ kiểu chữ dựng sẵn của preset (REQ-GRAPHICS-18). `sanitizeScene` luôn điền đủ (DEFAULT_TEXT_STYLES + kiểu của preset); vắng = DEFAULT_TEXT_STYLES. */
   textStyles?: TextStyleSet;
+  /** Các phase của bài (verse, chorus…), sắp theo `start`; dùng cho chỗ giữ `{phase}`… và (sau này) đoạn hiển thị. Vắng = không có phase. */
+  phases?: Phase[];
+  /** Nốt chủ do người dùng đặt (0 = C … 11 = B). Vắng = chưa đặt: `{bass}` hiện tên nốt thay vì bậc. */
+  tonic?: number;
   /** Thuộc tính tuỳ loại: PIANO_ROLL → PianoRollProps; loại chưa có renderer → giữ nguyên JSON. */
   widgets: WidgetSpec[];
 }
 
 export const DEFAULT_PIANO_ROLL: Readonly<PianoRollProps> = Object.freeze({
   orientation: 'HORIZONTAL', pitchRangeMode: 'CUSTOM', pitchMin: 21, pitchMax: 108, // mặc định hiện đủ 88 phím (A0–C8); FIT_CONTENT là lựa chọn
-  lookaheadSeconds: 3, playheadPositionRatio: 0.3, visibleSeconds: 3 / 0.7, scrollMode: 'SCROLL',
+  lookaheadSeconds: 3, playheadPositionRatio: 0.3, visibleSeconds: 3 / 0.7, scrollMode: 'SCROLL', pageUnit: 'SECONDS', pageBars: 4, revealAhead: 0,
   noteStyle: { base: { ...DEFAULT_NOTE_STYLE }, tracks: {} }, keyboard: { ...DEFAULT_KEYBOARD_STYLE, width: 96 }, // 96 pt ≈ 5% bề rộng 1920
   playheadColor: '#ffffff', playheadWidth: 2, playheadVisible: true,
 });
@@ -99,11 +117,11 @@ export function pianoRollWidget(layout: Omit<WidgetLayout, 'anchor'> & { anchor?
   return { id, type: 'PIANO_ROLL', zIndex: 10, visible: true, layout: { ...layout, anchor: { ...(layout.anchor ?? DEFAULT_ANCHOR) } }, trackMappingMode: 'ALL', assignedTrackIndices: [],
     properties: { ...clonePiano(DEFAULT_PIANO_ROLL), ...props } };
 }
-/** Loại widget người dùng thêm được từ Editor (có renderer). AUDIO_SPECTRUM chờ T-53. */
-export const ADDABLE_WIDGETS = ['PIANO_ROLL', 'TRACK_INFO', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'PROGRESS_BAR', 'TEXT'] as const satisfies readonly WidgetType[];
+/** Loại widget người dùng thêm được từ Editor (có renderer). */
+export const ADDABLE_WIDGETS = ['PIANO_ROLL', 'TRACK_INFO', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'AUDIO_SPECTRUM', 'PARTICLES', 'PROGRESS_BAR', 'TEXT'] as const satisfies readonly WidgetType[];
 const HUD_DEFAULTS: Record<string, unknown> = {
   TRACK_INFO: DEFAULT_TRACK_INFO, EVENT_COUNTER: DEFAULT_EVENT_COUNTER, LIVE_TRIGGER: DEFAULT_LIVE_TRIGGER,
-  TIME_BAR: DEFAULT_TIME_BAR, CHORD_DETECTION: DEFAULT_CHORD, PROGRESS_BAR: DEFAULT_PROGRESS_BAR, TEXT: DEFAULT_TEXT_BOX,
+  TIME_BAR: DEFAULT_TIME_BAR, CHORD_DETECTION: DEFAULT_CHORD, AUDIO_SPECTRUM: DEFAULT_SPECTRUM, PARTICLES: DEFAULT_PARTICLES, PROGRESS_BAR: DEFAULT_PROGRESS_BAR, TEXT: DEFAULT_TEXT_BOX,
 };
 /** Thuộc tính mặc định của một loại widget (bản sao sâu): mốc tham chiếu của nút ↺ khi widget chưa có bộ dựng sẵn nào áp lên nó. */
 export function widgetDefaults(type: WidgetType): Record<string, unknown> {
@@ -112,7 +130,7 @@ export function widgetDefaults(type: WidgetType): Record<string, unknown> {
 /** Cỡ mặc định khi thêm (tỉ lệ theo khung, hoặc pt cố định), kẹp trong khung. */
 const NEW_SIZE: Record<string, (W: number, H: number) => [number, number]> = {
   PIANO_ROLL: (W, H) => [W * 0.6, H * 0.4], TRACK_INFO: (W) => [W * 0.5, 130], EVENT_COUNTER: () => [480, 120], LIVE_TRIGGER: () => [480, 60],
-  TIME_BAR: () => [320, 100], CHORD_DETECTION: () => [400, 100], PROGRESS_BAR: (W) => [W * 0.8, 24], TEXT: () => [480, 100],
+  TIME_BAR: () => [320, 100], CHORD_DETECTION: () => [400, 100], AUDIO_SPECTRUM: (W) => [W * 0.5, 240], PARTICLES: (W, H) => [W * 0.5, H * 0.5], PROGRESS_BAR: (W) => [W * 0.8, 24], TEXT: () => [480, 100],
 };
 /** Độ dài tối đa của tên lớp. */
 export const MAX_WIDGET_NAME = 60;
@@ -269,13 +287,16 @@ export function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] 
   const c = raw.canvas;
   const dw = Math.round(num(c.designWidth, 1920, 256, 4096, '$.canvas.designWidth'));
   const dh = Math.round(num(c.designHeight, 1080, 256, 4096, '$.canvas.designHeight'));
-  if (c.backgroundImageData != null) w('WARN_PRESET_UNSUPPORTED', '$.canvas.backgroundImageData', '(ảnh)', 'ảnh nền chưa hỗ trợ (T-21); bỏ qua');
+  if (c.backgroundImageData != null) w('WARN_PRESET_UNSUPPORTED', '$.canvas.backgroundImageData', '(ảnh)', 'preset không chứa ảnh nền (ảnh là tài nguyên của phiên); bỏ qua');
+  const bi = isObj(c.backgroundImage) ? c.backgroundImage : undefined;
   const sn = isObj(c.snapping) ? c.snapping : {};
   const canvas: CanvasSpec = {
     aspectRatio: str(c.aspectRatio, `${dw}:${dh}`, '$.canvas.aspectRatio'),
     designWidth: dw, designHeight: dh,
     backgroundColor: str(c.backgroundColor, '#0c0e16', '$.canvas.backgroundColor', (s) => HEX.test(s)),
     backgroundImageData: null,
+    ...(bi ? { backgroundImage: { fit: oneOf(bi.fit, ['COVER', 'CONTAIN', 'STRETCH'] as const, DEFAULT_BACKGROUND.fit, '$.canvas.backgroundImage.fit'),
+      opacity: num(bi.opacity, DEFAULT_BACKGROUND.opacity, 0, 1, '$.canvas.backgroundImage.opacity'), dim: num(bi.dim, DEFAULT_BACKGROUND.dim, 0, 1, '$.canvas.backgroundImage.dim') } } : {}),
     snapping: {
       gridEnabled: bool(sn.gridEnabled, true, '$.canvas.snapping.gridEnabled'),
       gridSize: num(sn.gridSize, 8, 1, 256, '$.canvas.snapping.gridSize'),
@@ -308,6 +329,7 @@ export function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] 
       id, type: rw.type as WidgetType, zIndex: Math.round(num(rw.zIndex, 10 * (i + 1), -10000, 10000, `${p}.zIndex`)),
       visible: bool(rw.visible, true, `${p}.visible`), layout, trackMappingMode: mode, assignedTrackIndices: idx,
     };
+    if (rw.visibility !== undefined) { const vis = sanitizeVisibility(S, rw.visibility, `${p}.visibility`); if (vis) base.visibility = vis; }
     if (rw.name !== undefined) { // tên lớp: chuỗi 1–60 ký tự, không trùng (trùng thì bỏ tên, dùng tên theo loại)
       const nm = typeof rw.name === 'string' ? normalizeWidgetName(rw.name) : '';
       if (!nm || nm.length > MAX_WIDGET_NAME) w('WARN_PRESET_VALUE', `${p}.name`, rw.name, `tên lớp phải dài 1–${MAX_WIDGET_NAME} ký tự; bỏ tên`);
@@ -336,6 +358,9 @@ export function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] 
         lookaheadSeconds: look, playheadPositionRatio: ratio,
         visibleSeconds: num(P.visibleSeconds, Math.min(60, Math.max(0.5, Math.round(look / (1 - ratio) * 1e6) / 1e6)), 0.5, 60, `${p}.properties.visibleSeconds`),
         scrollMode: oneOf(P.scrollMode, ['SCROLL', 'PAGE'] as const, d.scrollMode, `${p}.properties.scrollMode`),
+        pageUnit: oneOf(P.pageUnit, ['SECONDS', 'BARS'] as const, d.pageUnit, `${p}.properties.pageUnit`),
+        pageBars: Math.round(num(P.pageBars, d.pageBars, 1, 32, `${p}.properties.pageBars`)),
+        revealAhead: num(P.revealAhead, d.revealAhead, 0, 30, `${p}.properties.revealAhead`),
         noteStyle: { base: sanitizeStyle(nsBase), tracks },
         keyboard: {
           enabled: bool(kb.enabled, d.keyboard.enabled, `${p}.properties.keyboard.enabled`),
@@ -370,8 +395,10 @@ export function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] 
     for (const f of Object.keys((TEXT_FIELDS as Record<string, object>)[wd.type] ?? {})) missing((P[f] as TextRef | undefined)?.font, `$.widgets[${i}].properties.${f}.font`);
   });
 
+  const phases = raw.phases === undefined ? undefined : sanitizePhases(S, raw.phases, '$.phases');
+  const tonic = raw.tonic === undefined ? undefined : Math.round(num(raw.tonic, NaN, 0, 11, '$.tonic'));
   return {
-    scene: { schemaVersion: SCENE_SCHEMA_VERSION, presetName: str(raw.presetName, 'Untitled', '$.presetName'), author: str(raw.author, '', '$.author'), canvas, textStyles, widgets },
+    scene: { schemaVersion: SCENE_SCHEMA_VERSION, presetName: str(raw.presetName, 'Untitled', '$.presetName'), author: str(raw.author, '', '$.author'), canvas, textStyles, ...(phases?.length ? { phases } : {}), ...(tonic !== undefined && !Number.isNaN(tonic) ? { tonic } : {}), widgets },
     warnings,
   };
 }
@@ -386,6 +413,41 @@ export interface Sanitizer {
   warn(path: string, value: unknown, message: string): void;
   /** Id kiểu chữ có trong scene (để kiểm `styleId` của chữ). */
   styleIds?: ReadonlySet<string>;
+}
+/** Khoảng hiển thị: danh sách khoảng (≤ MAX_RANGES), mỗi khoảng from ≥ 0, to > from hoặc null (tới hết bài); khoảng sai bị bỏ kèm cảnh báo. */
+export function sanitizeVisibility(S: Sanitizer, v: unknown, path: string): WidgetVisibility | undefined {
+  if (!isObj(v)) { S.warn(path, v, 'khoảng hiển thị không phải đối tượng; bỏ'); return undefined; }
+  const ranges: TimeRange[] = [];
+  const list = Array.isArray(v.ranges) ? v.ranges : (S.warn(`${path}.ranges`, v.ranges, 'không phải mảng; coi như hiện suốt bài'), [{ from: 0, to: null }]);
+  if (list.length > MAX_RANGES) S.warn(`${path}.ranges`, list.length, `quá ${MAX_RANGES} khoảng; bỏ phần thừa`);
+  list.slice(0, MAX_RANGES).forEach((r, i) => {
+    const rp = `${path}.ranges[${i}]`;
+    if (!isObj(r)) { S.warn(rp, r, 'khoảng không phải đối tượng; bỏ'); return; }
+    const from = S.num(r.from, NaN, 0, 86400, `${rp}.from`);
+    const to = r.to === null || r.to === undefined ? null : S.num(r.to, NaN, 0, 86400, `${rp}.to`);
+    if (Number.isNaN(from) || (to !== null && Number.isNaN(to))) { S.warn(rp, r, 'khoảng thiếu mốc hợp lệ; bỏ'); return; }
+    if (to !== null && to <= from) { S.warn(rp, r, '"to" phải lớn hơn "from"; bỏ'); return; }
+    ranges.push({ from, to });
+  });
+  ranges.sort((a, b) => a.from - b.from);
+  return { ranges, fadeIn: S.num(v.fadeIn, 0, 0, MAX_FADE, `${path}.fadeIn`), fadeOut: S.num(v.fadeOut, 0, 0, MAX_FADE, `${path}.fadeOut`) };
+}
+/** Phase: mảng {name, start}; tên 1–60 ký tự, start ≥ 0; sắp theo start; hai phase cùng start thì giữ phase đầu. */
+export function sanitizePhases(S: Sanitizer, v: unknown, path: string): Phase[] {
+  if (!Array.isArray(v)) { S.warn(path, v, 'không phải mảng; bỏ'); return []; }
+  if (v.length > MAX_PHASES) S.warn(path, v.length, `quá ${MAX_PHASES} phase; bỏ phần thừa`);
+  const out: Phase[] = [];
+  v.slice(0, MAX_PHASES).forEach((x, i) => {
+    const pp = `${path}[${i}]`;
+    if (!isObj(x)) { S.warn(pp, x, 'phase không phải đối tượng; bỏ'); return; }
+    const name = typeof x.name === 'string' ? normalizeWidgetName(x.name) : '';
+    if (!name || name.length > MAX_PHASE_NAME) { S.warn(`${pp}.name`, x.name, `tên phase phải dài 1–${MAX_PHASE_NAME} ký tự; bỏ phase`); return; }
+    const start = S.num(x.start, NaN, 0, 86400, `${pp}.start`);
+    if (Number.isNaN(start)) { S.warn(`${pp}.start`, x.start, 'thiếu mốc bắt đầu hợp lệ; bỏ phase'); return; }
+    out.push({ name, start });
+  });
+  out.sort((a, b) => a.start - b.start);
+  return out.filter((p, i) => i === 0 || p.start > out[i - 1].start);
 }
 const FONT_OK = (s: string) => /^[\w][\w \-]{0,39}$/.test(s);
 /** Mẫu chữ: tên chỗ giữ riêng của widget + chỗ giữ chung; chỗ giữ lạ hoặc định dạng sai → cảnh báo, chữ giữ nguyên (T-73). */
@@ -529,6 +591,32 @@ const HUD_SANITIZERS = {
     const d = DEFAULT_TEXT_BOX;
     return { align: S.oneOf(P.align, ALIGNS, d.align, `${p}.align`), text: tpl(S, P.text, d.text, `${p}.text`, TEMPLATE_KEYS.TEXT, 2000),
       style: textRef(S, P.style, d.style, `${p}.style`), valueStyle: textRef(S, P.valueStyle, d.valueStyle, `${p}.valueStyle`) };
+  },
+  AUDIO_SPECTRUM(P: Obj, p: string, S: Sanitizer): SpectrumProps {
+    const d = DEFAULT_SPECTRUM, col = (v: unknown, dv: string, path: string) => S.str(v, dv, path, (s) => HEX.test(s));
+    let lo = S.num(P.minHz, d.minHz, 20, 20000, `${p}.minHz`), hi = S.num(P.maxHz, d.maxHz, 20, 20000, `${p}.maxHz`);
+    if (lo >= hi) { S.warn(`${p}.minHz`, lo, 'minHz phải nhỏ hơn maxHz; dùng mặc định'); lo = d.minHz; hi = d.maxHz; }
+    let fl = S.num(P.floorDb, d.floorDb, -80, -10, `${p}.floorDb`), ce = S.num(P.ceilDb, d.ceilDb, -60, 0, `${p}.ceilDb`);
+    if (ce <= fl) { S.warn(`${p}.ceilDb`, ce, 'ceilDb phải lớn hơn floorDb; dùng mặc định'); fl = d.floorDb; ce = d.ceilDb; }
+    return { shape: S.oneOf(P.shape, ['LINE', 'CIRCLE'] as const, d.shape, `${p}.shape`), bars: Math.round(S.num(P.bars, d.bars, 8, 128, `${p}.bars`)), minHz: lo, maxHz: hi,
+      reverse: S.bool(P.reverse, d.reverse, `${p}.reverse`), mirror: S.bool(P.mirror, d.mirror, `${p}.mirror`), angle: normalizeAngle(S.num(P.angle, d.angle, -360, 360, `${p}.angle`)),
+      length: S.num(P.length, d.length, 16, 8192, `${p}.length`), radius: S.num(P.radius, d.radius, 0, 4096, `${p}.radius`), startAngle: S.num(P.startAngle, d.startAngle, -360, 360, `${p}.startAngle`),
+      thickness: S.num(P.thickness, d.thickness, 1, 4096, `${p}.thickness`), minLen: S.num(P.minLen, d.minLen, 0, 100, `${p}.minLen`), barWidth: S.num(P.barWidth, d.barWidth, 0.1, 1, `${p}.barWidth`),
+      roundness: S.num(P.roundness, d.roundness, 0, 1, `${p}.roundness`), attackMs: S.num(P.attackMs, d.attackMs, 0, 1000, `${p}.attackMs`), releaseMs: S.num(P.releaseMs, d.releaseMs, 0, 3000, `${p}.releaseMs`),
+      floorDb: fl, ceilDb: ce, colorMode: S.oneOf(P.colorMode, ['SOLID', 'GRADIENT'] as const, d.colorMode, `${p}.colorMode`), color: col(P.color, d.color, `${p}.color`), colorB: col(P.colorB, d.colorB, `${p}.colorB`),
+      opacity: S.num(P.opacity, d.opacity, 0, 1, `${p}.opacity`), glow: S.num(P.glow, d.glow, 0, 1, `${p}.glow`) };
+  },
+  PARTICLES(P: Obj, p: string, S: Sanitizer): ParticleProps {
+    const d = DEFAULT_PARTICLES;
+    let lo = Math.round(S.num(P.pitchMin, d.pitchMin, 0, 127, `${p}.pitchMin`)), hi = Math.round(S.num(P.pitchMax, d.pitchMax, 0, 127, `${p}.pitchMax`));
+    if (lo >= hi) { S.warn(`${p}.pitchMin`, lo, 'pitchMin phải nhỏ hơn pitchMax; dùng mặc định'); lo = d.pitchMin; hi = d.pitchMax; }
+    return { perNote: Math.round(S.num(P.perNote, d.perNote, 1, 24, `${p}.perNote`)), velocityScale: S.bool(P.velocityScale, d.velocityScale, `${p}.velocityScale`), life: S.num(P.life, d.life, 0.2, 10, `${p}.life`),
+      speed: S.num(P.speed, d.speed, 0, 3000, `${p}.speed`), speedSpread: S.num(P.speedSpread, d.speedSpread, 0, 1, `${p}.speedSpread`), angle: S.num(P.angle, d.angle, -360, 360, `${p}.angle`), spread: S.num(P.spread, d.spread, 0, 360, `${p}.spread`),
+      gravity: S.num(P.gravity, d.gravity, -3000, 3000, `${p}.gravity`), sizeStart: S.num(P.sizeStart, d.sizeStart, 0, 200, `${p}.sizeStart`), sizeEnd: S.num(P.sizeEnd, d.sizeEnd, 0, 200, `${p}.sizeEnd`),
+      shape: S.oneOf(P.shape, ['CIRCLE', 'SQUARE'] as const, d.shape, `${p}.shape`), colorMode: S.oneOf(P.colorMode, ['TRACK', 'SOLID'] as const, d.colorMode, `${p}.colorMode`), color: S.str(P.color, d.color, `${p}.color`, (s) => HEX.test(s)),
+      opacity: S.num(P.opacity, d.opacity, 0, 1, `${p}.opacity`), fade: S.bool(P.fade, d.fade, `${p}.fade`), glow: S.num(P.glow, d.glow, 0, 1, `${p}.glow`),
+      originX: S.oneOf(P.originX, ['PITCH', 'CENTER', 'SPREAD'] as const, d.originX, `${p}.originX`), originY: S.num(P.originY, d.originY, 0, 1, `${p}.originY`), pitchMin: lo, pitchMax: hi,
+      seed: Math.round(S.num(P.seed, d.seed, 0, 999999, `${p}.seed`)), maxParticles: Math.round(S.num(P.maxParticles, d.maxParticles, 50, 4000, `${p}.maxParticles`)) };
   },
   PROGRESS_BAR(P: Obj, p: string, S: Sanitizer): ProgressBarProps {
     const d = DEFAULT_PROGRESS_BAR;

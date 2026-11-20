@@ -26,7 +26,7 @@ async function run(job: ExportJob, file: Extract<ExportIn, { type: 'start' }>['f
   const faces = needsFonts(scene) ? requiredFonts(scene, charsOfScene(scene, ast)) : [];
   if (needsFonts(scene)) await ensureFonts(faces, loadFont);
   const index = buildIndex(ast.tracks, ast.meta.totalDurationSeconds);
-  const derived: Derived = { index, brightness: job.brightness, hud: buildSceneHud(scene, ast, index), fontsReady: true };
+  const derived: Derived = { index, brightness: job.brightness, hud: buildSceneHud(scene, ast, index), fontsReady: true, ...(job.spectrum ? { audio: job.spectrum } : {}), ...(job.background ? { background: job.background } : {}) };
 
   const canvas = new OffscreenCanvas(width, height);
   const ctx = canvas.getContext('2d');

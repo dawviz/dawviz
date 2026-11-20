@@ -6,7 +6,7 @@
 // và bắt dính đều là lệnh hoàn tác được (lib/commands.ts).
 import { motion } from 'framer-motion';
 import { useContext, useMemo, useRef, useState, type DragEvent, type KeyboardEvent, type ReactNode } from 'react';
-import { ADDABLE_WIDGETS, defaultScene, normalizeAngle, rotateGroup, type Derived, type SceneDocument, type UnifiedProjectAST, type WidgetLayout, type WidgetSpec, type WidgetType } from '@dawviz/render-core';
+import { ADDABLE_WIDGETS, defaultScene, normalizeAngle, rotateGroup, type Derived, type Phase, type SceneDocument, type UnifiedProjectAST, type WidgetLayout, type WidgetSpec, type WidgetType, type WidgetVisibility, type BackgroundImageSpec } from '@dawviz/render-core';
 import { clickIsKeyboard, startPaintDrag } from '../lib/paintDrag.ts';
 import { GestureContext } from '../lib/storeReact.ts';
 import { useI18n } from '../i18n/I18nProvider.tsx';
@@ -24,6 +24,8 @@ import { layerOrder } from '../lib/commands.ts';
 import { checkLayerName } from '../lib/layerName.ts';
 import { MAX_WIDGET_NAME } from '@dawviz/render-core';
 import { StatusIcon } from './StatusIcon.tsx';
+import { BackgroundSection, type BackgroundState } from './BackgroundSection.tsx';
+import { KeySection, PhasesSection, VisibilitySection } from './TimeSections.tsx';
 
 /** Mốc ↺ của mục Bắt dính: giá trị mặc định của canvas (scene mới). */
 const SNAP_DEFAULT = defaultScene().canvas.snapping;
@@ -48,6 +50,14 @@ export interface EditorActions {
   /** Đưa lớp tới vị trí `to` của danh sách Lớp (0 = trên cùng). */
   moveLayer(id: string, to: number): void;
   snapping(p: Partial<SceneDocument['canvas']['snapping']>): void;
+  /** Khoảng hiển thị theo thời gian của widget; null = hiện suốt bài. `key` gộp các lần chỉnh liên tiếp cùng một ô. */
+  visibility(id: string, v: WidgetVisibility | null, key?: string): void;
+  /** Phase của bài (đã sắp theo thời điểm bắt đầu). */
+  phases(list: Phase[], key?: string): void;
+  /** Nốt chủ của bài (0 = C … 11 = B); null = chưa đặt. */
+  tonic(t: number | null): void;
+  /** Ảnh nền của phiên (T-21): nạp, bỏ, đổi cách đặt. */
+  background: { pick(f: File): void; remove(): void; spec(p: Partial<BackgroundImageSpec>): void };
   /** Thêm widget loại `type` (T-68); trả id mới để chọn ngay. */
   add(type: WidgetType): string;
   /** Nhân bản; trả id các bản sao. */
@@ -65,6 +75,8 @@ interface Props {
   widgetSections?(w: WidgetSpec, n: number, locked: boolean): ReactNode[];
   /** Bố cục của phong cách/preset áp gần nhất (đích của nút ↺ ở X, Y, W, H). */
   layoutRef?: Record<string, WidgetLayout>;
+  /** Trạng thái ảnh nền của phiên. */
+  background?: BackgroundState;
 }
 
 /** Tên hiển thị của widget: tên loại theo ngôn ngữ, đánh số khi có nhiều widget cùng loại. */
@@ -83,7 +95,7 @@ export function useWidgetNames(widgets: readonly WidgetSpec[]): (id: string) => 
   }, [widgets, i18n]);
 }
 
-export function Editor({ scene, derived, ast, playback, fonts, advanced, actions, transport, active, widgetSections, layoutRef }: Props) {
+export function Editor({ scene, derived, ast, playback, fonts, advanced, actions, transport, active, widgetSections, layoutRef, background }: Props) {
   const { i18n } = useI18n();
   const [selected, setSelected] = useState<string[]>([]);
   const [locked, setLocked] = useState<ReadonlySet<string>>(new Set());
@@ -279,7 +291,7 @@ export function Editor({ scene, derived, ast, playback, fonts, advanced, actions
       </div>
 
       <aside aria-label={i18n.t('web.editor.properties')} className="relative min-h-0 overflow-y-auto border-t border-line bg-surface lg:border-l lg:border-t-0" data-testid="editor-props">
-        <Properties scene={scene} selected={live} locked={locked} name={name} advanced={advanced} actions={actions} onLock={toggleLock} order={order} move={move} widgetSections={widgetSections} onPick={(id) => setSelected([id])} layoutRef={layoutRef}
+        <Properties background={background} duration={derived?.index.duration ?? 0} scene={scene} selected={live} locked={locked} name={name} advanced={advanced} actions={actions} onLock={toggleLock} order={order} move={move} widgetSections={widgetSections} onPick={(id) => setSelected([id])} layoutRef={layoutRef}
           onDuplicate={duplicateSel} onRemove={removeSel} />
       </aside>
     </div>
@@ -371,7 +383,7 @@ function AlignSection({ n, items, frame, onLayouts, locked }: { n: number; items
 
 const btn = 'flex min-h-[var(--hit)] items-center gap-1.5 rounded border border-control bg-raised px-2.5 text-xs font-medium text-fg transition hover:border-line-strong disabled:cursor-not-allowed disabled:opacity-50';
 
-function Properties({ scene, selected, locked, name, advanced, actions, onLock, order, move, widgetSections, onPick, layoutRef, onDuplicate, onRemove }: { onDuplicate(): void; onRemove(): void; layoutRef?: Record<string, WidgetLayout>; onPick(id: string): void; scene: SceneDocument; selected: string[]; locked: ReadonlySet<string>; name(id: string): string; advanced: boolean; actions: EditorActions; onLock(id: string): void; order: string[]; move(id: string, to: number): void; widgetSections?: Props['widgetSections'] }) {
+function Properties({ background, duration, scene, selected, locked, name, advanced, actions, onLock, order, move, widgetSections, onPick, layoutRef, onDuplicate, onRemove }: { background?: BackgroundState; duration: number; onDuplicate(): void; onRemove(): void; layoutRef?: Record<string, WidgetLayout>; onPick(id: string): void; scene: SceneDocument; selected: string[]; locked: ReadonlySet<string>; name(id: string): string; advanced: boolean; actions: EditorActions; onLock(id: string): void; order: string[]; move(id: string, to: number): void; widgetSections?: Props['widgetSections'] }) {
   const { i18n } = useI18n();
   const ws = selected.map((id) => scene.widgets.find((w) => w.id === id)!).filter(Boolean);
   const { designWidth: W, designHeight: H } = scene.canvas;
@@ -402,7 +414,10 @@ function Properties({ scene, selected, locked, name, advanced, actions, onLock, 
         {/* Hình thức nốt chỉ còn ở Editor (D-57): lối tắt chọn Piano Roll để người mới không phải đoán. */}
         {piano && <button type="button" className={btn} onClick={() => onPick(piano.id)} data-testid="editor-open-look">{i18n.t('web.editor.openLook')}</button>}
       </InspectorSection>
-      {snapping(2)}
+      <PhasesSection n={2} phases={scene.phases ?? []} duration={duration} onChange={actions.phases} />
+      <KeySection n={3} tonic={scene.tonic} onChange={actions.tonic} />
+      {background && <BackgroundSection n={4} state={background} spec={scene.canvas.backgroundImage} onPick={actions.background.pick} onRemove={actions.background.remove} onSpec={actions.background.spec} />}
+      {snapping(background ? 5 : 4)}
     </>
   );
 
@@ -514,8 +529,9 @@ function Properties({ scene, selected, locked, name, advanced, actions, onLock, 
         <TickField strong label={i18n.t('web.editor.visible')} checked={w.visible} onChange={(v) => actions.visible(w.id, v)} reference />
         <TickField strong label={i18n.t('web.editor.locked')} checked={lk} onChange={() => onLock(w.id)} reference={false} />
       </InspectorSection>
-      <AlignSection n={4 + k} items={[w]} frame={{ width: W, height: H }} onLayouts={actions.layouts} locked={locked} />
-      {snapping(5 + k)}
+      <VisibilitySection n={4 + k} widgetId={w.id} value={w.visibility} disabled={lk} onChange={(v, key) => actions.visibility(w.id, v, key)} />
+      <AlignSection n={5 + k} items={[w]} frame={{ width: W, height: H }} onLayouts={actions.layouts} locked={locked} />
+      {snapping(6 + k)}
     </>
   );
 }

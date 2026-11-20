@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-WIDGET-07: Audio Spectrum & Meter (D-10, ARC-03, ARC-06)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-07: Audio Spectrum & Meter (D-10, ARC-03, ARC-06)"
 chunk: req-widget-07-audio-spectrum-meter-d-10-arc-03-a.md
-source_lines: 625-637
-source_sha1: 3ea818ffe0
+source_lines: 625-638
+source_sha1: 06902f4c4f
 ids: [ARC-03, ARC-06, D-10, D-54, ERR_AUDIO_DECODE, ERR_AUDIO_TOO_LONG, REQ-AUDIO-01, REQ-GRAPHICS-03, REQ-WIDGET-07]
 ---
 #### REQ-WIDGET-07: Audio Spectrum & Meter (D-10, ARC-03, ARC-06)
@@ -19,4 +19,5 @@ ids: [ARC-03, ARC-06, D-10, D-54, ERR_AUDIO_DECODE, ERR_AUDIO_TOO_LONG, REQ-AUDI
 * **Tuỳ chỉnh hình dạng (bổ sung v1.1 tài liệu):**
   * **1.0:** kiểu Bars, Mirrored, Line/Area (đường phổ liền), Dots, Oscilloscope (dạng sóng tức thời), **Waveform tổng quan** (toàn bài, có vạch phát và phần đã phát tô màu khác), Peak/RMS Meter. Tham số: số cột 8–256, thang tần số log/tuyến tính/mel, dải tần (ví dụ 30 Hz–16 kHz), độ rộng và khe cột, bo góc, hướng (theo mục "Hướng cột" ở trên), làm mượt theo thời gian (attack/release ms, tính tất định từ PCM, không mô phỏng), chấm đỉnh rơi chậm (peak cap), màu đơn / gradient theo tần số / gradient theo biên độ, độ đục, phát sáng.
   * **1.1:** dạng **tròn/radial** (cột toả quanh tâm, có thể đặt ảnh hoặc logo ở giữa), xoắn ốc, đường cong tuỳ vẽ làm "đường nền" cho cột chạy theo; hình cột là sprite người dùng nạp; mọi tham số gắn được keyframe/biểu thức (ví dụ bán kính đập theo kick).
+* **Hiện trạng (T-53, 2026-11-20): một widget, hai hình dạng.** Thay vì nhiều widget riêng (cột dọc, đối xứng…), `AUDIO_SPECTRUM` có thuộc tính `shape`: **LINE** (cột xếp theo một đường, `angle` −360…360° = hướng đường, `length` và `thickness` = chiều dài đường và độ cao cột, `mirror` = mọc hai phía) và **CIRCLE** (cột toả quanh tâm, `radius`, `thickness`, `startAngle`, `mirror` = đối xứng trái phải). Chung: 8–128 cột, dải tần (thang log), đảo chiều, gradient theo tần số, bo góc, attack/release tất định, sàn/trần dB, độ đục, phát sáng. Phân tích: FFT cơ số 2 tự cài, Hann 2048, mỗi 10 ms một khung, 128 dải log 30 Hz–16 kHz lượng tử 8 bit (−80…0 dBFS) cùng đỉnh/RMS; tính một lần ở Worker khi nạp âm thanh, **cùng một bảng** dùng cho Xem trước và Export (gửi kèm lệnh xuất). Hình chữ nhật xoay là primitive mới (`RectPrim.rotation`). **Chưa làm:** Oscilloscope, Waveform tổng quan, Meter, Dots, Line/Area, thang tần số tuyến tính/mel, chấm đỉnh rơi chậm, xoắn ốc, nguồn stem (REQ-AUDIO-01).
 * **Nguồn âm thanh:** 1.0 dùng một tệp audio tổng (mix). Hiện spectrum, waveform hay meter **riêng cho từng track** cần âm thanh tách track (stem) do người dùng xuất từ DAW: xem **REQ-AUDIO-01** (bản 1.2). Widget chọn nguồn là tệp tổng hoặc stem của track nào.

@@ -44,6 +44,62 @@ Mục **Căn chỉnh** có sáu nút: căn mép trái, giữa, phải và mép t
 
 Widget xoay được căn theo khung bao quanh nó. Widget đang khoá đứng yên.
 
+## Hạt (Particles)
+
+Widget **Hạt** phát ra các hạt nhỏ mỗi khi có nốt. Hạt chỉ phụ thuộc vào thời điểm đang xem, nên tua tới đâu cũng thấy đúng như chạy từ đầu, và xuất video cho đúng cùng hình.
+
+- **Số hạt mỗi nốt**, **Tuổi thọ**, **Tốc độ**, **Hướng bay** (0° là lên trên, tăng theo chiều kim đồng hồ), **Độ toả** (độ rộng quạt bay), **Trọng lực** (dương là rơi xuống, âm là bay lên), **Cỡ lúc đầu** và **Cỡ lúc cuối**.
+- **Màu:** theo màu của track phát nốt, hoặc **Một màu**.
+- Ở Nâng cao: nốt mạnh sinh nhiều hạt hơn, độ biến thiên tốc độ, hình tròn hay vuông, độ đục, mờ dần, phát sáng, **Vị trí xuất phát** (theo cao độ trải trên bề rộng widget, giữa, hoặc rải đều) và độ cao xuất phát, **Hạt giống ngẫu nhiên** (đổi để có kiểu rải khác), **Số hạt tối đa cùng lúc** (quá số này thì bỏ hạt cũ nhất).
+- Chọn track cho widget ở mục **Track** của **Thiết lập** như các widget khác.
+
+## Ảnh nền
+
+Khi không chọn widget nào, mục **Ảnh nền** cho bạn chọn một ảnh PNG, JPEG, WebP hoặc GIF (tối đa 20 MB; ảnh quá lớn về kích thước được thu nhỏ còn 4096 điểm ở cạnh dài, GIF lấy khung đầu). Ảnh nằm dưới mọi widget.
+
+- **Cách đặt:** **Phủ kín** (cắt phần thừa ở giữa), **Vừa khung** (nguyên ảnh, chừa màu nền) hoặc **Kéo giãn** (có thể méo ảnh).
+- **Độ đục** và **Làm tối** (phủ một lớp đen lên ảnh để chữ và nốt dễ đọc).
+- Ảnh được lưu cùng phiên và gói dự án. **Preset không chứa ảnh**, chỉ nhớ cách đặt, nên gửi preset cho người khác thì họ tự chọn ảnh của họ.
+
+## Phổ tần (Spectrum)
+
+Widget **Phổ tần** vẽ các cột nhảy theo âm thanh. Cần nạp âm thanh ở thẻ Xem trước (sau khi nạp, ứng dụng mất vài giây để phân tích; trong lúc đó và khi chưa có âm thanh, các cột nằm ở độ cao thấp nhất để bạn vẫn thấy chỗ đặt). Phổ đi theo **Offset âm thanh** của dự án.
+
+Có hai hình dạng, chọn ở **Hình dạng** trong mục **Thiết lập**:
+
+- **Thẳng:** các cột xếp dọc theo một đường, tần số thấp ở đầu đường. **Góc** xoay đường theo mọi góc từ -360° đến 360° (0° là nằm ngang, tăng theo chiều kim đồng hồ; 90° là đứng, tần số thấp ở trên). **Chiều dài đường** và **Độ cao cột** là kích thước của hình; cả hình luôn nằm giữa khung widget.
+- **Tròn:** các cột toả ra quanh tâm khung. **Bán kính vòng** là bán kính vòng trong, **Độ cao cột** là độ dài tối đa của cột. **Góc bắt đầu** (Nâng cao) xoay vị trí cột đầu tiên, tính từ đỉnh theo chiều kim đồng hồ.
+
+Chung cho cả hai: **Số cột** (8 đến 128), **Màu**. Ở Nâng cao còn có:
+
+- **Đối xứng:** hình thẳng thì cột mọc về hai phía của đường; hình tròn thì hai nửa vòng đối xứng trái phải.
+- **Đảo chiều tần số**, **Chuyển màu theo tần số** (từ **Màu** sang **Màu tần số cao**), bề rộng cột, độ bo tròn, **Độ cao khi lặng**.
+- **Tần số thấp nhất/cao nhất** (thang log): chỉ lấy một dải tần.
+- **Bám lên** và **Rơi xuống** (mili giây): cột lên nhanh và rơi chậm cho mượt. Đặt 0 thì cột nhảy tức thì.
+- **Mức sàn** và **Mức trần** (dB): âm nhỏ hơn sàn thì cột thấp nhất, lớn hơn trần thì cột cao nhất. Nhạc yên tĩnh thì nâng sàn lên hoặc hạ trần xuống để cột nhảy rõ hơn.
+- **Độ đục** và **Phát sáng**.
+
+Muốn một hình khác góc, kéo tay nắm xoay cả widget cũng được; **Góc** ở đây xoay đường mà không xoay khung.
+
+## Nốt chủ
+
+Khi không chọn widget nào, mục **Nốt chủ** cho bạn chọn nốt chủ của bài (C đến B). Có nốt chủ thì số liệu `{bass}` hiện **bậc** của nốt bass (1, ♭2, 2, … 7); chưa đặt thì hiện tên nốt.
+
+## Khoảng hiển thị
+
+Mặc định widget hiện suốt bài. Chọn widget rồi bật **Chỉ hiện trong các khoảng** ở mục **Khoảng hiển thị** để giới hạn lúc nó xuất hiện, ví dụ chỉ hiện tên bài ở 10 giây đầu.
+
+- Mỗi dòng là một khoảng: **Hiện từ** và **Hiện tới**. Gõ giây (`90`, `90.5`) hoặc phút:giây (`1:30`, `1:30.5`). Để trống ô **Hiện tới** nghĩa là hiện tới hết bài.
+- **Thêm khoảng** thêm một dòng; nút × xoá dòng. Không còn khoảng nào thì widget không bao giờ hiện.
+- **Hiện dần** và **Ẩn dần** (giây) làm widget mờ vào lúc bắt đầu khoảng và mờ ra lúc kết thúc. Khoảng ngắn hơn tổng hai thời gian này thì cả hai co lại theo tỉ lệ.
+- Tắt lại ô tick để về hiện suốt bài.
+
+Khoảng hiển thị chỉ ảnh hưởng video và Xem trước; trong Editor bạn vẫn chọn và kéo widget như bình thường.
+
+## Phase
+
+Phase là các đoạn của bài (verse, chorus…). Khi không chọn widget nào, mục **Phase** ở cột phải cho thêm phase: mỗi dòng có tên và thời điểm bắt đầu. Phase kéo dài tới phase kế; phase cuối kéo dài tới hết bài. Các số liệu `{phase}`, `{next_phase}`, `{phase_remaining}`… dùng được trong mọi ô chữ (xem [Chỗ giữ](08-cho-giu.md)).
+
 ## Điểm neo (Nâng cao)
 
 Điểm neo là điểm widget xoay quanh. Mặc định là tâm.
@@ -125,6 +181,8 @@ Chọn widget Piano roll (hoặc bấm **Chỉnh hình thức nốt** khi chưa 
 - **Dải cao độ:** **Vừa nội dung** lấy theo nốt thấp nhất và cao nhất của các track (nên một track ít nốt sẽ được phóng to); **Tuỳ chọn** (mặc định, A0–C8, đủ 88 phím) cho gõ nốt thấp nhất và cao nhất theo tên nốt như `C2`, `C#3`, `Db4`. Nốt nằm ngoài khoảng bị cắt. Tệp preset lưu dải này bằng số MIDI (`pitchMin`, `pitchMax`).
 - **Hiện bàn phím piano:** vẽ bàn phím ở mép trái; phím sáng lên khi nốt chạm tới. Khi bật bàn phím, vạch phát nằm đúng mép bàn phím nên hai ô **Hiện vạch phát** và **Vị trí vạch phát** đều ẩn. Tắt bàn phím để chỉnh lại vạch phát.
 - **Cách nốt chạy:** **Cuộn** (mặc định) nốt trôi qua vạch phát đứng yên; **Trang** nốt đứng yên theo từng trang, vạch phát chạy từ trái sang phải, hết trang thì về đầu và hiện trang nốt mới (nốt kéo dài qua ranh giới trang bị cắt ở mép trang; nốt đã phát đậm, nốt sắp tới nhạt theo **Độ đục khi chờ**). Ô **Thời gian hiển thị** là tỉ lệ thời gian ở chế độ Cuộn và độ dài một trang ở chế độ Trang. Ở chế độ Trang ô **Vị trí vạch phát** không còn tác dụng nên bị ẩn.
+- **Độ dài trang (chế độ Trang):** **Giây** hoặc **Ô nhịp**. Chọn **Ô nhịp** thì mỗi trang gồm đúng số ô nhịp bạn đặt (**Số ô nhịp mỗi trang**), trang bắt đầu đúng đầu ô nhịp và đổi trang đúng lúc sang ô mới, kể cả khi bài đổi tempo hoặc nhịp (trang dài ngắn khác nhau).
+- **Hiện nốt trước (chế độ Trang):** 0 là hiện cả trang. Đặt một số giây (ví dụ 2) thì nốt chỉ hiện khi còn cách vạch phát chừng ấy thời gian; nốt đã phát ở lại tới hết trang. Giống kiểu trang nhạc "hiện dần" trong nhiều video.
 - **Hiện vạch phát:** ẩn vạch thì nốt vẫn phát ở đúng chỗ đó, chỉ không vẽ vạch. Khi vạch đang ẩn, ô **Vị trí vạch phát** cũng ẩn theo; bật lại vạch để chỉnh vị trí.
 
 ### Phát sáng

@@ -457,7 +457,7 @@
   },
   "SRS.md": {
    "title": "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)",
-   "sha1": "3ea818ffe0",
+   "sha1": "06902f4c4f",
    "chunks": [
     {
      "n": 0,
@@ -1556,10 +1556,10 @@
       "3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04)",
       "REQ-WIDGET-07: Audio Spectrum & Meter (D-10, ARC-03, ARC-06)"
      ],
-     "chars": 2473,
+     "chars": 3470,
      "lines": [
       625,
-      637
+      638
      ],
      "ids": [
       "ARC-03",
@@ -1575,6 +1575,24 @@
     },
     {
      "n": 43,
+     "file": "SRS/req-audio-02-hieu-chinh-do-tre-thiet-bi-cho-xem.md",
+     "title": "REQ-AUDIO-02: Hiệu chỉnh độ trễ thiết bị cho Xem trước (T-82)",
+     "path": [
+      "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS)",
+      "3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04)",
+      "REQ-AUDIO-02: Hiệu chỉnh độ trễ thiết bị cho Xem trước (T-82)"
+     ],
+     "chars": 1882,
+     "lines": [
+      639,
+      646
+     ],
+     "ids": [
+      "REQ-AUDIO-02"
+     ]
+    },
+    {
+     "n": 44,
      "file": "SRS/req-audio-01-am-thanh-theo-track-stem-ban-1-2.md",
      "title": "REQ-AUDIO-01: Âm thanh theo track (stem), bản 1.2",
      "path": [
@@ -1584,8 +1602,8 @@
      ],
      "chars": 3254,
      "lines": [
-      638,
-      650
+      647,
+      659
      ],
      "ids": [
       "ERR_AUDIO_TOO_MANY",
@@ -1600,7 +1618,7 @@
      ]
     },
     {
-     "n": 44,
+     "n": 45,
      "file": "SRS/req-widget-08-progress-bar-d-27.md",
      "title": "REQ-WIDGET-08: Progress Bar (D-27)",
      "path": [
@@ -1610,8 +1628,8 @@
      ],
      "chars": 822,
      "lines": [
-      651,
-      656
+      660,
+      665
      ],
      "ids": [
       "D-27",
@@ -1621,7 +1639,7 @@
      ]
     },
     {
-     "n": 45,
+     "n": 46,
      "file": "SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md",
      "title": "3.4b. Đề xuất widget và dữ liệu hiển thị bổ sung (D-32, OI-11) **[ĐỀ XUẤT, chưa cam kết v1.0]**",
      "path": [
@@ -1630,8 +1648,8 @@
      ],
      "chars": 2994,
      "lines": [
-      657,
-      680
+      666,
+      689
      ],
      "ids": [
       "D-32",
@@ -1657,7 +1675,7 @@
      ]
     },
     {
-     "n": 46,
+     "n": 47,
      "file": "SRS/3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md",
      "title": "3.5. Lưu trữ, cấu hình & đóng gói (BR-05, D-11)",
      "path": [
@@ -1666,8 +1684,8 @@
      ],
      "chars": 4696,
      "lines": [
-      681,
-      753
+      690,
+      762
      ],
      "ids": [
       "BR-05",
@@ -1686,7 +1704,7 @@
      ]
     },
     {
-     "n": 47,
+     "n": 48,
      "file": "SRS/req-cap-01-phat-hien-kha-nang-cua-trinh-duyet-r.md",
      "title": "REQ-CAP-01: Phát hiện khả năng của trình duyệt (R-06, D-05)",
      "path": [
@@ -1696,8 +1714,8 @@
      ],
      "chars": 413,
      "lines": [
-      756,
-      758
+      765,
+      767
      ],
      "ids": [
       "D-05",
@@ -1706,7 +1724,7 @@
      ]
     },
     {
-     "n": 48,
+     "n": 49,
      "file": "SRS/req-export-00-pre-flight-r-01-d-17.md",
      "title": "REQ-EXPORT-00: Pre-flight (R-01, D-17)",
      "path": [
@@ -1716,8 +1734,8 @@
      ],
      "chars": 2606,
      "lines": [
-      759,
-      781
+      768,
+      790
      ],
      "ids": [
       "D-17",
@@ -1729,7 +1747,7 @@
      ]
     },
     {
-     "n": 49,
+     "n": 50,
      "file": "SRS/req-export-01-xung-nhip-khung-hinh-doc-lap.md",
      "title": "REQ-EXPORT-01: Xung nhịp khung hình độc lập",
      "path": [
@@ -1739,8 +1757,8 @@
      ],
      "chars": 502,
      "lines": [
-      782,
-      787
+      791,
+      796
      ],
      "ids": [
       "REQ-EXPORT-01",
@@ -1748,7 +1766,7 @@
      ]
     },
     {
-     "n": 50,
+     "n": 51,
      "file": "SRS/req-export-02-kiem-soat-dong-chay-r-01.md",
      "title": "REQ-EXPORT-02: Kiểm soát dòng chảy (R-01)",
      "path": [
@@ -1758,15 +1776,15 @@
      ],
      "chars": 192,
      "lines": [
-      788,
-      790
+      797,
+      799
      ],
      "ids": [
       "REQ-EXPORT-02"
      ]
     },
     {
-     "n": 51,
+     "n": 52,
      "file": "SRS/req-export-03-luong-am-thanh-va-silent-audio-d-0.md",
      "title": "REQ-EXPORT-03: Luồng âm thanh và Silent Audio (D-01 sửa, R-08)",
      "path": [
@@ -1776,8 +1794,8 @@
      ],
      "chars": 1276,
      "lines": [
-      791,
-      796
+      800,
+      805
      ],
      "ids": [
       "AT-03",
@@ -1788,7 +1806,7 @@
      ]
     },
     {
-     "n": 52,
+     "n": 53,
      "file": "SRS/req-export-04-ghep-container-qua-mediabunny-d-04.md",
      "title": "REQ-EXPORT-04: Ghép container qua Mediabunny (D-04)",
      "path": [
@@ -1798,8 +1816,8 @@
      ],
      "chars": 845,
      "lines": [
-      797,
-      801
+      806,
+      810
      ],
      "ids": [
       "D-04",
@@ -1808,7 +1826,7 @@
      ]
     },
     {
-     "n": 53,
+     "n": 54,
      "file": "SRS/req-export-05-giao-dien-tien-do-va-huy.md",
      "title": "REQ-EXPORT-05: Giao diện tiến độ và hủy",
      "path": [
@@ -1818,15 +1836,15 @@
      ],
      "chars": 466,
      "lines": [
-      802,
-      804
+      811,
+      813
      ],
      "ids": [
       "REQ-EXPORT-05"
      ]
     },
     {
-     "n": 54,
+     "n": 55,
      "file": "SRS/req-export-06-chon-dinh-dang-va-chuoi-du-phong-c.md",
      "title": "REQ-EXPORT-06: Chọn định dạng và chuỗi dự phòng codec (D-05, D-61, R-06)",
      "path": [
@@ -1836,8 +1854,8 @@
      ],
      "chars": 1793,
      "lines": [
-      805,
-      831
+      814,
+      840
      ],
      "ids": [
       "D-05",
@@ -1848,7 +1866,7 @@
      ]
     },
     {
-     "n": 55,
+     "n": 56,
      "file": "SRS/req-export-08-xuat-nen-trong-suot-de-ghep-trong.md",
      "title": "REQ-EXPORT-08: Xuất nền trong suốt để ghép trong phần mềm dựng (D-47), bản 1.0",
      "path": [
@@ -1858,8 +1876,8 @@
      ],
      "chars": 2121,
      "lines": [
-      832,
-      843
+      841,
+      852
      ],
      "ids": [
       "D-47",
@@ -1867,7 +1885,7 @@
      ]
     },
     {
-     "n": 56,
+     "n": 57,
      "file": "SRS/req-export-07-thuc-thi-trong-worker-arc-02-d-21.md",
      "title": "REQ-EXPORT-07: Thực thi trong Worker (ARC-02, D-21)",
      "path": [
@@ -1877,8 +1895,8 @@
      ],
      "chars": 946,
      "lines": [
-      844,
-      853
+      853,
+      862
      ],
      "ids": [
       "ARC-02",
@@ -1889,7 +1907,7 @@
      ]
     },
     {
-     "n": 57,
+     "n": 58,
      "file": "SRS/3-7-da-ngon-ngu-va-cong-dong-dich-br-09-d-30-kpi.md",
      "title": "3.7. Đa ngôn ngữ và cộng đồng dịch (BR-09, D-30, KPI-08)",
      "path": [
@@ -1898,8 +1916,8 @@
      ],
      "chars": 2714,
      "lines": [
-      854,
-      868
+      863,
+      877
      ],
      "ids": [
       "BR-09",
@@ -1909,7 +1927,7 @@
      ]
     },
     {
-     "n": 58,
+     "n": 59,
      "file": "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md",
      "title": "3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)",
      "path": [
@@ -1918,8 +1936,8 @@
      ],
      "chars": 328,
      "lines": [
-      869,
-      872
+      878,
+      881
      ],
      "ids": [
       "AD-08",
@@ -1934,7 +1952,7 @@
      ]
     },
     {
-     "n": 59,
+     "n": 60,
      "file": "SRS/req-graphics-09-bo-may-keyframe-easing-va-graph.md",
      "title": "REQ-GRAPHICS-09: Bộ máy keyframe, easing và Graph Editor",
      "path": [
@@ -1944,15 +1962,15 @@
      ],
      "chars": 844,
      "lines": [
-      873,
-      876
+      882,
+      885
      ],
      "ids": [
       "REQ-GRAPHICS-09"
      ]
     },
     {
-     "n": 60,
+     "n": 61,
      "file": "SRS/req-graphics-10-template-chuyen-canh-not.md",
      "title": "REQ-GRAPHICS-10: Template chuyển cảnh nốt",
      "path": [
@@ -1962,8 +1980,8 @@
      ],
      "chars": 467,
      "lines": [
-      877,
-      879
+      886,
+      888
      ],
      "ids": [
       "AD-11",
@@ -1973,7 +1991,7 @@
      ]
     },
     {
-     "n": 61,
+     "n": 62,
      "file": "SRS/req-graphics-11-hat-khong-trang-thai.md",
      "title": "REQ-GRAPHICS-11: Hạt không trạng thái",
      "path": [
@@ -1981,17 +1999,17 @@
       "3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)",
       "REQ-GRAPHICS-11: Hạt không trạng thái"
      ],
-     "chars": 327,
+     "chars": 836,
      "lines": [
-      880,
-      882
+      889,
+      892
      ],
      "ids": [
       "REQ-GRAPHICS-11"
      ]
     },
     {
-     "n": 62,
+     "n": 63,
      "file": "SRS/req-graphics-12-storyboard-hieu-ung-va-chu-dong.md",
      "title": "REQ-GRAPHICS-12: Storyboard, hiệu ứng và chữ động",
      "path": [
@@ -2001,15 +2019,15 @@
      ],
      "chars": 529,
      "lines": [
-      883,
-      885
+      893,
+      895
      ],
      "ids": [
       "REQ-GRAPHICS-12"
      ]
     },
     {
-     "n": 63,
+     "n": 64,
      "file": "SRS/req-graphics-13-bieu-thuc-thuoc-tinh.md",
      "title": "REQ-GRAPHICS-13: Biểu thức thuộc tính",
      "path": [
@@ -2019,15 +2037,15 @@
      ],
      "chars": 339,
      "lines": [
-      886,
-      888
+      896,
+      898
      ],
      "ids": [
       "REQ-GRAPHICS-13"
      ]
     },
     {
-     "n": 64,
+     "n": 65,
      "file": "SRS/req-graphics-14-khoang-hien-thi-theo-thoi-gian-v.md",
      "title": "REQ-GRAPHICS-14: Khoảng hiển thị theo thời gian và theo track",
      "path": [
@@ -2035,10 +2053,10 @@
       "3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)",
       "REQ-GRAPHICS-14: Khoảng hiển thị theo thời gian và theo track"
      ],
-     "chars": 759,
+     "chars": 1148,
      "lines": [
-      889,
-      893
+      899,
+      904
      ],
      "ids": [
       "P-04",
@@ -2051,7 +2069,7 @@
      ]
     },
     {
-     "n": 65,
+     "n": 66,
      "file": "SRS/req-graphics-15-khong-gian-2-5d-xoay-x-y-z-va-ca.md",
      "title": "REQ-GRAPHICS-15: Không gian 2.5D: xoay X/Y/Z và camera phối cảnh (D-47), bản 1.1",
      "path": [
@@ -2061,8 +2079,8 @@
      ],
      "chars": 1874,
      "lines": [
-      894,
-      902
+      905,
+      913
      ],
      "ids": [
       "D-47",
@@ -2072,7 +2090,7 @@
      ]
     },
     {
-     "n": 66,
+     "n": 67,
      "file": "SRS/req-storage-05-tai-nguyen-cua-phien.md",
      "title": "REQ-STORAGE-05: Tài nguyên của phiên",
      "path": [
@@ -2080,19 +2098,20 @@
       "3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)",
       "REQ-STORAGE-05: Tài nguyên của phiên"
      ],
-     "chars": 322,
+     "chars": 967,
      "lines": [
-      903,
-      905
+      914,
+      917
      ],
      "ids": [
       "ERR_ASSET_DECODE",
       "ERR_ASSET_TOO_LARGE",
-      "REQ-STORAGE-05"
+      "REQ-STORAGE-05",
+      "WARN_PRESET_UNSUPPORTED"
      ]
     },
     {
-     "n": 67,
+     "n": 68,
      "file": "SRS/req-storage-06-preset-moi-va-chia-se.md",
      "title": "REQ-STORAGE-06: Preset mới và chia sẻ",
      "path": [
@@ -2102,8 +2121,8 @@
      ],
      "chars": 444,
      "lines": [
-      906,
-      908
+      918,
+      920
      ],
      "ids": [
       "D-14",
@@ -2113,7 +2132,7 @@
      ]
     },
     {
-     "n": 68,
+     "n": 69,
      "file": "SRS/4-yeu-cau-phi-chuc-nang-non-functional-requireme.md",
      "title": "4. YÊU CẦU PHI CHỨC NĂNG (NON-FUNCTIONAL REQUIREMENTS)",
      "path": [
@@ -2121,8 +2140,8 @@
      ],
      "chars": 5167,
      "lines": [
-      909,
-      955
+      921,
+      967
      ],
      "ids": [
       "ARC-07",
@@ -2164,7 +2183,7 @@
      ]
     },
     {
-     "n": 69,
+     "n": 70,
      "file": "SRS/5-1-bo-cuc-khong-gian-lam-viec.md",
      "title": "5.1. Bố cục không gian làm việc",
      "path": [
@@ -2173,8 +2192,8 @@
      ],
      "chars": 4893,
      "lines": [
-      958,
-      995
+      970,
+      1007
      ],
      "ids": [
       "D-57",
@@ -2182,7 +2201,7 @@
      ]
     },
     {
-     "n": 70,
+     "n": 71,
      "file": "SRS/5-2-che-do-tuong-tac.md",
      "title": "5.2. Chế độ tương tác",
      "path": [
@@ -2191,15 +2210,15 @@
      ],
      "chars": 364,
      "lines": [
-      996,
-      1000
+      1008,
+      1012
      ],
      "ids": [
       "REQ-GRAPHICS-05"
      ]
     },
     {
-     "n": 71,
+     "n": 72,
      "file": "SRS/5-3-yeu-cau-giao-dien.md",
      "title": "5.3. Yêu cầu giao diện",
      "path": [
@@ -2208,8 +2227,8 @@
      ],
      "chars": 18661,
      "lines": [
-      1001,
-      1074
+      1013,
+      1086
      ],
      "ids": [
       "ARC-05",
@@ -2264,7 +2283,7 @@
      ]
     },
     {
-     "n": 72,
+     "n": 73,
      "file": "SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md",
      "title": "6. MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU",
      "path": [
@@ -2272,8 +2291,8 @@
      ],
      "chars": 1419,
      "lines": [
-      1075,
-      1090
+      1087,
+      1102
      ],
      "ids": [
       "BR-01",
@@ -2325,7 +2344,7 @@
      ]
     },
     {
-     "n": 73,
+     "n": 74,
      "file": "SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md",
      "title": "7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO",
      "path": [
@@ -2333,8 +2352,8 @@
      ],
      "chars": 6665,
      "lines": [
-      1091,
-      1125
+      1103,
+      1137
      ],
      "ids": [
       "ARC-01",
@@ -2392,7 +2411,7 @@
      ]
     },
     {
-     "n": 74,
+     "n": 75,
      "file": "SRS/8-cac-van-de-con-mo-cua-srs.md",
      "title": "8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS",
      "path": [
@@ -2400,8 +2419,8 @@
      ],
      "chars": 4044,
      "lines": [
-      1126,
-      1152
+      1138,
+      1164
      ],
      "ids": [
       "D-20",
@@ -2447,7 +2466,7 @@
      ]
     },
     {
-     "n": 75,
+     "n": 76,
      "file": "SRS/phu-luc-a-ma-loi.md",
      "title": "Phụ lục A: Mã lỗi",
      "path": [
@@ -2456,8 +2475,8 @@
      ],
      "chars": 2864,
      "lines": [
-      1155,
-      1180
+      1167,
+      1192
      ],
      "ids": [
       "ERR_ARCHIVE_INVALID",
@@ -2486,7 +2505,7 @@
      ]
     },
     {
-     "n": 76,
+     "n": 77,
      "file": "SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md",
      "title": "Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)",
      "path": [
@@ -2495,8 +2514,8 @@
      ],
      "chars": 1673,
      "lines": [
-      1181,
-      1197
+      1193,
+      1209
      ],
      "ids": [
       "NFR-SEC-04",
@@ -2514,7 +2533,7 @@
      ]
     },
     {
-     "n": 77,
+     "n": 78,
      "file": "SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md",
      "title": "Phụ lục A2: Mã cảnh báo của Parser Library",
      "path": [
@@ -2523,8 +2542,8 @@
      ],
      "chars": 1357,
      "lines": [
-      1198,
-      1203
+      1210,
+      1215
      ],
      "ids": [
       "REQ-AUDIO-01",
@@ -2563,7 +2582,7 @@
      ]
     },
     {
-     "n": 78,
+     "n": 79,
      "file": "SRS/phu-luc-b-ghi-chu-ra-soat.md",
      "title": "Phụ lục B: Ghi chú rà soát",
      "path": [
@@ -2572,8 +2591,8 @@
      ],
      "chars": 2904,
      "lines": [
-      1204,
-      1235
+      1216,
+      1247
      ],
      "ids": [
       "D-20",
@@ -2757,7 +2776,7 @@
   },
   "TECHNICAL-DESIGN.md": {
    "title": "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER",
-   "sha1": "b601c66aca",
+   "sha1": "b30e1aa694",
    "chunks": [
     {
      "n": 0,
@@ -3032,10 +3051,10 @@
       "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại",
       "5.10 Chỗ giữ trong chữ và Ô chữ 🟢 (T-73, SRS REQ-GRAPHICS-19, D-60/OI-18)"
      ],
-     "chars": 2966,
+     "chars": 5437,
      "lines": [
       213,
-      223
+      226
      ],
      "ids": [
       "D-60",
@@ -3055,8 +3074,8 @@
      ],
      "chars": 1256,
      "lines": [
-      226,
-      236
+      229,
+      239
      ],
      "ids": [
       "REQ-UI-14"
@@ -3072,8 +3091,8 @@
      ],
      "chars": 233,
      "lines": [
-      237,
-      239
+      240,
+      242
      ],
      "ids": [
       "NFR-SEC-04",
@@ -3095,8 +3114,8 @@
      ],
      "chars": 3263,
      "lines": [
-      240,
-      253
+      243,
+      256
      ],
      "ids": [
       "ARC-03",
@@ -3119,12 +3138,14 @@
       "6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh)",
       "6.2.2 Đồng hồ chủ"
      ],
-     "chars": 4556,
+     "chars": 5451,
      "lines": [
-      254,
-      274
+      257,
+      278
      ],
-     "ids": []
+     "ids": [
+      "REQ-AUDIO-02"
+     ]
     },
     {
      "n": 20,
@@ -3137,8 +3158,8 @@
      ],
      "chars": 1992,
      "lines": [
-      275,
-      282
+      279,
+      286
      ],
      "ids": [
       "REQ-UI-15",
@@ -3156,8 +3177,8 @@
      ],
      "chars": 1439,
      "lines": [
-      283,
-      290
+      287,
+      294
      ],
      "ids": [
       "REQ-UI-03"
@@ -3174,8 +3195,8 @@
      ],
      "chars": 1211,
      "lines": [
-      291,
-      297
+      295,
+      301
      ],
      "ids": [
       "REQ-WIDGET-07"
@@ -3192,8 +3213,8 @@
      ],
      "chars": 826,
      "lines": [
-      298,
-      303
+      302,
+      307
      ],
      "ids": [
       "REQ-PARSER-07",
@@ -3211,8 +3232,8 @@
      ],
      "chars": 1023,
      "lines": [
-      304,
-      314
+      308,
+      318
      ],
      "ids": [
       "AT-03",
@@ -3230,8 +3251,8 @@
      ],
      "chars": 1014,
      "lines": [
-      315,
-      317
+      319,
+      321
      ],
      "ids": [
       "ERR_AUDIO_DECODE",
@@ -3250,8 +3271,8 @@
      ],
      "chars": 672,
      "lines": [
-      318,
-      325
+      322,
+      329
      ],
      "ids": []
     },
@@ -3265,8 +3286,8 @@
      ],
      "chars": 1860,
      "lines": [
-      326,
-      335
+      330,
+      339
      ],
      "ids": [
       "D-50",
@@ -3283,8 +3304,8 @@
      ],
      "chars": 19139,
      "lines": [
-      336,
-      397
+      340,
+      401
      ],
      "ids": [
       "ARC-05",
@@ -3316,8 +3337,8 @@
      ],
      "chars": 1019,
      "lines": [
-      400,
-      415
+      404,
+      419
      ],
      "ids": [
       "REQ-EXPORT-00",
@@ -3335,8 +3356,8 @@
      ],
      "chars": 947,
      "lines": [
-      416,
-      423
+      420,
+      427
      ],
      "ids": [
       "AT-03",
@@ -3356,8 +3377,8 @@
      ],
      "chars": 1745,
      "lines": [
-      424,
-      433
+      428,
+      437
      ],
      "ids": [
       "D-26",
@@ -3381,8 +3402,8 @@
      ],
      "chars": 8203,
      "lines": [
-      434,
-      448
+      438,
+      452
      ],
      "ids": [
       "AT-03",
@@ -3405,8 +3426,8 @@
      ],
      "chars": 1704,
      "lines": [
-      449,
-      455
+      453,
+      459
      ],
      "ids": [
       "ERR_PRESET_INVALID",
@@ -3423,8 +3444,8 @@
      ],
      "chars": 492,
      "lines": [
-      456,
-      458
+      460,
+      462
      ],
      "ids": []
     },
@@ -3437,8 +3458,8 @@
      ],
      "chars": 470,
      "lines": [
-      459,
-      463
+      463,
+      467
      ],
      "ids": [
       "D-13"
@@ -3453,8 +3474,8 @@
      ],
      "chars": 885,
      "lines": [
-      464,
-      473
+      468,
+      477
      ],
      "ids": [
       "NFR-PERF-04",
@@ -3470,8 +3491,8 @@
      ],
      "chars": 728,
      "lines": [
-      474,
-      476
+      478,
+      480
      ],
      "ids": [
       "OI-07"
@@ -3486,8 +3507,8 @@
      ],
      "chars": 906,
      "lines": [
-      477,
-      483
+      481,
+      487
      ],
      "ids": [
       "D-12",
@@ -3504,8 +3525,8 @@
      ],
      "chars": 760,
      "lines": [
-      484,
-      491
+      488,
+      495
      ],
      "ids": []
     }
@@ -8089,6 +8110,7 @@
   ],
   "WARN_PRESET_UNSUPPORTED": [
    "SRS/lich-su-phien-ban.md",
+   "SRS/req-storage-05-tai-nguyen-cua-phien.md",
    "SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md",
    "TECHNICAL-DESIGN/5-1-giao-dien-chinh.md"
   ],
@@ -8452,6 +8474,10 @@
    "SRS/phu-luc-a-ma-loi.md",
    "TECHNICAL-DESIGN/6-2-1-nap-tep-am-thanh-mix.md",
    "TECHNICAL-DESIGN/6-2-8-kiem-thu-thuan-khong-can-trinh-duyet.md"
+  ],
+  "REQ-AUDIO-02": [
+   "SRS/req-audio-02-hieu-chinh-do-tre-thiet-bi-cho-xem.md",
+   "TECHNICAL-DESIGN/6-2-2-dong-ho-chu.md"
   ],
   "P-02": [
    "SRS/req-audio-01-am-thanh-theo-track-stem-ban-1-2.md",

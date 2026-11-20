@@ -5,6 +5,9 @@ import type { UnifiedProjectAST } from './types.ts';
 import type { WidgetSpec, WidgetType } from './scene.ts';
 import type { HudData } from './hud.ts';
 import type { Measure } from './text.ts';
+import type { Phase } from './visibility.ts';
+import type { DerivedAudio } from './spectrum.ts';
+import type { BackgroundImage } from './background.ts';
 import type { RichText, TextStyleSet } from './typography.ts';
 
 /** Dữ liệu dẫn xuất: tính một lần ngoài vòng vẽ (Technical Design §4). */
@@ -18,6 +21,14 @@ export interface Derived {
   measure?: Measure;
   /** Họ phông vẽ được (phông đóng gói + phông người dùng nạp, REQ-STORAGE-05). Vắng = phông đóng gói. */
   fonts?: ReadonlySet<string>;
+  /** Phase của scene (layoutFrame gắn mỗi khung từ `scene.phases`); cho chỗ giữ `{phase}`… */
+  phases?: readonly Phase[];
+  /** Bảng đặc trưng âm thanh cho widget phổ (T-53); vắng = chưa có âm thanh hoặc đang phân tích. */
+  audio?: DerivedAudio;
+  /** Nốt chủ của bài (0 = C … 11 = B) từ `scene.tonic`; vắng = chưa đặt. Cho chỗ giữ `{bass}`. */
+  tonic?: number;
+  /** Ảnh nền đã nạp của phiên (vẽ trước mọi widget theo `scene.canvas.backgroundImage`); vắng = không có ảnh. */
+  background?: BackgroundImage;
 }
 
 export interface RectPrim {
@@ -27,6 +38,8 @@ export interface RectPrim {
   radius: number;                   // 0 = góc vuông
   glowColor: string; glowBlur: number; // glowBlur 0 = không phát sáng
   stroke: string; strokeWidth: number; // strokeWidth 0 = không viền
+  /** Độ, theo chiều kim đồng hồ quanh TÂM hình chữ nhật (x, y, w, h vẫn là hộp chưa xoay). Vắng/0 = không xoay. */
+  rotation?: number;
 }
 /** Chữ một dòng. `y` là đường baseline; `x` là điểm neo theo `align`. */
 export interface TextPrim {
