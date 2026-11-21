@@ -1231,7 +1231,7 @@
   "web.timeline.group.transform": "Transform",
   "web.timeline.group.props": "Widget properties",
   "web.timeline.props": "Properties",
-  "web.timeline.animatedCount": "{n} animated",
+  "web.timeline.animatedCount": "animated: {n}",
   "web.timeline.onlyAnimated": "Show only animated properties",
   "web.timeline.zoomIn": "Zoom in",
   "web.timeline.zoomOut": "Zoom out",
@@ -1254,7 +1254,7 @@
   "web.timeline.noneAnimated": "Nothing is animated yet. Turn on the stopwatch of a property to start.",
   "web.timeline.showAll": "Show all properties",
   "web.keyinsp.title": "Keyframe",
-  "web.keyinsp.many": "{n} keyframes on {m} properties",
+  "web.keyinsp.many": "Keyframes: {n} · properties: {m}",
   "web.keyinsp.time": "Time",
   "web.keyinsp.value": "Value",
   "web.keyinsp.curveIn": "Curve into this keyframe",
@@ -1264,7 +1264,7 @@
   "web.keyinsp.bezier": "Bezier",
   "web.keyinsp.custom": "Custom curve",
   "web.keyinsp.mixed": "Several values",
-  "web.keyinsp.delete": "Delete {n} keyframe(s)",
+  "web.keyinsp.delete": "Delete keyframes ({n})",
   "web.keyinsp.notAnimated": "Not animated yet. Pick Keyframe or Music above.",
-  "web.keyinsp.keyCount": "{n} keyframe(s). Drag them on the Timeline; select one to edit its curve."
+  "web.keyinsp.keyCount": "Keyframes: {n}. Drag them on the Timeline; select one to shape its curve."
 }

@@ -706,6 +706,10 @@ describe('thẻ Editor (T-68)', () => {
     fireEvent.keyDown(document.querySelector('[data-key="layout.x#1"]')!, { key: 'Delete' });
     await waitFor(() => expect(document.querySelector('[data-key="layout.x#1"]')).toBeNull());
     expect(screen.getByTestId('editor-selected').textContent).toMatch(/(Text box|Ô chữ)/);
+    // không còn keyframe nào đang chọn: Delete trong Timeline không lọt ra Editor để xoá widget
+    fireEvent.keyDown(screen.getByTestId('tl-row-layout.x'), { key: 'Delete' });
+    expect(screen.getByTestId('editor-selected').textContent).toMatch(/(Text box|Ô chữ)/);
+    expect(document.querySelector('[data-key="layout.x#0"]')).toBeInTheDocument();
     ctrlZ(); await waitFor(() => expect(document.querySelector('[data-key="layout.x#1"]')).toBeInTheDocument());
   });
   it('Timeline: chọn hàng thuộc tính để đổi sang Theo nhạc ở Inspector, làn hiện thanh Theo nhạc; bỏ hoạt hình, hoàn tác', async () => {

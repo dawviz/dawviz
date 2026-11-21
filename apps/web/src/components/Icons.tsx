@@ -66,8 +66,9 @@ export const Stopwatch = (p: P) => <S {...p}><circle cx="8" cy="9" r="5" /><path
 export const Diamond = ({ className = 'h-4 w-4', filled }: P & { filled?: boolean }) => (
   <svg viewBox="0 0 16 16" className={className} aria-hidden><path d="M8 2.5 13.5 8 8 13.5 2.5 8Z" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /></svg>
 );
-export const KeyPrev = (p: P) => <S {...p}><path d="M10.5 4 6.5 8l4 4" /><path d="M4.5 4v8" /></S>;
-export const KeyNext = (p: P) => <S {...p}><path d="m5.5 4 4 4-4 4" /><path d="M11.5 4v8" /></S>;
+/** Tới keyframe trước/sau: tam giác đặc (như bộ điều hướng keyframe của After Effects). */
+export const KeyPrev = ({ className = 'h-4 w-4' }: P) => <svg viewBox="0 0 16 16" className={className} aria-hidden><path d="M11 3.5v9L4.5 8Z" fill="currentColor" /></svg>;
+export const KeyNext = ({ className = 'h-4 w-4' }: P) => <svg viewBox="0 0 16 16" className={className} aria-hidden><path d="M5 3.5v9L11.5 8Z" fill="currentColor" /></svg>;
 export const ZoomIn = (p: P) => <S {...p}><circle cx="7" cy="7" r="4.5" /><path d="m10.5 10.5 3 3M5 7h4M7 5v4" /></S>;
 export const ZoomOut = (p: P) => <S {...p}><circle cx="7" cy="7" r="4.5" /><path d="m10.5 10.5 3 3M5 7h4" /></S>;
 /** Vừa khung: hai mũi tên chỉ vào nhau theo chiều ngang. */

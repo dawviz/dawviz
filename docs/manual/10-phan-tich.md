@@ -64,7 +64,7 @@ Muốn một thuộc tính **đổi theo thời gian hoặc theo nhạc** thay v
 1. Chọn widget trên khung hoặc ở Lớp. Timeline hiện các thuộc tính của nó.
 2. Đưa vạch phát tới thời điểm muốn đặt: phát nhạc, hoặc nhấp/kéo trên thước thời gian của Timeline.
 3. Bấm **đồng hồ** ở đầu dòng thuộc tính. Một keyframe được đặt tại vạch phát với giá trị hiện tại.
-4. Đưa vạch phát tới thời điểm khác rồi gõ giá trị mới vào ô giá trị của dòng đó (hoặc kéo trên ô). Keyframe mới được thêm tại vạch phát. Nút hình thoi giữa hai mũi tên cũng thêm keyframe tại vạch phát (bấm lại để xoá), hai mũi tên đưa vạch phát tới keyframe trước hoặc sau.
+4. Đưa vạch phát tới thời điểm khác rồi gõ giá trị mới vào ô giá trị của dòng đó (hoặc kéo trên ô). Keyframe mới được thêm tại vạch phát. Nút hình thoi giữa hai nút tam giác cũng thêm keyframe tại vạch phát (bấm lại để xoá); hai nút tam giác đưa vạch phát tới keyframe trước hoặc sau.
 
 Bấm đồng hồ lần nữa để bỏ hoạt hình của thuộc tính đó (xoá mọi keyframe của nó). Nút phễu ở góc trên chỉ hiện những thuộc tính đang animate (phím U).
 

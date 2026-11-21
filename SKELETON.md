@@ -1646,8 +1646,8 @@ const PanelRight = (p: P) =>
 const PanelBottom = (p: P) =>
 const Stopwatch = (p: P) =>   // Đồng hồ bấm giờ: bật/tắt hoạt hình của một thuộc tính (như After Effects).
 const Diamond = ({ className = 'h-4 w-4', filled }: P & { filled?: boolean }) =>
-const KeyPrev = (p: P) =>
-const KeyNext = (p: P) =>
+const KeyPrev = ({ className = 'h-4 w-4' }: P) =>   // Tới keyframe trước/sau: tam giác đặc (như bộ điều hướng keyframe của After Effects).
+const KeyNext = ({ className = 'h-4 w-4' }: P) =>
 const ZoomIn = (p: P) =>
 const ZoomOut = (p: P) =>
 const FitWidth = (p: P) =>   // Vừa khung: hai mũi tên chỉ vào nhau theo chiều ngang.
@@ -1827,7 +1827,7 @@ function AppearanceSettings({ pref, onChange }: { pref: ThemePref; onChange(p: T
 Ô nhập thời gian `m:ss` / `m:ss.s` / giây (T-81). Enter hoặc rời ô để áp; sai cú pháp thì trả về giá trị cũ; Esc huỷ.
 
 ```text
-function TimeField({ id, label, value, onChange, emptyText, min = 0, max = 86400, className = '' }: { id?: string; label: string; value: number | null; onChange(v: number | null): void; /** Có thì cho phép ô trống (= null) và hiện chữ này làm gợi ý. */ emptyText?: string; min?: number; max?: number; className?: string; })
+function TimeField({ id, label, value, onChange, emptyText, min = 0, max = 86400, className = '', disabled }: { id?: string; label: string; value: number | null; onChange(v: number | null): void; disabled?: boolean; /** Có thì cho phép ô trống (= null) và hiện chữ này làm gợi ý. */ emptyText?: string; min?: number; max?: number; className?: string; })
 ```
 
 #### `apps/web/src/components/TimelinePanel.tsx`

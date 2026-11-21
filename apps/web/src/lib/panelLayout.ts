@@ -11,13 +11,13 @@ export interface PanelLayout {
 }
 
 export const PANEL_LIMITS: Readonly<Record<PanelId, readonly [number, number]>> = {
-  layers: [160, 400], props: [272, 560], timeline: [140, 640], tree: [220, 480],
+  layers: [160, 400], props: [272, 560], timeline: [140, 640], tree: [248, 480],
 };
-export const DEFAULT_LAYOUT: PanelLayout = { size: { layers: 224, props: 336, timeline: 248, tree: 300 }, collapsed: { layers: false, props: false } };
+export const DEFAULT_LAYOUT: PanelLayout = { size: { layers: 224, props: 336, timeline: 220, tree: 300 }, collapsed: { layers: false, props: false } };
 /** Cỡ khi thu gọn: dải dọc chứa nút mở (cột) và thanh tiêu đề (timeline). */
 export const RAIL = 36, TIMELINE_BAR = 36;
 /** Sân khấu luôn còn tối thiểu chừng này (px) để khung preview không bị bóp mất. */
-export const STAGE_MIN = { width: 360, height: 220 } as const;
+export const STAGE_MIN = { width: 360, height: 420 } as const;
 
 const clamp = (v: number, [lo, hi]: readonly [number, number]) => Math.round(Math.min(hi, Math.max(lo, v)));
 const num = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);

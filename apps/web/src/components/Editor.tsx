@@ -263,7 +263,7 @@ export function Editor({ styleName, scene, derived, ast, playback, fonts, advanc
   return (
     <div ref={panels.ref} style={vars} data-testid="editor" onKeyDown={onKeys}
       className="grid h-full min-h-0 max-lg:content-start max-lg:overflow-y-auto lg:grid-cols-[var(--ed-l)_minmax(0,1fr)_var(--ed-r)] lg:grid-rows-[minmax(0,1fr)_var(--ed-t)]">
-      <div className="relative min-h-0 max-lg:order-2 lg:col-start-1 lg:row-start-1">
+      <div className="relative max-lg:order-2 lg:col-start-1 lg:row-start-1 lg:min-h-0">
       {!r.open.layers ? (
         <Rail side="left" label={i18n.t('web.editor.layers')} title={keyHint(i18n.t('web.panel.open', { name: i18n.t('web.editor.layers') }), 'Ctrl+B')} onOpen={() => panels.setOpen('layers', true)} testId="rail-layers" />
       ) : <>
@@ -356,16 +356,16 @@ export function Editor({ styleName, scene, derived, ast, playback, fonts, advanc
         )}
       </div>
 
-      <div className="relative min-h-0 max-lg:order-3 lg:col-start-3 lg:row-span-2 lg:row-start-1">
+      <div className="relative max-lg:order-3 lg:col-start-3 lg:row-span-2 lg:row-start-1 lg:min-h-0">
       {!r.open.props ? (
         <Rail side="right" label={i18n.t('web.editor.properties')} title={keyHint(i18n.t('web.panel.open', { name: i18n.t('web.editor.properties') }), 'Ctrl+Alt+B')} onOpen={() => panels.setOpen('props', true)} testId="rail-props" />
       ) : <>
-      <aside id="editor-props-panel" aria-label={i18n.t('web.editor.properties')} className="relative flex h-full min-h-0 flex-col border-t border-line bg-surface max-lg:overflow-visible lg:border-l lg:border-t-0" data-testid="editor-props">
+      <aside id="editor-props-panel" aria-label={i18n.t('web.editor.properties')} className="relative flex h-full min-h-0 flex-col border-t border-line bg-surface max-lg:h-auto max-lg:overflow-visible lg:border-l lg:border-t-0" data-testid="editor-props">
         <div className="flex h-8 shrink-0 items-center justify-between gap-2 border-b border-line pl-4 pr-2">
           <span className="truncate text-xs text-muted">{i18n.t('web.editor.properties')}</span>
           <PanelCollapse label={keyHint(i18n.t('web.panel.collapse', { name: i18n.t('web.editor.properties') }), 'Ctrl+Alt+B')} icon={<PanelRight className="h-3.5 w-3.5" />} onClick={() => panels.setOpen('props', false)} testId="collapse-props" />
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto max-lg:overflow-visible">
+        <div className="min-h-0 flex-1 overflow-y-auto max-lg:flex-none max-lg:overflow-visible">
         <Properties background={background} duration={derived?.index.duration ?? 0} scene={scene} selected={live} locked={locked} name={name} advanced={advanced} actions={actions} onLock={toggleLock} order={order} move={move} widgetSections={widgetSections} onPick={(id) => setSelected([id])} layoutRef={layoutRef}
           onDuplicate={duplicateSel} onRemove={removeSel} onDeselect={deselect}
           keyInspector={single && ast && hasInspectorTarget(single, keySel) ? (n) => (
@@ -380,7 +380,7 @@ export function Editor({ styleName, scene, derived, ast, playback, fonts, advanc
       </>}
       </div>
 
-      <div className="relative min-h-0 min-w-0 max-lg:order-4 lg:col-span-2 lg:col-start-1 lg:row-start-2">
+      <div className={`relative min-w-0 max-lg:order-4 lg:min-h-0 lg:col-span-2 lg:col-start-1 lg:row-start-2 ${r.open.timeline ? 'max-lg:h-80' : ''}`}>
         {r.open.timeline && (
           <Splitter axis="y" grow={-1} label={i18n.t('web.panel.resize', { name: i18n.t('web.timeline.title') })} title={i18n.t('web.panel.resizeHint')} controls="editor-timeline"
             value={r.timeline} min={PANEL_LIMITS.timeline[0]} max={PANEL_LIMITS.timeline[1]} onResize={(v) => panels.resize('timeline', v)} onReset={() => panels.reset('timeline')}

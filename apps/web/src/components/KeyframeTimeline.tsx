@@ -179,9 +179,8 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
     const pick = new Set(keys);
     const targets = [playback.get().t, ...beatTimes(tempoMap, duration)];
     for (const [p, ts] of times) ts.forEach((t, j) => { if (!pick.has(keyRef(p, j))) targets.push(t); });
-    const x0 = e.clientX, el = e.currentTarget;
+    const x0 = e.clientX, el: Window = window;
     let moved = false;
-    el.setPointerCapture?.(e.pointerId);
     const move = (m: PointerEvent) => {
       const dx = m.clientX - x0;
       if (!moved && Math.abs(dx) < DRAG_SLOP) return;
@@ -213,9 +212,8 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
     const r0 = lanes.current.getBoundingClientRect();
     const p0 = { x: e.clientX - r0.left, y: e.clientY - r0.top }, base = e.shiftKey || e.ctrlKey || e.metaKey ? selKeys : [];
     const itemAt = (y: number) => items[Math.floor(y / ROW_H)];
-    const el = e.currentTarget;
+    const el: Window = window;
     let moved = false;
-    el.setPointerCapture?.(e.pointerId);
     const move = (m: PointerEvent) => {
       const rr = lanes.current!.getBoundingClientRect();
       const p = { x: m.clientX - rr.left, y: m.clientY - rr.top }, q0 = { x: p0.x + (r0.left - rr.left), y: p0.y + (r0.top - rr.top) };
@@ -246,9 +244,9 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
   // ── thước: kéo để tua ──
   const scrub = (e: RPointerEvent<HTMLDivElement>) => {
     if (e.button !== 0) return;
-    const el = e.currentTarget, seek = (x: number) => playback.seek(xToTime(x - el.getBoundingClientRect().left - PAD, live.current.pps, live.current.duration));
+    const ruler = e.currentTarget, el: Window = window;
+    const seek = (x: number) => playback.seek(xToTime(x - ruler.getBoundingClientRect().left - PAD, live.current.pps, live.current.duration));
     seek(e.clientX);
-    el.setPointerCapture?.(e.pointerId);
     const move = (m: PointerEvent) => seek(m.clientX);
     const up = () => { el.removeEventListener('pointermove', move); el.removeEventListener('pointerup', up); el.removeEventListener('pointercancel', up); };
     el.addEventListener('pointermove', move); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
@@ -258,7 +256,8 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
   const onKeys = (e: KeyboardEvent<HTMLDivElement>) => {
     if (isTextEntry(e.target)) return;
     const mod = e.ctrlKey || e.metaKey;
-    if ((e.key === 'Delete' || e.key === 'Backspace') && selKeys.length) { e.preventDefault(); e.stopPropagation(); removeSelected(); return; }
+    // Delete trong Timeline chỉ xoá keyframe; chưa chọn keyframe thì không làm gì (không để lọt ra Editor và xoá cả widget).
+    if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); e.stopPropagation(); removeSelected(); return; }
     if (e.key === 'Escape' && (selKeys.length || sel.row)) { e.preventDefault(); e.stopPropagation(); onSel(NO_SEL); return; }
     if (mod && e.code === 'KeyA' && !e.shiftKey) {
       e.preventDefault(); e.stopPropagation();
@@ -335,10 +334,10 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
 
           {/* Các hàng: cột cây dính trái + làn keyframe. Làn nhận kéo chọn hộp và nhấp đúp thêm keyframe. */}
           <div className="relative flex">
-            <div className="sticky left-0 z-20 shrink-0 bg-surface" style={{ width: tree }} role="tree" aria-label={i18n.t('web.timeline.props')}>
+            <div className="sticky left-0 z-20 shrink-0 bg-surface" style={{ width: tree }} role="group" aria-label={i18n.t('web.timeline.props')}>
               {items.map((it) => it.kind === 'group' ? (
-                <div key={it.id} role="treeitem" aria-expanded={it.open} aria-selected={false} className="flex items-center border-b border-r border-line bg-page/40" style={{ height: ROW_H }}>
-                  <button type="button" className="flex h-full min-w-0 flex-1 items-center gap-1.5 px-1.5 text-left text-xs font-semibold text-fg hover:bg-raised" data-testid={`timeline-group-${it.id}`}
+                <div key={it.id} className="flex items-center border-b border-r border-line bg-page/40" style={{ height: ROW_H }}>
+                  <button type="button" aria-expanded={it.open} className="flex h-full min-w-0 flex-1 items-center gap-1.5 px-1.5 text-left text-xs font-semibold text-fg hover:bg-raised" data-testid={`timeline-group-${it.id}`}
                     onClick={() => setClosed((s) => { const n = new Set(s); if (n.has(it.id)) n.delete(it.id); else n.add(it.id); return n; })}>
                     <ChevronRight className={`h-3 w-3 shrink-0 text-faint transition-transform duration-150 ${it.open ? 'rotate-90' : ''}`} />
                     <span className="min-w-0 truncate">{i18n.t(GROUPS.find((g) => g.id === it.id)!.key)}</span>
@@ -382,7 +381,7 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
                 </div>
               ))}
               {box && (
-                <div aria-hidden className="pointer-events-none absolute z-10 border border-focus bg-focus/10"
+                <div aria-hidden className="pointer-events-none absolute z-10 border border-focus bg-accent/10"
                   style={{ left: Math.min(box.x0, box.x1), top: Math.min(box.y0, box.y1), width: Math.abs(box.x1 - box.x0), height: Math.abs(box.y1 - box.y0) }} />
               )}
               {chip && (
@@ -443,23 +442,24 @@ function TreeRow({ f, name, anim, times, widget, tempoMap, playback, locked, sel
   selected: boolean; full: boolean; onPick(): void; onToggle(): void; onAddHere(): void; onRemoveHere(i: number): void; onValue(v: number | string): void;
 }) {
   const { i18n } = useI18n();
-  const t = usePlayback(playback, (s) => s.t);
   const keys = anim && !isBinding(anim) ? anim : null;
+  // Chỉ dòng có keyframe mới cần t (giá trị, keyframe tại vạch phát, trước/sau): dòng đứng yên không vẽ lại mỗi khung khi phát.
+  const t = usePlayback(playback, (s) => (keys ? s.t : 0));
   const compiled = useMemo(() => (keys ? compileTrack(keys, { tempoMap }) : null), [keys, tempoMap]);
   const value = compiled ? sampleTrack(compiled, t) : staticValue(widget, f.path);
   const here = keys ? keyAt(times, t) : -1;
   const prev = keys ? prevKey(times, t) : null, next = keys ? nextKey(times, t) : null;
   const watch = anim ? i18n.t('web.timeline.stopAnim', { name }) : full ? i18n.t('web.timeline.full') : i18n.t('web.timeline.startAnim', { name });
-  const nav = 'hit grid h-5 w-5 shrink-0 place-items-center rounded-sm text-muted transition hover:bg-raised hover:text-fg disabled:opacity-30 disabled:hover:bg-transparent';
+  const nav = 'grid h-6 w-6 shrink-0 place-items-center rounded-sm text-muted transition hover:bg-raised hover:text-fg disabled:opacity-30 disabled:hover:bg-transparent';
   const fmt = (v: number) => String(Math.round(v * 1000) / 1000);
   return (
-    <div role="treeitem" aria-selected={selected} aria-level={2} className={`relative flex items-center gap-1 border-b border-r border-line/70 pl-1 pr-1 ${selected ? 'bg-raised' : ''}`} style={{ height: ROW_H }} data-row={f.path}>
+    <div className={`relative flex items-center gap-0.5 border-b border-r border-line/70 pl-0.5 pr-0.5 ${selected ? 'bg-raised' : ''}`} style={{ height: ROW_H }} data-row={f.path}>
       {selected && <span aria-hidden className="absolute inset-y-0 left-0 w-0.5 bg-accent" />}
-      <button type="button" className={`hit grid h-5 w-5 shrink-0 place-items-center rounded-sm transition hover:bg-raised hover:text-fg disabled:opacity-40 ${anim ? 'text-fg' : 'text-faint'}`} aria-pressed={!!anim} aria-label={watch} title={watch} disabled={locked || (full && !anim)} onClick={onToggle} data-testid={`tl-watch-${f.path}`}>
+      <button type="button" className={`grid h-6 w-6 shrink-0 place-items-center rounded-sm transition hover:bg-raised hover:text-fg disabled:opacity-40 ${anim ? 'text-fg' : 'text-faint'}`} aria-pressed={!!anim} aria-label={watch} title={watch} disabled={locked || (full && !anim)} onClick={onToggle} data-testid={`tl-watch-${f.path}`}>
         <Stopwatch className="h-3.5 w-3.5" />
       </button>
-      <button type="button" className={`min-w-0 flex-1 truncate py-0.5 pl-0.5 text-left text-xs ${anim ? 'text-fg' : 'text-muted'} hover:text-fg`} title={name} onClick={onPick} data-testid={`tl-row-${f.path}`}>{name}</button>
-      <div className="w-[4.25rem] shrink-0">
+      <button type="button" className={`min-w-0 flex-1 truncate py-0.5 pl-0.5 text-left text-xs ${anim ? 'text-fg' : 'text-muted'} hover:text-fg`} title={name} aria-pressed={selected} onClick={onPick} data-testid={`tl-row-${f.path}`}>{name}</button>
+      <div className="w-[3.75rem] shrink-0">
         {anim && isBinding(anim) ? (
           <span className="block truncate text-right text-[11px] text-muted" title={i18n.t('web.anim.mode.bind')}>{i18n.t('web.anim.mode.bind')}</span>
         ) : f.kind === 'color' ? (

@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import { formatTime, parseTime } from '../lib/timeText.ts';
 
-export function TimeField({ id, label, value, onChange, emptyText, min = 0, max = 86400, className = '' }: {
-  id?: string; label: string; value: number | null; onChange(v: number | null): void;
+export function TimeField({ id, label, value, onChange, emptyText, min = 0, max = 86400, className = '', disabled }: {
+  id?: string; label: string; value: number | null; onChange(v: number | null): void; disabled?: boolean;
   /** Có thì cho phép ô trống (= null) và hiện chữ này làm gợi ý. */
   emptyText?: string; min?: number; max?: number; className?: string;
 }) {
@@ -19,9 +19,9 @@ export function TimeField({ id, label, value, onChange, emptyText, min = 0, max 
     setBad(false); setText(formatTime(v)); if (v !== value) onChange(v);
   };
   return (
-    <input id={id} type="text" inputMode="decimal" autoComplete="off" spellCheck={false} aria-label={label} value={text} placeholder={emptyText} aria-invalid={bad || undefined} data-testid={id}
+    <input id={id} type="text" inputMode="decimal" autoComplete="off" spellCheck={false} aria-label={label} value={text} placeholder={emptyText} aria-invalid={bad || undefined} data-testid={id} disabled={disabled}
       onChange={(e) => { setText(e.target.value); setBad(false); }} onBlur={commit}
       onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); commit(); } else if (e.key === 'Escape') { setText(shown); setBad(false); } }}
-      className={`w-full min-w-0 rounded border border-control bg-raised px-2 py-1 text-right text-[13px] tabular-nums text-fg ${className}`} />
+      className={`w-full min-w-0 rounded border border-control bg-raised px-2 py-1 text-right text-[13px] tabular-nums text-fg disabled:cursor-not-allowed disabled:opacity-60 ${className}`} />
   );
 }

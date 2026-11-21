@@ -118,11 +118,11 @@
         "locales/en.json#web.panel.",
         "locales/en.json#web.section."
       ],
-      "uiHash": "011874c02aaa",
+      "uiHash": "c99ef5a67530",
       "viHash": "483d3cc90bbc",
       "enHash": "63045a1230f3",
       "coverHashes": {
-        "apps/web/src/components/Editor.tsx": "1da92b659b85",
+        "apps/web/src/components/Editor.tsx": "7a9b94c87fbc",
         "apps/web/src/components/EditorOverlay.tsx": "c813801e06af",
         "apps/web/src/components/StylePanel.tsx": "26c35e084860",
         "locales/en.json#web.editor.": "7be8167cea49",
@@ -135,7 +135,7 @@
         "apps/web/src/components/WidgetSettings.tsx": "e64c1404be9b",
         "locales/en.json#web.ws.": "98ca285aa125",
         "apps/web/src/components/TimeSections.tsx": "513bfa5bff02",
-        "apps/web/src/components/TimeField.tsx": "d02e439b7844",
+        "apps/web/src/components/TimeField.tsx": "6495c126538a",
         "locales/en.json#web.vis.": "8bbfd1495bf1",
         "locales/en.json#web.phase.": "dafcbfbf2bf9",
         "locales/en.json#web.tonic.": "2b1a6b41c82b",
@@ -144,7 +144,7 @@
         "locales/en.json#web.page.": "0a9b9e917e7c",
         "apps/web/src/components/Splitter.tsx": "7ae82f8548cb",
         "apps/web/src/components/TimelinePanel.tsx": "0b618f92ef83",
-        "apps/web/src/lib/panelLayout.ts": "d5ea5ea3fe16",
+        "apps/web/src/lib/panelLayout.ts": "e55ab5576e47",
         "locales/en.json#web.panel.": "b0c8bed5d17f",
         "locales/en.json#web.section.": "8001c069c069"
       }
@@ -192,7 +192,7 @@
         "apps/web/src/components/KeyframeTimeline.tsx",
         "apps/web/src/components/Splitter.tsx"
       ],
-      "uiHash": "322623d48878",
+      "uiHash": "6fe33986796e",
       "viHash": "f672b2e10ca7",
       "enHash": "22ffab689b3f",
       "coverHashes": {
@@ -200,8 +200,8 @@
         "apps/web/src/lib/undoKeys.ts": "07c2c99f5cf4",
         "apps/web/src/components/EditorOverlay.tsx": "c813801e06af",
         "apps/web/src/lib/numberInput.ts": "8e27c53523c3",
-        "apps/web/src/components/Editor.tsx": "1da92b659b85",
-        "apps/web/src/components/KeyframeTimeline.tsx": "f5c8878e9a22",
+        "apps/web/src/components/Editor.tsx": "7a9b94c87fbc",
+        "apps/web/src/components/KeyframeTimeline.tsx": "5237278ffa3c",
         "apps/web/src/components/Splitter.tsx": "7ae82f8548cb"
       }
     },
@@ -298,9 +298,9 @@
         "locales/en.json#web.timeline.",
         "locales/en.json#web.keyinsp."
       ],
-      "uiHash": "9ec4d0cfdb87",
-      "viHash": "552d1277ec96",
-      "enHash": "74007dd05c15",
+      "uiHash": "071fb3fbf7d2",
+      "viHash": "2d326048cfd0",
+      "enHash": "1fb83710e501",
       "coverHashes": {
         "packages/render-core/src/insight.ts": "37e1f3014ac3",
         "packages/render-core/src/naming.ts": "9a90045d7e7c",
@@ -313,11 +313,11 @@
         "locales/en.json#web.ws.pianoTransition": "549cfa5d542f",
         "packages/render-core/src/animation.ts": "961a6fc8312d",
         "locales/en.json#web.anim.": "a8ba882b0153",
-        "apps/web/src/components/KeyframeTimeline.tsx": "f5c8878e9a22",
-        "apps/web/src/components/AnimationInspector.tsx": "ba2894fa3378",
-        "apps/web/src/components/EaseGraph.tsx": "b80587e3416d",
-        "locales/en.json#web.timeline.": "ebcb65532237",
-        "locales/en.json#web.keyinsp.": "26d5572bfc39"
+        "apps/web/src/components/KeyframeTimeline.tsx": "5237278ffa3c",
+        "apps/web/src/components/AnimationInspector.tsx": "30f7ff407fea",
+        "apps/web/src/components/EaseGraph.tsx": "e6ee3b71d0b5",
+        "locales/en.json#web.timeline.": "066f3bc83c54",
+        "locales/en.json#web.keyinsp.": "95eadb75d3bb"
       }
     }
   }

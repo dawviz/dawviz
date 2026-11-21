@@ -35,8 +35,8 @@ export function EaseGraph({ ease, mixed, disabled, onChange, onBegin, onEnd }: {
   const start = (e: PointerEvent<SVGCircleElement>, h: 0 | 1) => {
     if (disabled || e.button !== 0) return;
     e.preventDefault(); e.stopPropagation();
-    const el = e.currentTarget; el.setPointerCapture?.(e.pointerId);
-    (el as unknown as HTMLElement).focus?.();
+    (e.currentTarget as unknown as HTMLElement).focus?.();
+    const el: Window = window; // nghe trên window: tay nắm bị vẽ lại/gỡ giữa chừng vẫn nhận lúc thả, cử chỉ hoàn tác luôn đóng
     onBegin();
     let cur = bez;
     const move = (m: globalThis.PointerEvent) => {

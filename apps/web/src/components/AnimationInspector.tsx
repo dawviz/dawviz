@@ -84,7 +84,7 @@ export function AnimationInspector({ n, widget, sel, tempoMap, locked, getTime, 
           <div className="grid grid-cols-[minmax(0,1fr)_7rem] items-center gap-x-2 gap-y-2 text-xs text-muted">
             <span>{i18n.t('web.keyinsp.time')}</span>
             {'sec' in one.k.at
-              ? <TimeField id="keyinsp-time" label={i18n.t('web.keyinsp.time')} value={one.k.at.sec} onChange={(v) => { if (locked) return; const a = anim(one.path); if (a) onAnimate(one.path, setKey(a, one.i, { at: { sec: v ?? 0 } }), 'kt'); }} />
+              ? <TimeField id="keyinsp-time" label={i18n.t('web.keyinsp.time')} value={one.k.at.sec} disabled={locked} onChange={(v) => { if (locked) return; const a = anim(one.path); if (a) onAnimate(one.path, setKey(a, one.i, { at: { sec: v ?? 0 } }), 'kt'); }} />
               : <span className="text-right tabular-nums text-fg" title={i18n.t('web.anim.atMusic')}>{keyTimeText(one.k.at)}</span>}
             <span>{i18n.t('web.keyinsp.value')}</span>
             {one.f.kind === 'color'

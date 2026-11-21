@@ -1231,7 +1231,7 @@
   "web.timeline.group.transform": "Biến đổi",
   "web.timeline.group.props": "Thuộc tính widget",
   "web.timeline.props": "Thuộc tính",
-  "web.timeline.animatedCount": "{n} đang animate",
+  "web.timeline.animatedCount": "đang animate: {n}",
   "web.timeline.onlyAnimated": "Chỉ hiện thuộc tính đang animate",
   "web.timeline.zoomIn": "Phóng to",
   "web.timeline.zoomOut": "Thu nhỏ",
@@ -1254,7 +1254,7 @@
   "web.timeline.noneAnimated": "Chưa animate thuộc tính nào. Bật đồng hồ ở một thuộc tính để bắt đầu.",
   "web.timeline.showAll": "Hiện mọi thuộc tính",
   "web.keyinsp.title": "Keyframe",
-  "web.keyinsp.many": "{n} keyframe trên {m} thuộc tính",
+  "web.keyinsp.many": "Keyframe: {n} · thuộc tính: {m}",
   "web.keyinsp.time": "Thời điểm",
   "web.keyinsp.value": "Giá trị",
   "web.keyinsp.curveIn": "Đường cong đi tới keyframe",
@@ -1264,7 +1264,7 @@
   "web.keyinsp.bezier": "Bezier",
   "web.keyinsp.custom": "Đường cong riêng",
   "web.keyinsp.mixed": "Nhiều giá trị",
-  "web.keyinsp.delete": "Xoá {n} keyframe",
+  "web.keyinsp.delete": "Xoá keyframe ({n})",
   "web.keyinsp.notAnimated": "Chưa animate. Chọn Keyframe hoặc Theo nhạc ở trên.",
-  "web.keyinsp.keyCount": "{n} keyframe. Kéo chúng trên Timeline; chọn một keyframe để chỉnh đường cong."
+  "web.keyinsp.keyCount": "Số keyframe: {n}. Kéo chúng trên Timeline; chọn một keyframe để chỉnh đường cong."
 }

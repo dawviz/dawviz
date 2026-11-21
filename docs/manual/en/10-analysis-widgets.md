@@ -64,7 +64,7 @@ To make a property **change over time or with the music** instead of staying sti
 1. Select the widget on the frame or in Layers. The Timeline shows its properties.
 2. Move the playhead to the moment you want: play the song, or click/drag on the Timeline's time ruler.
 3. Press the **stopwatch** at the start of the property's row. A keyframe is set at the playhead with the current value.
-4. Move the playhead somewhere else and type a new value in that row's value field (or drag on the field). A new keyframe is added at the playhead. The diamond button between the two arrows also adds a keyframe at the playhead (press it again to remove it); the arrows move the playhead to the previous or next keyframe.
+4. Move the playhead somewhere else and type a new value in that row's value field (or drag on the field). A new keyframe is added at the playhead. The diamond button between the two triangle buttons also adds a keyframe at the playhead (press it again to remove it); the triangles move the playhead to the previous or next keyframe.
 
 Press the stopwatch again to stop animating that property (its keyframes are removed). The funnel button at the top corner shows only the properties that are animated (key U).
 
