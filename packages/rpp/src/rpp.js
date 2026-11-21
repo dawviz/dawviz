@@ -196,6 +196,15 @@ export async function parseRppText(text, options = {}) {
   const merged = ov ? ov : ticks.map((tk) => { const t = at(tempoPoints, tk), s = at(sigPts, tk); return { tick: tk, bpm: t.bpm, num: s.num || t.num || 4, den: s.den || t.den || 4 }; });
   const map = makeTempoMap(merged);
 
+  // P-10: MARKER <idx> <giây> "<tên>" <cờ> ... ; cờ &1 = vùng (region): lấy điểm đầu, bỏ dòng điểm cuối (tên rỗng, cùng idx).
+  const markers = [];
+  for (const l of proj.lines) {
+    if (!l.startsWith('MARKER ')) continue;
+    const t = tokenize(l), sec = parseFloat(t[2]);
+    if (!Number.isFinite(sec) || sec < 0 || !(t[3] || '').trim()) continue;
+    markers.push({ tick: Math.round(secToTick(map, sec)), name: t[3] });
+  }
+
   const pool = new Map();
   const tracks = [];
   let items = 0, mutedItems = 0, loopedItems = 0, srcLenWarn = false, soffsWarn = false;
@@ -275,7 +284,7 @@ export async function parseRppText(text, options = {}) {
 
   let built;
   try {
-    built = buildAST({ title: options.title || 'Reaper project', sourceFormat: 'rpp', sourceVersion, sourcePPQ: 960, tempoPoints: merged, tempoSource, tracks, warnings }, { maxNotes: limits.maxNotes, showMuted: options.showMuted });
+    built = buildAST({ title: options.title || 'Reaper project', sourceFormat: 'rpp', sourceVersion, sourcePPQ: 960, tempoPoints: merged, tempoSource, tracks, warnings, markers }, { maxNotes: limits.maxNotes, showMuted: options.showMuted });
   } catch (e) {
     const missing = [...new Set(warnings.filter((w) => w.code === 'WARN_RPP_EXTERNAL_MIDI').map((w) => w.details.file))];
     if (e.code === 'ERR_NO_NOTES' && unsupportedSrc.length && !missing.length) fail('ERR_NO_NOTES', `dự án chỉ có ${unsupportedSrc.length} nguồn MIDI dùng timebase chưa hỗ trợ (${[...new Set(unsupportedSrc.map((u) => `${u.ppq} ${u.unit}`))].join(', ')}): hãy lưu lại dự án bằng Reaper bản mới`, { unsupportedSources: unsupportedSrc });

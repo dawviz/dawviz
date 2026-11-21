@@ -4,11 +4,13 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "3.4b. Đề xuất widget và dữ liệu hiển thị bổ sung (D-32, OI-11) **[ĐỀ XUẤT, chưa cam kết v1.0]**"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4b. Đề xuất widget và dữ liệu hiển thị bổ sung (D-32, OI-11) **[ĐỀ XUẤT, chưa cam kết v1.0]**"
 chunk: 3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md
-source_lines: 696-719
-source_sha1: 34fd2a9134
-ids: [D-32, D-40, OI-11, P-01, P-02, P-03, P-04, P-05, P-06, P-07, P-08, P-09, P-10, P-11, P-12, P-13, REQ-AST-01, REQ-GRAPHICS-05, REQ-GRAPHICS-06, SOI-18]
+source_lines: 696-721
+source_sha1: 47b83a06d8
+ids: [D-32, D-40, D-45, OI-01, OI-11, P-01, P-02, P-03, P-04, P-05, P-06, P-07, P-08, P-09, P-10, P-11, P-12, P-13, REQ-AST-01, REQ-GRAPHICS-05, REQ-GRAPHICS-06, SOI-18]
 ---
 ### 3.4b. Đề xuất widget và dữ liệu hiển thị bổ sung (D-32, OI-11) **[ĐỀ XUẤT, chưa cam kết v1.0]**
+
+> **Đã làm 2026-11-21 (T-37/38/41/42/97):** P-02…P-13 có renderer (`TEMPO_INFO`, `BAR_BEAT`, `KEY_SCALE`, `VELOCITY`, `DENSITY`, `PITCH_WHEEL`, `ARRANGEMENT`, `DRUM_PAD`, `SECTION`, `LYRICS`, `AUTOMATION`; P-01 là Piano Roll). P-12 là `scene.noteNaming` (chữ cái, solfège, kiểu Đức; chữ Nhật cần phông người dùng nên chưa có sẵn). Dữ liệu: `meta.markers[]`, `meta.lyrics[]` (MIDI, Reaper, Ableton, DAWproject), automation âm lượng/pan của Reaper, Ableton, DAWproject, FL. P-10 không có marker thì dùng phase của scene. **Giới hạn đã biết (D-45):** nhánh Ableton automation mới kiểm bằng tệp tổng hợp (chưa có tệp thật tự động hoá mixer); mute Ableton và automation tham số plugin chưa đọc; DAWproject chưa thử với tệp thật (OI-01). Tô thang âm trên bàn phím theo giọng nhận diện chưa làm.
 
 > **Cập nhật v1.1 (D-40):** toàn bộ P-01…P-13 thuộc **phạm vi bản 1.0**. Tiêu đề mục giữ nguyên để không làm hỏng liên kết. P-10 (marker), P-11 (lời) cần thêm `meta.markers[]`, `meta.lyrics[]` vào AST; P-13 cần đọc automation Ableton/DAWproject (SOI-18).
 

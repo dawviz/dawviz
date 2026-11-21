@@ -11,6 +11,11 @@ import { ALIAS_KEYS, GLOBAL_KEYS, checkTemplate } from './placeholders.ts';
 import { normalizeAngle } from './snap.ts';
 import { DEFAULT_BACKGROUND, type BackgroundImageSpec } from './background.ts';
 import { DEFAULT_PARTICLES, type ParticleProps } from './particles.ts';
+import { DEFAULT_NAMING, NAMING_SYSTEMS, type NoteNaming } from './naming.ts';
+import {
+  DEFAULT_ARRANGEMENT, DEFAULT_AUTOMATION, DEFAULT_BAR_BEAT, DEFAULT_DENSITY, DEFAULT_DRUM_PAD, DEFAULT_KEY_SCALE, DEFAULT_LYRICS, DEFAULT_PITCH_WHEEL, DEFAULT_SECTION, DEFAULT_TEMPO_INFO, DEFAULT_VELOCITY,
+  INSIGHT_TEMPLATE_KEYS, INSIGHT_TYPES, type ArrangementProps, type AutomationProps, type BarBeatProps, type DensityProps, type DrumPadProps, type KeyScaleProps, type LyricsProps, type PitchWheelProps, type SectionProps, type TempoInfoProps, type VelocityProps,
+} from './insight.ts';
 import { DEFAULT_NOTATION, notationInkFor, type NotationProps } from './notation/widget.ts';
 import { DEFAULT_SPECTRUM, type SpectrumProps } from './spectrum.ts';
 import { MAX_FADE, MAX_PHASES, MAX_PHASE_NAME, MAX_RANGES, type Phase, type TimeRange, type WidgetVisibility } from './visibility.ts';
@@ -18,7 +23,7 @@ import { DEFAULT_KEYBOARD_STYLE, DEFAULT_NOTE_STYLE, sanitizeStyle, type Keyboar
 
 export const SCENE_SCHEMA_VERSION = '0.6.0';
 
-export const WIDGET_TYPES = ['TRACK_INFO', 'PIANO_ROLL', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'AUDIO_SPECTRUM', 'PROGRESS_BAR', 'TEXT', 'PARTICLES', 'NOTATION'] as const;
+export const WIDGET_TYPES = ['TRACK_INFO', 'PIANO_ROLL', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'AUDIO_SPECTRUM', 'PROGRESS_BAR', 'TEXT', 'PARTICLES', 'NOTATION', ...INSIGHT_TYPES] as const;
 export type WidgetType = typeof WIDGET_TYPES[number];
 
 /** `rotation`: độ, (−180, 180]. `anchor`: điểm neo xoay theo tỉ lệ khung widget (0..1), mặc định tâm (REQ-GRAPHICS-03). */
@@ -89,6 +94,8 @@ export interface SceneDocument {
   phases?: Phase[];
   /** Nốt chủ do người dùng đặt (0 = C … 11 = B). Vắng = chưa đặt: `{bass}` hiện tên nốt thay vì bậc. */
   tonic?: number;
+  /** Cách ghi tên nốt và hợp âm cho mọi widget (P-12). Vắng = cách ghi cũ (C♯, quy ước C4 = 60). */
+  noteNaming?: NoteNaming;
   /** Thuộc tính tuỳ loại: PIANO_ROLL → PianoRollProps; loại chưa có renderer → giữ nguyên JSON. */
   widgets: WidgetSpec[];
 }
@@ -119,10 +126,12 @@ export function pianoRollWidget(layout: Omit<WidgetLayout, 'anchor'> & { anchor?
     properties: { ...clonePiano(DEFAULT_PIANO_ROLL), ...props } };
 }
 /** Loại widget người dùng thêm được từ Editor (có renderer). */
-export const ADDABLE_WIDGETS = ['PIANO_ROLL', 'TRACK_INFO', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'AUDIO_SPECTRUM', 'PARTICLES', 'NOTATION', 'PROGRESS_BAR', 'TEXT'] as const satisfies readonly WidgetType[];
+export const ADDABLE_WIDGETS = ['PIANO_ROLL', 'TRACK_INFO', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'AUDIO_SPECTRUM', 'PARTICLES', 'NOTATION', ...INSIGHT_TYPES, 'PROGRESS_BAR', 'TEXT'] as const satisfies readonly WidgetType[];
 const HUD_DEFAULTS: Record<string, unknown> = {
   TRACK_INFO: DEFAULT_TRACK_INFO, EVENT_COUNTER: DEFAULT_EVENT_COUNTER, LIVE_TRIGGER: DEFAULT_LIVE_TRIGGER,
   TIME_BAR: DEFAULT_TIME_BAR, CHORD_DETECTION: DEFAULT_CHORD, AUDIO_SPECTRUM: DEFAULT_SPECTRUM, PARTICLES: DEFAULT_PARTICLES, NOTATION: DEFAULT_NOTATION, PROGRESS_BAR: DEFAULT_PROGRESS_BAR, TEXT: DEFAULT_TEXT_BOX,
+  TEMPO_INFO: DEFAULT_TEMPO_INFO, BAR_BEAT: DEFAULT_BAR_BEAT, KEY_SCALE: DEFAULT_KEY_SCALE, VELOCITY: DEFAULT_VELOCITY, DENSITY: DEFAULT_DENSITY, PITCH_WHEEL: DEFAULT_PITCH_WHEEL,
+  ARRANGEMENT: DEFAULT_ARRANGEMENT, DRUM_PAD: DEFAULT_DRUM_PAD, SECTION: DEFAULT_SECTION, LYRICS: DEFAULT_LYRICS, AUTOMATION: DEFAULT_AUTOMATION,
 };
 /** Thuộc tính mặc định của một loại widget (bản sao sâu): mốc tham chiếu của nút ↺ khi widget chưa có bộ dựng sẵn nào áp lên nó. */
 export function widgetDefaults(type: WidgetType): Record<string, unknown> {
@@ -132,6 +141,8 @@ export function widgetDefaults(type: WidgetType): Record<string, unknown> {
 const NEW_SIZE: Record<string, (W: number, H: number) => [number, number]> = {
   PIANO_ROLL: (W, H) => [W * 0.6, H * 0.4], TRACK_INFO: (W) => [W * 0.5, 130], EVENT_COUNTER: () => [480, 120], LIVE_TRIGGER: () => [480, 60],
   TIME_BAR: () => [320, 100], CHORD_DETECTION: () => [400, 100], AUDIO_SPECTRUM: (W) => [W * 0.5, 240], PARTICLES: (W, H) => [W * 0.5, H * 0.5], NOTATION: (W, H) => [W * 0.8, H * 0.45], PROGRESS_BAR: (W) => [W * 0.8, 24], TEXT: () => [480, 100],
+  TEMPO_INFO: () => [360, 110], BAR_BEAT: () => [320, 110], KEY_SCALE: () => [320, 110], VELOCITY: () => [360, 160], DENSITY: (W) => [W * 0.5, 200], PITCH_WHEEL: () => [320, 320],
+  ARRANGEMENT: (W) => [W * 0.6, 180], DRUM_PAD: () => [360, 360], SECTION: () => [420, 100], LYRICS: (W) => [W * 0.7, 120], AUTOMATION: (W) => [W * 0.5, 140],
 };
 /** Độ dài tối đa của tên lớp. */
 export const MAX_WIDGET_NAME = 60;
@@ -398,9 +409,12 @@ export function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] 
   });
 
   const phases = raw.phases === undefined ? undefined : sanitizePhases(S, raw.phases, '$.phases');
+  const nn = isObj(raw.noteNaming) ? raw.noteNaming : null;
+  const noteNaming: NoteNaming | undefined = nn ? { system: S.oneOf(nn.system, NAMING_SYSTEMS, DEFAULT_NAMING.system, '$.noteNaming.system'), accidental: S.oneOf(nn.accidental, ['SHARP', 'FLAT'] as const, DEFAULT_NAMING.accidental, '$.noteNaming.accidental'),
+    ascii: S.bool(nn.ascii, DEFAULT_NAMING.ascii, '$.noteNaming.ascii'), middleC: Math.round(S.num(nn.middleC, DEFAULT_NAMING.middleC, 3, 4, '$.noteNaming.middleC')) === 3 ? 3 : 4 } : undefined;
   const tonic = raw.tonic === undefined ? undefined : Math.round(num(raw.tonic, NaN, 0, 11, '$.tonic'));
   return {
-    scene: { schemaVersion: SCENE_SCHEMA_VERSION, presetName: str(raw.presetName, 'Untitled', '$.presetName'), author: str(raw.author, '', '$.author'), canvas, textStyles, ...(phases?.length ? { phases } : {}), ...(tonic !== undefined && !Number.isNaN(tonic) ? { tonic } : {}), widgets },
+    scene: { schemaVersion: SCENE_SCHEMA_VERSION, presetName: str(raw.presetName, 'Untitled', '$.presetName'), author: str(raw.author, '', '$.author'), canvas, textStyles, ...(phases?.length ? { phases } : {}), ...(tonic !== undefined && !Number.isNaN(tonic) ? { tonic } : {}), ...(noteNaming ? { noteNaming } : {}), widgets },
     warnings,
   };
 }
@@ -552,6 +566,8 @@ const groups = (S: Sanitizer, v: unknown, d: readonly number[], path: string): [
   return [0, 1, 2].map((i) => Math.round(S.num(a[i], d[i], 1, 8, `${path}[${i}]`))) as [number, number, number];
 };
 
+const hexp = (S: Sanitizer, v: unknown, d: string, path: string): string => S.str(v, d, path, (s) => HEX.test(s));
+const hexOpt = (S: Sanitizer, v: unknown, d: string, path: string): string => S.str(v, d, path, (s) => s === '' || HEX.test(s));
 const HUD_SANITIZERS = {
   TRACK_INFO(P: Obj, p: string, S: Sanitizer): TrackInfoProps {
     const d = DEFAULT_TRACK_INFO;
@@ -646,6 +662,75 @@ const HUD_SANITIZERS = {
       auraEvery: S.num(P.auraEvery, d.auraEvery, 0.25, 64, `${p}.auraEvery`), auraGlow: S.num(P.auraGlow, d.auraGlow, 0, 1, `${p}.auraGlow`), auraMin: S.num(P.auraMin, d.auraMin, 0, 1, `${p}.auraMin`),
       auraColor: S.str(P.auraColor, d.auraColor, `${p}.auraColor`, (s) => s === '' || HEX.test(s)),
     };
+  },
+  TEMPO_INFO(P: Obj, p: string, S: Sanitizer): TempoInfoProps {
+    const d = DEFAULT_TEMPO_INFO;
+    return { align: S.oneOf(P.align, ALIGNS, d.align, `${p}.align`), style: textRef(S, P.style, d.style, `${p}.style`), template: tpl(S, P.template, d.template, `${p}.template`, INSIGHT_TEMPLATE_KEYS.TEMPO_INFO),
+      showCurve: S.bool(P.showCurve, d.showCurve, `${p}.showCurve`), curveHeight: S.num(P.curveHeight, d.curveHeight, 8, 400, `${p}.curveHeight`), curveColor: hexp(S, P.curveColor, d.curveColor, `${p}.curveColor`),
+      flash: S.bool(P.flash, d.flash, `${p}.flash`), flashColor: hexp(S, P.flashColor, d.flashColor, `${p}.flashColor`), flashMs: S.num(P.flashMs, d.flashMs, 50, 3000, `${p}.flashMs`) };
+  },
+  BAR_BEAT(P: Obj, p: string, S: Sanitizer): BarBeatProps {
+    const d = DEFAULT_BAR_BEAT;
+    return { align: S.oneOf(P.align, ALIGNS, d.align, `${p}.align`), style: textRef(S, P.style, d.style, `${p}.style`), format: S.oneOf(P.format, ['PERCENT', 'SIXTEENTH'] as const, d.format, `${p}.format`),
+      barDigits: Math.round(S.num(P.barDigits, d.barDigits, 1, 4, `${p}.barDigits`)), dots: S.bool(P.dots, d.dots, `${p}.dots`), dotSize: S.num(P.dotSize, d.dotSize, 2, 60, `${p}.dotSize`),
+      dotColor: hexp(S, P.dotColor, d.dotColor, `${p}.dotColor`), dotActiveColor: hexp(S, P.dotActiveColor, d.dotActiveColor, `${p}.dotActiveColor`), pulse: S.bool(P.pulse, d.pulse, `${p}.pulse`) };
+  },
+  KEY_SCALE(P: Obj, p: string, S: Sanitizer): KeyScaleProps {
+    const d = DEFAULT_KEY_SCALE, K = INSIGHT_TEMPLATE_KEYS.KEY_SCALE;
+    return { align: S.oneOf(P.align, ALIGNS, d.align, `${p}.align`), nameStyle: textRef(S, P.nameStyle, d.nameStyle, `${p}.nameStyle`), confStyle: textRef(S, P.confStyle, d.confStyle, `${p}.confStyle`),
+      template: tpl(S, P.template, d.template, `${p}.template`, K), majorLabel: S.str(P.majorLabel, d.majorLabel, `${p}.majorLabel`, (s) => s.length <= 24), minorLabel: S.str(P.minorLabel, d.minorLabel, `${p}.minorLabel`, (s) => s.length <= 24),
+      noKeyText: S.str(P.noKeyText, d.noKeyText, `${p}.noKeyText`, (s) => s.length <= 40), windowSec: S.num(P.windowSec, d.windowSec, 2, 120, `${p}.windowSec`), minConfidence: S.num(P.minConfidence, d.minConfidence, 0, 1, `${p}.minConfidence`),
+      showConfidence: S.bool(P.showConfidence, d.showConfidence, `${p}.showConfidence`), confTemplate: tpl(S, P.confTemplate, d.confTemplate, `${p}.confTemplate`, K) };
+  },
+  VELOCITY(P: Obj, p: string, S: Sanitizer): VelocityProps {
+    const d = DEFAULT_VELOCITY;
+    return { mode: S.oneOf(P.mode, ['LEVEL', 'HISTOGRAM'] as const, d.mode, `${p}.mode`), perTrack: S.bool(P.perTrack, d.perTrack, `${p}.perTrack`), decayMs: S.num(P.decayMs, d.decayMs, 50, 5000, `${p}.decayMs`),
+      windowSec: S.num(P.windowSec, d.windowSec, 1, 120, `${p}.windowSec`), bins: Math.round(S.num(P.bins, d.bins, 4, 16, `${p}.bins`)), gap: S.num(P.gap, d.gap, 0, 40, `${p}.gap`),
+      colorMode: S.oneOf(P.colorMode, ['TRACK', 'SOLID'] as const, d.colorMode, `${p}.colorMode`), color: hexp(S, P.color, d.color, `${p}.color`), trackColor: hexOpt(S, P.trackColor, d.trackColor, `${p}.trackColor`), radius: S.num(P.radius, d.radius, 0, 50, `${p}.radius`) };
+  },
+  DENSITY(P: Obj, p: string, S: Sanitizer): DensityProps {
+    const d = DEFAULT_DENSITY;
+    return { cols: Math.round(S.num(P.cols, d.cols, 16, 400, `${p}.cols`)), rowGap: S.num(P.rowGap, d.rowGap, 0, 20, `${p}.rowGap`), cellGap: S.num(P.cellGap, d.cellGap, 0, 10, `${p}.cellGap`),
+      colorMode: S.oneOf(P.colorMode, ['TRACK', 'SOLID'] as const, d.colorMode, `${p}.colorMode`), color: hexp(S, P.color, d.color, `${p}.color`), minAlpha: S.num(P.minAlpha, d.minAlpha, 0, 1, `${p}.minAlpha`),
+      playheadColor: hexOpt(S, P.playheadColor, d.playheadColor, `${p}.playheadColor`), showPolyphony: S.bool(P.showPolyphony, d.showPolyphony, `${p}.showPolyphony`),
+      polyTemplate: tpl(S, P.polyTemplate, d.polyTemplate, `${p}.polyTemplate`, INSIGHT_TEMPLATE_KEYS.DENSITY), polyStyle: textRef(S, P.polyStyle, d.polyStyle, `${p}.polyStyle`) };
+  },
+  PITCH_WHEEL(P: Obj, p: string, S: Sanitizer): PitchWheelProps {
+    const d = DEFAULT_PITCH_WHEEL;
+    return { order: S.oneOf(P.order, ['CHROMATIC', 'FIFTHS'] as const, d.order, `${p}.order`), ring: S.num(P.ring, d.ring, 0.1, 0.5, `${p}.ring`), litColor: hexp(S, P.litColor, d.litColor, `${p}.litColor`), dimColor: hexp(S, P.dimColor, d.dimColor, `${p}.dimColor`),
+      dimAlpha: S.num(P.dimAlpha, d.dimAlpha, 0, 1, `${p}.dimAlpha`), showNames: S.bool(P.showNames, d.showNames, `${p}.showNames`), nameStyle: textRef(S, P.nameStyle, d.nameStyle, `${p}.nameStyle`),
+      showChord: S.bool(P.showChord, d.showChord, `${p}.showChord`), chordStyle: textRef(S, P.chordStyle, d.chordStyle, `${p}.chordStyle`) };
+  },
+  ARRANGEMENT(P: Obj, p: string, S: Sanitizer): ArrangementProps {
+    const d = DEFAULT_ARRANGEMENT;
+    return { cols: Math.round(S.num(P.cols, d.cols, 16, 600, `${p}.cols`)), rowGap: S.num(P.rowGap, d.rowGap, 0, 20, `${p}.rowGap`), colorMode: S.oneOf(P.colorMode, ['TRACK', 'SOLID'] as const, d.colorMode, `${p}.colorMode`), color: hexp(S, P.color, d.color, `${p}.color`),
+      upcomingAlpha: S.num(P.upcomingAlpha, d.upcomingAlpha, 0, 1, `${p}.upcomingAlpha`), playheadColor: hexOpt(S, P.playheadColor, d.playheadColor, `${p}.playheadColor`), playheadWidth: S.num(P.playheadWidth, d.playheadWidth, 0, 20, `${p}.playheadWidth`) };
+  },
+  DRUM_PAD(P: Obj, p: string, S: Sanitizer): DrumPadProps {
+    const d = DEFAULT_DRUM_PAD;
+    return { source: S.oneOf(P.source, ['DRUMS', 'ALL'] as const, d.source, `${p}.source`), cols: Math.round(S.num(P.cols, d.cols, 1, 8, `${p}.cols`)), maxPads: Math.round(S.num(P.maxPads, d.maxPads, 4, 32, `${p}.maxPads`)),
+      gap: S.num(P.gap, d.gap, 0, 40, `${p}.gap`), radius: S.num(P.radius, d.radius, 0, 100, `${p}.radius`), padColor: hexp(S, P.padColor, d.padColor, `${p}.padColor`), hitColor: hexp(S, P.hitColor, d.hitColor, `${p}.hitColor`),
+      colorMode: S.oneOf(P.colorMode, ['TRACK', 'SOLID'] as const, d.colorMode, `${p}.colorMode`), decayMs: S.num(P.decayMs, d.decayMs, 50, 3000, `${p}.decayMs`), labels: S.bool(P.labels, d.labels, `${p}.labels`),
+      labelStyle: textRef(S, P.labelStyle, d.labelStyle, `${p}.labelStyle`) };
+  },
+  SECTION(P: Obj, p: string, S: Sanitizer): SectionProps {
+    const d = DEFAULT_SECTION, K = INSIGHT_TEMPLATE_KEYS.SECTION;
+    return { align: S.oneOf(P.align, ALIGNS, d.align, `${p}.align`), style: textRef(S, P.style, d.style, `${p}.style`), nextStyle: textRef(S, P.nextStyle, d.nextStyle, `${p}.nextStyle`), template: tpl(S, P.template, d.template, `${p}.template`, K),
+      showNext: S.bool(P.showNext, d.showNext, `${p}.showNext`), nextTemplate: tpl(S, P.nextTemplate, d.nextTemplate, `${p}.nextTemplate`, K), fadeMs: S.num(P.fadeMs, d.fadeMs, 0, 3000, `${p}.fadeMs`) };
+  },
+  LYRICS(P: Obj, p: string, S: Sanitizer): LyricsProps {
+    const d = DEFAULT_LYRICS;
+    return { align: S.oneOf(P.align, ALIGNS, d.align, `${p}.align`), style: textRef(S, P.style, d.style, `${p}.style`), unsungStyle: textRef(S, P.unsungStyle, d.unsungStyle, `${p}.unsungStyle`), showNext: S.bool(P.showNext, d.showNext, `${p}.showNext`),
+      nextStyle: textRef(S, P.nextStyle, d.nextStyle, `${p}.nextStyle`), maxChars: Math.round(S.num(P.maxChars, d.maxChars, 20, 200, `${p}.maxChars`)), gapSec: S.num(P.gapSec, d.gapSec, 0.5, 10, `${p}.gapSec`), hideAfterSec: S.num(P.hideAfterSec, d.hideAfterSec, 0, 60, `${p}.hideAfterSec`) };
+  },
+  AUTOMATION(P: Obj, p: string, S: Sanitizer): AutomationProps {
+    const d = DEFAULT_AUTOMATION;
+    let fl = S.num(P.floorDb, d.floorDb, -120, 24, `${p}.floorDb`), ce = S.num(P.ceilDb, d.ceilDb, -120, 24, `${p}.ceilDb`);
+    if (ce - fl < 1) { S.warn(`${p}.ceilDb`, ce, 'ceilDb phải lớn hơn floorDb ít nhất 1 dB; dùng mặc định'); fl = d.floorDb; ce = d.ceilDb; }
+    return { lane: S.oneOf(P.lane, ['volume', 'pan'] as const, d.lane, `${p}.lane`), windowSec: S.num(P.windowSec, d.windowSec, 0, 1800, `${p}.windowSec`), playheadRatio: S.num(P.playheadRatio, d.playheadRatio, 0, 1, `${p}.playheadRatio`),
+      colorMode: S.oneOf(P.colorMode, ['TRACK', 'SOLID'] as const, d.colorMode, `${p}.colorMode`), color: hexp(S, P.color, d.color, `${p}.color`), thickness: S.num(P.thickness, d.thickness, 1, 20, `${p}.thickness`), fill: S.bool(P.fill, d.fill, `${p}.fill`),
+      fillAlpha: S.num(P.fillAlpha, d.fillAlpha, 0, 1, `${p}.fillAlpha`), floorDb: fl, ceilDb: ce, playheadColor: hexOpt(S, P.playheadColor, d.playheadColor, `${p}.playheadColor`), showValue: S.bool(P.showValue, d.showValue, `${p}.showValue`),
+      valueStyle: textRef(S, P.valueStyle, d.valueStyle, `${p}.valueStyle`) };
   },
   PROGRESS_BAR(P: Obj, p: string, S: Sanitizer): ProgressBarProps {
     const d = DEFAULT_PROGRESS_BAR;

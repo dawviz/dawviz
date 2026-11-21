@@ -1,6 +1,6 @@
 # Chỉ mục SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
-nguồn: `SRS.md` (sha1 34fd2a9134)
+nguồn: `SRS.md` (sha1 47b83a06d8)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -53,7 +53,7 @@ nguồn: `SRS.md` (sha1 34fd2a9134)
 | 46 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-09: Bản nhạc (Notation) (D-63; đã làm 2026-11-21, T-90…T-95) | [req-widget-09-ban-nhac-notation-d-63-da-lam-2026.md](req-widget-09-ban-nhac-notation-d-63-da-lam-2026.md) | 3392 | D-63, OI-20, REQ-GRAPHICS-05, REQ-WIDGET-09 |
 | 47 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-NOTATION-01: Lượng tử hoá để vẽ bản nhạc (D-63; đã làm 2026-11-21) | [req-notation-01-luong-tu-hoa-de-ve-ban-nhac-d-63.md](req-notation-01-luong-tu-hoa-de-ve-ban-nhac-d-63.md) | 1936 | D-63, REQ-NOTATION-01, WARN_NOTATION_EMPTY, WARN_NOTATION_GLYPH, WARN_NOTATION_KEY_GUESS, WARN_NOTATION_OFFGRID |
 | 48 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-GRAPHICS-20: Nét tay tất định cho đường vẽ (D-63; đã làm 2026-11-21 cho bản nhạc) | [req-graphics-20-net-tay-tat-dinh-cho-duong-ve-d.md](req-graphics-20-net-tay-tat-dinh-cho-duong-ve-d.md) | 602 | D-63, REQ-GRAPHICS-20 |
-| 49 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4b. Đề xuất widget và dữ liệu hiển thị bổ sung (D-32, OI-11) **[ĐỀ XUẤT, chưa cam kết v1.0]** | [3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md](3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md) | 2994 | D-32, D-40, OI-11, P-01, P-02, P-03… |
+| 49 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4b. Đề xuất widget và dữ liệu hiển thị bổ sung (D-32, OI-11) **[ĐỀ XUẤT, chưa cam kết v1.0]** | [3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md](3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md) | 3784 | D-32, D-40, D-45, OI-01, OI-11, P-01… |
 | 50 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.5. Lưu trữ, cấu hình & đóng gói (BR-05, D-11) | [3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md](3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md) | 4696 | BR-05, D-11, ERR_PACK_HASH, ERR_PACK_INVALID, ERR_PRESET_INVALID, ERR_SCHEMA_NEWER… |
 | 51 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-CAP-01: Phát hiện khả năng của trình duyệt (R-06, D-05) | [req-cap-01-phat-hien-kha-nang-cua-trinh-duyet-r.md](req-cap-01-phat-hien-kha-nang-cua-trinh-duyet-r.md) | 413 | D-05, REQ-CAP-01, REQ-EXPORT-06 |
 | 52 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-EXPORT-00: Pre-flight (R-01, D-17) | [req-export-00-pre-flight-r-01-d-17.md](req-export-00-pre-flight-r-01-d-17.md) | 2606 | D-17, D-26, KPI-05, REQ-EXPORT-00, REQ-GRAPHICS-04, SOI-05 |

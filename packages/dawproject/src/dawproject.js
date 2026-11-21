@@ -1,6 +1,6 @@
 // DAWproject (.dawproject = ZIP + project.xml + metadata.xml; do Bitwig, Studio One, Cubase... xuất). REQ-PARSER-03.
 // Cấu trúc đối chiếu với ví dụ project.xml chính thức (Bitwig Studio 5.0) trong tài liệu DAWproject. Chưa thử với file .dawproject thật (OI-01).
-import { fail, warn, resolveLimits, toU8, decodeUtf8, readZipDirectory, extractEntry, findEntry, parseXml, kid, kids, at, descendants, PPQ, makeTempoMap, tickToSec, secToTick, mergeTempoAndSig, rampToSteps, buildAST, normalizeTempoOverride, pathInventory } from '@dawviz/parser-core';
+import { fail, warn, resolveLimits, toU8, decodeUtf8, readZipDirectory, extractEntry, findEntry, parseXml, kid, kids, at, descendants, PPQ, makeTempoMap, tickToSec, secToTick, dbToGain, mergeTempoAndSig, rampToSteps, buildAST, normalizeTempoOverride, pathInventory } from '@dawviz/parser-core';
 
 const SKIP = new Set(['Devices', 'Warps', 'Audio', 'Video', 'Scenes']);
 const f = (v, d = 0) => { const x = parseFloat(v); return Number.isFinite(x) ? x : d; };
@@ -63,7 +63,7 @@ export function parseDawprojectXml(xmlText, options = {}) {
 
   // ---- track chứa nốt (contentType có "notes")
   const trackDefs = new Map(), order = [];
-  const collect = (n) => { for (const t of kids(n, 'Track')) { if (/\bnotes\b/.test(t.a.contentType || '') && (kid(t, 'Channel')?.a.role !== 'master')) { trackDefs.set(t.a.id, { name: t.a.name || 'Track', color: t.a.color, muted: at(t, 'Channel/Mute')?.a.value === 'true', notes: [], sourceId: t.a.id }); order.push(t.a.id); } collect(t); } };
+  const collect = (n) => { for (const t of kids(n, 'Track')) { if (/\bnotes\b/.test(t.a.contentType || '') && (kid(t, 'Channel')?.a.role !== 'master')) { trackDefs.set(t.a.id, { name: t.a.name || 'Track', color: t.a.color, muted: at(t, 'Channel/Mute')?.a.value === 'true', notes: [], sourceId: t.a.id, params: { volume: at(t, 'Channel/Volume')?.a.id, pan: at(t, 'Channel/Pan')?.a.id, volumeUnit: at(t, 'Channel/Volume')?.a.unit, panUnit: at(t, 'Channel/Pan')?.a.unit } }); order.push(t.a.id); } collect(t); } };
   collect(kid(root, 'Structure') || root);
   if (!trackDefs.size) warn(warnings, 'WARN_DAWPROJECT_NO_NOTE_TRACKS', 'không có track nào có contentType chứa "notes"');
 
@@ -87,9 +87,16 @@ export function parseDawprojectXml(xmlText, options = {}) {
   };
 
   const placeClip = (clip, ctx) => {
+    if (clip.a.enable === 'false') return; // Clip.enable (mặc định true): clip tắt không phát
     const cUnit = clip.a.contentTimeUnit || ctx.unit;
     if (cUnit !== ctx.unit) mixedUnits = true;
-    const time = f(clip.a.time), dur = f(clip.a.duration, NaN), playStart = f(clip.a.playStart);
+    const time = f(clip.a.time), playStart = f(clip.a.playStart);
+    // duration vắng: suy ra playStop − playStart (tính theo contentTimeUnit, đổi sang đơn vị của clip bằng tempo tại điểm bắt đầu)
+    let dur = f(clip.a.duration, NaN);
+    if (!Number.isFinite(dur) && clip.a.playStop !== undefined) {
+      const startAbs0 = ctx.origin + conv(time, ctx.unit, ctx.origin), contentTicks = conv(f(clip.a.playStop) - playStart, cUnit, startAbs0);
+      dur = ctx.unit === 'seconds' ? tickToSec(map, startAbs0 + contentTicks) - tickToSec(map, startAbs0) : contentTicks / PPQ;
+    }
     if (!Number.isFinite(dur)) return;
     const startAbs = ctx.origin + conv(time, ctx.unit, ctx.origin), endAbs = ctx.origin + conv(time + dur, ctx.unit, ctx.origin);
     const lo = Math.max(startAbs, ctx.lo), hi = Math.min(endAbs, ctx.hi);
@@ -125,7 +132,38 @@ export function parseDawprojectXml(xmlText, options = {}) {
   if (mixedUnits) warn(warnings, 'WARN_TIME_UNIT_MIXED', 'clip có contentTimeUnit khác timeUnit: quy đổi bằng tempo tại điểm bắt đầu clip (xấp xỉ) [VERIFY]');
 
   const tracks = order.map((id) => trackDefs.get(id));
-  const { ast } = buildAST({ title: options.title || 'DAWproject', artist: options.artist || '', sourceFormat: 'dawproject', sourceVersion, sourcePPQ: PPQ, tempoPoints, tempoSource, tracks, warnings }, { maxNotes: limits.maxNotes, showMuted: options.showMuted });
+  // P-10: <Markers><Marker time name/></Markers> (đơn vị theo Markers, không có thì theo Lanes/Arrangement cha, mặc định beats)
+  const mmap = makeTempoMap(tempoPoints), markers = [], lanesOut = new Map();
+  const timelines = (node, unit, trackId) => {
+    for (const ch of node.c) {
+      const u = ch.a.timeUnit || unit, tid = ch.a.track || trackId;
+      if (ch.n === 'Markers') for (const m of kids(ch, 'Marker')) { const v = f(m.a.time, NaN); if (Number.isFinite(v) && v >= 0) markers.push({ tick: Math.round(u === 'seconds' ? secToTick(mmap, v) : v * PPQ), name: m.a.name || '' }); }
+      else if (ch.n === 'Points') readPoints(ch, u, tid);
+      else if (ch.n === 'Lanes') timelines(ch, u, tid);
+    }
+  };
+  // P-13 / SOI-18: <Points><Target parameter|expression/><RealPoint time value interpolation/></Points> cho âm lượng và pan của Channel.
+  // Âm lượng đổi về gain tuyến tính (unit linear = giữ, decibel = đổi); pan normalized 0..1 (0,5 = giữa) → −1..1. Nội suy mặc định là hold (bậc thang).
+  const readPoints = (pts, unit, trackId) => {
+    const tg = kid(pts, 'Target'); if (!tg) return;
+    for (const td of trackDefs.values()) {
+      const mine = td.sourceId === trackId;
+      const kind = tg.a.parameter !== undefined && tg.a.parameter === td.params.volume ? 'volume' : tg.a.parameter !== undefined && tg.a.parameter === td.params.pan ? 'pan'
+        : mine && tg.a.expression === 'gain' ? 'volume' : mine && tg.a.expression === 'pan' ? 'pan' : null;
+      if (!kind || lanesOut.has(td.sourceId + kind)) continue;
+      const vu = pts.a.unit || (kind === 'volume' ? td.params.volumeUnit : td.params.panUnit) || (kind === 'volume' ? 'linear' : 'normalized');
+      const conv1 = (v) => (kind === 'volume' ? (vu === 'decibel' ? dbToGain(v) : v) : vu === 'normalized' || vu === 'percent' ? (vu === 'percent' ? v / 50 - 1 : v * 2 - 1) : v);
+      const raw = kids(pts, 'RealPoint').map((q) => ({ t: f(q.a.time, NaN), v: f(q.a.value, NaN), lin: q.a.interpolation === 'linear' })).filter((q) => Number.isFinite(q.t) && Number.isFinite(q.v) && q.t >= 0).sort((a, b) => a.t - b.t);
+      const lane = [];
+      for (const q of raw) {
+        const tick = Math.round(unit === 'seconds' ? secToTick(mmap, q.t) : q.t * PPQ), pt = { tick, timeSeconds: tickToSec(mmap, tick), value: Math.max(-1, Math.min(kind === 'pan' ? 1 : 1e6, conv1(q.v))), shape: q.lin ? 0 : 1 };
+        if (lane.length && pt.tick <= lane[lane.length - 1].tick) lane[lane.length - 1] = pt; else lane.push(pt);
+      }
+      if (lane.length) { lanesOut.set(td.sourceId + kind, true); (td.automation ||= {})[kind] = { kind, points: lane }; }
+    }
+  };
+  if (arr) timelines(arr, arr.a.timeUnit || 'beats', undefined);
+  const { ast } = buildAST({ markers, title: options.title || 'DAWproject', artist: options.artist || '', sourceFormat: 'dawproject', sourceVersion, sourcePPQ: PPQ, tempoPoints, tempoSource, tracks, warnings }, { maxNotes: limits.maxNotes, showMuted: options.showMuted });
   return { ast, warnings, info: { noteTracks: order.length } };
 }
 

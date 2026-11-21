@@ -503,6 +503,7 @@ export function App() {
     visibility: (id, v, key) => run((d) => Cmds.setWidgetVisibility(d, id, v, key)),
     phases: (list, key) => run((d) => Cmds.setPhases(d, list, key)),
     tonic: (t) => run((d) => Cmds.setTonic(d, t)),
+    noteNaming: (n) => run((d) => Cmds.setNoteNaming(d, n)),
     background: { pick: (f) => void onBackground(f), remove: dropBackground, spec: (p) => run((d) => Cmds.setBackgroundSpec(d, p)) },
     add: (type) => { const w = createWidget(store.get().scene, type); run((d) => Cmds.addWidget(d, w)); return w.id; },
     duplicate: (ids) => {

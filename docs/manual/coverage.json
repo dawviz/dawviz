@@ -12,8 +12,8 @@
         "locales/en.json#web.number."
       ],
       "uiHash": "6d90d8951bae",
-      "viHash": "21685e1285bd",
-      "enHash": "080af217ea47",
+      "viHash": "601da2b69c96",
+      "enHash": "f4c7d11ace4f",
       "coverHashes": {
         "apps/web/src/lib/numberInput.ts": "8e27c53523c3",
         "apps/web/src/components/NumberField.tsx": "f7668b64f388",
@@ -113,11 +113,11 @@
         "locales/en.json#web.bg.",
         "locales/en.json#web.page."
       ],
-      "uiHash": "84a947079751",
-      "viHash": "756fea8ff79a",
-      "enHash": "b5c621330766",
+      "uiHash": "dd11f23f0d48",
+      "viHash": "df8a64407cb5",
+      "enHash": "0d1b5f3ef00b",
       "coverHashes": {
-        "apps/web/src/components/Editor.tsx": "89566b93a4d9",
+        "apps/web/src/components/Editor.tsx": "8bf4b84c0602",
         "apps/web/src/components/EditorOverlay.tsx": "c813801e06af",
         "apps/web/src/components/StylePanel.tsx": "26c35e084860",
         "locales/en.json#web.editor.": "7be8167cea49",
@@ -127,9 +127,9 @@
         "locales/en.json#web.playhead.": "a9aab88bc783",
         "apps/web/src/components/TextPanel.tsx": "1d72815804e3",
         "locales/en.json#web.text.": "1dcb3963c82b",
-        "apps/web/src/components/WidgetSettings.tsx": "5400f03bc5e3",
-        "locales/en.json#web.ws.": "1216a7e6fa76",
-        "apps/web/src/components/TimeSections.tsx": "30e47fed817e",
+        "apps/web/src/components/WidgetSettings.tsx": "e64c1404be9b",
+        "locales/en.json#web.ws.": "a001738e0505",
+        "apps/web/src/components/TimeSections.tsx": "b7fe47a39deb",
         "apps/web/src/components/TimeField.tsx": "d02e439b7844",
         "locales/en.json#web.vis.": "8bbfd1495bf1",
         "locales/en.json#web.phase.": "dafcbfbf2bf9",
@@ -180,7 +180,7 @@
         "apps/web/src/lib/numberInput.ts",
         "apps/web/src/components/Editor.tsx"
       ],
-      "uiHash": "260675ba65a4",
+      "uiHash": "a8f37e1adbb4",
       "viHash": "a4fc2ae2b94b",
       "enHash": "f0eff66dc8fc",
       "coverHashes": {
@@ -188,7 +188,7 @@
         "apps/web/src/lib/undoKeys.ts": "07c2c99f5cf4",
         "apps/web/src/components/EditorOverlay.tsx": "c813801e06af",
         "apps/web/src/lib/numberInput.ts": "8e27c53523c3",
-        "apps/web/src/components/Editor.tsx": "89566b93a4d9"
+        "apps/web/src/components/Editor.tsx": "8bf4b84c0602"
       }
     },
     "06-xuat-video": {
@@ -232,13 +232,13 @@
         "locales/en.json#web.widget.",
         "locales/en.json#web.tonic."
       ],
-      "uiHash": "727f57fbf4cc",
-      "viHash": "2ec8a571cc5d",
-      "enHash": "b30c5d7c2349",
+      "uiHash": "7b222ddcf206",
+      "viHash": "b2804221e8d3",
+      "enHash": "47521b48927d",
       "coverHashes": {
-        "apps/web/src/components/WidgetSettings.tsx": "5400f03bc5e3",
-        "locales/en.json#web.ws.": "1216a7e6fa76",
-        "locales/en.json#web.widget.": "2dcf3b3823bc",
+        "apps/web/src/components/WidgetSettings.tsx": "e64c1404be9b",
+        "locales/en.json#web.ws.": "a001738e0505",
+        "locales/en.json#web.widget.": "d9a64261e49b",
         "locales/en.json#web.tonic.": "2b1a6b41c82b"
       }
     },
@@ -261,6 +261,27 @@
         "locales/en.json#web.ws.nt": "10e4c3bfd9db",
         "locales/en.json#warn.WARN_NOTATION": "a54d2c6c5a70",
         "locales/en.json#web.export.notationPending": "8d3b9fd42ea6"
+      }
+    },
+    "10-phan-tich": {
+      "vi": "docs/manual/10-phan-tich.md",
+      "en": "docs/manual/en/10-analysis-widgets.md",
+      "covers": [
+        "packages/render-core/src/insight.ts",
+        "packages/render-core/src/naming.ts",
+        "apps/web/src/components/TimeSections.tsx",
+        "locales/en.json#web.naming.",
+        "locales/en.json#web.ws.in"
+      ],
+      "uiHash": "cf516a543151",
+      "viHash": "8a30798e4481",
+      "enHash": "5a05f40fb1f0",
+      "coverHashes": {
+        "packages/render-core/src/insight.ts": "37e1f3014ac3",
+        "packages/render-core/src/naming.ts": "9a90045d7e7c",
+        "apps/web/src/components/TimeSections.tsx": "b7fe47a39deb",
+        "locales/en.json#web.naming.": "2386cbe2d200",
+        "locales/en.json#web.ws.in": "e60a0bc99d56"
       }
     }
   }

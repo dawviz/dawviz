@@ -23,6 +23,8 @@ export * from './spectrum.ts';
 export * from './musicAnalysis.ts';
 export * from './background.ts';
 export * from './particles.ts';
+export * from './naming.ts';
+export * from './insight.ts';
 export * from './notation/types.ts';
 export * from './notation/quantize.ts';
 export * from './notation/spelling.ts';

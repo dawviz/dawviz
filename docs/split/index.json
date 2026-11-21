@@ -498,7 +498,7 @@
   },
   "SRS.md": {
    "title": "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)",
-   "sha1": "34fd2a9134",
+   "sha1": "47b83a06d8",
    "chunks": [
     {
      "n": 0,
@@ -1757,14 +1757,16 @@
       "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS)",
       "3.4b. Đề xuất widget và dữ liệu hiển thị bổ sung (D-32, OI-11) **[ĐỀ XUẤT, chưa cam kết v1.0]**"
      ],
-     "chars": 2994,
+     "chars": 3784,
      "lines": [
       696,
-      719
+      721
      ],
      "ids": [
       "D-32",
       "D-40",
+      "D-45",
+      "OI-01",
       "OI-11",
       "P-01",
       "P-02",
@@ -1795,8 +1797,8 @@
      ],
      "chars": 4696,
      "lines": [
-      720,
-      792
+      722,
+      794
      ],
      "ids": [
       "BR-05",
@@ -1825,8 +1827,8 @@
      ],
      "chars": 413,
      "lines": [
-      795,
-      797
+      797,
+      799
      ],
      "ids": [
       "D-05",
@@ -1845,8 +1847,8 @@
      ],
      "chars": 2606,
      "lines": [
-      798,
-      820
+      800,
+      822
      ],
      "ids": [
       "D-17",
@@ -1868,8 +1870,8 @@
      ],
      "chars": 502,
      "lines": [
-      821,
-      826
+      823,
+      828
      ],
      "ids": [
       "REQ-EXPORT-01",
@@ -1887,8 +1889,8 @@
      ],
      "chars": 192,
      "lines": [
-      827,
-      829
+      829,
+      831
      ],
      "ids": [
       "REQ-EXPORT-02"
@@ -1905,8 +1907,8 @@
      ],
      "chars": 1276,
      "lines": [
-      830,
-      835
+      832,
+      837
      ],
      "ids": [
       "AT-03",
@@ -1927,8 +1929,8 @@
      ],
      "chars": 845,
      "lines": [
-      836,
-      840
+      838,
+      842
      ],
      "ids": [
       "D-04",
@@ -1947,8 +1949,8 @@
      ],
      "chars": 466,
      "lines": [
-      841,
-      843
+      843,
+      845
      ],
      "ids": [
       "REQ-EXPORT-05"
@@ -1965,8 +1967,8 @@
      ],
      "chars": 1793,
      "lines": [
-      844,
-      870
+      846,
+      872
      ],
      "ids": [
       "D-05",
@@ -1987,8 +1989,8 @@
      ],
      "chars": 2121,
      "lines": [
-      871,
-      882
+      873,
+      884
      ],
      "ids": [
       "D-47",
@@ -2006,8 +2008,8 @@
      ],
      "chars": 946,
      "lines": [
-      883,
-      892
+      885,
+      894
      ],
      "ids": [
       "ARC-02",
@@ -2027,8 +2029,8 @@
      ],
      "chars": 2714,
      "lines": [
-      893,
-      907
+      895,
+      909
      ],
      "ids": [
       "BR-09",
@@ -2047,8 +2049,8 @@
      ],
      "chars": 328,
      "lines": [
-      908,
-      911
+      910,
+      913
      ],
      "ids": [
       "AD-08",
@@ -2073,8 +2075,8 @@
      ],
      "chars": 844,
      "lines": [
-      912,
-      915
+      914,
+      917
      ],
      "ids": [
       "REQ-GRAPHICS-09"
@@ -2091,8 +2093,8 @@
      ],
      "chars": 467,
      "lines": [
-      916,
-      918
+      918,
+      920
      ],
      "ids": [
       "AD-11",
@@ -2112,8 +2114,8 @@
      ],
      "chars": 1821,
      "lines": [
-      919,
-      922
+      921,
+      924
      ],
      "ids": [
       "REQ-GRAPHICS-11"
@@ -2130,8 +2132,8 @@
      ],
      "chars": 529,
      "lines": [
-      923,
-      925
+      925,
+      927
      ],
      "ids": [
       "REQ-GRAPHICS-12"
@@ -2148,8 +2150,8 @@
      ],
      "chars": 339,
      "lines": [
-      926,
-      928
+      928,
+      930
      ],
      "ids": [
       "REQ-GRAPHICS-13"
@@ -2166,8 +2168,8 @@
      ],
      "chars": 1148,
      "lines": [
-      929,
-      934
+      931,
+      936
      ],
      "ids": [
       "P-04",
@@ -2190,8 +2192,8 @@
      ],
      "chars": 1874,
      "lines": [
-      935,
-      943
+      937,
+      945
      ],
      "ids": [
       "D-47",
@@ -2211,8 +2213,8 @@
      ],
      "chars": 967,
      "lines": [
-      944,
-      947
+      946,
+      949
      ],
      "ids": [
       "ERR_ASSET_DECODE",
@@ -2232,8 +2234,8 @@
      ],
      "chars": 444,
      "lines": [
-      948,
-      950
+      950,
+      952
      ],
      "ids": [
       "D-14",
@@ -2251,8 +2253,8 @@
      ],
      "chars": 5167,
      "lines": [
-      951,
-      997
+      953,
+      999
      ],
      "ids": [
       "ARC-07",
@@ -2303,8 +2305,8 @@
      ],
      "chars": 4893,
      "lines": [
-      1000,
-      1037
+      1002,
+      1039
      ],
      "ids": [
       "D-57",
@@ -2321,8 +2323,8 @@
      ],
      "chars": 364,
      "lines": [
-      1038,
-      1042
+      1040,
+      1044
      ],
      "ids": [
       "REQ-GRAPHICS-05"
@@ -2338,8 +2340,8 @@
      ],
      "chars": 18661,
      "lines": [
-      1043,
-      1116
+      1045,
+      1118
      ],
      "ids": [
       "ARC-05",
@@ -2402,8 +2404,8 @@
      ],
      "chars": 1468,
      "lines": [
-      1117,
-      1132
+      1119,
+      1134
      ],
      "ids": [
       "BR-01",
@@ -2466,8 +2468,8 @@
      ],
      "chars": 7104,
      "lines": [
-      1133,
-      1168
+      1135,
+      1170
      ],
      "ids": [
       "ARC-01",
@@ -2535,8 +2537,8 @@
      ],
      "chars": 4044,
      "lines": [
-      1169,
-      1195
+      1171,
+      1197
      ],
      "ids": [
       "D-20",
@@ -2591,8 +2593,8 @@
      ],
      "chars": 2864,
      "lines": [
-      1198,
-      1223
+      1200,
+      1225
      ],
      "ids": [
       "ERR_ARCHIVE_INVALID",
@@ -2630,8 +2632,8 @@
      ],
      "chars": 1673,
      "lines": [
-      1224,
-      1240
+      1226,
+      1242
      ],
      "ids": [
       "NFR-SEC-04",
@@ -2658,8 +2660,8 @@
      ],
      "chars": 1357,
      "lines": [
-      1241,
-      1246
+      1243,
+      1248
      ],
      "ids": [
       "REQ-AUDIO-01",
@@ -2707,8 +2709,8 @@
      ],
      "chars": 2904,
      "lines": [
-      1247,
-      1278
+      1249,
+      1280
      ],
      "ids": [
       "D-20",
@@ -6891,6 +6893,7 @@
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "BRD/8-cac-van-de-con-mo-open-issues.md",
    "SRS/lich-su-phien-ban.md",
+   "SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md",
    "SRS/8-cac-van-de-con-mo-cua-srs.md",
    "SPIKE-2-PARSER/5-trang-thai-hien-tai-tai-lieu-v1-1.md"
   ],
@@ -7904,6 +7907,7 @@
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "BRD/8-cac-van-de-con-mo-open-issues.md",
    "SRS/req-parser-03-dawproject-dawproject-d-03.md",
+   "SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md",
    "SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md",
    "SRS/8-cac-van-de-con-mo-cua-srs.md",
    "PARSER-SRS/6-cau-hoi-mo-can-du-lieu.md",

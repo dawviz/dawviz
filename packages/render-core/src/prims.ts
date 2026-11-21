@@ -9,6 +9,7 @@ import type { Phase } from './visibility.ts';
 import type { DerivedAudio } from './spectrum.ts';
 import type { BackgroundImage } from './background.ts';
 import type { RichText, TextStyleSet } from './typography.ts';
+import type { NoteNaming } from './naming.ts';
 import type { NotationItem, NotationLayout, PathData } from './notation/types.ts';
 
 /** Dữ liệu dẫn xuất: tính một lần ngoài vòng vẽ (Technical Design §4). */
@@ -28,6 +29,8 @@ export interface Derived {
   audio?: DerivedAudio;
   /** Nốt chủ của bài (0 = C … 11 = B) từ `scene.tonic`; vắng = chưa đặt. Cho chỗ giữ `{bass}`. */
   tonic?: number;
+  /** Cách ghi tên nốt/hợp âm của scene (P-12); vắng = cách ghi cũ của từng widget. */
+  naming?: NoteNaming;
   /** Ảnh nền đã nạp của phiên (vẽ trước mọi widget theo `scene.canvas.backgroundImage`); vắng = không có ảnh. */
   background?: BackgroundImage;
   /** Bản nhạc đã dựng theo id widget Bản nhạc (D-63); thiếu = đang dựng, widget không vẽ gì. */

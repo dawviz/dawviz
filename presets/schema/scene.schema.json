@@ -34,6 +34,8 @@
       "maxProperties": 64,
       "additionalProperties": { "$ref": "#/$defs/textStyle" }
     },
+    "noteNaming": { "type": "object", "description": "Cách ghi tên nốt và hợp âm cho mọi widget (P-12). Vắng = cách ghi cũ.", "additionalProperties": false,
+      "properties": { "system": { "enum": ["LETTER", "SOLFEGE", "GERMAN"] }, "accidental": { "enum": ["SHARP", "FLAT"] }, "ascii": { "type": "boolean" }, "middleC": { "enum": [3, 4] } } },
     "tonic": { "type": "integer", "minimum": 0, "maximum": 11, "description": "Nốt chủ của bài (0 = C … 11 = B); dùng cho chỗ giữ {bass} (T-83). Trường tuỳ chọn." },
     "phases": {
       "type": "array",
@@ -53,7 +55,7 @@
         "required": ["type"],
         "properties": {
           "id": { "type": "string", "minLength": 1, "maxLength": 64 },
-          "type": { "enum": ["TRACK_INFO", "PIANO_ROLL", "EVENT_COUNTER", "LIVE_TRIGGER", "TIME_BAR", "CHORD_DETECTION", "AUDIO_SPECTRUM", "PROGRESS_BAR", "TEXT", "PARTICLES"] },
+          "type": { "enum": ["TRACK_INFO", "PIANO_ROLL", "EVENT_COUNTER", "LIVE_TRIGGER", "TIME_BAR", "CHORD_DETECTION", "AUDIO_SPECTRUM", "PROGRESS_BAR", "TEXT", "PARTICLES", "NOTATION", "TEMPO_INFO", "BAR_BEAT", "KEY_SCALE", "VELOCITY", "DENSITY", "PITCH_WHEEL", "ARRANGEMENT", "DRUM_PAD", "SECTION", "LYRICS", "AUTOMATION"] },
           "name": { "type": "string", "minLength": 1, "maxLength": 60, "description": "Tên lớp do người dùng đặt; không trùng nhau. Vắng thì dùng tên theo loại." },
           "zIndex": { "type": "integer", "minimum": -10000, "maximum": 10000 },
           "visible": { "type": "boolean" },

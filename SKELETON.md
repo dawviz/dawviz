@@ -272,8 +272,10 @@ dawviz/
 │  │  │  ├─ glow.ts
 │  │  │  ├─ hud.ts
 │  │  │  ├─ index.ts
+│  │  │  ├─ insight.ts
 │  │  │  ├─ music.ts
 │  │  │  ├─ musicAnalysis.ts
+│  │  │  ├─ naming.ts
 │  │  │  ├─ notes.ts
 │  │  │  ├─ parser-core.d.ts
 │  │  │  ├─ particles.ts
@@ -301,6 +303,7 @@ dawviz/
 │  │  │  ├─ glow.test.ts
 │  │  │  ├─ helpers.ts
 │  │  │  ├─ hud.test.ts
+│  │  │  ├─ insight.test.ts
 │  │  │  ├─ legacy.test.ts
 │  │  │  ├─ musicAnalysis.test.ts
 │  │  │  ├─ notation.test.ts
@@ -352,8 +355,23 @@ dawviz/
 │  │  ├─ markdown.test.mjs
 │  │  └─ slug.mjs
 │  ├─ notation/
+│  │  ├─ data/
+│  │  │  ├─ maestro/
+│  │  │  │  ├─ bach-wtc1-a-minor-bwv865.mid
+│  │  │  │  ├─ chopin-nocturne-op9-2.mid
+│  │  │  │  └─ LICENSE
+│  │  │  └─ maestro-v3.0.0-midi.zip
 │  │  ├─ lib/
 │  │  │  └─ loadAst.mjs
+│  │  ├─ out/
+│  │  │  ├─ e2e/
+│  │  │  │  ├─ editor-added-final.png
+│  │  │  │  ├─ export-final.mp4
+│  │  │  │  ├─ play-final-0.png
+│  │  │  │  ├─ play-final-1.png
+│  │  │  │  └─ play-final-2.png
+│  │  │  ├─ app-short.mid.json
+│  │  │  └─ short.mid
 │  │  ├─ build-file.mjs
 │  │  ├─ e2e.mjs
 │  │  ├─ grid-stats.mjs
@@ -373,6 +391,7 @@ dawviz/
 │  ├─ fixtures/   # tệp mẫu
 │  ├─ als.test.js
 │  ├─ binary.test.js
+│  ├─ cues-automation.test.js
 │  ├─ dawproject.test.js
 │  ├─ detect-bundle.test.js
 │  ├─ flp.test.js
@@ -787,13 +806,22 @@ function barPageAt(g: BarGrid, bars: number, t: number):    // Trang gồm `bars
 interface ChordGroup   // Nhóm track + chế độ của một widget Chord Detection.
 function buildHud(ast: UnifiedProjectAST, index: TimelineIndex, chordGroups: ChordGroup[] = []): HudData   // `chordGroups`: các nhóm track mà widget Chord Detection sẽ đọc; dò hợp âm (
 function hudOf(derived: Derived, ast: UnifiedProjectAST): HudData   // HudData của derived. `layoutFrame` bảo đảm `derived.hud` có sẵn (dựng ở bước derived); thiếu thì chỉ còn số đ…
+const shown = (tracks: TrackIndex[]) =>
 const isDrumTrack = (name: string) =>
+const chordKey = (tracks: TrackIndex[], mode: ChordMode = 'sustained') =>
 const STRIKE_WINDOW_SEC   // Khung gom nốt của chế độ Strike: các nốt bắt đầu cách nốt đầu nhóm ≤ 30 ms là một lần dập (SRS REQ-WIDGET-06).
 function chordTimeline(hud: HudData, tracks: TrackIndex[], mode: ChordMode = 'sustained'): ChordSeg[]   // Danh sách đoạn hợp âm (SRS REQ-WIDGET-06) của một nhóm track theo chế độ; đệm theo (derived, chế độ, nhóm tra…
+function chordName(pitches: number[]): string | null
+function chordAt(segs: ChordSeg[], t: number): ChordSeg | null
 interface PlaceholderSource   // Nguồn của chỗ giữ chung: dự án, dữ liệu dẫn xuất, các track của widget đang vẽ.
 function globalValues(src: PlaceholderSource, t: number): Record<string, PV>   // Tập chỗ giữ chung tại `t`. Mỗi giá trị chỉ tính khi mẫu thật sự dùng tới (getter, đệm trong một lần vẽ), nên …
 function withLocals(glob: Record<string, PV>, local: Record<string, PV>): Record<string, PV>   // Giá trị riêng của widget che giá trị chung cùng tên (`{total}` của Thanh tiến độ là thời lượng, không phải số…
 const usesChordPlaceholder = (w: { properties: unknown }) =>   // Mẫu của mọi widget có dùng `{chord` thì nhóm track của nó cần dựng dòng thời gian hợp âm ở bước derived.
+const xFor = (align: Align, width: number) =>   // ───────────────────────────── trợ giúp vẽ chữ ─────────────────────────────
+function typo(set: TextStyleSet | undefined, measure: Measure, fonts?: ReadonlySet<string>)   // Bộ dựng chữ của một lần layout: kiểu của scene + hàm đo. `text` thêm primitive vào `out`, trả bước tiến dọc (…
+const base = (size: number) =>
+const block = (x: number, y: number, w: number, h: number, fill: string, radius = 0) =>
+const pct = (v: number) =>
 const trackInfoRenderer   // ───────────────────────────── widget ─────────────────────────────
 const eventCounterRenderer
 const liveTriggerRenderer
@@ -834,11 +862,62 @@ re-export * from './spectrum.ts'
 re-export * from './musicAnalysis.ts'
 re-export * from './background.ts'
 re-export * from './particles.ts'
+re-export * from './naming.ts'
+re-export * from './insight.ts'
 re-export * from './notation/types.ts'
 re-export * from './notation/quantize.ts'
 re-export * from './notation/spelling.ts'
 re-export * from './notation/widget.ts'
 re-export { roughPathData, roughGlyph, hashSigned } from './notation/draw.ts'
+```
+
+#### `packages/render-core/src/insight.ts`
+
+Các widget phân tích (P-02…P-13, SRS 3.4b, AT-23): Tempo & nhịp, Bar & Beat, Giọng, Velocity, Mật độ, Vòng cao độ, Tổng quan bản phối,
+
+```text
+interface TempoInfoProps   // ───────────────────────────── thuộc tính ─────────────────────────────
+interface BarBeatProps
+interface KeyScaleProps
+interface VelocityProps
+interface DensityProps
+interface PitchWheelProps
+interface ArrangementProps
+interface DrumPadProps
+interface SectionProps
+interface LyricsProps
+interface AutomationProps
+const DEFAULT_TEMPO_INFO
+const DEFAULT_BAR_BEAT
+const DEFAULT_KEY_SCALE
+const DEFAULT_VELOCITY
+const DEFAULT_DENSITY
+const DEFAULT_PITCH_WHEEL
+const DEFAULT_ARRANGEMENT
+const DEFAULT_DRUM_PAD
+const DEFAULT_SECTION
+const DEFAULT_LYRICS
+const DEFAULT_AUTOMATION
+const INSIGHT_TEMPLATE_KEYS   // Chỗ giữ riêng của từng widget phân tích (ngoài chỗ giữ chung).
+const INSIGHT_TYPES
+const tempoInfoRenderer   // ───────────────────────────── P-02 Tempo & nhịp ─────────────────────────────
+const barBeatRenderer   // ───────────────────────────── P-03 Bar & Beat ─────────────────────────────
+function keyFromHistogram(h: readonly number[]):    // Giọng tốt nhất của một biểu đồ 12 lớp cao độ (trọng số = độ dài nốt trong cửa sổ). `confidence` = hệ số tương…
+function keyAt(tracks: readonly TrackIndex[], t: number, windowSec: number)   // Giọng đang chạy tại t: biểu đồ lớp cao độ của các nốt chạm cửa sổ [t − windowSec, t].
+const keyScaleRenderer
+const velocityRenderer   // ───────────────────────────── P-05 Velocity ─────────────────────────────
+const densityRenderer
+const pitchWheelRenderer   // ───────────────────────────── P-07 Vòng cao độ / vòng quãng năm ─────────────────────────────
+const arrangementRenderer   // ───────────────────────────── P-08 Tổng quan bản phối ─────────────────────────────
+const GM_DRUMS   // Tên ngắn của trống GM (nốt 35–81, kênh 10).
+const drumPadRenderer
+interface Cue   // ───────────────────────────── P-10 Tên đoạn (marker) ─────────────────────────────
+function sectionsOf(derived: Derived, markers: readonly { timeSeconds: number; name: string }[] | undefined): Cue[]   // Đoạn của bài: marker của dự án; không có thì dùng phase của scene (REQ-GRAPHICS-14). Sắp theo thời gian.
+const sectionRenderer
+function lyricLines(lyrics: readonly { timeSeconds: number; text: string }[], gapSec: number, maxChars: number): LyricLine[]   // Gom âm tiết (MIDI Lyric/Text) thành dòng: ngắt khi gặp `/` hoặc `\` (kiểu .kar), khi nghỉ quá `gapSec` hoặc d…
+const lyricsRenderer
+const automationRenderer
+const INSIGHT_RENDERERS
 ```
 
 #### `packages/render-core/src/music.ts`
@@ -863,6 +942,20 @@ const PITCH_CLASSES
 const degreeName = (pitch: number, tonic: number) =>   // Bậc của `pitch` (MIDI) so với nốt chủ `tonic` (0 = C … 11 = B): 1, ♭2, 2, ♭3, 3, 4, ♭5, 5, ♭6, 6, ♭7, 7.
 const pitchClassName = (pitch: number) =>
 function quarterFraction(ticks: number, ppq: number): string   // Độ dài `ticks` theo phân số nốt đen: "1/2", "3/4", "1", "3/2", "1/3"; không biểu diễn đúng bằng mẫu số thường…
+```
+
+#### `packages/render-core/src/naming.ts`
+
+Cách ghi tên nốt và hợp âm dùng chung cho mọi widget (P-12, REQ-I18N-08). Hàm thuần.
+
+```text
+const NAMING_SYSTEMS   // Cách ghi tên nốt và hợp âm dùng chung cho mọi widget (P-12, REQ-I18N-08). Hàm thuần. Không có `scene.noteNami…
+type NamingSystem
+interface NoteNaming
+const DEFAULT_NAMING
+function pitchClassNameFor(pc: number, n: NoteNaming): string   // Tên lớp cao độ (0 = C … 11 = B).
+function noteNameFor(pitch: number, n: NoteNaming): string   // Tên nốt MIDI kèm số quãng tám, theo quy ước C4 = 60 (hoặc C3 = 60). Ngoài 0–127 → "?".
+function chordNameFor(name: string, n: NoteNaming): string   // Tên hợp âm kiểu tonal ("Cmaj7", "E7/G#", "Bbm") → cùng hợp âm theo cách ghi đã chọn: đổi gốc và bass, giữ phầ…
 ```
 
 #### `packages/render-core/src/notation/draw.ts`
@@ -1573,7 +1666,8 @@ Hai mục của bảng Thuộc tính (T-81): "Khoảng hiển thị" của widge
 ```text
 function VisibilitySection({ n, widgetId, value, disabled, onChange }: { n: number; widgetId: string; value: WidgetVisibility | undefined; disabled?: boolean; onChange(v: WidgetVisibility | null, key?: string): void })   // Mục "Khoảng hiển thị": tắt = hiện suốt bài; bật = danh sách khoảng (mốc kết thúc trống = hết bài) + thời gian…
 function PhasesSection({ n, phases, duration, onChange }: { n: number; phases: readonly Phase[]; duration: number; onChange(p: Phase[], key?: string): void })   // Mục "Phase": mỗi dòng là tên + thời điểm bắt đầu; phase kéo dài tới phase kế. Dùng cho chỗ giữ `{phase}`, `{n…
-function KeySection({ n, tonic, onChange }: { n: number; tonic: number | undefined; onChange(t: number | null): void })   // Mục "Nốt chủ": chọn nốt chủ của bài để `{bass}` hiện bậc (1, ♭2, … 7) thay vì tên nốt.
+function NamingSection({ n, naming, onChange }: { n: number; naming: NoteNaming | undefined; onChange(v: NoteNaming | null): void })   // Mục "Cách ghi tên nốt" (P-12): một thiết lập chung cho mọi widget có tên nốt hoặc hợp âm. Trống = cách ghi cũ.
+function KeySection({ n, tonic, onChange }: { n: number; tonic: number | undefined; onChange(t: number | null): void })
 ```
 
 #### `apps/web/src/components/TrackPanel.tsx`
@@ -1856,6 +1950,7 @@ const moveLayer = (d: Doc, widgetId: string, to: number) =>   // Đưa lớp `wi
 const setWidgetVisibility = (d: Doc, widgetId: string, next: WidgetVisibility | null, key?: string) =>   // Đặt khoảng hiển thị theo thời gian của widget (REQ-GRAPHICS-14); `null` = bỏ (hiện suốt bài). `key` gộp các l…
 const setPhases = (d: Doc, phases: Phase[], key?: string) =>   // Đặt danh sách phase của bài (đã sắp theo `start`, tên không rỗng). Rỗng = bỏ hết.
 const setTonic = (d: Doc, tonic: number | null) =>   // Đặt nốt chủ của bài (0 = C … 11 = B); `null` = bỏ (chỗ giữ `{bass}` hiện tên nốt thay vì bậc).
+const setNoteNaming = (d: Doc, naming: NoteNaming | null) =>   // Cách ghi tên nốt/hợp âm của cả scene (P-12); `null` = cách ghi cũ (C♯, C4 = 60).
 const setBackgroundSpec = (d: Doc, patch: Partial<BackgroundImageSpec>) =>   // Cách đặt ảnh nền (vừa khung, độ đục, làm tối). Ảnh là tài nguyên của phiên, không nằm trong scene. Kéo liên t…
 const setCanvasSize = (d: Doc, width: number, height: number) =>   // Đổi cỡ khung thiết kế (256–4096 pt mỗi cạnh; tỉ lệ dựng sẵn 9:16 / 1:1 / 16:9 qua `setAspect`): mọi widget co…
 const setAspect = (d: Doc, aspect: string) =>   // Đổi sang một tỉ lệ dựng sẵn (9:16 / 1:1 / 16:9); tỉ lệ không biết hoặc đang đúng tỉ lệ đó thì không làm gì.
@@ -2852,6 +2947,7 @@ type SpectrumOut
 - `packages/render-core/test/fonts.test.ts`
 - `packages/render-core/test/glow.test.ts`
 - `packages/render-core/test/hud.test.ts`
+- `packages/render-core/test/insight.test.ts`
 - `packages/render-core/test/legacy.test.ts`
 - `packages/render-core/test/musicAnalysis.test.ts`
 - `packages/render-core/test/notation.test.ts`
@@ -2869,6 +2965,7 @@ type SpectrumOut
 - `packages/render-core/test/visibility.test.ts`
 - `test/als.test.js`
 - `test/binary.test.js`
+- `test/cues-automation.test.js`
 - `test/dawproject.test.js`
 - `test/detect-bundle.test.js`
 - `test/flp.test.js`
@@ -2876,4 +2973,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 1199 ký hiệu công khai -->
+<!-- 10 thư mục src, 1261 ký hiệu công khai -->

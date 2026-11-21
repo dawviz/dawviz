@@ -126,6 +126,7 @@ export function describeCommand(cmd: Cmd, c: LabelCtx): string {
     case 'setWidgetVisibility': return i18n.t(cmd.after ? 'web.hist.visibility' : 'web.hist.visibilityOff', { widget });
     case 'setBackgroundSpec': return changeLabel(c, i18n.t('web.hist.what.background'), { fit: 'web.bg.fit', opacity: 'web.bg.opacity', dim: 'web.bg.dim' }, cmd);
     case 'setTonic': return cmd.after === null ? i18n.t('web.hist.tonicOff') : i18n.t('web.hist.tonic', { note: pitchClassName(Number(cmd.after)) });
+    case 'setNoteNaming': return cmd.after === null ? i18n.t('web.hist.noteNamingOff') : i18n.t('web.hist.noteNaming', { system: i18n.t(`web.naming.system.${String((cmd.after as { system: string }).system)}`) });
     case 'setPhases': return i18n.t('web.hist.phases', { n: Number(p.n) });
     case 'patchTextRef': return i18n.t('web.hist.text', { widget });
     case 'setTextStyles': return i18n.t(p.kind === 'save' ? 'web.hist.textStyleSave' : 'web.hist.textStyleUpdate', { widget });

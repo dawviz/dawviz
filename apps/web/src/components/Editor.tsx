@@ -6,7 +6,7 @@
 // và bắt dính đều là lệnh hoàn tác được (lib/commands.ts).
 import { motion } from 'framer-motion';
 import { useContext, useMemo, useRef, useState, type DragEvent, type KeyboardEvent, type ReactNode } from 'react';
-import { ADDABLE_WIDGETS, defaultScene, normalizeAngle, rotateGroup, type Derived, type Phase, type SceneDocument, type UnifiedProjectAST, type WidgetLayout, type WidgetSpec, type WidgetType, type WidgetVisibility, type BackgroundImageSpec } from '@dawviz/render-core';
+import { ADDABLE_WIDGETS, defaultScene, normalizeAngle, rotateGroup, type Derived, type NoteNaming, type Phase, type SceneDocument, type UnifiedProjectAST, type WidgetLayout, type WidgetSpec, type WidgetType, type WidgetVisibility, type BackgroundImageSpec } from '@dawviz/render-core';
 import { clickIsKeyboard, startPaintDrag } from '../lib/paintDrag.ts';
 import { GestureContext } from '../lib/storeReact.ts';
 import { useI18n } from '../i18n/I18nProvider.tsx';
@@ -27,7 +27,7 @@ import { checkLayerName } from '../lib/layerName.ts';
 import { MAX_WIDGET_NAME } from '@dawviz/render-core';
 import { StatusIcon } from './StatusIcon.tsx';
 import { BackgroundSection, type BackgroundState } from './BackgroundSection.tsx';
-import { KeySection, PhasesSection, VisibilitySection } from './TimeSections.tsx';
+import { KeySection, NamingSection, PhasesSection, VisibilitySection } from './TimeSections.tsx';
 
 /** Mốc ↺ của mục Bắt dính: giá trị mặc định của canvas (scene mới). */
 const SNAP_DEFAULT = defaultScene().canvas.snapping;
@@ -62,6 +62,7 @@ export interface EditorActions {
   phases(list: Phase[], key?: string): void;
   /** Nốt chủ của bài (0 = C … 11 = B); null = chưa đặt. */
   tonic(t: number | null): void;
+  noteNaming(n: NoteNaming | null): void;
   /** Ảnh nền của phiên (T-21): nạp, bỏ, đổi cách đặt. */
   background: { pick(f: File): void; remove(): void; spec(p: Partial<BackgroundImageSpec>): void };
   /** Thêm widget loại `type` (T-68); trả id mới để chọn ngay. */
@@ -435,6 +436,7 @@ function Properties({ background, duration, scene, selected, locked, name, advan
       {advanced && <FrameSection n={2} width={W} height={H} onSize={actions.canvasSize} />}
       <PhasesSection n={advanced ? 3 : 2} phases={scene.phases ?? []} duration={duration} onChange={actions.phases} />
       <KeySection n={advanced ? 4 : 3} tonic={scene.tonic} onChange={actions.tonic} />
+      <NamingSection n={advanced ? 5 : 4} naming={scene.noteNaming} onChange={actions.noteNaming} />
       {background && <BackgroundSection n={advanced ? 5 : 4} state={background} spec={scene.canvas.backgroundImage} onPick={actions.background.pick} onRemove={actions.background.remove} onSpec={actions.background.spec} />}
       {snapping((advanced ? 1 : 0) + (background ? 5 : 4))}
     </>

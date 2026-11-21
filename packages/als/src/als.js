@@ -1,6 +1,6 @@
 // Ableton Live (.als): XML thuần HOẶC XML nén Gzip. Nhận dạng bằng magic bytes, không dựa vào phần mở rộng.
 // Chỉ đọc Arrangement (REQ-PARSER-01). Đối chiếu với file thật: Live 9.1 (MinorVersion 9.0_305) và Live 12.4.16 (12.0_12402) — xem test/als.test.js.
-import { fail, warn, resolveLimits, toU8, sniff, inflateLimited, decodeUtf8, parseXml, kid, kids, at, val, num, PPQ, mergeTempoAndSig, rampToSteps, buildAST, normalizeTempoOverride, pathInventory } from '@dawviz/parser-core';
+import { fail, warn, resolveLimits, toU8, sniff, inflateLimited, decodeUtf8, parseXml, kid, kids, at, val, num, PPQ, makeTempoMap, tickToSec, mergeTempoAndSig, rampToSteps, buildAST, normalizeTempoOverride, pathInventory } from '@dawviz/parser-core';
 
 // Bỏ cả cây con không cần: giảm bộ nhớ/thời gian cho file hàng chục MB.
 const SKIP = new Set(['Devices', 'AudioTrack', 'ReturnTrack', 'PreHearTrack', 'ClipSlotList', 'WarpMarkers', 'SampleRef', 'Scenes', 'AudioClip']);
@@ -35,6 +35,32 @@ function automationEvents(master, paramNode, evName) {
       if (val(env, 'EnvelopeTarget/PointeeId') === id) ev = ev.concat(collectEvents(at(env, 'Automation/Events'), evName));
   }
   return ev.sort((a, b) => a.t - b.t);
+}
+
+/** Automation âm lượng/pan của một track (P-13, SOI-18): Time là beat (nốt đen), Value thô (volume = gain tuyến tính, 1 = 0 dB; pan −1…1).
+ *  Sự kiện Time < 0 là giá trị khởi đầu; đoạn kết thúc bằng sự kiện có CurveControl là đường cong, xấp xỉ bằng đường cong mượt (shape 2). */
+function trackLanes(tr, map, stats) {
+  const out = {};
+  for (const [kind, path] of [['volume', 'DeviceChain/Mixer/Volume'], ['pan', 'DeviceChain/Mixer/Pan']]) {
+    const param = at(tr, path);
+    if (!param) continue;
+    const id = kid(param, 'AutomationTarget')?.a.Id;
+    const env = id === undefined ? null : kids(at(tr, 'AutomationEnvelopes/Envelopes'), 'AutomationEnvelope').find((e) => val(e, 'EnvelopeTarget/PointeeId') === id);
+    const evs = kids(at(env, 'Automation/Events'), 'FloatEvent').map((e) => ({ t: parseFloat(e.a.Time), v: parseFloat(e.a.Value), curved: e.a.CurveControl1X !== undefined })).filter((e) => Number.isFinite(e.t) && Number.isFinite(e.v));
+    if (!evs.length) continue;
+    evs.sort((a, b) => a.t - b.t);
+    const init = evs.filter((e) => e.t < 0).pop(), body = evs.filter((e) => e.t >= 0);
+    if (init && (!body.length || body[0].t > 0)) body.unshift({ t: 0, v: init.v, curved: false });
+    const pts = [];
+    body.forEach((e, i) => {
+      const tick = Math.round(e.t * PPQ), nx = body[i + 1];
+      const curved = !!nx?.curved && nx.v !== e.v; if (curved) stats.curved = true;
+      const p = { tick, timeSeconds: tickToSec(map, tick), value: e.v, shape: curved ? 2 : 0 };
+      if (pts.length && p.tick <= pts[pts.length - 1].tick) pts[pts.length - 1] = p; else pts.push(p);
+    });
+    if (pts.length) { out[kind] = { kind, points: pts }; stats.read++; }
+  }
+  return Object.keys(out).length ? out : null;
 }
 
 function readTimeline(master, warnings, ctx) {
@@ -129,6 +155,7 @@ export function parseAlsText(text, options = {}) {
   else { tempoPoints = [{ tick: 0, bpm: 120, num: 4, den: 4 }]; tempoSource = 'fallback'; }
 
   const tracks = [], counter = { n: 0 };
+  const tmap = makeTempoMap(tempoPoints), laneStats = { read: 0, curved: false };
   let arrangementClips = 0;
   for (const tr of kids(kid(live, 'Tracks'), 'MidiTrack')) {
     const name = val(tr, 'Name/EffectiveName', val(tr, 'Name/UserName', 'MIDI Track'));
@@ -140,13 +167,17 @@ export function parseAlsText(text, options = {}) {
       arrangementClips++;
       clipNotes(clip, notes, counter, limits.maxNotes, warnings, name);
     }
-    tracks.push({ name, muted, notes, sourceId: tr.a.Id });
+    const automation = trackLanes(tr, tmap, laneStats);
+    tracks.push({ name, muted, notes, sourceId: tr.a.Id, ...(automation ? { automation } : {}) });
   }
   if (sessionClips) warn(warnings, 'WARN_SESSION_CLIPS_IGNORED', `${sessionClips} clip MIDI ở Session View bị bỏ qua (chỉ đọc Arrangement)`, { count: sessionClips });
 
+  if (laneStats.curved) warn(warnings, 'WARN_RPP_ENVELOPE_SHAPE_APPROX', 'đoạn automation cong của Ableton được xấp xỉ bằng đường cong mượt');
+  // P-10: Locators (Time tính bằng beat)
+  const markers = kids(at(live, 'Locators/Locators'), 'Locator').map((l) => ({ tick: Math.round(num(l, 'Time', NaN) * PPQ), name: val(l, 'Name', '') }));
   let built;
   try {
-    built = buildAST({ title: options.title || 'Ableton project', sourceFormat: 'als', sourceVersion, tempoPoints, tempoSource, sourcePPQ: PPQ, tracks, warnings }, { maxNotes: limits.maxNotes, showMuted: options.showMuted });
+    built = buildAST({ title: options.title || 'Ableton project', markers, sourceFormat: 'als', sourceVersion, tempoPoints, tempoSource, sourcePPQ: PPQ, tracks, warnings }, { maxNotes: limits.maxNotes, showMuted: options.showMuted });
   } catch (e) {
     if (e.code === 'ERR_NO_NOTES' && sessionClips > 0) fail('ERR_NO_NOTES', `Arrangement không có nốt, nhưng có ${sessionClips} clip MIDI ở Session View (chưa hỗ trợ đọc Session). Hãy kéo clip vào Arrangement trong Live rồi lưu lại.`, { sessionClips });
     throw e;

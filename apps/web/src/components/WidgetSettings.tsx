@@ -4,7 +4,7 @@
 // và Alt+nhấp (Option+nhấp trên Mac) vào nhãn để khôi phục nhanh (làm trong `ResetButton`, dùng chung cho mọi bảng). Mỗi thay đổi là `patchWidgetProps` (gộp bước theo khoá thuộc tính);
 // mỗi lần khôi phục là một bước hoàn tác riêng. Chữ của mẫu chỉ áp khi Enter hoặc rời ô.
 import { useContext, useEffect, useId, useRef, useState } from 'react';
-import { GLOBAL_KEYS, TEMPLATE_KEYS, type WidgetSpec } from '@dawviz/render-core';
+import { GLOBAL_KEYS, INSIGHT_TEMPLATE_KEYS, TEMPLATE_KEYS, type WidgetSpec } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { radioKeys, radioTab } from '../lib/a11y.ts';
 import { clickIsKeyboard, startPaintDrag } from '../lib/paintDrag.ts';
@@ -21,7 +21,7 @@ const numRow = 'grid grid-cols-[minmax(0,1fr)_4.5rem_1.5rem] items-center gap-2 
 /** Widget nào có mục Thiết lập. */
 export const hasWidgetSettings = hasWidgetFields;
 /** Tên chỗ giữ dùng được trong mẫu của widget: riêng của widget trước, rồi chỗ giữ chung (T-73). */
-export const placeholderNames = (type: string): string[] => [...new Set([...((TEMPLATE_KEYS as Record<string, readonly string[]>)[type] ?? []), ...GLOBAL_KEYS])];
+export const placeholderNames = (type: string): string[] => [...new Set([...((TEMPLATE_KEYS as Record<string, readonly string[]>)[type] ?? (INSIGHT_TEMPLATE_KEYS as Record<string, readonly string[]>)[type] ?? []), ...GLOBAL_KEYS])];
 
 export interface TrackChoice { index: number; name: string }
 export interface WidgetSettingsProps {

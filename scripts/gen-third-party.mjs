@@ -5,8 +5,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
 
-const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const web = path.join(root, 'apps/web');
 const out = process.argv[2] ?? path.join(web, 'dist/THIRD-PARTY-NOTICES.txt');
 const skip = (name) => name.startsWith('@dawviz/') || name.startsWith('@types/');
@@ -44,6 +45,13 @@ const missing = [];
     walk(pkg.dependencies, dir);
   }
 })(JSON.parse(fs.readFileSync(path.join(web, 'package.json'), 'utf8')).dependencies, web);
+
+// T-40 / OI-07: giấy phép của mọi gói đi kèm bản build phải nằm trong danh sách cho phép (không copyleft mạnh). Gói mới có giấy phép khác thì build dừng
+// để người quyết định xem xét rồi thêm vào ALLOWED; SPDX dạng "(A OR B)" đạt nếu có MỘT vế được phép.
+const ALLOWED = new Set(['MIT', 'ISC', 'BSD-2-Clause', 'BSD-3-Clause', 'Apache-2.0', '0BSD', 'MPL-2.0', 'Unlicense', 'CC0-1.0', 'BlueOak-1.0.0', 'Zlib', 'OFL-1.1']);
+const okLicense = (spdx) => String(spdx).replace(/[()]/g, ' ').split(/\s+(?:OR|AND)\s+/i).map((x) => x.trim()).some((x) => ALLOWED.has(x));
+const forbidden = [...seen.values()].filter((p) => !okLicense(p.license)).map((p) => `${p.name}@${p.version} (${p.license})`);
+if (forbidden.length) { console.error(`gen-third-party: giấy phép ngoài danh sách cho phép (scripts/gen-third-party.mjs, ALLOWED): ${forbidden.join(', ')}`); process.exit(1); }
 
 if (missing.length) { console.error(`gen-third-party: thiếu tệp giấy phép: ${missing.join(', ')}`); process.exit(1); }
 

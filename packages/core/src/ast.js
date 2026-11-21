@@ -22,6 +22,7 @@ export function createPairer() {
  * @param {object} inp
  *  title, artist, sourceFormat, sourceVersion, sourcePPQ,
  *  tempoPoints:[{tick,bpm,num,den}], tempoSource:'file'|'midi-default'|'fallback'|'user',
+ *  markers?:[{tick,name}] (P-10), lyrics?:[{tick,text}] (P-11): tick @960; thành meta.markers / meta.lyrics
  *  tracks:[{name,muted,sourceId,mix?:{volumeDb,pan},automation?:{volume?,pan?,mute?}(Lane, xem automation.js),notes:[{pitch,startTick,endTick,velocity,channel?}]}]
  * @param {{maxNotes?:number, showMuted?:boolean, warnings?:Array}} opts
  */
@@ -66,11 +67,21 @@ export function buildAST(inp, opts = {}) {
   if (zeroLen) warn(warnings, 'WARN_ZERO_LENGTH_NOTES', `${zeroLen} nốt có độ dài 0 được nâng lên 1 tick`);
   if (inp.tempoSource === 'fallback') warn(warnings, 'WARN_TEMPO_FALLBACK', 'không đọc được tempo từ file: tạm dùng 120 BPM. Hãy truyền options.tempoOverride (hoặc nhập BPM thủ công) rồi phân tích lại.');
 
+  // P-10/P-11: marker (đoạn) và lời. Chuẩn hoá: tick ≥ 0, sắp theo tick, chữ gọn, có giới hạn số lượng.
+  const cleanCues = (list, key, maxN, maxLen) => (list || [])
+    .filter((c) => c && Number.isFinite(c.tick) && c.tick >= 0 && typeof c[key] === 'string')
+    .map((c) => ({ tick: Math.round(c.tick), text: c[key].replace(/[\u0000-\u001f\u007f]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, maxLen) }))
+    .filter((c) => c.text !== '')
+    .sort((a, b) => a.tick - b.tick)
+    .slice(0, maxN)
+    .map((c) => ({ tick: c.tick, timeSeconds: tickToSec(tempoMap, c.tick), [key]: c.text }));
+  const markers = cleanCues(inp.markers, 'name', 2000, 120), lyrics = cleanCues(inp.lyrics, 'text', 20000, 200);
   const ast = {
     meta: {
       title: inp.title || 'Untitled', artist: inp.artist || '', sourceFormat: inp.sourceFormat, sourceVersion: inp.sourceVersion || '',
       sourcePPQ: inp.sourcePPQ || PPQ, internalPPQ: PPQ, tempoSource: inp.tempoSource || 'file',
       totalTicks: maxTick, totalDurationSeconds: tickToSec(tempoMap, maxTick),
+      ...(markers.length ? { markers } : {}), ...(lyrics.length ? { lyrics } : {}),
     },
     tempoMap, tracks, chordTimeline: [],
   };

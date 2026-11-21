@@ -13,7 +13,7 @@ export function readSmf(u8, warnings = []) {
   if (division & 0x8000) fail('ERR_UNSUPPORTED_FORMAT', 'MIDI division kiểu SMPTE chưa hỗ trợ');
   if (division === 0) fail('ERR_AST_INVALID', 'division = 0');
   let p = 8 + hl;
-  const tempos = [], sigs = [], tracks = [];
+  const tempos = [], sigs = [], tracks = [], markers = [], lyrics = [], texts = [];
   let truncated = false, hanging = 0;
   for (let ti = 0; ti < ntr && p + 8 <= u8.length; ti++) {
     const id = str(p, 4), size = dv.getUint32(p + 4); p += 8;
@@ -32,6 +32,10 @@ export function readSmf(u8, warnings = []) {
         if (p + len > end) { truncated = true; break; }
         if (type === 0x51 && len === 3) tempos.push({ tick, bpm: 60000000 / ((u8[p] << 16) | (u8[p + 1] << 8) | u8[p + 2]) });
         else if (type === 0x58 && len >= 2) sigs.push({ tick, num: u8[p], den: 2 ** u8[p + 1] });
+        else if ((type === 0x06 || type === 0x05 || type === 0x01) && len > 0) {
+          const text = new TextDecoder().decode(u8.subarray(p, p + len)).replace(/\0+$/, '');
+          if (type === 0x06) markers.push({ tick, name: text }); else if (type === 0x05) lyrics.push({ tick, text }); else texts.push({ tick, text });
+        }
         else if (type === 0x03 && !name) name = new TextDecoder().decode(u8.subarray(p, p + len)).replace(/\0+$/, '');
         p += len;
         if (type === 0x2f) break;
@@ -50,7 +54,9 @@ export function readSmf(u8, warnings = []) {
   }
   if (truncated) warn(warnings, 'WARN_MIDI_TRUNCATED', 'file MIDI bị cắt cụt hoặc có sự kiện lỗi; đọc phần hợp lệ');
   if (hanging) warn(warnings, 'WARN_MIDI_HANGING_NOTES', `${hanging} nốt thiếu Note-Off, đã kéo dài đến cuối track`);
-  return { format, division, tempos, sigs, tracks };
+  // Lời: Lyric (0x05); không có thì lấy Text (0x01) kiểu karaoke, bỏ dòng tiêu đề của .kar (bắt đầu bằng @) và dòng điều khiển (\\ /).
+  const kar = texts.filter((x) => !/^[@]/.test(x.text));
+  return { format, division, tempos, sigs, tracks, markers, lyrics: lyrics.length ? lyrics : kar.length >= 3 ? kar : [] };
 }
 
 export async function parseMidi(buffer, options = {}) {
@@ -77,6 +83,6 @@ export async function parseMidi(buffer, options = {}) {
     tempoPoints = mergeTempoAndSig(T, S);
     if (!T.length) { tempoSource = 'midi-default'; warn(warnings, 'WARN_TEMPO_MIDI_DEFAULT', 'MIDI không có Set Tempo: theo chuẩn SMF dùng 120 BPM. Nếu sai, truyền options.tempoOverride.'); }
   }
-  const { ast } = buildAST({ title: options.title || 'MIDI', sourceFormat: 'mid', sourceVersion: `SMF format ${smf.format}, division ${smf.division}`, sourcePPQ: smf.division, tempoPoints, tempoSource, tracks, warnings }, { maxNotes: limits.maxNotes, showMuted: options.showMuted });
+  const { ast } = buildAST({ title: options.title || 'MIDI', sourceFormat: 'mid', sourceVersion: `SMF format ${smf.format}, division ${smf.division}`, sourcePPQ: smf.division, tempoPoints, tempoSource, tracks, warnings, markers: smf.markers.map((m) => ({ ...m, tick: sc(m.tick) })), lyrics: smf.lyrics.map((l) => ({ ...l, tick: sc(l.tick) })) }, { maxNotes: limits.maxNotes, showMuted: options.showMuted });
   return { ast, warnings, info: { smfFormat: smf.format, division: smf.division, smfTracks: smf.tracks.length } };
 }

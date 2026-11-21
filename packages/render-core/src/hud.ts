@@ -7,6 +7,7 @@ import type { ASTNote, TempoPoint, UnifiedProjectAST } from './types.ts';
 import type { Derived, Primitive, RectPrim, WidgetRenderer } from './prims.ts';
 import { fixed, groupDigits, pad, type Measure } from './text.ts';
 import { pitchName } from './music.ts';
+import { chordNameFor, noteNameFor, pitchClassNameFor } from './naming.ts';
 import { phaseInfoAt, type PhaseInfo } from './visibility.ts';
 import { RECENT_ONSETS, degreeName, formatUnits, ioiSixteenths, pitchClassName, quarterFraction, recentOnsets } from './musicAnalysis.ts';
 import { listV, numV, timeV, type PV } from './placeholders.ts';
@@ -43,6 +44,10 @@ export const TEXT_FIELDS = {
   CHORD_DETECTION: { nameStyle: 'heading', bassStyle: null, notesStyle: 'body', notesValueStyle: null },
   PROGRESS_BAR: { timeStyle: 'tiny', timeValueStyle: null },
   TEXT: { style: 'body', valueStyle: null },
+  // widget phân tích (insight.ts)
+  TEMPO_INFO: { style: 'clock' }, BAR_BEAT: { style: 'clock' }, KEY_SCALE: { nameStyle: 'heading', confStyle: 'caption' }, DENSITY: { polyStyle: 'caption' },
+  PITCH_WHEEL: { nameStyle: 'label', chordStyle: 'heading' }, DRUM_PAD: { labelStyle: 'tiny' }, SECTION: { style: 'heading', nextStyle: 'caption' },
+  LYRICS: { style: 'body', nextStyle: 'caption' }, AUTOMATION: { valueStyle: 'tiny' },
 } as const satisfies Record<string, Record<string, keyof typeof DEFAULT_TEXT_STYLES | null>>;
 /** Ghi đè một đoạn → trường của dòng chứa nó (kiểu gốc của đoạn là kiểu thật của dòng đó). */
 export const TEXT_SPAN_OF = {
@@ -146,12 +151,12 @@ export function hudOf(derived: Derived, ast: UnifiedProjectAST): HudData {
   return derived.hud ?? buildHud(ast, derived.index);
 }
 const upperBound = (a: Float64Array, v: number) => { let lo = 0, hi = a.length; while (lo < hi) { const m = (lo + hi) >> 1; if (a[m] <= v) lo = m + 1; else hi = m; } return lo; };
-const shown = (tracks: TrackIndex[]) => tracks.filter((ti) => ti.track.isVisible);
+export const shown = (tracks: TrackIndex[]) => tracks.filter((ti) => ti.track.isVisible);
 
 /** Trống không có cao độ hoà âm: kênh MIDI 10 (chỉ số 9) và track tên Drums/Percussion bị loại khỏi nhận diện hợp âm (SRS REQ-WIDGET-06 nguồn nốt). */
 const DRUM_CHANNEL = 9;
 export const isDrumTrack = (name: string) => /\b(drums?|percussion|perc|kit)\b|\(drums\)|trống/i.test(name);
-const chordKey = (tracks: TrackIndex[], mode: ChordMode = 'sustained') => `${mode}:${tracks.map((ti) => ti.track.id).join('|')}`;
+export const chordKey = (tracks: TrackIndex[], mode: ChordMode = 'sustained') => `${mode}:${tracks.map((ti) => ti.track.id).join('|')}`;
 /** Khung gom nốt của chế độ Strike: các nốt bắt đầu cách nốt đầu nhóm ≤ 30 ms là một lần dập (SRS REQ-WIDGET-06). */
 export const STRIKE_WINDOW_SEC = 0.03;
 /** Danh sách đoạn hợp âm (SRS REQ-WIDGET-06) của một nhóm track theo chế độ; đệm theo (derived, chế độ, nhóm track). */
@@ -210,7 +215,7 @@ function strikeSegments(notes: ASTNote[]): ChordSeg[] {
   return raw;
 }
 const PC = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-function chordName(pitches: number[]): string | null {
+export function chordName(pitches: number[]): string | null {
   if (pitches.length < 2) return null;
   const pcs: string[] = []; // nốt thấp nhất đứng đầu: hợp âm đảo ra dạng "E7/G#"
   for (const p of pitches) { const n = PC[p % 12]; if (!pcs.includes(n)) pcs.push(n); }
@@ -218,7 +223,7 @@ function chordName(pitches: number[]): string | null {
   const d = detect(pcs)[0]; if (!d) return null;
   return d.replace(/^([A-G][#b]?)M(?=\/|$)/, '$1');   // tonal gọi tam hợp trưởng là "CM"; ký hiệu thường dùng là "C" (CM7 giữ nguyên)
 }
-function chordAt(segs: ChordSeg[], t: number): ChordSeg | null {
+export function chordAt(segs: ChordSeg[], t: number): ChordSeg | null {
   let lo = 0, hi = segs.length - 1, r = -1;
   while (lo <= hi) { const m = (lo + hi) >> 1; if (segs[m].start <= t) { r = m; lo = m + 1; } else hi = m - 1; }
   return r >= 0 && t < segs[r].end && segs[r].pitches.length ? segs[r] : null;
@@ -247,18 +252,19 @@ export function globalValues(src: PlaceholderSource, t: number): Record<string, 
     for (const ti of shown(tracks)) for (const n of notesInRange(ti, t, t)) if (n.startTimeSeconds <= t && t < n.endTimeSeconds) set.add(n.pitch);
     return [...set].sort((a, b) => a - b);
   };
-  const active = () => activePitches().map((p) => pitchName(p));
+  const nm = derived.naming, nName = (p: number) => (nm ? noteNameFor(p, nm) : pitchName(p)), pcN = (p: number) => (nm ? pitchClassNameFor(p, nm) : pitchClassName(p));
+  const active = () => activePitches().map(nName);
   const make: Record<string, () => PV> = {
     time: () => timeV(tt), elapsed: () => timeV(tt), remaining: () => timeV(Math.max(0, dur - t)), total_time: () => timeV(dur),
     bpm: () => numV(bar().bpm, String(Math.round(bar().bpm * 100) / 100)), tempo: () => numV(bar().bpm, String(Math.round(bar().bpm * 100) / 100)), // tempo = tên cũ của bpm
     rhythm: () => listV(ioiSixteenths(onsets(), ppq).slice(-RECENT_ONSETS).map(formatUnits)),
-    bass: () => listV(onsets().slice(-RECENT_ONSETS).map((o) => (derived.tonic === undefined ? pitchName(o.bass) : degreeName(o.bass, derived.tonic)))),
+    bass: () => listV(onsets().slice(-RECENT_ONSETS).map((o) => (derived.tonic === undefined ? nName(o.bass) : degreeName(o.bass, derived.tonic)))),
     lengths: () => listV(onsets().slice(-RECENT_ONSETS).map((o) => quarterFraction(o.len, ppq))),
-    pitch_classes: () => listV([...new Set(activePitches())].sort((a, b) => a - b).map(pitchClassName)),
+    pitch_classes: () => listV([...new Set(activePitches())].sort((a, b) => a - b).map(pcN)),
     phase: () => phase().name, next_phase: () => phase().next, phase_elapsed: () => timeV(phase().elapsed), phase_remaining: () => timeV(phase().remaining), phase_no: () => phase().index,
     bar: () => bar().bar, beat: () => bar().beat, sig: () => `${bar().num}/${bar().den}`,
     title: () => ast.meta.title ?? '', artist: () => (ast.meta as { artist?: string }).artist ?? '',
-    chord: () => chordAt(hud().chords.get(chordKey(shown(tracks))) ?? [], t)?.name ?? '', notes: () => listV(active()),
+    chord: () => { const c = chordAt(hud().chords.get(chordKey(shown(tracks))) ?? [], t)?.name ?? ''; return c && nm ? chordNameFor(c, nm) : c; }, notes: () => listV(active()),
     played: () => count().played, total: () => count().total,
     pct: () => { const c = count(), v = c.total ? c.played / c.total * 100 : 0; return numV(v, String(Math.round(v))); },
   };
@@ -276,9 +282,9 @@ export function withLocals(glob: Record<string, PV>, local: Record<string, PV>):
 export const usesChordPlaceholder = (w: { properties: unknown }) => JSON.stringify(w.properties).includes('{chord');
 
 // ───────────────────────────── trợ giúp vẽ chữ ─────────────────────────────
-const xFor = (align: Align, width: number) => (align === 'left' ? 0 : align === 'center' ? width / 2 : width);
+export const xFor = (align: Align, width: number) => (align === 'left' ? 0 : align === 'center' ? width / 2 : width);
 /** Bộ dựng chữ của một lần layout: kiểu của scene + hàm đo. `text` thêm primitive vào `out`, trả bước tiến dọc (chữ xuống dòng cao hơn một dòng). */
-function typo(set: TextStyleSet | undefined, measure: Measure, fonts?: ReadonlySet<string>) {
+export function typo(set: TextStyleSet | undefined, measure: Measure, fonts?: ReadonlySet<string>) {
   const S = set ?? DEFAULT_TEXT_STYLES;
   return {
     style: (ref: TextRef | undefined, fallbackId: string): TextStyle => resolveTextStyle(ref, S, fallbackId),
@@ -290,12 +296,12 @@ function typo(set: TextStyleSet | undefined, measure: Measure, fonts?: ReadonlyS
     width: (s: string | readonly TextSpan[], st: TextStyle) => textWidth(s, st, measure, S, fonts),
   };
 }
-const base = (size: number) => size * 0.95; // baseline dòng đầu so với mép trên widget
+export const base = (size: number) => size * 0.95; // baseline dòng đầu so với mép trên widget
 /** Độ rộng ổn định: chữ số tính theo ô chữ số rộng nhất (chữ số đều bề rộng), để nhãn đặt cạnh số không nhảy khi số đổi. */
 const stableWidth = (T: ReturnType<typeof typo>, s: string, st: TextStyle) => T.width(s, { ...st, tabularNums: true });
-const block = (x: number, y: number, w: number, h: number, fill: string, radius = 0): RectPrim =>
+export const block = (x: number, y: number, w: number, h: number, fill: string, radius = 0): RectPrim =>
   ({ kind: 'rect', x, y, w, h, fill, alpha: 1, radius: Math.min(radius, h / 2, w / 2), glowColor: '', glowBlur: 0, stroke: '', strokeWidth: 0 });
-const pct = (v: number) => Math.min(1, Math.max(0, Number.isFinite(v) ? v : 0));
+export const pct = (v: number) => Math.min(1, Math.max(0, Number.isFinite(v) ? v : 0));
 
 // ───────────────────────────── widget ─────────────────────────────
 export const trackInfoRenderer: WidgetRenderer<TrackInfoProps> = {
@@ -347,7 +353,7 @@ export const liveTriggerRenderer: WidgetRenderer<LiveTriggerProps> = {
     items.sort((a, b) => b.n.pitch - a.n.pitch || a.track.track.index - b.track.track.index || a.n.startTimeSeconds - b.n.startTimeSeconds);
     if (!items.length) return out;
     const G = globalValues({ ast, derived, tracks }, t);
-    const label = (it: typeof items[number]) => templateSpans(p.template, withLocals(G, { name: pitchName(it.n.pitch), velocity: Math.round(it.n.velocity), track: it.track.track.name, pitch: it.n.pitch }), p.valueStyle);
+    const label = (it: typeof items[number]) => templateSpans(p.template, withLocals(G, { name: derived.naming ? noteNameFor(it.n.pitch, derived.naming) : pitchName(it.n.pitch), velocity: Math.round(it.n.velocity), track: it.track.track.name, pitch: it.n.pitch }), p.valueStyle);
     const w = (s: string | readonly TextSpan[]) => T.width(s, st), y = base(st.size);
     if (p.mode === 'list') {
       const shownItems = items.slice(0, p.maxLines), more = items.length - shownItems.length;
@@ -427,10 +433,11 @@ export const chordRenderer: WidgetRenderer<ChordProps> = {
     const p = spec.properties, W = spec.layout.width, x = xFor(p.align, W), out: Primitive[] = [], T = typo(textStyles, measure, fonts);
     const nst = T.style(p.nameStyle, 'heading'), bst = T.style(p.notesStyle, 'body');
     const seg = chordAt(hudOf(derived, ast).chords.get(chordKey(shown(tracks), p.mode)) ?? [], t);
-    const notes = seg ? seg.pitches.map((n) => pitchName(n)).join(' ') : '';
-    const name = seg?.name ?? null;
+    const nmg = derived.naming, nN = (n: number) => (nmg ? noteNameFor(n, nmg) : pitchName(n));
+    const notes = seg ? seg.pitches.map(nN).join(' ') : '';
+    const name = seg?.name ? (nmg ? chordNameFor(seg.name, nmg) : seg.name) : null;
     const G = globalValues({ ast, derived, tracks }, t);
-    const notesLine = notes ? templateSpans(p.notesTemplate, withLocals(G, { notes: listV(seg!.pitches.map((n) => pitchName(n))), chord: name ?? '' }), p.notesValueStyle) : [];
+    const notesLine = notes ? templateSpans(p.notesTemplate, withLocals(G, { notes: listV(seg!.pitches.map(nN)), chord: name ?? '' }), p.notesValueStyle) : [];
     const y1 = nst.size * 0.85;
     if (name) {
       T.text(out, chordSpans(name, p.bassStyle), x, y1, nst, p.align, W);

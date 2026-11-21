@@ -695,6 +695,8 @@ Tệp dự án DAW chỉ chứa nốt, tempo, automation và **đường dẫn**
 
 ### 3.4b. Đề xuất widget và dữ liệu hiển thị bổ sung (D-32, OI-11) **[ĐỀ XUẤT, chưa cam kết v1.0]**
 
+> **Đã làm 2026-11-21 (T-37/38/41/42/97):** P-02…P-13 có renderer (`TEMPO_INFO`, `BAR_BEAT`, `KEY_SCALE`, `VELOCITY`, `DENSITY`, `PITCH_WHEEL`, `ARRANGEMENT`, `DRUM_PAD`, `SECTION`, `LYRICS`, `AUTOMATION`; P-01 là Piano Roll). P-12 là `scene.noteNaming` (chữ cái, solfège, kiểu Đức; chữ Nhật cần phông người dùng nên chưa có sẵn). Dữ liệu: `meta.markers[]`, `meta.lyrics[]` (MIDI, Reaper, Ableton, DAWproject), automation âm lượng/pan của Reaper, Ableton, DAWproject, FL. P-10 không có marker thì dùng phase của scene. **Giới hạn đã biết (D-45):** nhánh Ableton automation mới kiểm bằng tệp tổng hợp (chưa có tệp thật tự động hoá mixer); mute Ableton và automation tham số plugin chưa đọc; DAWproject chưa thử với tệp thật (OI-01). Tô thang âm trên bàn phím theo giọng nhận diện chưa làm.
+
 > **Cập nhật v1.1 (D-40):** toàn bộ P-01…P-13 thuộc **phạm vi bản 1.0**. Tiêu đề mục giữ nguyên để không làm hỏng liên kết. P-10 (marker), P-11 (lời) cần thêm `meta.markers[]`, `meta.lyrics[]` vào AST; P-13 cần đọc automation Ableton/DAWproject (SOI-18).
 
 Dựa trên dữ liệu AST đã có (nốt, tick, kênh, tempo, dấu nhịp, `tempoSource`). Cột *Dữ liệu* cho biết có sẵn hay cần parser đọc thêm.

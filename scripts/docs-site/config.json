@@ -46,6 +46,10 @@
         {
           "src": "docs/manual/09-ban-nhac.md",
           "title": "Bản nhạc"
+        },
+        {
+          "src": "docs/manual/10-phan-tich.md",
+          "title": "Widget phân tích"
         }
       ]
     },
@@ -91,6 +95,10 @@
         {
           "src": "docs/manual/en/09-sheet-music.md",
           "title": "Sheet music"
+        },
+        {
+          "src": "docs/manual/en/10-analysis-widgets.md",
+          "title": "Analysis widgets"
         }
       ]
     },

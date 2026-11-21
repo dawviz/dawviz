@@ -113,6 +113,10 @@ To get a shape at some other angle you can also drag the rotate handle of the wh
 
 When no widget is selected, the **Key** section lets you pick the song's key note (C to B). With a key set, `{bass}` shows the **scale degree** of the bass note (1, ♭2, 2, … 7); without one it shows note names.
 
+## Note names
+
+Also with no widget selected, the **Note names** section changes the names of notes and chords in every widget at once (letters, Do Re Mi, German; sharps or flats; C4 or C3). Details in [Analysis widgets](10-analysis-widgets.md#note-names).
+
 ## Display range
 
 By default a widget is shown for the whole song. Select a widget and turn on **Show only in these ranges** in the **Display range** section to limit when it appears, for example showing the title only for the first 10 seconds.

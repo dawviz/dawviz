@@ -45,6 +45,8 @@ Chữ của widget có sẵn vẫn như cũ. Ở chế độ **Nâng cao**, ô c
 
 Số liệu tính theo các track đang hiện (xem [thẻ Xem trước](02-xem-truoc.md) để ẩn hoặc solo track). Muốn một widget chỉ đọc vài track, chọn ở mục **Track** trong **Thiết lập** của nó: **Chọn track** rồi bấm vào các track cần. Bấm giữ rồi kéo qua nhiều dòng để chọn hoặc bỏ nhanh (cả lần kéo là một bước hoàn tác); **Chọn tất cả** và **Bỏ chọn tất cả** ở đầu danh sách. Nút ↺ cạnh chữ **Track** (hoặc Alt+nhấp vào chữ đó) đưa về **Mọi track đang hiện**. Ô chữ có mục này ở chế độ Cơ bản; bộ đếm nốt, nốt đang phát và hợp âm có ở Nâng cao.
 
+Tên nốt và hợp âm trong các chỗ giữ (`{notes}`, `{chord}`, `{bass}`, `{pitch_classes}`, `{name}`) theo **Cách ghi tên nốt** của cả dự án. Các [widget phân tích](10-phan-tich.md) có tên riêng: Giọng (`{key}`, `{scale}`, `{confidence}`), Tên đoạn (`{section}`, `{next}`, `{next_in}`, `{section_no}`, `{section_elapsed}`), Mật độ nốt (`{poly}`).
+
 Một số widget có thêm tên riêng và chúng được ưu tiên hơn tên chung: nốt đang phát có `{name}`, `{velocity}`, `{track}`, `{pitch}`; thanh tiến độ có `{elapsed}`, `{total}`, `{remaining}`, `{pct}` theo thời gian của bài (ở đó `{total}` là độ dài bài, không phải số nốt).
 
 ## Chọn cách hiện số

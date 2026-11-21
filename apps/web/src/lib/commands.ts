@@ -1,6 +1,6 @@
 // Tài liệu có hoàn tác và các lệnh (T-07, Technical Design §6.4). Hàm dựng lệnh nhận `doc` hiện tại để lấy giá trị "trước";
 // trả null khi không có gì đổi (không ghi mục lịch sử rỗng). `redo`/`undo` là hàm thuần trên Doc bất biến.
-import type { BrightnessConfig, NoteStyle, KeyboardStyle, PianoRollProps, Phase, SceneDocument, TextRef, TextStyleSet, WidgetLayout, WidgetSpec, WidgetVisibility } from '@dawviz/render-core';
+import type { BrightnessConfig, NoteNaming, NoteStyle, KeyboardStyle, PianoRollProps, Phase, SceneDocument, TextRef, TextStyleSet, WidgetLayout, WidgetSpec, WidgetVisibility } from '@dawviz/render-core';
 import { ASPECTS, DEFAULT_BACKGROUND, widgetDefaults, type BackgroundImageSpec } from '@dawviz/render-core';
 import type { Command } from './store.ts';
 import { clampOffsetMs } from './audioMap.ts';
@@ -331,6 +331,9 @@ export const setPhases = (d: Doc, phases: Phase[], key?: string): Cmd | null =>
 /** Đặt nốt chủ của bài (0 = C … 11 = B); `null` = bỏ (chỗ giữ `{bass}` hiện tên nốt thay vì bậc). */
 export const setTonic = (d: Doc, tonic: number | null): Cmd | null =>
   slice(d, 'setTonic', 'web.cmd.tonic', (x) => x.scene.tonic ?? null, (x, v) => { const { tonic: _t, ...rest } = x.scene; return { ...x, scene: v === null ? rest : { ...rest, tonic: v } }; }, tonic, undefined, {});
+/** Cách ghi tên nốt/hợp âm của cả scene (P-12); `null` = cách ghi cũ (C♯, C4 = 60). */
+export const setNoteNaming = (d: Doc, naming: NoteNaming | null): Cmd | null =>
+  slice(d, 'setNoteNaming', 'web.cmd.noteNaming', (x) => x.scene.noteNaming ?? null, (x, v) => { const { noteNaming: _n, ...rest } = x.scene; return { ...x, scene: v === null ? rest : { ...rest, noteNaming: v } }; }, naming, undefined, { system: naming?.system ?? '' });
 /** Cách đặt ảnh nền (vừa khung, độ đục, làm tối). Ảnh là tài nguyên của phiên, không nằm trong scene. Kéo liên tiếp cùng một thuộc tính gộp một bước. */
 export const setBackgroundSpec = (d: Doc, patch: Partial<BackgroundImageSpec>): Cmd | null =>
   slice(d, 'setBackgroundSpec', 'web.cmd.background', (x) => x.scene.canvas.backgroundImage ?? DEFAULT_BACKGROUND, (x, v) => ({ ...x, scene: { ...x.scene, canvas: { ...x.scene.canvas, backgroundImage: v } } }),

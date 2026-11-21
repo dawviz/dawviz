@@ -84,6 +84,8 @@ export const PLACEHOLDER_KINDS: Readonly<Record<string, readonly PlaceholderKind
   played: ['num'], total: ['num', 'time'], pct: ['num'],
   rhythm: ['list'], bass: ['list'], lengths: ['list'], pitch_classes: ['list'], phase: ['text'], next_phase: ['text'], phase_elapsed: ['time'], phase_remaining: ['time'], phase_no: ['num'],
   name: ['text'], velocity: ['num'], track: ['text'], pitch: ['num'],
+  // widget phân tích (insight.ts)
+  key: ['text'], scale: ['text'], confidence: ['num'], poly: ['num'], section: ['text'], next: ['text'], next_in: ['time'], section_no: ['num'], section_elapsed: ['time'],
 });
 /** Tên chỗ giữ dùng chung, dùng được ở mọi chữ (D-60). Widget có thể che bằng giá trị riêng cùng tên. */
 export const GLOBAL_KEYS = ['time', 'elapsed', 'remaining', 'total_time', 'bpm', 'bar', 'beat', 'sig', 'title', 'artist', 'chord', 'notes', 'played', 'total', 'pct', 'phase', 'next_phase', 'phase_elapsed', 'phase_remaining', 'phase_no', 'rhythm', 'bass', 'lengths', 'pitch_classes'] as const;

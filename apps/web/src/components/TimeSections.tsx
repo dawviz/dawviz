@@ -1,5 +1,5 @@
 // Hai mục của bảng Thuộc tính (T-81): "Khoảng hiển thị" của widget đang chọn (REQ-GRAPHICS-14) và "Phase" của cả bài.
-import { MAX_PHASES, MAX_RANGES, PITCH_CLASSES, type Phase, type TimeRange, type WidgetVisibility } from '@dawviz/render-core';
+import { DEFAULT_NAMING, MAX_PHASES, MAX_RANGES, NAMING_SYSTEMS, PITCH_CLASSES, type NoteNaming, type Phase, type TimeRange, type WidgetVisibility } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { InspectorSection, ResetButton, TickField } from './Inspector.tsx';
 import { NumberField } from './NumberField.tsx';
@@ -80,6 +80,40 @@ export function PhasesSection({ n, phases, duration, onChange }: { n: number; ph
 }
 
 /** Mục "Nốt chủ": chọn nốt chủ của bài để `{bass}` hiện bậc (1, ♭2, … 7) thay vì tên nốt. */
+/** Mục "Cách ghi tên nốt" (P-12): một thiết lập chung cho mọi widget có tên nốt hoặc hợp âm. Trống = cách ghi cũ. */
+export function NamingSection({ n, naming, onChange }: { n: number; naming: NoteNaming | undefined; onChange(v: NoteNaming | null): void }) {
+  const { i18n } = useI18n();
+  const cur = naming ?? DEFAULT_NAMING, set = (patch: Partial<NoteNaming>) => onChange({ ...cur, ...patch });
+  return (
+    <InspectorSection n={n} id="naming" title={i18n.t('web.naming.title')}>
+      <label className="flex items-center gap-2 text-xs text-muted">
+        <span className="shrink-0">{i18n.t('web.naming.system')}</span>
+        <Select wrapClassName="min-w-0 flex-1" value={naming ? naming.system : ''} data-testid="naming-system" onChange={(e) => (e.target.value === '' ? onChange(null) : set({ system: e.target.value as NoteNaming['system'] }))}>
+          <option value="">{i18n.t('web.naming.default')}</option>
+          {NAMING_SYSTEMS.map((s) => <option key={s} value={s}>{i18n.t(`web.naming.system.${s}`)}</option>)}
+        </Select>
+      </label>
+      {naming && (<>
+        <label className="flex items-center gap-2 text-xs text-muted">
+          <span className="shrink-0">{i18n.t('web.naming.accidental')}</span>
+          <Select wrapClassName="min-w-0 flex-1" value={naming.accidental} data-testid="naming-accidental" onChange={(e) => set({ accidental: e.target.value as NoteNaming['accidental'] })}>
+            <option value="SHARP">{i18n.t('web.naming.accidental.SHARP')}</option>
+            <option value="FLAT">{i18n.t('web.naming.accidental.FLAT')}</option>
+          </Select>
+        </label>
+        <label className="flex items-center gap-2 text-xs text-muted"><input type="checkbox" checked={naming.ascii} data-testid="naming-ascii" onChange={(e) => set({ ascii: e.target.checked })} />{i18n.t('web.naming.ascii')}</label>
+        <label className="flex items-center gap-2 text-xs text-muted">
+          <span className="shrink-0">{i18n.t('web.naming.middleC')}</span>
+          <Select wrapClassName="min-w-0 flex-1" value={String(naming.middleC)} data-testid="naming-middlec" onChange={(e) => set({ middleC: e.target.value === '3' ? 3 : 4 })}>
+            <option value="4">{i18n.t('web.naming.middleC.4')}</option>
+            <option value="3">{i18n.t('web.naming.middleC.3')}</option>
+          </Select>
+        </label>
+      </>)}
+    </InspectorSection>
+  );
+}
+
 export function KeySection({ n, tonic, onChange }: { n: number; tonic: number | undefined; onChange(t: number | null): void }) {
   const { i18n } = useI18n();
   return (
