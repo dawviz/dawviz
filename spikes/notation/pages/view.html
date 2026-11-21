@@ -1,0 +1,28 @@
+<!doctype html><meta charset="utf-8"><title>view</title>
+<style>body{margin:0;background:#fff}canvas{display:block}</style>
+<canvas id="c"></canvas>
+<script type="module">
+import { makePathCache, drawItem, toPath2D } from '/lib/player.mjs';
+import { roughPath, roughGlyph } from '/lib/rough.mjs';
+const q = new URLSearchParams(location.search);
+const lay = await (await fetch('/out/' + q.get('file') + '.layout.json')).json();
+const page = lay.pages[+(q.get('page') ?? 0)];
+const S = +(q.get('scale') ?? 1), amp = +(q.get('rough') ?? 0), step = +(q.get('step') ?? 0), crop = +(q.get('crop') ?? 0);
+const c = document.getElementById('c'); c.width = (crop || lay.width) * S; c.height = page.height * S;
+const ctx = c.getContext('2d'); ctx.fillStyle = q.get('bg') ?? '#fff'; ctx.fillRect(0, 0, c.width, c.height); ctx.scale(S, S);
+const ink = q.get('ink') ?? '#000';
+const cache = makePathCache(), L = { ...lay, items: page.items };
+const t0 = performance.now();
+page.items.forEach((it, i) => {
+  if (!amp) return drawItem(ctx, L, cache, it, ink);
+  if (it.t === 'path') {
+    const p = toPath2D(roughPath(it.d, i, step, 7, amp));
+    if (it.fill !== undefined) { ctx.fillStyle = ink; ctx.fill(p); }
+    if (it.stroke !== undefined) { ctx.strokeStyle = ink; ctx.lineWidth = (it.lw ?? 1) * 1.15; ctx.lineCap = 'round'; ctx.stroke(p); }
+  } else it.glyphs.forEach((g, gi) => {
+    const r = roughGlyph(i, gi, step, 7, amp);
+    ctx.save(); ctx.translate(g.x + r.dx, g.y + r.dy); ctx.rotate(r.rot); ctx.scale(g.s * r.sc, g.s * r.sc); ctx.fillStyle = ink; ctx.fill(cache.glyph(L, g.f + '#' + g.g)); ctx.restore();
+  });
+});
+window.__done = { pages: lay.pages.length, ms: +(performance.now() - t0).toFixed(1) };
+</script>
