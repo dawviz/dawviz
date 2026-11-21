@@ -200,7 +200,7 @@
         "apps/web/src/components/KeyframeTimeline.tsx",
         "apps/web/src/components/Splitter.tsx"
       ],
-      "uiHash": "2759897a1eba",
+      "uiHash": "4b69128cedf3",
       "viHash": "e3f0fca20d5e",
       "enHash": "fc1eed116477",
       "coverHashes": {
@@ -209,7 +209,7 @@
         "apps/web/src/components/EditorOverlay.tsx": "c813801e06af",
         "apps/web/src/lib/numberInput.ts": "8e27c53523c3",
         "apps/web/src/components/Editor.tsx": "cc87db5a6b0e",
-        "apps/web/src/components/KeyframeTimeline.tsx": "9db666ebb36e",
+        "apps/web/src/components/KeyframeTimeline.tsx": "aef5f4030316",
         "apps/web/src/components/Splitter.tsx": "7ae82f8548cb"
       }
     },
@@ -308,9 +308,9 @@
         "apps/web/src/lib/timelineRows.ts",
         "apps/web/src/components/LiveLayout.tsx"
       ],
-      "uiHash": "e3dcf3904b7d",
-      "viHash": "453ad424b2f4",
-      "enHash": "e8b35f787158",
+      "uiHash": "8ed2ba282bc9",
+      "viHash": "70d665b329e8",
+      "enHash": "63623f70ce83",
       "coverHashes": {
         "packages/render-core/src/insight.ts": "37e1f3014ac3",
         "packages/render-core/src/naming.ts": "9a90045d7e7c",
@@ -323,12 +323,12 @@
         "locales/en.json#web.ws.pianoTransition": "549cfa5d542f",
         "packages/render-core/src/animation.ts": "7c708712616a",
         "locales/en.json#web.anim.": "b53ef4feb05b",
-        "apps/web/src/components/KeyframeTimeline.tsx": "9db666ebb36e",
-        "apps/web/src/components/AnimationInspector.tsx": "8be8b495a19e",
+        "apps/web/src/components/KeyframeTimeline.tsx": "aef5f4030316",
+        "apps/web/src/components/AnimationInspector.tsx": "332ccd97a9df",
         "apps/web/src/components/EaseGraph.tsx": "e6ee3b71d0b5",
         "locales/en.json#web.timeline.": "e44f1962f6fe",
         "locales/en.json#web.keyinsp.": "560133fc64e2",
-        "apps/web/src/lib/timelineRows.ts": "faaff6e382b4",
+        "apps/web/src/lib/timelineRows.ts": "468eecc1a800",
         "apps/web/src/components/LiveLayout.tsx": "4ce15f68118f"
       }
     }

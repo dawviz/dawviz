@@ -75,7 +75,7 @@ Press the stopwatch again to stop animating that property (its keyframes are rem
 - **Select:** click a diamond. Hold Shift (or Ctrl/⌘) to add more. Drag on an empty part of the Timeline to select with a box. Ctrl+A selects every keyframe of the widget.
 - **Move:** drag a diamond left or right; every selected keyframe moves with it. Keyframes snap to the playhead, to other keyframes and to the song's beats; a teal guide line shows while snapping. Hold Alt while dragging to place them freely. Alt+Left/Right moves them one frame (add Shift: one second).
 - **Add:** double-click a property's row at the moment you want.
-- **Delete:** select and press Delete.
+- **Delete:** select (click, Ctrl+click or drag a box over empty space) then press Delete, or use the **Delete keyframes** button in the Settings column; the number in brackets is how many diamonds are selected.
 - **Jump to a keyframe:** drag on the time ruler and the playhead snaps to keyframes (the small marks on the ruler); hold Alt to scrub freely.
 - **Look closer:** hold Ctrl and scroll over the Timeline, or use zoom in, zoom out and **Fit the whole song** at the top corner.
 

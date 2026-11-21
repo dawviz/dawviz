@@ -3013,6 +3013,7 @@ function timelineRows(type: WidgetType, animate: Readonly<Record<string, Animati
 const rowOfPath = (rows: readonly RowDef[], path: string) =>   // Dòng chứa đường dẫn `path` (vd. layout.y → dòng Vị trí).
 interface VKey
 function rowKeys(row: RowDef, times: ReadonlyMap<string, readonly number[]>): VKey[]   // Gộp keyframe của các đường dẫn trong một dòng thành hình thoi: keyframe cách nhau ≤ SAME_TIME là một hình tho…
+function visibleKeyCount(rows: readonly RowDef[], picked: readonly { path: string; t: number }[]): number   // Số hình thoi người dùng thấy trong tập keyframe đang chọn (x+y cùng thời điểm của dòng Vị trí chỉ tính một).
 ```
 
 #### `apps/web/src/lib/timeText.ts`
@@ -3334,4 +3335,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 1457 ký hiệu công khai -->
+<!-- 10 thư mục src, 1458 ký hiệu công khai -->

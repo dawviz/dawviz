@@ -75,7 +75,7 @@ Bấm đồng hồ lần nữa để bỏ hoạt hình của thuộc tính đó 
 - **Chọn:** bấm vào hình thoi. Giữ Shift (hoặc Ctrl/⌘) để chọn thêm. Kéo trên chỗ trống của Timeline để chọn bằng khung. Ctrl+A chọn mọi keyframe của widget.
 - **Dời:** kéo hình thoi sang trái hoặc phải; mọi keyframe đang chọn đi cùng. Keyframe tự bắt vào vạch phát, keyframe khác và các phách của bài; khi đang bắt dính có một vạch dẫn màu xanh. Giữ Alt khi kéo để đặt tự do. Alt+mũi tên trái/phải dời từng khung (thêm Shift: từng giây).
 - **Thêm:** nhấp đúp vào dòng của thuộc tính tại thời điểm muốn đặt.
-- **Xoá:** chọn rồi nhấn Delete.
+- **Xoá:** chọn (nhấp, Ctrl+nhấp hoặc kéo hộp trên chỗ trống) rồi nhấn Delete, hoặc dùng nút **Xoá keyframe** ở cột Thiết lập; số trong ngoặc là số hình thoi đang chọn.
 - **Tua tới keyframe:** kéo trên thước thời gian, vạch phát tự bắt vào keyframe (chấm nhỏ trên thước); giữ Alt để tua tự do.
 - **Xem gần hơn:** giữ Ctrl rồi cuộn chuột trên Timeline, hoặc dùng nút phóng to, thu nhỏ, **Vừa cả bài** ở góc trên.
 

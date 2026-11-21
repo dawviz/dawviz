@@ -366,7 +366,7 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
   const empty = onlyAnimated && keyRows.length === 0;
 
   return (
-    <div className="relative h-full min-h-0" onKeyDown={onKeys} data-testid="keyframe-timeline">
+    <div className="relative h-full min-h-0 outline-none" tabIndex={-1} onKeyDown={onKeys} data-testid="keyframe-timeline">
       <div ref={scroller} className="tl-scroll relative h-full overflow-auto overscroll-contain" data-testid="timeline-scroller">
         <div className="relative" style={{ width: tree + contentW, minHeight: '100%', height }}>
           {/* Hàng thước: góc trái chứa công cụ (lọc, thu phóng), bên phải là thước kéo để tua. */}
