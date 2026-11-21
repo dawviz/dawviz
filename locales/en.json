@@ -1228,5 +1228,14 @@
   "web.anim.prop.width": "Width",
   "web.anim.prop.height": "Height",
   "web.anim.prop.rotation": "Rotation (°)",
-  "web.anim.prop.opacity": "Opacity of the whole widget"
+  "web.anim.prop.opacity": "Opacity of the whole widget",
+  "web.section.collapse": "Collapse {name}",
+  "web.section.expand": "Expand {name}",
+  "web.panel.open": "Open {name}",
+  "web.panel.collapse": "Collapse {name}",
+  "web.panel.resize": "Resize {name}",
+  "web.panel.resizeHint": "Drag to resize. Double-click: default size",
+  "web.timeline.title": "Timeline & keyframes",
+  "web.timeline.none": "Select a widget on the frame or in Layers to see its keyframes.",
+  "web.timeline.many": "Several widgets are selected. Select just one to see its keyframes."
 }

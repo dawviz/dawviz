@@ -1228,5 +1228,14 @@
   "web.anim.prop.width": "Rộng",
   "web.anim.prop.height": "Cao",
   "web.anim.prop.rotation": "Góc xoay (°)",
-  "web.anim.prop.opacity": "Độ đục cả widget"
+  "web.anim.prop.opacity": "Độ đục cả widget",
+  "web.section.collapse": "Thu gọn mục {name}",
+  "web.section.expand": "Mở mục {name}",
+  "web.panel.open": "Mở {name}",
+  "web.panel.collapse": "Thu gọn {name}",
+  "web.panel.resize": "Đổi cỡ {name}",
+  "web.panel.resizeHint": "Kéo để đổi cỡ. Nhấp đúp: về cỡ mặc định",
+  "web.timeline.title": "Timeline và keyframe",
+  "web.timeline.none": "Chọn một widget trên khung hoặc ở Lớp để xem keyframe của nó.",
+  "web.timeline.many": "Đang chọn nhiều widget. Chọn đúng một widget để xem keyframe."
 }

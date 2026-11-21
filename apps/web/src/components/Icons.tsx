@@ -54,3 +54,23 @@ export const Duplicate = (p: P) => <S {...p}><rect x="5.5" y="5.5" width="8" hei
 export const Trash = (p: P) => <S {...p}><path d="M2.5 4h11M6 4V2.5h4V4M4 4l.7 9.5h6.6L12 4M6.75 6.5v4.5M9.25 6.5v4.5" /></S>;
 export const Download = (p: P) => <S {...p}><path d="M8 2.5v8m0 0L5.25 7.75M8 10.5l2.75-2.75" /><path d="M2.5 13.5h11" /></S>;
 export const Close = (p: P) => <S {...p}><path d="m4 4 8 8M12 4l-8 8" /></S>;
+// ── Panel và timeline (Editor) ──
+export const ChevronLeft = (p: P) => <S {...p}><path d="M10 3.5 5.5 8l4.5 4.5" /></S>;
+/** Panel bên trái / phải / dưới: khung có một dải được tô (nút thu gọn, mở panel). */
+export const PanelLeft = (p: P) => <S {...p}><rect x="2" y="2.75" width="12" height="10.5" rx="1.5" /><path d="M6 2.75v10.5" /></S>;
+export const PanelRight = (p: P) => <S {...p}><rect x="2" y="2.75" width="12" height="10.5" rx="1.5" /><path d="M10 2.75v10.5" /></S>;
+export const PanelBottom = (p: P) => <S {...p}><rect x="2" y="2.75" width="12" height="10.5" rx="1.5" /><path d="M2 9.5h12" /></S>;
+/** Đồng hồ bấm giờ: bật/tắt hoạt hình của một thuộc tính (như After Effects). */
+export const Stopwatch = (p: P) => <S {...p}><circle cx="8" cy="9" r="5" /><path d="M8 9V6.5M6.5 1.75h3M12.25 4.25l1 -1" /></S>;
+/** Keyframe: hình thoi. `filled` tô kín (đã có keyframe tại vạch phát). */
+export const Diamond = ({ className = 'h-4 w-4', filled }: P & { filled?: boolean }) => (
+  <svg viewBox="0 0 16 16" className={className} aria-hidden><path d="M8 2.5 13.5 8 8 13.5 2.5 8Z" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /></svg>
+);
+export const KeyPrev = (p: P) => <S {...p}><path d="M10.5 4 6.5 8l4 4" /><path d="M4.5 4v8" /></S>;
+export const KeyNext = (p: P) => <S {...p}><path d="m5.5 4 4 4-4 4" /><path d="M11.5 4v8" /></S>;
+export const ZoomIn = (p: P) => <S {...p}><circle cx="7" cy="7" r="4.5" /><path d="m10.5 10.5 3 3M5 7h4M7 5v4" /></S>;
+export const ZoomOut = (p: P) => <S {...p}><circle cx="7" cy="7" r="4.5" /><path d="m10.5 10.5 3 3M5 7h4" /></S>;
+/** Vừa khung: hai mũi tên chỉ vào nhau theo chiều ngang. */
+export const FitWidth = (p: P) => <S {...p}><path d="M2 3.5v9M14 3.5v9M4.5 8h7M6.5 6 4.5 8l2 2M9.5 6l2 2-2 2" /></S>;
+/** Lọc: chỉ hiện thuộc tính đang animate. */
+export const Filter = (p: P) => <S {...p}><path d="M2.5 3.5h11L9.25 8.5v4l-2.5 1v-5Z" /></S>;

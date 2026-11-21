@@ -5,7 +5,7 @@
 // Khoá là trạng thái của phiên chỉnh sửa (không vào preset video, không vào lịch sử); ẩn/hiện, vị trí, cỡ, góc, neo, thứ tự lớp
 // và bắt dính đều là lệnh hoàn tác được (lib/commands.ts).
 import { motion } from 'framer-motion';
-import { useContext, useMemo, useRef, useState, type DragEvent, type KeyboardEvent, type ReactNode } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState, type DragEvent, type KeyboardEvent, type ReactNode } from 'react';
 import { ADDABLE_WIDGETS, defaultScene, normalizeAngle, rotateGroup, type Animation, type Derived, type NoteNaming, type WidgetMotion, type Phase, type SceneDocument, type UnifiedProjectAST, type WidgetLayout, type WidgetSpec, type WidgetType, type WidgetVisibility, type BackgroundImageSpec } from '@dawviz/render-core';
 import { clickIsKeyboard, startPaintDrag } from '../lib/paintDrag.ts';
 import { GestureContext } from '../lib/storeReact.ts';
@@ -20,7 +20,7 @@ import { AspectSwitch, frameInfo } from './AspectSwitch.tsx';
 import { Crop } from './Stage.tsx';
 import { InspectorSection, ResetButton, TickField } from './Inspector.tsx';
 import { NumberField } from './NumberField.tsx';
-import { AlignBottom, AlignHCenter, AlignLeft, AlignRight, AlignTop, AlignVCenter, DistributeH, DistributeV, Duplicate, Eye, EyeOff, Grip, LayerDown, LayerUp, Lock, Plus, ToBack, ToFront, Trash, Unlock } from './Icons.tsx';
+import { AlignBottom, AlignHCenter, AlignLeft, AlignRight, AlignTop, AlignVCenter, DistributeH, DistributeV, Duplicate, Eye, EyeOff, Grip, LayerDown, LayerUp, Lock, PanelLeft, PanelRight, Plus, ToBack, ToFront, Trash, Unlock } from './Icons.tsx';
 import { isTextEntry } from '../lib/a11y.ts';
 import { layerOrder } from '../lib/commands.ts';
 import { checkLayerName } from '../lib/layerName.ts';
@@ -28,6 +28,10 @@ import { MAX_WIDGET_NAME } from '@dawviz/render-core';
 import { StatusIcon } from './StatusIcon.tsx';
 import { BackgroundSection, type BackgroundState } from './BackgroundSection.tsx';
 import { AnimateSection } from './AnimateSection.tsx';
+import { Splitter } from './Splitter.tsx';
+import { TimelinePanel } from './TimelinePanel.tsx';
+import { usePanelLayout } from '../lib/usePanelLayout.ts';
+import { PANEL_LIMITS } from '../lib/panelLayout.ts';
 import { KeySection, MotionSection, NamingSection, PhasesSection, VisibilitySection } from './TimeSections.tsx';
 
 /** Mốc ↺ của mục Bắt dính: giá trị mặc định của canvas (scene mới). */
@@ -229,16 +233,45 @@ export function Editor({ styleName, scene, derived, ast, playback, fonts, advanc
     move(id, e.shiftKey ? (k > 0 ? 0 : order.length - 1) : i - k);
   };
 
+  // Bố cục panel đổi cỡ (lib/panelLayout.ts): Lớp | sân khấu | Thiết lập (cao hết), Timeline ở đáy dưới Lớp và sân khấu.
+  // Dưới 1024 px các khối xếp dọc như trước; thanh chia ẩn đi.
+  const panels = usePanelLayout(advanced), { r } = panels;
+  const keyHint = (label: string, keys: string) => `${label} (${keys})`;
+  // Ctrl/⌘+B: Lớp · Ctrl/⌘+Alt+B: Thiết lập · Ctrl/⌘+J: Timeline (như VS Code). Chỉ khi thẻ Editor đang mở và không gõ chữ.
+  const panelsRef = useRef(panels); panelsRef.current = panels;
+  useEffect(() => {
+    if (!active) return;
+    const h = (e: globalThis.KeyboardEvent) => {
+      if (!(e.ctrlKey || e.metaKey) || e.shiftKey || isTextEntry(e.target)) return;
+      const p = panelsRef.current;
+      const id = e.code === 'KeyB' ? (e.altKey ? 'props' : 'layers') : e.code === 'KeyJ' && !e.altKey ? 'timeline' : null;
+      if (!id) return;
+      e.preventDefault();
+      p.setOpen(id, !p.r.open[id]);
+    };
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
+  }, [active]);
+  const vars = { '--ed-l': `${r.layers}px`, '--ed-r': `${r.props}px`, '--ed-t': `${r.timeline}px` } as React.CSSProperties;
+
   return (
-    <div className="grid h-full min-h-0 max-lg:content-start max-lg:overflow-y-auto lg:grid-cols-[13rem_minmax(0,1fr)_20rem] min-[1440px]:grid-cols-[14rem_minmax(0,1fr)_22rem]" data-testid="editor" onKeyDown={onKeys}>
-      <aside aria-labelledby="layers-h" className="relative min-h-0 overflow-y-auto border-b border-line bg-surface py-3 max-lg:order-2 max-lg:max-h-60 lg:border-b-0 lg:border-r">
-        <div className="flex items-baseline justify-between gap-2 px-4 pb-2">
+    <div ref={panels.ref} style={vars} data-testid="editor" onKeyDown={onKeys}
+      className="grid h-full min-h-0 max-lg:content-start max-lg:overflow-y-auto lg:grid-cols-[var(--ed-l)_minmax(0,1fr)_var(--ed-r)] lg:grid-rows-[minmax(0,1fr)_var(--ed-t)]">
+      <div className="relative min-h-0 max-lg:order-2 lg:col-start-1 lg:row-start-1">
+      {!r.open.layers ? (
+        <Rail side="left" label={i18n.t('web.editor.layers')} title={keyHint(i18n.t('web.panel.open', { name: i18n.t('web.editor.layers') }), 'Ctrl+B')} onOpen={() => panels.setOpen('layers', true)} testId="rail-layers" />
+      ) : <>
+      <aside id="editor-layers" aria-labelledby="layers-h" className="relative h-full min-h-0 overflow-y-auto border-b border-line bg-surface py-3 max-lg:max-h-60 lg:border-b-0 lg:border-r">
+        <div className="flex items-center justify-between gap-2 pb-2 pl-4 pr-2">
           <h2 id="layers-h" className="text-[15px] font-semibold text-fg">{i18n.t('web.editor.layers')}</h2>
+          <div className="flex items-center gap-1">
           {/* Chọn hết rồi thì nút này thành "Bỏ chọn" (khi một widget phủ kín khung, bấm lên khung không bỏ chọn được). */}
           {order.length > 0 && live.length === order.length
             ? <button type="button" className="text-xs text-muted underline-offset-2 hover:text-fg hover:underline" onClick={deselect} title={i18n.t('web.editor.deselectHint')} data-testid="layers-deselect">{i18n.t('web.editor.deselect')}</button>
             : <button type="button" className="text-xs text-muted underline-offset-2 hover:text-fg hover:underline disabled:opacity-40" disabled={!order.length}
               onClick={selectAll} title={i18n.t('web.editor.selectAllHint')} data-testid="layers-select-all">{i18n.t('web.editor.selectAll')}</button>}
+            <PanelCollapse label={keyHint(i18n.t('web.panel.collapse', { name: i18n.t('web.editor.layers') }), 'Ctrl+B')} icon={<PanelLeft className="h-3.5 w-3.5" />} onClick={() => panels.setOpen('layers', false)} testId="collapse-layers" />
+          </div>
         </div>
         <LayersHead widgets={scene.widgets} locked={locked} onAllVisible={actions.allVisible} onLockAll={lockAll} onAdd={addWidget} />
         <ul aria-labelledby="layers-h" data-testid="layers" onPointerDown={paintLayers}>
@@ -282,10 +315,15 @@ export function Editor({ styleName, scene, derived, ast, playback, fonts, advanc
           })}
         </ul>
         {nameErr && <p role="alert" className="mx-4 mt-2 border border-warning/60 bg-warning/10 px-2 py-1.5 text-xs leading-snug text-fg" data-testid="layer-name-error">{nameErr}</p>}
-        <span className="sr-only" role="status" aria-live="polite">{say}</span>
       </aside>
+      <Splitter axis="x" grow={1} label={i18n.t('web.panel.resize', { name: i18n.t('web.editor.layers') })} title={i18n.t('web.panel.resizeHint')} controls="editor-layers"
+        value={r.layers} min={PANEL_LIMITS.layers[0]} max={PANEL_LIMITS.layers[1]} onResize={(v) => panels.resize('layers', v)} onReset={() => panels.reset('layers')}
+        onToggle={() => panels.setOpen('layers', false)} className="right-0 translate-x-1/2 max-lg:hidden" testId="split-layers" />
+      </>}
+      </div>
+      <span className="sr-only" role="status" aria-live="polite">{say}</span>
 
-      <div ref={scrollerRef} className="relative min-h-0 min-w-0 overflow-y-auto bg-page p-3 max-lg:order-1 max-lg:h-[75svh] lg:p-6"
+      <div ref={scrollerRef} className="relative min-h-0 min-w-0 overflow-y-auto bg-page p-3 max-lg:order-1 max-lg:h-[75svh] lg:col-start-2 lg:row-start-1 lg:p-6"
         onPointerDown={(e) => { if (live.length && !(e.target as HTMLElement).closest('figure, button, [role="radiogroup"], input, select, [data-testid="editor-transport"]')) setSelected([]); }}>
         {derived && ast ? (
           <div ref={stageRef} className="mx-auto grid gap-y-2" style={{ width: width + 2 * PASTEBOARD, gridTemplateColumns: `${width + 2 * PASTEBOARD}px` }}>
@@ -312,10 +350,35 @@ export function Editor({ styleName, scene, derived, ast, playback, fonts, advanc
         )}
       </div>
 
-      <aside aria-label={i18n.t('web.editor.properties')} className="relative min-h-0 overflow-y-auto border-t border-line bg-surface max-lg:order-3 max-lg:overflow-visible lg:border-l lg:border-t-0" data-testid="editor-props">
+      <div className="relative min-h-0 max-lg:order-3 lg:col-start-3 lg:row-span-2 lg:row-start-1">
+      {!r.open.props ? (
+        <Rail side="right" label={i18n.t('web.editor.properties')} title={keyHint(i18n.t('web.panel.open', { name: i18n.t('web.editor.properties') }), 'Ctrl+Alt+B')} onOpen={() => panels.setOpen('props', true)} testId="rail-props" />
+      ) : <>
+      <aside id="editor-props-panel" aria-label={i18n.t('web.editor.properties')} className="relative flex h-full min-h-0 flex-col border-t border-line bg-surface max-lg:overflow-visible lg:border-l lg:border-t-0" data-testid="editor-props">
+        <div className="flex h-8 shrink-0 items-center justify-between gap-2 border-b border-line pl-4 pr-2">
+          <span className="truncate text-xs text-muted">{i18n.t('web.editor.properties')}</span>
+          <PanelCollapse label={keyHint(i18n.t('web.panel.collapse', { name: i18n.t('web.editor.properties') }), 'Ctrl+Alt+B')} icon={<PanelRight className="h-3.5 w-3.5" />} onClick={() => panels.setOpen('props', false)} testId="collapse-props" />
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto max-lg:overflow-visible">
         <Properties getTime={() => playback.get().t} background={background} duration={derived?.index.duration ?? 0} scene={scene} selected={live} locked={locked} name={name} advanced={advanced} actions={actions} onLock={toggleLock} order={order} move={move} widgetSections={widgetSections} onPick={(id) => setSelected([id])} layoutRef={layoutRef}
           onDuplicate={duplicateSel} onRemove={removeSel} onDeselect={deselect} />
+        </div>
       </aside>
+      <Splitter axis="x" grow={-1} label={i18n.t('web.panel.resize', { name: i18n.t('web.editor.properties') })} title={i18n.t('web.panel.resizeHint')} controls="editor-props-panel"
+        value={r.props} min={PANEL_LIMITS.props[0]} max={PANEL_LIMITS.props[1]} onResize={(v) => panels.resize('props', v)} onReset={() => panels.reset('props')}
+        onToggle={() => panels.setOpen('props', false)} className="left-0 max-lg:hidden" testId="split-props" />
+      </>}
+      </div>
+
+      <div className="relative min-h-0 min-w-0 max-lg:order-4 lg:col-span-2 lg:col-start-1 lg:row-start-2">
+        {r.open.timeline && (
+          <Splitter axis="y" grow={-1} label={i18n.t('web.panel.resize', { name: i18n.t('web.timeline.title') })} title={i18n.t('web.panel.resizeHint')} controls="editor-timeline"
+            value={r.timeline} min={PANEL_LIMITS.timeline[0]} max={PANEL_LIMITS.timeline[1]} onResize={(v) => panels.resize('timeline', v)} onReset={() => panels.reset('timeline')}
+            onToggle={() => panels.setOpen('timeline', false)} className="top-0 max-lg:hidden" testId="split-timeline" />
+        )}
+        <TimelinePanel open={r.open.timeline} onOpen={(o) => panels.setOpen('timeline', o)} toggleHint={(open) => keyHint(i18n.t(open ? 'web.panel.collapse' : 'web.panel.open', { name: i18n.t('web.timeline.title') }), 'Ctrl+J')}
+          widget={live.length === 1 ? scene.widgets.find((w) => w.id === live[0]) ?? null : null} widgetName={live.length === 1 ? name(live[0]) : ''} selectedCount={live.length} />
+      </div>
     </div>
   );
 }
@@ -624,3 +687,20 @@ function AnchorPicker({ value, disabled, onChange }: { value: { x: number; y: nu
   );
 }
 
+
+/** Nút thu gọn panel (chỉ biểu tượng; tên và phím tắt ở chú thích). */
+function PanelCollapse({ label, icon, onClick, testId }: { label: string; icon: ReactNode; onClick(): void; testId: string }) {
+  return <button type="button" className="tog" aria-label={label} title={label} onClick={onClick} data-testid={testId}>{icon}</button>;
+}
+
+/** Dải mỏng của panel đã thu gọn: cả dải là một nút mở lại, tên panel chạy dọc (dưới 1024 px: một hàng ngang). */
+export function Rail({ side, label, title, onOpen, testId }: { side: 'left' | 'right'; label: string; title: string; onOpen(): void; testId: string }) {
+  const Icon = side === 'left' ? PanelLeft : PanelRight;
+  return (
+    <button type="button" onClick={onOpen} title={title} aria-label={title} data-testid={testId}
+      className={`flex h-full w-full items-center gap-2 border-line bg-surface px-3 py-2 text-xs text-muted transition hover:bg-raised hover:text-fg max-lg:border-y lg:flex-col lg:px-0 lg:py-3 ${side === 'left' ? 'lg:border-r' : 'lg:border-l'}`}>
+      <Icon className="h-3.5 w-3.5 shrink-0" />
+      <span className="lg:[writing-mode:vertical-rl]">{label}</span>
+    </button>
+  );
+}
