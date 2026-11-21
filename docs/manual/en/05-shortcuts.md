@@ -70,6 +70,7 @@ While you're typing in a field, these keys go to the field.
 | Hold Alt while dragging a keyframe | Place freely, no snapping |
 | Hold Alt while dragging on the ruler | Scrub freely, no snapping to keyframes |
 | Double-click a row | Add a keyframe there |
+| Press a row's ◆ button and drag down/up | Add (or remove) keyframes at the playhead on every row you pass |
 | Ctrl + scroll | Zoom in / out around the pointer |
 | U | Show only animated properties |
 | Arrows (on a curve handle) | Move the handle (Shift ×10, Alt ×0.1) |

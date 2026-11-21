@@ -42,7 +42,7 @@ export function Transport({ playback, duration, wave, offsetMs = 0 }: { playback
           <div className="relative min-w-[6rem] flex-1">
             <input aria-label={i18n.t('web.seek')} aria-valuetext={formatClock(t)} type="range" min={0} max={duration} step={0.01} value={t}
               style={{ '--p': `${pct}%` } as React.CSSProperties}
-              onChange={(e) => playback.seek(Number(e.target.value))} className="w-full min-w-0" />
+              onChange={(e) => playback.seek(Number(e.target.value))} className="block w-full min-w-0" />
             {loop && duration > 0 && (
               <span aria-hidden data-testid="loop-region" className="pointer-events-none absolute top-1/2 h-6 -translate-y-1/2 rounded-sm bg-accent/15"
                 style={{ left: `${(loop.start / duration) * 100}%`, width: `${((loop.end - loop.start) / duration) * 100}%` }} />

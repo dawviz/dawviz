@@ -168,22 +168,53 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
   /** Thêm keyframe tại `t` cho mọi đường dẫn của dòng (giá trị liền mạch: giá trị của hoạt hình tại `t`); đường dẫn chưa animate thì bật. Đường dẫn "Theo nhạc" bỏ qua. */
   const addAt = (it: RowItem, t: number) => {
     if (locked) return;
-    const fresh = it.row.paths.filter((p) => !animate[p]).length;
-    if (it.mode === 'none' && used + fresh > MAX_ANIMATIONS) return;
     const refs: string[] = [];
-    many((put) => {
-      for (const p of it.row.paths) {
-        const cur = animate[p];
-        if (cur && isBinding(cur)) continue;
-        const a = cur ? (cur as KeyAnimation) : null;
-        if (a && a.keys.length >= MAX_ANIM_KEYS) continue;
-        if (!a && used + fresh > MAX_ANIMATIONS) continue;
-        const next = a ? addKey(a, t, sampleTrack(compileTrack(a, { tempoMap }), t)) : newKeyAnimation(widget, p, t);
-        put(p, next);
-        const i = keyAt(keySecs(next, tempoMap), t); if (i >= 0) refs.push(keyRef(p, i));
-      }
-    });
+    many((put) => { refs.push(...putAdd(it, t, put)); });
     onSel({ keys: refs, row: it.row.id });
+  };
+  /** Đặt keyframe tại `t` cho mọi đường dẫn của dòng vào `put`; trả các keyframe vừa đặt. Dùng chung cho nút ◆, nhấp đúp và kéo qua nhiều dòng. */
+  const putAdd = (it: RowItem, t: number, put: (p: string, v: Animation | null) => void): string[] => {
+    const refs: string[] = [], fresh = it.row.paths.filter((p) => !animate[p]).length;
+    for (const p of it.row.paths) {
+      const cur = animate[p];
+      if (cur && isBinding(cur)) continue;
+      const a = cur ? (cur as KeyAnimation) : null;
+      if (a && a.keys.length >= MAX_ANIM_KEYS) continue;
+      if (!a && used + fresh > MAX_ANIMATIONS) continue;
+      const next = a ? addKey(a, t, sampleTrack(compileTrack(a, { tempoMap }), t)) : newKeyAnimation(widget, p, t);
+      put(p, next);
+      const i = keyAt(keySecs(next, tempoMap), t); if (i >= 0) refs.push(keyRef(p, i));
+    }
+    return refs;
+  };
+  // Nhấn ◆ rồi kéo xuống/lên qua các dòng khác: mọi dòng đi qua nhận keyframe tại vạch phát (hoặc mất keyframe, nếu dòng đầu đang có keyframe ở đó),
+  // như kéo qua các mắt của Lớp. Áp một lần lúc thả: một bước hoàn tác. Dòng đã vùng phủ được tô nhẹ khi đang kéo.
+  const [painted, setPainted] = useState<ReadonlySet<string>>(new Set());
+  const suppressClick = useRef(false);
+  const startAddPaint = (e: RPointerEvent<HTMLButtonElement>, it: RowItem, removing: boolean) => {
+    if (e.button !== 0 || live.current.locked) return;
+    const t = playback.get().t, rowsById = new Map(keyRows.map((x) => [x.row.id, x]));
+    const covered = new Set<string>([it.row.id]);
+    let moved = false;
+    const y0 = e.clientY;
+    const move = (m: PointerEvent) => {
+      if (!moved && Math.abs(m.clientY - y0) < DRAG_SLOP) return;
+      moved = true;
+      const id = document.elementFromPoint(m.clientX, m.clientY)?.closest<HTMLElement>('[data-row]')?.dataset.row;
+      if (id && rowsById.has(id) && !covered.has(id)) { covered.add(id); setPainted(new Set(covered)); } else if (covered.size === 1) setPainted(new Set(covered));
+    };
+    const up = () => {
+      window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', up);
+      setPainted(new Set());
+      if (!moved) return; // nhấp thường: onClick của nút xử lý
+      suppressClick.current = true; setTimeout(() => { suppressClick.current = false; }, 0);
+      const rows = [...covered].map((id) => rowsById.get(id)!).filter((r) => r.mode !== 'bind');
+      if (removing) { const refs = rows.flatMap((r) => refsAt(r.row.paths, t)); if (refs.length) { removeRefs(refs); onSel({ keys: [], row: it.row.id }); } return; }
+      const refs: string[] = [];
+      many((put) => { for (const r of rows) refs.push(...putAdd(r, t, put)); });
+      onSel({ keys: refs, row: it.row.id });
+    };
+    window.addEventListener('pointermove', move); window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
   };
 
   // ── vạch dẫn bắt dính (khi kéo keyframe hoặc tua bị bắt vào một mốc) ──
@@ -384,8 +415,9 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
                 <TreeRow key={it.row.id} it={it} name={label(it.row)} widget={widget} tempoMap={tempoMap} playback={playback} locked={locked}
                   selected={sel.row === it.row.id} full={it.mode === 'none' && used + it.row.paths.length > MAX_ANIMATIONS}
                   onPick={() => onSel({ keys: selKeys.filter((r) => it.row.paths.includes(parseKeyRef(r)?.path ?? '')), row: it.row.id })}
-                  onToggle={() => toggleAnim(it)} onAddHere={() => addAt(it, playback.get().t)}
-                  onRemoveHere={(t) => { if (locked) return; removeRefs(refsAt(it.row.paths, t)); onSel({ keys: [], row: it.row.id }); }}
+                  onToggle={() => toggleAnim(it)} onAddHere={() => { if (!suppressClick.current) addAt(it, playback.get().t); }} painted={painted.has(it.row.id)}
+                  onPaintStart={(e, removing) => startAddPaint(e, it, removing)}
+                  onRemoveHere={(t) => { if (locked || suppressClick.current) return; removeRefs(refsAt(it.row.paths, t)); onSel({ keys: [], row: it.row.id }); }}
                   onValue={(p, v) => {
                     const a = keyAnim(p); if (!a || locked) return;
                     const t = playback.get().t, i = keyAt(keySecs(a, tempoMap), t);
@@ -475,9 +507,9 @@ const Keys = memo(function Keys({ it, pps, sel, name, locked, widget, onDown, on
 });
 
 /** Một hàng của cây thuộc tính: đồng hồ | tên ngắn | giá trị tại vạch phát (một ô mỗi đường dẫn) | ◀ ◆ ▶. Chỉ hàng có keyframe theo dõi đồng hồ phát. */
-function TreeRow({ it, name, widget, tempoMap, playback, locked, selected, full, onPick, onToggle, onAddHere, onRemoveHere, onValue }: {
+function TreeRow({ it, name, widget, tempoMap, playback, locked, selected, full, painted, onPick, onToggle, onAddHere, onRemoveHere, onPaintStart, onValue }: {
   it: RowItem; name: string; widget: WidgetSpec; tempoMap: readonly TempoPoint[]; playback: Playback; locked: boolean;
-  selected: boolean; full: boolean; onPick(): void; onToggle(): void; onAddHere(): void; onRemoveHere(t: number): void; onValue(path: string, v: number | string): void;
+  selected: boolean; full: boolean; painted: boolean; onPaintStart(e: RPointerEvent<HTMLButtonElement>, removing: boolean): void; onPick(): void; onToggle(): void; onAddHere(): void; onRemoveHere(t: number): void; onValue(path: string, v: number | string): void;
 }) {
   const { i18n } = useI18n();
   const { row, anims, mode, vkeys } = it;
@@ -500,7 +532,7 @@ function TreeRow({ it, name, widget, tempoMap, playback, locked, selected, full,
     return <span key={f.path} className="block min-w-0 flex-1 truncate text-right text-[11px] tabular-nums text-muted" title={i18n.t('web.timeline.staticHint')}>{fmt(Number(value))}</span>;
   };
   return (
-    <div className={`relative flex items-center gap-0.5 border-b border-r border-line/70 pl-0.5 pr-0.5 ${selected ? 'bg-raised' : ''}`} style={{ height: ROW_H }} data-row={row.id}>
+    <div className={`relative flex items-center gap-0.5 border-b border-r border-line/70 pl-0.5 pr-0.5 ${painted ? 'bg-accent/15' : selected ? 'bg-raised' : ''}`} style={{ height: ROW_H }} data-row={row.id}>
       {selected && <span aria-hidden className="absolute inset-y-0 left-0 w-0.5 bg-accent" />}
       <button type="button" className={`grid h-6 w-6 shrink-0 place-items-center rounded-sm transition hover:bg-raised hover:text-fg disabled:opacity-40 ${mode !== 'none' ? 'text-fg' : 'text-faint'}`} aria-pressed={mode !== 'none'} aria-label={watch} title={watch} disabled={locked || full} onClick={onToggle} data-testid={`tl-watch-${row.id}`}>
         <Stopwatch className="h-3.5 w-3.5" />
@@ -510,7 +542,7 @@ function TreeRow({ it, name, widget, tempoMap, playback, locked, selected, full,
       {mode !== 'bind' && (
         <div className="flex shrink-0 items-center" role="group" aria-label={i18n.t('web.timeline.nav', { name })}>
           <button type="button" className={nav} disabled={prev === null} aria-label={i18n.t('web.timeline.prevKey')} title={i18n.t('web.timeline.prevKey')} onClick={() => prev !== null && playback.seek(prev)}><KeyPrev className="h-3 w-3" /></button>
-          <button type="button" className={`${nav} ${here ? 'text-accent' : ''}`} disabled={locked || full} aria-pressed={here} data-testid={`tl-here-${row.id}`}
+          <button type="button" className={`${nav} ${here ? 'text-accent' : ''}`} disabled={locked || full} aria-pressed={here} data-testid={`tl-here-${row.id}`} onPointerDown={(e) => onPaintStart(e, here)}
             aria-label={here ? i18n.t('web.timeline.removeHere') : i18n.t('web.timeline.addHere')} title={here ? i18n.t('web.timeline.removeHere') : i18n.t('web.timeline.addHere')}
             onClick={() => (here ? onRemoveHere(playback.get().t) : onAddHere())}><Diamond className="h-3 w-3" filled={here} /></button>
           <button type="button" className={nav} disabled={next === null} aria-label={i18n.t('web.timeline.nextKey')} title={i18n.t('web.timeline.nextKey')} onClick={() => next !== null && playback.seek(next)}><KeyNext className="h-3 w-3" /></button>

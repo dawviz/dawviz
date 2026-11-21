@@ -70,6 +70,7 @@ Khi đang gõ trong một ô nhập, các phím này dùng cho ô đó.
 | Giữ Alt khi kéo keyframe | Đặt tự do, không bắt dính |
 | Giữ Alt khi kéo trên thước | Tua tự do, không bắt vào keyframe |
 | Nhấp đúp vào dòng | Thêm keyframe tại chỗ nhấp |
+| Nhấn nút ◆ của một dòng rồi kéo xuống/lên | Thêm (hoặc xoá) keyframe tại vạch phát cho mọi dòng đi qua |
 | Ctrl + cuộn chuột | Phóng to / thu nhỏ quanh con trỏ |
 | U | Chỉ hiện thuộc tính đang animate |
 | Mũi tên (trên tay nắm đường cong) | Chỉnh tay nắm (Shift ×10, Alt ×0,1) |

@@ -186,3 +186,23 @@ test('setCanvasSize: cỡ tuỳ ý kẹp 256–4096, tỉ lệ rút gọn, trùn
   s.undo(); s.undo();
   assert.equal(JSON.stringify(s.get()), before);
 });
+
+test('nhãn lịch sử của keyframe nói rõ việc đã làm (thêm/dời/giá trị/xoá), cả hai ngôn ngữ', () => {
+  const s = createStore<C.Doc>(doc());
+  const go = (f: (d: C.Doc) => C.Cmd | null) => s.dispatch(f(s.get()));
+  const k = (...ks: [number, number][]) => ({ keys: ks.map(([sec, value]) => ({ at: { sec }, value })) });
+  go((d) => C.editWidgetAnimation(d, { 'track-info': { animate: { 'layout.x': k([0, 75]), 'layout.y': k([0, 40]) } } }));
+  go((d) => C.editWidgetAnimation(d, { 'track-info': { animate: { 'layout.x': k([0, 75], [2, 300]), 'layout.y': k([0, 40], [2, 90]) } } }));
+  go((d) => C.editWidgetAnimation(d, { 'track-info': { animate: { 'layout.x': k([0, 75], [3, 300]), 'layout.y': k([0, 40], [3, 90]) } } }));
+  go((d) => C.setWidgetAnimate(d, 'track-info', 'scale', k([1, 100])));
+  go((d) => C.editWidgetAnimation(d, { 'track-info': { animate: { 'layout.x': null, 'layout.y': null } } }));
+  const tl = s.state().history.timeline, text = (loc: string) => { i18n.setLocale(loc as never); return tl.map((c) => describeCommand(c, ctx)); };
+  const en = text('en'), vi = text('vi'); i18n.setLocale('en');
+  assert.match(en[0], /Position of .*: start|Animate/i);
+  assert.match(en[1], /Position of .*: add keyframe at 0:02\.000 \(value 300, 90\)/);
+  assert.match(vi[1], /Vị trí của .*: thêm keyframe tại 0:02\.000 \(giá trị 300, 90\)/);
+  assert.match(en[2], /move keyframe 0:02\.000 → 0:03\.000/);
+  assert.match(en[3], /Scale|scale/);
+  assert.match(en[4], /Position|Stop animating/i);
+  for (const t of [...en, ...vi]) assert.ok(t && !/undefined|\{|\}|\bweb\.|NaN/.test(t), t);
+});

@@ -64,7 +64,7 @@ Muốn một thuộc tính **đổi theo thời gian hoặc theo nhạc** thay v
 1. Chọn widget trên khung hoặc ở Lớp. Timeline hiện các thuộc tính của nó.
 2. Đưa vạch phát tới thời điểm muốn đặt: phát nhạc, hoặc nhấp/kéo trên thước thời gian của Timeline.
 3. Bấm **đồng hồ** ở đầu dòng thuộc tính. Một keyframe được đặt tại vạch phát với giá trị hiện tại.
-4. Đưa vạch phát tới thời điểm khác rồi gõ giá trị mới vào ô giá trị của dòng đó (hoặc kéo trên ô). Keyframe mới được thêm tại vạch phát. Nút hình thoi giữa hai nút tam giác cũng thêm keyframe tại vạch phát (bấm lại để xoá); hai nút tam giác đưa vạch phát tới keyframe trước hoặc sau.
+4. Đưa vạch phát tới thời điểm khác rồi gõ giá trị mới vào ô giá trị của dòng đó (hoặc kéo trên ô). Keyframe mới được thêm tại vạch phát. Nút hình thoi giữa hai nút tam giác cũng thêm keyframe tại vạch phát (bấm lại để xoá). Muốn đặt keyframe cho nhiều dòng cùng lúc, nhấn vào nút hình thoi của một dòng rồi kéo xuống (hoặc lên) qua các dòng khác; dòng đi qua được tô sáng, thả chuột là xong (một bước hoàn tác). Bắt đầu ở dòng đã có keyframe tại vạch phát thì kéo sẽ xoá; hai nút tam giác đưa vạch phát tới keyframe trước hoặc sau.
 
 **Kéo trên khung:** khi Vị trí, Xoay (hoặc Rộng/Cao) đã bật đồng hồ, kéo, xoay hay đổi cỡ widget trên khung (hoặc gõ vào ô X, Y, W, H, Góc ở cột bên phải) sẽ đặt keyframe tại vạch phát thay vì dời widget cố định. Cách nhanh để làm chuyển động: đưa vạch phát tới một chỗ, kéo widget; đưa tới chỗ khác, kéo tiếp. Khung chọn trên khung luôn đi theo chỗ widget đang ở tại vạch phát.
 

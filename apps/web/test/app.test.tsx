@@ -738,6 +738,30 @@ describe('thẻ Editor (T-68)', () => {
     await waitFor(() => expect(document.querySelector('[data-lane="opacity"]')).toHaveAttribute('data-mode', 'none'));
     ctrlZ(); await waitFor(() => expect(document.querySelector('[data-lane="opacity"]')).toHaveAttribute('data-mode', 'bind'));
   });
+  it('Timeline: nhấn ◆ rồi kéo qua các dòng khác đặt keyframe tại vạch phát cho cả dòng đi qua, một bước hoàn tác', async () => {
+    await openProject();
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    fireEvent.click(screen.getByTestId('layers-add'));
+    fireEvent.click(screen.getByRole('menuitem', { name: /^(Text box|Ô chữ)$/ }));
+    await waitFor(() => expect(screen.getByTestId('editor-selected').textContent).toMatch(/(Text box|Ô chữ)/));
+    fireEvent.click(screen.getByTestId('timeline-toggle'));
+    const dia = (id: string) => screen.getByTestId(`tl-here-${id}`);
+    const rowEl = (id: string) => document.querySelector(`[data-row="${id}"]`) as HTMLElement;
+    const orig = (document as { elementFromPoint?: unknown }).elementFromPoint;
+    (document as { elementFromPoint: (x: number, y: number) => Element | null }).elementFromPoint = (_x, y) => (y >= 200 ? rowEl('opacity') : y >= 100 ? rowEl('scale') : rowEl('position'));
+    try {
+      fireEvent.pointerDown(dia('position'), { button: 0, clientX: 10, clientY: 10, pointerId: 1 });
+      fireEvent.pointerMove(window, { clientX: 10, clientY: 120, pointerId: 1 });
+      fireEvent.pointerMove(window, { clientX: 10, clientY: 220, pointerId: 1 });
+      fireEvent.pointerUp(window, { pointerId: 1 });
+    } finally { (document as { elementFromPoint?: unknown }).elementFromPoint = orig; }
+    await waitFor(() => expect(document.querySelector('[data-lane="opacity"]')).toHaveAttribute('data-mode', 'keys'));
+    for (const id of ['position', 'scale', 'opacity']) expect(document.querySelector(`[data-lane="${id}"]`)).toHaveAttribute('data-mode', 'keys');
+    expect(document.querySelector('[data-lane="layout.rotation"]')).toHaveAttribute('data-mode', 'none');
+    ctrlZ(); // một lần hoàn tác trả cả ba dòng
+    await waitFor(() => expect(document.querySelector('[data-lane="position"]')).toHaveAttribute('data-mode', 'none'));
+    for (const id of ['scale', 'opacity']) expect(document.querySelector(`[data-lane="${id}"]`)).toHaveAttribute('data-mode', 'none');
+  });
   it('Panel Xem trước: Ctrl+B thu gọn Phong cách video, Ctrl+Alt+B thu gọn inspector; dải mỏng mở lại', async () => {
     await openProject();
     expect(screen.getByTestId('video-styles')).toBeInTheDocument();

@@ -83,6 +83,8 @@ dawviz/
 │     │  │  ├─ a11y.ts
 │     │  │  ├─ animateFields.test.ts
 │     │  │  ├─ animateFields.ts
+│     │  │  ├─ animDiff.test.ts
+│     │  │  ├─ animDiff.ts
 │     │  │  ├─ audioAsset.test.ts
 │     │  │  ├─ audioAsset.ts
 │     │  │  ├─ audioEngine.test.ts
@@ -1971,6 +1973,15 @@ const isKeyAnimation = (a: Animation) =>
 const SOURCES
 ```
 
+#### `apps/web/src/lib/animDiff.ts`
+
+So sánh hai hoạt hình để nhãn lịch sử nói đúng điều đã đổi (D-64): thêm/xoá/dời keyframe, đổi giá trị, đường cong, cách đi tiếp, lặp,
+
+```text
+type AnimChange
+function diffAnimate(before: Record<string, Animation> | undefined, after: Record<string, Animation> | undefined): AnimChange[]   // Mọi thay đổi giữa hai bảng `animate` (đường dẫn → hoạt hình), theo thứ tự đường dẫn.
+```
+
 #### `apps/web/src/lib/audioAsset.ts`
 
 Nạp tệp âm thanh mix (T-08, §6.2.1). Thứ tự kiểm: kích thước → thời lượng từ metadata → giải mã → thời lượng thật.
@@ -3237,6 +3248,7 @@ type SpectrumOut
 
 ## 4. Tệp test
 
+- `apps/web/src/lib/animDiff.test.ts`
 - `apps/web/src/lib/animateFields.test.ts`
 - `apps/web/src/lib/audioAsset.test.ts`
 - `apps/web/src/lib/audioEngine.test.ts`
@@ -3322,4 +3334,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 1455 ký hiệu công khai -->
+<!-- 10 thư mục src, 1457 ký hiệu công khai -->
