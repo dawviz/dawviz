@@ -43,13 +43,13 @@ While you're typing in a field, these keys go to the field.
 | Hold Shift while rotating | Rotate freely (no 15° steps) |
 | Double-click the rotate handle | Back to 0° |
 
-## Panels (Editor tab)
+## Panels (Editor and Preview tabs)
 
 | Key | Action |
 |---|---|
-| Ctrl+B | Collapse or open Layers |
-| Ctrl+Alt+B | Collapse or open Widget properties |
-| Ctrl+J | Collapse or open the Timeline |
+| Ctrl+B | Collapse or open the left column (Layers / Video styles) |
+| Ctrl+Alt+B | Collapse or open the right column (Widget properties / Inspector) |
+| Ctrl+J | Collapse or open the Timeline (Editor tab) |
 | Arrows (on a panel border) | Resize the panel (Shift: bigger steps) |
 | Enter (on a panel border) | Collapse the panel |
 | Double-click a panel border | Back to the default size |
@@ -68,6 +68,7 @@ While you're typing in a field, these keys go to the field.
 | Up / Down (on a keyframe) | Row above / below |
 | Enter (on a keyframe) | Move the playhead to the keyframe |
 | Hold Alt while dragging a keyframe | Place freely, no snapping |
+| Hold Alt while dragging on the ruler | Scrub freely, no snapping to keyframes |
 | Double-click a row | Add a keyframe there |
 | Ctrl + scroll | Zoom in / out around the pointer |
 | U | Show only animated properties |

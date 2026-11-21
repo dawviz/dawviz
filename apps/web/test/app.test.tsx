@@ -738,6 +738,19 @@ describe('thẻ Editor (T-68)', () => {
     await waitFor(() => expect(document.querySelector('[data-lane="opacity"]')).toHaveAttribute('data-mode', 'none'));
     ctrlZ(); await waitFor(() => expect(document.querySelector('[data-lane="opacity"]')).toHaveAttribute('data-mode', 'bind'));
   });
+  it('Panel Xem trước: Ctrl+B thu gọn Phong cách video, Ctrl+Alt+B thu gọn inspector; dải mỏng mở lại', async () => {
+    await openProject();
+    expect(screen.getByTestId('video-styles')).toBeInTheDocument();
+    fireEvent.keyDown(document.body, { key: 'b', code: 'KeyB', ctrlKey: true });
+    await waitFor(() => expect(screen.getByTestId('rail-styles')).toBeInTheDocument());
+    expect(screen.queryByTestId('video-styles')).toBeNull();
+    fireEvent.keyDown(document.body, { key: 'b', code: 'KeyB', ctrlKey: true, altKey: true });
+    await waitFor(() => expect(screen.getByTestId('rail-inspector')).toBeInTheDocument());
+    expect(screen.queryByTestId('inspector')).toBeNull();
+    fireEvent.click(screen.getByTestId('rail-styles')); fireEvent.click(screen.getByTestId('rail-inspector'));
+    await waitFor(() => expect(screen.getByTestId('inspector')).toBeInTheDocument());
+    expect(screen.getByTestId('video-styles')).toBeInTheDocument();
+  });
   it('Panel Editor: Ctrl+J mở/đóng Timeline, Ctrl+B thu gọn Lớp thành dải mỏng và mở lại', async () => {
     await openProject();
     fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));

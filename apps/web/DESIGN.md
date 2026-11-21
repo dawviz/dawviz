@@ -247,17 +247,20 @@ Tiêu đề là một nút gấp/mở: mũi tên 12 px `text-faint` (xoay 90° k
 ### Thanh chia panel (`Splitter`)
 Vô hình khi nghỉ (đường kẻ `line` của panel là đủ); vùng bấm 8 px; rê hoặc đang kéo hiện vạch `line-strong` 2 px, focus bàn phím hiện vạch `focus`. `role="separator"` có `aria-valuenow/min/max`; mũi tên 8 px (Shift 32), Home/End, Enter thu gọn, nhấp đúp về mặc định.
 
-### Dải panel thu gọn (`Rail`)
+### Dải panel thu gọn (`Rail`, `PanelChrome.tsx`)
+Dùng chung cho thẻ Editor (Lớp, Thuộc tính widget) và thẻ Xem trước (Phong cách video, Bảng chỉnh; profile `preview` của `lib/panelLayout.ts`: cột trái 168 px, 136–320).
 Dải 36 px nền `surface`, cả dải là một nút mở: biểu tượng panel + tên chạy dọc 12 px `text-muted`; hover nền `surface-raised`. Dưới 1024 px là một hàng ngang.
 
 ### Timeline và keyframe (`TimelinePanel`, `KeyframeTimeline`)
 - **Thanh tiêu đề** cao 36 px: nút panel, tiêu đề 13 px đậm 600, tên widget 12 px `text-muted`.
 - **Góc công cụ** (trên cột cây, cao 28 px): lọc "chỉ thuộc tính đang animate", thu nhỏ, vừa cả bài, phóng to (`.tog`).
 - **Thước**: nền `surface`, vạch chính `line-control` + nhãn 11 px `text-muted` số đều, vạch phụ `line`. Đầu vạch phát là ngũ giác nhỏ màu `text`; vạch phát dọc 1 px màu `text` (không màu nhấn, không phát sáng).
+- **Dòng Biến đổi**: Vị trí (x + y chung một dòng, hai ô giá trị, một hình thoi cho keyframe cùng thời điểm), Tỉ lệ (%), Xoay, Độ đục; nhãn ngắn, không đơn vị dài. Rộng/Cao chỉ hiện khi đã animate.
 - **Dòng cây** (24 px): đồng hồ · tên 12 px (`text` khi đang animate, `text-muted` khi không; cắt bằng `…` kèm chú thích, cột cây đổi cỡ được) · giá trị tại vạch phát (ô số 60 px khi có keyframe, chữ `text-muted` khi đứng yên, "Theo nhạc" khi binding) · ◀ ◆ ▶ (tam giác đặc, 24 px). Dòng đang chọn: nền `surface-raised` + vạch `accent` 2 px bên trái (như Lớp).
 - **Keyframe**: ô 10 px viền 1,5 px. Hình dạng mang thông tin cách đi tiếp: thoi (xoay 45°) = đều, vuông = giữ rồi nhảy, tròn = cong mượt. Chưa chọn: viền `text-muted`, nền `surface`, hover viền `text`. Đang chọn: nền và viền `accent`. Chấm 2 px `text-muted` dưới keyframe = gắn theo nhạc. Vùng bấm 24 px.
 - **Đoạn nối** giữa keyframe: 1 px `line-control` 70%; sau keyframe "giữ rồi nhảy" là nét đứt.
 - **Binding**: thanh cao 12 px, viền `line-control`, nền `surface-raised`, chữ 11 px "Theo nhạc · nguồn".
+- **Vạch dẫn bắt dính**: 1 px `guide` (như đường gióng trên khung) phủ hết các làn khi keyframe hoặc vạch phát đang bắt vào một mốc. Mốc keyframe trên thước: thoi 4 px `text-muted`.
 - **Chip thời gian khi kéo**: nền `surface-raised`, viền `line-control`, 11 px số đều, nằm trên keyframe.
 
 ### Animation Inspector (`AnimationInspector`, `EaseGraph`)

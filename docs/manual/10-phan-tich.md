@@ -57,7 +57,7 @@ Piano Roll còn có mục **Hoạt hình của nốt** trong **Thiết lập**: 
 
 ## Hoạt hình thuộc tính
 
-Muốn một thuộc tính **đổi theo thời gian hoặc theo nhạc** thay vì đứng yên, dùng panel **Timeline và keyframe** ở đáy thẻ Chỉnh sửa (mở bằng nút ở đầu thanh, hoặc Ctrl+J). Thuộc tính nào là số hoặc màu cũng animate được: vị trí, cỡ, góc xoay, độ đục cả widget (nhóm **Biến đổi**), và mọi ô số hay ô màu trong **Thiết lập** của widget (nhóm **Thuộc tính widget**, ví dụ màu cột, độ dày vạch, độ phát sáng).
+Muốn một thuộc tính **đổi theo thời gian hoặc theo nhạc** thay vì đứng yên, dùng panel **Timeline và keyframe** ở đáy thẻ Chỉnh sửa (mở bằng nút ở đầu thanh, hoặc Ctrl+J). Thuộc tính nào là số hoặc màu cũng animate được. Nhóm **Biến đổi** có **Vị trí** (X và Y chung một dòng, một keyframe cho cả hai), **Tỉ lệ** (phần trăm, 100 là nguyên cỡ; phóng to/thu nhỏ cả widget quanh điểm neo), **Xoay** và **Độ đục**. Nhóm **Thuộc tính widget** có mọi ô số hay ô màu trong **Thiết lập** của widget (ví dụ màu cột, độ dày vạch, độ phát sáng). Preset cũ có animate Rộng/Cao thì hai dòng đó cũng hiện.
 
 ### Đặt keyframe
 
@@ -66,14 +66,17 @@ Muốn một thuộc tính **đổi theo thời gian hoặc theo nhạc** thay v
 3. Bấm **đồng hồ** ở đầu dòng thuộc tính. Một keyframe được đặt tại vạch phát với giá trị hiện tại.
 4. Đưa vạch phát tới thời điểm khác rồi gõ giá trị mới vào ô giá trị của dòng đó (hoặc kéo trên ô). Keyframe mới được thêm tại vạch phát. Nút hình thoi giữa hai nút tam giác cũng thêm keyframe tại vạch phát (bấm lại để xoá); hai nút tam giác đưa vạch phát tới keyframe trước hoặc sau.
 
+**Kéo trên khung:** khi Vị trí, Xoay (hoặc Rộng/Cao) đã bật đồng hồ, kéo, xoay hay đổi cỡ widget trên khung (hoặc gõ vào ô X, Y, W, H, Góc ở cột bên phải) sẽ đặt keyframe tại vạch phát thay vì dời widget cố định. Cách nhanh để làm chuyển động: đưa vạch phát tới một chỗ, kéo widget; đưa tới chỗ khác, kéo tiếp. Khung chọn trên khung luôn đi theo chỗ widget đang ở tại vạch phát.
+
 Bấm đồng hồ lần nữa để bỏ hoạt hình của thuộc tính đó (xoá mọi keyframe của nó). Nút phễu ở góc trên chỉ hiện những thuộc tính đang animate (phím U).
 
 ### Sửa keyframe trên Timeline
 
 - **Chọn:** bấm vào hình thoi. Giữ Shift (hoặc Ctrl/⌘) để chọn thêm. Kéo trên chỗ trống của Timeline để chọn bằng khung. Ctrl+A chọn mọi keyframe của widget.
-- **Dời:** kéo hình thoi sang trái hoặc phải; mọi keyframe đang chọn đi cùng. Keyframe tự bắt vào vạch phát, keyframe khác và các phách của bài; giữ Alt khi kéo để đặt tự do. Alt+mũi tên trái/phải dời từng khung (thêm Shift: từng giây).
+- **Dời:** kéo hình thoi sang trái hoặc phải; mọi keyframe đang chọn đi cùng. Keyframe tự bắt vào vạch phát, keyframe khác và các phách của bài; khi đang bắt dính có một vạch dẫn màu xanh. Giữ Alt khi kéo để đặt tự do. Alt+mũi tên trái/phải dời từng khung (thêm Shift: từng giây).
 - **Thêm:** nhấp đúp vào dòng của thuộc tính tại thời điểm muốn đặt.
 - **Xoá:** chọn rồi nhấn Delete.
+- **Tua tới keyframe:** kéo trên thước thời gian, vạch phát tự bắt vào keyframe (chấm nhỏ trên thước); giữ Alt để tua tự do.
 - **Xem gần hơn:** giữ Ctrl rồi cuộn chuột trên Timeline, hoặc dùng nút phóng to, thu nhỏ, **Vừa cả bài** ở góc trên.
 
 Hình dạng keyframe cho biết cách giá trị đi tiếp tới keyframe sau: hình thoi là đều, hình vuông là giữ rồi nhảy, hình tròn là cong mượt. Keyframe đang chọn có màu nổi bật. Chấm nhỏ dưới keyframe nghĩa là keyframe gắn theo nhạc (phách, ô nhịp); kéo nó thì nó thành mốc theo giây.
@@ -87,6 +90,8 @@ Khi chọn keyframe, mục **Keyframe** hiện đầu tiên ở cột bên phả
 - **Đường cong**: chọn nhanh một đường cong có sẵn (đều, bật vọt, nảy, lò xo…).
 - **Giữa các keyframe**: đều, giữ rồi nhảy, hoặc cong mượt.
 - **Sau keyframe cuối**: giữ nguyên, lặp lại, tới lui, hoặc lặp và cộng dồn.
+
+Nút ↺ cạnh **Đường cong**, **Giữa các keyframe**, **Sau keyframe cuối** đưa ô đó về mặc định (đều, đều tới keyframe kế, giữ nguyên). **Bỏ chọn** (hoặc Esc trên Timeline) đóng mục **Keyframe**. Chọn hình thoi của Vị trí thì mục này có hai ô **Giá trị X** và **Giá trị Y**.
 
 Chọn nhiều keyframe rồi đổi một ô thì mọi keyframe đang chọn đổi theo; ô nào các keyframe đang khác nhau sẽ ghi **Nhiều giá trị**. Màu chuyển mượt, không bị xỉn ở giữa.
 

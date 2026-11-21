@@ -4,7 +4,7 @@
  "docs": {
   "BRD.md": {
    "title": "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)",
-   "sha1": "561455f4eb",
+   "sha1": "27bbfd5d90",
    "chunks": [
     {
      "n": 0,
@@ -330,7 +330,7 @@
      "path": [
       "7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)"
      ],
-     "chars": 30229,
+     "chars": 30502,
      "lines": [
       204,
       276

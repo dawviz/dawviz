@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { DEFAULT_LAYOUT, PANEL_LIMITS, RAIL, STAGE_MIN, TIMELINE_BAR, parseLayout, resetSize, resolveLayout, setSize, toggle } from './panelLayout.ts';
+import { DEFAULT_LAYOUT, PANEL_LIMITS, PROFILES, RAIL, STAGE_MIN, TIMELINE_BAR, parseLayout, resetSize, resolveLayout, setSize, toggle } from './panelLayout.ts';
 
 test('parseLayout: dữ liệu hỏng hoặc thiếu → mặc định; số ngoài giới hạn bị kẹp', () => {
   assert.deepEqual(parseLayout(null), DEFAULT_LAYOUT);
@@ -42,4 +42,12 @@ test('resolveLayout: cửa sổ hẹp thu cột lớn hơn trước, sân khấu
   assert.equal(tiny.layers, PANEL_LIMITS.layers[0]); assert.equal(tiny.props, PANEL_LIMITS.props[0]);
   assert.equal(tiny.timeline, PANEL_LIMITS.timeline[0], 'timeline thấp bớt nhưng không dưới giới hạn');
   assert.equal(resolveLayout(l, { width: 1600, height: 900 }, true).props, 500, 'cửa sổ đủ rộng: giữ cỡ đã lưu');
+});
+
+test('profile preview: cột Phong cách video mặc định 168 px, giới hạn riêng; inspector 320 px', () => {
+  const pf = PROFILES.preview, l = parseLayout(null, pf);
+  assert.equal(l.size.layers, 168); assert.equal(l.size.props, 320);
+  assert.equal(setSize(l, 'layers', 1000, pf).size.layers, pf.limits.layers[1]);
+  assert.equal(resetSize(setSize(l, 'layers', 300, pf), 'layers', pf).size.layers, 168);
+  assert.equal(parseLayout({ size: { layers: 50 } }, pf).size.layers, pf.limits.layers[0]);
 });

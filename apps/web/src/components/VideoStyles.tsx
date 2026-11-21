@@ -1,5 +1,6 @@
 // Cột "Video styles" / "Phong cách video" (UI-DIRECTION 5.3): chọn phong cách của KHUNG VIDEO, không phải theme app (D-52).
 // "Paper" (D-51) là phong cách mặc định; các bộ kiểu nốt dựng sẵn của Render Core đứng sau. Mỗi mục có ảnh thu nhỏ do Render Core vẽ (lib/thumbnails.ts).
+import type { ReactNode } from 'react';
 import { useRef } from 'react';
 import type { NoteStyle } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
@@ -41,7 +42,7 @@ export interface UserPresets {
 }
 const act = 'flex h-6 w-6 items-center justify-center rounded border border-control bg-surface text-fg shadow-sm transition hover:border-line-strong';
 /** `edited`: ô đang chọn đã được chỉnh so với bản gốc. */
-export function VideoStyles({ value, edited, onPick, thumb, presets }: { value: string; edited: boolean; onPick(id: string): void; thumb?(id: string): string | undefined; presets?: UserPresets }) {
+export function VideoStyles({ value, edited, onPick, thumb, presets, headerAction }: { value: string; edited: boolean; onPick(id: string): void; thumb?(id: string): string | undefined; presets?: UserPresets; /** Nút ở cuối hàng tiêu đề (vd. thu gọn cột). */ headerAction?: ReactNode }) {
   const { i18n } = useI18n();
   const input = useRef<HTMLInputElement>(null);
   const users = presets?.items ?? [];
@@ -74,7 +75,10 @@ export function VideoStyles({ value, edited, onPick, thumb, presets }: { value: 
   const dirty = new Set(presets?.dirty ?? []);
   return (
     <nav aria-labelledby="styles-h" className="py-3">
-      <h2 id="styles-h" className="px-4 pb-2 text-[15px] font-semibold text-fg">{i18n.t('web.styles.title')}</h2>
+      <div className="flex items-start justify-between gap-1 pb-2 pl-4 pr-2">
+        <h2 id="styles-h" className="min-w-0 break-words text-[15px] font-semibold leading-tight text-fg">{i18n.t('web.styles.title')}</h2>
+        {headerAction}
+      </div>
       <ul role="radiogroup" aria-labelledby="styles-h" data-testid="video-styles" onKeyDown={radioKeys}>
         {VIDEO_STYLES.map((id) => tile(id, i18n.t(`web.style.video.${id}`), () => onPick(id), id === selected, id === selected ? edited : dirty.has(id), false))}
         {users.map((u) => tile(u.id, u.name, () => presets!.onPick(u.id), u.id === selected, u.id === selected ? edited : dirty.has(u.id), true))}

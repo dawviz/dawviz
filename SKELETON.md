@@ -42,9 +42,11 @@ dawviz/
 │     │  │  ├─ Inspector.tsx
 │     │  │  ├─ KeyframeTimeline.tsx
 │     │  │  ├─ LanguageSelect.tsx
+│     │  │  ├─ LiveLayout.tsx
 │     │  │  ├─ MissingMidiPanel.tsx
 │     │  │  ├─ Notices.tsx
 │     │  │  ├─ NumberField.tsx
+│     │  │  ├─ PanelChrome.tsx
 │     │  │  ├─ PitchField.tsx
 │     │  │  ├─ SceneCanvas.tsx
 │     │  │  ├─ SchemaPanel.tsx
@@ -175,6 +177,8 @@ dawviz/
 │     │  │  ├─ timeFormat.ts
 │     │  │  ├─ timeline.test.ts
 │     │  │  ├─ timeline.ts
+│     │  │  ├─ timelineRows.test.ts
+│     │  │  ├─ timelineRows.ts
 │     │  │  ├─ timeText.test.ts
 │     │  │  ├─ timeText.ts
 │     │  │  ├─ transportKeys.ts
@@ -316,6 +320,7 @@ dawviz/
 │  │  │  ├─ fixtures/   # tệp mẫu
 │  │  │  ├─ golden/
 │  │  │  │  └─ paper-1x1.json
+│  │  │  ├─ animate-scale.test.ts
 │  │  │  ├─ animation.test.ts
 │  │  │  ├─ audioFeatures.test.ts
 │  │  │  ├─ background.test.ts
@@ -697,6 +702,7 @@ type KeyAnimation
 type Animation
 const isBinding = (a: Animation) =>
 const MAX_ANIMATIONS
+const MAX_SCALE   // Giới hạn của `scale` (%): 0 (biến mất) tới 2000.
 function animatablePaths(type: WidgetType): Map<string, 'number' | 'color'>   // Các đường dẫn animate được của một loại widget và kiểu giá trị của chúng.
 function sanitizeAnimate(S: Sanitizer, v: unknown, path: string, type: WidgetType): Record<string, Animation> | undefined   // Đọc `animate` của một widget. Mục sai bị bỏ kèm cảnh báo; không còn mục nào → undefined.
 interface BindCtx   // ───────────── tính giá trị mỗi khung ─────────────
@@ -1504,7 +1510,7 @@ Animation Inspector (UI-DIRECTION 5.3, DESIGN.md "Animation Inspector"): mục �
 ```text
 interface AnimationInspectorProps
 function hasInspectorTarget(widget: WidgetSpec, sel: KeySel): boolean   // Có gì để hiện không (để cột Thiết lập biết có đánh số thêm một mục hay không).
-function AnimationInspector({ n, widget, sel, tempoMap, locked, getTime, onAnimate, onSel, gesture }: AnimationInspectorProps)
+function AnimationInspector({ n, widget, sel, tempoMap, locked, getTime, onAnimate, onAnimateMany, onSel, gesture }: AnimationInspectorProps)
 ```
 
 #### `apps/web/src/components/AspectSwitch.tsx`
@@ -1559,7 +1565,6 @@ Thẻ Editor (T-68, UI-DIRECTION 5.3 mục 3, SRS 5.3 Edit Mode): bố cục wid
 interface EditorActions
 function useWidgetNames(widgets: readonly WidgetSpec[]): (id: string) => string   // Tên hiển thị của widget: tên loại theo ngôn ngữ, đánh số khi có nhiều widget cùng loại.
 function Editor({ styleName, scene, derived, ast, playback, fonts, advanced, actions, transport, active, widgetSections, layoutRef, background }: Props)
-function Rail({ side, label, title, onOpen, testId }: { side: 'left' | 'right'; label: string; title: string; onOpen(): void; testId: string })   // Dải mỏng của panel đã thu gọn: cả dải là một nút mở lại, tên panel chạy dọc (dưới 1024 px: một hàng ngang).
 ```
 
 #### `apps/web/src/components/EditorOverlay.tsx`
@@ -1667,13 +1672,13 @@ function TickField({ label, checked, onChange, reference, testId, disabled, stro
 
 #### `apps/web/src/components/KeyframeTimeline.tsx`
 
-Thân panel Timeline (UI-DIRECTION 5.3, DESIGN.md "Timeline"): bên trái là cây thuộc tính của widget đang chọn (đồng hồ bật hoạt hình, tên,
+Thân panel Timeline (UI-DIRECTION 5.3, DESIGN.md "Timeline"): bên trái là cây thuộc tính của widget đang chọn (đồng hồ bật hoạt hình, tên ngắn,
 
 ```text
-interface KeySel   // Vùng chọn của Timeline: keyframe (`đường dẫn#chỉ số`) và hàng thuộc tính đang chọn (đích của Animation Inspec…
+interface KeySel   // Vùng chọn của Timeline: keyframe (`đường dẫn#chỉ số`) và dòng đang chọn (id của dòng, lib/timelineRows.ts; đí…
 const NO_SEL
 interface KeyframeTimelineProps
-function KeyframeTimeline({ widget, tempoMap, duration, playback, locked, sel, onSel, onAnimate, gesture, tree, onTree, onTreeReset }: KeyframeTimelineProps)
+function KeyframeTimeline({ widget, tempoMap, duration, playback, locked, sel, onSel, onAnimate, onAnimateMany, gesture, tree, onTree, onTreeReset }: KeyframeTimelineProps)
 ```
 
 #### `apps/web/src/components/LanguageSelect.tsx`
@@ -1682,6 +1687,18 @@ function KeyframeTimeline({ widget, tempoMap, duration, playback, locked, sel, o
 
 ```text
 function LanguageSelect()
+```
+
+#### `apps/web/src/components/LiveLayout.tsx`
+
+Bố cục "đang thấy" của widget tại vạch phát (D-64): khi vị trí/cỡ/góc có keyframe hoặc chạy theo nhạc, khung chọn trên canvas và các ô X/Y/W/H/Xoay
+
+```text
+interface LiveCtx
+const hasLayoutAnim = (w: WidgetSpec) =>
+function layoutAt(w: WidgetSpec, ctx: Omit<LiveCtx, 'playback'>, canvas: SceneDocument['canvas'], t: number): WidgetLayout   // Bố cục của `w` tại `t` (chỉ phần layout.* được áp; thuộc tính khác giữ nguyên).
+function LiveLayout({ w, ctx, canvas, children }: { w: WidgetSpec; ctx: LiveCtx; canvas: SceneDocument['canvas']; children(l: WidgetLayout): ReactNode })   // Render-prop: con nhận bố cục tại vạch phát của widget.
+function LiveOverlay({ ctx, scene, ...rest }: { ctx: LiveCtx } & Parameters<typeof EditorOverlay>[0])   // Lớp chỉnh sửa trên khung, với widget đang animate bố cục được đặt đúng chỗ tại vạch phát.
 ```
 
 #### `apps/web/src/components/MissingMidiPanel.tsx`
@@ -1706,6 +1723,15 @@ function Notices({ problems, basic = false }: { problems: Problem[]; basic?: boo
 
 ```text
 function NumberField({ id, label, value, onChange, spec, className = '', disabled, describedBy, range, scrub = true }: { id?: string; label: string; value: number; onChange(v: number): void; spec: NumberSpec; className?: string; disabled?: boolean; describedBy?: string; range?: [number, number]; scrub?: boolean })   // `disabled`: ô bị khoá (vd. vạch phát khi bật bàn phím, T-71); `describedBy`: id đoạn chú thích giải thích lý …
+```
+
+#### `apps/web/src/components/PanelChrome.tsx`
+
+Phần khung dùng chung của panel đổi cỡ (Editor và Xem trước, DESIGN.md "Dải panel thu gọn"): nút thu gọn và dải mỏng của panel đã thu gọn.
+
+```text
+function PanelCollapse({ label, icon, onClick, testId }: { label: string; icon: ReactNode; onClick(): void; testId: string })   // Nút thu gọn panel (chỉ biểu tượng; tên và phím tắt ở chú thích).
+function Rail({ side, label, title, onOpen, testId }: { side: 'left' | 'right'; label: string; title: string; onOpen(): void; testId: string })   // Dải mỏng của panel đã thu gọn: cả dải là một nút mở lại, tên panel chạy dọc (dưới 1024 px: một hàng ngang).
 ```
 
 #### `apps/web/src/components/PitchField.tsx`
@@ -1886,7 +1912,7 @@ Cột "Video styles" / "Phong cách video" (UI-DIRECTION 5.3): chọn phong các
 re-export { VIDEO_STYLES, videoStyleBase }
 function isEdited(id: string, base: NoteStyle): boolean   // Kiểu nốt hiện tại còn đúng như phong cách đã chọn không (để hiện "đã chỉnh").
 interface UserPresets   // Cột phong cách + preset của người dùng. Mỗi ô (dựng sẵn hay của người dùng) giữ bản chỉnh dở của riêng nó khi…
-function VideoStyles({ value, edited, onPick, thumb, presets }: { value: string; edited: boolean; onPick(id: string): void; thumb?(id: string): string | undefined; presets?: UserPresets })   // `edited`: ô đang chọn đã được chỉnh so với bản gốc.
+function VideoStyles({ value, edited, onPick, thumb, presets, headerAction }: { value: string; edited: boolean; onPick(id: string): void; thumb?(id: string): string | undefined; presets?: UserPresets; /** Nút ở cuối hàng tiêu đề (vd. thu gọn cột). */ headerAction?: ReactNode })   // `edited`: ô đang chọn đã được chỉnh so với bản gốc.
 ```
 
 #### `apps/web/src/components/WidgetSettings.tsx`
@@ -2152,6 +2178,8 @@ const layerOrder = (s: SceneDocument) =>   // Thứ tự lớp như danh sách L
 const moveLayer = (d: Doc, widgetId: string, to: number) =>   // Đưa lớp `widgetId` tới vị trí `to` trong danh sách Lớp (0 = trên cùng): kéo thả, lên/xuống một bậc, lên trên/…
 const setWidgetVisibility = (d: Doc, widgetId: string, next: WidgetVisibility | null, key?: string) =>   // Đặt khoảng hiển thị theo thời gian của widget (REQ-GRAPHICS-14); `null` = bỏ (hiện suốt bài). `key` gộp các l…
 const setWidgetAnimate = (d: Doc, widgetId: string, path: string, next: Animation | null, key?: string) =>   // Đặt hoạt hình của MỘT thuộc tính widget (T-22); `null` = bỏ. `key` gộp các lần chỉnh liên tiếp một ô thành mộ…
+interface AnimEdit   // Một lần sửa gồm bố cục tĩnh và/hoặc nhiều hoạt hình của một widget (`null` = bỏ hoạt hình đường dẫn đó).
+const editWidgetAnimation = (d: Doc, edits: Record<string, AnimEdit>, key?: string) =>   // Sửa bố cục và nhiều hoạt hình của một hay nhiều widget trong MỘT lệnh (D-64): kéo hình thoi Vị trí (x + y), k…
 const setWidgetMotion = (d: Doc, widgetId: string, next: WidgetMotion | null, key?: string) =>   // Đặt chuyển động của widget (vào, ra, lặp theo nhịp; mọi loại widget); `null` = bỏ. `key` gộp các lần chỉnh li…
 const setPhases = (d: Doc, phases: Phase[], key?: string) =>   // Đặt danh sách phase của bài (đã sắp theo `start`, tên không rỗng). Rỗng = bỏ hết.
 const setTonic = (d: Doc, tonic: number | null) =>   // Đặt nốt chủ của bài (0 = C … 11 = B); `null` = bỏ (chỗ giữ `{bass}` hiện tên nốt thay vì bậc).
@@ -2656,7 +2684,7 @@ function startPaintDrag(e: { button: number; isPrimary: boolean; target: EventTa
 
 #### `apps/web/src/lib/panelLayout.ts`
 
-Bố cục panel đổi cỡ của thẻ Editor (UI-DIRECTION 5.3, DESIGN.md "Panel đổi cỡ"): cột Lớp, cột Thiết lập, panel Timeline ở đáy
+Bố cục panel đổi cỡ (UI-DIRECTION 5.3, DESIGN.md "Panel đổi cỡ"). Thẻ Editor: cột Lớp, cột Thiết lập, panel Timeline ở đáy và cột cây thuộc tính
 
 ```text
 type PanelId
@@ -2664,14 +2692,16 @@ type CollapsibleId
 interface PanelLayout
 const PANEL_LIMITS
 const DEFAULT_LAYOUT
+interface Profile   // Cỡ mặc định và giới hạn theo thẻ. Xem trước: cột trái là Phong cách video (ảnh thu nhỏ co theo bề rộng), cột …
+const PROFILES
 const RAIL   // Cỡ khi thu gọn: dải dọc chứa nút mở (cột) và thanh tiêu đề (timeline).
 const STAGE_MIN   // Sân khấu luôn còn tối thiểu chừng này (px) để khung preview không bị bóp mất.
-function parseLayout(raw: unknown): PanelLayout   // Đọc bố cục đã lưu; trường thiếu hoặc sai lấy mặc định, số ngoài giới hạn bị kẹp.
-const setSize = (l: PanelLayout, id: PanelId, v: number) =>   // Đặt cỡ một panel (kẹp trong giới hạn của nó).
+function parseLayout(raw: unknown, pf: Profile = PROFILES.editor): PanelLayout   // Đọc bố cục đã lưu; trường thiếu hoặc sai lấy mặc định, số ngoài giới hạn bị kẹp.
+const setSize = (l: PanelLayout, id: PanelId, v: number, pf: Profile = PROFILES.editor) =>   // Đặt cỡ một panel (kẹp trong giới hạn của nó).
 const toggle = (l: PanelLayout, id: CollapsibleId, open: boolean) =>
-const resetSize = (l: PanelLayout, id: PanelId) =>
+const resetSize = (l: PanelLayout, id: PanelId, pf: Profile = PROFILES.editor) =>
 interface Resolved
-function resolveLayout(l: PanelLayout, view: { width: number; height: number }, advanced: boolean): Resolved   // Cỡ thật để vẽ trong khung `view` (px): panel thu gọn còn dải RAIL/TIMELINE_BAR; nếu cửa sổ hẹp tới mức sân kh…
+function resolveLayout(l: PanelLayout, view: { width: number; height: number }, advanced: boolean, pf: Profile = PROFILES.editor): Resolved   // Cỡ thật để vẽ trong khung `view` (px): panel thu gọn còn dải RAIL/TIMELINE_BAR; nếu cửa sổ hẹp tới mức sân kh…
 ```
 
 #### `apps/web/src/lib/parseInWorker.ts`
@@ -2961,6 +2991,19 @@ function nextKey(times: readonly number[], t: number): number | null
 const keyAt = (times: readonly number[], t: number) =>   // Chỉ số keyframe nằm tại `t` (trong SAME_TIME), hoặc -1.
 ```
 
+#### `apps/web/src/lib/timelineRows.ts`
+
+Các dòng của Timeline (DESIGN.md "Timeline"): một dòng có thể gắn nhiều đường dẫn hoạt hình (Vị trí = layout.x + layout.y, như After Effects),
+
+```text
+type GroupId
+interface RowDef
+function timelineRows(type: WidgetType, animate: Readonly<Record<string, Animation>> = {}): RowDef[]   // Dòng của một loại widget theo thứ tự hiện; `animate` để quyết định có hiện dòng Rộng/Cao (chỉ khi đã animate).
+const rowOfPath = (rows: readonly RowDef[], path: string) =>   // Dòng chứa đường dẫn `path` (vd. layout.y → dòng Vị trí).
+interface VKey
+function rowKeys(row: RowDef, times: ReadonlyMap<string, readonly number[]>): VKey[]   // Gộp keyframe của các đường dẫn trong một dòng thành hình thoi: keyframe cách nhau ≤ SAME_TIME là một hình tho…
+```
+
 #### `apps/web/src/lib/timeText.ts`
 
 Đọc/ghi thời gian người dùng gõ cho khoảng hiển thị và phase (T-81): "90", "90.5", "1:30", "1:30.25", "1:02:03".
@@ -3001,11 +3044,12 @@ function shortcutLabels(mac = isMac()):
 
 #### `apps/web/src/lib/usePanelLayout.ts`
 
-Trạng thái bố cục panel của thẻ Editor: đọc/ghi localStorage (lib/prefs.ts), đo vùng Editor để kẹp cỡ theo cửa sổ (lib/panelLayout.ts).
+Trạng thái bố cục panel (thẻ Editor và thẻ Xem trước): đọc/ghi localStorage (lib/prefs.ts), đo vùng của thẻ để kẹp cỡ theo cửa sổ (lib/panelLayout.ts).
 
 ```text
 interface PanelLayoutApi
-function usePanelLayout(advanced: boolean): PanelLayoutApi
+function usePanelLayout(advanced: boolean, which: 'editor' | 'preview' = 'editor'): PanelLayoutApi
+function usePanelShortcuts(panels: PanelLayoutApi, active: boolean, timeline: boolean): void   // Phím tắt thu gọn/mở panel khi thẻ đang mở và không gõ chữ. `timeline` = có panel Timeline (thẻ Editor).
 ```
 
 #### `apps/web/src/lib/usePref.ts`
@@ -3235,12 +3279,14 @@ type SpectrumOut
 - `apps/web/src/lib/theme.test.ts`
 - `apps/web/src/lib/timeText.test.ts`
 - `apps/web/src/lib/timeline.test.ts`
+- `apps/web/src/lib/timelineRows.test.ts`
 - `apps/web/src/lib/undoKeys.test.ts`
 - `apps/web/src/lib/useStageWidth.test.ts`
 - `apps/web/src/lib/widgetFields.test.ts`
 - `apps/web/src/lib/workspaceStore.test.ts`
 - `apps/web/test/app.test.tsx`
 - `apps/web/test/components.test.tsx`
+- `packages/render-core/test/animate-scale.test.ts`
 - `packages/render-core/test/animation.test.ts`
 - `packages/render-core/test/audioFeatures.test.ts`
 - `packages/render-core/test/background.test.ts`
@@ -3276,4 +3322,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 1437 ký hiệu công khai -->
+<!-- 10 thư mục src, 1455 ký hiệu công khai -->

@@ -57,7 +57,7 @@ The Piano roll also has **Note animation** under **Settings**: each note goes th
 
 ## Animate properties
 
-To make a property **change over time or with the music** instead of staying still, use the **Timeline & keyframes** panel at the bottom of the Editor tab (open it with the button at the start of its bar, or Ctrl+J). Any number or colour can be animated: position, size, rotation, the opacity of the whole widget (the **Transform** group), and every number or colour field in the widget's **Settings** (the **Widget properties** group, for example bar colour, line thickness, glow).
+To make a property **change over time or with the music** instead of staying still, use the **Timeline & keyframes** panel at the bottom of the Editor tab (open it with the button at the start of its bar, or Ctrl+J). Any number or colour can be animated. The **Transform** group has **Position** (X and Y on one row, one keyframe for both), **Scale** (percent, 100 is full size; grows or shrinks the whole widget around its anchor), **Rotation** and **Opacity**. The **Widget properties** group has every number or colour field in the widget's **Settings** (for example bar colour, line thickness, glow). Older presets that animate Width/Height show those two rows as well.
 
 ### Setting keyframes
 
@@ -66,14 +66,17 @@ To make a property **change over time or with the music** instead of staying sti
 3. Press the **stopwatch** at the start of the property's row. A keyframe is set at the playhead with the current value.
 4. Move the playhead somewhere else and type a new value in that row's value field (or drag on the field). A new keyframe is added at the playhead. The diamond button between the two triangle buttons also adds a keyframe at the playhead (press it again to remove it); the triangles move the playhead to the previous or next keyframe.
 
+**Drag on the frame:** once Position, Rotation (or Width/Height) has its stopwatch on, moving, rotating or resizing the widget on the frame (or typing into X, Y, W, H, Angle on the right) sets a keyframe at the playhead instead of moving the widget for good. A quick way to make motion: move the playhead somewhere, drag the widget; move it again, drag again. The selection box on the frame always follows where the widget is at the playhead.
+
 Press the stopwatch again to stop animating that property (its keyframes are removed). The funnel button at the top corner shows only the properties that are animated (key U).
 
 ### Editing keyframes on the Timeline
 
 - **Select:** click a diamond. Hold Shift (or Ctrl/⌘) to add more. Drag on an empty part of the Timeline to select with a box. Ctrl+A selects every keyframe of the widget.
-- **Move:** drag a diamond left or right; every selected keyframe moves with it. Keyframes snap to the playhead, to other keyframes and to the song's beats; hold Alt while dragging to place them freely. Alt+Left/Right moves them one frame (add Shift: one second).
+- **Move:** drag a diamond left or right; every selected keyframe moves with it. Keyframes snap to the playhead, to other keyframes and to the song's beats; a teal guide line shows while snapping. Hold Alt while dragging to place them freely. Alt+Left/Right moves them one frame (add Shift: one second).
 - **Add:** double-click a property's row at the moment you want.
 - **Delete:** select and press Delete.
+- **Jump to a keyframe:** drag on the time ruler and the playhead snaps to keyframes (the small marks on the ruler); hold Alt to scrub freely.
 - **Look closer:** hold Ctrl and scroll over the Timeline, or use zoom in, zoom out and **Fit the whole song** at the top corner.
 
 A keyframe's shape tells how the value moves on to the next one: a diamond is even, a square is hold then jump, a circle is a soft curve. Selected keyframes are highlighted. A small dot under a keyframe means it is anchored to the music (beat, bar); dragging it turns it into a time in seconds.
@@ -87,6 +90,8 @@ When you select keyframes, the **Keyframe** section appears first in the right c
 - **Curve**: pick a ready-made curve (even, overshoot, bounce, spring…).
 - **Between keyframes**: smooth to the next, hold then jump, or soft curve.
 - **After the last keyframe**: stay, repeat, back and forth, or repeat and keep adding.
+
+The ↺ button next to **Curve**, **Between keyframes** and **After the last keyframe** puts that field back to its default (even, smooth to the next, stay). **Deselect** (or Esc on the Timeline) closes the **Keyframe** section. Selecting a Position diamond shows two fields, **Value X** and **Value Y**.
 
 Select several keyframes and change a field to change all of them; a field where they differ reads **Several values**. Colours blend smoothly, without going muddy in the middle.
 

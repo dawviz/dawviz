@@ -29,11 +29,12 @@ import { BackgroundSection, type BackgroundState } from './BackgroundSection.tsx
 import { AnimationInspector, hasInspectorTarget } from './AnimationInspector.tsx';
 import { LiveLayout, LiveOverlay, type LiveCtx } from './LiveLayout.tsx';
 import { addKey, setKey } from '../lib/animateFields.ts';
-import { keyAt, keySecs } from '../lib/timeline.ts';
+import { keyAt, keySecs, valueAt } from '../lib/timeline.ts';
 import { Splitter } from './Splitter.tsx';
 import { TimelinePanel } from './TimelinePanel.tsx';
 import { KeyframeTimeline, NO_SEL, type KeySel } from './KeyframeTimeline.tsx';
-import { usePanelLayout } from '../lib/usePanelLayout.ts';
+import { usePanelLayout, usePanelShortcuts } from '../lib/usePanelLayout.ts';
+import { PanelCollapse, Rail } from './PanelChrome.tsx';
 import { PANEL_LIMITS } from '../lib/panelLayout.ts';
 import { KeySection, MotionSection, NamingSection, PhasesSection, VisibilitySection } from './TimeSections.tsx';
 
@@ -243,20 +244,7 @@ export function Editor({ styleName, scene, derived, ast, playback, fonts, advanc
   const panels = usePanelLayout(advanced), { r } = panels;
   const keyHint = (label: string, keys: string) => `${label} (${keys})`;
   // Ctrl/⌘+B: Lớp · Ctrl/⌘+Alt+B: Thiết lập · Ctrl/⌘+J: Timeline (như VS Code). Chỉ khi thẻ Editor đang mở và không gõ chữ.
-  const panelsRef = useRef(panels); panelsRef.current = panels;
-  useEffect(() => {
-    if (!active) return;
-    const h = (e: globalThis.KeyboardEvent) => {
-      if (!(e.ctrlKey || e.metaKey) || e.shiftKey || isTextEntry(e.target)) return;
-      const p = panelsRef.current;
-      const id = e.code === 'KeyB' ? (e.altKey ? 'props' : 'layers') : e.code === 'KeyJ' && !e.altKey ? 'timeline' : null;
-      if (!id) return;
-      e.preventDefault();
-      p.setOpen(id, !p.r.open[id]);
-    };
-    window.addEventListener('keydown', h);
-    return () => window.removeEventListener('keydown', h);
-  }, [active]);
+  usePanelShortcuts(panels, active, true);
   // Sửa bố cục từ khung hoặc ô số (D-64, như After Effects): thuộc tính đang có keyframe thì đặt/sửa keyframe tại vạch phát;
   // đang chạy theo nhạc thì bỏ qua (không sửa được trên khung); đứng yên thì đổi bố cục tĩnh như cũ. Một lệnh mỗi lần → một bước hoàn tác cho cả lần kéo.
   const liveCtx = useMemo<LiveCtx | null>(() => (derived && ast ? { ast, derived, playback } : null), [ast, derived, playback]);
@@ -270,7 +258,10 @@ export function Editor({ styleName, scene, derived, ast, playback, fonts, advanc
         const a = f === 'anchor' ? undefined : w.animate?.[`layout.${f}`];
         if (!a) { layout[f] = v; continue; }
         if (isBinding(a)) continue;
-        const i = keyAt(keySecs(a, ast?.tempoMap ?? []), t);
+        const tm = ast?.tempoMap ?? [];
+        // Trường không đổi so với giá trị đang thấy (vd. x/y đi kèm khi đổi điểm neo) không sinh keyframe thừa.
+        if (Math.abs(Number(valueAt(a, t, tm)) - Number(v)) < 1e-6) continue;
+        const i = keyAt(keySecs(a, tm), t);
         animate[`layout.${f}`] = i >= 0 ? setKey(a, i, { value: v as number }) : addKey(a, t, v as number);
         keyed = true;
       }
@@ -738,19 +729,3 @@ function AnchorPicker({ value, disabled, onChange }: { value: { x: number; y: nu
 }
 
 
-/** Nút thu gọn panel (chỉ biểu tượng; tên và phím tắt ở chú thích). */
-function PanelCollapse({ label, icon, onClick, testId }: { label: string; icon: ReactNode; onClick(): void; testId: string }) {
-  return <button type="button" className="tog" aria-label={label} title={label} onClick={onClick} data-testid={testId}>{icon}</button>;
-}
-
-/** Dải mỏng của panel đã thu gọn: cả dải là một nút mở lại, tên panel chạy dọc (dưới 1024 px: một hàng ngang). */
-export function Rail({ side, label, title, onOpen, testId }: { side: 'left' | 'right'; label: string; title: string; onOpen(): void; testId: string }) {
-  const Icon = side === 'left' ? PanelLeft : PanelRight;
-  return (
-    <button type="button" onClick={onOpen} title={title} aria-label={title} data-testid={testId}
-      className={`flex h-full w-full items-center gap-2 border-line bg-surface px-3 py-2 text-xs text-muted transition hover:bg-raised hover:text-fg max-lg:border-y lg:flex-col lg:px-0 lg:py-3 ${side === 'left' ? 'lg:border-r' : 'lg:border-l'}`}>
-      <Icon className="h-3.5 w-3.5 shrink-0" />
-      <span className="lg:[writing-mode:vertical-rl]">{label}</span>
-    </button>
-  );
-}
