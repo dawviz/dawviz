@@ -107,6 +107,7 @@ dawviz/
 │     │  │  ├─ commands.ts
 │     │  │  ├─ csp.test.ts
 │     │  │  ├─ csp.ts
+│     │  │  ├─ dexieBackend.ts
 │     │  │  ├─ docSnapshot.test.ts
 │     │  │  ├─ docSnapshot.ts
 │     │  │  ├─ easeCurve.test.ts
@@ -2212,6 +2213,14 @@ const CSP_DIRECTIVES
 const CSP
 ```
 
+#### `apps/web/src/lib/dexieBackend.ts`
+
+Lớp mỏng bọc Dexie cho Backend lưu phiên (T-10). Chỉ nạp động qua lazyDexieBackend (workspaceStore.ts) để tách khỏi gói đầu (T-100).
+
+```text
+function dexieBackend(dbName?: string): Backend
+```
+
 #### `apps/web/src/lib/docSnapshot.ts`
 
 Tài liệu (Doc) ⇄ JSON để lưu phiên và Project Pack (T-10). Nạp lại luôn kiểm: scene qua `sanitizeScene`, id track phải có trong dự án,
@@ -3166,7 +3175,7 @@ interface Restored
 async function restoreWorkspace(backend: Backend): Promise<Restored | null>
 interface Timers   // Debounce có đồng hồ nhúng vào: `push` hẹn ghi sau `delay` ms kể từ lần gọi cuối; `flush` ghi ngay (đóng thẻ).
 function createDebounced<T>(run: (v: T) => void | Promise<unknown>, delay = AUTOSAVE_DELAY_MS, timers: Timers = { set: (f, m) => setTimeout(f, m), clear: (h) => clearTimeout(h as ReturnType<typeof setTimeout>) })
-function dexieBackend(dbName?: string): Backend
+function lazyDexieBackend(dbName?: string): Backend   // Backend nạp Dexie khi dùng lần đầu; giữ nguyên hợp đồng `Backend` nên App không phải đổi cách gọi.
 ```
 
 #### `apps/web/src/lib/workspaceStyles.ts`
@@ -3335,4 +3344,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 1458 ký hiệu công khai -->
+<!-- 10 thư mục src, 1459 ký hiệu công khai -->

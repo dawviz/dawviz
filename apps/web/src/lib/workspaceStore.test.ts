@@ -101,3 +101,11 @@ test('debounce: gộp nhiều lần đẩy thành một lần ghi sau 500 ms k�
   assert.deepEqual(out, [3, 4]);
   d.push(5); d.cancel(); assert.equal(fns.length, 0); assert.deepEqual(out, [3, 4]);
 });
+
+test('lazyDexieBackend: tạo backend không nạp Dexie; lỗi nạp/IndexedDB nổi lên ở lần gọi đầu', async () => {
+  const { lazyDexieBackend } = await import('./workspaceStore.ts');
+  const b = lazyDexieBackend('test-lazy');
+  assert.equal(typeof b.load, 'function');
+  // node không có indexedDB: lần gọi đầu phải từ chối (để restoreWorkspace bắt và báo), không treo.
+  await assert.rejects(b.load());
+});
