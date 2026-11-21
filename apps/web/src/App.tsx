@@ -3,7 +3,7 @@
 // Giữ trạng thái tệp đã nạp. Mọi thay đổi người dùng làm (kiểu nốt, ghi đè theo track, phong cách video, độ sáng, ẩn/solo/thứ tự track,
 // bố cục widget, mở preset) nằm trong store có hoàn tác (lib/store.ts, T-07). Đồng hồ phát nằm ở kho riêng (lib/playback.ts)
 // nên thành phần này không vẽ lại mỗi khung hình. Không có logic vẽ ở đây: khung hình = renderFrame của Render Core.
-import { Fragment, Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
+import { Fragment, Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react';
 import { LayoutGroup, MotionConfig } from 'framer-motion';
 import { usesChordPlaceholder, widgetDefaults, DEFAULT_BRIGHTNESS, DEFAULT_KEYBOARD_STYLE, defaultStyleConfig, sanitizeBrightness, buildIndex, buildSceneHud, type AudioFeatures, type Derived, type SceneDocument, type BrightnessConfig, type NoteStyle, type StyleConfig, type KeyboardStyle, type UnifiedProjectAST, type WidgetSpec, DEFAULT_TEXT_STYLES, createWidget, duplicateWidget } from '@dawviz/render-core';
 import type { ParseWarning } from '@dawviz/parser';
@@ -52,7 +52,10 @@ import { useFontsStatus } from './lib/fonts.ts';
 import { projectKey, styleThumbnail } from './lib/thumbnails.ts';
 import { NotationStatusContext, useNotation } from './lib/notation/useNotation.ts';
 import { Facts, InspectorSection } from './components/Inspector.tsx';
-import { Mark } from './components/Icons.tsx';
+import { Mark, PanelLeft, PanelRight } from './components/Icons.tsx';
+import { PanelCollapse, Rail } from './components/PanelChrome.tsx';
+import { Splitter } from './components/Splitter.tsx';
+import { usePanelLayout, usePanelShortcuts } from './lib/usePanelLayout.ts';
 import { HistoryMenu } from './components/HistoryMenu.tsx';
 import { Editor, useWidgetNames, type EditorActions } from './components/Editor.tsx';
 import { describeCommand, historyItems, type LabelCtx } from './lib/historyLabels.ts';
@@ -501,6 +504,7 @@ export function App() {
     moveLayer: (id, to) => run((d) => Cmds.moveLayer(d, id, to)),
     snapping: (p) => run((d) => Cmds.patchSnapping(d, p)),
     animate: (id, path, v, key) => run((d) => Cmds.setWidgetAnimate(d, id, path, v, key)),
+    animEdit: (edits, key) => run((d) => Cmds.editWidgetAnimation(d, edits, key)),
     motion: (id, v, key) => run((d) => Cmds.setWidgetMotion(d, id, v, key)),
     visibility: (id, v, key) => run((d) => Cmds.setWidgetVisibility(d, id, v, key)),
     phases: (list, key) => run((d) => Cmds.setPhases(d, list, key)),
@@ -549,6 +553,8 @@ export function App() {
 
   // Chiều rộng khung xem trước theo chỗ còn lại thật trong vùng cuộn giữa (lib/useStageWidth.ts).
   const scrollerRef = useRef<HTMLDivElement>(null), stageRef = useRef<HTMLDivElement>(null);
+  const pv = usePanelLayout(advanced, 'preview');
+  usePanelShortcuts(pv, tab === 'preview' && !!loaded, false);
   const stageWidth = useStageWidth(scrollerRef, stageRef, {
     aspect: scene.canvas.designWidth / scene.canvas.designHeight,
     chrome: ui.proofFrame ? STAGE_CHROME.proof : STAGE_CHROME.plain, extra: ui.proofFrame ? STAGE_WEDGE : 0, active: !!loaded,
@@ -637,16 +643,29 @@ export function App() {
 
   // `relative` ở cả ba vùng cuộn: phần tử sr-only (position: absolute) bên trong phải neo vào vùng cuộn của nó,
   // nếu không nó thoát ra ngoài, làm cả trang cuộn theo và đẩy thanh trên đi.
+  // Cột Phong cách video và inspector đổi cỡ/thu gọn được như ở Editor (D-64, lib/panelLayout.ts profile 'preview'); Ctrl+B / Ctrl+Alt+B.
+  const pvHint = (name: string, open: boolean, keys: string) => `${i18n.t(open ? 'web.panel.collapse' : 'web.panel.open', { name })} (${keys})`;
   const preview = (
-    <div className={`grid h-full min-h-0 max-lg:content-start max-lg:overflow-y-auto ${loaded ? 'lg:grid-cols-[10.5rem_minmax(0,1fr)_20rem] min-[1440px]:grid-cols-[10.5rem_minmax(0,1fr)_22rem]' : ''}`}>
+    <div ref={pv.ref} style={{ '--pv-l': `${pv.r.layers}px`, '--pv-r': `${pv.r.props}px` } as CSSProperties}
+      className={`grid h-full min-h-0 max-lg:content-start max-lg:overflow-y-auto ${loaded ? 'lg:grid-cols-[var(--pv-l)_minmax(0,1fr)_var(--pv-r)]' : ''}`}>
       {loaded && (
-        <aside className="relative min-h-0 overflow-y-auto border-b border-line bg-surface max-lg:order-2 max-lg:max-h-60 lg:border-b-0 lg:border-r">
-          <VideoStyles value={doc.videoStyle} edited={tileEdited} onPick={pickVideoStyle} thumb={(id) => thumbs[id]}
-            presets={{ items: userPresets.map(({ id, name }) => ({ id, name })), active: userActiveId, dirty: Object.keys(working).filter((k) => k !== tileId), onPick: onPickUserPreset, onAddFile: (f) => void onOpenPreset(f),
-              onDownload: onDownloadTile, onDuplicate, onRevert, onDelete: onDeleteUserPreset, problems: [], status: presetOpened ? i18n.t('web.preset.opened', { name: presetOpened }) : undefined }} />
-        </aside>
+        <div className="relative max-lg:order-2 lg:min-h-0">
+          {!pv.r.open.layers ? (
+            <Rail side="left" label={i18n.t('web.styles.title')} title={pvHint(i18n.t('web.styles.title'), false, 'Ctrl+B')} onOpen={() => pv.setOpen('layers', true)} testId="rail-styles" />
+          ) : <>
+            <aside id="preview-styles" className="relative h-full min-h-0 overflow-y-auto border-b border-line bg-surface max-lg:max-h-60 lg:border-b-0 lg:border-r">
+              <VideoStyles value={doc.videoStyle} edited={tileEdited} onPick={pickVideoStyle} thumb={(id) => thumbs[id]}
+                headerAction={<PanelCollapse label={pvHint(i18n.t('web.styles.title'), true, 'Ctrl+B')} icon={<PanelLeft className="h-3.5 w-3.5" />} onClick={() => pv.setOpen('layers', false)} testId="collapse-styles" />}
+                presets={{ items: userPresets.map(({ id, name }) => ({ id, name })), active: userActiveId, dirty: Object.keys(working).filter((k) => k !== tileId), onPick: onPickUserPreset, onAddFile: (f) => void onOpenPreset(f),
+                  onDownload: onDownloadTile, onDuplicate, onRevert, onDelete: onDeleteUserPreset, problems: [], status: presetOpened ? i18n.t('web.preset.opened', { name: presetOpened }) : undefined }} />
+            </aside>
+            <Splitter axis="x" grow={1} label={i18n.t('web.panel.resize', { name: i18n.t('web.styles.title') })} title={i18n.t('web.panel.resizeHint')} controls="preview-styles"
+              value={pv.r.layers} min={pv.profile.limits.layers[0]} max={pv.profile.limits.layers[1]} onResize={(v) => pv.resize('layers', v)} onReset={() => pv.reset('layers')}
+              onToggle={() => pv.setOpen('layers', false)} className="right-0 translate-x-1/2 max-lg:hidden" testId="split-styles" />
+          </>}
+        </div>
       )}
-      <div ref={scrollerRef} className="relative min-h-0 min-w-0 overflow-y-auto bg-page p-3 max-lg:order-1 max-lg:h-[75svh] lg:p-6">
+      <div ref={scrollerRef} className={`relative min-h-0 min-w-0 overflow-y-auto bg-page p-3 max-lg:order-1 max-lg:h-[75svh] lg:p-6 ${loaded ? 'lg:col-start-2' : ''}`}>
         <div className={`space-y-4 ${loaded ? '' : 'mx-auto max-w-2xl pt-10'}`}>
           {midi && midiLevel && <MissingMidiPanel info={midi} level={midiLevel} busy={busy} onAdd={addMidi} />}
           {needsSchema && source && <SchemaPanel schemas={schemas} busy={busy} onAdd={(schema) => reparse({ schemas: [...schemas, { name: String((schema as { name?: unknown; id?: unknown }).name ?? (schema as { id?: unknown }).id ?? 'schema').slice(0, 60), schema }] })} onRemove={(i) => reparse({ schemas: schemas.filter((_, k) => k !== i) })} />}
@@ -666,9 +685,24 @@ export function App() {
         )}
       </div>
       {loaded && trackProps && (
-        <aside aria-label={i18n.t('web.inspector')} className="relative min-h-0 overflow-y-auto border-t border-line bg-surface max-lg:order-3 max-lg:overflow-visible lg:border-l lg:border-t-0" data-testid="inspector">
-          {sectionOrder.map((id, i) => sections[id](i + 1))}
-        </aside>
+        <div className="relative max-lg:order-3 lg:min-h-0">
+          {!pv.r.open.props ? (
+            <Rail side="right" label={i18n.t('web.inspector')} title={pvHint(i18n.t('web.inspector'), false, 'Ctrl+Alt+B')} onOpen={() => pv.setOpen('props', true)} testId="rail-inspector" />
+          ) : <>
+            <aside id="preview-inspector" aria-label={i18n.t('web.inspector')} className="relative flex h-full min-h-0 flex-col border-t border-line bg-surface max-lg:h-auto max-lg:overflow-visible lg:border-l lg:border-t-0" data-testid="inspector">
+              <div className="flex h-8 shrink-0 items-center justify-between gap-2 border-b border-line pl-4 pr-2">
+                <span className="truncate text-xs text-muted">{i18n.t('web.inspector')}</span>
+                <PanelCollapse label={pvHint(i18n.t('web.inspector'), true, 'Ctrl+Alt+B')} icon={<PanelRight className="h-3.5 w-3.5" />} onClick={() => pv.setOpen('props', false)} testId="collapse-inspector" />
+              </div>
+              <div className="min-h-0 flex-1 overflow-y-auto max-lg:flex-none max-lg:overflow-visible">
+                {sectionOrder.map((id, i) => sections[id](i + 1))}
+              </div>
+            </aside>
+            <Splitter axis="x" grow={-1} label={i18n.t('web.panel.resize', { name: i18n.t('web.inspector') })} title={i18n.t('web.panel.resizeHint')} controls="preview-inspector"
+              value={pv.r.props} min={pv.profile.limits.props[0]} max={pv.profile.limits.props[1]} onResize={(v) => pv.resize('props', v)} onReset={() => pv.reset('props')}
+              onToggle={() => pv.setOpen('props', false)} className="left-0 max-lg:hidden" testId="split-inspector" />
+          </>}
+        </div>
       )}
     </div>
   );

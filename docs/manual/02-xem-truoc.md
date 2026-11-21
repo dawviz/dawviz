@@ -4,6 +4,10 @@
 
 Thẻ Xem trước là nơi xem video sẽ ra sao và chỉnh nhanh những thứ thuộc về bài nhạc: phong cách video, âm thanh, track nào hiện.
 
+## Đổi cỡ và thu gọn panel
+
+Giống thẻ Chỉnh sửa: kéo đường ranh giữa cột **Phong cách video**, khung video và **Bảng chỉnh** để đổi cỡ (nhấp đúp về cỡ mặc định). Nút panel ở đầu mỗi cột thu gọn cột đó thành một dải mỏng có tên chạy dọc; bấm dải để mở lại. Phím tắt: Ctrl+B (Phong cách video), Ctrl+Alt+B (Bảng chỉnh). Bấm tiêu đề một mục để gấp mục đó. Cỡ và trạng thái được nhớ riêng cho thẻ này.
+
 ## Phát bài
 
 Thanh phát nằm dưới khung xem trước.

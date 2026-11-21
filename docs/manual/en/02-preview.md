@@ -4,6 +4,10 @@
 
 The Preview tab shows what the video will look like and lets you make quick changes that belong to the song: video style, audio, which tracks show.
 
+## Resize and collapse panels
+
+Like the Editor tab: drag the border between the **Video styles** column, the video frame and the **Inspector** to resize (double-click for the default size). The panel button at the top of each column collapses it into a thin strip with its name running down; click the strip to open it again. Shortcuts: Ctrl+B (Video styles), Ctrl+Alt+B (Inspector). Click a section title to fold that section. Sizes and states are remembered separately for this tab.
+
 ## Playback
 
 The transport sits under the preview.

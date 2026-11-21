@@ -4,8 +4,8 @@ doc_title: "Định hướng hình ảnh: khung preview và giao diện web"
 section: "6. Việc tiếp theo đề xuất"
 path: "6. Việc tiếp theo đề xuất"
 chunk: 6-viec-tiep-theo-de-xuat.md
-source_lines: 414-420
-source_sha1: 4b6c40ad59
+source_lines: 415-421
+source_sha1: 7e6ce0b584
 ids: [D-57, REQ-EXPORT-00, REQ-UI-06, REQ-UI-07, REQ-UI-13, REQ-UI-15]
 ---
 ## 6. Việc tiếp theo đề xuất

@@ -27,11 +27,12 @@ dawviz/
 │     │  └─ theme-boot.js
 │     ├─ src/
 │     │  ├─ components/
-│     │  │  ├─ AnimateSection.tsx
+│     │  │  ├─ AnimationInspector.tsx
 │     │  │  ├─ AspectSwitch.tsx
 │     │  │  ├─ AudioPanel.tsx
 │     │  │  ├─ BackgroundSection.tsx
 │     │  │  ├─ DeviceLatency.tsx
+│     │  │  ├─ EaseGraph.tsx
 │     │  │  ├─ Editor.tsx
 │     │  │  ├─ EditorOverlay.tsx
 │     │  │  ├─ ExportDialog.tsx
@@ -39,16 +40,20 @@ dawviz/
 │     │  │  ├─ HistoryMenu.tsx
 │     │  │  ├─ Icons.tsx
 │     │  │  ├─ Inspector.tsx
+│     │  │  ├─ KeyframeTimeline.tsx
 │     │  │  ├─ LanguageSelect.tsx
+│     │  │  ├─ LiveLayout.tsx
 │     │  │  ├─ MissingMidiPanel.tsx
 │     │  │  ├─ Notices.tsx
 │     │  │  ├─ NumberField.tsx
+│     │  │  ├─ PanelChrome.tsx
 │     │  │  ├─ PitchField.tsx
 │     │  │  ├─ SceneCanvas.tsx
 │     │  │  ├─ SchemaPanel.tsx
 │     │  │  ├─ Select.tsx
 │     │  │  ├─ SessionSettings.tsx
 │     │  │  ├─ SliderField.tsx
+│     │  │  ├─ Splitter.tsx
 │     │  │  ├─ Stage.tsx
 │     │  │  ├─ StatusIcon.tsx
 │     │  │  ├─ StylePanel.tsx
@@ -56,6 +61,7 @@ dawviz/
 │     │  │  ├─ TextPanel.tsx
 │     │  │  ├─ ThemeSelect.tsx
 │     │  │  ├─ TimeField.tsx
+│     │  │  ├─ TimelinePanel.tsx
 │     │  │  ├─ TimeSections.tsx
 │     │  │  ├─ TrackPanel.tsx
 │     │  │  ├─ Transport.tsx
@@ -77,6 +83,8 @@ dawviz/
 │     │  │  ├─ a11y.ts
 │     │  │  ├─ animateFields.test.ts
 │     │  │  ├─ animateFields.ts
+│     │  │  ├─ animDiff.test.ts
+│     │  │  ├─ animDiff.ts
 │     │  │  ├─ audioAsset.test.ts
 │     │  │  ├─ audioAsset.ts
 │     │  │  ├─ audioEngine.test.ts
@@ -101,6 +109,8 @@ dawviz/
 │     │  │  ├─ csp.ts
 │     │  │  ├─ docSnapshot.test.ts
 │     │  │  ├─ docSnapshot.ts
+│     │  │  ├─ easeCurve.test.ts
+│     │  │  ├─ easeCurve.ts
 │     │  │  ├─ editorGeometry.test.ts
 │     │  │  ├─ editorGeometry.ts
 │     │  │  ├─ exportClient.test.ts
@@ -133,6 +143,8 @@ dawviz/
 │     │  │  ├─ numberInput.test.ts
 │     │  │  ├─ numberInput.ts
 │     │  │  ├─ paintDrag.ts
+│     │  │  ├─ panelLayout.test.ts
+│     │  │  ├─ panelLayout.ts
 │     │  │  ├─ parseInWorker.ts
 │     │  │  ├─ parserClient.test.ts
 │     │  │  ├─ parserClient.ts
@@ -149,6 +161,7 @@ dawviz/
 │     │  │  ├─ problems.ts
 │     │  │  ├─ projectPack.test.ts
 │     │  │  ├─ projectPack.ts
+│     │  │  ├─ sectionState.ts
 │     │  │  ├─ session.test.ts
 │     │  │  ├─ session.ts
 │     │  │  ├─ spectrumClient.test.ts
@@ -164,12 +177,17 @@ dawviz/
 │     │  │  ├─ theme.ts
 │     │  │  ├─ thumbnails.ts
 │     │  │  ├─ timeFormat.ts
+│     │  │  ├─ timeline.test.ts
+│     │  │  ├─ timeline.ts
+│     │  │  ├─ timelineRows.test.ts
+│     │  │  ├─ timelineRows.ts
 │     │  │  ├─ timeText.test.ts
 │     │  │  ├─ timeText.ts
 │     │  │  ├─ transportKeys.ts
 │     │  │  ├─ trustedTypes.ts
 │     │  │  ├─ undoKeys.test.ts
 │     │  │  ├─ undoKeys.ts
+│     │  │  ├─ usePanelLayout.ts
 │     │  │  ├─ usePref.ts
 │     │  │  ├─ userPresets.ts
 │     │  │  ├─ useStageWidth.test.ts
@@ -304,6 +322,7 @@ dawviz/
 │  │  │  ├─ fixtures/   # tệp mẫu
 │  │  │  ├─ golden/
 │  │  │  │  └─ paper-1x1.json
+│  │  │  ├─ animate-scale.test.ts
 │  │  │  ├─ animation.test.ts
 │  │  │  ├─ audioFeatures.test.ts
 │  │  │  ├─ background.test.ts
@@ -685,6 +704,7 @@ type KeyAnimation
 type Animation
 const isBinding = (a: Animation) =>
 const MAX_ANIMATIONS
+const MAX_SCALE   // Giới hạn của `scale` (%): 0 (biến mất) tới 2000.
 function animatablePaths(type: WidgetType): Map<string, 'number' | 'color'>   // Các đường dẫn animate được của một loại widget và kiểu giá trị của chúng.
 function sanitizeAnimate(S: Sanitizer, v: unknown, path: string, type: WidgetType): Record<string, Animation> | undefined   // Đọc `animate` của một widget. Mục sai bị bỏ kèm cảnh báo; không còn mục nào → undefined.
 interface BindCtx   // ───────────── tính giá trị mỗi khung ─────────────
@@ -1485,12 +1505,14 @@ Thành phần gốc (T-70, UI-DIRECTION 5.3 cấu trúc D + A + E): thanh trên 
 function App()
 ```
 
-#### `apps/web/src/components/AnimateSection.tsx`
+#### `apps/web/src/components/AnimationInspector.tsx`
 
-Mục "Hoạt hình" của widget đang chọn (T-22): mỗi thuộc tính số/màu (kể cả vị trí, cỡ, góc, độ đục) có thể chạy theo keyframe hoặc theo dữ liệu nhạc.
+Animation Inspector (UI-DIRECTION 5.3, DESIGN.md "Animation Inspector"): mục đầu của cột Thiết lập khi Timeline đang chọn keyframe
 
 ```text
-function AnimateSection({ n, widget, getTime, disabled, onChange }: { n: number; widget: WidgetSpec; getTime(): number; disabled?: boolean; onChange(path: string, v: Animation | null, key?: string): void })
+interface AnimationInspectorProps
+function hasInspectorTarget(widget: WidgetSpec, sel: KeySel): boolean   // Có gì để hiện không (để cột Thiết lập biết có đánh số thêm một mục hay không).
+function AnimationInspector({ n, widget, sel, tempoMap, locked, getTime, onAnimate, onAnimateMany, onSel, gesture }: AnimationInspectorProps)
 ```
 
 #### `apps/web/src/components/AspectSwitch.tsx`
@@ -1527,6 +1549,14 @@ Thẻ Cài đặt, mục "Độ trễ thiết bị" (T-82): hồ sơ thiết b�
 
 ```text
 function DeviceLatency({ prefs, onChange, makeCalibration = () => createCalibration(browserDeps) }: { prefs: DevicePrefs; onChange(p: DevicePrefs): void; makeCalibration?(): Calibration })
+```
+
+#### `apps/web/src/components/EaseGraph.tsx`
+
+Đồ thị đường cong của Animation Inspector (DESIGN.md "Animation Inspector"): trục ngang là thời gian của đoạn (0 → 1), trục dọc là tiến độ
+
+```text
+function EaseGraph({ ease, mixed, disabled, onChange, onBegin, onEnd }: { ease: EaseSpec | undefined; /** Nhiều keyframe đang chọn có đường cong khác nhau: vẽ mờ, kéo tay nắm sẽ áp cho tất cả. */ mixed?: boolean; disabled?: boolean; onChange(b: Bezier): void; onBegin(): void; onEnd(): void; })
 ```
 
 #### `apps/web/src/components/Editor.tsx`
@@ -1617,6 +1647,18 @@ const Duplicate = (p: P) =>
 const Trash = (p: P) =>
 const Download = (p: P) =>
 const Close = (p: P) =>
+const ChevronLeft = (p: P) =>   // ── Panel và timeline (Editor) ──
+const PanelLeft = (p: P) =>   // Panel bên trái / phải / dưới: khung có một dải được tô (nút thu gọn, mở panel).
+const PanelRight = (p: P) =>
+const PanelBottom = (p: P) =>
+const Stopwatch = (p: P) =>   // Đồng hồ bấm giờ: bật/tắt hoạt hình của một thuộc tính (như After Effects).
+const Diamond = ({ className = 'h-4 w-4', filled }: P & { filled?: boolean }) =>
+const KeyPrev = ({ className = 'h-4 w-4' }: P) =>   // Tới keyframe trước/sau: tam giác đặc (như bộ điều hướng keyframe của After Effects).
+const KeyNext = ({ className = 'h-4 w-4' }: P) =>
+const ZoomIn = (p: P) =>
+const ZoomOut = (p: P) =>
+const FitWidth = (p: P) =>   // Vừa khung: hai mũi tên chỉ vào nhau theo chiều ngang.
+const Filter = (p: P) =>   // Lọc: chỉ hiện thuộc tính đang animate.
 ```
 
 #### `apps/web/src/components/Inspector.tsx`
@@ -1630,12 +1672,35 @@ function ResetButton({ label, changed, disabled, onReset, text }: { label: strin
 function TickField({ label, checked, onChange, reference, testId, disabled, strong }: { label: string; checked: boolean; onChange(v: boolean): void; reference?: boolean; testId?: string; disabled?: boolean; strong?: boolean })   // Ô tick kèm ↺ (về giá trị `reference`; vắng thì không có ↺). Nhãn ở trong <label>, ↺ đứng ngoài để bấm ↺ không…
 ```
 
+#### `apps/web/src/components/KeyframeTimeline.tsx`
+
+Thân panel Timeline (UI-DIRECTION 5.3, DESIGN.md "Timeline"): bên trái là cây thuộc tính của widget đang chọn (đồng hồ bật hoạt hình, tên ngắn,
+
+```text
+interface KeySel   // Vùng chọn của Timeline: keyframe (`đường dẫn#chỉ số`) và dòng đang chọn (id của dòng, lib/timelineRows.ts; đí…
+const NO_SEL
+interface KeyframeTimelineProps
+function KeyframeTimeline({ widget, tempoMap, duration, playback, locked, sel, onSel, onAnimate, onAnimateMany, gesture, tree, onTree, onTreeReset }: KeyframeTimelineProps)
+```
+
 #### `apps/web/src/components/LanguageSelect.tsx`
 
 Ô chọn ngôn ngữ giao diện.
 
 ```text
 function LanguageSelect()
+```
+
+#### `apps/web/src/components/LiveLayout.tsx`
+
+Bố cục "đang thấy" của widget tại vạch phát (D-64): khi vị trí/cỡ/góc có keyframe hoặc chạy theo nhạc, khung chọn trên canvas và các ô X/Y/W/H/Xoay
+
+```text
+interface LiveCtx
+const hasLayoutAnim = (w: WidgetSpec) =>
+function layoutAt(w: WidgetSpec, ctx: Omit<LiveCtx, 'playback'>, canvas: SceneDocument['canvas'], t: number): WidgetLayout   // Bố cục của `w` tại `t` (chỉ phần layout.* được áp; thuộc tính khác giữ nguyên).
+function LiveLayout({ w, ctx, canvas, children }: { w: WidgetSpec; ctx: LiveCtx; canvas: SceneDocument['canvas']; children(l: WidgetLayout): ReactNode })   // Render-prop: con nhận bố cục tại vạch phát của widget.
+function LiveOverlay({ ctx, scene, ...rest }: { ctx: LiveCtx } & Parameters<typeof EditorOverlay>[0])   // Lớp chỉnh sửa trên khung, với widget đang animate bố cục được đặt đúng chỗ tại vạch phát.
 ```
 
 #### `apps/web/src/components/MissingMidiPanel.tsx`
@@ -1660,6 +1725,15 @@ function Notices({ problems, basic = false }: { problems: Problem[]; basic?: boo
 
 ```text
 function NumberField({ id, label, value, onChange, spec, className = '', disabled, describedBy, range, scrub = true }: { id?: string; label: string; value: number; onChange(v: number): void; spec: NumberSpec; className?: string; disabled?: boolean; describedBy?: string; range?: [number, number]; scrub?: boolean })   // `disabled`: ô bị khoá (vd. vạch phát khi bật bàn phím, T-71); `describedBy`: id đoạn chú thích giải thích lý …
+```
+
+#### `apps/web/src/components/PanelChrome.tsx`
+
+Phần khung dùng chung của panel đổi cỡ (Editor và Xem trước, DESIGN.md "Dải panel thu gọn"): nút thu gọn và dải mỏng của panel đã thu gọn.
+
+```text
+function PanelCollapse({ label, icon, onClick, testId }: { label: string; icon: ReactNode; onClick(): void; testId: string })   // Nút thu gọn panel (chỉ biểu tượng; tên và phím tắt ở chú thích).
+function Rail({ side, label, title, onOpen, testId }: { side: 'left' | 'right'; label: string; title: string; onOpen(): void; testId: string })   // Dải mỏng của panel đã thu gọn: cả dải là một nút mở lại, tên panel chạy dọc (dưới 1024 px: một hàng ngang).
 ```
 
 #### `apps/web/src/components/PitchField.tsx`
@@ -1711,6 +1785,15 @@ Dòng thông số số dùng chung cho mọi bảng (REQ-UI-15, D-57): nhãn | �
 
 ```text
 function SliderField({ id, label, value, min, max, step, hardMin, hardMax, disabled, describedBy, reset, onChange }: { id: string; label: string; value: number; min: number; max: number; step: number; hardMin?: number; hardMax?: number; disabled?: boolean; describedBy?: string; reset?: number; onChange(v: number): void })   // `disabled` + `describedBy`: khoá ô, nối với chú thích lý do. `reset`: giá trị tham chiếu (bộ dựng sẵn đang ch…
+```
+
+#### `apps/web/src/components/Splitter.tsx`
+
+Thanh chia panel (DESIGN.md "Panel đổi cỡ", mẫu WAI-ARIA Window Splitter): kéo để đổi cỡ, nhấp đúp về cỡ mặc định,
+
+```text
+interface SplitterProps
+function Splitter({ axis, grow, label, value, min, max, controls, onResize, onReset, onToggle, title, className = '', style, testId }: SplitterProps)
 ```
 
 #### `apps/web/src/components/Stage.tsx`
@@ -1772,7 +1855,16 @@ function AppearanceSettings({ pref, onChange }: { pref: ThemePref; onChange(p: T
 Ô nhập thời gian `m:ss` / `m:ss.s` / giây (T-81). Enter hoặc rời ô để áp; sai cú pháp thì trả về giá trị cũ; Esc huỷ.
 
 ```text
-function TimeField({ id, label, value, onChange, emptyText, min = 0, max = 86400, className = '' }: { id?: string; label: string; value: number | null; onChange(v: number | null): void; /** Có thì cho phép ô trống (= null) và hiện chữ này làm gợi ý. */ emptyText?: string; min?: number; max?: number; className?: string; })
+function TimeField({ id, label, value, onChange, emptyText, min = 0, max = 86400, className = '', disabled }: { id?: string; label: string; value: number | null; onChange(v: number | null): void; disabled?: boolean; /** Có thì cho phép ô trống (= null) và hiện chữ này làm gợi ý. */ emptyText?: string; min?: number; max?: number; className?: string; })
+```
+
+#### `apps/web/src/components/TimelinePanel.tsx`
+
+Panel "Timeline và keyframe" ở đáy thẻ Editor (UI-DIRECTION 5.3, DESIGN.md "Timeline"): thanh tiêu đề luôn hiện (thu gọn/mở bằng nút
+
+```text
+interface TimelinePanelProps
+function TimelinePanel({ open, onOpen, toggleHint, widget, widgetName, selectedCount, hasProject, children }: TimelinePanelProps)
 ```
 
 #### `apps/web/src/components/TimeSections.tsx`
@@ -1822,7 +1914,7 @@ Cột "Video styles" / "Phong cách video" (UI-DIRECTION 5.3): chọn phong các
 re-export { VIDEO_STYLES, videoStyleBase }
 function isEdited(id: string, base: NoteStyle): boolean   // Kiểu nốt hiện tại còn đúng như phong cách đã chọn không (để hiện "đã chỉnh").
 interface UserPresets   // Cột phong cách + preset của người dùng. Mỗi ô (dựng sẵn hay của người dùng) giữ bản chỉnh dở của riêng nó khi…
-function VideoStyles({ value, edited, onPick, thumb, presets }: { value: string; edited: boolean; onPick(id: string): void; thumb?(id: string): string | undefined; presets?: UserPresets })   // `edited`: ô đang chọn đã được chỉnh so với bản gốc.
+function VideoStyles({ value, edited, onPick, thumb, presets, headerAction }: { value: string; edited: boolean; onPick(id: string): void; thumb?(id: string): string | undefined; presets?: UserPresets; /** Nút ở cuối hàng tiêu đề (vd. thu gọn cột). */ headerAction?: ReactNode })   // `edited`: ô đang chọn đã được chỉnh so với bản gốc.
 ```
 
 #### `apps/web/src/components/WidgetSettings.tsx`
@@ -1879,6 +1971,15 @@ function removeKey(a: KeyAnimation, i: number): KeyAnimation | null   // Bỏ ke
 function keyTimeText(at: Key['at']): string   // Mô tả mốc của keyframe không phải giây (chỉ đọc trong giao diện).
 const isKeyAnimation = (a: Animation) =>
 const SOURCES
+```
+
+#### `apps/web/src/lib/animDiff.ts`
+
+So sánh hai hoạt hình để nhãn lịch sử nói đúng điều đã đổi (D-64): thêm/xoá/dời keyframe, đổi giá trị, đường cong, cách đi tiếp, lặp,
+
+```text
+type AnimChange
+function diffAnimate(before: Record<string, Animation> | undefined, after: Record<string, Animation> | undefined): AnimChange[]   // Mọi thay đổi giữa hai bảng `animate` (đường dẫn → hoạt hình), theo thứ tự đường dẫn.
 ```
 
 #### `apps/web/src/lib/audioAsset.ts`
@@ -2088,6 +2189,8 @@ const layerOrder = (s: SceneDocument) =>   // Thứ tự lớp như danh sách L
 const moveLayer = (d: Doc, widgetId: string, to: number) =>   // Đưa lớp `widgetId` tới vị trí `to` trong danh sách Lớp (0 = trên cùng): kéo thả, lên/xuống một bậc, lên trên/…
 const setWidgetVisibility = (d: Doc, widgetId: string, next: WidgetVisibility | null, key?: string) =>   // Đặt khoảng hiển thị theo thời gian của widget (REQ-GRAPHICS-14); `null` = bỏ (hiện suốt bài). `key` gộp các l…
 const setWidgetAnimate = (d: Doc, widgetId: string, path: string, next: Animation | null, key?: string) =>   // Đặt hoạt hình của MỘT thuộc tính widget (T-22); `null` = bỏ. `key` gộp các lần chỉnh liên tiếp một ô thành mộ…
+interface AnimEdit   // Một lần sửa gồm bố cục tĩnh và/hoặc nhiều hoạt hình của một widget (`null` = bỏ hoạt hình đường dẫn đó).
+const editWidgetAnimation = (d: Doc, edits: Record<string, AnimEdit>, key?: string) =>   // Sửa bố cục và nhiều hoạt hình của một hay nhiều widget trong MỘT lệnh (D-64): kéo hình thoi Vị trí (x + y), k…
 const setWidgetMotion = (d: Doc, widgetId: string, next: WidgetMotion | null, key?: string) =>   // Đặt chuyển động của widget (vào, ra, lặp theo nhịp; mọi loại widget); `null` = bỏ. `key` gộp các lần chỉnh li…
 const setPhases = (d: Doc, phases: Phase[], key?: string) =>   // Đặt danh sách phase của bài (đã sắp theo `start`, tên không rỗng). Rỗng = bỏ hết.
 const setTonic = (d: Doc, tonic: number | null) =>   // Đặt nốt chủ của bài (0 = C … 11 = B); `null` = bỏ (chỗ giữ `{bass}` hiện tên nốt thay vì bậc).
@@ -2118,6 +2221,25 @@ interface WorkspaceJson
 const toWorkspaceJson = (d: Doc, tempoDraft?: TempoDraft | null) =>
 interface Applied
 function applyWorkspace(base: Doc, sceneRaw: unknown, wsRaw: unknown, trackIds: string[]): Applied   // Dựng Doc từ JSON đã lưu. `base` cho các giá trị mặc định (store hiện tại); `trackIds` là track của dự án vừa …
+```
+
+#### `apps/web/src/lib/easeCurve.ts`
+
+Logic thuần của đồ thị đường cong trong Animation Inspector (DESIGN.md "Animation Inspector"): cubic-bezier tương đương của các
+
+```text
+type Bezier
+const LINEAR
+const DEFAULT_BEZIER   // Điểm xuất phát khi người dùng bắt đầu kéo tay nắm từ một đường cong không có bezier tương đương (elastic, bou…
+const EASE_BEZIER   // Cubic-bezier tương đương (gần đúng) của các easing Penner có thể biểu diễn bằng một bezier (easings.net).
+const Y_RANGE   // Giới hạn tay nắm: x trong [0, 1] (bắt buộc để đường cong là hàm của thời gian), y trong [-1, 2] (cho phép vượ…
+const clampBezier = (b: readonly number[]) =>
+function bezierOf(ease: EaseSpec | undefined): Bezier | null   // Bezier của một easing: chưa đặt = đều; tên có trong bảng; `{cubicBezier}`. Không biểu diễn được (elastic, bou…
+const easeName = (ease: EaseSpec | undefined) =>   // Tên để hiện trong ô chọn: tên easing, `hold`, hoặc `custom` (bezier riêng và mọi dạng đối tượng khác).
+const sameEase = (a: EaseSpec | undefined, b: EaseSpec | undefined) =>   // Hai easing giống nhau (so sánh theo nội dung).
+function easeSamples(ease: EaseSpec | undefined, n = 64): [number, number][]   // Lấy mẫu đường cong thật (đúng hàm Render Core dùng), n + 1 điểm [x, y] trên [0, 1].
+function graphRange(samples: readonly [number, number][], bez: Bezier | null): [number, number]   // Miền trục y của đồ thị: luôn chứa [0, 1], nới theo đường cong và tay nắm, thêm lề 8%.
+function common<T>(xs: readonly T[], eq: (a: T, b: T) => boolean = (a, b) => a === b): T | 'mixed' | undefined   // Giá trị chung của nhiều phần tử: giống nhau hết → giá trị đó; khác nhau → 'mixed'; rỗng → undefined.
 ```
 
 #### `apps/web/src/lib/editorGeometry.ts`
@@ -2571,6 +2693,28 @@ const clickIsKeyboard = (e: { detail: number }) =>   // Nút chỉ nên xử lý
 function startPaintDrag(e: { button: number; isPrimary: boolean; target: EventTarget; clientX: number; clientY: number }, o: PaintOptions): void
 ```
 
+#### `apps/web/src/lib/panelLayout.ts`
+
+Bố cục panel đổi cỡ (UI-DIRECTION 5.3, DESIGN.md "Panel đổi cỡ"). Thẻ Editor: cột Lớp, cột Thiết lập, panel Timeline ở đáy và cột cây thuộc tính
+
+```text
+type PanelId
+type CollapsibleId
+interface PanelLayout
+const PANEL_LIMITS
+const DEFAULT_LAYOUT
+interface Profile   // Cỡ mặc định và giới hạn theo thẻ. Xem trước: cột trái là Phong cách video (ảnh thu nhỏ co theo bề rộng), cột …
+const PROFILES
+const RAIL   // Cỡ khi thu gọn: dải dọc chứa nút mở (cột) và thanh tiêu đề (timeline).
+const STAGE_MIN   // Sân khấu luôn còn tối thiểu chừng này (px) để khung preview không bị bóp mất.
+function parseLayout(raw: unknown, pf: Profile = PROFILES.editor): PanelLayout   // Đọc bố cục đã lưu; trường thiếu hoặc sai lấy mặc định, số ngoài giới hạn bị kẹp.
+const setSize = (l: PanelLayout, id: PanelId, v: number, pf: Profile = PROFILES.editor) =>   // Đặt cỡ một panel (kẹp trong giới hạn của nó).
+const toggle = (l: PanelLayout, id: CollapsibleId, open: boolean) =>
+const resetSize = (l: PanelLayout, id: PanelId, pf: Profile = PROFILES.editor) =>
+interface Resolved
+function resolveLayout(l: PanelLayout, view: { width: number; height: number }, advanced: boolean, pf: Profile = PROFILES.editor): Resolved   // Cỡ thật để vẽ trong khung `view` (px): panel thu gọn còn dải RAIL/TIMELINE_BAR; nếu cửa sổ hẹp tới mức sân kh…
+```
+
 #### `apps/web/src/lib/parseInWorker.ts`
 
 Client parse thật: tạo Worker từ URL do Vite sinh, qua chính sách Trusted Types (NFR-SEC-06).
@@ -2675,6 +2819,15 @@ function isSafePackPath(p: string): boolean   // Đường dẫn trong ZIP có a
 async function sha256Hex(bytes: Uint8Array): Promise<string>
 async function buildPack(input: PackInput): Promise<Uint8Array>
 async function readPack(bytes: Uint8Array, limitsIn: Partial<PackLimits> = {}): Promise<PackContents>
+```
+
+#### `apps/web/src/lib/sectionState.ts`
+
+Mục nào của inspector đang thu gọn (theo id mục, dùng chung Xem trước và Editor), nhớ qua localStorage (lib/prefs.ts).
+
+```text
+function setSectionOpen(id: string, open: boolean): void
+function useSectionOpen(id: string): [boolean, (open: boolean) => void]
 ```
 
 #### `apps/web/src/lib/session.ts`
@@ -2815,6 +2968,53 @@ function formatClock(sec: number): string   // `m:ss.mmm`, ví dụ 95.0834 → 
 function bpmAt(tempoMap: readonly TempoPoint[], t: number): number | null   // BPM đang có hiệu lực tại thời điểm t (mốc tempo cuối cùng có timeSeconds ≤ t); không có mốc → null.
 ```
 
+#### `apps/web/src/lib/timeline.ts`
+
+Logic thuần của panel Timeline và keyframe (UI-DIRECTION 5.3, DESIGN.md "Timeline"): đổi toạ độ ↔ thời gian, thước, thu phóng quanh con trỏ,
+
+```text
+const ROW_H   // Chiều cao một hàng thuộc tính và hàng thước (px). Hàng = vùng bấm tối thiểu 24 px (DESIGN.md, 24-Pixel Hit Ru…
+const MAX_PPS   // Thu phóng: px mỗi giây, lớn nhất (đủ để chỉnh từng khung 1/60 s). Nhỏ nhất là "vừa khung" (cả bài vừa bề rộng…
+const DRAG_SLOP   // Bước lệch khi kéo dưới mức này (px) thì vẫn là nhấp, không phải kéo.
+const SNAP_PX   // Khoảng bắt dính (px trên màn hình).
+const SAME_TIME   // Hai mốc cách nhau dưới mức này (giây) coi là cùng một chỗ (keyframe "tại vạch phát").
+const timeToX = (t: number, pps: number) =>
+const xToTime = (x: number, pps: number, duration: number) =>
+const fitPps = (laneWidth: number, duration: number) =>   // Thu phóng "vừa khung": cả bài nằm vừa bề rộng làn (thời lượng 0 → 100 px/s).
+const clampPps = (pps: number, fit: number) =>
+function zoomAround(pps: number, factor: number, anchorX: number, scrollLeft: number, fit: number):    // Thu phóng giữ nguyên thời điểm dưới con trỏ: trả px/s mới và vị trí cuộn mới. `anchorX` là toạ độ con trỏ tín…
+const rulerStep = (pps: number, minPx = 72) =>   // Bước vạch chính của thước: bước nhỏ nhất mà hai nhãn cách nhau ít nhất `minPx`.
+function rulerTicks(from: number, to: number, step: number): number[]   // Các mốc vạch chính trong [from, to] (giây), kể cả 0.
+function rulerLabel(t: number, step: number): string   // Nhãn thước: m:ss, thêm phần lẻ khi bước dưới 1 giây (đủ chữ số cho bước đó).
+function keySecs(a: KeyAnimation, tempoMap: readonly TempoPoint[]): number[]   // Giây của từng keyframe (mốc theo nhạc đổi qua tempo map; mốc hỏng → NaN).
+function valueAt(a: KeyAnimation, t: number, tempoMap: readonly TempoPoint[]): number | string   // Giá trị của hoạt hình keyframe tại `t` (đúng như Render Core vẽ).
+function beatTimes(tempoMap: readonly TempoPoint[], duration: number): number[]   // Mốc phách (giây) trong [0, duration]: đích bắt dính theo nhạc. Tối đa 20 000 mốc.
+function snapTime(t: number, targets: readonly number[], pps: number, tolPx = SNAP_PX):    // Bắt dính: đích gần nhất trong SNAP_PX px (theo thu phóng hiện tại); không có thì giữ nguyên.
+function moveKeys(a: KeyAnimation, idx: readonly number[], dt: number, duration: number, tempoMap: readonly TempoPoint[]):    // Dời các keyframe `idx` của một hoạt hình thêm `dt` giây (kẹp trong [0, duration]). Mốc theo nhạc bị dời trở t…
+function clampShift(times: readonly number[], dt: number, duration: number): number   // Khoảng dời hợp lệ: kẹp `dt` để không keyframe nào ra ngoài [0, duration].
+function removeKeys(a: KeyAnimation, idx: readonly number[]): KeyAnimation | null   // Bỏ nhiều keyframe; hết keyframe thì null (bỏ cả hoạt hình).
+const keyRef = (path: string, i: number) =>   // Vùng chọn keyframe: khoá `đường dẫn#chỉ số`.
+function parseKeyRef(ref: string): 
+function groupRefs(refs: Iterable<string>): Map<string, number[]>   // Nhóm vùng chọn theo thuộc tính: đường dẫn → chỉ số (tăng dần).
+function keysInBox(rows: readonly { path: string; times: readonly number[] }[], r0: number, r1: number, t0: number, t1: number): string[]   // Hàng có keyframe trong hộp chọn: hàng thứ `row` (từ 0), keyframe ở giây `times`. Hộp tính bằng hàng [r0, r1] …
+function prevKey(times: readonly number[], t: number): number | null   // Keyframe trước/sau `t` (bỏ qua keyframe đúng tại `t`); không có thì null.
+function nextKey(times: readonly number[], t: number): number | null
+const keyAt = (times: readonly number[], t: number) =>   // Chỉ số keyframe nằm tại `t` (trong SAME_TIME), hoặc -1.
+```
+
+#### `apps/web/src/lib/timelineRows.ts`
+
+Các dòng của Timeline (DESIGN.md "Timeline"): một dòng có thể gắn nhiều đường dẫn hoạt hình (Vị trí = layout.x + layout.y, như After Effects),
+
+```text
+type GroupId
+interface RowDef
+function timelineRows(type: WidgetType, animate: Readonly<Record<string, Animation>> = {}): RowDef[]   // Dòng của một loại widget theo thứ tự hiện; `animate` để quyết định có hiện dòng Rộng/Cao (chỉ khi đã animate).
+const rowOfPath = (rows: readonly RowDef[], path: string) =>   // Dòng chứa đường dẫn `path` (vd. layout.y → dòng Vị trí).
+interface VKey
+function rowKeys(row: RowDef, times: ReadonlyMap<string, readonly number[]>): VKey[]   // Gộp keyframe của các đường dẫn trong một dòng thành hình thoi: keyframe cách nhau ≤ SAME_TIME là một hình tho…
+```
+
 #### `apps/web/src/lib/timeText.ts`
 
 Đọc/ghi thời gian người dùng gõ cho khoảng hiển thị và phase (T-81): "90", "90.5", "1:30", "1:30.25", "1:02:03".
@@ -2851,6 +3051,16 @@ function undoAction(e: Pick<KeyboardEvent, 'key' | 'ctrlKey' | 'metaKey' | 'shif
 function bindUndoKeys(target: Pick<Window, 'addEventListener' | 'removeEventListener'>, store: Undoable): () => void
 const isMac = () =>   // macOS dùng Cmd, nơi khác dùng Ctrl (chỉ để hiển thị; phím thật chấp nhận cả hai).
 function shortcutLabels(mac = isMac()): 
+```
+
+#### `apps/web/src/lib/usePanelLayout.ts`
+
+Trạng thái bố cục panel (thẻ Editor và thẻ Xem trước): đọc/ghi localStorage (lib/prefs.ts), đo vùng của thẻ để kẹp cỡ theo cửa sổ (lib/panelLayout.ts).
+
+```text
+interface PanelLayoutApi
+function usePanelLayout(advanced: boolean, which: 'editor' | 'preview' = 'editor'): PanelLayoutApi
+function usePanelShortcuts(panels: PanelLayoutApi, active: boolean, timeline: boolean): void   // Phím tắt thu gọn/mở panel khi thẻ đang mở và không gõ chữ. `timeline` = có panel Timeline (thẻ Editor).
 ```
 
 #### `apps/web/src/lib/usePref.ts`
@@ -3038,6 +3248,7 @@ type SpectrumOut
 
 ## 4. Tệp test
 
+- `apps/web/src/lib/animDiff.test.ts`
 - `apps/web/src/lib/animateFields.test.ts`
 - `apps/web/src/lib/audioAsset.test.ts`
 - `apps/web/src/lib/audioEngine.test.ts`
@@ -3049,6 +3260,7 @@ type SpectrumOut
 - `apps/web/src/lib/clock.test.ts`
 - `apps/web/src/lib/csp.test.ts`
 - `apps/web/src/lib/docSnapshot.test.ts`
+- `apps/web/src/lib/easeCurve.test.ts`
 - `apps/web/src/lib/editorGeometry.test.ts`
 - `apps/web/src/lib/exportClient.test.ts`
 - `apps/web/src/lib/exportDiagnostics.test.ts`
@@ -3063,6 +3275,7 @@ type SpectrumOut
 - `apps/web/src/lib/masterClock.test.ts`
 - `apps/web/src/lib/notation.test.ts`
 - `apps/web/src/lib/numberInput.test.ts`
+- `apps/web/src/lib/panelLayout.test.ts`
 - `apps/web/src/lib/parserClient.test.ts`
 - `apps/web/src/lib/pitchText.test.ts`
 - `apps/web/src/lib/playback.test.ts`
@@ -3077,12 +3290,15 @@ type SpectrumOut
 - `apps/web/src/lib/textRef.test.ts`
 - `apps/web/src/lib/theme.test.ts`
 - `apps/web/src/lib/timeText.test.ts`
+- `apps/web/src/lib/timeline.test.ts`
+- `apps/web/src/lib/timelineRows.test.ts`
 - `apps/web/src/lib/undoKeys.test.ts`
 - `apps/web/src/lib/useStageWidth.test.ts`
 - `apps/web/src/lib/widgetFields.test.ts`
 - `apps/web/src/lib/workspaceStore.test.ts`
 - `apps/web/test/app.test.tsx`
 - `apps/web/test/components.test.tsx`
+- `packages/render-core/test/animate-scale.test.ts`
 - `packages/render-core/test/animation.test.ts`
 - `packages/render-core/test/audioFeatures.test.ts`
 - `packages/render-core/test/background.test.ts`
@@ -3118,4 +3334,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 1357 ký hiệu công khai -->
+<!-- 10 thư mục src, 1457 ký hiệu công khai -->

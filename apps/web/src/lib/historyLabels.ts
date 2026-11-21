@@ -1,9 +1,12 @@
 // Nhãn danh sách lịch sử (T-07 bước 2b). Dựng LÚC HIỂN THỊ từ loại lệnh + tham số + giá trị trước/sau, qua locales/,
 // nên đổi ngôn ngữ thì nhãn đổi theo (không lưu chuỗi đã dịch trong lịch sử). Ví dụ: "Độ đục 0,70 → 0,85".
 import type { I18n } from '@dawviz/i18n';
-import { pitchName, pitchClassName } from '@dawviz/render-core';
+import { pitchName, pitchClassName, type Key } from '@dawviz/render-core';
 import type { Cmd } from './commands.ts';
 import type { History } from './store.ts';
+import { diffAnimate, type AnimChange } from './animDiff.ts';
+import { keyTimeText } from './animateFields.ts';
+import { formatClock } from './timeFormat.ts';
 
 export interface LabelCtx { i18n: Pick<I18n, 't' | 'has' | 'number'>; trackName(id: string): string; widgetName?(id: string): string }
 
@@ -44,6 +47,40 @@ function changeLabel(c: LabelCtx, what: string, fields: Record<string, string>, 
     return where ? i18n.t('web.hist.changeIn', { where, name, from, to }) : i18n.t('web.hist.change', { name, from, to });
   }
   return i18n.t('web.hist.many', { what: where ? `${where} · ${what}` : what, n: keys.length });
+}
+
+/** Tên dòng của Timeline cho một đường dẫn hoạt hình (Vị trí gộp x + y); đường dẫn khác hiện đúng tên mã. */
+const ROW_OF: Record<string, string> = { 'layout.x': 'position', 'layout.y': 'position', scale: 'scale', 'layout.rotation': 'rotation', opacity: 'opacity', 'layout.width': 'width', 'layout.height': 'height' };
+/**
+ * Nhãn của một lần sửa hoạt hình: nói rõ thêm/xoá/dời keyframe, đổi giá trị, đường cong… kèm thời điểm và giá trị (D-64).
+ * Nhiều thay đổi cùng loại trên cùng một dòng (Vị trí: X và Y) gộp thành một câu; còn lại ghi số thay đổi.
+ */
+function animLabel(c: LabelCtx, widget: string, changes: AnimChange[]): string | null {
+  const { i18n } = c;
+  if (!changes.length) return null;
+  const rowOf = (path: string) => ROW_OF[path] ?? path;
+  const rows = new Set(changes.map((x) => rowOf(x.path))), kinds = new Set(changes.map((x) => x.kind));
+  if (rows.size > 1 || kinds.size > 1) return i18n.t('web.hist.animMany', { widget, n: changes.length });
+  const row = [...rows][0], first = changes[0];
+  const what = ROW_OF[first.path] && i18n.has(`web.timeline.row.${row}`) ? i18n.t(`web.timeline.row.${row}`) : first.path;
+  const time = (at: Key['at']) => ('sec' in at ? formatClock(at.sec) : keyTimeText(at));
+  const num = (v: unknown) => (typeof v === 'number' ? i18n.number(Math.round(v * 100) / 100) : String(v));
+  const join = (f: (x: AnimChange) => string) => changes.map(f).join(', ');
+  const vars = { what, widget };
+  switch (first.kind) {
+    case 'start': return i18n.t('web.hist.animate', { widget, property: what });
+    case 'stop': return i18n.t('web.hist.animateOff', { widget, property: what });
+    case 'toKeys': return i18n.t('web.hist.anim.toKeys', vars);
+    case 'toBind': return i18n.t('web.hist.anim.toBind', vars);
+    case 'bind': return i18n.t('web.hist.anim.bind', vars);
+    case 'loop': return i18n.t('web.hist.anim.loop', vars);
+    case 'add': return i18n.t('web.hist.anim.add', { ...vars, time: time(first.at), value: join((x) => (x.kind === 'add' ? num(x.value) : '')) });
+    case 'remove': return i18n.t('web.hist.anim.remove', { ...vars, time: time(first.at) });
+    case 'move': return i18n.t('web.hist.anim.move', { ...vars, from: time(first.at), to: time((first as Extract<AnimChange, { kind: 'move' }>).to) });
+    case 'value': return i18n.t('web.hist.anim.value', { ...vars, time: time(first.at), from: join((x) => (x.kind === 'value' ? num(x.from) : '')), to: join((x) => (x.kind === 'value' ? num(x.to) : '')) });
+    case 'curve': return i18n.t('web.hist.anim.curve', { ...vars, time: time(first.at) });
+    case 'interp': return i18n.t('web.hist.anim.interp', { ...vars, time: time(first.at) });
+  }
 }
 
 /** Tên điểm neo: một trong 9 điểm chuẩn ("Tâm", "Trên trái"…) hoặc phần trăm. */
@@ -123,7 +160,16 @@ export function describeCommand(cmd: Cmd, c: LabelCtx): string {
     case 'duplicateWidgets': return i18n.t('web.hist.duplicate', { n: Number(p.n) });
     case 'removeWidgets': return i18n.t('web.hist.removeWidget', { n: Number(p.n) });
     case 'renameWidget': return cmd.after === null ? i18n.t('web.hist.renameReset') : i18n.t('web.hist.rename', { name: String(cmd.after) });
-    case 'setWidgetAnimate': return i18n.t(cmd.after ? 'web.hist.animate' : 'web.hist.animateOff', { widget, property: String(p.property) });
+    case 'setWidgetAnimate': {
+      const path = String(p.property), as = (v: unknown) => (v ? { [path]: v as never } : {});
+      return animLabel(c, widget, diffAnimate(as(cmd.before), as(cmd.after))) ?? i18n.t(cmd.after ? 'web.hist.animate' : 'web.hist.animateOff', { widget, property: path });
+    }
+    case 'editWidgetAnimation': {
+      const b = obj(cmd.before), a = obj(cmd.after), ids = Object.keys(a);
+      if (ids.length !== 1) return i18n.t('web.hist.animWidgets', { n: ids.length });
+      const id = ids[0], bw = obj(b[id]), aw = obj(a[id]);
+      return animLabel(c, widget, diffAnimate(bw.animate as never, aw.animate as never)) ?? layoutLabel(c, widget, bw.layout, aw.layout);
+    }
     case 'setWidgetMotion': return i18n.t(cmd.after ? 'web.hist.motion' : 'web.hist.motionOff', { widget });
     case 'setWidgetVisibility': return i18n.t(cmd.after ? 'web.hist.visibility' : 'web.hist.visibilityOff', { widget });
     case 'setBackgroundSpec': return changeLabel(c, i18n.t('web.hist.what.background'), { fit: 'web.bg.fit', opacity: 'web.bg.opacity', dim: 'web.bg.dim' }, cmd);

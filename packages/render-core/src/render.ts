@@ -16,7 +16,7 @@ import { DEFAULT_TEXT_STYLES, TEXT_METRICS, type PlacedRun, type RichText, type 
 import { normalizeAngle } from './snap.ts';
 import { visibilityAlpha } from './visibility.ts';
 import { resolveAnimated } from './animation.ts';
-import { activeRange, hasMotion, widgetFxAt, type WidgetFx } from './widgetMotion.ts';
+import { activeRange, hasMotion, NEUTRAL_WFX, widgetFxAt, type WidgetFx } from './widgetMotion.ts';
 import { spectrumRenderer } from './spectrum.ts';
 import { particleRenderer, particlesInCanvasSpace } from './particles.ts';
 import { DEFAULT_BACKGROUND, placeImage, type BackgroundImage } from './background.ts';
@@ -171,9 +171,11 @@ export function layoutFrame(scene: SceneDocument, derived0: Derived, ast: Unifie
     if (k <= 0) continue; // ngoài khoảng hiển thị: không dựng gì
     const wTracks = tracksFor(w, derived.index);
     let we = w;
-    if (w.animate) { const r = resolveAnimated(w, { ast, derived, tracks: wTracks, t }, scene.canvas); we = r.widget; k *= r.opacity; if (k <= 0) continue; } // hoạt hình thuộc tính (T-22)
+    let sc = 1; // `scale` animate được (%, quanh điểm neo): gộp vào phép co giãn của chuyển động cấp widget
+    if (w.animate) { const r = resolveAnimated(w, { ast, derived, tracks: wTracks, t }, scene.canvas); we = r.widget; k *= r.opacity; sc = r.scale; if (k <= 0 || sc <= 0) continue; } // hoạt hình thuộc tính (T-22)
     const prims = renderers[w.type]!.layout({ ast, derived, tracks: wTracks, measure, textStyles, fonts: derived.fonts, emitter }, we, t);
     let fx = hasMotion(w.motion) ? widgetFxAt(w.motion, activeRange(w.visibility, t, dur), t, ast.tempoMap) : undefined;
+    if (sc !== 1) fx = { ...(fx ?? NEUTRAL_WFX), sx: (fx?.sx ?? 1) * sc, sy: (fx?.sy ?? 1) * sc };
     if (fx && fx.dx === 0 && fx.dy === 0 && fx.sx === 1 && fx.sy === 1 && fx.rot === 0 && fx.alpha === 1) fx = undefined; // trung tính: chuỗi lệnh vẽ giữ như không có motion
     const ka = fx ? k * fx.alpha : k;
     if (fx && ka <= 0) continue; // vào/ra: đang ẩn hẳn

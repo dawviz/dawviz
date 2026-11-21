@@ -43,6 +43,38 @@ While you're typing in a field, these keys go to the field.
 | Hold Shift while rotating | Rotate freely (no 15° steps) |
 | Double-click the rotate handle | Back to 0° |
 
+## Panels (Editor and Preview tabs)
+
+| Key | Action |
+|---|---|
+| Ctrl+B | Collapse or open the left column (Layers / Video styles) |
+| Ctrl+Alt+B | Collapse or open the right column (Widget properties / Inspector) |
+| Ctrl+J | Collapse or open the Timeline (Editor tab) |
+| Arrows (on a panel border) | Resize the panel (Shift: bigger steps) |
+| Enter (on a panel border) | Collapse the panel |
+| Double-click a panel border | Back to the default size |
+
+## Timeline & keyframes
+
+| Key | Action |
+|---|---|
+| Shift-click a keyframe | Add it to the selection |
+| Drag on an empty area | Select with a box (hold Shift to add) |
+| Ctrl+A | Select every keyframe of the widget |
+| Delete | Delete the selected keyframes |
+| Esc | Deselect keyframes |
+| Alt+Left / Alt+Right | Move the selected keyframes one frame (add Shift: one second) |
+| Left / Right (on a keyframe) | Previous / next keyframe in the row |
+| Up / Down (on a keyframe) | Row above / below |
+| Enter (on a keyframe) | Move the playhead to the keyframe |
+| Hold Alt while dragging a keyframe | Place freely, no snapping |
+| Hold Alt while dragging on the ruler | Scrub freely, no snapping to keyframes |
+| Double-click a row | Add a keyframe there |
+| Press a row's ◆ button and drag down/up | Add (or remove) keyframes at the playhead on every row you pass |
+| Ctrl + scroll | Zoom in / out around the pointer |
+| U | Show only animated properties |
+| Arrows (on a curve handle) | Move the handle (Shift ×10, Alt ×0.1) |
+
 ## Number fields
 
 | Action | What it does |

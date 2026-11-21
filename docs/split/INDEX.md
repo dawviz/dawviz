@@ -16,7 +16,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1202 ký tự
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4347 ký tự
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](BRD/6-gia-dinh-assumptions.md) · 554 ký tự
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 28972 ký tự
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 30502 ký tự
 - [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](BRD/8-cac-van-de-con-mo-open-issues.md) · 7755 ký tự
 
 ## SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
@@ -251,7 +251,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [4. Nhật ký thử và hướng được chọn](UI-DIRECTION/4-nhat-ky-thu-va-huong-duoc-chon.md) · 3486 ký tự
 - [5.1 Quyết định](UI-DIRECTION/5-1-quyet-dinh.md) · 779 ký tự
 - [5.2 Bộ token (đề xuất, chốt khi làm)](UI-DIRECTION/5-2-bo-token-de-xuat-chot-khi-lam.md) · 1000 ký tự
-- [5.3 Cấu trúc giao diện: D + A + E (D-53, đã chốt 2026-11-13)](UI-DIRECTION/5-3-cau-truc-giao-dien-d-a-e-d-53-da-chot-2026-1.md) · 3345 ký tự
+- [5.3 Cấu trúc giao diện: D + A + E (D-53, đã chốt 2026-11-13)](UI-DIRECTION/5-3-cau-truc-giao-dien-d-a-e-d-53-da-chot-2026-1.md) · 4174 ký tự
 - [5.4 Bảng màu dựng sẵn (đã kiểm AA, v0.5)](UI-DIRECTION/5-4-bang-mau-dung-san-da-kiem-aa-v0-5.md) · 4454 ký tự
 - [6. Việc tiếp theo đề xuất](UI-DIRECTION/6-viec-tiep-theo-de-xuat.md) · 988 ký tự
 - [7. Nguyên tắc sản phẩm: trình dựng thật, mặc định đơn giản (D-54)](UI-DIRECTION/7-nguyen-tac-san-pham-trinh-dung-that-mac-dinh-d.md) · 1117 ký tự

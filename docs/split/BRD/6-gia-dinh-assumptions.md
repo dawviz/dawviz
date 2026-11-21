@@ -5,7 +5,7 @@ section: "6. GIẢ ĐỊNH (ASSUMPTIONS)"
 path: "6. GIẢ ĐỊNH (ASSUMPTIONS)"
 chunk: 6-gia-dinh-assumptions.md
 source_lines: 195-203
-source_sha1: a7085f608b
+source_sha1: 27bbfd5d90
 ids: [D-01]
 ---
 ## 6. GIẢ ĐỊNH (ASSUMPTIONS)

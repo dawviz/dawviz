@@ -57,11 +57,46 @@ Piano Roll còn có mục **Hoạt hình của nốt** trong **Thiết lập**: 
 
 ## Hoạt hình thuộc tính
 
-Muốn một thuộc tính **đổi theo thời gian hoặc theo nhạc** thay vì đứng yên: chọn widget, mở mục **Hoạt hình thuộc tính**, chọn thuộc tính rồi bấm **Thêm**. Thuộc tính nào là số hoặc màu cũng animate được: vị trí, cỡ, góc xoay, độ đục cả widget, và mọi ô số hay ô màu trong **Thiết lập** của widget (ví dụ màu cột, độ dày vạch, độ phát sáng).
+Muốn một thuộc tính **đổi theo thời gian hoặc theo nhạc** thay vì đứng yên, dùng panel **Timeline và keyframe** ở đáy thẻ Chỉnh sửa (mở bằng nút ở đầu thanh, hoặc Ctrl+J). Thuộc tính nào là số hoặc màu cũng animate được. Nhóm **Biến đổi** có **Vị trí** (X và Y chung một dòng, một keyframe cho cả hai), **Tỉ lệ** (phần trăm, 100 là nguyên cỡ; phóng to/thu nhỏ cả widget quanh điểm neo), **Xoay** và **Độ đục**. Nhóm **Thuộc tính widget** có mọi ô số hay ô màu trong **Thiết lập** của widget (ví dụ màu cột, độ dày vạch, độ phát sáng). Preset cũ có animate Rộng/Cao thì hai dòng đó cũng hiện.
 
-Mỗi thuộc tính chọn một **Cách thay đổi**:
+### Đặt keyframe
 
-- **Keyframe**: bấm **Thêm keyframe tại vạch phát** để đặt giá trị tại thời điểm đang xem. Mỗi keyframe có thời điểm, giá trị và **Đường cong** để đi tới nó (đều, bật vọt, nảy, lò xo…). Giữa hai keyframe chọn đều, giữ rồi nhảy, hoặc cong mượt. **Sau keyframe cuối** thuộc tính giữ nguyên, hoặc lặp lại, tới lui, lặp và cộng dồn. Màu chuyển mượt, không bị xỉn ở giữa.
-- **Theo nhạc**: giá trị chạy theo một nguồn dữ liệu của bài: phách, ô nhịp, tiến độ bài, số nốt đang vang, nốt mạnh nhất đang vang, nốt vừa chạm (vọt lên rồi tắt dần), automation âm lượng hoặc pan của track, độ to của âm thanh. Bạn đặt khoảng nguồn chạy từ đâu tới đâu và giá trị tương ứng, ví dụ độ phát sáng từ 0 tới 1 khi nốt vừa chạm.
+1. Chọn widget trên khung hoặc ở Lớp. Timeline hiện các thuộc tính của nó.
+2. Đưa vạch phát tới thời điểm muốn đặt: phát nhạc, hoặc nhấp/kéo trên thước thời gian của Timeline.
+3. Bấm **đồng hồ** ở đầu dòng thuộc tính. Một keyframe được đặt tại vạch phát với giá trị hiện tại.
+4. Đưa vạch phát tới thời điểm khác rồi gõ giá trị mới vào ô giá trị của dòng đó (hoặc kéo trên ô). Keyframe mới được thêm tại vạch phát. Nút hình thoi giữa hai nút tam giác cũng thêm keyframe tại vạch phát (bấm lại để xoá). Muốn đặt keyframe cho nhiều dòng cùng lúc, nhấn vào nút hình thoi của một dòng rồi kéo xuống (hoặc lên) qua các dòng khác; dòng đi qua được tô sáng, thả chuột là xong (một bước hoàn tác). Bắt đầu ở dòng đã có keyframe tại vạch phát thì kéo sẽ xoá; hai nút tam giác đưa vạch phát tới keyframe trước hoặc sau.
+
+**Kéo trên khung:** khi Vị trí, Xoay (hoặc Rộng/Cao) đã bật đồng hồ, kéo, xoay hay đổi cỡ widget trên khung (hoặc gõ vào ô X, Y, W, H, Góc ở cột bên phải) sẽ đặt keyframe tại vạch phát thay vì dời widget cố định. Cách nhanh để làm chuyển động: đưa vạch phát tới một chỗ, kéo widget; đưa tới chỗ khác, kéo tiếp. Khung chọn trên khung luôn đi theo chỗ widget đang ở tại vạch phát.
+
+Bấm đồng hồ lần nữa để bỏ hoạt hình của thuộc tính đó (xoá mọi keyframe của nó). Nút phễu ở góc trên chỉ hiện những thuộc tính đang animate (phím U).
+
+### Sửa keyframe trên Timeline
+
+- **Chọn:** bấm vào hình thoi. Giữ Shift (hoặc Ctrl/⌘) để chọn thêm. Kéo trên chỗ trống của Timeline để chọn bằng khung. Ctrl+A chọn mọi keyframe của widget.
+- **Dời:** kéo hình thoi sang trái hoặc phải; mọi keyframe đang chọn đi cùng. Keyframe tự bắt vào vạch phát, keyframe khác và các phách của bài; khi đang bắt dính có một vạch dẫn màu xanh. Giữ Alt khi kéo để đặt tự do. Alt+mũi tên trái/phải dời từng khung (thêm Shift: từng giây).
+- **Thêm:** nhấp đúp vào dòng của thuộc tính tại thời điểm muốn đặt.
+- **Xoá:** chọn rồi nhấn Delete.
+- **Tua tới keyframe:** kéo trên thước thời gian, vạch phát tự bắt vào keyframe (chấm nhỏ trên thước); giữ Alt để tua tự do.
+- **Xem gần hơn:** giữ Ctrl rồi cuộn chuột trên Timeline, hoặc dùng nút phóng to, thu nhỏ, **Vừa cả bài** ở góc trên.
+
+Hình dạng keyframe cho biết cách giá trị đi tiếp tới keyframe sau: hình thoi là đều, hình vuông là giữ rồi nhảy, hình tròn là cong mượt. Keyframe đang chọn có màu nổi bật. Chấm nhỏ dưới keyframe nghĩa là keyframe gắn theo nhạc (phách, ô nhịp); kéo nó thì nó thành mốc theo giây.
+
+### Chỉnh đường cong
+
+Khi chọn keyframe, mục **Keyframe** hiện đầu tiên ở cột bên phải:
+
+- **Thời điểm** và **Giá trị** (khi chọn một keyframe).
+- **Đường cong đi tới keyframe**: đồ thị ngang là thời gian, dọc là giá trị. Kéo hai tay nắm tròn để chỉnh cách giá trị đi tới keyframe này (chậm rồi nhanh, vọt quá rồi về…). Bốn ô **x1, y1, x2, y2** bên dưới cho gõ số chính xác. Keyframe đầu tiên chưa có đoạn nào đi tới nên không chỉnh được đường cong.
+- **Đường cong**: chọn nhanh một đường cong có sẵn (đều, bật vọt, nảy, lò xo…).
+- **Giữa các keyframe**: đều, giữ rồi nhảy, hoặc cong mượt.
+- **Sau keyframe cuối**: giữ nguyên, lặp lại, tới lui, hoặc lặp và cộng dồn.
+
+Nút ↺ cạnh **Đường cong**, **Giữa các keyframe**, **Sau keyframe cuối** đưa ô đó về mặc định (đều, đều tới keyframe kế, giữ nguyên). **Bỏ chọn** (hoặc Esc trên Timeline) đóng mục **Keyframe**. Chọn hình thoi của Vị trí thì mục này có hai ô **Giá trị X** và **Giá trị Y**.
+
+Chọn nhiều keyframe rồi đổi một ô thì mọi keyframe đang chọn đổi theo; ô nào các keyframe đang khác nhau sẽ ghi **Nhiều giá trị**. Màu chuyển mượt, không bị xỉn ở giữa.
+
+### Chạy theo nhạc
+
+Bấm tên một thuộc tính trên Timeline (không bấm keyframe), rồi ở mục **Keyframe** bên phải chọn **Theo nhạc**. Giá trị chạy theo một nguồn dữ liệu của bài: phách, ô nhịp, tiến độ bài, số nốt đang vang, nốt mạnh nhất đang vang, nốt vừa chạm (vọt lên rồi tắt dần), automation âm lượng hoặc pan của track, độ to của âm thanh. Bạn đặt khoảng nguồn chạy từ đâu tới đâu và giá trị tương ứng, ví dụ độ phát sáng từ 0 tới 1 khi nốt vừa chạm. Trên Timeline, thuộc tính đó hiện một thanh **Theo nhạc** thay cho keyframe. **Bỏ hoạt hình** đưa thuộc tính về giá trị đứng yên.
 
 Giá trị luôn được giữ trong miền hợp lệ của thuộc tính: kéo quá giới hạn thì dừng ở giới hạn chứ không làm hỏng hình. Hai thuộc tính khác nhau chạy độc lập, và Preview giống hệt video xuất ra. Piano Roll và Bản nhạc chỉ nhận vị trí, cỡ, góc và độ đục (đổi thuộc tính bản nhạc phải viết lại bản nhạc).

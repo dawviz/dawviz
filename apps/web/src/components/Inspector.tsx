@@ -3,7 +3,8 @@
 // nào, ở cả hai chế độ (D-57, chủ dự án bỏ hẳn nhãn NC 2026-11-14: không phần mềm dựng hình nào đánh dấu như vậy).
 import { useEffect, useRef, type ReactNode } from 'react';
 import { useI18n } from '../i18n/I18nProvider.tsx';
-import { RotateReset } from './Icons.tsx';
+import { ChevronRight, RotateReset } from './Icons.tsx';
+import { useSectionOpen } from '../lib/sectionState.ts';
 
 export function InspectorSection({ n, id, title, more, children }: {
   n: number; id: string; title: string; children: ReactNode;
@@ -11,12 +12,21 @@ export function InspectorSection({ n, id, title, more, children }: {
   more?: { open: boolean; edited: boolean; onToggle(): void };
 }) {
   const { i18n } = useI18n();
+  // Nhấp tiêu đề để thu gọn/mở mục (nhớ theo id, dùng chung Xem trước và Editor): cột dài thì gấp những mục không dùng tới.
+  const [open, setOpen] = useSectionOpen(id);
   return (
-    <section aria-labelledby={`${id}-h`} className="border-b border-line" data-testid={`section-${id}`}>
-      <header className="flex items-center gap-2 px-4 pb-2 pt-3">
-        <span className="text-xs tabular-nums text-muted" aria-hidden>{String(n).padStart(2, '0')}</span>
-        <h2 id={`${id}-h`} className="min-w-0 flex-1 truncate text-[15px] font-semibold text-fg">{title}</h2>
-        {more && (
+    <section aria-labelledby={`${id}-h`} className="border-b border-line" data-testid={`section-${id}`} data-collapsed={open ? undefined : true}>
+      <header className={`flex items-center gap-2 px-4 pt-2 ${open ? 'pb-1' : 'pb-2'}`}>
+        <h2 id={`${id}-h`} className="min-w-0 flex-1 text-[15px] font-semibold text-fg">
+          <button type="button" aria-expanded={open} aria-controls={`${id}-body`} onClick={() => setOpen(!open)} data-testid={`section-toggle-${id}`}
+            title={i18n.t(open ? 'web.section.collapse' : 'web.section.expand', { name: title })}
+            className="group -mx-1 flex min-h-[var(--hit)] w-[calc(100%+0.5rem)] items-center gap-2 rounded px-1 py-1 text-left transition hover:bg-raised">
+            <ChevronRight className={`h-3 w-3 shrink-0 text-faint transition-transform duration-150 group-hover:text-fg ${open ? 'rotate-90' : ''}`} />
+            <span className="text-xs font-normal tabular-nums text-muted" aria-hidden>{String(n).padStart(2, '0')}</span>
+            <span className="min-w-0 flex-1 break-words leading-tight">{title}</span>
+          </button>
+        </h2>
+        {more && open && (
           <button type="button" className="btn-ghost flex items-center gap-1.5" aria-expanded={more.open} onClick={more.onToggle}
             title={more.edited && !more.open ? i18n.t('web.more.edited') : undefined}>
             {more.edited && !more.open && <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-line-strong" />}
@@ -25,7 +35,7 @@ export function InspectorSection({ n, id, title, more, children }: {
           </button>
         )}
       </header>
-      <div className="space-y-2.5 px-4 pb-4">{children}</div>
+      {open && <div id={`${id}-body`} className="space-y-2.5 px-4 pb-4 pt-1">{children}</div>}
     </section>
   );
 }

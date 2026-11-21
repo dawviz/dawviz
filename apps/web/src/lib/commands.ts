@@ -335,6 +335,27 @@ export const setWidgetAnimate = (d: Doc, widgetId: string, path: string, next: A
   });
   return slice(d, 'setWidgetAnimate', 'web.cmd.animate', get, set, next, key ? `anim:${widgetId}:${path}:${key}` : undefined, { widget: widgetId, property: path });
 };
+/** Một lần sửa gồm bố cục tĩnh và/hoặc nhiều hoạt hình của một widget (`null` = bỏ hoạt hình đường dẫn đó). */
+export interface AnimEdit { layout?: Partial<WidgetLayout>; animate?: Record<string, Animation | null> }
+/**
+ * Sửa bố cục và nhiều hoạt hình của một hay nhiều widget trong MỘT lệnh (D-64): kéo hình thoi Vị trí (x + y), kéo nhiều keyframe của nhiều
+ * thuộc tính, hay kéo widget trên khung khi thuộc tính đang có keyframe (đặt keyframe tại vạch phát). Một lệnh mỗi lần → trong một cử chỉ
+ * các lần cùng `key` gộp thành một bước hoàn tác (store chỉ gộp các lệnh liên tiếp cùng mergeKey).
+ */
+export const editWidgetAnimation = (d: Doc, edits: Record<string, AnimEdit>, key?: string): Cmd | null => {
+  const ids = Object.keys(edits).filter((id) => d.scene.widgets.some((w) => w.id === id)).sort();
+  if (!ids.length) return null;
+  type V = Record<string, { layout: WidgetLayout; animate?: Record<string, Animation> }>;
+  const get = (x: Doc): V => Object.fromEntries(ids.map((id) => { const q = x.scene.widgets.find((w) => w.id === id)!; return [id, { layout: q.layout, ...(q.animate ? { animate: q.animate } : {}) }]; }));
+  const set = (x: Doc, v: V) => ids.reduce((acc, id) => withWidget(acc, id, (q) => { const { animate: _a, ...rest } = q; return { ...rest, layout: v[id].layout, ...(v[id].animate ? { animate: v[id].animate } : {}) }; }), x);
+  const cur = get(d);
+  const after: V = Object.fromEntries(ids.map((id) => {
+    const e = edits[id], an: Record<string, Animation> = { ...(cur[id].animate ?? {}) };
+    for (const [p, v] of Object.entries(e.animate ?? {})) { if (v) an[p] = v; else delete an[p]; }
+    return [id, { layout: { ...cur[id].layout, ...(e.layout ?? {}) }, ...(Object.keys(an).length ? { animate: an } : {}) }];
+  }));
+  return slice(d, 'editWidgetAnimation', 'web.cmd.animate', get, set, after, key ? `animedit:${ids.join('|')}:${key}` : undefined, { widgets: ids, ...(ids.length === 1 ? { widget: ids[0] } : {}) });
+};
 /** Đặt chuyển động của widget (vào, ra, lặp theo nhịp; mọi loại widget); `null` = bỏ. `key` gộp các lần chỉnh liên tiếp một ô thành một bước hoàn tác. */
 export const setWidgetMotion = (d: Doc, widgetId: string, next: WidgetMotion | null, key?: string): Cmd | null => {
   if (!d.scene.widgets.some((x) => x.id === widgetId)) return null;

@@ -12,6 +12,7 @@ const LAYOUT: Record<string, Omit<AnimField, 'path' | 'kind'>> = {
   'layout.height': { labelKey: 'web.anim.prop.height', min: 1, max: 16384, step: 1, range: [1, 3000] },
   'layout.rotation': { labelKey: 'web.anim.prop.rotation', min: -360, max: 360, step: 1, range: [-180, 180] },
   opacity: { labelKey: 'web.anim.prop.opacity', min: 0, max: 1, step: 0.05 },
+  scale: { labelKey: 'web.anim.prop.scale', min: 0, max: 2000, step: 1, range: [0, 400] },
 };
 /** Thuộc tính animate được của loại widget, theo thứ tự: bố cục, độ đục, rồi thuộc tính của widget (nhãn lấy từ bảng Thiết lập nếu có). */
 export function animFields(type: WidgetType): AnimField[] {
@@ -26,6 +27,7 @@ const getIn = (o: unknown, path: readonly string[]): unknown => { let v = o; for
 /** Giá trị tĩnh hiện tại của thuộc tính (điểm xuất phát của hoạt hình mới). */
 export function staticValue(w: Pick<WidgetSpec, 'layout' | 'properties'>, path: string): number | string {
   if (path === 'opacity') return 1;
+  if (path === 'scale') return 100; // % (100 = nguyên cỡ)
   const v = path.startsWith('layout.') ? getIn(w.layout, [path.slice(7)]) : getIn(w.properties, path.split('.'));
   return typeof v === 'number' || typeof v === 'string' ? v : 0;
 }
