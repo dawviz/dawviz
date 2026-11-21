@@ -1,7 +1,6 @@
 // Tự lưu phiên (T-10, REQ-STORAGE-01): bảng `workspace_state` (JSON) + bảng `blobs` (tệp dự án, âm thanh, ảnh nền, phông).
 // Phần quyết định (khi nào ghi Blob, suy thoái khi thiếu dung lượng, debounce) là hàm thuần nhận `Backend` và đồng hồ nhúng vào,
 // nên test bằng backend trong bộ nhớ; `dexieBackend()` chỉ là lớp mỏng bọc Dexie.
-import Dexie, { type Table } from 'dexie';
 
 export const WORKSPACE_SCHEMA_VERSION = '1.0.0';
 export const LOW_STORAGE_BYTES = 50e6;
@@ -111,30 +110,10 @@ export function createDebounced<T>(run: (v: T) => void | Promise<unknown>, delay
   };
 }
 
-// ── Dexie ──
-class DawvizDb extends Dexie {
-  workspace_state!: Table<WorkspaceState, string>;
-  blobs!: Table<StoredBlob, string>;
-  constructor(name = 'dawviz') {
-    super(name);
-    this.version(1).stores({ workspace_state: 'id', blobs: 'id' });
-  }
-}
-
-export function dexieBackend(dbName?: string): Backend {
-  const db = new DawvizDb(dbName);
-  return {
-    async load() {
-      const state = await db.workspace_state.get(CURRENT_ID);
-      if (!state) return null;
-      return { state, blobs: await db.blobs.toArray() };
-    },
-    async save(state, blobs) {
-      await db.transaction('rw', db.workspace_state, db.blobs, async () => {
-        if (blobs !== 'keep') { await db.blobs.clear(); if (blobs && blobs.length) await db.blobs.bulkPut(blobs); }
-        await db.workspace_state.put(state);
-      });
-    },
-    async clear() { await db.transaction('rw', db.workspace_state, db.blobs, async () => { await db.workspace_state.clear(); await db.blobs.clear(); }); },
-  };
+// ── Dexie (tách chunk riêng: lib/dexieBackend.ts, ~31 kB nén, không nằm trong gói đầu) ──
+/** Backend nạp Dexie khi dùng lần đầu; giữ nguyên hợp đồng `Backend` nên App không phải đổi cách gọi. */
+export function lazyDexieBackend(dbName?: string): Backend {
+  let real: Promise<Backend> | null = null;
+  const get = () => (real ??= import('./dexieBackend.ts').then((m) => m.dexieBackend(dbName)));
+  return { load: () => get().then((b) => b.load()), save: (st, bl) => get().then((b) => b.save(st, bl)), clear: () => get().then((b) => b.clear()) };
 }

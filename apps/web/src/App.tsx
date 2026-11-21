@@ -20,7 +20,7 @@ import { SessionSettings, type SaveState } from './components/SessionSettings.ts
 import { DeviceLatency } from './components/DeviceLatency.tsx';
 import { BackgroundError, loadBackground, type BitmapLike } from './lib/backgroundImage.ts';
 import { DEFAULT_DEVICE_PREFS, activeOffsetMs, sanitizeDevicePrefs, type DevicePrefs } from './lib/latencyCalibration.ts';
-import { AUTOSAVE_DELAY_MS, createDebounced, createSaver, dexieBackend, restoreWorkspace, type Backend } from './lib/workspaceStore.ts';
+import { AUTOSAVE_DELAY_MS, createDebounced, createSaver, lazyDexieBackend, restoreWorkspace, type Backend } from './lib/workspaceStore.ts';
 import { applyWorkspace, toWorkspaceJson } from './lib/docSnapshot.ts';
 import { downloadBytes, packOf, sessionFromPack, snapshotOf, type SessionData, type SessionParts } from './lib/session.ts';
 import { PACK_LIMITS, PackError } from './lib/projectPack.ts';
@@ -38,7 +38,9 @@ import { createStore, type History } from './lib/store.ts';
 import * as Cmds from './lib/commands.ts';
 import { AudioPanel } from './components/AudioPanel.tsx';
 // Hộp thoại xuất chỉ cần khi bấm Xuất video: tách thành mảnh tải sau để bản đầu nhẹ hơn.
-const ExportDialog = lazy(() => import('./components/ExportDialog.tsx').then((m) => ({ default: m.ExportDialog })));
+// Tải ExportDialog sớm khi rê/focus/chạm nút Xuất video (không tải export.worker: chỉ nạp khi hộp thoại mở).
+const loadExportDialog = () => import('./components/ExportDialog.tsx').then((m) => ({ default: m.ExportDialog }));
+const ExportDialog = lazy(loadExportDialog);
 import { AudioLoadError, browserDeps, loadAudioAsset, type AudioAsset } from './lib/audioAsset.ts';
 import { audioLengthCheck } from './lib/audioLength.ts';
 import { peaksInWorker, spectrumInWorker } from './lib/audioWorkers.ts';
@@ -281,7 +283,7 @@ export function App() {
   const [sessionProblems, setSessionProblems] = useState<Problem[]>([]);
   const [saveState, setSaveState] = useState<SaveState>({ kind: 'idle' });
   const [missingFiles, setMissingFiles] = useState<string[]>([]);
-  const backend = useMemo<Backend | null>(() => (typeof indexedDB === 'undefined' ? null : dexieBackend()), []);
+  const backend = useMemo<Backend | null>(() => (typeof indexedDB === 'undefined' ? null : lazyDexieBackend()), []);
   const saver = useMemo(() => (backend ? createSaver(backend) : null), [backend]);
   const parts: SessionParts | null = useMemo(() => (loaded && source ? {
     title: loaded.ast.meta.title || loaded.name, source: source.main, extras: source.extras, schemas, tempo, scene: doc.scene,
@@ -751,6 +753,7 @@ export function App() {
 
 /** Thanh trên hai hàng (UI-DIRECTION 5.3). Hàng 1: dấu + tên, tệp đang mở; chế độ, mở tệp, xuất video, sáng/tối, ngôn ngữ.
  *  Hàng 2: ba thẻ, thẻ đang mở gạch chân màu nhấn; phím ←/→ chuyển thẻ (WAI-ARIA tabs, kích hoạt tự động). */
+const prefetchExport = () => { void loadExportDialog(); };
 function TopBar({ tab, onTab, fileName, onExport, mode, onMode, file, theme, history, shortcuts, onUndo, onRedo, onJump, stepLabel, announce }: { tab: Tab; onTab(t: Tab): void; fileName?: string; onExport?(): void; mode: UiMode; onMode(m: UiMode): void; file: React.ReactNode; theme: React.ReactNode; history: History<Doc>; shortcuts: { undo: string; redo: string }; onUndo(): void; onRedo(): void; onJump(position: number): void; stepLabel(h: History<Doc>, position: number): string; announce: { n: number; text: string } }) {
   const { i18n } = useI18n();
   const onKey = (e: KeyboardEvent<HTMLButtonElement>) => {
@@ -774,7 +777,7 @@ function TopBar({ tab, onTab, fileName, onExport, mode, onMode, file, theme, his
           </div>
           {file}
           {/* Chưa mở dự án thì chưa có gì để xuất: nút giữ chỗ cho bố cục ổn định và nói rõ vì sao chưa bấm được. */}
-          <button type="button" disabled={!onExport} onClick={onExport} aria-describedby={onExport ? undefined : 'export-why'} title={onExport ? undefined : i18n.t('web.export.needProject')}
+          <button type="button" disabled={!onExport} onClick={onExport} onPointerEnter={prefetchExport} onPointerDown={prefetchExport} onFocus={prefetchExport} aria-describedby={onExport ? undefined : 'export-why'} title={onExport ? undefined : i18n.t('web.export.needProject')}
             className="rounded border border-accent bg-accent px-3 py-1.5 text-[13px] font-semibold text-on-accent transition ring-offset-2 ring-offset-surface enabled:hover:ring-2 enabled:hover:ring-line-strong enabled:active:brightness-95 disabled:cursor-not-allowed disabled:opacity-60" data-testid="export">
             {i18n.t('web.export')}
           </button>
