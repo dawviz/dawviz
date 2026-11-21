@@ -5,7 +5,7 @@ section: "8. Còn lại"
 path: "8. Còn lại"
 chunk: 8-con-lai.md
 source_lines: 131-135
-source_sha1: 513257591d
+source_sha1: c33d54141a
 ids: [OI-20]
 ---
 ## 8. Còn lại

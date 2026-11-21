@@ -505,7 +505,7 @@ Nguồn: `docs/spikes/SPIKE-4-NOTATION.md` · [thứ tự đọc](docs/split/SPI
 - [1. Điều quan sát từ video tham chiếu (đoạn 1:49–2:10)](docs/split/SPIKE-4-NOTATION/1-dieu-quan-sat-tu-video-tham-chieu-doan-1-49-2.md) · 0.5k
 - [2. Hiện trạng liên quan trong repo (trước spike)](docs/split/SPIKE-4-NOTATION/2-hien-trang-lien-quan-trong-repo-truoc-spike.md) · 0.8k
 - [3. Kiến trúc (sau spike)](docs/split/SPIKE-4-NOTATION/3-kien-truc-sau-spike.md) · 2.0k
-- [4. Các spike (câu hỏi và cách làm)](docs/split/SPIKE-4-NOTATION/4-cac-spike-cau-hoi-va-cach-lam.md) · 1.0k
+- [4. Các spike (câu hỏi và cách làm)](docs/split/SPIKE-4-NOTATION/4-cac-spike-cau-hoi-va-cach-lam.md) · 1.1k
 - [5. Khả năng tuỳ biến (đã làm)](docs/split/SPIKE-4-NOTATION/5-kha-nang-tuy-bien-da-lam.md) · 1.2k
 - [6. Kết quả](docs/split/SPIKE-4-NOTATION/6-ket-qua.md) · 5.0k
 - [7. Quyết định](docs/split/SPIKE-4-NOTATION/7-quyet-dinh.md) · 0.2k

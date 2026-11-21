@@ -5,7 +5,7 @@ section: "Spike 4: bản nhạc (notation) bằng VexFlow, phát sáng từng n�
 path: "Spike 4: bản nhạc (notation) bằng VexFlow, phát sáng từng nốt, nét tay (mở đầu)"
 chunk: spike-4-ban-nhac-notation-bang-vexflow-phat-sang.md
 source_lines: 1-6
-source_sha1: 513257591d
+source_sha1: c33d54141a
 ids: [D-63, OI-20]
 ---
 # Spike 4: bản nhạc (notation) bằng VexFlow, phát sáng từng nốt, nét tay

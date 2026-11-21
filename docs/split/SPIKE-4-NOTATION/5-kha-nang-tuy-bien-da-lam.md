@@ -5,7 +5,7 @@ section: "5. Khả năng tuỳ biến (đã làm)"
 path: "5. Khả năng tuỳ biến (đã làm)"
 chunk: 5-kha-nang-tuy-bien-da-lam.md
 source_lines: 60-74
-source_sha1: 513257591d
+source_sha1: c33d54141a
 ids: []
 ---
 ## 5. Khả năng tuỳ biến (đã làm)

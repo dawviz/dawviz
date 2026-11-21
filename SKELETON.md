@@ -352,23 +352,8 @@ dawviz/
 │  │  ├─ markdown.test.mjs
 │  │  └─ slug.mjs
 │  ├─ notation/
-│  │  ├─ data/
-│  │  │  ├─ maestro/
-│  │  │  │  ├─ bach-wtc1-a-minor-bwv865.mid
-│  │  │  │  ├─ chopin-nocturne-op9-2.mid
-│  │  │  │  └─ LICENSE
-│  │  │  └─ maestro-v3.0.0-midi.zip
 │  │  ├─ lib/
 │  │  │  └─ loadAst.mjs
-│  │  ├─ out/
-│  │  │  ├─ e2e/
-│  │  │  │  ├─ editor-added-final.png
-│  │  │  │  ├─ export-final.mp4
-│  │  │  │  ├─ play-final-0.png
-│  │  │  │  ├─ play-final-1.png
-│  │  │  │  └─ play-final-2.png
-│  │  │  ├─ app-short.mid.json
-│  │  │  └─ short.mid
 │  │  ├─ build-file.mjs
 │  │  ├─ e2e.mjs
 │  │  ├─ grid-stats.mjs

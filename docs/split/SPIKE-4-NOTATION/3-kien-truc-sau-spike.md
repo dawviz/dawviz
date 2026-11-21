@@ -5,7 +5,7 @@ section: "3. Kiến trúc (sau spike)"
 path: "3. Kiến trúc (sau spike)"
 chunk: 3-kien-truc-sau-spike.md
 source_lines: 24-49
-source_sha1: 513257591d
+source_sha1: c33d54141a
 ids: [WARN_NOTATION_]
 ---
 ## 3. Kiến trúc (sau spike)

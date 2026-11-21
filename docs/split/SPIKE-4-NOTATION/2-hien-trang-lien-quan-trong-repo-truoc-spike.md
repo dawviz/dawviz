@@ -5,7 +5,7 @@ section: "2. Hiện trạng liên quan trong repo (trước spike)"
 path: "2. Hiện trạng liên quan trong repo (trước spike)"
 chunk: 2-hien-trang-lien-quan-trong-repo-truoc-spike.md
 source_lines: 14-23
-source_sha1: 513257591d
+source_sha1: c33d54141a
 ids: [D-50]
 ---
 ## 2. Hiện trạng liên quan trong repo (trước spike)

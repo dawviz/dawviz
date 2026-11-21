@@ -5,7 +5,7 @@ section: "6. Kết quả"
 path: "6. Kết quả"
 chunk: 6-ket-qua.md
 source_lines: 75-126
-source_sha1: 513257591d
+source_sha1: c33d54141a
 ids: [WARN_NOTATION_KEY_GUESS, WARN_NOTATION_OFFGRID]
 ---
 ## 6. Kết quả

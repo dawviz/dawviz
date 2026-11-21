@@ -389,7 +389,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [1. Điều quan sát từ video tham chiếu (đoạn 1:49–2:10)](SPIKE-4-NOTATION/1-dieu-quan-sat-tu-video-tham-chieu-doan-1-49-2.md) · 532 ký tự
 - [2. Hiện trạng liên quan trong repo (trước spike)](SPIKE-4-NOTATION/2-hien-trang-lien-quan-trong-repo-truoc-spike.md) · 850 ký tự
 - [3. Kiến trúc (sau spike)](SPIKE-4-NOTATION/3-kien-truc-sau-spike.md) · 1965 ký tự
-- [4. Các spike (câu hỏi và cách làm)](SPIKE-4-NOTATION/4-cac-spike-cau-hoi-va-cach-lam.md) · 1042 ký tự
+- [4. Các spike (câu hỏi và cách làm)](SPIKE-4-NOTATION/4-cac-spike-cau-hoi-va-cach-lam.md) · 1053 ký tự
 - [5. Khả năng tuỳ biến (đã làm)](SPIKE-4-NOTATION/5-kha-nang-tuy-bien-da-lam.md) · 1182 ký tự
 - [6. Kết quả](SPIKE-4-NOTATION/6-ket-qua.md) · 4969 ký tự
 - [7. Quyết định](SPIKE-4-NOTATION/7-quyet-dinh.md) · 224 ký tự

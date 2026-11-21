@@ -5,7 +5,7 @@ section: "7. Quyết định"
 path: "7. Quyết định"
 chunk: 7-quyet-dinh.md
 source_lines: 127-130
-source_sha1: 513257591d
+source_sha1: c33d54141a
 ids: [D-63]
 ---
 ## 7. Quyết định

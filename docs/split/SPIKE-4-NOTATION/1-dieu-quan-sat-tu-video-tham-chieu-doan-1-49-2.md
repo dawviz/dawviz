@@ -5,7 +5,7 @@ section: "1. Điều quan sát từ video tham chiếu (đoạn 1:49–2:10)"
 path: "1. Điều quan sát từ video tham chiếu (đoạn 1:49–2:10)"
 chunk: 1-dieu-quan-sat-tu-video-tham-chieu-doan-1-49-2.md
 source_lines: 7-13
-source_sha1: 513257591d
+source_sha1: c33d54141a
 ids: []
 ---
 ## 1. Điều quan sát từ video tham chiếu (đoạn 1:49–2:10)
