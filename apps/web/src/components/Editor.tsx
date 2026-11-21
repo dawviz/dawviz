@@ -27,7 +27,7 @@ import { checkLayerName } from '../lib/layerName.ts';
 import { MAX_WIDGET_NAME } from '@dawviz/render-core';
 import { StatusIcon } from './StatusIcon.tsx';
 import { BackgroundSection, type BackgroundState } from './BackgroundSection.tsx';
-import { AnimateSection } from './AnimateSection.tsx';
+import { AnimationInspector, hasInspectorTarget } from './AnimationInspector.tsx';
 import { Splitter } from './Splitter.tsx';
 import { TimelinePanel } from './TimelinePanel.tsx';
 import { KeyframeTimeline, NO_SEL, type KeySel } from './KeyframeTimeline.tsx';
@@ -366,8 +366,12 @@ export function Editor({ styleName, scene, derived, ast, playback, fonts, advanc
           <PanelCollapse label={keyHint(i18n.t('web.panel.collapse', { name: i18n.t('web.editor.properties') }), 'Ctrl+Alt+B')} icon={<PanelRight className="h-3.5 w-3.5" />} onClick={() => panels.setOpen('props', false)} testId="collapse-props" />
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto max-lg:overflow-visible">
-        <Properties getTime={() => playback.get().t} background={background} duration={derived?.index.duration ?? 0} scene={scene} selected={live} locked={locked} name={name} advanced={advanced} actions={actions} onLock={toggleLock} order={order} move={move} widgetSections={widgetSections} onPick={(id) => setSelected([id])} layoutRef={layoutRef}
-          onDuplicate={duplicateSel} onRemove={removeSel} onDeselect={deselect} />
+        <Properties background={background} duration={derived?.index.duration ?? 0} scene={scene} selected={live} locked={locked} name={name} advanced={advanced} actions={actions} onLock={toggleLock} order={order} move={move} widgetSections={widgetSections} onPick={(id) => setSelected([id])} layoutRef={layoutRef}
+          onDuplicate={duplicateSel} onRemove={removeSel} onDeselect={deselect}
+          keyInspector={single && ast && hasInspectorTarget(single, keySel) ? (n) => (
+            <AnimationInspector n={n} widget={single} sel={keySel} tempoMap={ast.tempoMap} locked={locked.has(single.id)} getTime={() => playback.get().t}
+              onAnimate={(p, v, k) => actions.animate(single.id, p, v, k)} onSel={onKeySel} gesture={gestureCtx} />
+          ) : undefined} />
         </div>
       </aside>
       <Splitter axis="x" grow={-1} label={i18n.t('web.panel.resize', { name: i18n.t('web.editor.properties') })} title={i18n.t('web.panel.resizeHint')} controls="editor-props-panel"
@@ -480,7 +484,7 @@ function AlignSection({ n, items, frame, onLayouts, locked }: { n: number; items
 
 const btn = 'flex min-h-[var(--hit)] items-center gap-1.5 rounded border border-control bg-raised px-2.5 text-xs font-medium text-fg transition hover:border-line-strong disabled:cursor-not-allowed disabled:opacity-50';
 
-function Properties({ getTime, background, duration, scene, selected, locked, name, advanced, actions, onLock, order, move, widgetSections, onPick, layoutRef, onDuplicate, onRemove, onDeselect }: { getTime(): number; onDeselect(): void; background?: BackgroundState; duration: number; onDuplicate(): void; onRemove(): void; layoutRef?: Record<string, WidgetLayout>; onPick(id: string): void; scene: SceneDocument; selected: string[]; locked: ReadonlySet<string>; name(id: string): string; advanced: boolean; actions: EditorActions; onLock(id: string): void; order: string[]; move(id: string, to: number): void; widgetSections?: Props['widgetSections'] }) {
+function Properties({ background, duration, scene, selected, locked, name, advanced, actions, onLock, order, move, widgetSections, onPick, layoutRef, onDuplicate, onRemove, onDeselect, keyInspector }: { keyInspector?(n: number): ReactNode; onDeselect(): void; background?: BackgroundState; duration: number; onDuplicate(): void; onRemove(): void; layoutRef?: Record<string, WidgetLayout>; onPick(id: string): void; scene: SceneDocument; selected: string[]; locked: ReadonlySet<string>; name(id: string): string; advanced: boolean; actions: EditorActions; onLock(id: string): void; order: string[]; move(id: string, to: number): void; widgetSections?: Props['widgetSections'] }) {
   const { i18n } = useI18n();
   const ws = selected.map((id) => scene.widgets.find((w) => w.id === id)!).filter(Boolean);
   const { designWidth: W, designHeight: H } = scene.canvas;
@@ -542,8 +546,10 @@ function Properties({ getTime, background, duration, scene, selected, locked, na
   );
 
   const w = ws[0], l = w.layout, lk = locked.has(w.id), zi = order.indexOf(w.id);
+  // Animation Inspector (khi Timeline đang chọn keyframe/hàng) là mục 01: thứ người dùng đang chỉnh ngay lúc đó; các mục sau lùi một số.
+  const ki = keyInspector?.(1), o = ki ? 1 : 0;
   // Mục riêng của widget (Hình thức của Piano Roll) đứng ngay sau Vị trí: là thứ hay chỉnh nhất; các mục sau đánh số tiếp.
-  const extra = (widgetSections?.(w, 2, lk) ?? []).filter(Boolean), k = extra.length;
+  const extra = (widgetSections?.(w, 2 + o, lk) ?? []).filter(Boolean), k = extra.length + o;
   const set = (p: Partial<WidgetLayout>) => actions.layouts({ [w.id]: p });
   const ref = layoutRef?.[w.id];
   const field = (k: 'x' | 'y' | 'width' | 'height', label: string, min: number, max: number) => {
@@ -568,7 +574,8 @@ function Properties({ getTime, background, duration, scene, selected, locked, na
         <button type="button" className="btn-ghost shrink-0 border border-control" onClick={onDeselect} title={i18n.t('web.editor.deselectHint')} data-testid="deselect">{i18n.t('web.editor.deselect')}</button>
       </header>
       {!hasCanvasFrame(w) && <p className="border-b border-line px-4 py-2 text-xs leading-snug text-muted" data-testid="frame-hidden-note">{i18n.t('web.editor.frameHidden')}</p>}
-      <InspectorSection n={1} id="transform" title={i18n.t('web.editor.positionSize')}>
+      {ki}
+      <InspectorSection n={1 + o} id="transform" title={i18n.t('web.editor.positionSize')}>
         {lk && (
           <div className="flex items-center justify-between gap-2 text-xs leading-snug text-muted" data-testid="editor-locked">
             <span className="flex items-center gap-1.5"><Lock className="h-3.5 w-3.5 shrink-0" />{i18n.t('web.editor.lockedHint')}</span>
@@ -637,9 +644,8 @@ function Properties({ getTime, background, duration, scene, selected, locked, na
       </InspectorSection>
       <VisibilitySection n={4 + k} widgetId={w.id} value={w.visibility} disabled={lk} onChange={(v, key) => actions.visibility(w.id, v, key)} />
       <MotionSection n={5 + k} widgetId={w.id} value={w.motion} disabled={lk} onChange={(v, key) => actions.motion(w.id, v, key)} />
-      <AnimateSection n={6 + k} widget={w} getTime={getTime} disabled={lk} onChange={(path, v, key) => actions.animate(w.id, path, v, key)} />
-      <AlignSection n={7 + k} items={[w]} frame={{ width: W, height: H }} onLayouts={actions.layouts} locked={locked} />
-      {snapping(8 + k)}
+      <AlignSection n={6 + k} items={[w]} frame={{ width: W, height: H }} onLayouts={actions.layouts} locked={locked} />
+      {snapping(7 + k)}
     </>
   );
 }

@@ -716,3 +716,35 @@ describe('AspectSwitch', () => {
     expect(screen.getByTestId('aspect-9:16')).toHaveAttribute('tabindex', '0');
   });
 });
+
+describe('Panel đổi cỡ và mục thu gọn (Editor)', () => {
+  it('Splitter: phím mũi tên đổi 8 px (Shift 32) theo chiều lớn lên, Home/End, Enter thu gọn, nhấp đúp về mặc định', async () => {
+    const { Splitter } = await import('../src/components/Splitter.tsx');
+    const calls: number[] = []; let toggled = 0, reset = 0;
+    render(<Splitter axis="x" grow={-1} label="Đổi cỡ" value={300} min={200} max={500} controls="p" onResize={(v) => calls.push(v)} onReset={() => { reset++; }} onToggle={() => { toggled++; }} />);
+    const sep = screen.getByRole('separator', { name: 'Đổi cỡ' });
+    expect(sep).toHaveAttribute('aria-valuenow', '300');
+    expect(sep).toHaveAttribute('aria-orientation', 'vertical');
+    fireEvent.keyDown(sep, { key: 'ArrowLeft' }); // panel bên phải: sang trái là lớn lên
+    fireEvent.keyDown(sep, { key: 'ArrowRight', shiftKey: true });
+    fireEvent.keyDown(sep, { key: 'Home' }); fireEvent.keyDown(sep, { key: 'End' });
+    expect(calls).toEqual([308, 268, 200, 500]);
+    fireEvent.keyDown(sep, { key: 'Enter' }); fireEvent.doubleClick(sep);
+    expect(toggled).toBe(1); expect(reset).toBe(1);
+  });
+  it('InspectorSection: nhấp tiêu đề gấp/mở mục, aria-expanded đúng, nhớ trạng thái cho mục cùng id', async () => {
+    const { InspectorSection } = await import('../src/components/Inspector.tsx');
+    const ui = () => <I18nProvider><InspectorSection n={3} id="test-fold" title="Mục thử"><p>nội dung</p></InspectorSection></I18nProvider>;
+    const { unmount } = render(ui());
+    const head = screen.getByTestId('section-toggle-test-fold');
+    expect(head).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByText('nội dung')).toBeInTheDocument();
+    fireEvent.click(head);
+    expect(head).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByText('nội dung')).toBeNull();
+    unmount(); render(ui());
+    expect(screen.getByTestId('section-toggle-test-fold')).toHaveAttribute('aria-expanded', 'false');
+    fireEvent.click(screen.getByTestId('section-toggle-test-fold'));
+    expect(screen.getByText('nội dung')).toBeInTheDocument();
+  });
+});
