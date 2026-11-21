@@ -58,6 +58,13 @@ for (const top of ['packages', 'apps']) {
 }
 const TOOL_DIRS = ['bin', 'scripts'].map((d) => path.join(ROOT, d)).filter(exists);
 const CODE_EXT = /\.(mjs|js|ts|tsx)$/;
+// Tệp/thư mục bị .gitignore (dữ liệu thử, kết quả chạy…) có thể có ở máy này mà CI không có: bỏ khỏi cây để SKELETON.md giống nhau ở mọi nơi.
+const GIT_IGNORED = (() => {
+  try {
+    const out = execFileSync('git', ['ls-files', '--others', '--ignored', '--exclude-standard', '--directory'], { cwd: ROOT, encoding: 'utf8' });
+    return new Set(out.split('\n').map((x) => x.replace(/\/$/, '')).filter(Boolean));
+  } catch { return new Set(); }
+})();
 const TREE_IGNORE = new Set(['node_modules', 'dist', '.git', '.vite', 'coverage', 'dist-docs', 'package-lock.json', '__pycache__']);
 const TREE_COLLAPSE = new Map([['docs', 'tài liệu; xem AI_CONTEXT.md'], ['fixtures', 'tệp mẫu'], ['schemas', null]]);
 const DIR_NOTES = {
@@ -153,13 +160,14 @@ function walkFiles(dir, pred) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
     if (TREE_IGNORE.has(e.name)) continue;
     const p = path.join(dir, e.name);
+    if (GIT_IGNORED.has(rel(p))) continue;
     if (e.isDirectory()) out.push(...walkFiles(p, pred)); else if (pred(p)) out.push(p);
   }
   return out;
 }
 function tree(dir, prefix = '', depth = 0) {
   const out = [];
-  const ents = fs.readdirSync(dir, { withFileTypes: true }).filter((e) => !TREE_IGNORE.has(e.name) && !e.name.startsWith('.')).sort((a, b) => (b.isDirectory() - a.isDirectory()) || a.name.localeCompare(b.name));
+  const ents = fs.readdirSync(dir, { withFileTypes: true }).filter((e) => !TREE_IGNORE.has(e.name) && !e.name.startsWith('.') && !GIT_IGNORED.has(rel(path.join(dir, e.name)))).sort((a, b) => (b.isDirectory() - a.isDirectory()) || a.name.localeCompare(b.name));
   ents.forEach((e, i) => {
     const last = i === ents.length - 1, p = path.join(dir, e.name), r = rel(p);
     const branch = prefix + (last ? '└─ ' : '├─ '), next = prefix + (last ? '   ' : '│  ');
