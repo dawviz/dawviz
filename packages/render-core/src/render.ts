@@ -4,6 +4,8 @@ import type { Ctx2D } from './draw.ts';
 import type { TimelineIndex, TrackIndex } from './notes.ts';
 import type { UnifiedProjectAST } from './types.ts';
 import { layoutPianoRoll, layoutKeyboard } from './pianoroll.ts';
+import { NOTE_TRANSITIONS } from './noteTransition.ts';
+import { barPosAt } from './hud.ts';
 import { DEFAULT_KEYBOARD_STYLE } from './style.ts';
 import type { PianoRollProps, SceneDocument, WidgetSpec } from './scene.ts';
 import type { Derived, LayoutCtx, Primitive, RectPrim, TextPrim, WidgetRenderer } from './prims.ts';
@@ -13,6 +15,7 @@ import { measureText } from './text.ts';
 import { DEFAULT_TEXT_STYLES, TEXT_METRICS, type PlacedRun, type RichText, type TextGradient } from './typography.ts';
 import { normalizeAngle } from './snap.ts';
 import { visibilityAlpha } from './visibility.ts';
+import { activeRange, hasMotion, widgetFxAt, type WidgetFx } from './widgetMotion.ts';
 import { spectrumRenderer } from './spectrum.ts';
 import { particleRenderer, particlesInCanvasSpace } from './particles.ts';
 import { DEFAULT_BACKGROUND, placeImage, type BackgroundImage } from './background.ts';
@@ -105,7 +108,8 @@ export const pianoRollRenderer: WidgetRenderer<PianoRollProps> = {
     const page = p.scrollMode === 'PAGE' && p.pageUnit === 'BARS' ? barPageAt(hudOf(derived, ast).bars, p.pageBars, t) : undefined;
     const { kb, ratio, playX, windowSeconds, pageStart } = pianoRollGeometry(p, width, t, page);
     const rects = layoutPianoRoll({ tracks, duration: derived.index.duration }, ast.tempoMap, t,
-      { width, height, windowSeconds, playheadRatio: ratio, pitchMin, pitchMax, brightness: derived.brightness, style: p.noteStyle, left: kb, pageStart, revealAhead: p.scrollMode === 'PAGE' && p.revealAhead > 0 ? p.revealAhead : undefined });
+      { width, height, windowSeconds, playheadRatio: ratio, pitchMin, pitchMax, brightness: derived.brightness, style: p.noteStyle, left: kb, pageStart, revealAhead: p.scrollMode === 'PAGE' && p.revealAhead > 0 ? p.revealAhead : undefined,
+        transition: p.transition && p.transition !== 'none' && NOTE_TRANSITIONS[p.transition] ? { spec: NOTE_TRANSITIONS[p.transition], beatPhase: barPosAt(hudOf(derived, ast).bars, t).beatPhase } : undefined });
     const out: Primitive[] = [];
     for (const r of rects) {
       const alpha = a01(r.brightness * r.opacity);
@@ -151,7 +155,7 @@ export function layoutFrame(scene: SceneDocument, derived0: Derived, ast: Unifie
   const order = scene.widgets.map((w, i) => ({ w, i })).filter(({ w }) => w.visible && renderers[w.type])
     .sort((a, b) => a.w.zIndex - b.w.zIndex || a.i - b.i); // cùng zIndex: giữ thứ tự trong tài liệu
   const measure = derived.measure ?? measureText, textStyles = scene.textStyles ?? DEFAULT_TEXT_STYLES;
-  const out: { widget: WidgetSpec; prims: Primitive[] }[] = [];
+  const out: { widget: WidgetSpec; prims: Primitive[]; fx?: WidgetFx }[] = [];
   // Điểm chạm vạch phát của nốt (hạt `NOTE`): cùng hình học với Piano Roll nên khớp ở Preview và Export.
   const roll = order.map(({ w }) => w).find((w): w is WidgetSpec<PianoRollProps> => w.type === 'PIANO_ROLL');
   const emitter: LayoutCtx['emitter'] | undefined = roll && ((pitch, ts) => {
@@ -165,7 +169,11 @@ export function layoutFrame(scene: SceneDocument, derived0: Derived, ast: Unifie
     const k = visibilityAlpha(w.visibility, t, dur);
     if (k <= 0) continue; // ngoài khoảng hiển thị: không dựng gì
     const prims = renderers[w.type]!.layout({ ast, derived, tracks: tracksFor(w, derived.index), measure, textStyles, fonts: derived.fonts, emitter }, w, t);
-    out.push({ widget: w, prims: k >= 1 ? prims : prims.map((p) => fadePrim(p, k)) });
+    let fx = hasMotion(w.motion) ? widgetFxAt(w.motion, activeRange(w.visibility, t, dur), t, ast.tempoMap) : undefined;
+    if (fx && fx.dx === 0 && fx.dy === 0 && fx.sx === 1 && fx.sy === 1 && fx.rot === 0 && fx.alpha === 1) fx = undefined; // trung tính: chuỗi lệnh vẽ giữ như không có motion
+    const ka = fx ? k * fx.alpha : k;
+    if (fx && ka <= 0) continue; // vào/ra: đang ẩn hẳn
+    out.push({ widget: w, prims: ka >= 1 ? prims : prims.map((p) => fadePrim(p, ka)), ...(fx ? { fx } : {}) });
   }
   return out;
 }
@@ -184,12 +192,15 @@ export function renderFrame(scene: SceneDocument, derived: Derived, ast: Unified
   g.setTransform(scale, 0, 0, scale, 0, 0);
   g.fillStyle = scene.canvas.backgroundColor; g.fillRect(0, 0, W, H);
   if (derived.background) drawBackground(g, scene, derived.background, W, H);
-  for (const { widget, prims } of layoutFrame(scene, derived, ast, t, renderers)) {
+  for (const { widget, prims, fx } of layoutFrame(scene, derived, ast, t, renderers)) {
     const L = widget.layout;
     g.save();
     if (particlesInCanvasSpace(widget)) { drawPrimitives(g, prims, { scale, rotation: 0 }); g.restore(); continue; }
-    const rot = normalizeAngle(L.rotation);
-    if (rot === 0) g.translate(L.x, L.y); // góc 0: đúng chuỗi lệnh trước T-68
+    const rot = normalizeAngle(L.rotation) + (fx ? fx.rot : 0);
+    if (fx) { // chuyển động cấp widget: dời, xoay thêm và co giãn quanh điểm neo
+      const ax = L.anchor.x * L.width, ay = L.anchor.y * L.height;
+      g.translate(L.x + ax + fx.dx * L.width, L.y + ay + fx.dy * L.height); g.rotate(rot * Math.PI / 180); g.scale(fx.sx, fx.sy); g.translate(-ax, -ay);
+    } else if (rot === 0) g.translate(L.x, L.y); // góc 0: đúng chuỗi lệnh trước T-68
     else { // dời tới điểm neo, xoay (chiều kim đồng hồ, trục y xuống), dời ngược: toạ độ trong widget giữ nguyên, không co nội dung
       const ax = L.anchor.x * L.width, ay = L.anchor.y * L.height;
       g.translate(L.x + ax, L.y + ay); g.rotate(rot * Math.PI / 180); g.translate(-ax, -ay);

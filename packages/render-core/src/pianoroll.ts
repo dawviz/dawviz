@@ -3,6 +3,7 @@ import { notesInRange, type TimelineIndex } from './notes.ts';
 import { trackBrightness, DEFAULT_BRIGHTNESS, type BrightnessConfig } from './brightness.ts';
 import type { TempoPoint } from './types.ts';
 import { glowAmount } from './glow.ts';
+import { noteFxAt, applyNoteFx, type NoteTransitionSpec } from './noteTransition.ts';
 import { resolveNoteStyle, noteColor, noteState, stateColor, shade, DEFAULT_KEYBOARD_STYLE, type StyleConfig, type KeyboardStyle } from './style.ts';
 
 export interface PianoRollOptions {
@@ -17,6 +18,8 @@ export interface PianoRollOptions {
   pageStart?: number;
   /** Chế độ trang: chỉ hiện nốt đã phát hoặc sẽ bắt đầu trong `revealAhead` giây tới (nốt xa hơn chưa hiện). Vắng/0 = hiện cả trang. */
   revealAhead?: number;
+  /** Chuyển cảnh nốt bốn pha (T-18). `beatPhase`: 0..1 trong nhịp tại t, cho pha kêu. Vắng = không biến đổi. */
+  transition?: { spec: NoteTransitionSpec; beatPhase: number };
 }
 export interface NoteRect { id: string; trackId: string; x: number; y: number; w: number; h: number; color: string; brightness: number; active: boolean; velocity: number;
   pitch: number; opacity: number; radius: number; glow: number; glowRadius: number; borderWidth: number; borderColor: string }
@@ -41,14 +44,15 @@ export function layoutPianoRoll(index: TimelineIndex, tempoMap: TempoPoint[], t:
       const x = left + (s0 - t0) * pxPerSec, h = Math.max(1, rowH * st.heightScale);
       const active = n.startTimeSeconds <= t && t < n.endTimeSeconds;
       const color = stateColor(st, noteState(n.startTimeSeconds, n.endTimeSeconds, t), noteColor(st, ti.track.color, n.pitch, n.velocity)), w = Math.max(1, (e0 - s0) * pxPerSec);
-      rects.push({
+      const rect: NoteRect = {
         id: n.id, trackId: ti.track.id, x, w, y: (o.pitchMax - n.pitch) * rowH + (rowH - h) / 2, h, color,
         brightness: trackBrightness(ti.track, tempoMap, Math.max(0, n.startTimeSeconds), cfg),
         active, velocity: n.velocity, pitch: n.pitch,
         opacity: st.opacity * (active ? 1 : st.inactiveOpacity), radius: Math.min(st.cornerRadius, h / 2, w / 2),
         glow: st.glow > 0 ? st.glow * glowAmount(st, { track: ti.track, note: n, t, tempoMap, pitchMin: o.pitchMin, pitchMax: o.pitchMax }) : 0, glowRadius: st.glowRadius,
         borderWidth: st.borderWidth, borderColor: st.borderColor || shade(color, 0.45),
-      });
+      };
+      if (o.transition) { const { fx, morph } = noteFxAt(o.transition.spec, n.startTimeSeconds, n.endTimeSeconds, t, o.transition.beatPhase); rects.push(applyNoteFx(rect, fx, morph)); } else rects.push(rect);
     }
   }
   // T-71: nốt đang phát vẽ sau cùng (nằm trên nốt đã phát và nốt chưa phát chồng lên nó); giữ thứ tự ổn định trong mỗi nhóm.

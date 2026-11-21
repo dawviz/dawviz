@@ -11,6 +11,7 @@ import { ALIAS_KEYS, GLOBAL_KEYS, checkTemplate } from './placeholders.ts';
 import { normalizeAngle } from './snap.ts';
 import { DEFAULT_BACKGROUND, type BackgroundImageSpec } from './background.ts';
 import { DEFAULT_PARTICLES, type ParticleProps } from './particles.ts';
+import { NOTE_TRANSITION_NAMES } from './noteTransition.ts';
 import { DEFAULT_NAMING, NAMING_SYSTEMS, type NoteNaming } from './naming.ts';
 import {
   DEFAULT_ARRANGEMENT, DEFAULT_AUTOMATION, DEFAULT_BAR_BEAT, DEFAULT_DENSITY, DEFAULT_DRUM_PAD, DEFAULT_KEY_SCALE, DEFAULT_LYRICS, DEFAULT_PITCH_WHEEL, DEFAULT_SECTION, DEFAULT_TEMPO_INFO, DEFAULT_VELOCITY,
@@ -18,6 +19,8 @@ import {
 } from './insight.ts';
 import { DEFAULT_NOTATION, notationInkFor, type NotationProps } from './notation/widget.ts';
 import { DEFAULT_SPECTRUM, type SpectrumProps } from './spectrum.ts';
+import { DEFAULT_LOOP, DEFAULT_PHASE, LOOP_EFFECT_NAMES, WIDGET_EFFECT_NAMES, hasMotion, type MotionLoop, type MotionPhase, type WidgetMotion } from './widgetMotion.ts';
+import { parseEase } from './motion.ts';
 import { MAX_FADE, MAX_PHASES, MAX_PHASE_NAME, MAX_RANGES, type Phase, type TimeRange, type WidgetVisibility } from './visibility.ts';
 import { DEFAULT_KEYBOARD_STYLE, DEFAULT_NOTE_STYLE, sanitizeStyle, type KeyboardStyle, type NoteStyle, type StyleConfig } from './style.ts';
 
@@ -41,6 +44,8 @@ export interface WidgetSpec<P = unknown> {
   name?: string;
   /** Khoảng hiển thị theo thời gian (REQ-GRAPHICS-14). Vắng = hiện suốt bài. */
   visibility?: WidgetVisibility;
+  /** Chuyển động cấp widget (vào, ra, lặp theo nhịp), dùng được cho mọi loại widget. Vắng = không chuyển động. */
+  motion?: WidgetMotion;
   trackMappingMode: TrackMappingMode;
   /** Chỉ số track trong AST (khớp `ProjectTrack.index`), dùng khi `trackMappingMode = MANUAL`. */
   assignedTrackIndices: number[];
@@ -65,6 +70,8 @@ export interface PianoRollProps {
   pageBars: number;
   /** Chế độ trang: chỉ hiện nốt sắp tới trong ngần này giây tính từ vạch phát (nốt đã phát vẫn ở lại tới hết trang). 0 = hiện cả trang. */
   revealAhead: number;
+  /** Chuyển cảnh nốt (T-18): tên template trong NOTE_TRANSITIONS; `none` = Piano Roll thường. */
+  transition: string;
   noteStyle: StyleConfig;
   keyboard: KeyboardStyle;
   playheadColor: string;
@@ -102,7 +109,7 @@ export interface SceneDocument {
 
 export const DEFAULT_PIANO_ROLL: Readonly<PianoRollProps> = Object.freeze({
   orientation: 'HORIZONTAL', pitchRangeMode: 'CUSTOM', pitchMin: 21, pitchMax: 108, // mặc định hiện đủ 88 phím (A0–C8); FIT_CONTENT là lựa chọn
-  lookaheadSeconds: 3, playheadPositionRatio: 0.3, visibleSeconds: 3 / 0.7, scrollMode: 'SCROLL', pageUnit: 'SECONDS', pageBars: 4, revealAhead: 0,
+  lookaheadSeconds: 3, playheadPositionRatio: 0.3, visibleSeconds: 3 / 0.7, scrollMode: 'SCROLL', pageUnit: 'SECONDS', pageBars: 4, revealAhead: 0, transition: 'none',
   noteStyle: { base: { ...DEFAULT_NOTE_STYLE }, tracks: {} }, keyboard: { ...DEFAULT_KEYBOARD_STYLE, width: 96 }, // 96 pt ≈ 5% bề rộng 1920
   playheadColor: '#ffffff', playheadWidth: 2, playheadVisible: true,
 });
@@ -342,6 +349,7 @@ export function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] 
       id, type: rw.type as WidgetType, zIndex: Math.round(num(rw.zIndex, 10 * (i + 1), -10000, 10000, `${p}.zIndex`)),
       visible: bool(rw.visible, true, `${p}.visible`), layout, trackMappingMode: mode, assignedTrackIndices: idx,
     };
+    if (rw.motion !== undefined) { const mo = sanitizeMotion(S, rw.motion, `${p}.motion`); if (mo) base.motion = mo; }
     if (rw.visibility !== undefined) { const vis = sanitizeVisibility(S, rw.visibility, `${p}.visibility`); if (vis) base.visibility = vis; }
     if (rw.name !== undefined) { // tên lớp: chuỗi 1–60 ký tự, không trùng (trùng thì bỏ tên, dùng tên theo loại)
       const nm = typeof rw.name === 'string' ? normalizeWidgetName(rw.name) : '';
@@ -374,6 +382,7 @@ export function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] 
         pageUnit: oneOf(P.pageUnit, ['SECONDS', 'BARS'] as const, d.pageUnit, `${p}.properties.pageUnit`),
         pageBars: Math.round(num(P.pageBars, d.pageBars, 1, 32, `${p}.properties.pageBars`)),
         revealAhead: num(P.revealAhead, d.revealAhead, 0, 30, `${p}.properties.revealAhead`),
+        transition: oneOf(P.transition, NOTE_TRANSITION_NAMES as readonly string[], d.transition, `${p}.properties.transition`),
         noteStyle: { base: sanitizeStyle(nsBase), tracks },
         keyboard: {
           enabled: bool(kb.enabled, d.keyboard.enabled, `${p}.properties.keyboard.enabled`),
@@ -566,6 +575,22 @@ const groups = (S: Sanitizer, v: unknown, d: readonly number[], path: string): [
   return [0, 1, 2].map((i) => Math.round(S.num(a[i], d[i], 1, 8, `${path}[${i}]`))) as [number, number, number];
 };
 
+/** Chuyển động của widget: hiệu ứng lạ về mặc định kèm cảnh báo; không còn gì (vào, ra, lặp đều trống) thì bỏ hẳn. */
+function sanitizeMotion(S: Sanitizer, v: unknown, path: string): WidgetMotion | undefined {
+  if (!isObj(v)) { S.warn(path, v, 'không phải đối tượng; bỏ'); return undefined; }
+  const phase = (raw: unknown, p: string): MotionPhase | null => {
+    if (raw === undefined || raw === null) return null;
+    if (!isObj(raw)) { S.warn(p, raw, 'không phải đối tượng; bỏ'); return null; }
+    const ease = raw.ease === undefined ? DEFAULT_PHASE.ease : raw.ease;
+    if (!parseEase(ease).ok) S.warn(`${p}.ease`, ease, 'easing lạ; dùng mặc định');
+    return { effect: S.oneOf(raw.effect, WIDGET_EFFECT_NAMES as readonly string[], DEFAULT_PHASE.effect, `${p}.effect`), sec: S.num(raw.sec, DEFAULT_PHASE.sec, 0, 30, `${p}.sec`), ease: parseEase(ease).ok ? (ease as MotionPhase['ease']) : DEFAULT_PHASE.ease };
+  };
+  let loop: MotionLoop | null = null;
+  if (isObj(v.loop)) { const l = v.loop; loop = { effect: S.oneOf(l.effect, LOOP_EFFECT_NAMES, DEFAULT_LOOP.effect, `${path}.loop.effect`), amount: S.num(l.amount, DEFAULT_LOOP.amount, 0, 1, `${path}.loop.amount`), every: S.num(l.every, DEFAULT_LOOP.every, 0.05, 64, `${path}.loop.every`), unit: S.oneOf(l.unit, ['BEATS', 'SECONDS'] as const, DEFAULT_LOOP.unit, `${path}.loop.unit`) }; }
+  else if (v.loop !== undefined && v.loop !== null) S.warn(`${path}.loop`, v.loop, 'không phải đối tượng; bỏ');
+  const m: WidgetMotion = { enter: phase(v.enter, `${path}.enter`), exit: phase(v.exit, `${path}.exit`), loop };
+  return hasMotion(m) ? m : undefined;
+}
 const hexp = (S: Sanitizer, v: unknown, d: string, path: string): string => S.str(v, d, path, (s) => HEX.test(s));
 const hexOpt = (S: Sanitizer, v: unknown, d: string, path: string): string => S.str(v, d, path, (s) => s === '' || HEX.test(s));
 const HUD_SANITIZERS = {

@@ -1,7 +1,7 @@
 // Tài liệu có hoàn tác và các lệnh (T-07, Technical Design §6.4). Hàm dựng lệnh nhận `doc` hiện tại để lấy giá trị "trước";
 // trả null khi không có gì đổi (không ghi mục lịch sử rỗng). `redo`/`undo` là hàm thuần trên Doc bất biến.
-import type { BrightnessConfig, NoteNaming, NoteStyle, KeyboardStyle, PianoRollProps, Phase, SceneDocument, TextRef, TextStyleSet, WidgetLayout, WidgetSpec, WidgetVisibility } from '@dawviz/render-core';
-import { ASPECTS, DEFAULT_BACKGROUND, widgetDefaults, type BackgroundImageSpec } from '@dawviz/render-core';
+import type { BrightnessConfig, NoteNaming, WidgetMotion, NoteStyle, KeyboardStyle, PianoRollProps, Phase, SceneDocument, TextRef, TextStyleSet, WidgetLayout, WidgetSpec, WidgetVisibility } from '@dawviz/render-core';
+import { ASPECTS, DEFAULT_BACKGROUND, hasMotion, widgetDefaults, type BackgroundImageSpec } from '@dawviz/render-core';
 import type { Command } from './store.ts';
 import { clampOffsetMs } from './audioMap.ts';
 import { sceneForStyle, videoStyleBase, videoStyleKeyboard, withTrackOverrides } from './videoScenes.ts';
@@ -324,6 +324,13 @@ export const setWidgetVisibility = (d: Doc, widgetId: string, next: WidgetVisibi
   const get = (x: Doc): WidgetVisibility | null => x.scene.widgets.find((q) => q.id === widgetId)!.visibility ?? null;
   const set = (x: Doc, v: WidgetVisibility | null) => withWidget(x, widgetId, (q) => { const { visibility: _v, ...rest } = q; return v ? { ...rest, visibility: v } : rest; });
   return slice(d, 'setWidgetVisibility', 'web.cmd.visibility', get, set, next, key ? `vis:${widgetId}:${key}` : undefined, { widget: widgetId });
+};
+/** Đặt chuyển động của widget (vào, ra, lặp theo nhịp; mọi loại widget); `null` = bỏ. `key` gộp các lần chỉnh liên tiếp một ô thành một bước hoàn tác. */
+export const setWidgetMotion = (d: Doc, widgetId: string, next: WidgetMotion | null, key?: string): Cmd | null => {
+  if (!d.scene.widgets.some((x) => x.id === widgetId)) return null;
+  const get = (x: Doc): WidgetMotion | null => x.scene.widgets.find((q) => q.id === widgetId)!.motion ?? null;
+  const set = (x: Doc, v: WidgetMotion | null) => withWidget(x, widgetId, (q) => { const { motion: _m, ...rest } = q; return v && hasMotion(v) ? { ...rest, motion: v } : rest; });
+  return slice(d, 'setWidgetMotion', 'web.cmd.motion', get, set, next && hasMotion(next) ? next : null, key ? `motion:${widgetId}:${key}` : undefined, { widget: widgetId });
 };
 /** Đặt danh sách phase của bài (đã sắp theo `start`, tên không rỗng). Rỗng = bỏ hết. */
 export const setPhases = (d: Doc, phases: Phase[], key?: string): Cmd | null =>

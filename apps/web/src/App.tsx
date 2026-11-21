@@ -500,6 +500,7 @@ export function App() {
     z: (id, where) => run((d) => Cmds.reorderZ(d, id, where)),
     moveLayer: (id, to) => run((d) => Cmds.moveLayer(d, id, to)),
     snapping: (p) => run((d) => Cmds.patchSnapping(d, p)),
+    motion: (id, v, key) => run((d) => Cmds.setWidgetMotion(d, id, v, key)),
     visibility: (id, v, key) => run((d) => Cmds.setWidgetVisibility(d, id, v, key)),
     phases: (list, key) => run((d) => Cmds.setPhases(d, list, key)),
     tonic: (t) => run((d) => Cmds.setTonic(d, t)),
@@ -682,7 +683,7 @@ export function App() {
         <div role="tabpanel" id="panel-editor" aria-labelledby="tab-editor" hidden={tab !== 'editor'} className="h-full">
           <Editor styleName={styleLabel} scene={scene} derived={derived} ast={renderAst} playback={playback} fonts={fonts} advanced={advanced} actions={editorActions} active={tab === 'editor'}
             layoutRef={doc.layoutRef} background={{ name: bgFile?.name ?? null, busy: bgBusy, error: bgError }}
-            widgetSections={(w, n, lk) => (w.type === 'PIANO_ROLL' ? [w.id === piano?.id ? lookSection(n) : null] : hasWidgetSettings(w.type) ? [settingsSection(w, n, lk), textSection(w, n + 1, lk)] : [textSection(w, n, lk)])}
+            widgetSections={(w, n, lk) => (w.type === 'PIANO_ROLL' ? [w.id === piano?.id ? lookSection(n) : null, settingsSection(w, n + (w.id === piano?.id ? 1 : 0), lk)] : hasWidgetSettings(w.type) ? [settingsSection(w, n, lk), textSection(w, n + 1, lk)] : [textSection(w, n, lk)])}
             transport={loaded ? <Transport playback={playback} duration={playDuration} offsetMs={offsetMs} wave={audio && peaks ? { peaks, durationSec: audio.durationSec } : null} /> : undefined} />
         </div>
         <div role="tabpanel" id="panel-settings" aria-labelledby="tab-settings" hidden={tab !== 'settings'} className="h-full overflow-y-auto bg-page">

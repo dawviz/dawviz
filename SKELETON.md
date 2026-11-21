@@ -273,10 +273,13 @@ dawviz/
 │  │  │  ├─ hud.ts
 │  │  │  ├─ index.ts
 │  │  │  ├─ insight.ts
+│  │  │  ├─ keyframes.ts
+│  │  │  ├─ motion.ts
 │  │  │  ├─ music.ts
 │  │  │  ├─ musicAnalysis.ts
 │  │  │  ├─ naming.ts
 │  │  │  ├─ notes.ts
+│  │  │  ├─ noteTransition.ts
 │  │  │  ├─ parser-core.d.ts
 │  │  │  ├─ particles.ts
 │  │  │  ├─ pianoroll.ts
@@ -291,7 +294,8 @@ dawviz/
 │  │  │  ├─ thumbnail.ts
 │  │  │  ├─ types.ts
 │  │  │  ├─ typography.ts
-│  │  │  └─ visibility.ts
+│  │  │  ├─ visibility.ts
+│  │  │  └─ widgetMotion.ts
 │  │  ├─ test/
 │  │  │  ├─ fixtures/   # tệp mẫu
 │  │  │  ├─ golden/
@@ -305,6 +309,7 @@ dawviz/
 │  │  │  ├─ hud.test.ts
 │  │  │  ├─ insight.test.ts
 │  │  │  ├─ legacy.test.ts
+│  │  │  ├─ motion.test.ts
 │  │  │  ├─ musicAnalysis.test.ts
 │  │  │  ├─ notation.test.ts
 │  │  │  ├─ paper.test.ts
@@ -318,7 +323,8 @@ dawviz/
 │  │  │  ├─ snap.test.ts
 │  │  │  ├─ spectrum.test.ts
 │  │  │  ├─ typography.test.ts
-│  │  │  └─ visibility.test.ts
+│  │  │  ├─ visibility.test.ts
+│  │  │  └─ widgetmotion.test.ts
 │  │  ├─ package.json
 │  │  └─ tsconfig.json
 │  ├─ rpp/   # @dawviz/parser-rpp: Reaper .rpp
@@ -847,6 +853,10 @@ re-export * from './spectrum.ts'
 re-export * from './musicAnalysis.ts'
 re-export * from './background.ts'
 re-export * from './particles.ts'
+re-export * from './motion.ts'
+re-export * from './keyframes.ts'
+re-export * from './noteTransition.ts'
+re-export * from './widgetMotion.ts'
 re-export * from './naming.ts'
 re-export * from './insight.ts'
 re-export * from './notation/types.ts'
@@ -903,6 +913,51 @@ function lyricLines(lyrics: readonly { timeSeconds: number; text: string }[], ga
 const lyricsRenderer
 const automationRenderer
 const INSIGHT_RENDERERS
+```
+
+#### `packages/render-core/src/keyframes.ts`
+
+Bộ máy keyframe (T-32, CUSTOMIZATION §3.1): một thuộc tính số, góc hoặc màu là một Track gồm các keyframe, mốc theo giây, beat, bar.beat hoặc tick.
+
+```text
+type KeyTime
+type InterpMode
+interface Key   // `ease` của keyframe áp cho đoạn ĐI TỚI keyframe đó (như After Effects); `interp` của keyframe là cách đi từ n…
+type LoopMode
+type ValueKind
+interface TrackSpec
+interface TimeCtx
+function barBeatToTick(g: BarGrid, bar: number, beat = 1): number   // Tick của `bar.beat` (cả hai đếm từ 1) theo lưới ô nhịp: đúng cả khi đổi dấu nhịp giữa bài.
+function keyTimeSec(at: KeyTime, ctx: TimeCtx): number   // Giây của một mốc. Mốc không hợp lệ → NaN (biên dịch sẽ bỏ keyframe đó và cảnh báo).
+function hexToLab(hex: string): Lab | null   // `#rgb`, `#rrggbb`, `#rrggbbaa` → OKLab (+ alpha). Sai định dạng → null.
+function labToHex(c: Lab): string
+function mixColor(a: string, b: string, k: number): string   // Nội suy màu trong OKLab (màu không bị xỉn ở giữa). Màu sai định dạng giữ `a`.
+const mixAngle = (a: number, b: number, k: number) =>   // Nội suy góc (độ) theo đường ngắn nhất, kết quả trong (−180, 180] cộng với góc đầu (không bó lại: giữ liên tục…
+interface CompiledTrack   // ───────────── biên dịch và lấy mẫu ─────────────
+function compileTrack(spec: TrackSpec, ctx: TimeCtx): CompiledTrack
+function sampleTrack(ct: CompiledTrack, t: number): number | string   // Giá trị tại t. Track rỗng → 0 (hoặc `#000000` với màu).
+function trackSpeed(ct: CompiledTrack, t: number, dt = 1 / 240): number   // Tốc độ thay đổi (đơn vị/giây) tại t, sai phân trung tâm: dữ liệu cho đồ thị tốc độ (speed graph) của Graph Ed…
+```
+
+#### `packages/render-core/src/motion.ts`
+
+Easing và nội suy tất định (T-15/T-17, AD-09, CUSTOMIZATION §4). Mọi easing là hàm thuần `f: [0,1] → ℝ` với f(0) = 0 và f(1) = 1
+
+```text
+type EaseFn   // Easing và nội suy tất định (T-15/T-17, AD-09, CUSTOMIZATION §4). Mọi easing là hàm thuần `f: [0,1] → ℝ` với f…
+const EASINGS   // 30 hàm Penner + `linear` + hai hàm elastic của osu!. Tên theo easings.net.
+const EASING_NAMES
+const hold = (x) =>   // `hold`: giữ giá trị đầu cho đến hết đoạn rồi nhảy (đoạn bậc thang).
+function steps(n: number, at: 'start' | 'end' = 'end'): EaseFn   // `steps(n, 'end')`: n bậc, nhảy ở cuối mỗi bậc; `'start'`: nhảy ở đầu.
+function cubicBezier(x1: number, y1: number, x2: number, y2: number): EaseFn   // CSS cubic-bezier. Giải x(s) = t bằng 8 vòng Newton, không hội tụ thì chia đôi đúng 40 vòng: số vòng cố định n…
+interface SpringSpec
+const DEFAULT_SPRING
+function spring(spec: Partial<SpringSpec> = {}): EaseFn   // Lò xo dạng công thức đóng (dưới tắt, tắt tới hạn, quá tắt), co giãn thời gian để đạt 1% quanh đích rồi trừ nố…
+function curve(points: readonly (readonly [number, number])[]): EaseFn   // Đường cong tự vẽ: các điểm (x, y) với x tăng dần trong [0, 1]; nội suy Hermite đơn điệu (Fritsch–Carlson) nên…
+type EaseSpec   // Easing trong dữ liệu: tên, hoặc đối tượng một khoá.
+function parseEase(spec: unknown):    // Đọc một easing từ dữ liệu. Sai thì trả `linear` và `ok: false` (để nơi gọi cảnh báo, không bao giờ ném).
+interface InterpolateOptions
+function interpolate(x: number, input: readonly number[], output: readonly number[], opt: InterpolateOptions = {}): number   // Kiểu Remotion: ánh xạ `x` từ các mốc `input` (tăng dần) sang `output`, easing áp lên từng đoạn. Mặc định kẹp …
 ```
 
 #### `packages/render-core/src/music.ts`
@@ -1033,6 +1088,25 @@ interface TimelineIndex
 function buildIndex(tracks: ProjectTrack[], duration: number): TimelineIndex
 function notesInRange(ti: TrackIndex, t0: number, t1: number): ASTNote[]   // Các nốt trong [t0, t1] (giao với khoảng), theo thứ tự bắt đầu. Dùng cho cửa sổ nhìn của Piano Roll.
 function activeNotes(ti: TrackIndex, t: number): ASTNote[]   // Nốt đang vang tại t: start <= t < end.
+```
+
+#### `packages/render-core/src/noteTransition.ts`
+
+Chuyển cảnh nốt bốn pha (T-18, CUSTOMIZATION §3.2) và morph cùng họ hình (T-19, AD-11).
+
+```text
+interface NoteFx   // Trạng thái biến đổi của một nốt. Trung tính: dời 0, tỉ lệ 1, độ đục ×1, phát sáng +0.
+const NEUTRAL_FX
+interface NoteTransitionSpec
+const NOTE_TRANSITIONS   // Template dựng sẵn. `none` = Piano Roll thường (nốt trôi ngang, không biến đổi).
+const NOTE_TRANSITION_NAMES
+function noteFxAt(spec: NoteTransitionSpec, start: number, end: number, t: number, beatPhase = 0):    // Biến đổi của một nốt tại `t` và mức morph (0 = viên tròn, 1 = thanh đầy đủ). `beatPhase`: 0..1 trong nhịp, ch…
+interface BoxLike
+function applyNoteFx<B extends BoxLike>(r: B, fx: NoteFx, morph: number, restRadius = r.radius): B   // Áp biến đổi lên một hình chữ nhật nốt: morph độ dài (giữ mép trái) và bo góc, rồi co giãn quanh tâm, dời theo…
+function morphRoundRect(a: { w: number; h: number; radius: number }, b: { w: number; h: number; radius: number }, k: number):    // Morph chữ nhật bo góc ↔ viên thuốc ↔ tròn: nội suy kích thước và bán kính bo. `k` 0..1. Bán kính tối đa luôn …
+type Pt
+function resamplePolygon(poly: readonly Pt[], n: number): Pt[]   // Lấy mẫu lại một đa giác kín về đúng `n` đỉnh, cách đều theo chu vi, bắt đầu từ đỉnh đầu: điều kiện để morph đ…
+function morphPolygon(a: readonly Pt[], b: readonly Pt[], k: number): Pt[]   // Morph hai đa giác bất kỳ: cùng lấy mẫu về cùng số đỉnh (lớn hơn trong hai, tối thiểu 3) rồi nội suy từng đỉnh.
 ```
 
 #### `packages/render-core/src/particles.ts`
@@ -1326,6 +1400,28 @@ function visibilityAlpha(v: WidgetVisibility | undefined, t: number, duration: n
 function phaseIndexAt(phases: readonly Phase[] | undefined, t: number): number   // Phase đang diễn ra tại `t`: chỉ số trong danh sách đã sắp theo `start`, hoặc −1 khi chưa tới phase đầu.
 interface PhaseInfo
 function phaseInfoAt(phases: readonly Phase[] | undefined, t: number, duration: number): PhaseInfo
+```
+
+#### `packages/render-core/src/widgetMotion.ts`
+
+Chuyển động cấp widget (T-34 phần v1.0, CUSTOMIZATION §3): MỌI loại widget có thể có hiệu ứng vào, hiệu ứng ra và một chuyển động lặp theo nhịp.
+
+```text
+interface WidgetFx
+const NEUTRAL_WFX
+const WIDGET_EFFECTS   // Hiệu ứng vào/ra: giá trị ở ĐIỂM ẨN (đầu hiệu ứng vào, cuối hiệu ứng ra), nội suy về trung tính.
+const WIDGET_EFFECT_NAMES
+const LOOP_EFFECT_NAMES   // Chuyển động lặp. `amount` 0..1 là biên độ (nhân với cỡ riêng của từng hiệu ứng).
+type LoopEffect
+interface MotionPhase
+interface MotionLoop
+interface WidgetMotion
+const DEFAULT_PHASE
+const DEFAULT_LOOP
+const hasMotion = (m: WidgetMotion | undefined) =>
+function activeRange(v: WidgetVisibility | undefined, t: number, duration: number):    // Khoảng đang hiển thị chứa t: [bắt đầu, kết thúc). Không có `visibility` thì cả bài. Ngoài mọi khoảng → null.
+function loopPhase(l: MotionLoop, t: number, tempoMap: readonly TempoPoint[]): number   // Pha của chuyển động lặp, 0 ≤ φ < 1. BEATS theo tempo thật của bài (đổi tempo thì vẫn khớp nhịp).
+function widgetFxAt(m: WidgetMotion, range: { from: number; to: number } | null, t: number, tempoMap: readonly TempoPoint[]): WidgetFx   // Biến đổi của widget tại t. `range` = khoảng hiển thị đang chứa t (activeRange).
 ```
 
 ### packages/rpp — @dawviz/parser-rpp: Reaper .rpp
@@ -1650,6 +1746,7 @@ Hai mục của bảng Thuộc tính (T-81): "Khoảng hiển thị" của widge
 
 ```text
 function VisibilitySection({ n, widgetId, value, disabled, onChange }: { n: number; widgetId: string; value: WidgetVisibility | undefined; disabled?: boolean; onChange(v: WidgetVisibility | null, key?: string): void })   // Mục "Khoảng hiển thị": tắt = hiện suốt bài; bật = danh sách khoảng (mốc kết thúc trống = hết bài) + thời gian…
+function MotionSection({ n, widgetId, value, disabled, onChange }: { n: number; widgetId: string; value: WidgetMotion | undefined; disabled?: boolean; onChange(v: WidgetMotion | null, key?: string): void })   // Mục "Chuyển động" (mọi loại widget): hiệu ứng vào ở đầu khoảng hiển thị, hiệu ứng ra ở cuối, và một chuyển độ…
 function PhasesSection({ n, phases, duration, onChange }: { n: number; phases: readonly Phase[]; duration: number; onChange(p: Phase[], key?: string): void })   // Mục "Phase": mỗi dòng là tên + thời điểm bắt đầu; phase kéo dài tới phase kế. Dùng cho chỗ giữ `{phase}`, `{n…
 function NamingSection({ n, naming, onChange }: { n: number; naming: NoteNaming | undefined; onChange(v: NoteNaming | null): void })   // Mục "Cách ghi tên nốt" (P-12): một thiết lập chung cho mọi widget có tên nốt hoặc hợp âm. Trống = cách ghi cũ.
 function KeySection({ n, tonic, onChange }: { n: number; tonic: number | undefined; onChange(t: number | null): void })
@@ -1933,6 +2030,7 @@ const reorderZ = (d: Doc, widgetId: string, where: 'front' | 'back') =>   // Đ�
 const layerOrder = (s: SceneDocument) =>   // Thứ tự lớp như danh sách Lớp hiển thị: trên cùng trước (zIndex giảm dần; cùng zIndex thì widget đứng sau tron…
 const moveLayer = (d: Doc, widgetId: string, to: number) =>   // Đưa lớp `widgetId` tới vị trí `to` trong danh sách Lớp (0 = trên cùng): kéo thả, lên/xuống một bậc, lên trên/…
 const setWidgetVisibility = (d: Doc, widgetId: string, next: WidgetVisibility | null, key?: string) =>   // Đặt khoảng hiển thị theo thời gian của widget (REQ-GRAPHICS-14); `null` = bỏ (hiện suốt bài). `key` gộp các l…
+const setWidgetMotion = (d: Doc, widgetId: string, next: WidgetMotion | null, key?: string) =>   // Đặt chuyển động của widget (vào, ra, lặp theo nhịp; mọi loại widget); `null` = bỏ. `key` gộp các lần chỉnh li…
 const setPhases = (d: Doc, phases: Phase[], key?: string) =>   // Đặt danh sách phase của bài (đã sắp theo `start`, tên không rỗng). Rỗng = bỏ hết.
 const setTonic = (d: Doc, tonic: number | null) =>   // Đặt nốt chủ của bài (0 = C … 11 = B); `null` = bỏ (chỗ giữ `{bass}` hiện tên nốt thay vì bậc).
 const setNoteNaming = (d: Doc, naming: NoteNaming | null) =>   // Cách ghi tên nốt/hợp âm của cả scene (P-12); `null` = cách ghi cũ (C♯, C4 = 60).
@@ -2934,6 +3032,7 @@ type SpectrumOut
 - `packages/render-core/test/hud.test.ts`
 - `packages/render-core/test/insight.test.ts`
 - `packages/render-core/test/legacy.test.ts`
+- `packages/render-core/test/motion.test.ts`
 - `packages/render-core/test/musicAnalysis.test.ts`
 - `packages/render-core/test/notation.test.ts`
 - `packages/render-core/test/paper.test.ts`
@@ -2948,6 +3047,7 @@ type SpectrumOut
 - `packages/render-core/test/spectrum.test.ts`
 - `packages/render-core/test/typography.test.ts`
 - `packages/render-core/test/visibility.test.ts`
+- `packages/render-core/test/widgetmotion.test.ts`
 - `test/als.test.js`
 - `test/binary.test.js`
 - `test/cues-automation.test.js`
@@ -2958,4 +3058,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 1261 ký hiệu công khai -->
+<!-- 10 thư mục src, 1325 ký hiệu công khai -->

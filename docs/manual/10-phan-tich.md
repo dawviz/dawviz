@@ -40,3 +40,17 @@ Khi không chọn widget nào, mục **Cách ghi tên nốt** đổi tên nốt 
 - Chữ trong các widget này là mẫu có chỗ giữ, như ở [Chèn số liệu vào chữ](08-cho-giu.md). Ví dụ Giọng dùng `{key}`, `{scale}`, `{confidence}`; Tên đoạn dùng `{section}`, `{next}`, `{next_in}`, `{section_no}`, `{section_elapsed}`; Mật độ nốt dùng `{poly}`.
 - Chữ "major" và "minor" của widget Giọng là chữ bạn sửa được (mục Nâng cao), nên đổi thành "trưởng" và "thứ" tuỳ ý.
 - Preview và video xuất ra giống hệt nhau: mọi widget này chỉ phụ thuộc thời điểm đang xem.
+
+## Chuyển động cho mọi widget
+
+Không riêng widget phân tích: **mọi widget** (Piano Roll, chữ, phổ, hạt, bản nhạc…) có mục **Chuyển động** khi bạn chọn nó ở Editor.
+
+- **Hiệu ứng vào**: chạy ở đầu mỗi khoảng hiển thị của widget (xem **Khoảng hiển thị**); widget không giới hạn khoảng thì chạy ở đầu bài. Chọn một kiểu (mờ dần, trượt từ trái/phải/trên/dưới, bật to dần, phóng từ lớn, rơi xuống, xoay vào) và độ dài tính bằng giây.
+- **Hiệu ứng ra**: chạy ngay trước cuối khoảng hiển thị, cùng các kiểu như trên.
+- **Lặp theo nhịp**: thở, bồng bềnh, đung đưa, nảy theo nhịp, nhấp nháy, lắc. Chỉnh **Mạnh nhẹ** và **Lặp mỗi** (tính bằng phách hoặc giây). Tính bằng phách thì đổi tempo vẫn khớp nhịp.
+
+Các chuyển động có thể dùng chung: ví dụ hiệu ứng vào "Trượt từ trái" và lặp "Nảy theo nhịp" cho cùng một widget. Chuyển động xoay và co giãn quanh **điểm neo** của widget. Preview và video xuất ra giống hệt nhau.
+
+## Hoạt hình của từng nốt
+
+Piano Roll còn có mục **Hoạt hình của nốt** trong **Thiết lập**: mỗi nốt đi qua bốn pha (đang tới, chạm, đang kêu, vừa tắt) với kiểu bạn chọn: bật to dần, mờ và co giãn, rơi và nảy, bay lên, biến hình (chấm thành thanh), nổ tung khi tắt, nảy khi chạm. Chọn **Không** thì nốt chỉ trôi như cũ. Muốn nốt rơi từ trên xuống hoặc bay lên, xoay cả widget Piano Roll.

@@ -1,7 +1,7 @@
 // Bảng khai báo mục Thiết lập của từng loại widget (T-73 bổ sung, REQ-UI-13/15, D-57): MỖI thiết lập khai báo MỘT lần ở đây;
 // `WidgetSettings` vẽ điều khiển, nút ↺ và dấu "đã chỉnh nâng cao" từ chính bảng này, nên thêm một thiết lập mới là tự có ↺
 // (test `widgetFields.test.ts` bắt thiết lập có trong mặc định mà thiếu trong bảng). Hàm thuần, không DOM.
-import type { WidgetSpec, WidgetType } from '@dawviz/render-core';
+import { NOTE_TRANSITION_NAMES, type WidgetSpec, type WidgetType } from '@dawviz/render-core';
 
 type Obj = Record<string, unknown>;
 export type FieldKind = 'check' | 'num' | 'choice' | 'select' | 'color' | 'colorOpt' | 'text';
@@ -248,6 +248,9 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['floorDb'], 'num', 'inFloorDb', { adv: true, when: (P) => P.lane === 'volume', num: { min: -120, max: 24, step: 1, range: [-80, 0] } }),
     L(['ceilDb'], 'num', 'inCeilDb', { adv: true, when: (P) => P.lane === 'volume', num: { min: -120, max: 24, step: 1, range: [-24, 12] } }),
     L(['playheadColor'], 'colorOpt', 'inPlayheadColor', { adv: true }),
+  ],
+  PIANO_ROLL: [
+    L(['transition'], 'select', 'pianoTransition', { options: NOTE_TRANSITION_NAMES, prefix: 'web.ws.pianoTransition.' }),
   ],
   TEXT: [
     L(['text'], 'text', 'boxText', { text: { max: 2000, multiline: true } }),

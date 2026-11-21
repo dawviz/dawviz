@@ -113,6 +113,10 @@ Muốn một hình khác góc, kéo tay nắm xoay cả widget cũng được; *
 
 Khi không chọn widget nào, mục **Nốt chủ** cho bạn chọn nốt chủ của bài (C đến B). Có nốt chủ thì số liệu `{bass}` hiện **bậc** của nốt bass (1, ♭2, 2, … 7); chưa đặt thì hiện tên nốt.
 
+## Chuyển động
+
+Chọn widget rồi mở mục **Chuyển động** để cho nó hiệu ứng vào, hiệu ứng ra và một chuyển động lặp theo nhịp. Dùng được cho mọi loại widget. Chi tiết ở [Widget phân tích](10-phan-tich.md#chuyển-động-cho-mọi-widget).
+
 ## Cách ghi tên nốt
 
 Cũng khi không chọn widget nào, mục **Cách ghi tên nốt** đổi tên nốt và hợp âm ở mọi widget cùng lúc (chữ cái, Do Re Mi, kiểu Đức; dấu thăng hay giáng; C4 hay C3). Chi tiết ở [Widget phân tích](10-phan-tich.md#cách-ghi-tên-nốt).

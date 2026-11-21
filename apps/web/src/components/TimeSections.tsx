@@ -1,5 +1,5 @@
 // Hai mục của bảng Thuộc tính (T-81): "Khoảng hiển thị" của widget đang chọn (REQ-GRAPHICS-14) và "Phase" của cả bài.
-import { DEFAULT_NAMING, MAX_PHASES, MAX_RANGES, NAMING_SYSTEMS, PITCH_CLASSES, type NoteNaming, type Phase, type TimeRange, type WidgetVisibility } from '@dawviz/render-core';
+import { DEFAULT_LOOP, DEFAULT_PHASE, DEFAULT_NAMING, LOOP_EFFECT_NAMES, WIDGET_EFFECT_NAMES, type MotionLoop, type WidgetMotion, MAX_PHASES, MAX_RANGES, NAMING_SYSTEMS, PITCH_CLASSES, type NoteNaming, type Phase, type TimeRange, type WidgetVisibility } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { InspectorSection, ResetButton, TickField } from './Inspector.tsx';
 import { NumberField } from './NumberField.tsx';
@@ -46,6 +46,67 @@ export function VisibilitySection({ n, widgetId, value, disabled, onChange }: { 
             <ResetButton label={i18n.t('web.vis.fadeOut')} changed={value!.fadeOut !== 0} disabled={disabled} onReset={() => onChange({ ...value!, fadeOut: 0 }, 'fadeOut')} />
           </div>
         </>
+      )}
+    </InspectorSection>
+  );
+}
+
+const MOTION_SEC = { min: 0, max: 30, step: 0.1, units: { s: 1 } } as const;
+/** Mục "Chuyển động" (mọi loại widget): hiệu ứng vào ở đầu khoảng hiển thị, hiệu ứng ra ở cuối, và một chuyển động lặp theo nhịp. */
+export function MotionSection({ n, widgetId, value, disabled, onChange }: { n: number; widgetId: string; value: WidgetMotion | undefined; disabled?: boolean; onChange(v: WidgetMotion | null, key?: string): void }) {
+  const { i18n } = useI18n();
+  const cur: WidgetMotion = value ?? { enter: null, exit: null, loop: null };
+  const phase = (k: 'enter' | 'exit') => {
+    const p = cur[k];
+    return (
+      <div className="space-y-1.5" data-testid={`motion-${k}`}>
+        <label className="flex items-center gap-2 text-xs text-muted">
+          <span className="shrink-0">{i18n.t(`web.motion.${k}`)}</span>
+          <Select wrapClassName="min-w-0 flex-1" value={p ? p.effect : ''} disabled={disabled} data-testid={`motion-${k}-effect`} onChange={(e) => onChange({ ...cur, [k]: e.target.value === '' ? null : { ...(p ?? DEFAULT_PHASE), effect: e.target.value } })}>
+            <option value="">{i18n.t('web.motion.none')}</option>
+            {WIDGET_EFFECT_NAMES.map((f) => <option key={f} value={f}>{i18n.t(`web.motion.fx.${f}`)}</option>)}
+          </Select>
+        </label>
+        {p && (
+          <div className="grid grid-cols-[minmax(0,1fr)_4.5rem_1.5rem] items-center gap-2 text-xs text-muted">
+            <span>{i18n.t('web.motion.sec')}</span>
+            <NumberField label={`${i18n.t(`web.motion.${k}`)}: ${i18n.t('web.motion.sec')}`} value={p.sec} spec={MOTION_SEC} range={[0, 3]} disabled={disabled} onChange={(v) => onChange({ ...cur, [k]: { ...p, sec: v } }, `${k}Sec`)} />
+            <ResetButton label={i18n.t('web.motion.sec')} changed={p.sec !== DEFAULT_PHASE.sec} disabled={disabled} onReset={() => onChange({ ...cur, [k]: { ...p, sec: DEFAULT_PHASE.sec } }, `${k}Sec`)} />
+          </div>
+        )}
+      </div>
+    );
+  };
+  const lp = cur.loop;
+  return (
+    <InspectorSection n={n} id="motion" title={i18n.t('web.motion.title')}>
+      {phase('enter')}
+      {phase('exit')}
+      <label className="flex items-center gap-2 text-xs text-muted">
+        <span className="shrink-0">{i18n.t('web.motion.loop')}</span>
+        <Select wrapClassName="min-w-0 flex-1" value={lp ? lp.effect : ''} disabled={disabled} data-testid="motion-loop-effect" onChange={(e) => onChange({ ...cur, loop: e.target.value === '' ? null : { ...(lp ?? DEFAULT_LOOP), effect: e.target.value as MotionLoop['effect'] } })}>
+          <option value="">{i18n.t('web.motion.none')}</option>
+          {LOOP_EFFECT_NAMES.map((f) => <option key={f} value={f}>{i18n.t(`web.motion.loopfx.${f}`)}</option>)}
+        </Select>
+      </label>
+      {lp && (
+        <div className="grid grid-cols-[minmax(0,1fr)_4.5rem_1.5rem] items-center gap-2 text-xs text-muted">
+          <span>{i18n.t('web.motion.amount')}</span>
+          <NumberField label={i18n.t('web.motion.amount')} value={lp.amount} spec={{ min: 0, max: 1, step: 0.05 }} disabled={disabled} onChange={(v) => onChange({ ...cur, loop: { ...lp, amount: v } }, 'amount')} />
+          <ResetButton label={i18n.t('web.motion.amount')} changed={lp.amount !== DEFAULT_LOOP.amount} disabled={disabled} onReset={() => onChange({ ...cur, loop: { ...lp, amount: DEFAULT_LOOP.amount } }, 'amount')} />
+          <span>{i18n.t('web.motion.every')}</span>
+          <NumberField label={i18n.t('web.motion.every')} value={lp.every} spec={{ min: 0.05, max: 64, step: 0.25 }} range={[0.25, 8]} disabled={disabled} onChange={(v) => onChange({ ...cur, loop: { ...lp, every: v } }, 'every')} />
+          <ResetButton label={i18n.t('web.motion.every')} changed={lp.every !== DEFAULT_LOOP.every} disabled={disabled} onReset={() => onChange({ ...cur, loop: { ...lp, every: DEFAULT_LOOP.every } }, 'every')} />
+        </div>
+      )}
+      {lp && (
+        <label className="flex items-center gap-2 text-xs text-muted">
+          <span className="shrink-0">{i18n.t('web.motion.unit')}</span>
+          <Select wrapClassName="min-w-0 flex-1" value={lp.unit} disabled={disabled} data-testid="motion-loop-unit" onChange={(e) => onChange({ ...cur, loop: { ...lp, unit: e.target.value as MotionLoop['unit'] } })}>
+            <option value="BEATS">{i18n.t('web.motion.unit.BEATS')}</option>
+            <option value="SECONDS">{i18n.t('web.motion.unit.SECONDS')}</option>
+          </Select>
+        </label>
       )}
     </InspectorSection>
   );

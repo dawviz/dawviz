@@ -6,7 +6,7 @@
 // và bắt dính đều là lệnh hoàn tác được (lib/commands.ts).
 import { motion } from 'framer-motion';
 import { useContext, useMemo, useRef, useState, type DragEvent, type KeyboardEvent, type ReactNode } from 'react';
-import { ADDABLE_WIDGETS, defaultScene, normalizeAngle, rotateGroup, type Derived, type NoteNaming, type Phase, type SceneDocument, type UnifiedProjectAST, type WidgetLayout, type WidgetSpec, type WidgetType, type WidgetVisibility, type BackgroundImageSpec } from '@dawviz/render-core';
+import { ADDABLE_WIDGETS, defaultScene, normalizeAngle, rotateGroup, type Derived, type NoteNaming, type WidgetMotion, type Phase, type SceneDocument, type UnifiedProjectAST, type WidgetLayout, type WidgetSpec, type WidgetType, type WidgetVisibility, type BackgroundImageSpec } from '@dawviz/render-core';
 import { clickIsKeyboard, startPaintDrag } from '../lib/paintDrag.ts';
 import { GestureContext } from '../lib/storeReact.ts';
 import { useI18n } from '../i18n/I18nProvider.tsx';
@@ -27,7 +27,7 @@ import { checkLayerName } from '../lib/layerName.ts';
 import { MAX_WIDGET_NAME } from '@dawviz/render-core';
 import { StatusIcon } from './StatusIcon.tsx';
 import { BackgroundSection, type BackgroundState } from './BackgroundSection.tsx';
-import { KeySection, NamingSection, PhasesSection, VisibilitySection } from './TimeSections.tsx';
+import { KeySection, MotionSection, NamingSection, PhasesSection, VisibilitySection } from './TimeSections.tsx';
 
 /** Mốc ↺ của mục Bắt dính: giá trị mặc định của canvas (scene mới). */
 const SNAP_DEFAULT = defaultScene().canvas.snapping;
@@ -58,6 +58,7 @@ export interface EditorActions {
   snapping(p: Partial<SceneDocument['canvas']['snapping']>): void;
   /** Khoảng hiển thị theo thời gian của widget; null = hiện suốt bài. `key` gộp các lần chỉnh liên tiếp cùng một ô. */
   visibility(id: string, v: WidgetVisibility | null, key?: string): void;
+  motion(id: string, v: WidgetMotion | null, key?: string): void;
   /** Phase của bài (đã sắp theo thời điểm bắt đầu). */
   phases(list: Phase[], key?: string): void;
   /** Nốt chủ của bài (0 = C … 11 = B); null = chưa đặt. */
@@ -558,8 +559,9 @@ function Properties({ background, duration, scene, selected, locked, name, advan
         <TickField strong label={i18n.t('web.editor.locked')} checked={lk} onChange={() => onLock(w.id)} reference={false} />
       </InspectorSection>
       <VisibilitySection n={4 + k} widgetId={w.id} value={w.visibility} disabled={lk} onChange={(v, key) => actions.visibility(w.id, v, key)} />
-      <AlignSection n={5 + k} items={[w]} frame={{ width: W, height: H }} onLayouts={actions.layouts} locked={locked} />
-      {snapping(6 + k)}
+      <MotionSection n={5 + k} widgetId={w.id} value={w.motion} disabled={lk} onChange={(v, key) => actions.motion(w.id, v, key)} />
+      <AlignSection n={6 + k} items={[w]} frame={{ width: W, height: H }} onLayouts={actions.layouts} locked={locked} />
+      {snapping(7 + k)}
     </>
   );
 }

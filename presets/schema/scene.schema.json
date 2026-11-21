@@ -59,6 +59,13 @@
           "name": { "type": "string", "minLength": 1, "maxLength": 60, "description": "Tên lớp do người dùng đặt; không trùng nhau. Vắng thì dùng tên theo loại." },
           "zIndex": { "type": "integer", "minimum": -10000, "maximum": 10000 },
           "visible": { "type": "boolean" },
+          "motion": { "type": "object", "description": "Chuyển động cấp widget (vào, ra, lặp theo nhịp) cho mọi loại widget. Vắng = không chuyển động.", "additionalProperties": false,
+            "properties": {
+              "enter": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/motionPhase" }] },
+              "exit": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/motionPhase" }] },
+              "loop": { "oneOf": [{ "type": "null" }, { "type": "object", "additionalProperties": false, "properties": {
+                "effect": { "enum": ["breathe", "float", "sway", "pulse", "blink", "wobble"] }, "amount": { "type": "number", "minimum": 0, "maximum": 1 },
+                "every": { "type": "number", "minimum": 0.05, "maximum": 64 }, "unit": { "enum": ["BEATS", "SECONDS"] } } }] } } },
           "visibility": {
             "type": "object",
             "description": "Khoảng hiển thị theo thời gian (REQ-GRAPHICS-14, T-81). Vắng = hiện suốt bài; ranges rỗng = không bao giờ hiện. Hiện dần/ẩn dần làm mượt, co lại nếu khoảng ngắn hơn tổng hai thời gian.",
@@ -92,6 +99,7 @@
     }
   },
   "$defs": {
+    "motionPhase": { "type": "object", "additionalProperties": false, "properties": { "effect": { "enum": ["fade", "slide-from-left", "slide-from-right", "slide-from-top", "slide-from-bottom", "pop", "zoom", "drop", "spin"] }, "sec": { "type": "number", "minimum": 0, "maximum": 30 }, "ease": {} } },
     "textStyle": {
       "type": "object",
       "description": "Thuộc tính chữ (REQ-GRAPHICS-18, T-72). Trong textStyles: kiểu đầy đủ (trường vắng lấy từ kiểu dựng sẵn cùng id hoặc kiểu gốc). Trong widget: ghi đè, chỉ trường có mặt thay kiểu.",

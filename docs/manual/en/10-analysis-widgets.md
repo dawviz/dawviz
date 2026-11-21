@@ -40,3 +40,17 @@ Leave it on "Default" to keep the names as before.
 - The text in these widgets is a template with placeholders, as in [Inserting live values into text](08-placeholders.md). For example Key uses `{key}`, `{scale}`, `{confidence}`; Section name uses `{section}`, `{next}`, `{next_in}`, `{section_no}`, `{section_elapsed}`; Note density uses `{poly}`.
 - The words "major" and "minor" in the Key widget are text you can edit (Advanced), so you can change them to your own language.
 - Preview and the exported video are identical: these widgets depend only on the moment being shown.
+
+## Motion for every widget
+
+Not only the analysis widgets: **every widget** (Piano roll, text, spectrum, particles, sheet music…) has a **Motion** section when you select it in the Editor.
+
+- **Entrance** runs at the start of each of the widget's display ranges (see **Display range**); a widget with no range runs it at the start of the song. Pick a style (fade, slide from the left/right/top/bottom, pop, zoom, drop, spin) and a length in seconds.
+- **Exit** runs just before the end of the display range, with the same styles.
+- **Repeating**: breathe, float, sway, pulse on the beat, blink, wobble. Adjust **Strength** and **Repeat every** (in beats or seconds). Counted in beats, it stays on the beat when the tempo changes.
+
+You can combine them: for example the entrance "Slide from the left" with the repeating "Pulse on the beat" on the same widget. Scaling and rotation happen around the widget's **anchor point**. Preview and the exported video are identical.
+
+## Per-note animation
+
+The Piano roll also has **Note animation** under **Settings**: each note goes through four phases (arriving, hit, sounding, just ended) in the style you pick: pop in, fade and scale, drop and bounce, rise up, morph (dot to bar), burst when it ends, pulse on hit. Choose **None** and notes just scroll as before. To make notes fall from above or rise from below, rotate the whole Piano roll widget.

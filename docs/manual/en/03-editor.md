@@ -113,6 +113,10 @@ To get a shape at some other angle you can also drag the rotate handle of the wh
 
 When no widget is selected, the **Key** section lets you pick the song's key note (C to B). With a key set, `{bass}` shows the **scale degree** of the bass note (1, ♭2, 2, … 7); without one it shows note names.
 
+## Motion
+
+Select a widget and open **Motion** to give it an entrance, an exit and a repeating move on the beat. It works for every kind of widget. Details in [Analysis widgets](10-analysis-widgets.md#motion-for-every-widget).
+
 ## Note names
 
 Also with no widget selected, the **Note names** section changes the names of notes and chords in every widget at once (letters, Do Re Mi, German; sharps or flats; C4 or C3). Details in [Analysis widgets](10-analysis-widgets.md#note-names).
