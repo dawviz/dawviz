@@ -60,3 +60,15 @@ export function rowKeys(row: RowDef, times: ReadonlyMap<string, readonly number[
   }
   return out;
 }
+
+/** Số hình thoi người dùng thấy trong tập keyframe đang chọn (x+y cùng thời điểm của dòng Vị trí chỉ tính một). */
+export function visibleKeyCount(rows: readonly RowDef[], picked: readonly { path: string; t: number }[]): number {
+  let n = 0;
+  for (const row of rows) {
+    const times = new Map<string, number[]>();
+    for (const p of picked) if (row.paths.includes(p.path)) (times.get(p.path) ?? times.set(p.path, []).get(p.path)!).push(p.t);
+    for (const ts of times.values()) ts.sort((a, b) => a - b);
+    if (times.size) n += rowKeys(row, times).length;
+  }
+  return n;
+}

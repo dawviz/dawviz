@@ -19,7 +19,7 @@ import { Select } from './Select.tsx';
 import { EaseGraph } from './EaseGraph.tsx';
 import { Trash } from './Icons.tsx';
 import { NO_SEL, type KeySel } from './KeyframeTimeline.tsx';
-import { rowOfPath, timelineRows } from '../lib/timelineRows.ts';
+import { rowOfPath, timelineRows, visibleKeyCount } from '../lib/timelineRows.ts';
 
 const EASES = [...EASING_NAMES, 'hold'];
 const LOOPS: LoopMode[] = ['NONE', 'CYCLE', 'PINGPONG', 'OFFSET'];
@@ -65,6 +65,9 @@ export function AnimationInspector({ n, widget, sel, tempoMap, locked, getTime, 
     const first = secs.every((x, j) => j === p.i || !(x < t || (x === t && j < p.i)));
     return [{ path: p.path, i: p.i, f, a, k: a.keys[p.i], t, first }];
   });
+
+  // Số hình thoi người dùng thấy: Vị trí gộp x+y nên cùng dòng, cùng thời điểm chỉ tính một.
+  const shownCount = visibleKeyCount(rows, entries);
 
   if (entries.length) {
     const groups = groupRefs(entries.map((e) => keyRef(e.path, e.i)));
@@ -158,7 +161,7 @@ export function AnimationInspector({ n, widget, sel, tempoMap, locked, getTime, 
         </div>
         <button type="button" className={btn} disabled={locked} data-testid="keyinsp-delete"
           onClick={() => { many((put) => { for (const [p, idx] of groups) { const a = anim(p); if (a) put(p, removeKeys(a, idx)); } }); onSel({ keys: [], row: sel.row }); }}>
-          <Trash className="h-3.5 w-3.5" />{i18n.t('web.keyinsp.delete', { n: entries.length })}
+          <Trash className="h-3.5 w-3.5" />{i18n.t('web.keyinsp.delete', { n: shownCount })}
         </button>
       </InspectorSection>
     );
