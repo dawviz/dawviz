@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "7.2 Quyết định kỹ thuật"
 path: "7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) > 7.2 Quyết định kỹ thuật"
 chunk: 7-2-quyet-dinh-ky-thuat.md
-source_lines: 429-437
-source_sha1: 57493fb549
+source_lines: 435-443
+source_sha1: ff3dfa792b
 ids: [AT-03, D-01, D-63, ERR_EXPORT_FAILED, ERR_NO_SUPPORTED_ENCODER, SOI-10]
 ---
 ### 7.2 Quyết định kỹ thuật
@@ -13,6 +13,6 @@ ids: [AT-03, D-01, D-63, ERR_EXPORT_FAILED, ERR_NO_SUPPORTED_ENCODER, SOI-10]
 - **MP4 fast-start:** `MuxerAdapter` bọc Mediabunny với `fastStart: 'in-memory'` (đã đo cho `ftyp moov mdat`); ghi thẳng đĩa kèm fast-start còn [VERIFY] (SOI-10).
 - **Bậc dự phòng codec:** H.264+AAC/MP4 → H.264 video-only/MP4 → VP9(VP8)+Opus/WebM → `ERR_NO_SUPPORTED_ENCODER`. Silent AAC mặc định TẮT (D-01).
 - **Đồng bộ A/V:** mẫu audio đầu timestamp 0 trùng khung video đầu; bù priming AAC; kiểm bằng AT-03. Cam kết ±2 ms chỉ cho desktop (R-11).
-- **Bản nhạc (đề xuất D-63):** bước pre-flight có thêm "engrave trước" cho widget Bản nhạc (§5.11); Worker chỉ nhận dữ liệu đã dựng.
+- **Bản nhạc (D-63):** bản dựng có sẵn từ Xem trước đi theo `ExportJob.notation`; Export Worker chỉ vẽ (§5.11). Còn widget đang dựng thì hộp thoại khoá nút xuất.
 - **Wake Lock** trong khi xuất; Worker lỗi → `ERR_EXPORT_FAILED`, giữ phiên, cho thử lại.
 - **Bộ nhớ:** mỗi `VideoFrame` phải `close()` ngay; `ImageBitmap`/`AudioData` cũng vậy; kiểm bằng test dài (xuất 90 s 1080p60 không tăng bộ nhớ tuyến tính).

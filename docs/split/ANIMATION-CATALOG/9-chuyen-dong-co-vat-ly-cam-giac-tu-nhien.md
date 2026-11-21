@@ -5,7 +5,7 @@ section: "9. Chuyển động \"có vật lý\" (cảm giác tự nhiên)"
 path: "9. Chuyển động \"có vật lý\" (cảm giác tự nhiên)"
 chunk: 9-chuyen-dong-co-vat-ly-cam-giac-tu-nhien.md
 source_lines: 149-160
-source_sha1: 31fc7a72b4
+source_sha1: 0c1c7a0731
 ids: []
 ---
 ## 9. Chuyển động "có vật lý" (cảm giác tự nhiên)

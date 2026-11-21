@@ -9,6 +9,7 @@ import type { Phase } from './visibility.ts';
 import type { DerivedAudio } from './spectrum.ts';
 import type { BackgroundImage } from './background.ts';
 import type { RichText, TextStyleSet } from './typography.ts';
+import type { NotationItem, NotationLayout, PathData } from './notation/types.ts';
 
 /** Dữ liệu dẫn xuất: tính một lần ngoài vòng vẽ (Technical Design §4). */
 export interface Derived {
@@ -29,6 +30,8 @@ export interface Derived {
   tonic?: number;
   /** Ảnh nền đã nạp của phiên (vẽ trước mọi widget theo `scene.canvas.backgroundImage`); vắng = không có ảnh. */
   background?: BackgroundImage;
+  /** Bản nhạc đã dựng theo id widget Bản nhạc (D-63); thiếu = đang dựng, widget không vẽ gì. */
+  notation?: ReadonlyMap<string, NotationLayout>;
 }
 
 export interface RectPrim {
@@ -51,8 +54,21 @@ export interface TextPrim {
    *  Render Core tự vẽ theo vị trí đã dàn; `text`/`x`/`size`… vẫn điền để đọc/kiểm. Vắng = một lệnh fillText như trước. */
   rich?: RichText;
 }
+/**
+ * Một phần tử bản nhạc (D-63): đường vẽ hoặc dãy glyph của NotationLayout, đặt bằng phép (tx, ty, s) vào toạ độ widget.
+ * `zoom` phóng quanh (cx, cy) đơn vị trang; `glow` vẽ quầng (HALO: viền dày mờ; SOFT: shadowBlur); `rough` làm rung nét tất định.
+ */
+export interface PathPrim {
+  kind: 'path';
+  item: NotationItem; glyphs: readonly PathData[];
+  color: string; alpha: number;
+  tx: number; ty: number; s: number;
+  zoom?: { k: number; cx: number; cy: number };
+  glow?: { mode: 'HALO' | 'SOFT'; color: string; width: number; alpha: number };
+  rough?: { amp: number; step: number; seed: number; id: number };
+}
 /** Hình học thuần, đơn vị pt trong toạ độ widget. */
-export type Primitive = RectPrim | TextPrim;
+export type Primitive = RectPrim | TextPrim | PathPrim;
 
 export interface LayoutCtx {
   ast: UnifiedProjectAST; derived: Derived; tracks: TrackIndex[]; measure: Measure;

@@ -1,7 +1,7 @@
 // Hai mục của bảng Thuộc tính (T-81): "Khoảng hiển thị" của widget đang chọn (REQ-GRAPHICS-14) và "Phase" của cả bài.
 import { MAX_PHASES, MAX_RANGES, PITCH_CLASSES, type Phase, type TimeRange, type WidgetVisibility } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
-import { InspectorSection, TickField } from './Inspector.tsx';
+import { InspectorSection, ResetButton, TickField } from './Inspector.tsx';
 import { NumberField } from './NumberField.tsx';
 import { TimeField } from './TimeField.tsx';
 import { Plus, Close } from './Icons.tsx';
@@ -37,11 +37,13 @@ export function VisibilitySection({ n, widgetId, value, disabled, onChange }: { 
             const last = value!.ranges[value!.ranges.length - 1], from = last ? (last.to ?? last.from) : 0;
             onChange({ ...value!, ranges: [...value!.ranges, { from, to: null }] });
           }} data-testid="vis-add"><Plus className="h-3.5 w-3.5" />{i18n.t('web.vis.addRange')}</button>
-          <div className="grid grid-cols-[minmax(0,1fr)_4.5rem] items-center gap-2 text-xs text-muted">
+          <div className="grid grid-cols-[minmax(0,1fr)_4.5rem_1.5rem] items-center gap-2 text-xs text-muted">
             <span>{i18n.t('web.vis.fadeIn')}</span>
-            <NumberField label={i18n.t('web.vis.fadeIn')} value={value!.fadeIn} spec={FADE} range={[0, 5]} onChange={(v) => onChange({ ...value!, fadeIn: v }, 'fadeIn')} />
+            <NumberField label={i18n.t('web.vis.fadeIn')} value={value!.fadeIn} spec={FADE} range={[0, 5]} disabled={disabled} onChange={(v) => onChange({ ...value!, fadeIn: v }, 'fadeIn')} />
+            <ResetButton label={i18n.t('web.vis.fadeIn')} changed={value!.fadeIn !== 0} disabled={disabled} onReset={() => onChange({ ...value!, fadeIn: 0 }, 'fadeIn')} />
             <span>{i18n.t('web.vis.fadeOut')}</span>
-            <NumberField label={i18n.t('web.vis.fadeOut')} value={value!.fadeOut} spec={FADE} range={[0, 5]} onChange={(v) => onChange({ ...value!, fadeOut: v }, 'fadeOut')} />
+            <NumberField label={i18n.t('web.vis.fadeOut')} value={value!.fadeOut} spec={FADE} range={[0, 5]} disabled={disabled} onChange={(v) => onChange({ ...value!, fadeOut: v }, 'fadeOut')} />
+            <ResetButton label={i18n.t('web.vis.fadeOut')} changed={value!.fadeOut !== 0} disabled={disabled} onReset={() => onChange({ ...value!, fadeOut: 0 }, 'fadeOut')} />
           </div>
         </>
       )}

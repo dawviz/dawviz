@@ -16,6 +16,7 @@ This guide grows with the app. If something isn't in the app yet, it isn't descr
 6. [Exporting video](06-export-video.md): choose the size and format, follow progress, cancel.
 7. [Testing video export](07-testing-export.md): help us try export on your computer and send the results.
 8. [Putting live numbers into text](08-placeholders.md): the text box, `{bpm}`, `{title}`, `{notes}` and how to choose the number style.
+9. [Sheet music](09-sheet-music.md): writing the notes as a score, playing notes that light up and grow, a hand-drawn look.
 
 ## Good to know
 

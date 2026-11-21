@@ -23,6 +23,8 @@ Sound always reaches you a little late through speakers or headphones, and the b
 - In **Device**, pick the one you are using. **Automatic** adds no correction. The app can't tell devices apart by itself, so change this when you switch headphones.
 - **Save device file** and **Open device file** move a device between computers. You can keep up to 16 devices.
 
+The ↺ button next to the **Offset (ms)** field sets that device's offset back to 0.
+
 This offset only shifts the picture against the sound while previewing on this computer. It doesn't change the audio, isn't part of the project's **Audio offset**, and isn't in presets, project packs or exported video.
 
 The result is an estimate: it also includes the delay of your keyboard or mouse and whether you tend to tap early or late. If the picture still seems off, nudge it by a few milliseconds by hand.

@@ -50,6 +50,7 @@ import { loadWorkspaceStyles, saveWorkspaceStyles } from './lib/workspaceStyles.
 import { addUserPreset, loadUserPresets, matchUserPreset, removeUserPreset, saveUserPresets, type UserPreset } from './lib/userPresets.ts';
 import { useFontsStatus } from './lib/fonts.ts';
 import { projectKey, styleThumbnail } from './lib/thumbnails.ts';
+import { NotationStatusContext, useNotation } from './lib/notation/useNotation.ts';
 import { Facts, InspectorSection } from './components/Inspector.tsx';
 import { Mark } from './components/Icons.tsx';
 import { HistoryMenu } from './components/HistoryMenu.tsx';
@@ -198,7 +199,9 @@ export function App() {
   const chordSig = JSON.stringify(scene.widgets.filter((w) => w.type === 'CHORD_DETECTION' || usesChordPlaceholder(w)).map((w) => [w.id, w.trackMappingMode, w.assignedTrackIndices, (w.properties as { mode?: string }).mode, usesChordPlaceholder(w)]));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const hud = useMemo(() => (renderAst && index ? buildSceneHud(scene, renderAst, index) : undefined), [renderAst, index, chordSig]);
-  const derived: Derived | null = useMemo(() => (index ? { index, brightness, hud, fontsReady: fonts === 'ready', ...(features ? { audio: { features, offsetSec: offsetMs / 1000 } } : {}), ...(bgBitmap ? { background: { image: bgBitmap, width: bgBitmap.width, height: bgBitmap.height } } : {}) } : null), [index, brightness, hud, fonts, features, offsetMs, bgBitmap]);
+  // Bản nhạc (D-63): dựng trong Worker, theo widget; đổi màu/phóng to không dựng lại.
+  const notation = useNotation(scene, renderAst, index, loaded ? projectKey(loaded.name, loaded.ast) : '');
+  const derived: Derived | null = useMemo(() => (index ? { index, brightness, hud, fontsReady: fonts === 'ready', ...(notation.layouts.size ? { notation: notation.layouts } : {}), ...(features ? { audio: { features, offsetSec: offsetMs / 1000 } } : {}), ...(bgBitmap ? { background: { image: bgBitmap, width: bgBitmap.width, height: bgBitmap.height } } : {}) } : null), [index, brightness, hud, fonts, features, offsetMs, bgBitmap, notation.layouts]);
 
   // Preset của người dùng (cột Video styles): lưu theo trình duyệt. `activeUser` = ô đang áp khi scene đã bị chỉnh nên không còn khớp từng chữ.
   const [userPresets, setUserPresets] = useState<UserPreset[]>(loadUserPresets);
@@ -668,7 +671,7 @@ export function App() {
   );
 
   return (
-    <GestureContext.Provider value={gesture}><MotionConfig reducedMotion="user"><LayoutGroup>
+    <GestureContext.Provider value={gesture}><NotationStatusContext.Provider value={notation}><MotionConfig reducedMotion="user"><LayoutGroup>
     <div className="flex h-screen min-h-0 flex-col">
       <TopBar tab={tab} onTab={setTab} fileName={loaded?.name} onExport={derived && renderAst ? () => setExporting(true) : undefined} mode={ui.mode} onMode={(mode) => setUi((u) => ({ ...u, mode }))}
         history={history} shortcuts={shortcuts} onUndo={doUndo} onRedo={doRedo} onJump={doJump} stepLabel={stepLabel} announce={announce}
@@ -705,7 +708,7 @@ export function App() {
       </main>
     </div>
     {exporting && derived && renderAst && <Suspense fallback={null}><ExportDialog scene={scene} ast={renderAst} derived={derived} audio={audio} offsetMs={offsetMs} projectSec={duration} fileName={loaded?.name ?? 'dawviz'} advanced={advanced} styleId={doc.videoStyle} styleName={VIDEO_STYLES.includes(doc.videoStyle) ? i18n.t(`web.style.video.${doc.videoStyle}`) : undefined} onClose={() => setExporting(false)} /></Suspense>}
-    </LayoutGroup></MotionConfig></GestureContext.Provider>
+    </LayoutGroup></MotionConfig></NotationStatusContext.Provider></GestureContext.Provider>
   );
 }
 

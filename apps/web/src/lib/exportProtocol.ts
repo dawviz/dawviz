@@ -1,5 +1,5 @@
 // T-09: thông điệp giữa giao diện và Export Worker (Technical Design §7.1, REQ-EXPORT-07).
-import type { BackgroundImage, Derived, DerivedAudio, SceneDocument, UnifiedProjectAST } from '@dawviz/render-core';
+import type { BackgroundImage, Derived, DerivedAudio, NotationLayout, SceneDocument, UnifiedProjectAST } from '@dawviz/render-core';
 import type { CodecChoice, ProgressInfo } from './exportPlan.ts';
 import type { ExportReport, ExportStats } from './exportStats.ts';
 
@@ -23,6 +23,8 @@ export interface ExportJob {
   spectrum?: DerivedAudio;
   /** Ảnh nền của phiên (T-21): ImageBitmap riêng cho lần xuất này, được chuyển (transfer) sang Worker. */
   background?: BackgroundImage;
+  /** Bản nhạc đã dựng ở Xem trước theo id widget Bản nhạc (D-63): Export vẽ đúng bản đó (Preview = Export). */
+  notation?: [string, NotationLayout][];
 }
 /** Tay cầm tệp từ showSaveFilePicker: clone được sang Worker (FileSystemWritableFileStream thì KHÔNG, Chrome ném DataCloneError). */
 export interface FileTarget { createWritable(): Promise<WritableStream<{ type: 'write'; data: Uint8Array; position: number }>> }

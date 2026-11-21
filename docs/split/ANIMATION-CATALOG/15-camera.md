@@ -5,7 +5,7 @@ section: "15. Camera"
 path: "15. Camera"
 chunk: 15-camera.md
 source_lines: 236-247
-source_sha1: 31fc7a72b4
+source_sha1: 0c1c7a0731
 ids: [REQ-GRAPHICS-15]
 ---
 ## 15. Camera

@@ -4,8 +4,8 @@ doc_title: "TÀI LIỆU THIẾT KẾ PHẦN MỀM (SDD) — ỨNG DỤNG DAW VIS
 section: "7. Mở rộng"
 path: "7. Mở rộng"
 chunk: 7-mo-rong.md
-source_lines: 75-80
-source_sha1: 7318e4095f
+source_lines: 76-81
+source_sha1: bd726ffa10
 ids: []
 ---
 ## 7. Mở rộng

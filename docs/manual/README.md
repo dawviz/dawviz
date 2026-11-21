@@ -16,6 +16,7 @@ Hướng dẫn này viết dần theo ứng dụng. Phần nào chưa có trong 
 6. [Xuất video](06-xuat-video.md): chọn kích thước và định dạng, theo dõi tiến độ, hủy.
 7. [Thử nghiệm xuất video](07-thu-nghiem.md): giúp thử xuất video trên máy của bạn và gửi kết quả.
 8. [Chèn số liệu vào chữ](08-cho-giu.md): ô chữ, `{bpm}`, `{title}`, `{notes}` và cách chọn kiểu hiện số.
+9. [Bản nhạc](09-ban-nhac.md): viết nốt thành bản nhạc, nốt đang phát sáng và phóng to, nét viết tay.
 
 ## Vài điều nên biết trước
 

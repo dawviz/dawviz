@@ -64,7 +64,7 @@ apps/web ──► packages/render-core ──► packages/core (chỉ sampleLan
 | D-35 | Một monorepo (parser, i18n, render-core, web, tài liệu) | BRD §7 (như trên) |
 | D-36 | Mã mới viết bằng TypeScript; parser giữ JS + JSDoc (66 test); Render Core là hàm thuần | BRD §7 (như trên) |
 | D-33 | Độ sáng track theo automation, mặc định theo volume, người dùng đổi nguồn | BRD §7 (như trên) · [SRS REQ-GRAPHICS-06](docs/split/SRS/req-graphics-06-do-sang-track-theo-automation-d.md#req-graphics-06-độ-sáng-track-theo-automation-d-33) |
-| D-63 | **[Đề xuất, chờ Spike 4]** Widget Bản nhạc: VexFlow và lượng tử hoá ngoài `packages/render-core`, engrave một lần ra `NotationLayout`, Render Core chỉ vẽ; lượng tử hoá chỉ để vẽ | BRD §7 · [SPIKE-4](docs/spikes/SPIKE-4-NOTATION.md) · [Technical Design §5.11](docs/design/TECHNICAL-DESIGN.md) |
+| D-63 | Widget Bản nhạc (đã làm 2026-11-21): lượng tử hoá/cách viết cao độ/renderer thuần ở `packages/render-core/src/notation/`; VexFlow 5.6 (`vexflow/core`, MIT) **chỉ** ở `apps/web` trong Worker riêng, engrave một lần ra `NotationLayout`; glyph đo và vẽ bằng bảng sinh sẵn (không phông web); lượng tử hoá chỉ để vẽ | BRD §7 · [SPIKE-4](docs/spikes/SPIKE-4-NOTATION.md) · [Technical Design §5.11](docs/design/TECHNICAL-DESIGN.md) |
 | AD-01…06 | Render Core thuần; state nhỏ bằng `useState`; `t` là số duy nhất điều khiển hình ảnh; i18n tĩnh; pan/mute thử nghiệm; Tailwind v3 | [SDD §5 Quyết định thiết kế](docs/split/SDD/5-quyet-dinh-thiet-ke-cua-ung-dung.md#5-quyết-định-thiết-kế-của-ứng-dụng) |
 | PD-xx | Quyết định của thư viện parser (không đoán tempo, giới hạn an toàn, i18n theo mã…) | [PARSER-SDD §10](docs/split/PARSER-SDD/10-quyet-dinh-thiet-ke-va-danh-doi.md#10-quyết-định-thiết-kế-và-đánh-đổi) |
 

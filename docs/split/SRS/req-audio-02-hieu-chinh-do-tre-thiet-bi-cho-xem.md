@@ -5,7 +5,7 @@ section: "REQ-AUDIO-02: Hiệu chỉnh độ trễ thiết bị cho Xem trước
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-AUDIO-02: Hiệu chỉnh độ trễ thiết bị cho Xem trước (T-82)"
 chunk: req-audio-02-hieu-chinh-do-tre-thiet-bi-cho-xem.md
 source_lines: 643-650
-source_sha1: 6d45847731
+source_sha1: 34fd2a9134
 ids: [REQ-AUDIO-02]
 ---
 #### REQ-AUDIO-02: Hiệu chỉnh độ trễ thiết bị cho Xem trước (T-82)

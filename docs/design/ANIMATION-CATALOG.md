@@ -177,7 +177,7 @@ Quyết định giá trị thay đổi **thế nào** giữa hai keyframe.
 | Color shift / Tint | Đổi màu theo thời gian hoặc dữ liệu | v1.0 | C2D |
 | Hue rotate | Xoay vòng màu | v1.0 | C2D (`filter`) |
 | Gradient animate | Điểm dừng gradient, góc, vị trí có keyframe | v1.0 | C2D |
-| Glow / Bloom pulse | Phát sáng đập theo nhịp | v1.0 | C2D $ |
+| Glow / Bloom pulse | Phát sáng đập theo nhịp. Riêng widget Bản nhạc đã có sẵn "Sáng cả bản nhạc" (T-96, Thở/Loé/Bật tắt theo phách, ô, giây); bản tổng quát cho mọi lớp làm ở T-34 | v1.0 | C2D $ |
 | Brightness / Contrast / Saturation | Chỉnh toàn lớp | v1.0 | C2D (`filter`) |
 | Flash | Loé sáng toàn màn ở thời điểm chỉ định | v1.0 | C2D |
 | Light sweep / Shine | Vệt sáng lướt qua đối tượng | v1.1 | C2D |

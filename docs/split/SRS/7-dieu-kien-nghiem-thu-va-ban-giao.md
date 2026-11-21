@@ -4,9 +4,9 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO"
 path: "7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO"
 chunk: 7-dieu-kien-nghiem-thu-va-ban-giao.md
-source_lines: 1130-1164
-source_sha1: 6d45847731
-ids: [ARC-01, AT-01, AT-02, AT-03, AT-04, AT-05, AT-06, AT-07, AT-08, AT-09, AT-10, AT-11, AT-12, AT-13, AT-14, AT-15, AT-16, AT-17, AT-18, AT-19, AT-20, AT-21, AT-22, AT-23, AT-24, AT-25, AT-26, BR-01, BR-02, BR-05, BR-08, BR-09, D-11, D-25, D-29, KPI-01, KPI-02, KPI-03, KPI-04, KPI-05, KPI-06, KPI-07, KPI-08, NFR-COMP-02, NFR-PERF-03, OI-01, OI-02, P-01, P-13, REQ-GRAPHICS-05, REQ-GRAPHICS-06, REQ-UI-08]
+source_lines: 1133-1168
+source_sha1: 34fd2a9134
+ids: [ARC-01, AT-01, AT-02, AT-03, AT-04, AT-05, AT-06, AT-07, AT-08, AT-09, AT-10, AT-11, AT-12, AT-13, AT-14, AT-15, AT-16, AT-17, AT-18, AT-19, AT-20, AT-21, AT-22, AT-23, AT-24, AT-25, AT-26, AT-27, BR-01, BR-02, BR-05, BR-08, BR-09, D-11, D-25, D-29, D-63, KPI-01, KPI-02, KPI-03, KPI-04, KPI-05, KPI-06, KPI-07, KPI-08, NFR-COMP-02, NFR-PERF-03, OI-01, OI-02, P-01, P-13, REQ-GRAPHICS-05, REQ-GRAPHICS-06, REQ-UI-08]
 ---
 ## 7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO
 
@@ -40,5 +40,6 @@ Phiên bản đạt nghiệm thu khi vượt qua toàn bộ các kiểm thử sa
 | **AT-25** | Bố cục track và nhập giá trị (1.0) | Đổi Dọc/Ngang/Lưới và Gọn/Đầy đủ với dự án 15+ track: không phần tử tràn khỏi thẻ ở bề rộng 1440/1100/800 px, phím mũi tên đi đúng hướng; mọi thuộc tính có tay nắm kéo đều có ô nhập; gõ `1920/2`, `+=10`, `0,5`, `50%` cho kết quả đúng; chuỗi sai giữ giá trị cũ; giá trị ngoài giới hạn cứng bị kẹp và trùng với giá trị Render Core vẽ. |
 | **AT-26** | Phát sáng động và bố cục track (1.0) | Mặc định mọi nốt sáng như nhau và độ sáng nền "đều nhau". Bật "Động khi chạm": theo velocity thì nốt velocity 127 sáng hơn rõ nốt velocity 30; theo fade thì sáng nhất lúc chạm rồi tắt dần; theo automation âm lượng (`BigProject4b.rpp`) thì đổi theo envelope; track không có lane sáng đều. Dự án 15 track: Lưới tự động không tràn ở 1440/1100/800 px; chọn 8 cột ở 1280 px thì báo chỉ vừa 4; đổi số cột và đổi Lưới ↔ Danh sách thấy thẻ di chuyển mượt; Danh sách mở dòng bằng Enter; tải lại trang giữ lựa chọn. |
 | **AT-24** | Stem theo track (1.2) | Nạp tệp mix + 4 stem xuất từ Reaper và Ableton (cùng điểm đầu): tự ghép đúng tên track; spectrum của từng track khớp âm thanh của track đó; stem lệch độ dài có cảnh báo; mở lại dự án từ Project Pack không cần stem mà widget vẫn vẽ được. |
+| **AT-27** | Bản nhạc (D-63) | Thêm widget Bản nhạc với tệp DAW đúng lưới (vd. `fun song.flp`) và một `.mid` chơi tự do: tệp DAW viết đúng nhịp, không lỗi; tệp chơi tự do hiện cảnh báo nhịp tự do. Khi phát, nốt sáng đúng lúc nghe (lệch ≤ 1 khung so với Piano Roll), nốt đã qua đổi màu, sang trang đúng đầu ô. Xuất video: khung hình giống Xem trước tại cùng thời điểm; với Quầng sáng, thời gian vẽ mỗi khung không tăng dần trên Firefox. |
 
 ---

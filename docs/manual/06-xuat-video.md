@@ -54,6 +54,10 @@ Tệp lớn hơn 1 GB trên trình duyệt không ghi thẳng xuống đĩa đư
 
 Trên Ubuntu, cả Chrome lẫn Firefox hiện báo không mã hoá được AAC. Đây là giới hạn của trình duyệt, chưa có cách khắc phục trong ứng dụng, và chúng tôi chưa thấy thư viện nào cài thêm trên máy giúp được. Ở chế độ Cơ bản, ứng dụng tự hạ xuống một codec khác trong MP4 (thường là Opus), nên tệp vẫn có tiếng. Opus phát được trong Chrome, Firefox, VLC, mpv và các phần mềm dựng mới; phần mềm cũ có thể không mở được tiếng Opus trong MP4. Khi đó dùng chế độ Nâng cao, chọn **MOV** hoặc **MKV** với **PCM** (không nén, tệp lớn nhưng đọc được ở hầu hết nơi).
 
+## Khi có Bản nhạc
+
+Khi khung có widget Bản nhạc mà bản nhạc vẫn đang được viết, hộp thoại báo "Bản nhạc vẫn đang được viết" và chỉ cho bấm **Bắt đầu xuất** khi viết xong, để video không thiếu bản nhạc.
+
 ## Chỉ một lần xuất mỗi lúc
 
 Ứng dụng chỉ cho một tab xuất tại một thời điểm. Tab thứ hai báo "Một tab khác đang xuất video" và khoá nút **Bắt đầu xuất** cho tới khi tab kia xong. Lý do: hai lần xuất cùng lúc tranh nhau bộ mã hoá nên cả hai chậm đi nhiều, và nếu cùng lưu vào một tên tệp thì lần xong sau ghi đè lần kia mà không báo.

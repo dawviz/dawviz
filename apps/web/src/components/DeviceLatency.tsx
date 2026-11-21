@@ -6,6 +6,7 @@ import { createCalibration, type Calibration, type CalStatus } from '../lib/cali
 import { CAL, DEVICE_OFFSET_LIMIT_MS, MAX_PROFILES, MAX_PROFILE_FILE_BYTES, MAX_PROFILE_NAME, addProfile, removeProfile, parseProfile, serializeProfile, updateProfile, uniqueProfileName,
   type CalibrationResult, type DevicePrefs } from '../lib/latencyCalibration.ts';
 import { NumberField } from './NumberField.tsx';
+import { ResetButton } from './Inspector.tsx';
 import { Select } from './Select.tsx';
 import { StatusIcon } from './StatusIcon.tsx';
 
@@ -93,16 +94,17 @@ export function DeviceLatency({ prefs, onChange, makeCalibration = () => createC
       </div>
 
       {active && (
-        <div className="grid grid-cols-[minmax(0,1fr)_6rem] items-center gap-x-3 gap-y-2 text-xs text-muted" data-testid="device-edit">
+        <div className="grid grid-cols-[minmax(0,1fr)_6rem_1.5rem] items-center gap-x-3 gap-y-2 text-xs text-muted" data-testid="device-edit">
           <span>{i18n.t('web.latency.name')}</span>
-          <span aria-hidden />
+          <span aria-hidden className="col-span-2" />
           <input type="text" aria-label={i18n.t('web.latency.name')} defaultValue={active.name} key={active.id + active.name} maxLength={MAX_PROFILE_NAME} data-testid="device-name"
             onBlur={(e) => { const v = e.target.value.trim(); if (!v) e.target.value = active.name; else if (v !== active.name) onChange(updateProfile(prefs, active.id, { name: v })); }}
             onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
-            className="col-span-2 w-full min-w-0 rounded border border-control bg-raised px-2 py-1 text-[13px] text-fg" />
+            className="col-span-3 w-full min-w-0 rounded border border-control bg-raised px-2 py-1 text-[13px] text-fg" />
           <span>{i18n.t('web.latency.offset')}</span>
           <NumberField label={i18n.t('web.latency.offset')} value={active.offsetMs} spec={{ min: -DEVICE_OFFSET_LIMIT_MS, max: DEVICE_OFFSET_LIMIT_MS, step: 1, units: { ms: 1 } }} range={[-200, 200]}
             onChange={(v) => onChange(updateProfile(prefs, active.id, { offsetMs: v }))} />
+          <ResetButton label={i18n.t('web.latency.offset')} changed={active.offsetMs !== 0} onReset={() => onChange(updateProfile(prefs, active.id, { offsetMs: 0 }))} />
         </div>
       )}
 

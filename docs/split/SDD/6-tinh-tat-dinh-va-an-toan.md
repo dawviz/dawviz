@@ -4,8 +4,8 @@ doc_title: "TÀI LIỆU THIẾT KẾ PHẦN MỀM (SDD) — ỨNG DỤNG DAW VIS
 section: "6. Tính tất định và an toàn"
 path: "6. Tính tất định và an toàn"
 chunk: 6-tinh-tat-dinh-va-an-toan.md
-source_lines: 69-74
-source_sha1: 7318e4095f
+source_lines: 70-75
+source_sha1: bd726ffa10
 ids: []
 ---
 ## 6. Tính tất định và an toàn

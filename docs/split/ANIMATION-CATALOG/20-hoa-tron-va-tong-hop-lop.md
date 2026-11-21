@@ -5,7 +5,7 @@ section: "20. Hoà trộn và tổng hợp lớp"
 path: "20. Hoà trộn và tổng hợp lớp"
 chunk: 20-hoa-tron-va-tong-hop-lop.md
 source_lines: 313-322
-source_sha1: 31fc7a72b4
+source_sha1: 0c1c7a0731
 ids: []
 ---
 ## 20. Hoà trộn và tổng hợp lớp

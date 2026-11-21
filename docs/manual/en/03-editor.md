@@ -77,6 +77,10 @@ The **Particles** widget throws out small particles whenever a note starts. Part
 
 For slow, plentiful embers: raise Particles per note and Lifetime, lower Speed. For fast sparks: raise Speed, lower Lifetime. On a light style such as Paper, pick a dark colour, because the default of "One colour" is white. Ready-made particle sets (fire, smoke, mist, snow…) are planned for a later version, so you will not have to pick the settings yourself.
 
+## Sheet music
+
+The **Sheet music** widget writes your notes as a two-staff score; playing notes light up and grow. How to use it and every setting: [Sheet music](09-sheet-music.md).
+
 ## Background image
 
 When no widget is selected, the **Background image** section lets you pick a PNG, JPEG, WebP or GIF (up to 20 MB; very large images are scaled down to 4096 pixels on the long side, GIFs use the first frame). The image sits under every widget.
@@ -115,7 +119,7 @@ By default a widget is shown for the whole song. Select a widget and turn on **S
 
 - Each row is a range: **Show from** and **Show until**. Type seconds (`90`, `90.5`) or minutes:seconds (`1:30`, `1:30.5`). Leave **Show until** empty to show it until the end of the song.
 - **Add range** adds a row; the × button removes one. With no range left the widget is never shown.
-- **Fade in** and **Fade out** (seconds) make the widget fade in when a range starts and fade out when it ends. If a range is shorter than the two times together, both shrink in proportion.
+- **Fade in** and **Fade out** (seconds) make the widget fade in when a range starts and fade out when it ends. If a range is shorter than the two times together, both shrink in proportion. The ↺ button next to each field sets it back to 0 (no fade).
 - Turn the tick off again to show it for the whole song.
 
 The display range only affects the video and Preview; in the Editor you can still select and drag the widget as usual.

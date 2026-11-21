@@ -1,6 +1,6 @@
 # Chỉ mục ANIMATION-CATALOG.md — Danh mục hiệu ứng chuyển động và đường cong nội suy
 
-nguồn: `ANIMATION-CATALOG.md` (sha1 31fc7a72b4)
+nguồn: `ANIMATION-CATALOG.md` (sha1 0c1c7a0731)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -16,7 +16,7 @@ nguồn: `ANIMATION-CATALOG.md` (sha1 31fc7a72b4)
 | 9 | 8. Hình dạng (shape) và biến dạng hình học | [8-hinh-dang-shape-va-bien-dang-hinh-hoc.md](8-hinh-dang-shape-va-bien-dang-hinh-hoc.md) | 691 | AD-11, D-44 |
 | 10 | 9. Chuyển động "có vật lý" (cảm giác tự nhiên) | [9-chuyen-dong-co-vat-ly-cam-giac-tu-nhien.md](9-chuyen-dong-co-vat-ly-cam-giac-tu-nhien.md) | 562 |  |
 | 11 | 10. Hiệu ứng thủ tục (procedural) | [10-hieu-ung-thu-tuc-procedural.md](10-hieu-ung-thu-tuc-procedural.md) | 643 |  |
-| 12 | 11. Màu và ánh sáng | [11-mau-va-anh-sang.md](11-mau-va-anh-sang.md) | 749 |  |
+| 12 | 11. Màu và ánh sáng | [11-mau-va-anh-sang.md](11-mau-va-anh-sang.md) | 883 |  |
 | 13 | 12. Làm mờ, biến dạng điểm ảnh và phong cách hoá | [12-lam-mo-bien-dang-diem-anh-va-phong-cach-hoa.md](12-lam-mo-bien-dang-diem-anh-va-phong-cach-hoa.md) | 968 |  |
 | 14 | 13. Chữ (text) | [13-chu-text.md](13-chu-text.md) | 720 |  |
 | 15 | 14. Chuyển cảnh (giữa hai cảnh hoặc hai đoạn) | [14-chuyen-canh-giua-hai-canh-hoac-hai-doan.md](14-chuyen-canh-giua-hai-canh-hoac-hai-doan.md) | 701 |  |

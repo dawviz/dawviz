@@ -24,7 +24,8 @@
     "docs:sync": "node scripts/sync-docs.mjs",
     "test:docs-site": "node --test scripts/docs-site/markdown.test.mjs",
     "docs:site": "node scripts/docs-site/build.mjs",
-    "docs:serve": "node scripts/docs-site/build.mjs --serve"
+    "docs:serve": "node scripts/docs-site/build.mjs --serve",
+    "notation:e2e": "node scripts/notation/e2e.mjs"
   },
   "engines": {
     "node": ">=22.18"
@@ -32,6 +33,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@fontsource/space-grotesk": "^5.3.0",
-    "fontkit": "^3.0.0"
+    "fontkit": "^3.0.0",
+    "playwright-core": "^1.65.1"
   }
 }

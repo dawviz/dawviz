@@ -30,3 +30,7 @@ test/fixtures/third-party/
 
 # tệp mẫu sinh bằng test/fixtures/generate-synthetic.mjs
 test/fixtures/generated/
+
+# Công cụ đo Bản nhạc (scripts/notation): kết quả chạy và dữ liệu thử của bên thứ ba (MAESTRO: CC BY-NC-SA 4.0, không phân phối lại)
+scripts/notation/out/
+scripts/notation/data/

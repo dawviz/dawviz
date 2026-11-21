@@ -4,7 +4,9 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 
 ## BRD.md — TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)
 
-- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 5772 ký tự
+- [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 528 ký tự
+- [Lịch sử phiên bản](BRD/lich-su-phien-ban.md) · 5287 ký tự
+- [Quy ước nhãn trong tài liệu](BRD/quy-uoc-nhan-trong-tai-lieu.md) · 426 ký tự
 - [1. THÔNG TIN CHUNG & BỐI CẢNH DỰ ÁN](BRD/1-thong-tin-chung-boi-canh-du-an.md) · 1753 ký tự
 - [2. MỤC TIÊU KINH DOANH, CHỈ SỐ ĐO LƯỜNG & YÊU CẦU NGHIỆP VỤ](BRD/2-muc-tieu-kinh-doanh-chi-so-do-luong-yeu-cau-ng.md) · 4778 ký tự
 - [3. CHÂN DUNG NGƯỜI DÙNG MỤC TIÊU (USER PERSONAS)](BRD/3-chan-dung-nguoi-dung-muc-tieu-user-personas.md) · 1453 ký tự
@@ -14,13 +16,13 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1202 ký tự
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4347 ký tự
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](BRD/6-gia-dinh-assumptions.md) · 554 ký tự
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 28812 ký tự
-- [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](BRD/8-cac-van-de-con-mo-open-issues.md) · 7174 ký tự
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 28972 ký tự
+- [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](BRD/8-cac-van-de-con-mo-open-issues.md) · 7755 ký tự
 
 ## SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
 - [DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)](SRS/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md) · 422 ký tự
-- [Lịch sử phiên bản](SRS/lich-su-phien-ban.md) · 9627 ký tự
+- [Lịch sử phiên bản](SRS/lich-su-phien-ban.md) · 9737 ký tự
 - [Quy ước trong tài liệu](SRS/quy-uoc-trong-tai-lieu.md) · 818 ký tự
 - [Mục lục](SRS/muc-luc.md) · 365 ký tự
 - [1. GIỚI THIỆU & MỤC TIÊU HỆ THỐNG](SRS/1-gioi-thieu-muc-tieu-he-thong.md) · 4750 ký tự
@@ -65,9 +67,9 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [REQ-AUDIO-02: Hiệu chỉnh độ trễ thiết bị cho Xem trước (T-82)](SRS/req-audio-02-hieu-chinh-do-tre-thiet-bi-cho-xem.md) · 1882 ký tự
 - [REQ-AUDIO-01: Âm thanh theo track (stem), bản 1.2](SRS/req-audio-01-am-thanh-theo-track-stem-ban-1-2.md) · 3254 ký tự
 - [REQ-WIDGET-08: Progress Bar (D-27)](SRS/req-widget-08-progress-bar-d-27.md) · 822 ký tự
-- [REQ-WIDGET-09: Bản nhạc (Notation) **[ĐỀ XUẤT, D-63, chờ Spike 4]**](SRS/req-widget-09-ban-nhac-notation-de-xuat-d-63-cho.md) · 2140 ký tự
-- [REQ-NOTATION-01: Lượng tử hoá để vẽ bản nhạc **[ĐỀ XUẤT, D-63]**](SRS/req-notation-01-luong-tu-hoa-de-ve-ban-nhac-de-x.md) · 1181 ký tự
-- [REQ-GRAPHICS-20: Nét tay tất định cho đường vẽ **[ĐỀ XUẤT, D-63]**](SRS/req-graphics-20-net-tay-tat-dinh-cho-duong-ve-de.md) · 615 ký tự
+- [REQ-WIDGET-09: Bản nhạc (Notation) (D-63; đã làm 2026-11-21, T-90…T-95)](SRS/req-widget-09-ban-nhac-notation-d-63-da-lam-2026.md) · 3392 ký tự
+- [REQ-NOTATION-01: Lượng tử hoá để vẽ bản nhạc (D-63; đã làm 2026-11-21)](SRS/req-notation-01-luong-tu-hoa-de-ve-ban-nhac-d-63.md) · 1936 ký tự
+- [REQ-GRAPHICS-20: Nét tay tất định cho đường vẽ (D-63; đã làm 2026-11-21 cho bản nhạc)](SRS/req-graphics-20-net-tay-tat-dinh-cho-duong-ve-d.md) · 602 ký tự
 - [3.4b. Đề xuất widget và dữ liệu hiển thị bổ sung (D-32, OI-11) **[ĐỀ XUẤT, chưa cam kết v1.0]**](SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md) · 2994 ký tự
 - [3.5. Lưu trữ, cấu hình & đóng gói (BR-05, D-11)](SRS/3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md) · 4696 ký tự
 - [REQ-CAP-01: Phát hiện khả năng của trình duyệt (R-06, D-05)](SRS/req-cap-01-phat-hien-kha-nang-cua-trinh-duyet-r.md) · 413 ký tự
@@ -95,8 +97,8 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [5.1. Bố cục không gian làm việc](SRS/5-1-bo-cuc-khong-gian-lam-viec.md) · 4893 ký tự
 - [5.2. Chế độ tương tác](SRS/5-2-che-do-tuong-tac.md) · 364 ký tự
 - [5.3. Yêu cầu giao diện](SRS/5-3-yeu-cau-giao-dien.md) · 18661 ký tự
-- [6. MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU](SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md) · 1419 ký tự
-- [7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO](SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md) · 6665 ký tự
+- [6. MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU](SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md) · 1468 ký tự
+- [7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO](SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md) · 7104 ký tự
 - [8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS](SRS/8-cac-van-de-con-mo-cua-srs.md) · 4044 ký tự
 - [Phụ lục A: Mã lỗi](SRS/phu-luc-a-ma-loi.md) · 2864 ký tự
 - [Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)](SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md) · 1673 ký tự
@@ -108,8 +110,8 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [TÀI LIỆU THIẾT KẾ PHẦN MỀM (SDD) — ỨNG DỤNG DAW VISUALIZER (mở đầu)](SDD/tai-lieu-thiet-ke-phan-mem-sdd-ung-dung-daw-visu.md) · 495 ký tự
 - [1. Phạm vi và nguyên tắc](SDD/1-pham-vi-va-nguyen-tac.md) · 615 ký tự
 - [2. Cấu trúc kho mã (D-35)](SDD/2-cau-truc-kho-ma-d-35.md) · 704 ký tự
-- [3. Render Core (`@dawviz/render-core`, D-36)](SDD/3-render-core-dawviz-render-core-d-36.md) · 1359 ký tự
-- [4. Ứng dụng web (`apps/web`, D-34)](SDD/4-ung-dung-web-apps-web-d-34.md) · 1290 ký tự
+- [3. Render Core (`@dawviz/render-core`, D-36)](SDD/3-render-core-dawviz-render-core-d-36.md) · 1739 ký tự
+- [4. Ứng dụng web (`apps/web`, D-34)](SDD/4-ung-dung-web-apps-web-d-34.md) · 1633 ký tự
 - [5. Quyết định thiết kế của ứng dụng](SDD/5-quyet-dinh-thiet-ke-cua-ung-dung.md) · 1191 ký tự
 - [6. Tính tất định và an toàn](SDD/6-tinh-tat-dinh-va-an-toan.md) · 318 ký tự
 - [7. Mở rộng](SDD/7-mo-rong.md) · 416 ký tự
@@ -129,11 +131,11 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [5.4 Piano Roll 🟢](TECHNICAL-DESIGN/5-4-piano-roll.md) · 714 ký tự
 - [5.5 Quy tắc tất định (kiểm bằng test)](TECHNICAL-DESIGN/5-5-quy-tac-tat-dinh-kiem-bang-test.md) · 640 ký tự
 - [5.6 Phát sáng động khi chạm 🟢](TECHNICAL-DESIGN/5-6-phat-sang-dong-khi-cham.md) · 1776 ký tự
-- [5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)](TECHNICAL-DESIGN/5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md) · 5390 ký tự
+- [5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)](TECHNICAL-DESIGN/5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md) · 5581 ký tự
 - [5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp 🟢 (đã dùng ở T-69)](TECHNICAL-DESIGN/5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md) · 925 ký tự
 - [5.9 Kiểu chữ cho mọi chữ trong video 🟢 (T-72, SRS REQ-GRAPHICS-18, D-58)](TECHNICAL-DESIGN/5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md) · 6552 ký tự
 - [5.10 Chỗ giữ trong chữ và Ô chữ 🟢 (T-73, SRS REQ-GRAPHICS-19, D-60/OI-18)](TECHNICAL-DESIGN/5-10-cho-giu-trong-chu-va-o-chu-t-73-srs-req-gra.md) · 5437 ký tự
-- [5.11 Bản nhạc (Notation) ⚪ (đề xuất D-63, SRS REQ-WIDGET-09 / REQ-NOTATION-01 / REQ-GRAPHICS-20; chờ Spike 4)](TECHNICAL-DESIGN/5-11-ban-nhac-notation-de-xuat-d-63-srs-req-widg.md) · 2050 ký tự
+- [5.11 Bản nhạc (Notation) 🟢 (T-90…T-95, D-63; SRS REQ-WIDGET-09, REQ-NOTATION-01, REQ-GRAPHICS-20; báo cáo Spike 4)](TECHNICAL-DESIGN/5-11-ban-nhac-notation-t-90-t-95-d-63-srs-req-wi.md) · 5709 ký tự
 - [6.1 Trạng thái](TECHNICAL-DESIGN/6-1-trang-thai.md) · 1256 ký tự
 - [6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh)](TECHNICAL-DESIGN/6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md) · 233 ký tự
 - [6.2.1 Nạp tệp âm thanh (mix)](TECHNICAL-DESIGN/6-2-1-nap-tep-am-thanh-mix.md) · 3263 ký tự
@@ -148,13 +150,13 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [6.3 Danh sách track 🟢](TECHNICAL-DESIGN/6-3-danh-sach-track.md) · 1860 ký tự
 - [6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)](TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) · 19139 ký tự
 - [7.1 Trình tự](TECHNICAL-DESIGN/7-1-trinh-tu.md) · 1019 ký tự
-- [7.2 Quyết định kỹ thuật](TECHNICAL-DESIGN/7-2-quyet-dinh-ky-thuat.md) · 1080 ký tự
+- [7.2 Quyết định kỹ thuật](TECHNICAL-DESIGN/7-2-quyet-dinh-ky-thuat.md) · 1109 ký tự
 - [7.3 Phần lõi thuần đã làm (T-09, 2026-11-14)](TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md) · 1745 ký tự
 - [7.4 Export Worker và giao diện (T-09, 2026-11-14)](TECHNICAL-DESIGN/7-4-export-worker-va-giao-dien-t-09-2026-11-14.md) · 8203 ký tự
 - [8. Lưu trữ 🟢 (M4, T-10)](TECHNICAL-DESIGN/8-luu-tru-m4-t-10.md) · 1704 ký tự
 - [9. Đa ngôn ngữ 🟢](TECHNICAL-DESIGN/9-da-ngon-ngu.md) · 492 ký tự
 - [10. Lỗi, ghi nhật ký, quan sát](TECHNICAL-DESIGN/10-loi-ghi-nhat-ky-quan-sat.md) · 470 ký tự
-- [11. Hiệu năng và bộ nhớ (ngân sách)](TECHNICAL-DESIGN/11-hieu-nang-va-bo-nho-ngan-sach.md) · 1092 ký tự
+- [11. Hiệu năng và bộ nhớ (ngân sách)](TECHNICAL-DESIGN/11-hieu-nang-va-bo-nho-ngan-sach.md) · 1164 ký tự
 - [12. Bảo mật và quyền riêng tư](TECHNICAL-DESIGN/12-bao-mat-va-quyen-rieng-tu.md) · 728 ký tự
 - [13. Xây dựng, kiểm thử, phát hành](TECHNICAL-DESIGN/13-xay-dung-kiem-thu-phat-hanh.md) · 906 ký tự
 - [14. Việc cần làm theo mốc (từ thiết kế này)](TECHNICAL-DESIGN/14-viec-can-lam-theo-moc-tu-thiet-ke-nay.md) · 760 ký tự
@@ -208,7 +210,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [8. Hình dạng (shape) và biến dạng hình học](ANIMATION-CATALOG/8-hinh-dang-shape-va-bien-dang-hinh-hoc.md) · 691 ký tự
 - [9. Chuyển động "có vật lý" (cảm giác tự nhiên)](ANIMATION-CATALOG/9-chuyen-dong-co-vat-ly-cam-giac-tu-nhien.md) · 562 ký tự
 - [10. Hiệu ứng thủ tục (procedural)](ANIMATION-CATALOG/10-hieu-ung-thu-tuc-procedural.md) · 643 ký tự
-- [11. Màu và ánh sáng](ANIMATION-CATALOG/11-mau-va-anh-sang.md) · 749 ký tự
+- [11. Màu và ánh sáng](ANIMATION-CATALOG/11-mau-va-anh-sang.md) · 883 ký tự
 - [12. Làm mờ, biến dạng điểm ảnh và phong cách hoá](ANIMATION-CATALOG/12-lam-mo-bien-dang-diem-anh-va-phong-cach-hoa.md) · 968 ký tự
 - [13. Chữ (text)](ANIMATION-CATALOG/13-chu-text.md) · 720 ký tự
 - [14. Chuyển cảnh (giữa hai cảnh hoặc hai đoạn)](ANIMATION-CATALOG/14-chuyen-canh-giua-hai-canh-hoac-hai-doan.md) · 701 ký tự
@@ -383,13 +385,13 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 
 ## SPIKE-4-NOTATION.md — Spike 4: bản nhạc (notation) bằng VexFlow, phát sáng từng nốt, nét tay
 
-- [Spike 4: bản nhạc (notation) bằng VexFlow, phát sáng từng nốt, nét tay (mở đầu)](SPIKE-4-NOTATION/spike-4-ban-nhac-notation-bang-vexflow-phat-sang.md) · 779 ký tự
+- [Spike 4: bản nhạc (notation) bằng VexFlow, phát sáng từng nốt, nét tay (mở đầu)](SPIKE-4-NOTATION/spike-4-ban-nhac-notation-bang-vexflow-phat-sang.md) · 720 ký tự
 - [1. Điều quan sát từ video tham chiếu (đoạn 1:49–2:10)](SPIKE-4-NOTATION/1-dieu-quan-sat-tu-video-tham-chieu-doan-1-49-2.md) · 532 ký tự
-- [2. Hiện trạng liên quan trong repo](SPIKE-4-NOTATION/2-hien-trang-lien-quan-trong-repo.md) · 1042 ký tự
-- [3. Kiến trúc đề xuất](SPIKE-4-NOTATION/3-kien-truc-de-xuat.md) · 1528 ký tự
-- [4. Các spike](SPIKE-4-NOTATION/4-cac-spike.md) · 3763 ký tự
-- [5. Khả năng tuỳ biến dự kiến](SPIKE-4-NOTATION/5-kha-nang-tuy-bien-du-kien.md) · 907 ký tự
-- [6. Kết quả](SPIKE-4-NOTATION/6-ket-qua.md) · 114 ký tự
-- [7. Điều kiện chốt D-63](SPIKE-4-NOTATION/7-dieu-kien-chot-d-63.md) · 294 ký tự
-- [8. Việc kéo theo (không làm trong spike)](SPIKE-4-NOTATION/8-viec-keo-theo-khong-lam-trong-spike.md) · 299 ký tự
+- [2. Hiện trạng liên quan trong repo (trước spike)](SPIKE-4-NOTATION/2-hien-trang-lien-quan-trong-repo-truoc-spike.md) · 850 ký tự
+- [3. Kiến trúc (sau spike)](SPIKE-4-NOTATION/3-kien-truc-sau-spike.md) · 1965 ký tự
+- [4. Các spike (câu hỏi và cách làm)](SPIKE-4-NOTATION/4-cac-spike-cau-hoi-va-cach-lam.md) · 1042 ký tự
+- [5. Khả năng tuỳ biến (đã làm)](SPIKE-4-NOTATION/5-kha-nang-tuy-bien-da-lam.md) · 1182 ký tự
+- [6. Kết quả](SPIKE-4-NOTATION/6-ket-qua.md) · 4969 ký tự
+- [7. Quyết định](SPIKE-4-NOTATION/7-quyet-dinh.md) · 224 ký tự
+- [8. Còn lại](SPIKE-4-NOTATION/8-con-lai.md) · 1226 ký tự
 

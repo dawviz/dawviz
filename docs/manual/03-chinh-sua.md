@@ -77,6 +77,10 @@ Widget **Hạt** phát ra các hạt nhỏ mỗi khi có nốt. Hạt chỉ ph�
 
 Muốn tàn lửa chậm và nhiều hơn: tăng Số hạt và Tuổi thọ, giảm Tốc độ. Muốn tia lửa nhanh: tăng Tốc độ, giảm Tuổi thọ. Trên nền sáng như phong cách Paper, nhớ chọn màu đậm vì mặc định của "Một màu" là trắng. Các bộ hạt dựng sẵn (lửa, khói, sương, tuyết…) sẽ có ở bản sau để bạn khỏi phải tự đặt thông số.
 
+## Bản nhạc
+
+Widget **Bản nhạc** viết nốt của dự án thành bản nhạc khuông đôi; nốt đang phát sáng và phóng to. Cách dùng và mọi thiết lập: [Bản nhạc](09-ban-nhac.md).
+
 ## Ảnh nền
 
 Khi không chọn widget nào, mục **Ảnh nền** cho bạn chọn một ảnh PNG, JPEG, WebP hoặc GIF (tối đa 20 MB; ảnh quá lớn về kích thước được thu nhỏ còn 4096 điểm ở cạnh dài, GIF lấy khung đầu). Ảnh nằm dưới mọi widget.
@@ -115,7 +119,7 @@ Mặc định widget hiện suốt bài. Chọn widget rồi bật **Chỉ hiệ
 
 - Mỗi dòng là một khoảng: **Hiện từ** và **Hiện tới**. Gõ giây (`90`, `90.5`) hoặc phút:giây (`1:30`, `1:30.5`). Để trống ô **Hiện tới** nghĩa là hiện tới hết bài.
 - **Thêm khoảng** thêm một dòng; nút × xoá dòng. Không còn khoảng nào thì widget không bao giờ hiện.
-- **Hiện dần** và **Ẩn dần** (giây) làm widget mờ vào lúc bắt đầu khoảng và mờ ra lúc kết thúc. Khoảng ngắn hơn tổng hai thời gian này thì cả hai co lại theo tỉ lệ.
+- **Hiện dần** và **Ẩn dần** (giây) làm widget mờ vào lúc bắt đầu khoảng và mờ ra lúc kết thúc. Khoảng ngắn hơn tổng hai thời gian này thì cả hai co lại theo tỉ lệ. Nút ↺ cạnh mỗi ô đưa về 0 (không mờ dần).
 - Tắt lại ô tick để về hiện suốt bài.
 
 Khoảng hiển thị chỉ ảnh hưởng video và Xem trước; trong Editor bạn vẫn chọn và kéo widget như bình thường.

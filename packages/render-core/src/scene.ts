@@ -11,13 +11,14 @@ import { ALIAS_KEYS, GLOBAL_KEYS, checkTemplate } from './placeholders.ts';
 import { normalizeAngle } from './snap.ts';
 import { DEFAULT_BACKGROUND, type BackgroundImageSpec } from './background.ts';
 import { DEFAULT_PARTICLES, type ParticleProps } from './particles.ts';
+import { DEFAULT_NOTATION, notationInkFor, type NotationProps } from './notation/widget.ts';
 import { DEFAULT_SPECTRUM, type SpectrumProps } from './spectrum.ts';
 import { MAX_FADE, MAX_PHASES, MAX_PHASE_NAME, MAX_RANGES, type Phase, type TimeRange, type WidgetVisibility } from './visibility.ts';
 import { DEFAULT_KEYBOARD_STYLE, DEFAULT_NOTE_STYLE, sanitizeStyle, type KeyboardStyle, type NoteStyle, type StyleConfig } from './style.ts';
 
 export const SCENE_SCHEMA_VERSION = '0.6.0';
 
-export const WIDGET_TYPES = ['TRACK_INFO', 'PIANO_ROLL', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'AUDIO_SPECTRUM', 'PROGRESS_BAR', 'TEXT', 'PARTICLES'] as const;
+export const WIDGET_TYPES = ['TRACK_INFO', 'PIANO_ROLL', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'AUDIO_SPECTRUM', 'PROGRESS_BAR', 'TEXT', 'PARTICLES', 'NOTATION'] as const;
 export type WidgetType = typeof WIDGET_TYPES[number];
 
 /** `rotation`: độ, (−180, 180]. `anchor`: điểm neo xoay theo tỉ lệ khung widget (0..1), mặc định tâm (REQ-GRAPHICS-03). */
@@ -118,10 +119,10 @@ export function pianoRollWidget(layout: Omit<WidgetLayout, 'anchor'> & { anchor?
     properties: { ...clonePiano(DEFAULT_PIANO_ROLL), ...props } };
 }
 /** Loại widget người dùng thêm được từ Editor (có renderer). */
-export const ADDABLE_WIDGETS = ['PIANO_ROLL', 'TRACK_INFO', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'AUDIO_SPECTRUM', 'PARTICLES', 'PROGRESS_BAR', 'TEXT'] as const satisfies readonly WidgetType[];
+export const ADDABLE_WIDGETS = ['PIANO_ROLL', 'TRACK_INFO', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'AUDIO_SPECTRUM', 'PARTICLES', 'NOTATION', 'PROGRESS_BAR', 'TEXT'] as const satisfies readonly WidgetType[];
 const HUD_DEFAULTS: Record<string, unknown> = {
   TRACK_INFO: DEFAULT_TRACK_INFO, EVENT_COUNTER: DEFAULT_EVENT_COUNTER, LIVE_TRIGGER: DEFAULT_LIVE_TRIGGER,
-  TIME_BAR: DEFAULT_TIME_BAR, CHORD_DETECTION: DEFAULT_CHORD, AUDIO_SPECTRUM: DEFAULT_SPECTRUM, PARTICLES: DEFAULT_PARTICLES, PROGRESS_BAR: DEFAULT_PROGRESS_BAR, TEXT: DEFAULT_TEXT_BOX,
+  TIME_BAR: DEFAULT_TIME_BAR, CHORD_DETECTION: DEFAULT_CHORD, AUDIO_SPECTRUM: DEFAULT_SPECTRUM, PARTICLES: DEFAULT_PARTICLES, NOTATION: DEFAULT_NOTATION, PROGRESS_BAR: DEFAULT_PROGRESS_BAR, TEXT: DEFAULT_TEXT_BOX,
 };
 /** Thuộc tính mặc định của một loại widget (bản sao sâu): mốc tham chiếu của nút ↺ khi widget chưa có bộ dựng sẵn nào áp lên nó. */
 export function widgetDefaults(type: WidgetType): Record<string, unknown> {
@@ -130,7 +131,7 @@ export function widgetDefaults(type: WidgetType): Record<string, unknown> {
 /** Cỡ mặc định khi thêm (tỉ lệ theo khung, hoặc pt cố định), kẹp trong khung. */
 const NEW_SIZE: Record<string, (W: number, H: number) => [number, number]> = {
   PIANO_ROLL: (W, H) => [W * 0.6, H * 0.4], TRACK_INFO: (W) => [W * 0.5, 130], EVENT_COUNTER: () => [480, 120], LIVE_TRIGGER: () => [480, 60],
-  TIME_BAR: () => [320, 100], CHORD_DETECTION: () => [400, 100], AUDIO_SPECTRUM: (W) => [W * 0.5, 240], PARTICLES: (W, H) => [W * 0.5, H * 0.5], PROGRESS_BAR: (W) => [W * 0.8, 24], TEXT: () => [480, 100],
+  TIME_BAR: () => [320, 100], CHORD_DETECTION: () => [400, 100], AUDIO_SPECTRUM: (W) => [W * 0.5, 240], PARTICLES: (W, H) => [W * 0.5, H * 0.5], NOTATION: (W, H) => [W * 0.8, H * 0.45], PROGRESS_BAR: (W) => [W * 0.8, 24], TEXT: () => [480, 100],
 };
 /** Độ dài tối đa của tên lớp. */
 export const MAX_WIDGET_NAME = 60;
@@ -154,8 +155,9 @@ export function createWidget(scene: SceneDocument, type: WidgetType, center?: { 
   const id = newWidgetId(scene, type);
   const zIndex = scene.widgets.reduce((m, x) => Math.max(m, x.zIndex), 0) + 1;
   if (type === 'PIANO_ROLL') return { ...pianoRollWidget(layout, {}, id), zIndex };
-  return { id, type, zIndex, visible: true, layout: { ...layout, anchor: { ...DEFAULT_ANCHOR } }, trackMappingMode: 'ALL', assignedTrackIndices: [],
-    properties: JSON.parse(JSON.stringify(HUD_DEFAULTS[type] ?? {})) };
+  const properties = JSON.parse(JSON.stringify(HUD_DEFAULTS[type] ?? {}));
+  if (type === 'NOTATION') Object.assign(properties, notationInkFor(scene.canvas.backgroundColor)); // mực nhìn rõ trên nền khung
+  return { id, type, zIndex, visible: true, layout: { ...layout, anchor: { ...DEFAULT_ANCHOR } }, trackMappingMode: 'ALL', assignedTrackIndices: [], properties };
 }
 /** Bản sao của widget (nhân bản): id mới, dời `offset` pt, nằm ngay trên bản gốc. */
 export function duplicateWidget(scene: SceneDocument, w: WidgetSpec, offset = 16): WidgetSpec {
@@ -617,6 +619,33 @@ const HUD_SANITIZERS = {
       opacity: S.num(P.opacity, d.opacity, 0, 1, `${p}.opacity`), fade: S.bool(P.fade, d.fade, `${p}.fade`), glow: S.num(P.glow, d.glow, 0, 1, `${p}.glow`),
       originX: S.oneOf(P.originX, ['PITCH', 'CENTER', 'SPREAD', 'NOTE'] as const, d.originX, `${p}.originX`), originY: S.num(P.originY, d.originY, 0, 1, `${p}.originY`), pitchMin: lo, pitchMax: hi,
       seed: Math.round(S.num(P.seed, d.seed, 0, 999999, `${p}.seed`)), maxParticles: Math.round(S.num(P.maxParticles, d.maxParticles, 50, 4000, `${p}.maxParticles`)) };
+  },
+  NOTATION(P: Obj, p: string, S: Sanitizer): NotationProps {
+    const d = DEFAULT_NOTATION, col = (v: unknown, dv: string, path: string) => S.str(v, dv, path, (x) => HEX.test(x)), int = (v: unknown, dv: number, lo: number, hi: number, path: string) => Math.round(S.num(v, dv, lo, hi, path));
+    const pick = <T extends number>(v: unknown, list: readonly T[], dv: T, path: string): T => {
+      if (v === undefined) return dv;
+      if (!list.includes(v as T)) { S.warn(path, v, `không thuộc ${list.join('/')}; dùng ${dv}`); return dv; }
+      return v as T;
+    };
+    return {
+      division: pick(P.division, [8, 16, 32] as const, d.division, `${p}.division`), triplets: S.bool(P.triplets, d.triplets, `${p}.triplets`), simplify: S.num(P.simplify, d.simplify, 0.5, 4, `${p}.simplify`),
+      splitPitch: int(P.splitPitch, d.splitPitch, 21, 108, `${p}.splitPitch`), voices: pick(P.voices, [1, 2] as const, d.voices, `${p}.voices`),
+      keyMode: S.oneOf(P.keyMode, ['AUTO', 'MANUAL'] as const, d.keyMode, `${p}.keyMode`), keyFifths: int(P.keyFifths, d.keyFifths, -7, 7, `${p}.keyFifths`), keyMinor: S.bool(P.keyMinor, d.keyMinor, `${p}.keyMinor`),
+      barsPerSystem: int(P.barsPerSystem, d.barsPerSystem, 0, 8, `${p}.barsPerSystem`), systemsPerPage: int(P.systemsPerPage, d.systemsPerPage, 1, 4, `${p}.systemsPerPage`),
+      musicFont: S.oneOf(P.musicFont, ['BRAVURA', 'PETALUMA', 'GONVILLE'] as const, d.musicFont, `${p}.musicFont`), measureNumbers: S.bool(P.measureNumbers, d.measureNumbers, `${p}.measureNumbers`), tempoMark: S.bool(P.tempoMark, d.tempoMark, `${p}.tempoMark`),
+      measureNumberSize: S.num(P.measureNumberSize, d.measureNumberSize, 0.5, 4, `${p}.measureNumberSize`),
+      inkColor: col(P.inkColor, d.inkColor, `${p}.inkColor`), playedColor: col(P.playedColor, d.playedColor, `${p}.playedColor`), activeColor: col(P.activeColor, d.activeColor, `${p}.activeColor`),
+      colorMode: S.oneOf(P.colorMode, ['SOLID', 'TRACK'] as const, d.colorMode, `${p}.colorMode`), upcomingOpacity: S.num(P.upcomingOpacity, d.upcomingOpacity, 0, 1, `${p}.upcomingOpacity`), playedOpacity: S.num(P.playedOpacity, d.playedOpacity, 0, 1, `${p}.playedOpacity`),
+      staticOpacity: S.num(P.staticOpacity, d.staticOpacity, 0, 1, `${p}.staticOpacity`), opacity: S.num(P.opacity, d.opacity, 0, 1, `${p}.opacity`),
+      zoom: S.num(P.zoom, d.zoom, 1, 3, `${p}.zoom`), zoomMode: S.oneOf(P.zoomMode, ['PULSE', 'HOLD'] as const, d.zoomMode, `${p}.zoomMode`), zoomMs: S.num(P.zoomMs, d.zoomMs, 20, 3000, `${p}.zoomMs`),
+      glow: S.num(P.glow, d.glow, 0, 1, `${p}.glow`), glowSize: S.num(P.glowSize, d.glowSize, 0, 20, `${p}.glowSize`), glowMode: S.oneOf(P.glowMode, ['HALO', 'SOFT'] as const, d.glowMode, `${p}.glowMode`),
+      playhead: S.oneOf(P.playhead, ['NONE', 'LINE'] as const, d.playhead, `${p}.playhead`), playheadColor: col(P.playheadColor, d.playheadColor, `${p}.playheadColor`), playheadWidth: S.num(P.playheadWidth, d.playheadWidth, 0, 40, `${p}.playheadWidth`),
+      rough: S.num(P.rough, d.rough, 0, 6, `${p}.rough`), boilFps: S.num(P.boilFps, d.boilFps, 0, 24, `${p}.boilFps`), seed: int(P.seed, d.seed, 0, 999999, `${p}.seed`),
+      align: S.oneOf(P.align, ['TOP', 'CENTER'] as const, d.align, `${p}.align`), pageFadeMs: S.num(P.pageFadeMs, d.pageFadeMs, 0, 2000, `${p}.pageFadeMs`),
+      aura: S.oneOf(P.aura, ['OFF', 'STEADY', 'BEAT', 'BAR', 'TIME'] as const, d.aura, `${p}.aura`), auraShape: S.oneOf(P.auraShape, ['SMOOTH', 'FLASH', 'BLINK'] as const, d.auraShape, `${p}.auraShape`),
+      auraEvery: S.num(P.auraEvery, d.auraEvery, 0.25, 64, `${p}.auraEvery`), auraGlow: S.num(P.auraGlow, d.auraGlow, 0, 1, `${p}.auraGlow`), auraMin: S.num(P.auraMin, d.auraMin, 0, 1, `${p}.auraMin`),
+      auraColor: S.str(P.auraColor, d.auraColor, `${p}.auraColor`, (s) => s === '' || HEX.test(s)),
+    };
   },
   PROGRESS_BAR(P: Obj, p: string, S: Sanitizer): ProgressBarProps {
     const d = DEFAULT_PROGRESS_BAR;

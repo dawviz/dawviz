@@ -21,7 +21,7 @@ export interface FieldDef {
   /** kind 'num': giới hạn cứng và `range` mềm cho tốc độ kéo. */
   num?: { min: number; max: number; step: number; range?: [number, number] };
   /** kind 'choice' | 'select': giá trị và tiền tố khoá nhãn (`${prefix}${giá trị}`). */
-  options?: readonly string[];
+  options?: readonly (string | number)[];
   prefix?: string;
   /** kind 'text'. `placeholder`: khoá con của `web.ws.*` khi để trống. */
   text?: { max?: number; multiline?: boolean; placeholder?: string };
@@ -145,6 +145,53 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
   TEXT: [
     L(['text'], 'text', 'boxText', { text: { max: 2000, multiline: true } }),
   ],
+  // Bản nhạc (D-63): nhóm "bản nhạc" (đổi thì dựng lại, vài trăm ms) rồi nhóm "hình vẽ" (đổi ngay).
+  NOTATION: [
+    L(['musicFont'], 'select', 'ntFont', { options: ['BRAVURA', 'PETALUMA', 'GONVILLE'], prefix: 'web.ws.ntFont.' }),
+    L(['barsPerSystem'], 'num', 'ntBars', { num: { min: 0, max: 8, step: 1 } }),
+    L(['systemsPerPage'], 'num', 'ntSystems', { num: { min: 1, max: 4, step: 1 } }),
+    L(['inkColor'], 'color', 'ntInk'),
+    L(['activeColor'], 'color', 'ntActive', { when: (P) => P.colorMode === 'SOLID' }),
+    L(['colorMode'], 'choice', 'ntColorMode', { options: ['SOLID', 'TRACK'], prefix: 'web.ws.ntColorMode.' }),
+    L(['zoom'], 'num', 'ntZoom', { num: { min: 1, max: 3, step: 0.05, range: [1, 2] } }),
+    L(['glow'], 'num', 'ntGlow', { num: { min: 0, max: 1, step: 0.05 } }),
+    L(['playhead'], 'choice', 'ntPlayhead', { options: ['NONE', 'LINE'], prefix: 'web.ws.ntPlayhead.' }),
+    L(['opacity'], 'num', 'ntOpacity', { num: { min: 0, max: 1, step: 0.05 } }),
+    L(['rough'], 'num', 'ntRough', { num: { min: 0, max: 6, step: 0.1, range: [0, 4] } }),
+    L(['aura'], 'select', 'ntAura', { options: ['OFF', 'STEADY', 'BEAT', 'BAR', 'TIME'], prefix: 'web.ws.ntAura.' }),
+    L(['auraEvery'], 'num', 'ntAuraEveryBeat', { when: (P) => P.aura === 'BEAT', num: { min: 0.25, max: 64, step: 0.25, range: [0.25, 8] } }),
+    L(['auraEvery'], 'num', 'ntAuraEveryBar', { when: (P) => P.aura === 'BAR', num: { min: 0.25, max: 64, step: 0.25, range: [0.25, 8] } }),
+    L(['auraEvery'], 'num', 'ntAuraEveryTime', { when: (P) => P.aura === 'TIME', num: { min: 0.25, max: 64, step: 0.25, range: [0.25, 16] } }),
+    L(['auraShape'], 'choice', 'ntAuraShape', { when: (P) => P.aura === 'BEAT' || P.aura === 'BAR' || P.aura === 'TIME', options: ['SMOOTH', 'FLASH', 'BLINK'], prefix: 'web.ws.ntAuraShape.' }),
+    L(['division'], 'select', 'ntDivision', { adv: true, options: [8, 16, 32], prefix: 'web.ws.ntDivision.' }),
+    L(['triplets'], 'check', 'ntTriplets', { adv: true }),
+    L(['simplify'], 'num', 'ntSimplify', { adv: true, num: { min: 0.5, max: 4, step: 0.1 } }),
+    L(['voices'], 'choice', 'ntVoices', { adv: true, options: [1, 2], prefix: 'web.ws.ntVoices.' }),
+    L(['splitPitch'], 'num', 'ntSplit', { adv: true, num: { min: 21, max: 108, step: 1 } }),
+    L(['keyMode'], 'choice', 'ntKeyMode', { adv: true, options: ['AUTO', 'MANUAL'], prefix: 'web.ws.ntKeyMode.' }),
+    L(['keyFifths'], 'select', 'ntKey', { adv: true, when: (P) => P.keyMode === 'MANUAL', options: [-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7], prefix: 'web.ws.ntKey.' }),
+    L(['keyMinor'], 'check', 'ntKeyMinor', { adv: true, when: (P) => P.keyMode === 'MANUAL' }),
+    L(['measureNumbers'], 'check', 'ntMeasureNumbers', { adv: true }),
+    L(['measureNumberSize'], 'num', 'ntMeasureNumberSize', { adv: true, when: (P) => !!P.measureNumbers, num: { min: 0.5, max: 4, step: 0.1, range: [0.5, 3] } }),
+    L(['tempoMark'], 'check', 'ntTempoMark', { adv: true }),
+    L(['playedColor'], 'color', 'ntPlayed', { adv: true }),
+    L(['playedOpacity'], 'num', 'ntPlayedOpacity', { adv: true, num: { min: 0, max: 1, step: 0.05 } }),
+    L(['staticOpacity'], 'num', 'ntStaticOpacity', { adv: true, num: { min: 0, max: 1, step: 0.05 } }),
+    L(['upcomingOpacity'], 'num', 'ntUpcomingOpacity', { adv: true, num: { min: 0, max: 1, step: 0.05 } }),
+    L(['zoomMode'], 'choice', 'ntZoomMode', { adv: true, options: ['PULSE', 'HOLD'], prefix: 'web.ws.ntZoomMode.' }),
+    L(['zoomMs'], 'num', 'ntZoomMs', { adv: true, when: (P) => P.zoomMode === 'PULSE', num: { min: 20, max: 3000, step: 10, range: [50, 1000] } }),
+    L(['glowSize'], 'num', 'ntGlowSize', { adv: true, num: { min: 0, max: 20, step: 0.5, range: [0, 10] } }),
+    L(['glowMode'], 'choice', 'ntGlowMode', { adv: true, options: ['HALO', 'SOFT'], prefix: 'web.ws.ntGlowMode.' }),
+    L(['playheadColor'], 'color', 'ntPlayheadColor', { adv: true, when: (P) => P.playhead === 'LINE' }),
+    L(['playheadWidth'], 'num', 'ntPlayheadWidth', { adv: true, when: (P) => P.playhead === 'LINE', num: { min: 0, max: 40, step: 0.5, range: [0, 8] } }),
+    L(['boilFps'], 'num', 'ntBoil', { adv: true, when: (P) => Number(P.rough) > 0, num: { min: 0, max: 24, step: 1 } }),
+    L(['seed'], 'num', 'ntSeed', { adv: true, when: (P) => Number(P.rough) > 0, num: { min: 0, max: 999999, step: 1 } }),
+    L(['align'], 'choice', 'ntAlign', { adv: true, options: ['TOP', 'CENTER'], prefix: 'web.ws.ntAlign.' }),
+    L(['pageFadeMs'], 'num', 'ntPageFade', { adv: true, num: { min: 0, max: 2000, step: 10, range: [0, 1000] } }),
+    L(['auraGlow'], 'num', 'ntAuraGlow', { adv: true, when: (P) => P.aura !== 'OFF', num: { min: 0, max: 1, step: 0.05 } }),
+    L(['auraMin'], 'num', 'ntAuraMin', { adv: true, when: (P) => P.aura === 'BEAT' || P.aura === 'BAR' || P.aura === 'TIME', num: { min: 0, max: 1, step: 0.05 } }),
+    L(['auraColor'], 'colorOpt', 'ntAuraColor', { adv: true, when: (P) => P.aura !== 'OFF' }),
+  ],
 };
 
 /** Thuộc tính KHÔNG nằm ở mục Thiết lập (kiểu chữ, căn lề ở mục Chữ; vài thuộc tính chưa có giao diện). Test dùng để bắt thiết lập bị bỏ sót. */
@@ -189,7 +236,7 @@ export function resetPatch(f: FieldDef, P: Obj, R: Obj): Obj {
 /** Có thiết lập nâng cao nào của widget khác mốc không (không tính điều kiện hiện, để chấm báo "đã chỉnh nâng cao" không phụ thuộc trạng thái ẩn). */
 export function advancedEdited(widget: Pick<WidgetSpec, 'type' | 'trackMappingMode'>, P: Obj, R: Obj | undefined): boolean {
   const adv = (WIDGET_FIELDS[widget.type] ?? []).some((f) => f.adv && fieldChanged(f, P, R));
-  return adv || (widget.type !== 'TEXT' && TRACK_WIDGETS.includes(widget.type) && widget.trackMappingMode === 'MANUAL');
+  return adv || (widget.type !== 'TEXT' && widget.type !== 'NOTATION' && TRACK_WIDGETS.includes(widget.type) && widget.trackMappingMode === 'MANUAL');
 }
 /** Widget đọc số liệu từ các track nên có mục chọn track (Ô chữ ở Cơ bản, còn lại ở Nâng cao). */
-export const TRACK_WIDGETS: readonly string[] = ['TEXT', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'CHORD_DETECTION', 'PARTICLES'];
+export const TRACK_WIDGETS: readonly string[] = ['TEXT', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'CHORD_DETECTION', 'PARTICLES', 'NOTATION'];

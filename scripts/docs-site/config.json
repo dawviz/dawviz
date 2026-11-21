@@ -42,6 +42,10 @@
         {
           "src": "docs/manual/08-cho-giu.md",
           "title": "Chèn số liệu vào chữ"
+        },
+        {
+          "src": "docs/manual/09-ban-nhac.md",
+          "title": "Bản nhạc"
         }
       ]
     },
@@ -83,6 +87,10 @@
         {
           "src": "docs/manual/en/08-placeholders.md",
           "title": "Putting live numbers into text"
+        },
+        {
+          "src": "docs/manual/en/09-sheet-music.md",
+          "title": "Sheet music"
         }
       ]
     },

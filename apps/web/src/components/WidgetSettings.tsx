@@ -13,6 +13,7 @@ import { TRACK_WIDGETS, WIDGET_FIELDS, fieldChanged, getIn, hasWidgetFields, res
 import { NumberField } from './NumberField.tsx';
 import { ResetButton } from './Inspector.tsx';
 import { Select } from './Select.tsx';
+import { NotationStatusContext } from '../lib/notation/useNotation.ts';
 
 type Obj = Record<string, unknown>;
 const numRow = 'grid grid-cols-[minmax(0,1fr)_4.5rem_1.5rem] items-center gap-2 text-xs text-muted';
@@ -39,7 +40,7 @@ export function WidgetSettings({ widget, advanced, disabled, reference, onProps,
   const T = (k: string) => i18n.t(`web.ws.${k}`);
   const names = placeholderNames(widget.type);
   const hint = i18n.t('web.ws.placeholders', { list: names.map((k) => `{${k}}`).join(' ') });
-  const showTracks = !!tracks?.length && !!onTracks && TRACK_WIDGETS.includes(widget.type) && (widget.type === 'TEXT' || advanced);
+  const showTracks = !!tracks?.length && !!onTracks && TRACK_WIDGETS.includes(widget.type) && (widget.type === 'TEXT' || widget.type === 'NOTATION' || advanced);
 
   const name = (f: FieldDef) => (f.group ? `${T(f.group)}: ${T(f.label)}` : T(f.label));
   const changed = (f: FieldDef) => !disabled && fieldChanged(f, P, reference);
@@ -75,7 +76,7 @@ export function WidgetSettings({ widget, advanced, disabled, reference, onProps,
       case 'select': return (
         <div key={f.path.join('.')} className="grid grid-cols-[minmax(0,1fr)_minmax(0,9.5rem)_1.5rem] items-center gap-2 text-xs text-muted">
           <label>{T(f.label)}</label>
-          <Select value={String(v)} disabled={disabled} aria-label={label} onChange={(e) => set(f)(e.target.value)} className="py-1 pl-2" wrapClassName="min-w-0">
+          <Select value={String(v)} disabled={disabled} aria-label={label} onChange={(e) => set(f)(f.options!.find((o) => String(o) === e.target.value) ?? e.target.value)} className="py-1 pl-2" wrapClassName="min-w-0">
             {f.options!.map((o) => <option key={o} value={o}>{i18n.t(`${f.prefix}${o}`)}</option>)}
           </Select>
           {resetBtn(f)}
@@ -101,8 +102,28 @@ export function WidgetSettings({ widget, advanced, disabled, reference, onProps,
 
   return (
     <div className="space-y-2.5" data-testid="widget-settings">
+      {widget.type === 'NOTATION' && <NotationStatus id={widget.id} />}
       {fields.filter((f) => (!f.adv || advanced) && (f.when?.(P) ?? true)).map(control)}
       {showTracks && <TrackPicker widget={widget} tracks={tracks!} disabled={disabled} onTracks={onTracks!} />}
+    </div>
+  );
+}
+
+const MAJOR_TONICS = ['C♭', 'G♭', 'D♭', 'A♭', 'E♭', 'B♭', 'F', 'C', 'G', 'D', 'A', 'E', 'B', 'F♯', 'C♯'];
+const MINOR_TONICS = ['A♭', 'E♭', 'B♭', 'F', 'C', 'G', 'D', 'A', 'E', 'B', 'F♯', 'C♯', 'G♯', 'D♯', 'A♯'];
+/** Trạng thái bản dựng của widget Bản nhạc: đang viết / lỗi / số trang + cảnh báo (dịch theo mã). */
+function NotationStatus({ id }: { id: string }) {
+  const { i18n } = useI18n();
+  const st = useContext(NotationStatusContext);
+  if (!st) return null;
+  const err = st.errors.get(id), lay = st.layouts.get(id), busy = st.busy.has(id);
+  const key = lay ? i18n.t(`web.ws.ntKeyName.${lay.key.mode}`, { tonic: (lay.key.mode === 'major' ? MAJOR_TONICS : MINOR_TONICS)[lay.key.fifths + 7] }) : '';
+  return (
+    <div className="space-y-1 text-xs" data-testid="notation-status" role="status">
+      {busy && <p className="text-muted">{i18n.t('web.ws.ntBusy')}</p>}
+      {err && <p className="text-danger">{i18n.t('web.ws.ntFailed', { message: err })}</p>}
+      {lay && !busy && <p className="text-muted">{i18n.t('web.ws.ntPages', { pages: lay.pages.length, measures: lay.stats.measures, key })}</p>}
+      {lay && lay.warnings.map((w) => <p key={w.code} className="text-warning">{i18n.t(`warn.${w.code}`, (w.details ?? {}) as Record<string, string | number>)}</p>)}
     </div>
   );
 }

@@ -5,7 +5,7 @@ section: "5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)"
 path: "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)"
 chunk: 5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md
 source_lines: 167-194
-source_sha1: 57493fb549
+source_sha1: ff3dfa792b
 ids: [ERR_FONT_LOAD, NFR-SEC-03, REQ-STORAGE-05, REQ-WIDGET-02]
 ---
 ### 5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)
@@ -30,7 +30,7 @@ interface TextPrim {
 - **Nguồn chữ.** Chuỗi trong primitive đến từ mẫu chữ của preset (`properties.template`…) và dữ liệu dự án, không từ `locales/` (The Two Worlds Rule). Hàm định dạng (`formatTemplate`, `groupDigits`) là hàm thuần trong `packages/render-core/src/text.ts`.
 
 **Nạp phông.**
-- Phông gói theo ứng dụng: `apps/web/public/fonts/SpaceGrotesk-*.woff2` (OFL, kèm `OFL-SpaceGrotesk.txt`; phông giao diện Inter đi qua `@fontsource-variable/inter` vào `dist/assets`, giấy phép kèm `OFL-Inter.txt` ở cùng thư mục `fonts/`; cả hai chép vào `dist/fonts/`), phục vụ cùng origin nên khớp CSP `font-src 'self'` (NFR-SEC-03); không `@font-face` từ CDN, không `data:` cho phông chính.
+- Phông gói theo ứng dụng: `apps/web/public/fonts/SpaceGrotesk-*.woff2` (OFL, kèm `OFL-SpaceGrotesk.txt`; phông giao diện Inter đi qua `@fontsource-variable/inter` vào `dist/assets`, giấy phép kèm `OFL-Inter.txt` ở cùng thư mục `fonts/`; cả hai chép vào `dist/fonts/`; glyph của widget Bản nhạc kèm `OFL-SMuFL-Steinberg.txt`; giấy phép mọi gói npm chạy trong ứng dụng gom vào `dist/THIRD-PARTY-NOTICES.txt` bằng `scripts/gen-third-party.mjs` sau `vite build`), phục vụ cùng origin nên khớp CSP `font-src 'self'` (NFR-SEC-03); không `@font-face` từ CDN, không `data:` cho phông chính.
 - Render Core không tự tải. Cung cấp `FontRegistry` (`packages/render-core/src/fonts.ts`): `ensureFonts(specs, loader): Promise<void>` nhận danh sách `{family, weight, url}` mà scene cần (`requiredFonts(scene)` thuần, sắp ổn định), gọi `new FontFace(family, `url(...)`, {weight})`, `await face.load()`, rồi thêm vào `document.fonts` (Preview) hoặc `self.fonts` (Worker). `loader` được truyền vào để cùng một mã dùng cho cả hai nơi và để test bằng loader giả.
 - **Cổng khung đầu.** `renderFrame` nhận `derived.fontsReady?: boolean`. Khi `fontsReady = false`, `renderFrame` **bỏ qua mọi primitive `text`**; ứng dụng (`useFontsStatus`, `SceneCanvas blocked`) còn **không vẽ cả khung** và hiện trạng thái chờ/lỗi (`needsFonts(scene)` cho biết có cần chờ); **Export không bắt đầu** khi `ensureFonts` chưa xong hoặc bị lỗi (báo `ERR_FONT_LOAD`, không xuất bằng phông dự phòng). Preview vẽ lại khi `ensureFonts` kết thúc.
 - **Export Worker (M3).** Worker nhận `requiredFonts(scene)` cùng thông điệp `start`, tự gọi `ensureFonts` với `self.fonts` (Spike 1: `FontFace` trong Worker hoạt động) và chỉ gửi `ready` về UI khi xong; khung 0 chỉ được vẽ sau `ready`. Phông người dùng nạp (REQ-STORAGE-05) dùng cùng đường, tệp truyền bằng `ArrayBuffer`.

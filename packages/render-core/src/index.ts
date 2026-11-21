@@ -23,3 +23,8 @@ export * from './spectrum.ts';
 export * from './musicAnalysis.ts';
 export * from './background.ts';
 export * from './particles.ts';
+export * from './notation/types.ts';
+export * from './notation/quantize.ts';
+export * from './notation/spelling.ts';
+export * from './notation/widget.ts';
+export { roughPathData, roughGlyph, hashSigned } from './notation/draw.ts';

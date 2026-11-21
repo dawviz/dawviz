@@ -23,6 +23,8 @@ Tiếng đi qua loa hoặc tai nghe luôn chậm hơn một chút, và trình du
 - Ở ô **Thiết bị**, chọn thiết bị đang dùng. **Tự động** là không bù thêm gì. Ứng dụng không tự nhận biết thiết bị, nên đổi tai nghe thì đổi lựa chọn này.
 - **Lưu tệp thiết bị** và **Mở tệp thiết bị** chuyển một thiết bị giữa các máy. Lưu được tối đa 16 thiết bị.
 
+Nút ↺ cạnh ô **Độ lệch (ms)** đưa độ lệch của thiết bị đó về 0.
+
 Độ lệch này chỉ dời hình so với tiếng khi xem trước trên máy này. Nó không đổi âm thanh, không nằm trong **Offset âm thanh** của dự án, và không có trong preset, gói dự án hay video xuất.
 
 Kết quả là ước lượng: nó gồm cả độ chậm của bàn phím hoặc chuột và thói quen gõ sớm hay muộn của bạn. Nếu thấy hình vẫn lệch, chỉnh tay thêm vài mili giây.

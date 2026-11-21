@@ -35,7 +35,7 @@ Phụ thuộc một chiều: `apps/web → render-core → parser-core`; `apps/w
 | `pianoroll.ts` | `layoutPianoRoll(index, tempoMap, t, options)` → danh sách hình chữ nhật pixel (không vẽ). Cùng đầu vào cho cùng đầu ra | REQ-GRAPHICS-05 |
 | `draw.ts` | `drawPianoRoll(ctx, rects, size)`: lớp vẽ duy nhất lên Canvas 2D/OffscreenCanvas; `Ctx2D` là giao diện tối thiểu nên test được bằng đối tượng giả | ARC-01, D-06 |
 
-**Đề xuất (D-63, chưa làm):** widget Bản nhạc thêm primitive `path`/`group` vào Render Core; VexFlow và bộ lượng tử hoá **không** vào Render Core, chỉ đưa vào `NotationLayout` dữ liệu thuần (xem [Technical Design §5.11](TECHNICAL-DESIGN.md)).
+**Bản nhạc (D-63, T-90…T-95):** `notation/quantize.ts` (lượng tử để vẽ, giọng), `notation/spelling.ts` (cách viết cao độ), `notation/types.ts` (`NotationLayout`, `pageIndexAt`, `systemX`), `notation/widget.ts` (`NotationProps`, `notationRenderer`, `notationPrims`, `zoomAt`, `notationInkFor`), `notation/draw.ts` (`drawPathPrim`, nét tay `roughPathData`/`roughGlyph`). Primitive mới `PathPrim` (`kind: 'path'`). VexFlow **không** ở Render Core: engraver ở `apps/web/src/lib/notation/` chạy trong `workers/notation.worker.ts`, trả `NotationLayout` vào `Derived.notation` (xem [Technical Design §5.11](TECHNICAL-DESIGN.md)).
 
 Độ sáng của nốt lấy tại thời điểm **bắt đầu nốt** (không đổi trong suốt nốt) để tránh nhấp nháy và giữ chi phí O(1) mỗi nốt. Phép nội suy lane volume/pan/mute và đổi gain → 0..1 dùng `sampleLane`/`volumeToUnit` của `@dawviz/parser-core` (nguồn sự thật duy nhất).
 
@@ -44,6 +44,7 @@ Phụ thuộc một chiều: `apps/web → render-core → parser-core`; `apps/w
 | Phần | Thiết kế |
 |---|---|
 | `workers/parser.worker.ts` + `lib/parserClient.ts` | Một Worker module; `parseInWorker({name, buffer, files})` trả Promise; chuyển quyền sở hữu `ArrayBuffer`; lỗi là `ParseFailure{code, message, details}` |
+| `workers/notation.worker.ts` + `lib/notation/` | Bản nhạc (D-63): `buildNotation` (lượng tử của Render Core + `engrave` bằng VexFlow 5.6 core, `RecordingContext`, bảng glyph sinh sẵn `glyphTable.ts`); `notationClient` (một Worker dùng lại, bộ đệm theo khoá), `useNotation` (luồng chính, khoá ở `key.ts` không kéo VexFlow vào bundle chính) |
 | `lib/clock.ts` | Đồng hồ phát thuần: `advance`, `seek`, `togglePlay` (không đụng DOM) |
 | `lib/problems.ts` | `describeProblem(i18n, kind, code, message, details)` → chuỗi dịch (`errors.*`, `warn.*`), rơi về thông điệp gốc nếu chưa có bản dịch |
 | `i18n/I18nProvider.tsx` | Nạp `locales/*.json`, chọn ngôn ngữ (lưu `localStorage` có try/catch), đặt `<html lang dir>` |

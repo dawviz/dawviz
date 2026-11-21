@@ -4,7 +4,7 @@
  "docs": {
   "BRD.md": {
    "title": "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)",
-   "sha1": "e9919890cd",
+   "sha1": "a7085f608b",
    "chunks": [
     {
      "n": 0,
@@ -13,10 +13,28 @@
      "path": [
       "DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)"
      ],
-     "chars": 5772,
+     "chars": 528,
      "lines": [
       2,
-      32
+      5
+     ],
+     "ids": [
+      "D-38",
+      "D-45"
+     ]
+    },
+    {
+     "n": 1,
+     "file": "BRD/lich-su-phien-ban.md",
+     "title": "Lịch sử phiên bản",
+     "path": [
+      "DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)",
+      "Lịch sử phiên bản"
+     ],
+     "chars": 5287,
+     "lines": [
+      6,
+      24
      ],
      "ids": [
       "BR-09",
@@ -71,7 +89,22 @@
      ]
     },
     {
-     "n": 1,
+     "n": 2,
+     "file": "BRD/quy-uoc-nhan-trong-tai-lieu.md",
+     "title": "Quy ước nhãn trong tài liệu",
+     "path": [
+      "DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)",
+      "Quy ước nhãn trong tài liệu"
+     ],
+     "chars": 426,
+     "lines": [
+      25,
+      33
+     ],
+     "ids": []
+    },
+    {
+     "n": 3,
      "file": "BRD/1-thong-tin-chung-boi-canh-du-an.md",
      "title": "1. THÔNG TIN CHUNG & BỐI CẢNH DỰ ÁN",
      "path": [
@@ -79,15 +112,15 @@
      ],
      "chars": 1753,
      "lines": [
-      33,
-      47
+      34,
+      48
      ],
      "ids": [
       "D-54"
      ]
     },
     {
-     "n": 2,
+     "n": 4,
      "file": "BRD/2-muc-tieu-kinh-doanh-chi-so-do-luong-yeu-cau-ng.md",
      "title": "2. MỤC TIÊU KINH DOANH, CHỈ SỐ ĐO LƯỜNG & YÊU CẦU NGHIỆP VỤ",
      "path": [
@@ -95,8 +128,8 @@
      ],
      "chars": 4778,
      "lines": [
-      48,
-      86
+      49,
+      87
      ],
      "ids": [
       "BR-01",
@@ -123,7 +156,7 @@
      ]
     },
     {
-     "n": 3,
+     "n": 5,
      "file": "BRD/3-chan-dung-nguoi-dung-muc-tieu-user-personas.md",
      "title": "3. CHÂN DUNG NGƯỜI DÙNG MỤC TIÊU (USER PERSONAS)",
      "path": [
@@ -131,15 +164,15 @@
      ],
      "chars": 1453,
      "lines": [
-      87,
-      106
+      88,
+      107
      ],
      "ids": [
       "D-62"
      ]
     },
     {
-     "n": 4,
+     "n": 6,
      "file": "BRD/4-1-trong-pham-vi-phien-ban-1-0-in-scope.md",
      "title": "4.1. Trong phạm vi phiên bản 1.0 (In-Scope)",
      "path": [
@@ -148,8 +181,8 @@
      ],
      "chars": 3226,
      "lines": [
-      109,
-      135
+      110,
+      136
      ],
      "ids": [
       "BR-09",
@@ -169,7 +202,7 @@
      ]
     },
     {
-     "n": 5,
+     "n": 7,
      "file": "BRD/4-3-lo-trinh-phat-hanh-milestones.md",
      "title": "4.3. Lộ trình phát hành (Milestones)",
      "path": [
@@ -178,8 +211,8 @@
      ],
      "chars": 892,
      "lines": [
-      136,
-      145
+      137,
+      146
      ],
      "ids": [
       "AT-05",
@@ -187,7 +220,7 @@
      ]
     },
     {
-     "n": 6,
+     "n": 8,
      "file": "BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md",
      "title": "4.4. Phân bổ theo bản phát hành (D-40, chốt ở tài liệu v1.1)",
      "path": [
@@ -196,8 +229,8 @@
      ],
      "chars": 2924,
      "lines": [
-      146,
-      157
+      147,
+      158
      ],
      "ids": [
       "D-14",
@@ -223,7 +256,7 @@
      ]
     },
     {
-     "n": 7,
+     "n": 9,
      "file": "BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md",
      "title": "4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)",
      "path": [
@@ -232,8 +265,8 @@
      ],
      "chars": 1202,
      "lines": [
-      158,
-      172
+      159,
+      173
      ],
      "ids": [
       "D-12",
@@ -249,7 +282,7 @@
      ]
     },
     {
-     "n": 8,
+     "n": 10,
      "file": "BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md",
      "title": "5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)",
      "path": [
@@ -257,8 +290,8 @@
      ],
      "chars": 4347,
      "lines": [
-      173,
-      193
+      174,
+      194
      ],
      "ids": [
       "D-01",
@@ -275,7 +308,7 @@
      ]
     },
     {
-     "n": 9,
+     "n": 11,
      "file": "BRD/6-gia-dinh-assumptions.md",
      "title": "6. GIẢ ĐỊNH (ASSUMPTIONS)",
      "path": [
@@ -283,24 +316,24 @@
      ],
      "chars": 554,
      "lines": [
-      194,
-      202
+      195,
+      203
      ],
      "ids": [
       "D-01"
      ]
     },
     {
-     "n": 10,
+     "n": 12,
      "file": "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
      "title": "7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)",
      "path": [
       "7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)"
      ],
-     "chars": 28812,
+     "chars": 28972,
      "lines": [
-      203,
-      274
+      204,
+      275
      ],
      "ids": [
       "AD-08",
@@ -384,6 +417,7 @@
       "OI-14",
       "OI-18",
       "OI-19",
+      "OI-20",
       "P-01",
       "P-13",
       "REQ-AST-02",
@@ -404,20 +438,21 @@
       "SOI-16",
       "SOI-17",
       "SOI-19",
-      "WARN_FLP_CLIPS_SKIPPED"
+      "WARN_FLP_CLIPS_SKIPPED",
+      "WARN_NOTATION_"
      ]
     },
     {
-     "n": 11,
+     "n": 13,
      "file": "BRD/8-cac-van-de-con-mo-open-issues.md",
      "title": "8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)",
      "path": [
       "8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)"
      ],
-     "chars": 7174,
+     "chars": 7755,
      "lines": [
-      275,
-      298
+      276,
+      299
      ],
      "ids": [
       "D-01",
@@ -455,14 +490,15 @@
       "OI-19",
       "OI-20",
       "P-01",
-      "P-13"
+      "P-13",
+      "WARN_NOTATION_OFFGRID"
      ]
     }
    ]
   },
   "SRS.md": {
    "title": "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)",
-   "sha1": "6d45847731",
+   "sha1": "34fd2a9134",
    "chunks": [
     {
      "n": 0,
@@ -486,7 +522,7 @@
       "DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO)",
       "Lịch sử phiên bản"
      ],
-     "chars": 9627,
+     "chars": 9737,
      "lines": [
       7,
       26
@@ -502,6 +538,7 @@
       "AT-24",
       "AT-25",
       "AT-26",
+      "AT-27",
       "BR-01",
       "BR-08",
       "D-01",
@@ -1651,65 +1688,61 @@
     },
     {
      "n": 46,
-     "file": "SRS/req-widget-09-ban-nhac-notation-de-xuat-d-63-cho.md",
-     "title": "REQ-WIDGET-09: Bản nhạc (Notation) **[ĐỀ XUẤT, D-63, chờ Spike 4]**",
+     "file": "SRS/req-widget-09-ban-nhac-notation-d-63-da-lam-2026.md",
+     "title": "REQ-WIDGET-09: Bản nhạc (Notation) (D-63; đã làm 2026-11-21, T-90…T-95)",
      "path": [
       "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS)",
       "3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04)",
-      "REQ-WIDGET-09: Bản nhạc (Notation) **[ĐỀ XUẤT, D-63, chờ Spike 4]**"
+      "REQ-WIDGET-09: Bản nhạc (Notation) (D-63; đã làm 2026-11-21, T-90…T-95)"
      ],
-     "chars": 2140,
+     "chars": 3392,
      "lines": [
       670,
-      679
+      681
      ],
      "ids": [
       "D-63",
-      "REQ-EXPORT-00",
+      "OI-20",
       "REQ-GRAPHICS-05",
-      "REQ-GRAPHICS-14",
-      "REQ-GRAPHICS-16",
-      "REQ-GRAPHICS-17",
-      "REQ-STORAGE-05",
-      "REQ-WIDGET-06",
-      "REQ-WIDGET-09",
-      "WARN_NOTATION_DENSE",
-      "WARN_NOTATION_FALLBACK"
+      "REQ-WIDGET-09"
      ]
     },
     {
      "n": 47,
-     "file": "SRS/req-notation-01-luong-tu-hoa-de-ve-ban-nhac-de-x.md",
-     "title": "REQ-NOTATION-01: Lượng tử hoá để vẽ bản nhạc **[ĐỀ XUẤT, D-63]**",
+     "file": "SRS/req-notation-01-luong-tu-hoa-de-ve-ban-nhac-d-63.md",
+     "title": "REQ-NOTATION-01: Lượng tử hoá để vẽ bản nhạc (D-63; đã làm 2026-11-21)",
      "path": [
       "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS)",
       "3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04)",
-      "REQ-NOTATION-01: Lượng tử hoá để vẽ bản nhạc **[ĐỀ XUẤT, D-63]**"
+      "REQ-NOTATION-01: Lượng tử hoá để vẽ bản nhạc (D-63; đã làm 2026-11-21)"
      ],
-     "chars": 1181,
+     "chars": 1936,
      "lines": [
-      680,
-      687
+      682,
+      690
      ],
      "ids": [
       "D-63",
       "REQ-NOTATION-01",
-      "WARN_NOTATION_KEY_GUESS"
+      "WARN_NOTATION_EMPTY",
+      "WARN_NOTATION_GLYPH",
+      "WARN_NOTATION_KEY_GUESS",
+      "WARN_NOTATION_OFFGRID"
      ]
     },
     {
      "n": 48,
-     "file": "SRS/req-graphics-20-net-tay-tat-dinh-cho-duong-ve-de.md",
-     "title": "REQ-GRAPHICS-20: Nét tay tất định cho đường vẽ **[ĐỀ XUẤT, D-63]**",
+     "file": "SRS/req-graphics-20-net-tay-tat-dinh-cho-duong-ve-d.md",
+     "title": "REQ-GRAPHICS-20: Nét tay tất định cho đường vẽ (D-63; đã làm 2026-11-21 cho bản nhạc)",
      "path": [
       "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS)",
       "3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04)",
-      "REQ-GRAPHICS-20: Nét tay tất định cho đường vẽ **[ĐỀ XUẤT, D-63]**"
+      "REQ-GRAPHICS-20: Nét tay tất định cho đường vẽ (D-63; đã làm 2026-11-21 cho bản nhạc)"
      ],
-     "chars": 615,
+     "chars": 602,
      "lines": [
-      688,
-      692
+      691,
+      695
      ],
      "ids": [
       "D-63",
@@ -1726,8 +1759,8 @@
      ],
      "chars": 2994,
      "lines": [
-      693,
-      716
+      696,
+      719
      ],
      "ids": [
       "D-32",
@@ -1762,8 +1795,8 @@
      ],
      "chars": 4696,
      "lines": [
-      717,
-      789
+      720,
+      792
      ],
      "ids": [
       "BR-05",
@@ -1792,8 +1825,8 @@
      ],
      "chars": 413,
      "lines": [
-      792,
-      794
+      795,
+      797
      ],
      "ids": [
       "D-05",
@@ -1812,8 +1845,8 @@
      ],
      "chars": 2606,
      "lines": [
-      795,
-      817
+      798,
+      820
      ],
      "ids": [
       "D-17",
@@ -1835,8 +1868,8 @@
      ],
      "chars": 502,
      "lines": [
-      818,
-      823
+      821,
+      826
      ],
      "ids": [
       "REQ-EXPORT-01",
@@ -1854,8 +1887,8 @@
      ],
      "chars": 192,
      "lines": [
-      824,
-      826
+      827,
+      829
      ],
      "ids": [
       "REQ-EXPORT-02"
@@ -1872,8 +1905,8 @@
      ],
      "chars": 1276,
      "lines": [
-      827,
-      832
+      830,
+      835
      ],
      "ids": [
       "AT-03",
@@ -1894,8 +1927,8 @@
      ],
      "chars": 845,
      "lines": [
-      833,
-      837
+      836,
+      840
      ],
      "ids": [
       "D-04",
@@ -1914,8 +1947,8 @@
      ],
      "chars": 466,
      "lines": [
-      838,
-      840
+      841,
+      843
      ],
      "ids": [
       "REQ-EXPORT-05"
@@ -1932,8 +1965,8 @@
      ],
      "chars": 1793,
      "lines": [
-      841,
-      867
+      844,
+      870
      ],
      "ids": [
       "D-05",
@@ -1954,8 +1987,8 @@
      ],
      "chars": 2121,
      "lines": [
-      868,
-      879
+      871,
+      882
      ],
      "ids": [
       "D-47",
@@ -1973,8 +2006,8 @@
      ],
      "chars": 946,
      "lines": [
-      880,
-      889
+      883,
+      892
      ],
      "ids": [
       "ARC-02",
@@ -1994,8 +2027,8 @@
      ],
      "chars": 2714,
      "lines": [
-      890,
-      904
+      893,
+      907
      ],
      "ids": [
       "BR-09",
@@ -2014,8 +2047,8 @@
      ],
      "chars": 328,
      "lines": [
-      905,
-      908
+      908,
+      911
      ],
      "ids": [
       "AD-08",
@@ -2040,8 +2073,8 @@
      ],
      "chars": 844,
      "lines": [
-      909,
-      912
+      912,
+      915
      ],
      "ids": [
       "REQ-GRAPHICS-09"
@@ -2058,8 +2091,8 @@
      ],
      "chars": 467,
      "lines": [
-      913,
-      915
+      916,
+      918
      ],
      "ids": [
       "AD-11",
@@ -2079,8 +2112,8 @@
      ],
      "chars": 1821,
      "lines": [
-      916,
-      919
+      919,
+      922
      ],
      "ids": [
       "REQ-GRAPHICS-11"
@@ -2097,8 +2130,8 @@
      ],
      "chars": 529,
      "lines": [
-      920,
-      922
+      923,
+      925
      ],
      "ids": [
       "REQ-GRAPHICS-12"
@@ -2115,8 +2148,8 @@
      ],
      "chars": 339,
      "lines": [
-      923,
-      925
+      926,
+      928
      ],
      "ids": [
       "REQ-GRAPHICS-13"
@@ -2133,8 +2166,8 @@
      ],
      "chars": 1148,
      "lines": [
-      926,
-      931
+      929,
+      934
      ],
      "ids": [
       "P-04",
@@ -2157,8 +2190,8 @@
      ],
      "chars": 1874,
      "lines": [
-      932,
-      940
+      935,
+      943
      ],
      "ids": [
       "D-47",
@@ -2178,8 +2211,8 @@
      ],
      "chars": 967,
      "lines": [
-      941,
-      944
+      944,
+      947
      ],
      "ids": [
       "ERR_ASSET_DECODE",
@@ -2199,8 +2232,8 @@
      ],
      "chars": 444,
      "lines": [
-      945,
-      947
+      948,
+      950
      ],
      "ids": [
       "D-14",
@@ -2218,8 +2251,8 @@
      ],
      "chars": 5167,
      "lines": [
-      948,
-      994
+      951,
+      997
      ],
      "ids": [
       "ARC-07",
@@ -2270,8 +2303,8 @@
      ],
      "chars": 4893,
      "lines": [
-      997,
-      1034
+      1000,
+      1037
      ],
      "ids": [
       "D-57",
@@ -2288,8 +2321,8 @@
      ],
      "chars": 364,
      "lines": [
-      1035,
-      1039
+      1038,
+      1042
      ],
      "ids": [
       "REQ-GRAPHICS-05"
@@ -2305,8 +2338,8 @@
      ],
      "chars": 18661,
      "lines": [
-      1040,
-      1113
+      1043,
+      1116
      ],
      "ids": [
       "ARC-05",
@@ -2367,10 +2400,10 @@
      "path": [
       "6. MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU"
      ],
-     "chars": 1419,
+     "chars": 1468,
      "lines": [
-      1114,
-      1129
+      1117,
+      1132
      ],
      "ids": [
       "BR-01",
@@ -2404,6 +2437,8 @@
       "REQ-EXPORT-05",
       "REQ-GRAPHICS-00",
       "REQ-GRAPHICS-04",
+      "REQ-GRAPHICS-20",
+      "REQ-NOTATION-01",
       "REQ-PARSER-00",
       "REQ-PARSER-05",
       "REQ-STORAGE-01",
@@ -2418,7 +2453,8 @@
       "REQ-WIDGET-01",
       "REQ-WIDGET-06",
       "REQ-WIDGET-07",
-      "REQ-WIDGET-08"
+      "REQ-WIDGET-08",
+      "REQ-WIDGET-09"
      ]
     },
     {
@@ -2428,10 +2464,10 @@
      "path": [
       "7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO"
      ],
-     "chars": 6665,
+     "chars": 7104,
      "lines": [
-      1130,
-      1164
+      1133,
+      1168
      ],
      "ids": [
       "ARC-01",
@@ -2461,6 +2497,7 @@
       "AT-24",
       "AT-25",
       "AT-26",
+      "AT-27",
       "BR-01",
       "BR-02",
       "BR-05",
@@ -2469,6 +2506,7 @@
       "D-11",
       "D-25",
       "D-29",
+      "D-63",
       "KPI-01",
       "KPI-02",
       "KPI-03",
@@ -2497,8 +2535,8 @@
      ],
      "chars": 4044,
      "lines": [
-      1165,
-      1191
+      1169,
+      1195
      ],
      "ids": [
       "D-20",
@@ -2553,8 +2591,8 @@
      ],
      "chars": 2864,
      "lines": [
-      1194,
-      1219
+      1198,
+      1223
      ],
      "ids": [
       "ERR_ARCHIVE_INVALID",
@@ -2592,8 +2630,8 @@
      ],
      "chars": 1673,
      "lines": [
-      1220,
-      1236
+      1224,
+      1240
      ],
      "ids": [
       "NFR-SEC-04",
@@ -2620,8 +2658,8 @@
      ],
      "chars": 1357,
      "lines": [
-      1237,
-      1242
+      1241,
+      1246
      ],
      "ids": [
       "REQ-AUDIO-01",
@@ -2669,8 +2707,8 @@
      ],
      "chars": 2904,
      "lines": [
-      1243,
-      1274
+      1247,
+      1278
      ],
      "ids": [
       "D-20",
@@ -2698,7 +2736,7 @@
   },
   "SDD.md": {
    "title": "TÀI LIỆU THIẾT KẾ PHẦN MỀM (SDD) — ỨNG DỤNG DAW VISUALIZER",
-   "sha1": "7318e4095f",
+   "sha1": "bd726ffa10",
    "chunks": [
     {
      "n": 0,
@@ -2754,7 +2792,7 @@
      "path": [
       "3. Render Core (`@dawviz/render-core`, D-36)"
      ],
-     "chars": 1359,
+     "chars": 1739,
      "lines": [
       28,
       41
@@ -2777,13 +2815,14 @@
      "path": [
       "4. Ứng dụng web (`apps/web`, D-34)"
      ],
-     "chars": 1290,
+     "chars": 1633,
      "lines": [
       42,
-      56
+      57
      ],
      "ids": [
-      "D-34"
+      "D-34",
+      "D-63"
      ]
     },
     {
@@ -2795,8 +2834,8 @@
      ],
      "chars": 1191,
      "lines": [
-      57,
-      68
+      58,
+      69
      ],
      "ids": [
       "AD-01",
@@ -2818,8 +2857,8 @@
      ],
      "chars": 318,
      "lines": [
-      69,
-      74
+      70,
+      75
      ],
      "ids": []
     },
@@ -2832,8 +2871,8 @@
      ],
      "chars": 416,
      "lines": [
-      75,
-      80
+      76,
+      81
      ],
      "ids": []
     },
@@ -2846,8 +2885,8 @@
      ],
      "chars": 543,
      "lines": [
-      81,
-      83
+      82,
+      84
      ],
      "ids": []
     }
@@ -2855,7 +2894,7 @@
   },
   "TECHNICAL-DESIGN.md": {
    "title": "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER",
-   "sha1": "57493fb549",
+   "sha1": "ff3dfa792b",
    "chunks": [
     {
      "n": 0,
@@ -3072,7 +3111,7 @@
       "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại",
       "5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)"
      ],
-     "chars": 5390,
+     "chars": 5581,
      "lines": [
       167,
       194
@@ -3145,23 +3184,23 @@
     },
     {
      "n": 16,
-     "file": "TECHNICAL-DESIGN/5-11-ban-nhac-notation-de-xuat-d-63-srs-req-widg.md",
-     "title": "5.11 Bản nhạc (Notation) ⚪ (đề xuất D-63, SRS REQ-WIDGET-09 / REQ-NOTATION-01 / REQ-GRAPHICS-20; chờ Spike 4)",
+     "file": "TECHNICAL-DESIGN/5-11-ban-nhac-notation-t-90-t-95-d-63-srs-req-wi.md",
+     "title": "5.11 Bản nhạc (Notation) 🟢 (T-90…T-95, D-63; SRS REQ-WIDGET-09, REQ-NOTATION-01, REQ-GRAPHICS-20; báo cáo Spike 4)",
      "path": [
       "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại",
-      "5.11 Bản nhạc (Notation) ⚪ (đề xuất D-63, SRS REQ-WIDGET-09 / REQ-NOTATION-01 / REQ-GRAPHICS-20; chờ Spike 4)"
+      "5.11 Bản nhạc (Notation) 🟢 (T-90…T-95, D-63; SRS REQ-WIDGET-09, REQ-NOTATION-01, REQ-GRAPHICS-20; báo cáo Spike 4)"
      ],
-     "chars": 2050,
+     "chars": 5709,
      "lines": [
       227,
-      235
+      241
      ],
      "ids": [
       "D-63",
-      "REQ-EXPORT-00",
       "REQ-GRAPHICS-20",
       "REQ-NOTATION-01",
-      "REQ-WIDGET-09"
+      "REQ-WIDGET-09",
+      "WARN_NOTATION_GLYPH"
      ]
     },
     {
@@ -3174,8 +3213,8 @@
      ],
      "chars": 1256,
      "lines": [
-      238,
-      248
+      244,
+      254
      ],
      "ids": [
       "REQ-UI-14"
@@ -3191,8 +3230,8 @@
      ],
      "chars": 233,
      "lines": [
-      249,
-      251
+      255,
+      257
      ],
      "ids": [
       "NFR-SEC-04",
@@ -3214,8 +3253,8 @@
      ],
      "chars": 3263,
      "lines": [
-      252,
-      265
+      258,
+      271
      ],
      "ids": [
       "ARC-03",
@@ -3240,8 +3279,8 @@
      ],
      "chars": 5451,
      "lines": [
-      266,
-      287
+      272,
+      293
      ],
      "ids": [
       "REQ-AUDIO-02"
@@ -3258,8 +3297,8 @@
      ],
      "chars": 1992,
      "lines": [
-      288,
-      295
+      294,
+      301
      ],
      "ids": [
       "REQ-UI-15",
@@ -3277,8 +3316,8 @@
      ],
      "chars": 1439,
      "lines": [
-      296,
-      303
+      302,
+      309
      ],
      "ids": [
       "REQ-UI-03"
@@ -3295,8 +3334,8 @@
      ],
      "chars": 1211,
      "lines": [
-      304,
-      310
+      310,
+      316
      ],
      "ids": [
       "REQ-WIDGET-07"
@@ -3313,8 +3352,8 @@
      ],
      "chars": 826,
      "lines": [
-      311,
-      316
+      317,
+      322
      ],
      "ids": [
       "REQ-PARSER-07",
@@ -3332,8 +3371,8 @@
      ],
      "chars": 1023,
      "lines": [
-      317,
-      327
+      323,
+      333
      ],
      "ids": [
       "AT-03",
@@ -3351,8 +3390,8 @@
      ],
      "chars": 1014,
      "lines": [
-      328,
-      330
+      334,
+      336
      ],
      "ids": [
       "ERR_AUDIO_DECODE",
@@ -3371,8 +3410,8 @@
      ],
      "chars": 672,
      "lines": [
-      331,
-      338
+      337,
+      344
      ],
      "ids": []
     },
@@ -3386,8 +3425,8 @@
      ],
      "chars": 1860,
      "lines": [
-      339,
-      348
+      345,
+      354
      ],
      "ids": [
       "D-50",
@@ -3404,8 +3443,8 @@
      ],
      "chars": 19139,
      "lines": [
-      349,
-      410
+      355,
+      416
      ],
      "ids": [
       "ARC-05",
@@ -3437,8 +3476,8 @@
      ],
      "chars": 1019,
      "lines": [
-      413,
-      428
+      419,
+      434
      ],
      "ids": [
       "REQ-EXPORT-00",
@@ -3454,10 +3493,10 @@
       "7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở)",
       "7.2 Quyết định kỹ thuật"
      ],
-     "chars": 1080,
+     "chars": 1109,
      "lines": [
-      429,
-      437
+      435,
+      443
      ],
      "ids": [
       "AT-03",
@@ -3478,8 +3517,8 @@
      ],
      "chars": 1745,
      "lines": [
-      438,
-      447
+      444,
+      453
      ],
      "ids": [
       "D-26",
@@ -3503,8 +3542,8 @@
      ],
      "chars": 8203,
      "lines": [
-      448,
-      462
+      454,
+      468
      ],
      "ids": [
       "AT-03",
@@ -3527,8 +3566,8 @@
      ],
      "chars": 1704,
      "lines": [
-      463,
-      469
+      469,
+      475
      ],
      "ids": [
       "ERR_PRESET_INVALID",
@@ -3545,8 +3584,8 @@
      ],
      "chars": 492,
      "lines": [
-      470,
-      472
+      476,
+      478
      ],
      "ids": []
     },
@@ -3559,8 +3598,8 @@
      ],
      "chars": 470,
      "lines": [
-      473,
-      477
+      479,
+      483
      ],
      "ids": [
       "D-13"
@@ -3573,10 +3612,10 @@
      "path": [
       "11. Hiệu năng và bộ nhớ (ngân sách)"
      ],
-     "chars": 1092,
+     "chars": 1164,
      "lines": [
-      478,
-      488
+      484,
+      494
      ],
      "ids": [
       "D-63",
@@ -3593,8 +3632,8 @@
      ],
      "chars": 728,
      "lines": [
-      489,
-      491
+      495,
+      497
      ],
      "ids": [
       "OI-07"
@@ -3609,8 +3648,8 @@
      ],
      "chars": 906,
      "lines": [
-      492,
-      498
+      498,
+      504
      ],
      "ids": [
       "D-12",
@@ -3627,8 +3666,8 @@
      ],
      "chars": 760,
      "lines": [
-      499,
-      506
+      505,
+      512
      ],
      "ids": []
     }
@@ -4118,7 +4157,7 @@
   },
   "ANIMATION-CATALOG.md": {
    "title": "Danh mục hiệu ứng chuyển động và đường cong nội suy",
-   "sha1": "31fc7a72b4",
+   "sha1": "0c1c7a0731",
    "chunks": [
     {
      "n": 0,
@@ -4310,7 +4349,7 @@
      "path": [
       "11. Màu và ánh sáng"
      ],
-     "chars": 749,
+     "chars": 883,
      "lines": [
       173,
       187
@@ -6693,20 +6732,21 @@
   },
   "SPIKE-4-NOTATION.md": {
    "title": "Spike 4: bản nhạc (notation) bằng VexFlow, phát sáng từng nốt, nét tay",
-   "sha1": "226588bac5",
+   "sha1": "513257591d",
    "chunks": [
     {
      "n": 0,
      "file": "SPIKE-4-NOTATION/spike-4-ban-nhac-notation-bang-vexflow-phat-sang.md",
      "title": "Spike 4: bản nhạc (notation) bằng VexFlow, phát sáng từng nốt, nét tay (mở đầu)",
      "path": [],
-     "chars": 779,
+     "chars": 720,
      "lines": [
       1,
       6
      ],
      "ids": [
-      "D-63"
+      "D-63",
+      "OI-20"
      ]
     },
     {
@@ -6725,15 +6765,15 @@
     },
     {
      "n": 2,
-     "file": "SPIKE-4-NOTATION/2-hien-trang-lien-quan-trong-repo.md",
-     "title": "2. Hiện trạng liên quan trong repo",
+     "file": "SPIKE-4-NOTATION/2-hien-trang-lien-quan-trong-repo-truoc-spike.md",
+     "title": "2. Hiện trạng liên quan trong repo (trước spike)",
      "path": [
-      "2. Hiện trạng liên quan trong repo"
+      "2. Hiện trạng liên quan trong repo (trước spike)"
      ],
-     "chars": 1042,
+     "chars": 850,
      "lines": [
       14,
-      25
+      23
      ],
      "ids": [
       "D-50"
@@ -6741,53 +6781,47 @@
     },
     {
      "n": 3,
-     "file": "SPIKE-4-NOTATION/3-kien-truc-de-xuat.md",
-     "title": "3. Kiến trúc đề xuất",
+     "file": "SPIKE-4-NOTATION/3-kien-truc-sau-spike.md",
+     "title": "3. Kiến trúc (sau spike)",
      "path": [
-      "3. Kiến trúc đề xuất"
+      "3. Kiến trúc (sau spike)"
      ],
-     "chars": 1528,
+     "chars": 1965,
      "lines": [
-      26,
-      51
+      24,
+      49
      ],
      "ids": [
-      "REQ-NOTATION-01",
-      "REQ-WIDGET-09",
       "WARN_NOTATION_"
      ]
     },
     {
      "n": 4,
-     "file": "SPIKE-4-NOTATION/4-cac-spike.md",
-     "title": "4. Các spike",
+     "file": "SPIKE-4-NOTATION/4-cac-spike-cau-hoi-va-cach-lam.md",
+     "title": "4. Các spike (câu hỏi và cách làm)",
      "path": [
-      "4. Các spike"
+      "4. Các spike (câu hỏi và cách làm)"
      ],
-     "chars": 3763,
+     "chars": 1042,
      "lines": [
-      52,
-      90
+      50,
+      59
      ],
-     "ids": [
-      "REQ-STORAGE-05"
-     ]
+     "ids": []
     },
     {
      "n": 5,
-     "file": "SPIKE-4-NOTATION/5-kha-nang-tuy-bien-du-kien.md",
-     "title": "5. Khả năng tuỳ biến dự kiến",
+     "file": "SPIKE-4-NOTATION/5-kha-nang-tuy-bien-da-lam.md",
+     "title": "5. Khả năng tuỳ biến (đã làm)",
      "path": [
-      "5. Khả năng tuỳ biến dự kiến"
+      "5. Khả năng tuỳ biến (đã làm)"
      ],
-     "chars": 907,
+     "chars": 1182,
      "lines": [
-      91,
-      101
+      60,
+      74
      ],
-     "ids": [
-      "REQ-GRAPHICS-16"
-     ]
+     "ids": []
     },
     {
      "n": 6,
@@ -6796,24 +6830,27 @@
      "path": [
       "6. Kết quả"
      ],
-     "chars": 114,
+     "chars": 4969,
      "lines": [
-      102,
-      105
+      75,
+      126
      ],
-     "ids": []
+     "ids": [
+      "WARN_NOTATION_KEY_GUESS",
+      "WARN_NOTATION_OFFGRID"
+     ]
     },
     {
      "n": 7,
-     "file": "SPIKE-4-NOTATION/7-dieu-kien-chot-d-63.md",
-     "title": "7. Điều kiện chốt D-63",
+     "file": "SPIKE-4-NOTATION/7-quyet-dinh.md",
+     "title": "7. Quyết định",
      "path": [
-      "7. Điều kiện chốt D-63"
+      "7. Quyết định"
      ],
-     "chars": 294,
+     "chars": 224,
      "lines": [
-      106,
-      109
+      127,
+      130
      ],
      "ids": [
       "D-63"
@@ -6821,24 +6858,44 @@
     },
     {
      "n": 8,
-     "file": "SPIKE-4-NOTATION/8-viec-keo-theo-khong-lam-trong-spike.md",
-     "title": "8. Việc kéo theo (không làm trong spike)",
+     "file": "SPIKE-4-NOTATION/8-con-lai.md",
+     "title": "8. Còn lại",
      "path": [
-      "8. Việc kéo theo (không làm trong spike)"
+      "8. Còn lại"
      ],
-     "chars": 299,
+     "chars": 1226,
      "lines": [
-      110,
-      112
+      131,
+      135
      ],
-     "ids": []
+     "ids": [
+      "OI-20"
+     ]
     }
    ]
   }
  },
  "ids": {
-  "BR-09": [
+  "D-38": [
    "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
+   "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md",
+   "CUSTOMIZATION/tuy-bien-toi-da-storyboard-chuyen-canh-not-duong.md",
+   "CUSTOMIZATION/8-quyet-dinh-de-xuat.md"
+  ],
+  "D-45": [
+   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
+   "BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md",
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
+   "BRD/8-cac-van-de-con-mo-open-issues.md",
+   "SRS/lich-su-phien-ban.md",
+   "SRS/8-cac-van-de-con-mo-cua-srs.md",
+   "SPIKE-2-PARSER/5-trang-thai-hien-tai-tai-lieu-v1-1.md"
+  ],
+  "BR-09": [
+   "BRD/lich-su-phien-ban.md",
    "BRD/2-muc-tieu-kinh-doanh-chi-so-do-luong-yeu-cau-ng.md",
    "BRD/4-1-trong-pham-vi-phien-ban-1-0-in-scope.md",
    "SRS/3-7-da-ngon-ngu-va-cong-dong-dich-br-09-d-30-kpi.md",
@@ -6847,7 +6904,7 @@
    "SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md"
   ],
   "D-01": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/4-1-trong-pham-vi-phien-ban-1-0-in-scope.md",
    "BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md",
    "BRD/6-gia-dinh-assumptions.md",
@@ -6860,7 +6917,7 @@
    "SPIKE-1-EXPORT/5-doi-chieu-voi-tai-lieu-v1-1.md"
   ],
   "D-15": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/lich-su-phien-ban.md",
@@ -6869,13 +6926,13 @@
    "UI-DIRECTION/7-nguyen-tac-san-pham-trinh-dung-that-mac-dinh-d.md"
   ],
   "D-19": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/5-3-yeu-cau-giao-dien.md",
    "SPIKE-3-FLP/spike-3-doc-flp-fl-studio-bang-json-schema-mo-da.md"
   ],
   "D-20": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/2-4-danh-gia-kien-truc-hien-tai.md",
    "SRS/req-graphics-05-render-core-dung-chung-arc-01-d.md",
@@ -6884,14 +6941,14 @@
    "SPIKE-1-EXPORT/5-doi-chieu-voi-tai-lieu-v1-1.md"
   ],
   "D-22": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/2-4-danh-gia-kien-truc-hien-tai.md",
    "SRS/8-cac-van-de-con-mo-cua-srs.md",
    "SRS/phu-luc-b-ghi-chu-ra-soat.md"
   ],
   "D-23": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/1-gioi-thieu-muc-tieu-he-thong.md",
    "SRS/2-3-thanh-phan-ben-thu-ba.md",
@@ -6899,7 +6956,7 @@
    "SPIKE-2-PARSER/5-trang-thai-hien-tai-tai-lieu-v1-1.md"
   ],
   "D-24": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/4-1-trong-pham-vi-phien-ban-1-0-in-scope.md",
    "BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
@@ -6909,14 +6966,14 @@
    "SPIKE-2-PARSER/5-trang-thai-hien-tai-tai-lieu-v1-1.md"
   ],
   "D-25": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/5-3-yeu-cau-giao-dien.md",
    "SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md"
   ],
   "D-26": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/4-1-trong-pham-vi-phien-ban-1-0-in-scope.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/req-export-00-pre-flight-r-01-d-17.md",
@@ -6925,14 +6982,14 @@
    "SPIKE-1-EXPORT/5-doi-chieu-voi-tai-lieu-v1-1.md"
   ],
   "D-27": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/4-1-trong-pham-vi-phien-ban-1-0-in-scope.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/req-widget-08-progress-bar-d-27.md",
    "SPIKE-2-PARSER/5-trang-thai-hien-tai-tai-lieu-v1-1.md"
   ],
   "D-28": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/4-1-trong-pham-vi-phien-ban-1-0-in-scope.md",
    "BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
@@ -6944,7 +7001,7 @@
    "SPIKE-3-FLP/7-phuong-an-da-can-nhac.md"
   ],
   "D-29": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/4-1-trong-pham-vi-phien-ban-1-0-in-scope.md",
    "BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
@@ -6955,7 +7012,7 @@
    "SPIKE-2-PARSER/5-trang-thai-hien-tai-tai-lieu-v1-1.md"
   ],
   "D-30": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/4-1-trong-pham-vi-phien-ban-1-0-in-scope.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/3-7-da-ngon-ngu-va-cong-dong-dich-br-09-d-30-kpi.md",
@@ -6963,19 +7020,19 @@
    "SRS/5-3-yeu-cau-giao-dien.md"
   ],
   "D-31": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/4-1-trong-pham-vi-phien-ban-1-0-in-scope.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/8-cac-van-de-con-mo-cua-srs.md",
    "SPIKE-2-PARSER/5-trang-thai-hien-tai-tai-lieu-v1-1.md"
   ],
   "D-32": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md"
   ],
   "D-33": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/4-1-trong-pham-vi-phien-ban-1-0-in-scope.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/req-graphics-06-do-sang-track-theo-automation-d.md",
@@ -6983,7 +7040,7 @@
    "TDD/2-danh-muc-test-moi.md"
   ],
   "D-34": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/lich-su-phien-ban.md",
    "SRS/2-3-thanh-phan-ben-thu-ba.md",
@@ -6992,29 +7049,22 @@
    "ANIMATION/2-cac-lua-chon-da-xet.md"
   ],
   "D-36": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/lich-su-phien-ban.md",
    "SRS/2-3-thanh-phan-ben-thu-ba.md",
    "SRS/2-6-ngan-xep-giao-dien-render-core-va-cau-truc-k.md",
    "SDD/3-render-core-dawviz-render-core-d-36.md"
   ],
-  "D-38": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
-   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
-   "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md",
-   "CUSTOMIZATION/tuy-bien-toi-da-storyboard-chuyen-canh-not-duong.md",
-   "CUSTOMIZATION/8-quyet-dinh-de-xuat.md"
-  ],
   "D-39": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "BRD/8-cac-van-de-con-mo-open-issues.md",
    "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md",
    "EXPRESSIONS/bieu-thuc-nguoi-dung-mo-hinh-bao-mat-va-kiem-duy.md"
   ],
   "D-40": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "BRD/8-cac-van-de-con-mo-open-issues.md",
@@ -7025,17 +7075,8 @@
    "CUSTOMIZATION/10-kha-thi.md",
    "ANIMATION-CATALOG/danh-muc-hieu-ung-chuyen-dong-va-duong-cong-noi.md"
   ],
-  "D-45": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
-   "BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md",
-   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
-   "BRD/8-cac-van-de-con-mo-open-issues.md",
-   "SRS/lich-su-phien-ban.md",
-   "SRS/8-cac-van-de-con-mo-cua-srs.md",
-   "SPIKE-2-PARSER/5-trang-thai-hien-tai-tai-lieu-v1-1.md"
-  ],
   "D-51": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/lich-su-phien-ban.md",
    "SRS/req-graphics-04-preset-dung-san-va-doi-ti-le-khu.md",
@@ -7044,21 +7085,21 @@
    "UI-DIRECTION/4-nhat-ky-thu-va-huong-duoc-chon.md"
   ],
   "D-52": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/lich-su-phien-ban.md",
    "SRS/5-3-yeu-cau-giao-dien.md",
    "UI-DIRECTION/dinh-huong-hinh-anh-khung-preview-va-giao-dien-w.md"
   ],
   "D-53": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "UI-DIRECTION/dinh-huong-hinh-anh-khung-preview-va-giao-dien-w.md",
    "UI-DIRECTION/4-nhat-ky-thu-va-huong-duoc-chon.md",
    "UI-DIRECTION/5-3-cau-truc-giao-dien-d-a-e-d-53-da-chot-2026-1.md"
   ],
   "D-54": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/1-thong-tin-chung-boi-canh-du-an.md",
    "BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
@@ -7071,14 +7112,14 @@
    "UI-DIRECTION/7-nguyen-tac-san-pham-trinh-dung-that-mac-dinh-d.md"
   ],
   "D-55": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/lich-su-phien-ban.md",
    "TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md",
    "UI-DIRECTION/dinh-huong-hinh-anh-khung-preview-va-giao-dien-w.md"
   ],
   "D-57": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/lich-su-phien-ban.md",
    "SRS/req-graphics-01-phan-lop-do-hoa-d-07.md",
@@ -7092,18 +7133,18 @@
    "UI-DIRECTION/6-viec-tiep-theo-de-xuat.md"
   ],
   "D-58": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/lich-su-phien-ban.md",
    "SRS/req-graphics-18-kieu-chu-cho-moi-chu-trong-video.md",
    "TECHNICAL-DESIGN/5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md"
   ],
   "D-59": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md"
   ],
   "D-60": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "BRD/8-cac-van-de-con-mo-open-issues.md",
    "SRS/lich-su-phien-ban.md",
@@ -7112,7 +7153,7 @@
    "TECHNICAL-DESIGN/5-10-cho-giu-trong-chu-va-o-chu-t-73-srs-req-gra.md"
   ],
   "D-61": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/lich-su-phien-ban.md",
    "SRS/req-export-06-chon-dinh-dang-va-chuoi-du-phong-c.md",
@@ -7120,7 +7161,7 @@
    "TECHNICAL-DESIGN/7-4-export-worker-va-giao-dien-t-09-2026-11-14.md"
   ],
   "D-62": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/3-chan-dung-nguoi-dung-muc-tieu-user-personas.md",
    "BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
@@ -7135,56 +7176,58 @@
    "SPIKE-3-FLP/spike-3-doc-flp-fl-studio-bang-json-schema-mo-da.md"
   ],
   "D-63": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "BRD/8-cac-van-de-con-mo-open-issues.md",
    "SRS/lich-su-phien-ban.md",
-   "SRS/req-widget-09-ban-nhac-notation-de-xuat-d-63-cho.md",
-   "SRS/req-notation-01-luong-tu-hoa-de-ve-ban-nhac-de-x.md",
-   "SRS/req-graphics-20-net-tay-tat-dinh-cho-duong-ve-de.md",
+   "SRS/req-widget-09-ban-nhac-notation-d-63-da-lam-2026.md",
+   "SRS/req-notation-01-luong-tu-hoa-de-ve-ban-nhac-d-63.md",
+   "SRS/req-graphics-20-net-tay-tat-dinh-cho-duong-ve-d.md",
+   "SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md",
    "SDD/3-render-core-dawviz-render-core-d-36.md",
-   "TECHNICAL-DESIGN/5-11-ban-nhac-notation-de-xuat-d-63-srs-req-widg.md",
+   "SDD/4-ung-dung-web-apps-web-d-34.md",
+   "TECHNICAL-DESIGN/5-11-ban-nhac-notation-t-90-t-95-d-63-srs-req-wi.md",
    "TECHNICAL-DESIGN/7-2-quyet-dinh-ky-thuat.md",
    "TECHNICAL-DESIGN/11-hieu-nang-va-bo-nho-ngan-sach.md",
    "SPIKE-4-NOTATION/spike-4-ban-nhac-notation-bang-vexflow-phat-sang.md",
-   "SPIKE-4-NOTATION/7-dieu-kien-chot-d-63.md"
+   "SPIKE-4-NOTATION/7-quyet-dinh.md"
   ],
   "OI-09": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/8-cac-van-de-con-mo-open-issues.md",
    "SRS/8-cac-van-de-con-mo-cua-srs.md"
   ],
   "OI-10": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/8-cac-van-de-con-mo-open-issues.md",
    "SRS/8-cac-van-de-con-mo-cua-srs.md"
   ],
   "OI-11": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "BRD/8-cac-van-de-con-mo-open-issues.md",
    "SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md",
    "ANIMATION-CATALOG/18-rieng-cho-am-nhac-diem-manh-cua-daw-visualize.md"
   ],
   "OI-13": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/8-cac-van-de-con-mo-open-issues.md",
    "SRS/3-7-da-ngon-ngu-va-cong-dong-dich-br-09-d-30-kpi.md",
    "SRS/8-cac-van-de-con-mo-cua-srs.md"
   ],
   "OI-14": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "BRD/8-cac-van-de-con-mo-open-issues.md"
   ],
   "OI-15": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/8-cac-van-de-con-mo-open-issues.md",
    "CUSTOMIZATION/tuy-bien-toi-da-storyboard-chuyen-canh-not-duong.md",
    "CUSTOMIZATION/11-van-de-mo.md"
   ],
   "OI-16": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/8-cac-van-de-con-mo-open-issues.md",
    "CUSTOMIZATION/tuy-bien-toi-da-storyboard-chuyen-canh-not-duong.md",
    "CUSTOMIZATION/3-mo-hinh-du-lieu-storyboard-ad-08.md",
@@ -7194,14 +7237,14 @@
    "EXPRESSIONS/9-van-de-mo.md"
   ],
   "OI-17": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/8-cac-van-de-con-mo-open-issues.md",
    "EXPRESSIONS/2-ma-doc-o-day-la-gi.md",
    "EXPRESSIONS/7-yeu-cau-tuong-ung-da-dua-vao-srs-v1-1.md",
    "EXPRESSIONS/9-van-de-mo.md"
   ],
   "OI-18": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "BRD/8-cac-van-de-con-mo-open-issues.md",
    "SRS/lich-su-phien-ban.md",
@@ -7209,12 +7252,16 @@
    "TECHNICAL-DESIGN/5-10-cho-giu-trong-chu-va-o-chu-t-73-srs-req-gra.md"
   ],
   "OI-20": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "BRD/8-cac-van-de-con-mo-open-issues.md",
-   "SRS/lich-su-phien-ban.md"
+   "SRS/lich-su-phien-ban.md",
+   "SRS/req-widget-09-ban-nhac-notation-d-63-da-lam-2026.md",
+   "SPIKE-4-NOTATION/spike-4-ban-nhac-notation-bang-vexflow-phat-sang.md",
+   "SPIKE-4-NOTATION/8-con-lai.md"
   ],
   "P-01": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "BRD/8-cac-van-de-con-mo-open-issues.md",
@@ -7224,7 +7271,7 @@
    "SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md"
   ],
   "P-13": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "BRD/8-cac-van-de-con-mo-open-issues.md",
@@ -7234,7 +7281,7 @@
    "SRS/8-cac-van-de-con-mo-cua-srs.md"
   ],
   "REQ-GRAPHICS-02": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/lich-su-phien-ban.md",
    "SRS/req-graphics-02-bat-dinh-thong-minh.md",
@@ -7244,7 +7291,7 @@
    "UI-DIRECTION/5-4-bang-mau-dung-san-da-kiem-aa-v0-5.md"
   ],
   "REQ-GRAPHICS-18": [
-   "BRD/du-an-trinh-truc-quan-hoa-du-lieu-du-an-am-nhac.md",
+   "BRD/lich-su-phien-ban.md",
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/lich-su-phien-ban.md",
    "SRS/req-graphics-18-kieu-chu-cho-moi-chu-trong-video.md",
@@ -7509,7 +7556,7 @@
    "TECHNICAL-DESIGN/5-4-piano-roll.md",
    "TECHNICAL-DESIGN/5-6-phat-sang-dong-khi-cham.md",
    "TECHNICAL-DESIGN/6-3-danh-sach-track.md",
-   "SPIKE-4-NOTATION/2-hien-trang-lien-quan-trong-repo.md"
+   "SPIKE-4-NOTATION/2-hien-trang-lien-quan-trong-repo-truoc-spike.md"
   ],
   "REQ-AST-02": [
    "BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md",
@@ -7552,7 +7599,6 @@
   "REQ-GRAPHICS-14": [
    "BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md",
    "SRS/lich-su-phien-ban.md",
-   "SRS/req-widget-09-ban-nhac-notation-de-xuat-d-63-cho.md",
    "SRS/req-graphics-14-khoang-hien-thi-theo-thoi-gian-v.md",
    "SRS/5-1-bo-cuc-khong-gian-lam-viec.md",
    "SRS/5-3-yeu-cau-giao-dien.md"
@@ -7564,7 +7610,6 @@
    "SRS/req-graphics-06-do-sang-track-theo-automation-d.md",
    "SRS/req-graphics-17-phat-sang-dong-khi-cham-d-50-1-0.md",
    "SRS/req-ast-02-automation-tong-quat-d-50-1-0-cho-rea.md",
-   "SRS/req-widget-09-ban-nhac-notation-de-xuat-d-63-cho.md",
    "SRS/5-3-yeu-cau-giao-dien.md",
    "TECHNICAL-DESIGN/5-6-phat-sang-dong-khi-cham.md",
    "TDD/5-danh-sach-kiem-thu-cong-cho-at-18-chrome.md",
@@ -7638,11 +7683,9 @@
    "SRS/2-2-luong-du-lieu-chinh.md",
    "SRS/req-audio-01-am-thanh-theo-track-stem-ban-1-2.md",
    "SRS/req-widget-08-progress-bar-d-27.md",
-   "SRS/req-widget-09-ban-nhac-notation-de-xuat-d-63-cho.md",
    "SRS/req-export-00-pre-flight-r-01-d-17.md",
    "SRS/5-3-yeu-cau-giao-dien.md",
    "SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md",
-   "TECHNICAL-DESIGN/5-11-ban-nhac-notation-de-xuat-d-63-srs-req-widg.md",
    "TECHNICAL-DESIGN/7-1-trinh-tu.md",
    "TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md",
    "CUSTOMIZATION/6-tai-nguyen-assets-cua-phien-va-cua-cong-dong-a.md",
@@ -7897,7 +7940,7 @@
    "SRS/req-graphics-18-kieu-chu-cho-moi-chu-trong-video.md",
    "SRS/req-graphics-19-o-chu-nguoi-dung-them-va-cho-giu.md",
    "SRS/req-widget-08-progress-bar-d-27.md",
-   "SRS/req-widget-09-ban-nhac-notation-de-xuat-d-63-cho.md",
+   "SRS/req-widget-09-ban-nhac-notation-d-63-da-lam-2026.md",
    "SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md",
    "SRS/req-export-01-xung-nhip-khung-hinh-doc-lap.md",
    "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md",
@@ -7989,6 +8032,10 @@
    "SPIKE-3-FLP/3-dieu-json-chua-lam-duoc-va-bon-bo-sung-cho-eng.md",
    "SPIKE-3-FLP/5-gioi-han-da-biet-can-tep-mau-hoac-quyet-dinh-d.md"
   ],
+  "WARN_NOTATION_": [
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
+   "SPIKE-4-NOTATION/3-kien-truc-sau-spike.md"
+  ],
   "OI-02": [
    "BRD/8-cac-van-de-con-mo-open-issues.md",
    "SRS/4-yeu-cau-phi-chuc-nang-non-functional-requireme.md",
@@ -8016,6 +8063,11 @@
    "SRS/2-3-thanh-phan-ben-thu-ba.md",
    "TECHNICAL-DESIGN/12-bao-mat-va-quyen-rieng-tu.md",
    "PUBLISHING/1-giay-phep-da-chon-va-ly-do.md"
+  ],
+  "WARN_NOTATION_OFFGRID": [
+   "BRD/8-cac-van-de-con-mo-open-issues.md",
+   "SRS/req-notation-01-luong-tu-hoa-de-ve-ban-nhac-d-63.md",
+   "SPIKE-4-NOTATION/6-ket-qua.md"
   ],
   "AT-13": [
    "SRS/lich-su-phien-ban.md",
@@ -8057,6 +8109,10 @@
    "SRS/lich-su-phien-ban.md",
    "SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md",
    "TDD/5-danh-sach-kiem-thu-cong-cho-at-18-chrome.md"
+  ],
+  "AT-27": [
+   "SRS/lich-su-phien-ban.md",
+   "SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md"
   ],
   "ERR_AUDIO_TOO_MANY": [
    "SRS/lich-su-phien-ban.md",
@@ -8197,22 +8253,21 @@
   "REQ-GRAPHICS-16": [
    "SRS/lich-su-phien-ban.md",
    "SRS/req-graphics-16-thanh-phat-playhead-tuy-chinh.md",
-   "SRS/req-widget-09-ban-nhac-notation-de-xuat-d-63-cho.md",
    "SRS/req-graphics-10-template-chuyen-canh-not.md",
    "SRS/5-3-yeu-cau-giao-dien.md",
-   "UI-DIRECTION/1-khung-preview-huong-ban-in-da-chot-huong-chua.md",
-   "SPIKE-4-NOTATION/5-kha-nang-tuy-bien-du-kien.md"
+   "UI-DIRECTION/1-khung-preview-huong-ban-in-da-chot-huong-chua.md"
   ],
   "REQ-GRAPHICS-20": [
    "SRS/lich-su-phien-ban.md",
-   "SRS/req-graphics-20-net-tay-tat-dinh-cho-duong-ve-de.md",
-   "TECHNICAL-DESIGN/5-11-ban-nhac-notation-de-xuat-d-63-srs-req-widg.md"
+   "SRS/req-graphics-20-net-tay-tat-dinh-cho-duong-ve-d.md",
+   "SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md",
+   "TECHNICAL-DESIGN/5-11-ban-nhac-notation-t-90-t-95-d-63-srs-req-wi.md"
   ],
   "REQ-NOTATION-01": [
    "SRS/lich-su-phien-ban.md",
-   "SRS/req-notation-01-luong-tu-hoa-de-ve-ban-nhac-de-x.md",
-   "TECHNICAL-DESIGN/5-11-ban-nhac-notation-de-xuat-d-63-srs-req-widg.md",
-   "SPIKE-4-NOTATION/3-kien-truc-de-xuat.md"
+   "SRS/req-notation-01-luong-tu-hoa-de-ve-ban-nhac-d-63.md",
+   "SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md",
+   "TECHNICAL-DESIGN/5-11-ban-nhac-notation-t-90-t-95-d-63-srs-req-wi.md"
   ],
   "REQ-PARSER-01": [
    "SRS/lich-su-phien-ban.md",
@@ -8250,7 +8305,6 @@
    "SRS/req-graphics-16-thanh-phat-playhead-tuy-chinh.md",
    "SRS/req-graphics-07-kieu-dang-not-tuy-chinh-va-ban-p.md",
    "SRS/req-graphics-18-kieu-chu-cho-moi-chu-trong-video.md",
-   "SRS/req-widget-09-ban-nhac-notation-de-xuat-d-63-cho.md",
    "SRS/req-storage-05-tai-nguyen-cua-phien.md",
    "SRS/5-3-yeu-cau-giao-dien.md",
    "SRS/8-cac-van-de-con-mo-cua-srs.md",
@@ -8260,8 +8314,7 @@
    "TECHNICAL-DESIGN/6-2-1-nap-tep-am-thanh-mix.md",
    "CUSTOMIZATION/tuy-bien-toi-da-storyboard-chuyen-canh-not-duong.md",
    "CUSTOMIZATION/9-yeu-cau-tuong-ung-da-dua-vao-srs-3-8.md",
-   "ANIMATION-CATALOG/17-hat-bo-sung-cho-customization-5.md",
-   "SPIKE-4-NOTATION/4-cac-spike.md"
+   "ANIMATION-CATALOG/17-hat-bo-sung-cho-customization-5.md"
   ],
   "REQ-UI-02": [
    "SRS/lich-su-phien-ban.md",
@@ -8339,7 +8392,6 @@
    "SRS/2-2-luong-du-lieu-chinh.md",
    "SRS/2-3-thanh-phan-ben-thu-ba.md",
    "SRS/req-widget-06-chord-detection-d-09.md",
-   "SRS/req-widget-09-ban-nhac-notation-de-xuat-d-63-cho.md",
    "SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md",
    "UI-DIRECTION/1-khung-preview-huong-ban-in-da-chot-huong-chua.md"
   ],
@@ -8352,9 +8404,9 @@
   ],
   "REQ-WIDGET-09": [
    "SRS/lich-su-phien-ban.md",
-   "SRS/req-widget-09-ban-nhac-notation-de-xuat-d-63-cho.md",
-   "TECHNICAL-DESIGN/5-11-ban-nhac-notation-de-xuat-d-63-srs-req-widg.md",
-   "SPIKE-4-NOTATION/3-kien-truc-de-xuat.md"
+   "SRS/req-widget-09-ban-nhac-notation-d-63-da-lam-2026.md",
+   "SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md",
+   "TECHNICAL-DESIGN/5-11-ban-nhac-notation-t-90-t-95-d-63-srs-req-wi.md"
   ],
   "SOI-01": [
    "SRS/lich-su-phien-ban.md",
@@ -8789,14 +8841,16 @@
    "SRS/req-audio-01-am-thanh-theo-track-stem-ban-1-2.md",
    "SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md"
   ],
-  "WARN_NOTATION_DENSE": [
-   "SRS/req-widget-09-ban-nhac-notation-de-xuat-d-63-cho.md"
+  "WARN_NOTATION_EMPTY": [
+   "SRS/req-notation-01-luong-tu-hoa-de-ve-ban-nhac-d-63.md"
   ],
-  "WARN_NOTATION_FALLBACK": [
-   "SRS/req-widget-09-ban-nhac-notation-de-xuat-d-63-cho.md"
+  "WARN_NOTATION_GLYPH": [
+   "SRS/req-notation-01-luong-tu-hoa-de-ve-ban-nhac-d-63.md",
+   "TECHNICAL-DESIGN/5-11-ban-nhac-notation-t-90-t-95-d-63-srs-req-wi.md"
   ],
   "WARN_NOTATION_KEY_GUESS": [
-   "SRS/req-notation-01-luong-tu-hoa-de-ve-ban-nhac-de-x.md"
+   "SRS/req-notation-01-luong-tu-hoa-de-ve-ban-nhac-d-63.md",
+   "SPIKE-4-NOTATION/6-ket-qua.md"
   ],
   "P-03": [
    "SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md"
@@ -9403,9 +9457,6 @@
   ],
   "PD-18": [
    "PARSER-SDD/10-quyet-dinh-thiet-ke-va-danh-doi.md"
-  ],
-  "WARN_NOTATION_": [
-   "SPIKE-4-NOTATION/3-kien-truc-de-xuat.md"
   ]
  }
 }

@@ -5,7 +5,7 @@ section: "8. Hình dạng (shape) và biến dạng hình học"
 path: "8. Hình dạng (shape) và biến dạng hình học"
 chunk: 8-hinh-dang-shape-va-bien-dang-hinh-hoc.md
 source_lines: 134-148
-source_sha1: 31fc7a72b4
+source_sha1: 0c1c7a0731
 ids: [AD-11, D-44]
 ---
 ## 8. Hình dạng (shape) và biến dạng hình học

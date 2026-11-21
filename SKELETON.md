@@ -14,6 +14,7 @@ dawviz/
 │     ├─ public/
 │     │  ├─ fonts/
 │     │  │  ├─ OFL-Inter.txt
+│     │  │  ├─ OFL-SMuFL-Steinberg.txt
 │     │  │  ├─ OFL-SpaceGrotesk.txt
 │     │  │  ├─ space-grotesk-latin-400-normal.woff2
 │     │  │  ├─ space-grotesk-latin-700-normal.woff2
@@ -62,6 +63,16 @@ dawviz/
 │     │  ├─ i18n/
 │     │  │  └─ I18nProvider.tsx
 │     │  ├─ lib/
+│     │  │  ├─ notation/
+│     │  │  │  ├─ buildNotation.ts
+│     │  │  │  ├─ engrave.ts
+│     │  │  │  ├─ glyphTable.ts
+│     │  │  │  ├─ key.ts
+│     │  │  │  ├─ notationClient.ts
+│     │  │  │  ├─ notationFonts.generated.ts
+│     │  │  │  ├─ notationWorker.ts
+│     │  │  │  ├─ recordingContext.ts
+│     │  │  │  └─ useNotation.ts
 │     │  │  ├─ a11y.ts
 │     │  │  ├─ audioAsset.test.ts
 │     │  │  ├─ audioAsset.ts
@@ -115,6 +126,7 @@ dawviz/
 │     │  │  ├─ layerName.ts
 │     │  │  ├─ masterClock.test.ts
 │     │  │  ├─ masterClock.ts
+│     │  │  ├─ notation.test.ts
 │     │  │  ├─ numberInput.test.ts
 │     │  │  ├─ numberInput.ts
 │     │  │  ├─ paintDrag.ts
@@ -170,6 +182,7 @@ dawviz/
 │     │  ├─ workers/
 │     │  │  ├─ audioPeaks.worker.ts
 │     │  │  ├─ export.worker.ts
+│     │  │  ├─ notation.worker.ts
 │     │  │  ├─ parser.worker.ts
 │     │  │  └─ spectrum.worker.ts
 │     │  ├─ App.tsx
@@ -244,6 +257,12 @@ dawviz/
 │  │  └─ package.json
 │  ├─ render-core/   # @dawviz/render-core: khung hình = hàm của t
 │  │  ├─ src/
+│  │  │  ├─ notation/
+│  │  │  │  ├─ draw.ts
+│  │  │  │  ├─ quantize.ts
+│  │  │  │  ├─ spelling.ts
+│  │  │  │  ├─ types.ts
+│  │  │  │  └─ widget.ts
 │  │  │  ├─ audioFeatures.ts
 │  │  │  ├─ background.ts
 │  │  │  ├─ brightness.ts
@@ -284,6 +303,7 @@ dawviz/
 │  │  │  ├─ hud.test.ts
 │  │  │  ├─ legacy.test.ts
 │  │  │  ├─ musicAnalysis.test.ts
+│  │  │  ├─ notation.test.ts
 │  │  │  ├─ paper.test.ts
 │  │  │  ├─ particles.test.ts
 │  │  │  ├─ placeholders.test.ts
@@ -331,10 +351,36 @@ dawviz/
 │  │  ├─ markdown.mjs
 │  │  ├─ markdown.test.mjs
 │  │  └─ slug.mjs
+│  ├─ notation/
+│  │  ├─ data/
+│  │  │  ├─ maestro/
+│  │  │  │  ├─ bach-wtc1-a-minor-bwv865.mid
+│  │  │  │  ├─ chopin-nocturne-op9-2.mid
+│  │  │  │  └─ LICENSE
+│  │  │  └─ maestro-v3.0.0-midi.zip
+│  │  ├─ lib/
+│  │  │  └─ loadAst.mjs
+│  │  ├─ out/
+│  │  │  ├─ e2e/
+│  │  │  │  ├─ editor-added-final.png
+│  │  │  │  ├─ export-final.mp4
+│  │  │  │  ├─ play-final-0.png
+│  │  │  │  ├─ play-final-1.png
+│  │  │  │  └─ play-final-2.png
+│  │  │  ├─ app-short.mid.json
+│  │  │  └─ short.mid
+│  │  ├─ build-file.mjs
+│  │  ├─ e2e.mjs
+│  │  ├─ grid-stats.mjs
+│  │  ├─ make-short-mid.mjs
+│  │  ├─ quantize-check.mjs
+│  │  └─ README.md
 │  ├─ bundle.mjs
 │  ├─ check-i18n.mjs
 │  ├─ gen-builtin-schemas.mjs
 │  ├─ gen-font-metrics.mjs
+│  ├─ gen-notation-fonts.mjs
+│  ├─ gen-third-party.mjs
 │  ├─ rewrite-imports.mjs
 │  ├─ split_doc.py
 │  └─ sync-docs.mjs
@@ -803,6 +849,11 @@ re-export * from './spectrum.ts'
 re-export * from './musicAnalysis.ts'
 re-export * from './background.ts'
 re-export * from './particles.ts'
+re-export * from './notation/types.ts'
+re-export * from './notation/quantize.ts'
+re-export * from './notation/spelling.ts'
+re-export * from './notation/widget.ts'
+re-export { roughPathData, roughGlyph, hashSigned } from './notation/draw.ts'
 ```
 
 #### `packages/render-core/src/music.ts`
@@ -827,6 +878,86 @@ const PITCH_CLASSES
 const degreeName = (pitch: number, tonic: number) =>   // Bậc của `pitch` (MIDI) so với nốt chủ `tonic` (0 = C … 11 = B): 1, ♭2, 2, ♭3, 3, 4, ♭5, 5, ♭6, 6, ♭7, 7.
 const pitchClassName = (pitch: number) =>
 function quarterFraction(ticks: number, ppq: number): string   // Độ dài `ticks` theo phân số nốt đen: "1/2", "3/4", "1", "3/2", "1/3"; không biểu diễn đúng bằng mẫu số thường…
+```
+
+#### `packages/render-core/src/notation/draw.ts`
+
+Vẽ PathPrim (phần tử bản nhạc) lên Canvas 2D. Path2D được đệm theo phần tử/glyph (không dựng lại mỗi khung);
+
+```text
+function hashSigned(a: number, b: number, c: number, d: number): number   // Băm 32 bit → [-1, 1). Thuần số nguyên nên giống nhau ở mọi trình duyệt.
+function roughPathData(d: PathData, id: number, step: number, seed: number, amp: number): PathData   // Làm rung một đường (đơn vị trang; amp 1 ≈ 1/10 khoảng dòng kẻ). Đoạn thẳng dài thành một đường cong bậc ba lư…
+function roughGlyph(id: number, gi: number, step: number, seed: number, amp: number)   // Lệch nhỏ cho từng glyph (dời, xoay, co giãn) theo nét tay.
+function drawPathPrim(g0: RenderCtx, p: PathPrim, devScale: number): void   // Vẽ một PathPrim. `devScale` = điểm ảnh thiết bị / pt (cho độ mờ SOFT). Trả mọi trạng thái ctx về như trước.
+```
+
+#### `packages/render-core/src/notation/quantize.ts`
+
+Lượng tử hoá nốt thành bản nhạc (REQ-NOTATION-01, D-63). Hàm thuần, tất định, không phụ thuộc ngoài.
+
+```text
+const NOTATION_PPQ
+interface QuantizeOptions
+interface ScoreNoteRef
+interface NoteValue   // Giá trị nốt: base 1 (tròn), 2 (trắng), 4 (đen), 8, 16, 32; dots 0/1; triplet = nằm trong nhóm tam liên của ph…
+interface ScoreEvent
+interface ScoreVoice
+interface ScoreStaff
+interface ScoreMeasure
+interface QuantizeStats
+interface ScoreModel
+function barsOf(tempoMap: readonly TempoPoint[], endTick: number, ppq = NOTATION_PPQ): Bar[]   // Danh sách ô nhịp phủ [0, endTick) theo dấu nhịp trong tempoMap (đổi nhịp giữa ô thì bắt đầu ô mới tại điểm đổ…
+function estimateKey(notes: readonly { pitch: number; startTick: number; endTick: number }[]):    // Krumhansl–Schmuckler trên toàn bài, trọng số theo độ dài nốt.
+interface QuantizeInput   // ───────────────────────────── chính ─────────────────────────────
+function quantize(input: QuantizeInput, options: QuantizeOptions = {}): ScoreModel
+function validateScore(model: ScoreModel): string[]   // Kiểm cấu trúc: mọi giọng mọi ô có tổng độ dài = độ dài ô và các sự kiện liền nhau. Trả danh sách lỗi (rỗng = …
+```
+
+#### `packages/render-core/src/notation/spelling.ts`
+
+Cách viết cao độ theo giọng (REQ-NOTATION-01): pc → chữ cái + dấu hoá. Hàm thuần, dùng chung cho engraver và test.
+
+```text
+const MAJOR_KEY_NAMES
+const MINOR_KEY_NAMES
+interface Spelled
+function keyName(fifths: number, mode: 'major' | 'minor'): string   // Tên giọng kiểu VexFlow ("Eb", "C#m"). fifths −7…7.
+function spellingTable(fifths: number, mode: 'major' | 'minor'): Spelled[]   // Bảng pc → cách viết. Nốt trong âm giai theo hoá biểu; nốt ngoài âm giai: tự nhiên nếu có, không thì thăng (gi…
+function vexKey(pitch: number, table: readonly Spelled[]): string   // Khoá nốt kiểu VexFlow: "c#/4", "fx" viết "f##". Quãng tám theo chữ cái (Si thăng 4 = Đô 5 về âm).
+```
+
+#### `packages/render-core/src/notation/types.ts`
+
+NotationLayout (D-63, Technical Design §5.11): bản nhạc đã dàn trang, dữ liệu thuần (JSON/structured clone được).
+
+```text
+type PathData   // Lệnh đường vẽ nén thành mảng số: [op, ...args]* với op 0 = M x y, 1 = L x y, 2 = C x1 y1 x2 y2 x y, 3 = Q x1 …
+const PATH_ARGS
+interface NotationItem   // Một phần tử vẽ. `o` = chỉ số chủ (nốt) trong `owners`, −1 = phần tĩnh (khuông, khoá, móc nối…). k = 0 tô đườn…
+interface NotationOwner   // Chủ của một nhóm phần tử: một hợp âm/nốt của bản nhạc, nối về nốt AST để sáng đúng lúc (giây thật, không lượn…
+interface NotationSystem   // Một hàng (system) của trang: phạm vi dọc và mốc thời gian → x (đơn điệu) cho vạch phát.
+interface NotationPage
+interface NotationWarning
+interface NotationLayout
+function pageIndexAt(layout: NotationLayout, t: number): number   // Trang chứa thời điểm t (tìm nhị phân theo `start`).
+function systemX(s: NotationSystem, t: number): number   // x của vạch phát trong một hàng tại t (nội suy tuyến tính giữa các mốc).
+```
+
+#### `packages/render-core/src/notation/widget.ts`
+
+Widget Bản nhạc (REQ-WIDGET-09, D-63): vẽ NotationLayout đã dựng sẵn theo t. Không lượng tử hoá, không VexFlow ở đây:
+
+```text
+interface NotationProps
+const DEFAULT_NOTATION
+function notationInkFor(background: string): Pick<NotationProps, 'inkColor' | 'playedColor' | 'auraColor'>   // Màu mực hợp với nền khung: nền sáng (độ sáng tương đối > 0,5) dùng mực tối, nền tối dùng mực sáng. Dùng khi t…
+const NOTATION_ENGRAVE_KEYS   // Thuộc tính ảnh hưởng bản dựng: đổi một trong số này thì phải engrave lại (khoá đệm).
+function zoomAt(p: Pick<NotationProps, 'zoom' | 'zoomMode' | 'zoomMs'>, head: boolean, on: number, off: number, t: number): number   // Hệ số phóng to của một chủ tại t (1 = bình thường).
+interface MusicPos   // Vị trí nhạc liên tục tại t: số phách và số ô nhịp đã qua kể từ đầu bài (có phần lẻ).
+function auraAt(p: Pick<NotationProps, 'aura' | 'auraShape' | 'auraEvery' | 'auraGlow' | 'auraMin'>, t: number, pos?: MusicPos): number   // Độ sáng cả bản nhạc tại t (0 … auraGlow). Thuần theo (props, t, vị trí nhạc); thiếu vị trí nhạc thì BEAT/BAR …
+function notationFit(lay: NotationLayout, W: number, H: number, pageH: number, align: NotationProps['align'])   // Phép đặt trang vào khung widget: tỉ lệ theo bề rộng và chiều cao trang lớn nhất (tỉ lệ không đổi khi lật tran…
+function notationPrims(lay: NotationLayout, p: NotationProps, W: number, H: number, t: number, trackColor: (track: number) => string | undefined, pos?: MusicPos): Primitive[]   // Primitive của một khung: mỗi phần tử của trang hiện tại thành một PathPrim (màu theo trạng thái nốt), nốt đan…
+const notationRenderer
 ```
 
 #### `packages/render-core/src/notes.ts`
@@ -898,6 +1029,7 @@ Kiểu primitive và hợp đồng widget (tách khỏi render.ts để widget v
 interface Derived   // Dữ liệu dẫn xuất: tính một lần ngoài vòng vẽ (Technical Design §4).
 interface RectPrim
 interface TextPrim   // Chữ một dòng. `y` là đường baseline; `x` là điểm neo theo `align`.
+interface PathPrim   // Một phần tử bản nhạc (D-63): đường vẽ hoặc dãy glyph của NotationLayout, đặt bằng phép (tx, ty, s) vào toạ độ…
 type Primitive   // Hình học thuần, đơn vị pt trong toạ độ widget.
 interface LayoutCtx
 interface WidgetRenderer
@@ -2055,6 +2187,145 @@ const validStamp = (s: OutputStamp | null | undefined) =>
 function heardContextTime(c: CtxSample, frameMs: number, latency: number): number   // Giờ (trên trục AudioContext) của mẫu đang được NGHE tại khung vẽ `frameMs` (performance.now, mili giây). Có g…
 ```
 
+#### `apps/web/src/lib/notation/buildNotation.ts`
+
+Dựng bản nhạc cho một widget Bản nhạc: nốt của các track được gán → lượng tử (Render Core) → engrave (VexFlow) → NotationLayout.
+
+```text
+re-export { notationKey, type NotationNote, type NotationEngraveProps, type NotationRequest } from './key.ts'
+function tickToSecFn(tempoMap: readonly TempoPoint[], ppq = 960): (tick: number) => number   // Giây của một tick theo tempoMap (đoạn tempo hằng, như parser).
+const OFFGRID_RATIO   // Ngưỡng cảnh báo: dưới 30% nốt đúng lưới = có lẽ chơi tự do không theo nhịp (cần bản nhạc có tempo map).
+const KEY_CONFIDENCE_MIN
+function buildNotation(req: NotationRequest): NotationLayout
+```
+
+#### `apps/web/src/lib/notation/engrave.ts`
+
+Engraver Bản nhạc (D-63, Technical Design §5.11): ScoreModel (đã lượng tử) → VexFlow → NotationLayout (dữ liệu thuần).
+
+```text
+type MusicFont
+const MUSIC_FONTS   // Chồng phông (nhạc, dự phòng, chữ): glyph thiếu ở phông chính lấy từ Bravura (Gonville không có số liên ba, nố…
+interface EngraveOptions
+function engrave(model: ScoreModel, o: EngraveOptions): NotationLayout
+```
+
+#### `apps/web/src/lib/notation/glyphTable.ts`
+
+Đo chữ và tra glyph cho engraver Bản nhạc bằng bảng sinh sẵn (notationFonts.generated.ts): không FontFace, không DOM,
+
+```text
+interface ParsedFont
+function parseCssFont(css: string): ParsedFont   // Chuỗi CSS font kiểu "italic bold 30pt Bravura,Academico".
+function pickGlyph(families: readonly string[], cp: number):    // Phông đầu tiên trong danh sách có glyph cho ký tự (như trình duyệt dò dự phòng); cuối cùng là Academico.
+interface PlacedGlyph
+function layoutText(css: string, text: string, x0: number, y0: number, missing?: Set<number>): PlacedGlyph[]   // Bố trí chữ: mỗi ký tự một glyph, cách nhau theo advance (không kerning: đo và vẽ cùng một luật). `missing` đế…
+function measureText(css: string, text: string)   // measureText tương đương Canvas 2D.
+function measureCanvas()   // Canvas giả cho VexFlow `Element.setTextMeasurementCanvas`.
+function glyphPath(font: string, cp: number): PathData   // Đường viền glyph (đơn vị em, y xuống dưới) từ bảng (nghìn em).
+```
+
+#### `apps/web/src/lib/notation/key.ts`
+
+Khoá đệm và kiểu yêu cầu dựng bản nhạc: module NHẸ (không import VexFlow) để luồng chính dùng được mà không kéo engraver vào bundle chính.
+
+```text
+interface NotationNote
+type NotationEngraveProps
+interface NotationRequest
+function notationKey(projectKey: string, trackIdx: readonly number[], props: NotationProps): string   // Khoá đệm của một bản dựng: thuộc tính ảnh hưởng bản dựng + tập track + định danh dự án.
+```
+
+#### `apps/web/src/lib/notation/notationClient.ts`
+
+Client dựng bản nhạc: một Worker dùng lại, yêu cầu theo khoá (notationKey), bộ đệm nhỏ theo khoá. Worker tiêm vào để test.
+
+```text
+interface NotationWorkerLike
+const NOTATION_CACHE_SIZE
+function createNotationClient(makeWorker: () => NotationWorkerLike)
+```
+
+#### `apps/web/src/lib/notation/notationFonts.generated.ts`
+
+SINH TỰ ĐỘNG bởi scripts/gen-notation-fonts.mjs: đừng sửa tay. 377 glyph.
+
+```text
+type GlyphRec   // SINH TỰ ĐỘNG bởi scripts/gen-notation-fonts.mjs: đừng sửa tay. 377 glyph. Đơn vị: nghìn em. Mỗi glyph: [advan…
+interface FontRec
+const NOTATION_FONTS
+```
+
+#### `apps/web/src/lib/notation/notationWorker.ts`
+
+Worker dựng bản nhạc qua chính sách Trusted Types (NFR-SEC-06), như audioWorkers.ts.
+
+```text
+const notationClient
+```
+
+#### `apps/web/src/lib/notation/recordingContext.ts`
+
+RenderContext của VexFlow ghi lại lệnh vẽ thành NotationItem (dữ liệu thuần), gắn mỗi phần tử với "chủ" là nốt đang vẽ.
+
+```text
+class RecordingContext extends RenderContext
+  pushFrame(el: Element)
+  popFrame()
+  clear()
+  setFillStyle(s: string)
+  setBackgroundFillStyle()
+  setStrokeStyle(s: string)
+  setShadowColor()
+  setShadowBlur()
+  setLineWidth(w: number)
+  setLineCap(c: CanvasLineCap)
+  setLineDash()
+  scale()
+  resize()
+  set fillStyle(s: string | CanvasGradient | CanvasPattern)
+  get fillStyle()
+  set strokeStyle(s: string | CanvasGradient | CanvasPattern)
+  get strokeStyle()
+  setFont(f?: string | FontInfoLike, size?: string | number, weight?: string | number, style?: string)
+  getFont()
+  save()
+  restore()
+  beginPath()
+  moveTo(x: number, y: number)
+  lineTo(x: number, y: number)
+  bezierCurveTo(a: number, b: number, c: number, d: number, x: number, y: number)
+  quadraticCurveTo(a: number, b: number, x: number, y: number)
+  arc(x: number, y: number, r: number, a0: number, a1: number, ccw: boolean)
+  closePath()
+  rect(x: number, y: number, w: number, h: number)
+  fill()
+  stroke()
+  fillRect(x: number, y: number, w: number, h: number)
+  clearRect()
+  pointerRect()
+  fillText(text: string, x: number, y: number)
+  measureText(text: string)
+  openGroup()
+  closeGroup()
+  openRotation()
+  closeRotation()
+  add()
+function patchElementFrames(): void   // Bọc Element.drawWithStyle để biết phần tử nào đang vẽ (gán chủ nốt cho dấu hoá, chấm, cờ…). Gọi một lần.
+function drawFramed(ctx: RecordingContext, el: Element & { setContext(c: RenderContext): unknown; draw(): unknown }): void   // Vẽ một phần tử được gọi draw() trực tiếp (khuông, đường nối khuông) trong khung của nó.
+```
+
+#### `apps/web/src/lib/notation/useNotation.ts`
+
+Hook dựng bản nhạc cho mọi widget Bản nhạc của scene (D-63). Dựng lại chỉ khi đổi thứ ảnh hưởng bản dựng
+
+```text
+interface NotationState
+const NotationStatusContext   // Trạng thái dựng cho mục Thiết lập của widget Bản nhạc (đang viết, lỗi, số trang, cảnh báo).
+function notationRequestFor(w: WidgetSpec<NotationProps>, ast: UnifiedProjectAST, index: TimelineIndex):    // Yêu cầu dựng cho một widget (thuần: test được).
+function useNotation(scene: SceneDocument, ast: UnifiedProjectAST | null, index: TimelineIndex | null, projectId: string): NotationState
+```
+
 #### `apps/web/src/lib/numberInput.ts`
 
 Đọc và bước giá trị cho ô nhập số dùng chung (REQ-UI-15). Hàm thuần, không phụ thuộc DOM; không dùng eval/Function.
@@ -2493,6 +2764,15 @@ type PeaksOut
 
 Export Worker (T-09, REQ-EXPORT-07): dựng derived từ ast + scene, vẽ từng khung bằng renderFrame lên OffscreenCanvas,
 
+#### `apps/web/src/workers/notation.worker.ts`
+
+Worker dựng bản nhạc (D-63): lượng tử + VexFlow engrave chạy ở đây để không chặn giao diện. Một yêu cầu một lần trả lời.
+
+```text
+type NotationIn
+type NotationOut
+```
+
 #### `apps/web/src/workers/parser.worker.ts`
 
 Worker: toàn bộ việc parse chạy ở đây để không chặn giao diện (NFR-PERF). Không có logic parser trong app.
@@ -2523,6 +2803,14 @@ type SpectrumOut
 - `scripts/docs-site/slug.mjs` — Quy tắc tạo anchor (id) cho heading, giống GitHub: chữ thường, bỏ ký tự đặc biệt/emoji, khoảng trắng → '-'. Dùng chung cho sync-docs và docs site.
 - `scripts/gen-builtin-schemas.mjs` — Sinh packages/binary/src/builtin-schemas.js từ schemas/*.schema.json dựng sẵn (hiện: flp).
 - `scripts/gen-font-metrics.mjs` — Sinh bảng độ rộng ký tự (FONT_METRICS) từ CHÍNH các tệp phông đã đóng gói trong apps/web/public/fonts
+- `scripts/gen-notation-fonts.mjs` — Sinh apps/web/src/lib/notation/notationFonts.generated.ts (D-63): số đo + đường viền của TẬP CON glyph mà engraver Bản nhạc dùng,
+- `scripts/gen-third-party.mjs` — Gom giấy phép của mọi gói chạy trong ứng dụng web (dependencies của apps/web, đệ quy; bỏ @dawviz/* và @types/*)
+- `scripts/notation/build-file.mjs` — Thử buildNotation của ứng dụng trên tệp thật (Node).
+- `scripts/notation/e2e.mjs` — Kiểm thử tự động trong ứng dụng thật (Vite dev + Chromium): mở dự án, thêm widget Bản nhạc, phát, chụp khung, xuất video ngắn.
+- `scripts/notation/grid-stats.mjs` — S2 bước 0: nốt trong tệp thật đã nằm trên lưới nào (đơn vị 960 PPQ).
+- `scripts/notation/lib/loadAst.mjs` — Nạp AST thật bằng thư viện parser của repo (công cụ đo Bản nhạc; tệp bên thứ ba không commit).
+- `scripts/notation/make-short-mid.mjs` — Sinh scripts/notation/out/short.mid: 8 ô 4/4 ở 100 BPM (~19 s), tay phải giai điệu (móc đơn, liên ba, nốt nối qua vạch nhịp), tay trái hợp âm.
+- `scripts/notation/quantize-check.mjs` — Lượng tử hoá trên tệp thật; đo lỗi cấu trúc, sai số điểm bắt đầu, thời gian chạy.
 - `scripts/rewrite-imports.mjs` — Công cụ một lần: viết lại import tương đối giữa các package khi tách monorepo.
 - `scripts/split_doc.py` — Tách tài liệu Markdown (SRS/SDD/TDD...) thành các mảnh nhỏ để đưa cho AI tham chiếu.
 - `scripts/sync-docs.mjs` — Đồng bộ "hệ thống ngữ cảnh AI" của repo và kiểm tra liên kết. Không phụ thuộc thư viện ngoài (Node >= 18; split dùng python3).
@@ -2551,6 +2839,7 @@ type SpectrumOut
 - `apps/web/src/lib/latencyCalibration.test.ts`
 - `apps/web/src/lib/layerName.test.ts`
 - `apps/web/src/lib/masterClock.test.ts`
+- `apps/web/src/lib/notation.test.ts`
 - `apps/web/src/lib/numberInput.test.ts`
 - `apps/web/src/lib/parserClient.test.ts`
 - `apps/web/src/lib/pitchText.test.ts`
@@ -2580,6 +2869,7 @@ type SpectrumOut
 - `packages/render-core/test/hud.test.ts`
 - `packages/render-core/test/legacy.test.ts`
 - `packages/render-core/test/musicAnalysis.test.ts`
+- `packages/render-core/test/notation.test.ts`
 - `packages/render-core/test/paper.test.ts`
 - `packages/render-core/test/particles.test.ts`
 - `packages/render-core/test/placeholders.test.ts`
@@ -2601,4 +2891,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 1070 ký hiệu công khai -->
+<!-- 10 thư mục src, 1199 ký hiệu công khai -->

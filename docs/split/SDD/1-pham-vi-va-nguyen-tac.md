@@ -5,7 +5,7 @@ section: "1. Phạm vi và nguyên tắc"
 path: "1. Phạm vi và nguyên tắc"
 chunk: 1-pham-vi-va-nguyen-tac.md
 source_lines: 5-11
-source_sha1: 7318e4095f
+source_sha1: bd726ffa10
 ids: [ARC-01, NFR-PERF-05, NFR-SEC-01, REQ-GRAPHICS-05]
 ---
 ## 1. Phạm vi và nguyên tắc

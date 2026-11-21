@@ -1,6 +1,6 @@
 # Chỉ mục TECHNICAL-DESIGN.md — THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER
 
-nguồn: `TECHNICAL-DESIGN.md` (sha1 57493fb549)
+nguồn: `TECHNICAL-DESIGN.md` (sha1 ff3dfa792b)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -16,11 +16,11 @@ nguồn: `TECHNICAL-DESIGN.md` (sha1 57493fb549)
 | 9 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.4 Piano Roll 🟢 | [5-4-piano-roll.md](5-4-piano-roll.md) | 714 | D-50 |
 | 10 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.5 Quy tắc tất định (kiểm bằng test) | [5-5-quy-tac-tat-dinh-kiem-bang-test.md](5-5-quy-tac-tat-dinh-kiem-bang-test.md) | 640 | REQ-GRAPHICS-05 |
 | 11 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.6 Phát sáng động khi chạm 🟢 | [5-6-phat-sang-dong-khi-cham.md](5-6-phat-sang-dong-khi-cham.md) | 1776 | D-50, REQ-GRAPHICS-06, REQ-GRAPHICS-17 |
-| 12 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02) | [5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md](5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md) | 5390 | ERR_FONT_LOAD, NFR-SEC-03, REQ-STORAGE-05, REQ-WIDGET-02 |
+| 12 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02) | [5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md](5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md) | 5581 | ERR_FONT_LOAD, NFR-SEC-03, REQ-STORAGE-05, REQ-WIDGET-02 |
 | 13 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp 🟢 (đã dùng ở T-69) | [5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md](5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md) | 925 | REQ-WIDGET-05 |
 | 14 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.9 Kiểu chữ cho mọi chữ trong video 🟢 (T-72, SRS REQ-GRAPHICS-18, D-58) | [5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md](5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md) | 6552 | D-58, REQ-GRAPHICS-18, REQ-STORAGE-05, WARN_PRESET_FONT_MISSING, WARN_PRESET_VALUE |
 | 15 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.10 Chỗ giữ trong chữ và Ô chữ 🟢 (T-73, SRS REQ-GRAPHICS-19, D-60/OI-18) | [5-10-cho-giu-trong-chu-va-o-chu-t-73-srs-req-gra.md](5-10-cho-giu-trong-chu-va-o-chu-t-73-srs-req-gra.md) | 5437 | D-60, OI-18, REQ-GRAPHICS-19, WARN_PRESET_MIGRATED, WARN_PRESET_VALUE |
-| 16 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.11 Bản nhạc (Notation) ⚪ (đề xuất D-63, SRS REQ-WIDGET-09 / REQ-NOTATION-01 / REQ-GRAPHICS-20; chờ Spike 4) | [5-11-ban-nhac-notation-de-xuat-d-63-srs-req-widg.md](5-11-ban-nhac-notation-de-xuat-d-63-srs-req-widg.md) | 2050 | D-63, REQ-EXPORT-00, REQ-GRAPHICS-20, REQ-NOTATION-01, REQ-WIDGET-09 |
+| 16 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.11 Bản nhạc (Notation) 🟢 (T-90…T-95, D-63; SRS REQ-WIDGET-09, REQ-NOTATION-01, REQ-GRAPHICS-20; báo cáo Spike 4) | [5-11-ban-nhac-notation-t-90-t-95-d-63-srs-req-wi.md](5-11-ban-nhac-notation-t-90-t-95-d-63-srs-req-wi.md) | 5709 | D-63, REQ-GRAPHICS-20, REQ-NOTATION-01, REQ-WIDGET-09, WARN_NOTATION_GLYPH |
 | 17 | 6. Ứng dụng web và phát lại 🟡 > 6.1 Trạng thái | [6-1-trang-thai.md](6-1-trang-thai.md) | 1256 | REQ-UI-14 |
 | 18 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) | [6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md](6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md) | 233 | NFR-SEC-04, REQ-EXPORT-03, REQ-PARSER-00, REQ-STORAGE-05, REQ-UI-03, REQ-WIDGET-07 |
 | 19 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.1 Nạp tệp âm thanh (mix) | [6-2-1-nap-tep-am-thanh-mix.md](6-2-1-nap-tep-am-thanh-mix.md) | 3263 | ARC-03, ERR_AUDIO_DECODE, ERR_AUDIO_TOO_LONG, ERR_FILE_TOO_LARGE, NFR-PERF-04, REQ-AUDIO-01… |
@@ -35,13 +35,13 @@ nguồn: `TECHNICAL-DESIGN.md` (sha1 57493fb549)
 | 28 | 6. Ứng dụng web và phát lại 🟡 > 6.3 Danh sách track 🟢 | [6-3-danh-sach-track.md](6-3-danh-sach-track.md) | 1860 | D-50, REQ-UI-14 |
 | 29 | 6. Ứng dụng web và phát lại 🟡 > 6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68) | [6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md](6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) | 19139 | ARC-05, D-55, D-57, ERR_PRESET_, ERR_PRESET_INVALID, ERR_PRESET_TOO_LARGE… |
 | 30 | 7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) > 7.1 Trình tự | [7-1-trinh-tu.md](7-1-trinh-tu.md) | 1019 | REQ-EXPORT-00, REQ-EXPORT-02, REQ-EXPORT-06 |
-| 31 | 7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) > 7.2 Quyết định kỹ thuật | [7-2-quyet-dinh-ky-thuat.md](7-2-quyet-dinh-ky-thuat.md) | 1080 | AT-03, D-01, D-63, ERR_EXPORT_FAILED, ERR_NO_SUPPORTED_ENCODER, SOI-10 |
+| 31 | 7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) > 7.2 Quyết định kỹ thuật | [7-2-quyet-dinh-ky-thuat.md](7-2-quyet-dinh-ky-thuat.md) | 1109 | AT-03, D-01, D-63, ERR_EXPORT_FAILED, ERR_NO_SUPPORTED_ENCODER, SOI-10 |
 | 32 | 7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) > 7.3 Phần lõi thuần đã làm (T-09, 2026-11-14) | [7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md](7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md) | 1745 | D-26, ERR_NO_SUPPORTED_ENCODER, REQ-EXPORT-00, REQ-EXPORT-01, REQ-EXPORT-02, REQ-EXPORT-03… |
 | 33 | 7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) > 7.4 Export Worker và giao diện (T-09, 2026-11-14) | [7-4-export-worker-va-giao-dien-t-09-2026-11-14.md](7-4-export-worker-va-giao-dien-t-09-2026-11-14.md) | 8203 | AT-03, AT-05, D-04, D-26, D-61, ERR_EXPORT_FAILED… |
 | 34 | 8. Lưu trữ 🟢 (M4, T-10) | [8-luu-tru-m4-t-10.md](8-luu-tru-m4-t-10.md) | 1704 | ERR_PRESET_INVALID, ERR_SCHEMA_NEWER, WARN_PRESET_MIGRATED |
 | 35 | 9. Đa ngôn ngữ 🟢 | [9-da-ngon-ngu.md](9-da-ngon-ngu.md) | 492 |  |
 | 36 | 10. Lỗi, ghi nhật ký, quan sát | [10-loi-ghi-nhat-ky-quan-sat.md](10-loi-ghi-nhat-ky-quan-sat.md) | 470 | D-13 |
-| 37 | 11. Hiệu năng và bộ nhớ (ngân sách) | [11-hieu-nang-va-bo-nho-ngan-sach.md](11-hieu-nang-va-bo-nho-ngan-sach.md) | 1092 | D-63, NFR-PERF-04, NFR-PERF-05 |
+| 37 | 11. Hiệu năng và bộ nhớ (ngân sách) | [11-hieu-nang-va-bo-nho-ngan-sach.md](11-hieu-nang-va-bo-nho-ngan-sach.md) | 1164 | D-63, NFR-PERF-04, NFR-PERF-05 |
 | 38 | 12. Bảo mật và quyền riêng tư | [12-bao-mat-va-quyen-rieng-tu.md](12-bao-mat-va-quyen-rieng-tu.md) | 728 | OI-07 |
 | 39 | 13. Xây dựng, kiểm thử, phát hành | [13-xay-dung-kiem-thu-phat-hanh.md](13-xay-dung-kiem-thu-phat-hanh.md) | 906 | D-12, D-35, REQ-CAP-01 |
 | 40 | 14. Việc cần làm theo mốc (từ thiết kế này) | [14-viec-can-lam-theo-moc-tu-thiet-ke-nay.md](14-viec-can-lam-theo-moc-tu-thiet-ke-nay.md) | 760 |  |

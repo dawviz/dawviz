@@ -1,9 +1,0 @@
-<!doctype html><meta charset="utf-8"><title>perf</title>
-<script type="module">
-const q = new URLSearchParams(location.search);
-const layout = await (await fetch('/out/' + q.get('file') + '.layout.json')).json();
-const w = new Worker('/pages/perf.worker.mjs', { type: 'module' });
-w.onerror = (e) => { window.__res = { error: e.message }; };
-w.onmessage = (e) => { window.__res = e.data; };
-w.postMessage({ layout, W: +(q.get('w') ?? 1920), H: +(q.get('h') ?? 1080), fps: 30, frames: +(q.get('frames') ?? 4500), cache: q.get('cache') === '1', glow: q.get('glow') ?? 'none', start: +(q.get('start') ?? 0) });
-</script>

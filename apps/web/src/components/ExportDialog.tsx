@@ -61,6 +61,8 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
 
   const size = useMemo(() => sizeForClass(scene.canvas.designWidth, scene.canvas.designHeight, cls), [scene, cls]);
   const range = useMemo(() => exportDuration({ projectSec, audioSec: audio ? Math.max(0, offsetMs / 1000 + audio.durationSec) : 0 }), [projectSec, audio, offsetMs]);
+  // Bản nhạc còn đang viết (D-63): chưa cho xuất, nếu không widget sẽ trống trong video.
+  const notationPending = scene.widgets.some((w) => w.type === 'NOTATION' && w.visible && !derived.notation?.has(w.id));
   const hasFsa = typeof window !== 'undefined' && 'showSaveFilePicker' in window;
   const pre = useMemo(() => preflight({ width: size.width, height: size.height, fps, quality, duration: range.duration, hasAudio: !!audio, hasFileSystemAccess: hasFsa }), [size, fps, quality, range, audio, hasFsa]);
 
@@ -140,7 +142,7 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
     try { if (derived.background) background = { image: await createImageBitmap(derived.background.image as ImageBitmap), width: derived.background.width, height: derived.background.height }; } catch { background = undefined; }
     let h: ExportHandle;
     try { h = startExport({
-      ast, scene, brightness: derived.brightness, spectrum: derived.audio, background, width: size.width, height: size.height, fps, bitrate: pre.bitrate, choice,
+      ast, scene, brightness: derived.brightness, spectrum: derived.audio, background, ...(derived.notation?.size ? { notation: [...derived.notation] } : {}), width: size.width, height: size.height, fps, bitrate: pre.bitrate, choice,
       start: range.start, duration: range.duration, style: styleId,
       audio: slice ? { channels: slice.channels, sampleRate: audio!.buffer.sampleRate, offsetMs: slice.offsetMs } : undefined,
     }, makeExportWorker, {
@@ -218,6 +220,7 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
               {choice === 'checking' ? i18n.t('web.export.checking') : unsupported ? '' : i18n.t('web.export.format', { format: format ?? '' })}
             </p>
             {busy && <p role="alert" className="text-[13px] text-warning" data-testid="export-busy">{i18n.t('web.export.busy')}</p>}
+            {notationPending && <p role="status" className="text-[13px] text-warning" data-testid="export-notation-pending">{i18n.t('web.export.notationPending')}</p>}
             {unsupported && <p role="alert" className="text-[13px] text-danger">{i18n.t('errors.ERR_NO_SUPPORTED_ENCODER')}</p>}
             {notes.length > 0 && <ul className="space-y-1 text-[13px] text-warning">{notes.map((n, i) => <li key={i}>{n}</li>)}</ul>}
             <div className="space-y-2">
@@ -287,7 +290,7 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
             ? <button type="button" className="btn-ghost border border-control" onClick={() => handle.current?.cancel()} data-testid="export-cancel">{i18n.t('web.export.cancel')}</button>
             : <>
                 <button type="button" className="btn-ghost border border-control" onClick={onClose} data-testid="export-close">{i18n.t('web.export.close')}</button>
-                {phase !== 'done' && <button ref={startBtn} type="button" disabled={choice === 'checking' || unsupported || busy} onClick={() => void start()}
+                {phase !== 'done' && <button ref={startBtn} type="button" disabled={choice === 'checking' || unsupported || busy || notationPending} onClick={() => void start()}
                   className="rounded border border-accent px-3 py-1.5 text-[13px] font-medium text-accent disabled:cursor-not-allowed disabled:opacity-50" data-testid="export-start">{i18n.t('web.export.start')}</button>}
               </>}
         </div>

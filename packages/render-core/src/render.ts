@@ -15,6 +15,8 @@ import { visibilityAlpha } from './visibility.ts';
 import { spectrumRenderer } from './spectrum.ts';
 import { particleRenderer, particlesInCanvasSpace } from './particles.ts';
 import { DEFAULT_BACKGROUND, placeImage, type BackgroundImage } from './background.ts';
+import { notationRenderer } from './notation/widget.ts';
+import { drawPathPrim } from './notation/draw.ts';
 
 /** Ngữ cảnh vẽ đủ cho renderFrame (Canvas 2D và OffscreenCanvas đều có). */
 export interface RenderCtx extends Ctx2D {
@@ -127,7 +129,7 @@ export const pianoRollRenderer: WidgetRenderer<PianoRollProps> = {
 const rect = (x: number, y: number, w: number, h: number, fill: string): RectPrim => ({ kind: 'rect', x, y, w, h, fill, alpha: 1, radius: 0, glowColor: '', glowBlur: 0, stroke: '', strokeWidth: 0 });
 
 /** Bảng renderer theo loại. Widget chưa có renderer được bỏ qua khi vẽ (vẫn giữ trong Scene). */
-export const WIDGET_RENDERERS: Partial<Record<WidgetSpec['type'], WidgetRenderer<any>>> = { PIANO_ROLL: pianoRollRenderer, AUDIO_SPECTRUM: spectrumRenderer, PARTICLES: particleRenderer, ...HUD_RENDERERS };
+export const WIDGET_RENDERERS: Partial<Record<WidgetSpec['type'], WidgetRenderer<any>>> = { PIANO_ROLL: pianoRollRenderer, AUDIO_SPECTRUM: spectrumRenderer, PARTICLES: particleRenderer, NOTATION: notationRenderer, ...HUD_RENDERERS };
 
 /** Bố cục toàn khung (thuần): danh sách widget đã sắp theo zIndex kèm primitive của từng widget. Dùng để test tất định. */
 /** HudData cho một scene: số đếm, lưới ô nhịp và hợp âm của mọi widget Chord Detection. Gọi ở bước derived (một lần cho mỗi dự án × scene). */
@@ -167,7 +169,7 @@ export function layoutFrame(scene: SceneDocument, derived0: Derived, ast: Unifie
   return out;
 }
 /** Nhân độ đục của primitive với hệ số làm mờ `k` (0..1); phát sáng co theo để không còn quầng khi gần ẩn. */
-const fadePrim = (p: Primitive, k: number): Primitive => (p.kind === 'rect' ? { ...p, alpha: p.alpha * k, glowBlur: p.glowBlur * k } : { ...p, alpha: p.alpha * k });
+const fadePrim = (p: Primitive, k: number): Primitive => (p.kind === 'rect' ? { ...p, alpha: p.alpha * k, glowBlur: p.glowBlur * k } : p.kind === 'path' && p.glow ? { ...p, alpha: p.alpha * k, glow: { ...p.glow, alpha: p.glow.alpha * k } } : { ...p, alpha: p.alpha * k });
 
 /**
  * Vẽ một khung hình. `scale` = điểm ảnh đích / pt (Preview: bề rộng canvas × DPR / designWidth; Export: W_export / designWidth).
@@ -216,6 +218,7 @@ export function drawPrimitives(g: RenderCtx, prims: Primitive[], env0: DrawEnv =
   const env: DrawEnv = { ...env0, font: { v: '' } };
   for (const p of prims) {
     if (p.kind === 'text') { if (p.rich) drawRichText(g, p, p.rich, env); else drawText(g, p, env); continue; }
+    if (p.kind === 'path') { drawPathPrim(g, p, env.scale); continue; }
     g.globalAlpha = p.alpha; g.fillStyle = p.fill;
     const rot = p.rotation ? p.rotation * Math.PI / 180 : 0;
     if (rot) { g.save(); g.translate(p.x + p.w / 2, p.y + p.h / 2); g.rotate(rot); } // xoay quanh tâm hình; vẽ như hộp đặt tại gốc

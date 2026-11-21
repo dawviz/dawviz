@@ -4,8 +4,8 @@ doc_title: "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT
 section: "4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)"
 path: "4. PHẠM VI DỰ ÁN (PROJECT SCOPE) > 4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)"
 chunk: 4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md
-source_lines: 158-172
-source_sha1: e9919890cd
+source_lines: 159-173
+source_sha1: a7085f608b
 ids: [D-12, D-13, D-14, D-15, D-28, D-44, D-47, D-54, D-62, OI-08]
 ---
 ### 4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)

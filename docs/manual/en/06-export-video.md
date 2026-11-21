@@ -54,6 +54,10 @@ If a file is larger than 1 GB and the browser can't write straight to disk, the 
 
 On Ubuntu, both Chrome and Firefox currently report that they can't encode AAC. This is a browser limit; there is no fix inside the app, and we haven't found a library you could install that helps. In Basic mode the app steps down to another codec inside the MP4 (usually Opus), so the file still has sound. Opus plays in Chrome, Firefox, VLC, mpv and recent editors; older software may not open Opus audio in MP4. In that case use Advanced mode and pick **MOV** or **MKV** with **PCM** (uncompressed: a big file, but readable almost everywhere).
 
+## With sheet music
+
+If the frame has a Sheet music widget whose score is still being written, the dialog says "The sheet music is still being written" and lets you press **Start export** only once it is done, so the video does not miss the score.
+
 ## One export at a time
 
 The app lets only one tab export at a time. A second tab says "Another tab is exporting a video" and disables **Start export** until the first one is done. Two exports at once compete for the encoder so both slow down a lot, and if both save to the same file name the one that finishes last silently overwrites the other.

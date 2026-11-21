@@ -5,7 +5,7 @@ section: "3. Render Core (`@dawviz/render-core`, D-36)"
 path: "3. Render Core (`@dawviz/render-core`, D-36)"
 chunk: 3-render-core-dawviz-render-core-d-36.md
 source_lines: 28-41
-source_sha1: 7318e4095f
+source_sha1: bd726ffa10
 ids: [ARC-01, D-06, D-33, D-36, D-63, NFR-PERF-05, REQ-GRAPHICS-05, REQ-GRAPHICS-06]
 ---
 ## 3. Render Core (`@dawviz/render-core`, D-36)
@@ -18,6 +18,6 @@ ids: [ARC-01, D-06, D-33, D-36, D-63, NFR-PERF-05, REQ-GRAPHICS-05, REQ-GRAPHICS
 | `pianoroll.ts` | `layoutPianoRoll(index, tempoMap, t, options)` → danh sách hình chữ nhật pixel (không vẽ). Cùng đầu vào cho cùng đầu ra | REQ-GRAPHICS-05 |
 | `draw.ts` | `drawPianoRoll(ctx, rects, size)`: lớp vẽ duy nhất lên Canvas 2D/OffscreenCanvas; `Ctx2D` là giao diện tối thiểu nên test được bằng đối tượng giả | ARC-01, D-06 |
 
-**Đề xuất (D-63, chưa làm):** widget Bản nhạc thêm primitive `path`/`group` vào Render Core; VexFlow và bộ lượng tử hoá **không** vào Render Core, chỉ đưa vào `NotationLayout` dữ liệu thuần (xem [Technical Design §5.11](../../design/TECHNICAL-DESIGN.md)).
+**Bản nhạc (D-63, T-90…T-95):** `notation/quantize.ts` (lượng tử để vẽ, giọng), `notation/spelling.ts` (cách viết cao độ), `notation/types.ts` (`NotationLayout`, `pageIndexAt`, `systemX`), `notation/widget.ts` (`NotationProps`, `notationRenderer`, `notationPrims`, `zoomAt`, `notationInkFor`), `notation/draw.ts` (`drawPathPrim`, nét tay `roughPathData`/`roughGlyph`). Primitive mới `PathPrim` (`kind: 'path'`). VexFlow **không** ở Render Core: engraver ở `apps/web/src/lib/notation/` chạy trong `workers/notation.worker.ts`, trả `NotationLayout` vào `Derived.notation` (xem [Technical Design §5.11](../../design/TECHNICAL-DESIGN.md)).
 
 Độ sáng của nốt lấy tại thời điểm **bắt đầu nốt** (không đổi trong suốt nốt) để tránh nhấp nháy và giữ chi phí O(1) mỗi nốt. Phép nội suy lane volume/pan/mute và đổi gain → 0..1 dùng `sampleLane`/`volumeToUnit` của `@dawviz/parser-core` (nguồn sự thật duy nhất).

@@ -19,7 +19,8 @@ test('FONT_METRICS khớp tệp phông đóng gói: đổi phông mà quên ch�
   assert.deepEqual(files, Object.keys(FONT_METRICS_DATA.files).sort(), 'danh sách tệp phông lệch bảng');
   for (const f of files) assert.equal(crypto.createHash('sha256').update(fs.readFileSync(new URL(f, FONT_DIR))).digest('hex'), (FONT_METRICS_DATA.files as Record<string, string>)[f], `${f}: mã băm lệch; chạy node scripts/gen-font-metrics.mjs`);
   assert.deepEqual(BUNDLED_FONTS.map((b) => b.file).sort(), files); // danh sách nạp = tệp đã gói
-  for (const f of ['OFL-SpaceGrotesk.txt', 'OFL-Inter.txt']) assert.ok(/SIL Open Font License/.test(fs.readFileSync(new URL(f, FONT_DIR), 'utf8')), f);   // giấy phép đi kèm phông, Vite chép vào dist/fonts
+  for (const f of ['OFL-SpaceGrotesk.txt', 'OFL-Inter.txt', 'OFL-SMuFL-Steinberg.txt']) assert.ok(/SIL Open Font License/.test(fs.readFileSync(new URL(f, FONT_DIR), 'utf8')), f);   // giấy phép đi kèm phông, Vite chép vào dist/fonts
+  assert.match(fs.readFileSync(new URL('OFL-SMuFL-Steinberg.txt', FONT_DIR), 'utf8'), /Copyright © [0-9–]+, Steinberg Media Technologies GmbH/);   // glyph Bản nhạc (D-63, OI-20)
 });
 
 test('bảng đo phủ Latin cơ bản, Latin mở rộng và tiếng Việt', () => {
