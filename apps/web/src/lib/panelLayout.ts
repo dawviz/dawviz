@@ -11,9 +11,9 @@ export interface PanelLayout {
 }
 
 export const PANEL_LIMITS: Readonly<Record<PanelId, readonly [number, number]>> = {
-  layers: [160, 400], props: [272, 560], timeline: [140, 640], tree: [176, 420],
+  layers: [160, 400], props: [272, 560], timeline: [140, 640], tree: [220, 480],
 };
-export const DEFAULT_LAYOUT: PanelLayout = { size: { layers: 224, props: 336, timeline: 248, tree: 256 }, collapsed: { layers: false, props: false } };
+export const DEFAULT_LAYOUT: PanelLayout = { size: { layers: 224, props: 336, timeline: 248, tree: 300 }, collapsed: { layers: false, props: false } };
 /** Cỡ khi thu gọn: dải dọc chứa nút mở (cột) và thanh tiêu đề (timeline). */
 export const RAIL = 36, TIMELINE_BAR = 36;
 /** Sân khấu luôn còn tối thiểu chừng này (px) để khung preview không bị bóp mất. */

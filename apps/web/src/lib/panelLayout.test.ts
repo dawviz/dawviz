@@ -5,11 +5,11 @@ import { DEFAULT_LAYOUT, PANEL_LIMITS, RAIL, STAGE_MIN, TIMELINE_BAR, parseLayou
 test('parseLayout: dữ liệu hỏng hoặc thiếu → mặc định; số ngoài giới hạn bị kẹp', () => {
   assert.deepEqual(parseLayout(null), DEFAULT_LAYOUT);
   assert.deepEqual(parseLayout('rác'), DEFAULT_LAYOUT);
-  const l = parseLayout({ size: { layers: 9999, props: -5, timeline: 'x', tree: 300 }, collapsed: { layers: true, props: 'yes', timeline: false } });
+  const l = parseLayout({ size: { layers: 9999, props: -5, timeline: 'x', tree: 320 }, collapsed: { layers: true, props: 'yes', timeline: false } });
   assert.equal(l.size.layers, PANEL_LIMITS.layers[1]);
   assert.equal(l.size.props, PANEL_LIMITS.props[0]);
   assert.equal(l.size.timeline, DEFAULT_LAYOUT.size.timeline);
-  assert.equal(l.size.tree, 300);
+  assert.equal(l.size.tree, 320);
   assert.deepEqual(l.collapsed, { layers: true, props: false, timeline: false });
   assert.equal('timeline' in parseLayout({ collapsed: {} }).collapsed, false, 'timeline chưa chọn thì để theo chế độ');
 });

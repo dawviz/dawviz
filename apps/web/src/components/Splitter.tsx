@@ -1,7 +1,7 @@
 // Thanh chia panel (DESIGN.md "Panel đổi cỡ", mẫu WAI-ARIA Window Splitter): kéo để đổi cỡ, nhấp đúp về cỡ mặc định,
 // phím mũi tên đổi 8 px (Shift: 32 px), Home/End về nhỏ nhất/lớn nhất, Enter thu gọn/mở panel nếu có `onToggle`.
 // Vô hình khi nghỉ (đường kẻ `line` của panel là đủ); rê, focus hoặc đang kéo thì hiện vạch `line-strong` 2 px.
-import { useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
+import { useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent } from 'react';
 
 export interface SplitterProps {
   /** 'x': vạch dọc, đổi bề rộng. 'y': vạch ngang, đổi chiều cao. */
@@ -17,10 +17,11 @@ export interface SplitterProps {
   /** Gợi ý khi rê (cách kéo, nhấp đúp, phím). */
   title?: string;
   className?: string;
+  style?: CSSProperties;
   testId?: string;
 }
 
-export function Splitter({ axis, grow, label, value, min, max, controls, onResize, onReset, onToggle, title, className = '', testId }: SplitterProps) {
+export function Splitter({ axis, grow, label, value, min, max, controls, onResize, onReset, onToggle, title, className = '', style, testId }: SplitterProps) {
   const [drag, setDrag] = useState(false);
   const start = useRef({ p: 0, v: 0 });
   const down = (e: PointerEvent<HTMLDivElement>) => {
@@ -58,7 +59,7 @@ export function Splitter({ axis, grow, label, value, min, max, controls, onResiz
     <div role="separator" tabIndex={0} aria-orientation={axis === 'x' ? 'vertical' : 'horizontal'} aria-label={label} aria-controls={controls}
       aria-valuenow={Math.round(value)} aria-valuemin={min} aria-valuemax={max} title={title} data-testid={testId} data-dragging={drag || undefined}
       onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} onLostPointerCapture={up} onDoubleClick={onReset} onKeyDown={key}
-      className={`group absolute z-30 touch-none outline-none ${box} ${className}`}>
+      className={`group absolute z-30 touch-none outline-none ${box} ${className}`} style={style}>
       <span aria-hidden className={`pointer-events-none absolute ${bar} transition-colors duration-150 ${drag ? 'bg-line-strong' : 'bg-transparent group-hover:bg-line-strong group-focus-visible:bg-focus'}`} />
     </div>
   );

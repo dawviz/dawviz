@@ -13,12 +13,12 @@ export interface TimelinePanelProps {
   widget: WidgetSpec | null;
   widgetName: string;
   selectedCount: number;
-  /** Nút công cụ ở thanh tiêu đề (thu phóng, lọc). */
-  tools?: ReactNode;
+  /** Đã nạp dự án chưa (chưa thì nhắc mở dự án). */
+  hasProject: boolean;
   children?: ReactNode;
 }
 
-export function TimelinePanel({ open, onOpen, toggleHint, widget, widgetName, selectedCount, tools, children }: TimelinePanelProps) {
+export function TimelinePanel({ open, onOpen, toggleHint, widget, widgetName, selectedCount, hasProject, children }: TimelinePanelProps) {
   const { i18n } = useI18n();
   const hint = toggleHint(open);
   return (
@@ -29,13 +29,12 @@ export function TimelinePanel({ open, onOpen, toggleHint, widget, widgetName, se
         </button>
         <h2 id="timeline-h" className="shrink-0 text-[13px] font-semibold text-fg">{i18n.t('web.timeline.title')}</h2>
         {widget && <span className="min-w-0 truncate text-xs text-muted" title={widgetName} data-testid="timeline-widget"><span aria-hidden>· </span>{widgetName}</span>}
-        <div className="ml-auto flex shrink-0 items-center gap-1">{open && tools}</div>
       </header>
       {open && (
         <div id="timeline-body" className="min-h-0 flex-1 border-t border-line">
-          {widget ? children : (
+          {widget && hasProject ? children : (
             <p className="px-4 py-3 text-xs leading-snug text-muted" data-testid="timeline-empty">
-              {i18n.t(selectedCount > 1 ? 'web.timeline.many' : 'web.timeline.none')}
+              {i18n.t(!hasProject ? 'web.editor.empty' : selectedCount > 1 ? 'web.timeline.many' : 'web.timeline.none')}
             </p>
           )}
         </div>
