@@ -501,6 +501,7 @@ export function App() {
     moveLayer: (id, to) => run((d) => Cmds.moveLayer(d, id, to)),
     snapping: (p) => run((d) => Cmds.patchSnapping(d, p)),
     animate: (id, path, v, key) => run((d) => Cmds.setWidgetAnimate(d, id, path, v, key)),
+    animEdit: (edits, key) => run((d) => Cmds.editWidgetAnimation(d, edits, key)),
     motion: (id, v, key) => run((d) => Cmds.setWidgetMotion(d, id, v, key)),
     visibility: (id, v, key) => run((d) => Cmds.setWidgetVisibility(d, id, v, key)),
     phases: (list, key) => run((d) => Cmds.setPhases(d, list, key)),

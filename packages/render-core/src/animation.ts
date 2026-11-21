@@ -2,7 +2,8 @@
 // hoặc binding vào dữ liệu nhạc. `WidgetSpec.animate` ánh xạ đường dẫn thuộc tính → hoạt hình. Mỗi khung hình, giá trị tính ra được ghép vào bản sao của widget
 // rồi đi lại qua đúng bộ kiểm của loại widget (kẹp về miền hợp lệ), nên renderer không bao giờ nhận giá trị sai. Thuần và tất định: hàm của (widget, t, AST).
 //
-// Đường dẫn: `layout.x|y|width|height|rotation`, `opacity` (0..1, nhân thêm độ đục cả widget), và mọi thuộc tính số hoặc màu `#rrggbb` có trong mặc định của loại
+// Đường dẫn: `layout.x|y|width|height|rotation`, `opacity` (0..1, nhân thêm độ đục cả widget), `scale` (%, 100 = nguyên cỡ; co giãn cả widget quanh điểm neo,
+// như Scale của After Effects; không đổi khung bố cục), và mọi thuộc tính số hoặc màu `#rrggbb` có trong mặc định của loại
 // widget (lồng được: `lines.played.x`…). Piano Roll chỉ nhận `layout.*` và `opacity`; Bản nhạc chỉ nhận `layout.*` và `opacity` (đổi thuộc tính bản nhạc phải dựng lại).
 import { activeNotes, notesInRange, type TrackIndex } from './notes.ts';
 import { barPosAt, hudOf, shown } from './hud.ts';
@@ -23,6 +24,8 @@ export type KeyAnimation = TrackSpec;
 export type Animation = KeyAnimation | Binding;
 export const isBinding = (a: Animation): a is Binding => 'bind' in a;
 export const MAX_ANIMATIONS = 24, MAX_ANIM_KEYS = 256;
+/** Giới hạn của `scale` (%): 0 (biến mất) tới 2000. */
+export const MAX_SCALE = 2000;
 const HEX = /^#[0-9a-f]{6}$/i;
 const LAYOUT_PATHS = ['layout.x', 'layout.y', 'layout.width', 'layout.height', 'layout.rotation'] as const;
 const FRAME_ONLY: ReadonlySet<string> = new Set(['PIANO_ROLL', 'NOTATION']);
@@ -45,6 +48,7 @@ export function animatablePaths(type: WidgetType): Map<string, 'number' | 'color
   const out = new Map<string, 'number' | 'color'>();
   for (const p of LAYOUT_PATHS) out.set(p, 'number');
   out.set('opacity', 'number');
+  out.set('scale', 'number');
   if (!FRAME_ONLY.has(type)) leaves(widgetDefaults(type), [], out);
   return out;
 }
@@ -143,15 +147,16 @@ function animValue(a: Animation, kind: 'number' | 'color', c: BindCtx): number |
  * Widget của khung hình này: bản sao với thuộc tính/bố cục đã animate (qua bộ kiểm của loại widget) và hệ số độ đục `opacity`.
  * Widget không có `animate` được trả nguyên (cùng tham chiếu).
  */
-export function resolveAnimated(w: WidgetSpec, c: BindCtx, canvas: SceneDocument['canvas']): { widget: WidgetSpec; opacity: number } {
-  if (!w.animate) return { widget: w, opacity: 1 };
+export function resolveAnimated(w: WidgetSpec, c: BindCtx, canvas: SceneDocument['canvas']): { widget: WidgetSpec; opacity: number; scale: number } {
+  if (!w.animate) return { widget: w, opacity: 1, scale: 1 };
   const kinds = animatablePaths(w.type);
-  let props = w.properties as Obj | null, layout = w.layout, opacity = 1, propsTouched = false;
+  let props = w.properties as Obj | null, layout = w.layout, opacity = 1, scale = 1, propsTouched = false;
   const { designWidth: dw, designHeight: dh } = canvas;
   for (const [path, a] of Object.entries(w.animate)) {
     const kind = kinds.get(path); if (!kind) continue;
     const v = animValue(a, kind, c);
     if (path === 'opacity') opacity = clamp01(Number(v));
+    else if (path === 'scale') { const n = Number(v); if (Number.isFinite(n)) scale = Math.min(MAX_SCALE, Math.max(0, n)) / 100; }
     else if (path.startsWith('layout.')) {
       const f = path.slice(7) as 'x' | 'y' | 'width' | 'height' | 'rotation', n = Number(v);
       if (!Number.isFinite(n)) continue;
@@ -164,5 +169,5 @@ export function resolveAnimated(w: WidgetSpec, c: BindCtx, canvas: SceneDocument
     const clean = sanitizeWidgetProps(w.type, props, silentSanitizer());
     if (clean) properties = clean as never;
   }
-  return { widget: layout === w.layout && properties === w.properties ? w : { ...w, layout, properties }, opacity };
+  return { widget: layout === w.layout && properties === w.properties ? w : { ...w, layout, properties }, opacity, scale };
 }

@@ -6,7 +6,7 @@
 // và bắt dính đều là lệnh hoàn tác được (lib/commands.ts).
 import { motion } from 'framer-motion';
 import { useContext, useEffect, useMemo, useRef, useState, type DragEvent, type KeyboardEvent, type ReactNode } from 'react';
-import { ADDABLE_WIDGETS, defaultScene, normalizeAngle, rotateGroup, type Animation, type Derived, type NoteNaming, type WidgetMotion, type Phase, type SceneDocument, type UnifiedProjectAST, type WidgetLayout, type WidgetSpec, type WidgetType, type WidgetVisibility, type BackgroundImageSpec } from '@dawviz/render-core';
+import { ADDABLE_WIDGETS, isBinding, defaultScene, normalizeAngle, rotateGroup, type Animation, type Derived, type NoteNaming, type WidgetMotion, type Phase, type SceneDocument, type UnifiedProjectAST, type WidgetLayout, type WidgetSpec, type WidgetType, type WidgetVisibility, type BackgroundImageSpec } from '@dawviz/render-core';
 import { clickIsKeyboard, startPaintDrag } from '../lib/paintDrag.ts';
 import { GestureContext } from '../lib/storeReact.ts';
 import { useI18n } from '../i18n/I18nProvider.tsx';
@@ -15,19 +15,21 @@ import type { FontsStatus } from '../lib/fonts.ts';
 import { STAGE_CHROME, useStageWidth } from '../lib/useStageWidth.ts';
 import { alignLayouts, distributeLayouts, hasCanvasFrame, intoFrame, outsideFrame, round, setAnchor, type AlignMode } from '../lib/editorGeometry.ts';
 import { LiveCanvas } from './Stage.tsx';
-import { EditorOverlay } from './EditorOverlay.tsx';
 import { AspectSwitch, frameInfo } from './AspectSwitch.tsx';
 import { Crop } from './Stage.tsx';
 import { InspectorSection, ResetButton, TickField } from './Inspector.tsx';
 import { NumberField } from './NumberField.tsx';
 import { AlignBottom, AlignHCenter, AlignLeft, AlignRight, AlignTop, AlignVCenter, DistributeH, DistributeV, Duplicate, Eye, EyeOff, Grip, LayerDown, LayerUp, Lock, PanelLeft, PanelRight, Plus, ToBack, ToFront, Trash, Unlock } from './Icons.tsx';
 import { isTextEntry } from '../lib/a11y.ts';
-import { layerOrder } from '../lib/commands.ts';
+import { layerOrder, type AnimEdit } from '../lib/commands.ts';
 import { checkLayerName } from '../lib/layerName.ts';
 import { MAX_WIDGET_NAME } from '@dawviz/render-core';
 import { StatusIcon } from './StatusIcon.tsx';
 import { BackgroundSection, type BackgroundState } from './BackgroundSection.tsx';
 import { AnimationInspector, hasInspectorTarget } from './AnimationInspector.tsx';
+import { LiveLayout, LiveOverlay, type LiveCtx } from './LiveLayout.tsx';
+import { addKey, setKey } from '../lib/animateFields.ts';
+import { keyAt, keySecs } from '../lib/timeline.ts';
 import { Splitter } from './Splitter.tsx';
 import { TimelinePanel } from './TimelinePanel.tsx';
 import { KeyframeTimeline, NO_SEL, type KeySel } from './KeyframeTimeline.tsx';
@@ -66,6 +68,8 @@ export interface EditorActions {
   visibility(id: string, v: WidgetVisibility | null, key?: string): void;
   motion(id: string, v: WidgetMotion | null, key?: string): void;
   animate(id: string, path: string, v: Animation | null, key?: string): void;
+  /** Sửa bố cục tĩnh + nhiều hoạt hình của nhiều widget trong một lệnh (lib/commands.ts editWidgetAnimation). */
+  animEdit(edits: Record<string, AnimEdit>, key?: string): void;
   /** Phase của bài (đã sắp theo thời điểm bắt đầu). */
   phases(list: Phase[], key?: string): void;
   /** Nốt chủ của bài (0 = C … 11 = B); null = chưa đặt. */
@@ -253,6 +257,28 @@ export function Editor({ styleName, scene, derived, ast, playback, fonts, advanc
     window.addEventListener('keydown', h);
     return () => window.removeEventListener('keydown', h);
   }, [active]);
+  // Sửa bố cục từ khung hoặc ô số (D-64, như After Effects): thuộc tính đang có keyframe thì đặt/sửa keyframe tại vạch phát;
+  // đang chạy theo nhạc thì bỏ qua (không sửa được trên khung); đứng yên thì đổi bố cục tĩnh như cũ. Một lệnh mỗi lần → một bước hoàn tác cho cả lần kéo.
+  const liveCtx = useMemo<LiveCtx | null>(() => (derived && ast ? { ast, derived, playback } : null), [ast, derived, playback]);
+  const editLayouts = (patches: Patches) => {
+    const t = playback.get().t, edits: Record<string, AnimEdit> = {};
+    let keyed = false;
+    for (const [id, p] of Object.entries(patches)) {
+      const w = scene.widgets.find((x) => x.id === id); if (!w) continue;
+      const layout: Record<string, unknown> = {}, animate: Record<string, Animation> = {};
+      for (const [f, v] of Object.entries(p)) {
+        const a = f === 'anchor' ? undefined : w.animate?.[`layout.${f}`];
+        if (!a) { layout[f] = v; continue; }
+        if (isBinding(a)) continue;
+        const i = keyAt(keySecs(a, ast?.tempoMap ?? []), t);
+        animate[`layout.${f}`] = i >= 0 ? setKey(a, i, { value: v as number }) : addKey(a, t, v as number);
+        keyed = true;
+      }
+      edits[id] = { ...(Object.keys(layout).length ? { layout: layout as Partial<WidgetLayout> } : {}), ...(Object.keys(animate).length ? { animate } : {}) };
+    }
+    if (keyed) actions.animEdit(edits, 'canvas'); else actions.layouts(patches);
+  };
+
   // Vùng chọn của Timeline (keyframe + hàng thuộc tính), gắn với widget đang chọn: đổi widget thì vùng chọn cũ không còn hiệu lực.
   const single = live.length === 1 ? scene.widgets.find((w) => w.id === live[0]) ?? null : null;
   const [keySelRaw, setKeySel] = useState<{ id: string; sel: KeySel }>({ id: '', sel: NO_SEL });
@@ -344,7 +370,7 @@ export function Editor({ styleName, scene, derived, ast, playback, fonts, advanc
                 <Crop className="-left-5 -top-5" /><Crop className="-right-5 -top-5 -scale-x-100" />
                 <Crop className="-bottom-5 -left-5 -scale-y-100" /><Crop className="-bottom-5 -right-5 -scale-100" />
                 <LiveCanvas scene={scene} derived={derived} ast={ast} playback={playback} fonts={fonts} />
-                <EditorOverlay scene={scene} cssWidth={width} selected={live} locked={locked} onSelect={setSelected} onLayouts={actions.layouts} name={name} advanced={advanced} />
+                <LiveOverlay ctx={liveCtx!} scene={scene} cssWidth={width} selected={live} locked={locked} onSelect={setSelected} onLayouts={editLayouts} name={name} advanced={advanced} />
               </figure>
             </div>
             {transport && <div className="mx-7 border border-line bg-surface" data-testid="editor-transport">{transport}</div>}
@@ -367,10 +393,10 @@ export function Editor({ styleName, scene, derived, ast, playback, fonts, advanc
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto max-lg:flex-none max-lg:overflow-visible">
         <Properties background={background} duration={derived?.index.duration ?? 0} scene={scene} selected={live} locked={locked} name={name} advanced={advanced} actions={actions} onLock={toggleLock} order={order} move={move} widgetSections={widgetSections} onPick={(id) => setSelected([id])} layoutRef={layoutRef}
-          onDuplicate={duplicateSel} onRemove={removeSel} onDeselect={deselect}
+          onDuplicate={duplicateSel} onRemove={removeSel} onDeselect={deselect} live={liveCtx} editLayouts={editLayouts}
           keyInspector={single && ast && hasInspectorTarget(single, keySel) ? (n) => (
             <AnimationInspector n={n} widget={single} sel={keySel} tempoMap={ast.tempoMap} locked={locked.has(single.id)} getTime={() => playback.get().t}
-              onAnimate={(p, v, k) => actions.animate(single.id, p, v, k)} onSel={onKeySel} gesture={gestureCtx} />
+              onAnimate={(p, v, k) => actions.animate(single.id, p, v, k)} onAnimateMany={(ch, k) => actions.animEdit({ [single.id]: { animate: ch } }, k)} onSel={onKeySel} gesture={gestureCtx} />
           ) : undefined} />
         </div>
       </aside>
@@ -390,7 +416,7 @@ export function Editor({ styleName, scene, derived, ast, playback, fonts, advanc
           widget={single} widgetName={single ? name(single.id) : ''} selectedCount={live.length} hasProject={!!ast}>
           {single && ast && (
             <KeyframeTimeline widget={single} tempoMap={ast.tempoMap} duration={derived?.index.duration ?? 0} playback={playback} locked={locked.has(single.id)}
-              sel={keySel} onSel={onKeySel} onAnimate={(p, v, k) => actions.animate(single.id, p, v, k)} gesture={gestureCtx}
+              sel={keySel} onSel={onKeySel} onAnimate={(p, v, k) => actions.animate(single.id, p, v, k)} onAnimateMany={(ch, k) => actions.animEdit({ [single.id]: { animate: ch } }, k)} gesture={gestureCtx}
               tree={r.tree} onTree={(v) => panels.resize('tree', v)} onTreeReset={() => panels.reset('tree')} />
           )}
         </TimelinePanel>
@@ -484,7 +510,7 @@ function AlignSection({ n, items, frame, onLayouts, locked }: { n: number; items
 
 const btn = 'flex min-h-[var(--hit)] items-center gap-1.5 rounded border border-control bg-raised px-2.5 text-xs font-medium text-fg transition hover:border-line-strong disabled:cursor-not-allowed disabled:opacity-50';
 
-function Properties({ background, duration, scene, selected, locked, name, advanced, actions, onLock, order, move, widgetSections, onPick, layoutRef, onDuplicate, onRemove, onDeselect, keyInspector }: { keyInspector?(n: number): ReactNode; onDeselect(): void; background?: BackgroundState; duration: number; onDuplicate(): void; onRemove(): void; layoutRef?: Record<string, WidgetLayout>; onPick(id: string): void; scene: SceneDocument; selected: string[]; locked: ReadonlySet<string>; name(id: string): string; advanced: boolean; actions: EditorActions; onLock(id: string): void; order: string[]; move(id: string, to: number): void; widgetSections?: Props['widgetSections'] }) {
+function Properties({ background, duration, scene, selected, locked, name, advanced, actions, onLock, order, move, widgetSections, onPick, layoutRef, onDuplicate, onRemove, onDeselect, keyInspector, live, editLayouts }: { keyInspector?(n: number): ReactNode; live: LiveCtx | null; editLayouts(p: Patches): void; onDeselect(): void; background?: BackgroundState; duration: number; onDuplicate(): void; onRemove(): void; layoutRef?: Record<string, WidgetLayout>; onPick(id: string): void; scene: SceneDocument; selected: string[]; locked: ReadonlySet<string>; name(id: string): string; advanced: boolean; actions: EditorActions; onLock(id: string): void; order: string[]; move(id: string, to: number): void; widgetSections?: Props['widgetSections'] }) {
   const { i18n } = useI18n();
   const ws = selected.map((id) => scene.widgets.find((w) => w.id === id)!).filter(Boolean);
   const { designWidth: W, designHeight: H } = scene.canvas;
@@ -545,14 +571,16 @@ function Properties({ background, duration, scene, selected, locked, name, advan
     </>
   );
 
-  const w = ws[0], l = w.layout, lk = locked.has(w.id), zi = order.indexOf(w.id);
+  const w = ws[0], lk = locked.has(w.id), zi = order.indexOf(w.id);
+  // Bố cục tại vạch phát (khi vị trí/cỡ/góc đang animate): ô số và nút ↺ đọc giá trị đang thấy; sửa thì đặt keyframe (editLayouts).
+  const withL = (fn: (l: WidgetLayout) => ReactNode) => (live ? <LiveLayout w={w} ctx={live} canvas={scene.canvas}>{fn}</LiveLayout> : fn(w.layout));
   // Animation Inspector (khi Timeline đang chọn keyframe/hàng) là mục 01: thứ người dùng đang chỉnh ngay lúc đó; các mục sau lùi một số.
   const ki = keyInspector?.(1), o = ki ? 1 : 0;
   // Mục riêng của widget (Hình thức của Piano Roll) đứng ngay sau Vị trí: là thứ hay chỉnh nhất; các mục sau đánh số tiếp.
   const extra = (widgetSections?.(w, 2 + o, lk) ?? []).filter(Boolean), k = extra.length + o;
-  const set = (p: Partial<WidgetLayout>) => actions.layouts({ [w.id]: p });
+  const set = (p: Partial<WidgetLayout>) => editLayouts({ [w.id]: p });
   const ref = layoutRef?.[w.id];
-  const field = (k: 'x' | 'y' | 'width' | 'height', label: string, min: number, max: number) => {
+  const field = (l: WidgetLayout, k: 'x' | 'y' | 'width' | 'height', label: string, min: number, max: number) => {
     const full = i18n.t(`web.editor.${k === 'width' ? 'w' : k === 'height' ? 'h' : k}`);
     return (
       <div className="grid grid-cols-[1.25rem_minmax(0,1fr)_1.5rem] items-center gap-1.5 text-xs text-muted">
@@ -582,6 +610,7 @@ function Properties({ background, duration, scene, selected, locked, name, advan
             <button type="button" className={btn} onClick={() => onLock(w.id)}>{i18n.t('web.editor.unlockBtn')}</button>
           </div>
         )}
+        {withL((l) => <>
         {w.visible && outsideFrame(l, W, H) && (
           <div className="flex items-start justify-between gap-2 border border-warning/60 bg-warning/10 px-2 py-1.5 text-xs leading-snug text-fg" role="status" data-testid="editor-outside">
             <span className="flex gap-1.5"><StatusIcon kind="warning" className="mt-px h-3.5 w-3.5 shrink-0 text-warning" />{i18n.t('web.editor.outsideHint')}</span>
@@ -589,13 +618,15 @@ function Properties({ background, duration, scene, selected, locked, name, advan
           </div>
         )}
         <div className="grid grid-cols-2 gap-x-2 gap-y-2" data-testid="editor-geometry">
-          {field('x', 'X', -W, 2 * W)}{field('y', 'Y', -H, 2 * H)}
-          {field('width', 'W', 1, 4 * W)}{field('height', 'H', 1, 4 * H)}
+          {field(l, 'x', 'X', -W, 2 * W)}{field(l, 'y', 'Y', -H, 2 * H)}
+          {field(l, 'width', 'W', 1, 4 * W)}{field(l, 'height', 'H', 1, 4 * H)}
         </div>
+        </>)}
       </InspectorSection>
       {extra}
       <InspectorSection n={2 + k} id="rotation" title={i18n.t('web.editor.rotation')}>
         {/* Cùng lưới với dòng số của Hình thức (nhãn | ô 4,5rem | ↺), nên các ô thẳng cột; ↺ chỉ hiện khi đã đổi. */}
+        {withL((l) => <>
         <NumRow label={i18n.t('web.editor.angle')} reset={<ResetButton label={i18n.t('web.editor.angle')} text={i18n.t('web.editor.resetRotation')} changed={l.rotation !== 0} disabled={lk} onReset={() => set({ rotation: 0 })} />}>
           <NumberField label={i18n.t('web.editor.angle')} value={l.rotation} spec={{ min: -360, max: 360, step: 1, units: { '°': 1, deg: 1 } }} disabled={lk}
             onChange={(v) => set({ rotation: normalizeAngle(v) })} />
@@ -604,19 +635,20 @@ function Properties({ background, duration, scene, selected, locked, name, advan
         {advanced && <>
           <div className="grid grid-cols-[minmax(0,1fr)_auto_1.5rem] items-center gap-2 text-xs text-muted">
             <span className="min-w-0 break-words leading-tight">{i18n.t('web.editor.anchor')}</span>
-            <AnchorPicker value={l.anchor} disabled={lk} onChange={(a) => actions.layouts({ [w.id]: setAnchor(l, a) })} />
+            <AnchorPicker value={l.anchor} disabled={lk} onChange={(a) => editLayouts({ [w.id]: setAnchor(l, a) })} />
             <ResetButton label={i18n.t('web.editor.anchor')} text={i18n.t('web.editor.resetAnchor')} changed={l.anchor.x !== 0.5 || l.anchor.y !== 0.5} disabled={lk}
-              onReset={() => actions.layouts({ [w.id]: setAnchor(l, { x: 0.5, y: 0.5 }) })} />
+              onReset={() => editLayouts({ [w.id]: setAnchor(l, { x: 0.5, y: 0.5 }) })} />
           </div>
           {(['x', 'y'] as const).map((ax) => (
             <NumRow key={ax} label={i18n.t(`web.editor.anchor${ax.toUpperCase()}`)}
               reset={<ResetButton label={i18n.t(`web.editor.anchor${ax.toUpperCase()}`)} changed={l.anchor[ax] !== 0.5} disabled={lk} text={i18n.t('web.editor.resetAnchorAxis', { name: i18n.t(`web.editor.anchor${ax.toUpperCase()}`) })}
-                onReset={() => actions.layouts({ [w.id]: setAnchor(l, { ...l.anchor, [ax]: 0.5 }) })} />}>
+                onReset={() => editLayouts({ [w.id]: setAnchor(l, { ...l.anchor, [ax]: 0.5 }) })} />}>
               <NumberField label={i18n.t(`web.editor.anchor${ax.toUpperCase()}`)} value={Math.round(l.anchor[ax] * 100)} spec={{ min: 0, max: 100, step: 1, units: { '%': 1 } }} disabled={lk}
-                onChange={(v) => actions.layouts({ [w.id]: setAnchor(l, { ...l.anchor, [ax]: v / 100 }) })} />
+                onChange={(v) => editLayouts({ [w.id]: setAnchor(l, { ...l.anchor, [ax]: v / 100 }) })} />
             </NumRow>
           ))}
         </>}
+        </>)}
       </InspectorSection>
       <InspectorSection n={3 + k} id="arrange" title={i18n.t('web.editor.arrange')}>
         {/* Bốn nút một hàng, chỉ biểu tượng + chú thích khi rê (tên đầy đủ cho trình đọc màn hình); ở đầu/cuối thì nút tương ứng mờ. */}

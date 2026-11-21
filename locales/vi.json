@@ -1217,8 +1217,8 @@
   "web.anim.prop.y": "Vị trí Y",
   "web.anim.prop.width": "Rộng",
   "web.anim.prop.height": "Cao",
-  "web.anim.prop.rotation": "Góc xoay (°)",
-  "web.anim.prop.opacity": "Độ đục cả widget",
+  "web.anim.prop.rotation": "Xoay",
+  "web.anim.prop.opacity": "Độ đục",
   "web.section.collapse": "Thu gọn mục {name}",
   "web.section.expand": "Mở mục {name}",
   "web.panel.open": "Mở {name}",
@@ -1266,5 +1266,16 @@
   "web.keyinsp.mixed": "Nhiều giá trị",
   "web.keyinsp.delete": "Xoá keyframe ({n})",
   "web.keyinsp.notAnimated": "Chưa animate. Chọn Keyframe hoặc Theo nhạc ở trên.",
-  "web.keyinsp.keyCount": "Số keyframe: {n}. Kéo chúng trên Timeline; chọn một keyframe để chỉnh đường cong."
+  "web.keyinsp.keyCount": "Số keyframe: {n}. Kéo chúng trên Timeline; chọn một keyframe để chỉnh đường cong.",
+  "web.timeline.row.position": "Vị trí",
+  "web.timeline.row.scale": "Tỉ lệ",
+  "web.timeline.row.rotation": "Xoay",
+  "web.timeline.row.opacity": "Độ đục",
+  "web.timeline.row.width": "Rộng",
+  "web.timeline.row.height": "Cao",
+  "web.anim.prop.scale": "Tỉ lệ (%)",
+  "web.keyinsp.deselect": "Bỏ chọn",
+  "web.keyinsp.resetCurve": "Về đường cong đều",
+  "web.keyinsp.resetInterp": "Về đều tới keyframe kế",
+  "web.keyinsp.resetLoop": "Về giữ nguyên sau keyframe cuối"
 }

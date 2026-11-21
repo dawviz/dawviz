@@ -1217,8 +1217,8 @@
   "web.anim.prop.y": "Position Y",
   "web.anim.prop.width": "Width",
   "web.anim.prop.height": "Height",
-  "web.anim.prop.rotation": "Rotation (°)",
-  "web.anim.prop.opacity": "Opacity of the whole widget",
+  "web.anim.prop.rotation": "Rotation",
+  "web.anim.prop.opacity": "Opacity",
   "web.section.collapse": "Collapse {name}",
   "web.section.expand": "Expand {name}",
   "web.panel.open": "Open {name}",
@@ -1266,5 +1266,16 @@
   "web.keyinsp.mixed": "Several values",
   "web.keyinsp.delete": "Delete keyframes ({n})",
   "web.keyinsp.notAnimated": "Not animated yet. Pick Keyframe or Music above.",
-  "web.keyinsp.keyCount": "Keyframes: {n}. Drag them on the Timeline; select one to shape its curve."
+  "web.keyinsp.keyCount": "Keyframes: {n}. Drag them on the Timeline; select one to shape its curve.",
+  "web.timeline.row.position": "Position",
+  "web.timeline.row.scale": "Scale",
+  "web.timeline.row.rotation": "Rotation",
+  "web.timeline.row.opacity": "Opacity",
+  "web.timeline.row.width": "Width",
+  "web.timeline.row.height": "Height",
+  "web.anim.prop.scale": "Scale (%)",
+  "web.keyinsp.deselect": "Deselect",
+  "web.keyinsp.resetCurve": "Back to an even curve",
+  "web.keyinsp.resetInterp": "Back to smooth to the next",
+  "web.keyinsp.resetLoop": "Back to stay after the last keyframe"
 }

@@ -1,11 +1,13 @@
-// Thân panel Timeline (UI-DIRECTION 5.3, DESIGN.md "Timeline"): bên trái là cây thuộc tính của widget đang chọn (đồng hồ bật hoạt hình, tên,
+// Thân panel Timeline (UI-DIRECTION 5.3, DESIGN.md "Timeline"): bên trái là cây thuộc tính của widget đang chọn (đồng hồ bật hoạt hình, tên ngắn,
 // giá trị tại vạch phát, đi tới keyframe trước/sau), bên phải là thước và làn keyframe theo thời gian. Một vùng cuộn chung cho hai cột:
 // cột cây dính mép trái, thước dính mép trên, nên cuộn dọc/ngang luôn thẳng hàng.
-// Thao tác: nhấp hình thoi để chọn (Shift/Ctrl/⌘ cộng thêm), kéo để dời (bắt dính vạch phát, keyframe khác và phách; giữ Alt để tắt),
-// kéo trên chỗ trống để chọn bằng hộp, nhấp đúp vào làn để thêm keyframe, Ctrl+cuộn để thu phóng, kéo trên thước để tua.
+// Dòng có thể gắn nhiều đường dẫn (Vị trí = x + y, lib/timelineRows.ts): keyframe cùng thời điểm của các đường dẫn hiện thành MỘT hình thoi.
+// Thao tác: nhấp hình thoi để chọn (Shift/Ctrl/⌘ cộng thêm), kéo để dời (bắt dính vạch phát, keyframe khác và phách; giữ Alt để tắt;
+// đang bắt dính thì hiện vạch dẫn), kéo trên chỗ trống để chọn bằng hộp, nhấp đúp vào làn để thêm keyframe, Ctrl+cuộn để thu phóng,
+// kéo trên thước để tua (vạch phát bắt dính vào keyframe; Alt để tắt).
 // Bàn phím: Delete xoá, Ctrl+A chọn hết, Esc bỏ chọn, U chỉ hiện thuộc tính đang animate, Alt+←/→ dời 1/30 s (thêm Shift: 1 s),
 // ←/→ trên hình thoi đi qua keyframe cùng hàng, ↑/↓ sang hàng khác, Enter đưa vạch phát tới keyframe.
-// Logic thuần ở lib/timeline.ts; hình dạng hình thoi cho biết cách đi tiếp: thoi = đều, vuông = giữ rồi nhảy, tròn = cong mượt.
+// Logic thuần ở lib/timeline.ts và lib/timelineRows.ts; hình dạng hình thoi cho biết cách đi tiếp: thoi = đều, vuông = giữ rồi nhảy, tròn = cong mượt.
 import { memo, useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent as RPointerEvent } from 'react';
 import { MAX_ANIMATIONS, MAX_ANIM_KEYS, compileTrack, isBinding, sampleTrack, type Animation, type KeyAnimation, type TempoPoint, type WidgetSpec } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
@@ -13,17 +15,18 @@ import { usePlayback, type Playback } from '../lib/playback.ts';
 import type { Gesture } from '../lib/storeReact.ts';
 import { isTextEntry } from '../lib/a11y.ts';
 import { formatClock } from '../lib/timeFormat.ts';
-import { addKey, animFields, newKeyAnimation, removeKey, setKey, staticValue, type AnimField } from '../lib/animateFields.ts';
+import { addKey, newKeyAnimation, setKey, staticValue, type AnimField } from '../lib/animateFields.ts';
 import {
-  DRAG_SLOP, ROW_H, RULER_H, beatTimes, clampPps, clampShift, fitPps, groupRefs, keyAt, keyRef, keySecs, keysInBox, moveKeys, nextKey,
-  parseKeyRef, prevKey, removeKeys, rulerLabel, rulerStep, rulerTicks, snapTime, xToTime, zoomAround,
+  DRAG_SLOP, ROW_H, RULER_H, SAME_TIME, beatTimes, clampPps, clampShift, fitPps, groupRefs, keyAt, keyRef, keySecs, moveKeys,
+  parseKeyRef, removeKeys, rulerLabel, rulerStep, rulerTicks, snapTime, xToTime, zoomAround,
 } from '../lib/timeline.ts';
+import { rowKeys, timelineRows, type GroupId, type RowDef, type VKey } from '../lib/timelineRows.ts';
 import { PANEL_LIMITS } from '../lib/panelLayout.ts';
 import { NumberField } from './NumberField.tsx';
 import { Splitter } from './Splitter.tsx';
 import { ChevronRight, Diamond, FitWidth, Filter, KeyNext, KeyPrev, Stopwatch, ZoomIn, ZoomOut } from './Icons.tsx';
 
-/** Vùng chọn của Timeline: keyframe (`đường dẫn#chỉ số`) và hàng thuộc tính đang chọn (đích của Animation Inspector). */
+/** Vùng chọn của Timeline: keyframe (`đường dẫn#chỉ số`) và dòng đang chọn (id của dòng, lib/timelineRows.ts; đích của Animation Inspector). */
 export interface KeySel { keys: string[]; row: string | null }
 export const NO_SEL: KeySel = { keys: [], row: null };
 
@@ -36,6 +39,8 @@ export interface KeyframeTimelineProps {
   sel: KeySel;
   onSel(s: KeySel): void;
   onAnimate(path: string, v: Animation | null, key?: string): void;
+  /** Nhiều đường dẫn trong một lệnh (một bước hoàn tác). */
+  onAnimateMany(changes: Record<string, Animation | null>, key?: string): void;
   gesture: Gesture;
   tree: number;
   onTree(px: number): void;
@@ -45,20 +50,21 @@ export interface KeyframeTimelineProps {
 const FRAME = 1 / 30;
 /** Lề trái của làn (px): keyframe ở 0:00 không bị cắt nửa ở mép. */
 const PAD = 10;
-const GROUPS = [{ id: 'transform', key: 'web.timeline.group.transform' }, { id: 'props', key: 'web.timeline.group.props' }] as const;
-type GroupId = typeof GROUPS[number]['id'];
-const groupOf = (path: string): GroupId => (path.startsWith('layout.') || path === 'opacity' ? 'transform' : 'props');
-type Item = { kind: 'group'; id: GroupId; open: boolean; count: number } | { kind: 'row'; f: AnimField; anim: Animation | undefined; times: number[]; keyRow: number };
+const GROUPS: readonly { id: GroupId; key: string }[] = [{ id: 'transform', key: 'web.timeline.group.transform' }, { id: 'props', key: 'web.timeline.group.props' }];
+type Mode = 'none' | 'keys' | 'bind';
+type RowItem = { kind: 'row'; row: RowDef; anims: (Animation | undefined)[]; mode: Mode; vkeys: VKey[] };
+type Item = { kind: 'group'; id: GroupId; open: boolean; count: number } | RowItem;
+const modeOf = (anims: (Animation | undefined)[]): Mode => (anims.some((a) => a && !isBinding(a)) ? 'keys' : anims.some((a) => a) ? 'bind' : 'none');
 
-export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked, sel, onSel, onAnimate, gesture, tree, onTree, onTreeReset }: KeyframeTimelineProps) {
+export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked, sel, onSel, onAnimate, onAnimateMany, gesture, tree, onTree, onTreeReset }: KeyframeTimelineProps) {
   const { i18n } = useI18n();
-  const label = (f: AnimField) => (f.labelKey && i18n.has(f.labelKey) ? i18n.t(f.labelKey) : f.path);
-  const fields = useMemo(() => animFields(widget.type), [widget.type]);
   const animate = widget.animate ?? {};
-  const used = Object.keys(animate).filter((p) => fields.some((f) => f.path === p));
+  const rows = useMemo(() => timelineRows(widget.type, animate), [widget.type, animate]);
+  const label = (r: RowDef) => (i18n.has(r.labelKey) ? i18n.t(r.labelKey) : r.id);
+  const used = Object.keys(animate).length;
   const [onlyAnimated, setOnlyAnimated] = useState(false);
   // Nhóm "Thuộc tính widget" thường dài: đóng sẵn khi chưa có thuộc tính nào trong đó đang animate.
-  const [closed, setClosed] = useState<ReadonlySet<GroupId>>(() => new Set(used.some((p) => groupOf(p) === 'props') ? [] : ['props']));
+  const [closed, setClosed] = useState<ReadonlySet<GroupId>>(() => new Set(rows.some((r) => r.group === 'props' && r.paths.some((p) => animate[p])) ? [] : ['props']));
 
   // ── hàng hiển thị ──
   const times = useMemo(() => {
@@ -67,18 +73,21 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
     return m;
   }, [animate, tempoMap]);
   const items: Item[] = [];
-  let keyRow = 0;
   for (const g of GROUPS) {
-    const rows = fields.filter((f) => groupOf(f.path) === g.id && (!onlyAnimated || animate[f.path]));
-    if (!rows.length) continue;
+    const mine = rows.filter((r) => r.group === g.id).map((row): RowItem => {
+      const anims = row.paths.map((p) => animate[p]);
+      return { kind: 'row', row, anims, mode: modeOf(anims), vkeys: rowKeys(row, times) };
+    }).filter((x) => !onlyAnimated || x.mode !== 'none');
+    if (!mine.length) continue;
     const open = !closed.has(g.id);
-    items.push({ kind: 'group', id: g.id, open, count: rows.filter((f) => animate[f.path]).length });
-    if (open) for (const f of rows) items.push({ kind: 'row', f, anim: animate[f.path], times: times.get(f.path) ?? [], keyRow: keyRow++ });
+    items.push({ kind: 'group', id: g.id, open, count: mine.filter((x) => x.mode !== 'none').length });
+    if (open) items.push(...mine);
   }
-  const keyRows = items.filter((x): x is Extract<Item, { kind: 'row' }> => x.kind === 'row');
+  const keyRows = items.filter((x): x is RowItem => x.kind === 'row');
   // Vùng chọn chỉ giữ keyframe còn tồn tại (sau hoàn tác, xoá thuộc tính…).
   const selKeys = sel.keys.filter((r) => { const p = parseKeyRef(r); return !!p && (times.get(p.path)?.length ?? 0) > p.i; });
   const selSet = new Set(selKeys);
+  const allTimes = keyRows.flatMap((x) => x.vkeys.map((v) => v.t));
 
   // ── kích thước và thu phóng ──
   const scroller = useRef<HTMLDivElement>(null);
@@ -98,12 +107,12 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
   const [zoom, setZoom] = useState<number | null>(null); // null = vừa khung
   const pps = zoom === null ? fit : clampPps(zoom, fit);
   const contentW = PAD + Math.max(laneW - PAD, duration * pps) + 16;
-  const live = useRef({ pps, fit, tree, duration, widget, sel: { keys: selKeys, row: sel.row }, times, keyRows, locked });
-  live.current = { pps, fit, tree, duration, widget, sel: { keys: selKeys, row: sel.row }, times, keyRows, locked };
+  const live = useRef({ pps, fit, tree, duration, widget, sel: { keys: selKeys, row: sel.row }, allTimes, locked });
+  live.current = { pps, fit, tree, duration, widget, sel: { keys: selKeys, row: sel.row }, allTimes, locked };
 
-  const zoomBy = (factor: number, anchorX?: number) => {
+  const zoomBy = (factor: number) => {
     const el = scroller.current, L = live.current; if (!el) return;
-    const ax = anchorX ?? Math.min(laneW, Math.max(0, playback.get().t * L.pps - el.scrollLeft)); // nút: giữ vạch phát đứng yên
+    const ax = Math.min(laneW, Math.max(0, playback.get().t * L.pps - el.scrollLeft)); // nút: giữ vạch phát đứng yên
     const z = zoomAround(L.pps, factor, ax, el.scrollLeft, L.fit);
     setZoom(z.pps <= L.fit * 1.0001 ? null : z.pps);
     requestAnimationFrame(() => { el.scrollLeft = z.scrollLeft; });
@@ -127,10 +136,13 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
 
   // ── sửa dữ liệu ──
   const keyAnim = (p: string): KeyAnimation | null => { const a = live.current.widget.animate?.[p]; return a && !isBinding(a) ? a : null; };
-  const batch = (fn: () => void) => { gesture.begin(); try { fn(); } finally { gesture.end(); } };
+  /** Gom mọi thay đổi của một thao tác thành MỘT lệnh (một bước hoàn tác, lib/commands.ts editWidgetAnimation). */
+  const many = (fn: (put: (p: string, v: Animation | null) => void) => void, key?: string) => { const ch: Record<string, Animation | null> = {}; fn((p, v) => { ch[p] = v; }); if (Object.keys(ch).length) onAnimateMany(ch, key); };
+  const refsAt = (paths: readonly string[], t: number): string[] => paths.flatMap((p) => { const a = keyAnim(p); if (!a) return []; const i = keyAt(keySecs(a, tempoMap), t); return i >= 0 ? [keyRef(p, i)] : []; });
+  const removeRefs = (refs: readonly string[]) => many((put) => { for (const [p, idx] of groupRefs(refs)) { const a = keyAnim(p); if (a) put(p, removeKeys(a, idx)); } });
   const removeSelected = () => {
     if (live.current.locked || !selKeys.length) return;
-    batch(() => { for (const [p, idx] of groupRefs(selKeys)) { const a = keyAnim(p); if (a) onAnimate(p, removeKeys(a, idx)); } });
+    removeRefs(selKeys);
     onSel({ keys: [], row: sel.row });
   };
   const shiftSelected = (dt: number) => {
@@ -138,44 +150,62 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
     const all = selKeys.map((r) => { const q = parseKeyRef(r)!; return times.get(q.path)?.[q.i] ?? NaN; });
     const d = clampShift(all, dt, duration);
     const next: string[] = [];
-    batch(() => { for (const [p, idx] of groupRefs(selKeys)) { const a = keyAnim(p); if (!a) continue; const m = moveKeys(a, idx, d, duration, tempoMap); onAnimate(p, m.anim, 'knudge'); next.push(...m.idx.map((j) => keyRef(p, j))); } });
+    many((put) => { for (const [p, idx] of groupRefs(selKeys)) { const a = keyAnim(p); if (!a) continue; const m = moveKeys(a, idx, d, duration, tempoMap); put(p, m.anim); next.push(...m.idx.map((j) => keyRef(p, j))); } }, 'knudge');
     onSel({ keys: next, row: sel.row });
   };
-  const toggleAnim = (f: AnimField) => {
+  const toggleAnim = (it: RowItem) => {
     if (locked) return;
-    if (animate[f.path]) { onAnimate(f.path, null); onSel({ keys: selKeys.filter((r) => parseKeyRef(r)?.path !== f.path), row: f.path }); return; }
-    onAnimate(f.path, newKeyAnimation(widget, f.path, playback.get().t));
-    onSel({ keys: [keyRef(f.path, 0)], row: f.path });
+    if (it.mode !== 'none') {
+      many((put) => { for (const p of it.row.paths) if (animate[p]) put(p, null); });
+      onSel({ keys: selKeys.filter((r) => !it.row.paths.includes(parseKeyRef(r)?.path ?? '')), row: it.row.id });
+      return;
+    }
+    if (used + it.row.paths.length > MAX_ANIMATIONS) return;
+    const t = playback.get().t;
+    many((put) => { for (const p of it.row.paths) put(p, newKeyAnimation(widget, p, t)); });
+    onSel({ keys: it.row.paths.map((p) => keyRef(p, 0)), row: it.row.id });
   };
-  /** Thêm keyframe tại `t` (giá trị liền mạch: giá trị của hoạt hình tại `t`), hoặc bật hoạt hình nếu chưa có. */
-  const addAt = (f: AnimField, t: number) => {
+  /** Thêm keyframe tại `t` cho mọi đường dẫn của dòng (giá trị liền mạch: giá trị của hoạt hình tại `t`); đường dẫn chưa animate thì bật. Đường dẫn "Theo nhạc" bỏ qua. */
+  const addAt = (it: RowItem, t: number) => {
     if (locked) return;
-    const a = keyAnim(f.path);
-    if (a && a.keys.length >= MAX_ANIM_KEYS) return;
-    if (!a && (animate[f.path] || used.length >= MAX_ANIMATIONS)) return; // binding: không thêm keyframe
-    const next = a ? addKey(a, t, sampleTrack(compileTrack(a, { tempoMap }), t)) : newKeyAnimation(widget, f.path, t);
-    onAnimate(f.path, next);
-    const i = keyAt(keySecs(next, tempoMap), t);
-    onSel({ keys: i >= 0 ? [keyRef(f.path, i)] : [], row: f.path });
+    const fresh = it.row.paths.filter((p) => !animate[p]).length;
+    if (it.mode === 'none' && used + fresh > MAX_ANIMATIONS) return;
+    const refs: string[] = [];
+    many((put) => {
+      for (const p of it.row.paths) {
+        const cur = animate[p];
+        if (cur && isBinding(cur)) continue;
+        const a = cur ? (cur as KeyAnimation) : null;
+        if (a && a.keys.length >= MAX_ANIM_KEYS) continue;
+        if (!a && used + fresh > MAX_ANIMATIONS) continue;
+        const next = a ? addKey(a, t, sampleTrack(compileTrack(a, { tempoMap }), t)) : newKeyAnimation(widget, p, t);
+        put(p, next);
+        const i = keyAt(keySecs(next, tempoMap), t); if (i >= 0) refs.push(keyRef(p, i));
+      }
+    });
+    onSel({ keys: refs, row: it.row.id });
   };
 
+  // ── vạch dẫn bắt dính (khi kéo keyframe hoặc tua bị bắt vào một mốc) ──
+  const [snapLine, setSnapLine] = useState<number | null>(null);
+
   // ── kéo hình thoi ──
-  const [chip, setChip] = useState<{ t: number; path: string; i: number } | null>(null);
-  const startKeyDrag = (e: RPointerEvent<HTMLButtonElement>, path: string, i: number) => {
+  const [chip, setChip] = useState<{ t: number; row: string } | null>(null);
+  const startKeyDrag = (e: RPointerEvent<HTMLButtonElement>, it: RowItem, vk: VKey) => {
     if (e.button !== 0) return;
     e.stopPropagation();
-    const ref = keyRef(path, i), additive = e.shiftKey || e.ctrlKey || e.metaKey;
+    const additive = e.shiftKey || e.ctrlKey || e.metaKey, on = vk.refs.some((r) => selSet.has(r));
     let keys = selKeys;
     if (additive) {
-      if (selSet.has(ref)) { onSel({ keys: selKeys.filter((r) => r !== ref), row: path }); return; }
-      keys = [...selKeys, ref];
-    } else if (!selSet.has(ref)) keys = [ref];
-    onSel({ keys, row: path });
+      if (on) { onSel({ keys: selKeys.filter((r) => !vk.refs.includes(r)), row: it.row.id }); return; }
+      keys = [...selKeys, ...vk.refs];
+    } else if (!on) keys = [...vk.refs];
+    onSel({ keys, row: it.row.id });
     if (locked) return;
     const groups = groupRefs(keys), orig = new Map<string, KeyAnimation>();
     for (const p of groups.keys()) { const a = keyAnim(p); if (a) orig.set(p, a); }
     const selTimes = keys.map((r) => { const q = parseKeyRef(r)!; return times.get(q.path)?.[q.i] ?? NaN; });
-    const grabT = times.get(path)?.[i] ?? 0;
+    const grabT = vk.t;
     const pick = new Set(keys);
     const targets = [playback.get().t, ...beatTimes(tempoMap, duration)];
     for (const [p, ts] of times) ts.forEach((t, j) => { if (!pick.has(keyRef(p, j))) targets.push(t); });
@@ -186,19 +216,21 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
       if (!moved && Math.abs(dx) < DRAG_SLOP) return;
       if (!moved) { moved = true; gesture.begin(); }
       const L = live.current;
-      let target = grabT + dx / L.pps;
-      if (!m.altKey) target = snapTime(target, targets, L.pps).t;
+      let target = grabT + dx / L.pps, snapped = false;
+      if (!m.altKey) ({ t: target, snapped } = snapTime(target, targets, L.pps));
       const dt = clampShift(selTimes, target - grabT, duration);
       const next: string[] = [];
-      for (const [p, idx] of groups) { const a = orig.get(p); if (!a) continue; const r = moveKeys(a, idx, dt, duration, tempoMap); onAnimate(p, r.anim, 'kdrag'); next.push(...r.idx.map((j) => keyRef(p, j))); }
-      onSel({ keys: next, row: path });
-      const mine = next.find((r) => parseKeyRef(r)?.path === path);
-      setChip({ t: grabT + dt, path, i: mine ? parseKeyRef(mine)!.i : i });
+      const ch: Record<string, Animation> = {};
+      for (const [p, idx] of groups) { const a = orig.get(p); if (!a) continue; const r = moveKeys(a, idx, dt, duration, tempoMap); ch[p] = r.anim; next.push(...r.idx.map((j) => keyRef(p, j))); }
+      onAnimateMany(ch, 'kdrag');
+      onSel({ keys: next, row: it.row.id });
+      setChip({ t: grabT + dt, row: it.row.id });
+      setSnapLine(snapped ? grabT + dt : null);
     };
     const up = () => {
       el.removeEventListener('pointermove', move); el.removeEventListener('pointerup', up); el.removeEventListener('pointercancel', up);
       if (moved) gesture.end();
-      setChip(null);
+      setChip(null); setSnapLine(null);
     };
     el.addEventListener('pointermove', move); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
   };
@@ -222,14 +254,14 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
       setBox({ x0: q0.x, y0: q0.y, x1: p.x, y1: p.y });
       const L = live.current;
       const [ya, yb] = q0.y <= p.y ? [q0.y, p.y] : [p.y, q0.y];
-      const rows = items.flatMap((it, k) => (it.kind === 'row' && (k + 1) * ROW_H > ya && k * ROW_H < yb ? [{ path: it.f.path, times: it.times }] : []));
-      const picked = keysInBox(rows, 0, rows.length - 1, (q0.x - PAD) / L.pps, (p.x - PAD) / L.pps);
+      const [ta, tb] = [(Math.min(q0.x, p.x) - PAD) / L.pps, (Math.max(q0.x, p.x) - PAD) / L.pps];
+      const picked = items.flatMap((it, k) => (it.kind === 'row' && (k + 1) * ROW_H > ya && k * ROW_H < yb ? it.vkeys.filter((v) => v.t >= ta && v.t <= tb).flatMap((v) => v.refs) : []));
       onSel({ keys: [...new Set([...base, ...picked])], row: L.sel.row });
     };
     const up = () => {
       el.removeEventListener('pointermove', move); el.removeEventListener('pointerup', up); el.removeEventListener('pointercancel', up);
       setBox(null);
-      if (!moved) { const it = itemAt(p0.y); onSel({ keys: base, row: it && it.kind === 'row' ? it.f.path : live.current.sel.row }); }
+      if (!moved) { const it = itemAt(p0.y); onSel({ keys: base, row: it && it.kind === 'row' ? it.row.id : live.current.sel.row }); }
     };
     el.addEventListener('pointermove', move); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
   };
@@ -238,17 +270,21 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
     const r = lanes.current.getBoundingClientRect(), it = items[Math.floor((e.clientY - r.top) / ROW_H)];
     if (!it || it.kind !== 'row') return;
     const t = xToTime(e.clientX - r.left - PAD, pps, duration);
-    addAt(it.f, e.altKey ? t : snapTime(t, [playback.get().t, ...beatTimes(tempoMap, duration)], pps).t);
+    addAt(it, e.altKey ? t : snapTime(t, [playback.get().t, ...beatTimes(tempoMap, duration)], pps).t);
   };
 
-  // ── thước: kéo để tua ──
+  // ── thước: kéo để tua; vạch phát bắt dính vào keyframe (Alt để tắt) ──
   const scrub = (e: RPointerEvent<HTMLDivElement>) => {
     if (e.button !== 0) return;
     const ruler = e.currentTarget, el: Window = window;
-    const seek = (x: number) => playback.seek(xToTime(x - ruler.getBoundingClientRect().left - PAD, live.current.pps, live.current.duration));
-    seek(e.clientX);
-    const move = (m: PointerEvent) => seek(m.clientX);
-    const up = () => { el.removeEventListener('pointermove', move); el.removeEventListener('pointerup', up); el.removeEventListener('pointercancel', up); };
+    const seek = (x: number, alt: boolean) => {
+      const L = live.current, raw = xToTime(x - ruler.getBoundingClientRect().left - PAD, L.pps, L.duration);
+      const s = alt ? { t: raw, snapped: false } : snapTime(raw, L.allTimes, L.pps);
+      playback.seek(s.t); setSnapLine(s.snapped ? s.t : null);
+    };
+    seek(e.clientX, e.altKey);
+    const move = (m: PointerEvent) => seek(m.clientX, m.altKey);
+    const up = () => { el.removeEventListener('pointermove', move); el.removeEventListener('pointerup', up); el.removeEventListener('pointercancel', up); setSnapLine(null); };
     el.addEventListener('pointermove', move); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
   };
 
@@ -261,33 +297,32 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
     if (e.key === 'Escape' && (selKeys.length || sel.row)) { e.preventDefault(); e.stopPropagation(); onSel(NO_SEL); return; }
     if (mod && e.code === 'KeyA' && !e.shiftKey) {
       e.preventDefault(); e.stopPropagation();
-      onSel({ keys: keyRows.flatMap((x) => x.times.map((_, i) => keyRef(x.f.path, i))), row: sel.row }); return;
+      onSel({ keys: keyRows.flatMap((x) => x.vkeys.flatMap((v) => v.refs)), row: sel.row }); return;
     }
     if (!mod && !e.altKey && (e.key === 'u' || e.key === 'U')) { e.preventDefault(); e.stopPropagation(); setOnlyAnimated((v) => !v); return; }
     if (e.altKey && !mod && (e.key === 'ArrowLeft' || e.key === 'ArrowRight') && selKeys.length) {
       e.preventDefault(); e.stopPropagation(); shiftSelected((e.key === 'ArrowLeft' ? -1 : 1) * (e.shiftKey ? 1 : FRAME));
     }
   };
-  const focusKey = (path: string, i: number) => requestAnimationFrame(() => scroller.current?.querySelector<HTMLElement>(`[data-key="${CSS.escape(keyRef(path, i))}"]`)?.focus());
-  const onDiamondKey = (e: KeyboardEvent<HTMLButtonElement>, row: Extract<Item, { kind: 'row' }>, i: number) => {
+  const focusKey = (ref: string) => requestAnimationFrame(() => scroller.current?.querySelector<HTMLElement>(`[data-key="${CSS.escape(ref)}"]`)?.focus());
+  const onDiamondKey = (e: KeyboardEvent<HTMLButtonElement>, it: RowItem, k: number) => {
     if (e.altKey || e.ctrlKey || e.metaKey) return;
-    const t = row.times[i];
-    if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); playback.seek(t); return; }
+    const vk = it.vkeys[k];
+    if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); playback.seek(vk.t); return; }
     if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
       e.preventDefault(); e.stopPropagation();
-      const order = row.times.map((x, j) => ({ x, j })).sort((a, b) => a.x - b.x || a.j - b.j), at = order.findIndex((o) => o.j === i);
-      const nb = order[at + (e.key === 'ArrowLeft' ? -1 : 1)];
+      const nb = it.vkeys[k + (e.key === 'ArrowLeft' ? -1 : 1)];
       if (!nb) return;
-      onSel({ keys: e.shiftKey ? [...new Set([...selKeys, keyRef(row.f.path, nb.j)])] : [keyRef(row.f.path, nb.j)], row: row.f.path });
-      focusKey(row.f.path, nb.j); return;
+      onSel({ keys: e.shiftKey ? [...new Set([...selKeys, ...nb.refs])] : [...nb.refs], row: it.row.id });
+      focusKey(nb.refs[0]); return;
     }
     if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
       e.preventDefault(); e.stopPropagation();
-      const k = keyRows.indexOf(row), step = e.key === 'ArrowUp' ? -1 : 1;
-      for (let r = k + step; r >= 0 && r < keyRows.length; r += step) {
-        const o = keyRows[r]; if (!o.times.length) continue;
-        let best = 0; o.times.forEach((x, j) => { if (Math.abs(x - t) < Math.abs(o.times[best] - t)) best = j; });
-        onSel({ keys: [keyRef(o.f.path, best)], row: o.f.path }); focusKey(o.f.path, best); return;
+      const r0 = keyRows.indexOf(it), step = e.key === 'ArrowUp' ? -1 : 1;
+      for (let r = r0 + step; r >= 0 && r < keyRows.length; r += step) {
+        const o = keyRows[r]; if (!o.vkeys.length) continue;
+        const best = o.vkeys.reduce((b, v) => (Math.abs(v.t - vk.t) < Math.abs(b.t - vk.t) ? v : b));
+        onSel({ keys: [...best.refs], row: o.row.id }); focusKey(best.refs[0]); return;
       }
     }
   };
@@ -297,7 +332,6 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
   const ticks = rulerTicks(Math.max(0, from), Math.min(duration, to), step);
   const minor = pps * step / 4 >= 10 ? rulerTicks(Math.max(0, from), Math.min(duration, to), step / 4).filter((t) => !ticks.includes(t)) : [];
   const height = RULER_H + items.length * ROW_H;
-  const shown = (a: Animation | undefined) => (a ? (isBinding(a) ? 'bind' : 'keys') : 'none');
   const empty = onlyAnimated && keyRows.length === 0;
 
   return (
@@ -323,6 +357,8 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
                   <span className="absolute bottom-2.5 left-1 whitespace-nowrap text-[11px] tabular-nums text-muted">{rulerLabel(t, step)}</span>
                 </span>
               ))}
+              {/* mốc keyframe trên thước: chỗ vạch phát bắt dính khi tua */}
+              {[...new Set(allTimes)].map((t) => <span key={`k${t}`} aria-hidden className="absolute bottom-0 h-1 w-1 -translate-x-1/2 rotate-45 bg-muted" style={{ left: PAD + t * pps }} />)}
               <PlayheadHead playback={playback} pps={pps} />
             </div>
           </div>
@@ -345,15 +381,15 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
                   </button>
                 </div>
               ) : (
-                <TreeRow key={it.f.path} f={it.f} name={label(it.f)} anim={it.anim} times={it.times} widget={widget} tempoMap={tempoMap} playback={playback} locked={locked}
-                  selected={sel.row === it.f.path} full={!it.anim && used.length >= MAX_ANIMATIONS}
-                  onPick={() => onSel({ keys: selKeys.filter((r) => parseKeyRef(r)?.path === it.f.path), row: it.f.path })}
-                  onToggle={() => toggleAnim(it.f)} onAddHere={() => addAt(it.f, playback.get().t)}
-                  onRemoveHere={(i) => { const a = keyAnim(it.f.path); if (a && !locked) { onAnimate(it.f.path, removeKey(a, i)); onSel({ keys: [], row: it.f.path }); } }}
-                  onValue={(v) => {
-                    const a = keyAnim(it.f.path); if (!a || locked) return;
-                    const t = playback.get().t, i = keyAt(it.times, t);
-                    onAnimate(it.f.path, i >= 0 ? setKey(a, i, { value: v }) : addKey(a, t, v), 'val');
+                <TreeRow key={it.row.id} it={it} name={label(it.row)} widget={widget} tempoMap={tempoMap} playback={playback} locked={locked}
+                  selected={sel.row === it.row.id} full={it.mode === 'none' && used + it.row.paths.length > MAX_ANIMATIONS}
+                  onPick={() => onSel({ keys: selKeys.filter((r) => it.row.paths.includes(parseKeyRef(r)?.path ?? '')), row: it.row.id })}
+                  onToggle={() => toggleAnim(it)} onAddHere={() => addAt(it, playback.get().t)}
+                  onRemoveHere={(t) => { if (locked) return; removeRefs(refsAt(it.row.paths, t)); onSel({ keys: [], row: it.row.id }); }}
+                  onValue={(p, v) => {
+                    const a = keyAnim(p); if (!a || locked) return;
+                    const t = playback.get().t, i = keyAt(keySecs(a, tempoMap), t);
+                    onAnimate(p, i >= 0 ? setKey(a, i, { value: v }) : addKey(a, t, v), 'val');
                   }} />
               ))}
               {empty && (
@@ -367,26 +403,28 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
               {items.map((it, k) => it.kind === 'group' ? (
                 <div key={it.id} className="absolute inset-x-0 border-b border-line bg-page/40" style={{ top: k * ROW_H, height: ROW_H }} />
               ) : (
-                <div key={it.f.path} className={`absolute inset-x-0 border-b border-line/70 ${sel.row === it.f.path ? 'bg-raised/70' : ''}`} style={{ top: k * ROW_H, height: ROW_H }} data-lane={it.f.path} data-mode={shown(it.anim)}>
+                <div key={it.row.id} className={`absolute inset-x-0 border-b border-line/70 ${sel.row === it.row.id ? 'bg-raised/70' : ''}`} style={{ top: k * ROW_H, height: ROW_H }} data-lane={it.row.id} data-mode={it.mode}>
                   <div className="absolute inset-y-0 right-0" style={{ left: PAD }}>
-                  {it.anim && isBinding(it.anim) ? (
+                  {it.mode === 'bind' && (
                     <div className="absolute inset-y-1.5 left-0 flex items-center overflow-hidden rounded-sm border border-control bg-raised px-2 text-[11px] text-muted" style={{ width: duration * pps }}>
-                      <span className="sticky left-2 truncate">{i18n.t('web.timeline.bound', { source: i18n.t(`web.anim.src.${it.anim.bind}`) })}</span>
+                      <span className="sticky left-2 truncate">{i18n.t('web.timeline.bound', { source: i18n.t(`web.anim.src.${(it.anims.find((a) => a && isBinding(a)) as { bind: string }).bind}`) })}</span>
                     </div>
-                  ) : it.anim ? (
-                    <Keys row={it} pps={pps} sel={selSet} name={label(it.f)} locked={locked}
-                      onDown={(e, i) => startKeyDrag(e, it.f.path, i)} onKey={(e, i) => onDiamondKey(e, it, i)} />
-                  ) : null}
+                  )}
+                  {it.vkeys.length > 0 && (
+                    <Keys it={it} pps={pps} sel={selSet} name={label(it.row)} locked={locked} widget={widget}
+                      onDown={(e, vk) => startKeyDrag(e, it, vk)} onKey={(e, k) => onDiamondKey(e, it, k)} />
+                  )}
                   </div>
                 </div>
               ))}
+              {snapLine !== null && <span aria-hidden className="pointer-events-none absolute inset-y-0 z-20 w-px bg-guide" style={{ left: PAD + snapLine * pps }} data-testid="timeline-snap" />}
               {box && (
                 <div aria-hidden className="pointer-events-none absolute z-10 border border-focus bg-accent/10"
                   style={{ left: Math.min(box.x0, box.x1), top: Math.min(box.y0, box.y1), width: Math.abs(box.x1 - box.x0), height: Math.abs(box.y1 - box.y0) }} />
               )}
               {chip && (
                 <div aria-hidden className="pointer-events-none absolute z-30 -translate-x-1/2 whitespace-nowrap rounded-sm border border-control bg-raised px-1.5 py-0.5 text-[11px] tabular-nums text-fg"
-                  style={{ left: PAD + chip.t * pps, top: Math.max(0, items.findIndex((x) => x.kind === 'row' && x.f.path === chip.path) * ROW_H - 22) }} data-testid="timeline-drag-chip">
+                  style={{ left: PAD + chip.t * pps, top: Math.max(0, items.findIndex((x) => x.kind === 'row' && x.row.id === chip.row) * ROW_H - 22) }} data-testid="timeline-drag-chip">
                   {formatClock(chip.t)}
                 </div>
               )}
@@ -403,31 +441,31 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
 }
 
 /** Hình thoi của một hàng + đoạn nối giữa các keyframe. Hình dạng theo cách đi tiếp: thoi = đều, vuông = giữ rồi nhảy, tròn = cong mượt. */
-const Keys = memo(function Keys({ row, pps, sel, name, locked, onDown, onKey }: {
-  row: Extract<Item, { kind: 'row' }>; pps: number; sel: ReadonlySet<string>; name: string; locked: boolean;
-  onDown(e: RPointerEvent<HTMLButtonElement>, i: number): void; onKey(e: KeyboardEvent<HTMLButtonElement>, i: number): void;
+const Keys = memo(function Keys({ it, pps, sel, name, locked, widget, onDown, onKey }: {
+  it: RowItem; pps: number; sel: ReadonlySet<string>; name: string; locked: boolean; widget: WidgetSpec;
+  onDown(e: RPointerEvent<HTMLButtonElement>, vk: VKey): void; onKey(e: KeyboardEvent<HTMLButtonElement>, k: number): void;
 }) {
   const { i18n } = useI18n();
-  const a = row.anim as KeyAnimation;
-  const order = row.times.map((t, i) => ({ t, i })).filter((x) => Number.isFinite(x.t)).sort((x, y) => x.t - y.t || x.i - y.i);
-  // Một điểm dừng Tab cho mỗi hàng: keyframe đầu tiên đang chọn, không thì keyframe đầu.
-  const stop = order.find((o) => sel.has(keyRef(row.f.path, o.i)))?.i ?? order[0]?.i;
+  const keyOf = (ref: string) => { const q = parseKeyRef(ref)!; const a = widget.animate?.[q.path]; return a && !isBinding(a) ? a.keys[q.i] : undefined; };
+  // Một điểm dừng Tab cho mỗi hàng: hình thoi đầu tiên đang chọn, không thì hình thoi đầu.
+  const stop = Math.max(0, it.vkeys.findIndex((v) => v.refs.some((r) => sel.has(r))));
   return (
     <>
-      {order.slice(1).map((o, k) => {
-        const prev = order[k], hold = (a.keys[prev.i]?.interp ?? 'linear') === 'hold';
-        return <span key={`s${prev.i}`} aria-hidden className={`pointer-events-none absolute top-1/2 ${hold ? 'border-t border-dashed border-control' : 'h-px bg-control/70'}`} style={{ left: prev.t * pps, width: (o.t - prev.t) * pps }} />;
+      {it.vkeys.slice(1).map((v, k) => {
+        const prev = it.vkeys[k], hold = (keyOf(prev.refs[0])?.interp ?? 'linear') === 'hold';
+        return <span key={`s${k}`} aria-hidden className={`pointer-events-none absolute top-1/2 ${hold ? 'border-t border-dashed border-control' : 'h-px bg-control/70'}`} style={{ left: prev.t * pps, width: (v.t - prev.t) * pps }} />;
       })}
-      {order.map((o) => {
-        const k = a.keys[o.i], on = sel.has(keyRef(row.f.path, o.i)), interp = k.interp ?? 'linear';
+      {it.vkeys.map((v, k) => {
+        const key = keyOf(v.refs[0]), on = v.refs.some((r) => sel.has(r)), interp = key?.interp ?? 'linear';
         const shape = interp === 'hold' ? 'rounded-[1px]' : interp === 'smooth' ? 'rounded-full' : 'rotate-45 rounded-[1px]';
-        const music = !('sec' in k.at);
-        const text = i18n.t('web.timeline.keyLabel', { name, n: o.i + 1, time: formatClock(o.t), value: typeof k.value === 'number' ? String(Math.round(k.value * 1000) / 1000) : k.value });
+        const music = !!key && !('sec' in key.at);
+        const value = v.refs.map((r) => { const x = keyOf(r)?.value; return typeof x === 'number' ? String(Math.round(x * 1000) / 1000) : x ?? ''; }).join(', ');
+        const text = i18n.t('web.timeline.keyLabel', { name, n: k + 1, time: formatClock(v.t), value });
         return (
-          <button key={o.i} type="button" data-key={keyRef(row.f.path, o.i)} aria-pressed={on} aria-label={text} title={music ? `${text} · ${i18n.t('web.timeline.musicAnchored')}` : text}
-            tabIndex={o.i === stop ? 0 : -1} onPointerDown={(e) => onDown(e, o.i)} onKeyDown={(e) => onKey(e, o.i)} onDoubleClick={(e) => e.stopPropagation()}
-            className={`group absolute top-0 grid h-6 w-6 -translate-x-1/2 place-items-center outline-none ${locked ? 'cursor-not-allowed' : 'cursor-grab active:cursor-grabbing'}`} style={{ left: o.t * pps }}>
-            <span aria-hidden className={`block h-2.5 w-2.5 border-[1.5px] transition-colors duration-100 ${shape} ${on ? 'border-accent bg-accent' : `border-muted bg-surface group-hover:border-fg`} group-focus-visible:ring-2 group-focus-visible:ring-focus group-focus-visible:ring-offset-1 group-focus-visible:ring-offset-surface`} />
+          <button key={v.refs[0]} type="button" data-key={v.refs[0]} data-refs={v.refs.join(' ')} aria-pressed={on} aria-label={text} title={music ? `${text} · ${i18n.t('web.timeline.musicAnchored')}` : text}
+            tabIndex={k === stop ? 0 : -1} onPointerDown={(e) => onDown(e, v)} onKeyDown={(e) => onKey(e, k)} onDoubleClick={(e) => e.stopPropagation()}
+            className={`group absolute top-0 grid h-6 w-6 -translate-x-1/2 place-items-center outline-none ${locked ? 'cursor-not-allowed' : 'cursor-grab active:cursor-grabbing'}`} style={{ left: v.t * pps }}>
+            <span aria-hidden className={`block h-2.5 w-2.5 border-[1.5px] transition-colors duration-100 ${shape} ${on ? 'border-accent bg-accent' : 'border-muted bg-surface group-hover:border-fg'} group-focus-visible:ring-2 group-focus-visible:ring-focus group-focus-visible:ring-offset-1 group-focus-visible:ring-offset-surface`} />
             {music && <span aria-hidden className="absolute bottom-0.5 h-0.5 w-0.5 rounded-full bg-muted" />}
           </button>
         );
@@ -436,47 +474,45 @@ const Keys = memo(function Keys({ row, pps, sel, name, locked, onDown, onKey }: 
   );
 });
 
-/** Một hàng của cây thuộc tính: đồng hồ | tên | giá trị tại vạch phát | ◀ ◆ ▶. Theo dõi đồng hồ phát riêng (chỉ hàng này vẽ lại mỗi khung). */
-function TreeRow({ f, name, anim, times, widget, tempoMap, playback, locked, selected, full, onPick, onToggle, onAddHere, onRemoveHere, onValue }: {
-  f: AnimField; name: string; anim: Animation | undefined; times: number[]; widget: WidgetSpec; tempoMap: readonly TempoPoint[]; playback: Playback; locked: boolean;
-  selected: boolean; full: boolean; onPick(): void; onToggle(): void; onAddHere(): void; onRemoveHere(i: number): void; onValue(v: number | string): void;
+/** Một hàng của cây thuộc tính: đồng hồ | tên ngắn | giá trị tại vạch phát (một ô mỗi đường dẫn) | ◀ ◆ ▶. Chỉ hàng có keyframe theo dõi đồng hồ phát. */
+function TreeRow({ it, name, widget, tempoMap, playback, locked, selected, full, onPick, onToggle, onAddHere, onRemoveHere, onValue }: {
+  it: RowItem; name: string; widget: WidgetSpec; tempoMap: readonly TempoPoint[]; playback: Playback; locked: boolean;
+  selected: boolean; full: boolean; onPick(): void; onToggle(): void; onAddHere(): void; onRemoveHere(t: number): void; onValue(path: string, v: number | string): void;
 }) {
   const { i18n } = useI18n();
-  const keys = anim && !isBinding(anim) ? anim : null;
+  const { row, anims, mode, vkeys } = it;
   // Chỉ dòng có keyframe mới cần t (giá trị, keyframe tại vạch phát, trước/sau): dòng đứng yên không vẽ lại mỗi khung khi phát.
-  const t = usePlayback(playback, (s) => (keys ? s.t : 0));
-  const compiled = useMemo(() => (keys ? compileTrack(keys, { tempoMap }) : null), [keys, tempoMap]);
-  const value = compiled ? sampleTrack(compiled, t) : staticValue(widget, f.path);
-  const here = keys ? keyAt(times, t) : -1;
-  const prev = keys ? prevKey(times, t) : null, next = keys ? nextKey(times, t) : null;
-  const watch = anim ? i18n.t('web.timeline.stopAnim', { name }) : full ? i18n.t('web.timeline.full') : i18n.t('web.timeline.startAnim', { name });
+  const t = usePlayback(playback, (s) => (mode === 'keys' ? s.t : 0));
+  const compiled = useMemo(() => anims.map((a) => (a && !isBinding(a) ? compileTrack(a, { tempoMap }) : null)), [anims, tempoMap]);
+  const here = mode === 'keys' && vkeys.some((v) => Math.abs(v.t - t) <= SAME_TIME);
+  const prev = mode === 'keys' ? vkeys.filter((v) => v.t < t - SAME_TIME).at(-1)?.t ?? null : null;
+  const next = mode === 'keys' ? vkeys.find((v) => v.t > t + SAME_TIME)?.t ?? null : null;
+  const watch = mode !== 'none' ? i18n.t('web.timeline.stopAnim', { name }) : full ? i18n.t('web.timeline.full') : i18n.t('web.timeline.startAnim', { name });
   const nav = 'grid h-6 w-6 shrink-0 place-items-center rounded-sm text-muted transition hover:bg-raised hover:text-fg disabled:opacity-30 disabled:hover:bg-transparent';
   const fmt = (v: number) => String(Math.round(v * 1000) / 1000);
+  const cell = (f: AnimField, j: number) => {
+    const a = anims[j], c = compiled[j], value = c ? sampleTrack(c, t) : staticValue(widget, f.path);
+    const lbl = i18n.t('web.timeline.valueAt', { name: row.paths.length > 1 ? `${name} ${f.path.split('.').pop()!.toUpperCase()}` : name });
+    if (a && isBinding(a)) return <span key={f.path} className="block min-w-0 flex-1 truncate text-right text-[11px] text-muted" title={i18n.t('web.anim.mode.bind')}>{i18n.t('web.anim.mode.bind')}</span>;
+    if (f.kind === 'color') return <input key={f.path} type="color" aria-label={lbl} value={String(value).slice(0, 7)} disabled={!c || locked} onChange={(e) => onValue(f.path, e.target.value)}
+      className="h-5 min-w-0 flex-1 cursor-pointer rounded-sm border border-control bg-raised disabled:cursor-default" title={c ? undefined : i18n.t('web.timeline.staticHint')} />;
+    if (c) return <div key={f.path} className="min-w-0 flex-1"><NumberField label={lbl} value={Number(value)} spec={{ min: f.min, max: f.max, step: f.step }} range={f.range} disabled={locked} onChange={(v) => onValue(f.path, v)} className="!min-h-5 !py-0 text-[11px]" /></div>;
+    return <span key={f.path} className="block min-w-0 flex-1 truncate text-right text-[11px] tabular-nums text-muted" title={i18n.t('web.timeline.staticHint')}>{fmt(Number(value))}</span>;
+  };
   return (
-    <div className={`relative flex items-center gap-0.5 border-b border-r border-line/70 pl-0.5 pr-0.5 ${selected ? 'bg-raised' : ''}`} style={{ height: ROW_H }} data-row={f.path}>
+    <div className={`relative flex items-center gap-0.5 border-b border-r border-line/70 pl-0.5 pr-0.5 ${selected ? 'bg-raised' : ''}`} style={{ height: ROW_H }} data-row={row.id}>
       {selected && <span aria-hidden className="absolute inset-y-0 left-0 w-0.5 bg-accent" />}
-      <button type="button" className={`grid h-6 w-6 shrink-0 place-items-center rounded-sm transition hover:bg-raised hover:text-fg disabled:opacity-40 ${anim ? 'text-fg' : 'text-faint'}`} aria-pressed={!!anim} aria-label={watch} title={watch} disabled={locked || (full && !anim)} onClick={onToggle} data-testid={`tl-watch-${f.path}`}>
+      <button type="button" className={`grid h-6 w-6 shrink-0 place-items-center rounded-sm transition hover:bg-raised hover:text-fg disabled:opacity-40 ${mode !== 'none' ? 'text-fg' : 'text-faint'}`} aria-pressed={mode !== 'none'} aria-label={watch} title={watch} disabled={locked || full} onClick={onToggle} data-testid={`tl-watch-${row.id}`}>
         <Stopwatch className="h-3.5 w-3.5" />
       </button>
-      <button type="button" className={`min-w-0 flex-1 truncate py-0.5 pl-0.5 text-left text-xs ${anim ? 'text-fg' : 'text-muted'} hover:text-fg`} title={name} aria-pressed={selected} onClick={onPick} data-testid={`tl-row-${f.path}`}>{name}</button>
-      <div className="w-[3.75rem] shrink-0">
-        {anim && isBinding(anim) ? (
-          <span className="block truncate text-right text-[11px] text-muted" title={i18n.t('web.anim.mode.bind')}>{i18n.t('web.anim.mode.bind')}</span>
-        ) : f.kind === 'color' ? (
-          <input type="color" aria-label={i18n.t('web.timeline.valueAt', { name })} value={String(value).slice(0, 7)} disabled={!keys || locked} onChange={(e) => onValue(e.target.value)}
-            className="h-5 w-full cursor-pointer rounded-sm border border-control bg-raised disabled:cursor-default" title={keys ? undefined : i18n.t('web.timeline.staticHint')} />
-        ) : keys ? (
-          <NumberField label={i18n.t('web.timeline.valueAt', { name })} value={Number(value)} spec={{ min: f.min, max: f.max, step: f.step }} range={f.range} disabled={locked} onChange={(v) => onValue(v)} className="!min-h-5 !py-0 text-[11px]" />
-        ) : (
-          <span className="block truncate text-right text-[11px] tabular-nums text-muted" title={i18n.t('web.timeline.staticHint')}>{fmt(Number(value))}</span>
-        )}
-      </div>
-      {!(anim && isBinding(anim)) && (
+      <button type="button" className={`min-w-0 flex-1 truncate py-0.5 pl-0.5 text-left text-xs ${mode !== 'none' ? 'text-fg' : 'text-muted'} hover:text-fg`} title={name} aria-pressed={selected} onClick={onPick} data-testid={`tl-row-${row.id}`}>{name}</button>
+      <div className={`flex shrink-0 items-center gap-1 ${row.paths.length > 1 ? 'w-[6.5rem]' : 'w-[3.75rem]'}`}>{row.fields.map(cell)}</div>
+      {mode !== 'bind' && (
         <div className="flex shrink-0 items-center" role="group" aria-label={i18n.t('web.timeline.nav', { name })}>
           <button type="button" className={nav} disabled={prev === null} aria-label={i18n.t('web.timeline.prevKey')} title={i18n.t('web.timeline.prevKey')} onClick={() => prev !== null && playback.seek(prev)}><KeyPrev className="h-3 w-3" /></button>
-          <button type="button" className={`${nav} ${here >= 0 ? 'text-accent' : ''}`} disabled={locked || (!anim && full)} aria-pressed={here >= 0} data-testid={`tl-here-${f.path}`}
-            aria-label={here >= 0 ? i18n.t('web.timeline.removeHere') : i18n.t('web.timeline.addHere')} title={here >= 0 ? i18n.t('web.timeline.removeHere') : i18n.t('web.timeline.addHere')}
-            onClick={() => (here >= 0 ? onRemoveHere(here) : onAddHere())}><Diamond className="h-3 w-3" filled={here >= 0} /></button>
+          <button type="button" className={`${nav} ${here ? 'text-accent' : ''}`} disabled={locked || full} aria-pressed={here} data-testid={`tl-here-${row.id}`}
+            aria-label={here ? i18n.t('web.timeline.removeHere') : i18n.t('web.timeline.addHere')} title={here ? i18n.t('web.timeline.removeHere') : i18n.t('web.timeline.addHere')}
+            onClick={() => (here ? onRemoveHere(playback.get().t) : onAddHere())}><Diamond className="h-3 w-3" filled={here} /></button>
           <button type="button" className={nav} disabled={next === null} aria-label={i18n.t('web.timeline.nextKey')} title={i18n.t('web.timeline.nextKey')} onClick={() => next !== null && playback.seek(next)}><KeyNext className="h-3 w-3" /></button>
         </div>
       )}

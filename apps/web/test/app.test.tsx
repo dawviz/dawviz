@@ -688,29 +688,38 @@ describe('thẻ Editor (T-68)', () => {
     fireEvent.click(screen.getByTestId('timeline-toggle'));
     await waitFor(() => expect(screen.getByTestId('keyframe-timeline')).toBeInTheDocument());
     expect(screen.queryByTestId('section-keyframe')).toBeNull(); // chưa chọn gì trên Timeline: không có mục Keyframe
-    fireEvent.click(screen.getByTestId('tl-watch-layout.x'));
-    await waitFor(() => expect(document.querySelector('[data-key="layout.x#0"]')).toBeInTheDocument());
-    expect(screen.getByTestId('tl-watch-layout.x')).toHaveAttribute('aria-pressed', 'true');
+    fireEvent.click(screen.getByTestId('tl-watch-position'));
+    // Vị trí = x + y: một hình thoi gộp cả hai keyframe
+    await waitFor(() => expect(document.querySelector('[data-key="layout.x#0"]')).toHaveAttribute('data-refs', 'layout.x#0 layout.y#0'));
+    expect(screen.getByTestId('tl-watch-position')).toHaveAttribute('aria-pressed', 'true');
     // keyframe mới được chọn sẵn → mục 01 Keyframe ở cột Thiết lập; keyframe đầu chưa có đường cong đi tới
     const ins = () => within(screen.getByTestId('section-keyframe'));
     await waitFor(() => expect(ins().getByTestId('keyinsp-first')).toBeInTheDocument());
     expect(screen.getByTestId('section-keyframe').querySelector('span[aria-hidden]')?.textContent).toBe('01');
     // tua tới 2 s rồi thêm keyframe tại vạch phát → keyframe thứ hai được chọn, chỉnh được đường cong
     fireEvent.change(screen.getAllByLabelText(/^(Seek|Tua)$/)[0], { target: { value: '2' } });
-    fireEvent.click(screen.getByTestId('tl-here-layout.x'));
+    fireEvent.click(screen.getByTestId('tl-here-position'));
     await waitFor(() => expect(document.querySelector('[data-key="layout.x#1"]')).toHaveAttribute('aria-pressed', 'true'));
     fireEvent.change(ins().getByTestId('keyinsp-ease'), { target: { value: 'easeInQuad' } });
     await waitFor(() => expect(ins().getByTestId('keyinsp-ease')).toHaveValue('easeInQuad'));
     expect(ins().queryByTestId('keyinsp-first')).toBeNull();
-    // Delete trên Timeline xoá keyframe đang chọn (không xoá widget)
+    // ↺ đưa đường cong về đều; Bỏ chọn đóng mục Keyframe
+    fireEvent.click(within(screen.getByTestId('section-keyframe')).getByRole('button', { name: /^(Back to an even curve|Về đường cong đều)$/ }));
+    await waitFor(() => expect(ins().getByTestId('keyinsp-ease')).toHaveValue('linear'));
+    // Delete trên Timeline xoá keyframe đang chọn (cả x và y; không xoá widget)
     fireEvent.keyDown(document.querySelector('[data-key="layout.x#1"]')!, { key: 'Delete' });
     await waitFor(() => expect(document.querySelector('[data-key="layout.x#1"]')).toBeNull());
     expect(screen.getByTestId('editor-selected').textContent).toMatch(/(Text box|Ô chữ)/);
     // không còn keyframe nào đang chọn: Delete trong Timeline không lọt ra Editor để xoá widget
-    fireEvent.keyDown(screen.getByTestId('tl-row-layout.x'), { key: 'Delete' });
+    fireEvent.keyDown(screen.getByTestId('tl-row-position'), { key: 'Delete' });
     expect(screen.getByTestId('editor-selected').textContent).toMatch(/(Text box|Ô chữ)/);
     expect(document.querySelector('[data-key="layout.x#0"]')).toBeInTheDocument();
-    ctrlZ(); await waitFor(() => expect(document.querySelector('[data-key="layout.x#1"]')).toBeInTheDocument());
+    ctrlZ(); await waitFor(() => expect(document.querySelector('[data-key="layout.x#1"]')).toHaveAttribute('data-refs', 'layout.x#1 layout.y#1'));
+    // Vị trí đang có keyframe: gõ X ở cột Thiết lập (vạch phát ở 2 s, chưa có keyframe ở đó) → thêm keyframe, không đổi bố cục tĩnh
+    fireEvent.change(screen.getAllByLabelText(/^(Seek|Tua)$/)[0], { target: { value: '4' } });
+    const x = screen.getByTestId('editor-geometry').querySelector('input')!;
+    fireEvent.focus(x); fireEvent.change(x, { target: { value: '321' } }); fireEvent.keyDown(x, { key: 'Enter' }); fireEvent.blur(x);
+    await waitFor(() => expect(document.querySelector('[data-key="layout.x#2"]')).toBeInTheDocument());
   });
   it('Timeline: chọn hàng thuộc tính để đổi sang Theo nhạc ở Inspector, làn hiện thanh Theo nhạc; bỏ hoạt hình, hoàn tác', async () => {
     await openProject();

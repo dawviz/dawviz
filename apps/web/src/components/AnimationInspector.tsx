@@ -12,13 +12,14 @@ import { formatClock } from '../lib/timeFormat.ts';
 import { animFields, keyTimeText, newBinding, newKeyAnimation, setKey, SOURCES, withSource, type AnimField } from '../lib/animateFields.ts';
 import { DEFAULT_BEZIER, bezierOf, common, easeName, sameEase, type Bezier } from '../lib/easeCurve.ts';
 import { groupRefs, keyRef, keySecs, parseKeyRef, removeKeys } from '../lib/timeline.ts';
-import { InspectorSection } from './Inspector.tsx';
+import { InspectorSection, ResetButton } from './Inspector.tsx';
 import { NumberField } from './NumberField.tsx';
 import { TimeField } from './TimeField.tsx';
 import { Select } from './Select.tsx';
 import { EaseGraph } from './EaseGraph.tsx';
 import { Trash } from './Icons.tsx';
-import type { KeySel } from './KeyframeTimeline.tsx';
+import { NO_SEL, type KeySel } from './KeyframeTimeline.tsx';
+import { rowOfPath, timelineRows } from '../lib/timelineRows.ts';
 
 const EASES = [...EASING_NAMES, 'hold'];
 const LOOPS: LoopMode[] = ['NONE', 'CYCLE', 'PINGPONG', 'OFFSET'];
@@ -33,23 +34,28 @@ export interface AnimationInspectorProps {
   locked: boolean;
   getTime(): number;
   onAnimate(path: string, v: Animation | null, key?: string): void;
+  /** Nhiều đường dẫn trong một lệnh (một bước hoàn tác). */
+  onAnimateMany(changes: Record<string, Animation | null>, key?: string): void;
   onSel(s: KeySel): void;
   gesture: Gesture;
 }
 
 /** Có gì để hiện không (để cột Thiết lập biết có đánh số thêm một mục hay không). */
 export function hasInspectorTarget(widget: WidgetSpec, sel: KeySel): boolean {
-  const fields = animFields(widget.type);
   if (sel.keys.some((r) => { const p = parseKeyRef(r); const a = p && widget.animate?.[p.path]; return !!a && !isBinding(a) && a.keys.length > p!.i; })) return true;
-  return !!sel.row && fields.some((f) => f.path === sel.row);
+  return !!sel.row && timelineRows(widget.type, widget.animate).some((r) => r.id === sel.row);
 }
 
-export function AnimationInspector({ n, widget, sel, tempoMap, locked, getTime, onAnimate, onSel, gesture }: AnimationInspectorProps) {
+export function AnimationInspector({ n, widget, sel, tempoMap, locked, getTime, onAnimate, onAnimateMany, onSel, gesture }: AnimationInspectorProps) {
   const { i18n } = useI18n();
   const fields = animFields(widget.type), byPath = new Map(fields.map((f) => [f.path, f]));
   const label = (f: AnimField) => (f.labelKey && i18n.has(f.labelKey) ? i18n.t(f.labelKey) : f.path);
   const anim = (p: string): KeyAnimation | null => { const a = widget.animate?.[p]; return a && !isBinding(a) ? a : null; };
-  const batch = (fn: () => void) => { gesture.begin(); try { fn(); } finally { gesture.end(); } };
+  /** Gom mọi thay đổi của một thao tác thành MỘT lệnh (một bước hoàn tác, lib/commands.ts editWidgetAnimation). */
+  const many = (fn: (put: (p: string, v: Animation | null) => void) => void, key?: string) => { const ch: Record<string, Animation | null> = {}; fn((p, v) => { ch[p] = v; }); if (Object.keys(ch).length) onAnimateMany(ch, key); };
+  const rows = timelineRows(widget.type, widget.animate);
+  const rowName = (path: string) => { const r = rowOfPath(rows, path); return r && i18n.has(r.labelKey) ? i18n.t(r.labelKey) : label(byPath.get(path)!); };
+  const deselect = <button type="button" className="btn-ghost shrink-0" onClick={() => onSel(NO_SEL)} title={`${i18n.t('web.keyinsp.deselect')} (Esc)`} data-testid="keyinsp-deselect">{i18n.t('web.keyinsp.deselect')}</button>;
 
   // Keyframe đang chọn (bỏ những cái không còn tồn tại).
   const entries = sel.keys.flatMap((r) => {
@@ -63,9 +69,9 @@ export function AnimationInspector({ n, widget, sel, tempoMap, locked, getTime, 
   if (entries.length) {
     const groups = groupRefs(entries.map((e) => keyRef(e.path, e.i)));
     const paths = [...groups.keys()];
-    const patchAll = (patch: (k: Key) => Partial<Key>, key?: string) => batch(() => {
-      for (const [p, idx] of groups) { const a = anim(p); if (!a) continue; let next = a; for (const i of idx) next = setKey(next, i, patch(next.keys[i])); onAnimate(p, next, key); }
-    });
+    const patchAll = (patch: (k: Key) => Partial<Key>, key?: string) => many((put) => {
+      for (const [p, idx] of groups) { const a = anim(p); if (!a) continue; let next = a; for (const i of idx) next = setKey(next, i, patch(next.keys[i])); put(p, next); }
+    }, key);
     const incoming = entries.filter((e) => !e.first);
     const ease = common(incoming.map((e) => e.k.ease), sameEase);
     const mixedEase = ease === 'mixed';
@@ -74,23 +80,34 @@ export function AnimationInspector({ n, widget, sel, tempoMap, locked, getTime, 
     const setEase = (e: EaseSpec | undefined, key?: string) => patchAll(() => ({ ease: e }), key);
     const interp = common(entries.map((e) => e.k.interp ?? 'linear'));
     const loop = common(paths.map((p) => anim(p)?.loop ?? 'NONE'));
-    const one = entries.length === 1 ? entries[0] : null;
+    const spots = new Set(entries.map((e) => `${rowOfPath(rows, e.path)?.id ?? e.path}@${Math.round(e.t * 240)}`));
+    const rowIds = new Set(entries.map((e) => rowOfPath(rows, e.path)?.id ?? e.path));
+    const one = spots.size === 1 ? entries : null;
     const noIncoming = incoming.length === 0;
-    const title = one ? `${label(one.f)} · ${formatClock(one.t)}` : i18n.t('web.keyinsp.many', { n: entries.length, m: paths.length });
+    const title = one ? `${rowName(one[0].path)} · ${formatClock(one[0].t)}` : i18n.t('web.keyinsp.many', { n: spots.size, m: rowIds.size });
     return (
       <InspectorSection n={n} id="keyframe" title={i18n.t('web.keyinsp.title')}>
-        <p className="text-xs leading-snug text-fg" data-testid="keyinsp-summary">{title}</p>
+        <div className="flex items-center justify-between gap-2">
+          <p className="min-w-0 text-xs leading-snug text-fg" data-testid="keyinsp-summary">{title}</p>
+          {deselect}
+        </div>
         {one && (
           <div className="grid grid-cols-[minmax(0,1fr)_7rem] items-center gap-x-2 gap-y-2 text-xs text-muted">
             <span>{i18n.t('web.keyinsp.time')}</span>
-            {'sec' in one.k.at
-              ? <TimeField id="keyinsp-time" label={i18n.t('web.keyinsp.time')} value={one.k.at.sec} disabled={locked} onChange={(v) => { if (locked) return; const a = anim(one.path); if (a) onAnimate(one.path, setKey(a, one.i, { at: { sec: v ?? 0 } }), 'kt'); }} />
-              : <span className="text-right tabular-nums text-fg" title={i18n.t('web.anim.atMusic')}>{keyTimeText(one.k.at)}</span>}
-            <span>{i18n.t('web.keyinsp.value')}</span>
-            {one.f.kind === 'color'
-              ? <input type="color" aria-label={i18n.t('web.keyinsp.value')} value={String(one.k.value)} disabled={locked} onChange={(e) => { const a = anim(one.path); if (a) onAnimate(one.path, setKey(a, one.i, { value: e.target.value }), 'kv'); }} className="h-6 w-full" />
-              : <NumberField label={i18n.t('web.keyinsp.value')} value={Number(one.k.value)} spec={{ min: one.f.min, max: one.f.max, step: one.f.step }} range={one.f.range} disabled={locked}
-                  onChange={(v) => { const a = anim(one.path); if (a) onAnimate(one.path, setKey(a, one.i, { value: v }), 'kv'); }} />}
+            {one.every((e) => 'sec' in e.k.at)
+              ? <TimeField id="keyinsp-time" label={i18n.t('web.keyinsp.time')} value={(one[0].k.at as { sec: number }).sec} disabled={locked}
+                  onChange={(v) => { if (locked) return; many((put) => { for (const e of one) { const a = anim(e.path); if (a) put(e.path, setKey(a, e.i, { at: { sec: v ?? 0 } })); } }, 'kt'); }} />
+              : <span className="text-right tabular-nums text-fg" title={i18n.t('web.anim.atMusic')}>{keyTimeText(one[0].k.at)}</span>}
+            {one.map((e) => {
+              const name = one.length > 1 ? `${i18n.t('web.keyinsp.value')} ${e.path.split('.').pop()!.toUpperCase()}` : i18n.t('web.keyinsp.value');
+              const set = (v: number | string) => { const a = anim(e.path); if (a) onAnimate(e.path, setKey(a, e.i, { value: v }), `kv${e.path}`); };
+              return [
+                <span key={`l${e.path}`}>{name}</span>,
+                e.f.kind === 'color'
+                  ? <input key={e.path} type="color" aria-label={name} value={String(e.k.value)} disabled={locked} onChange={(x) => set(x.target.value)} className="h-6 w-full" />
+                  : <NumberField key={e.path} label={name} value={Number(e.k.value)} spec={{ min: e.f.min, max: e.f.max, step: e.f.step }} range={e.f.range} disabled={locked} onChange={set} />,
+              ];
+            })}
           </div>
         )}
 
@@ -99,8 +116,8 @@ export function AnimationInspector({ n, widget, sel, tempoMap, locked, getTime, 
           {noIncoming && <p className="text-xs leading-snug text-muted" data-testid="keyinsp-first">{i18n.t('web.keyinsp.firstKey')}</p>}
           <EaseGraph ease={curEase} mixed={mixedEase} disabled={locked || noIncoming}
             onBegin={() => gesture.begin()} onEnd={() => gesture.end()}
-            onChange={(b) => { for (const [p, idx] of groups) { const a = anim(p); if (!a) continue; let next = a; for (const i of idx) next = setKey(next, i, { ease: { cubicBezier: b } }); onAnimate(p, next, 'bez'); } }} />
-          <Row label={i18n.t('web.anim.ease')}>
+            onChange={(b) => patchAll(() => ({ ease: { cubicBezier: b } }), 'bez')} />
+          <Row label={i18n.t('web.anim.ease')} reset={<ResetButton label={i18n.t('web.anim.ease')} text={i18n.t('web.keyinsp.resetCurve')} changed={!noIncoming && (mixedEase || !sameEase(curEase, undefined))} disabled={locked} onReset={() => setEase(undefined)} />}>
             <Select wrapClassName="w-full" aria-label={i18n.t('web.anim.ease')} value={mixedEase ? MIXED : easeName(curEase)} disabled={locked || noIncoming} data-testid="keyinsp-ease"
               onChange={(e) => { if (e.target.value !== MIXED && e.target.value !== 'custom') setEase(e.target.value); }}>
               {mixedEase && <option value={MIXED} disabled>{i18n.t('web.keyinsp.mixed')}</option>}
@@ -120,18 +137,19 @@ export function AnimationInspector({ n, widget, sel, tempoMap, locked, getTime, 
         </div>
 
         <div className="space-y-2 border-t border-line pt-2.5">
-          <Row label={i18n.t('web.anim.interp')}>
+          <Row label={i18n.t('web.anim.interp')} reset={<ResetButton label={i18n.t('web.anim.interp')} text={i18n.t('web.keyinsp.resetInterp')} changed={interp !== 'linear'} disabled={locked} onReset={() => patchAll(() => ({ interp: undefined }))} />}>
             <Select wrapClassName="w-full" aria-label={i18n.t('web.anim.interp')} value={interp === 'mixed' ? MIXED : interp} disabled={locked} data-testid="keyinsp-interp"
               onChange={(e) => { if (e.target.value !== MIXED) patchAll(() => ({ interp: e.target.value as Key['interp'] })); }}>
               {interp === 'mixed' && <option value={MIXED} disabled>{i18n.t('web.keyinsp.mixed')}</option>}
               {(['linear', 'hold', 'smooth'] as const).map((m) => <option key={m} value={m}>{i18n.t(`web.anim.interp.${m}`)}</option>)}
             </Select>
           </Row>
-          <Row label={i18n.t('web.anim.loop')}>
+          <Row label={i18n.t('web.anim.loop')} reset={<ResetButton label={i18n.t('web.anim.loop')} text={i18n.t('web.keyinsp.resetLoop')} changed={loop !== 'NONE'} disabled={locked}
+            onReset={() => many((put) => { for (const p of paths) { const a = anim(p); if (a?.loop) { const { loop: _l, ...rest } = a; put(p, rest); } } })} />}>
             <Select wrapClassName="w-full" aria-label={i18n.t('web.anim.loop')} value={loop === 'mixed' ? MIXED : loop} disabled={locked} data-testid="keyinsp-loop"
               onChange={(e) => {
                 const v = e.target.value as LoopMode | typeof MIXED; if (v === MIXED) return;
-                batch(() => { for (const p of paths) { const a = anim(p); if (a) onAnimate(p, { ...a, loop: v === 'NONE' ? undefined : v }); } });
+                many((put) => { for (const p of paths) { const a = anim(p); if (a) put(p, { ...a, loop: v === 'NONE' ? undefined : v }); } });
               }}>
               {loop === 'mixed' && <option value={MIXED} disabled>{i18n.t('web.keyinsp.mixed')}</option>}
               {LOOPS.map((l) => <option key={l} value={l}>{i18n.t(`web.anim.loop.${l}`)}</option>)}
@@ -139,27 +157,31 @@ export function AnimationInspector({ n, widget, sel, tempoMap, locked, getTime, 
           </Row>
         </div>
         <button type="button" className={btn} disabled={locked} data-testid="keyinsp-delete"
-          onClick={() => { batch(() => { for (const [p, idx] of groups) { const a = anim(p); if (a) onAnimate(p, removeKeys(a, idx)); } }); onSel({ keys: [], row: sel.row }); }}>
+          onClick={() => { many((put) => { for (const [p, idx] of groups) { const a = anim(p); if (a) put(p, removeKeys(a, idx)); } }); onSel({ keys: [], row: sel.row }); }}>
           <Trash className="h-3.5 w-3.5" />{i18n.t('web.keyinsp.delete', { n: entries.length })}
         </button>
       </InspectorSection>
     );
   }
 
-  // ── chọn hàng thuộc tính ──
-  const f = sel.row ? byPath.get(sel.row) : undefined;
-  if (!f) return null;
-  const a = widget.animate?.[f.path];
-  const mode = a ? (isBinding(a) ? 'bind' : 'keys') : null;
+  // ── chọn dòng thuộc tính (một dòng có thể gồm nhiều đường dẫn, vd. Vị trí = X + Y) ──
+  const row = sel.row ? rows.find((r) => r.id === sel.row) : undefined;
+  if (!row) return null;
+  const anims = row.paths.map((p) => widget.animate?.[p]);
+  const mode = anims.some((a) => a && !isBinding(a)) ? 'keys' : anims.some((a) => a) ? 'bind' : null;
   const used = Object.keys(widget.animate ?? {}).length;
+  const rname = i18n.has(row.labelKey) ? i18n.t(row.labelKey) : row.id;
   const setMode = (m: 'keys' | 'bind') => {
     if (locked || m === mode) return;
-    if (!a && used >= 24) return;
-    onAnimate(f.path, m === 'keys' ? newKeyAnimation(widget, f.path, getTime()) : newBinding(widget, f));
+    if (!mode && used + row.paths.length > 24) return;
+    many((put) => { row.fields.forEach((f) => put(f.path, m === 'keys' ? newKeyAnimation(widget, f.path, getTime()) : newBinding(widget, f))); });
   };
   return (
     <InspectorSection n={n} id="keyframe" title={i18n.t('web.keyinsp.title')}>
-      <p className="text-xs leading-snug text-fg" data-testid="keyinsp-summary">{label(f)}</p>
+      <div className="flex items-center justify-between gap-2">
+        <p className="min-w-0 text-xs leading-snug text-fg" data-testid="keyinsp-summary">{rname}</p>
+        {deselect}
+      </div>
       <div className="seg w-full" role="radiogroup" aria-label={i18n.t('web.anim.mode')} onKeyDown={radioKeys} data-testid="keyinsp-mode">
         {(['keys', 'bind'] as const).map((m) => (
           <button key={m} type="button" role="radio" aria-checked={mode === m} tabIndex={radioTab(mode === m || (mode === null && m === 'keys'))} className="seg-btn flex-1" disabled={locked}
@@ -167,31 +189,40 @@ export function AnimationInspector({ n, widget, sel, tempoMap, locked, getTime, 
         ))}
       </div>
       {mode === null && <p className="text-xs leading-snug text-muted">{i18n.t('web.keyinsp.notAnimated')}</p>}
-      {mode === 'keys' && (
-        <>
-          <p className="text-xs leading-snug text-muted">{i18n.t('web.keyinsp.keyCount', { n: (a as KeyAnimation).keys.length })}</p>
-          <Row label={i18n.t('web.anim.loop')}>
-            <Select wrapClassName="w-full" aria-label={i18n.t('web.anim.loop')} value={(a as KeyAnimation).loop ?? 'NONE'} disabled={locked} data-testid="keyinsp-loop"
-              onChange={(e) => onAnimate(f.path, { ...(a as KeyAnimation), loop: e.target.value === 'NONE' ? undefined : (e.target.value as LoopMode) })}>
-              {LOOPS.map((l) => <option key={l} value={l}>{i18n.t(`web.anim.loop.${l}`)}</option>)}
-            </Select>
-          </Row>
-        </>
-      )}
-      {mode === 'bind' && <BindEditor f={f} b={a as Binding} name={label(f)} disabled={locked} onChange={(v, key) => onAnimate(f.path, v, key)} />}
+      {mode === 'keys' && (() => {
+        const ka = anims.filter((a): a is KeyAnimation => !!a && !isBinding(a));
+        const loop = common(ka.map((a) => a.loop ?? 'NONE'));
+        return (
+          <>
+            <p className="text-xs leading-snug text-muted">{i18n.t('web.keyinsp.keyCount', { n: Math.max(...ka.map((a) => a.keys.length)) })}</p>
+            <Row label={i18n.t('web.anim.loop')} reset={<ResetButton label={i18n.t('web.anim.loop')} text={i18n.t('web.keyinsp.resetLoop')} changed={loop !== 'NONE'} disabled={locked}
+              onReset={() => many((put) => { row.paths.forEach((p, j) => { const a = anims[j]; if (a && !isBinding(a) && a.loop) { const { loop: _l, ...rest } = a; put(p, rest); } }); })} />}>
+              <Select wrapClassName="w-full" aria-label={i18n.t('web.anim.loop')} value={loop === 'mixed' ? MIXED : loop ?? 'NONE'} disabled={locked} data-testid="keyinsp-loop"
+                onChange={(e) => { const v = e.target.value; if (v === MIXED) return; many((put) => { row.paths.forEach((p, j) => { const a = anims[j]; if (a && !isBinding(a)) put(p, { ...a, loop: v === 'NONE' ? undefined : (v as LoopMode) }); }); }); }}>
+                {loop === 'mixed' && <option value={MIXED} disabled>{i18n.t('web.keyinsp.mixed')}</option>}
+                {LOOPS.map((l) => <option key={l} value={l}>{i18n.t(`web.anim.loop.${l}`)}</option>)}
+              </Select>
+            </Row>
+          </>
+        );
+      })()}
+      {mode === 'bind' && row.fields.map((f, j) => { const b = anims[j]; return b && isBinding(b)
+        ? <BindEditor key={f.path} f={f} b={b} name={row.paths.length > 1 ? label(f) : rname} disabled={locked} onChange={(v, key) => onAnimate(f.path, v, key)} />
+        : null; })}
       {mode && (
         <button type="button" className={btn} disabled={locked} data-testid="keyinsp-remove"
-          onClick={() => { onAnimate(f.path, null); onSel({ keys: [], row: f.path }); }}><Trash className="h-3.5 w-3.5" />{i18n.t('web.anim.remove')}</button>
+          onClick={() => { many((put) => { for (const p of row.paths) if (widget.animate?.[p]) put(p, null); }); onSel({ keys: [], row: row.id }); }}><Trash className="h-3.5 w-3.5" />{i18n.t('web.anim.remove')}</button>
       )}
     </InspectorSection>
   );
 }
 
-function Row({ label, children }: { label: string; children: ReactNode }) {
+function Row({ label, children, reset }: { label: string; children: ReactNode; reset?: ReactNode }) {
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,9.5rem)] items-center gap-2 text-xs text-muted">
+    <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,9.5rem)_1.5rem] items-center gap-2 text-xs text-muted">
       <span className="min-w-0 break-words leading-tight">{label}</span>
       {children}
+      {reset ?? <span aria-hidden />}
     </div>
   );
 }
