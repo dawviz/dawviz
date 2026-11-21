@@ -6,7 +6,7 @@
 // và bắt dính đều là lệnh hoàn tác được (lib/commands.ts).
 import { motion } from 'framer-motion';
 import { useContext, useMemo, useRef, useState, type DragEvent, type KeyboardEvent, type ReactNode } from 'react';
-import { ADDABLE_WIDGETS, defaultScene, normalizeAngle, rotateGroup, type Derived, type NoteNaming, type WidgetMotion, type Phase, type SceneDocument, type UnifiedProjectAST, type WidgetLayout, type WidgetSpec, type WidgetType, type WidgetVisibility, type BackgroundImageSpec } from '@dawviz/render-core';
+import { ADDABLE_WIDGETS, defaultScene, normalizeAngle, rotateGroup, type Animation, type Derived, type NoteNaming, type WidgetMotion, type Phase, type SceneDocument, type UnifiedProjectAST, type WidgetLayout, type WidgetSpec, type WidgetType, type WidgetVisibility, type BackgroundImageSpec } from '@dawviz/render-core';
 import { clickIsKeyboard, startPaintDrag } from '../lib/paintDrag.ts';
 import { GestureContext } from '../lib/storeReact.ts';
 import { useI18n } from '../i18n/I18nProvider.tsx';
@@ -27,6 +27,7 @@ import { checkLayerName } from '../lib/layerName.ts';
 import { MAX_WIDGET_NAME } from '@dawviz/render-core';
 import { StatusIcon } from './StatusIcon.tsx';
 import { BackgroundSection, type BackgroundState } from './BackgroundSection.tsx';
+import { AnimateSection } from './AnimateSection.tsx';
 import { KeySection, MotionSection, NamingSection, PhasesSection, VisibilitySection } from './TimeSections.tsx';
 
 /** Mốc ↺ của mục Bắt dính: giá trị mặc định của canvas (scene mới). */
@@ -59,6 +60,7 @@ export interface EditorActions {
   /** Khoảng hiển thị theo thời gian của widget; null = hiện suốt bài. `key` gộp các lần chỉnh liên tiếp cùng một ô. */
   visibility(id: string, v: WidgetVisibility | null, key?: string): void;
   motion(id: string, v: WidgetMotion | null, key?: string): void;
+  animate(id: string, path: string, v: Animation | null, key?: string): void;
   /** Phase của bài (đã sắp theo thời điểm bắt đầu). */
   phases(list: Phase[], key?: string): void;
   /** Nốt chủ của bài (0 = C … 11 = B); null = chưa đặt. */
@@ -311,7 +313,7 @@ export function Editor({ styleName, scene, derived, ast, playback, fonts, advanc
       </div>
 
       <aside aria-label={i18n.t('web.editor.properties')} className="relative min-h-0 overflow-y-auto border-t border-line bg-surface max-lg:order-3 max-lg:overflow-visible lg:border-l lg:border-t-0" data-testid="editor-props">
-        <Properties background={background} duration={derived?.index.duration ?? 0} scene={scene} selected={live} locked={locked} name={name} advanced={advanced} actions={actions} onLock={toggleLock} order={order} move={move} widgetSections={widgetSections} onPick={(id) => setSelected([id])} layoutRef={layoutRef}
+        <Properties getTime={() => playback.get().t} background={background} duration={derived?.index.duration ?? 0} scene={scene} selected={live} locked={locked} name={name} advanced={advanced} actions={actions} onLock={toggleLock} order={order} move={move} widgetSections={widgetSections} onPick={(id) => setSelected([id])} layoutRef={layoutRef}
           onDuplicate={duplicateSel} onRemove={removeSel} onDeselect={deselect} />
       </aside>
     </div>
@@ -403,7 +405,7 @@ function AlignSection({ n, items, frame, onLayouts, locked }: { n: number; items
 
 const btn = 'flex min-h-[var(--hit)] items-center gap-1.5 rounded border border-control bg-raised px-2.5 text-xs font-medium text-fg transition hover:border-line-strong disabled:cursor-not-allowed disabled:opacity-50';
 
-function Properties({ background, duration, scene, selected, locked, name, advanced, actions, onLock, order, move, widgetSections, onPick, layoutRef, onDuplicate, onRemove, onDeselect }: { onDeselect(): void; background?: BackgroundState; duration: number; onDuplicate(): void; onRemove(): void; layoutRef?: Record<string, WidgetLayout>; onPick(id: string): void; scene: SceneDocument; selected: string[]; locked: ReadonlySet<string>; name(id: string): string; advanced: boolean; actions: EditorActions; onLock(id: string): void; order: string[]; move(id: string, to: number): void; widgetSections?: Props['widgetSections'] }) {
+function Properties({ getTime, background, duration, scene, selected, locked, name, advanced, actions, onLock, order, move, widgetSections, onPick, layoutRef, onDuplicate, onRemove, onDeselect }: { getTime(): number; onDeselect(): void; background?: BackgroundState; duration: number; onDuplicate(): void; onRemove(): void; layoutRef?: Record<string, WidgetLayout>; onPick(id: string): void; scene: SceneDocument; selected: string[]; locked: ReadonlySet<string>; name(id: string): string; advanced: boolean; actions: EditorActions; onLock(id: string): void; order: string[]; move(id: string, to: number): void; widgetSections?: Props['widgetSections'] }) {
   const { i18n } = useI18n();
   const ws = selected.map((id) => scene.widgets.find((w) => w.id === id)!).filter(Boolean);
   const { designWidth: W, designHeight: H } = scene.canvas;
@@ -560,8 +562,9 @@ function Properties({ background, duration, scene, selected, locked, name, advan
       </InspectorSection>
       <VisibilitySection n={4 + k} widgetId={w.id} value={w.visibility} disabled={lk} onChange={(v, key) => actions.visibility(w.id, v, key)} />
       <MotionSection n={5 + k} widgetId={w.id} value={w.motion} disabled={lk} onChange={(v, key) => actions.motion(w.id, v, key)} />
-      <AlignSection n={6 + k} items={[w]} frame={{ width: W, height: H }} onLayouts={actions.layouts} locked={locked} />
-      {snapping(7 + k)}
+      <AnimateSection n={6 + k} widget={w} getTime={getTime} disabled={lk} onChange={(path, v, key) => actions.animate(w.id, path, v, key)} />
+      <AlignSection n={7 + k} items={[w]} frame={{ width: W, height: H }} onLayouts={actions.layouts} locked={locked} />
+      {snapping(8 + k)}
     </>
   );
 }

@@ -27,6 +27,7 @@ dawviz/
 │     │  └─ theme-boot.js
 │     ├─ src/
 │     │  ├─ components/
+│     │  │  ├─ AnimateSection.tsx
 │     │  │  ├─ AspectSwitch.tsx
 │     │  │  ├─ AudioPanel.tsx
 │     │  │  ├─ BackgroundSection.tsx
@@ -74,6 +75,8 @@ dawviz/
 │     │  │  │  ├─ recordingContext.ts
 │     │  │  │  └─ useNotation.ts
 │     │  │  ├─ a11y.ts
+│     │  │  ├─ animateFields.test.ts
+│     │  │  ├─ animateFields.ts
 │     │  │  ├─ audioAsset.test.ts
 │     │  │  ├─ audioAsset.ts
 │     │  │  ├─ audioEngine.test.ts
@@ -263,6 +266,7 @@ dawviz/
 │  │  │  │  ├─ spelling.ts
 │  │  │  │  ├─ types.ts
 │  │  │  │  └─ widget.ts
+│  │  │  ├─ animation.ts
 │  │  │  ├─ audioFeatures.ts
 │  │  │  ├─ background.ts
 │  │  │  ├─ brightness.ts
@@ -300,6 +304,7 @@ dawviz/
 │  │  │  ├─ fixtures/   # tệp mẫu
 │  │  │  ├─ golden/
 │  │  │  │  └─ paper-1x1.json
+│  │  │  ├─ animation.test.ts
 │  │  │  ├─ audioFeatures.test.ts
 │  │  │  ├─ background.test.ts
 │  │  │  ├─ barpages.test.ts
@@ -668,6 +673,25 @@ async function parseProject(name, buffer, options = {})
 
 ### packages/render-core — @dawviz/render-core: khung hình = hàm của t
 
+#### `packages/render-core/src/animation.ts`
+
+Hoạt hình thuộc tính (T-22, CUSTOMIZATION §3.1 và §3.3): MỌI thuộc tính số hoặc màu của một widget có thể là giá trị tĩnh, keyframe theo thời gian,
+
+```text
+const BIND_SOURCES
+type BindSource
+interface Binding   // Giá trị = `to[0]` khi nguồn ở `from[0]`, `to[1]` khi ở `from[1]`, nội suy (kẹp ngoài biên) qua `ease`. `to` l…
+type KeyAnimation
+type Animation
+const isBinding = (a: Animation) =>
+const MAX_ANIMATIONS
+function animatablePaths(type: WidgetType): Map<string, 'number' | 'color'>   // Các đường dẫn animate được của một loại widget và kiểu giá trị của chúng.
+function sanitizeAnimate(S: Sanitizer, v: unknown, path: string, type: WidgetType): Record<string, Animation> | undefined   // Đọc `animate` của một widget. Mục sai bị bỏ kèm cảnh báo; không còn mục nào → undefined.
+interface BindCtx   // ───────────── tính giá trị mỗi khung ─────────────
+function bindSourceValue(src: BindSource, c: BindCtx): number   // Giá trị thô của một nguồn dữ liệu nhạc tại t (thang riêng của từng nguồn; ánh xạ sang thuộc tính bằng `from`/…
+function resolveAnimated(w: WidgetSpec, c: BindCtx, canvas: SceneDocument['canvas']):    // Widget của khung hình này: bản sao với thuộc tính/bố cục đã animate (qua bộ kiểm của loại widget) và hệ số độ…
+```
+
 #### `packages/render-core/src/audioFeatures.ts`
 
 Phân tích âm thanh cho widget phổ (T-53, REQ-WIDGET-07). Hàm thuần, không DOM, không Web Audio: nhận PCM mono, trả bảng đặc trưng
@@ -857,6 +881,7 @@ re-export * from './motion.ts'
 re-export * from './keyframes.ts'
 re-export * from './noteTransition.ts'
 re-export * from './widgetMotion.ts'
+re-export * from './animation.ts'
 re-export * from './naming.ts'
 re-export * from './insight.ts'
 re-export * from './notation/types.ts'
@@ -1230,6 +1255,8 @@ const UNSAFE_KEYS   // Khoá có thể làm bẩn nguyên mẫu đối tượng:
 function migrateScene(raw: unknown):    // Di trú theo từng bậc phiên bản, trên một bản sao (đối tượng vào không bị sửa). Trả bản đã lên `SCENE_SCHEMA_V…
 function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] } = {}):    // Đọc một preset/scene từ JSON thô. Trả scene hợp lệ + cảnh báo. `opts.fonts`: họ phông vẽ được (mặc định phông…
 interface Sanitizer   // Bộ kiểm giá trị dùng chung (đóng gói từ sanitizeScene để mỗi widget kiểm theo đường dẫn riêng).
+function silentSanitizer(styleIds?: ReadonlySet<string>): Sanitizer   // Bộ kiểm im lặng: kẹp về miền hợp lệ, không ghi cảnh báo. Dùng cho giá trị tính mỗi khung (thuộc tính đã anima…
+function sanitizeWidgetProps(type: WidgetType, props: unknown, S: Sanitizer): Record<string, unknown> | null   // Thuộc tính của widget (trừ Piano Roll) qua đúng bộ kiểm của loại đó. Loại không có bộ kiểm (Piano Roll) → nul…
 function sanitizeVisibility(S: Sanitizer, v: unknown, path: string): WidgetVisibility | undefined   // Khoảng hiển thị: danh sách khoảng (≤ MAX_RANGES), mỗi khoảng from ≥ 0, to > from hoặc null (tới hết bài); kho…
 function sanitizePhases(S: Sanitizer, v: unknown, path: string): Phase[]   // Phase: mảng {name, start}; tên 1–60 ký tự, start ≥ 0; sắp theo start; hai phase cùng start thì giữ phase đầu.
 ```
@@ -1456,6 +1483,14 @@ Thành phần gốc (T-70, UI-DIRECTION 5.3 cấu trúc D + A + E): thanh trên 
 
 ```text
 function App()
+```
+
+#### `apps/web/src/components/AnimateSection.tsx`
+
+Mục "Hoạt hình" của widget đang chọn (T-22): mỗi thuộc tính số/màu (kể cả vị trí, cỡ, góc, độ đục) có thể chạy theo keyframe hoặc theo dữ liệu nhạc.
+
+```text
+function AnimateSection({ n, widget, getTime, disabled, onChange }: { n: number; widget: WidgetSpec; getTime(): number; disabled?: boolean; onChange(path: string, v: Animation | null, key?: string): void })
 ```
 
 #### `apps/web/src/components/AspectSwitch.tsx`
@@ -1824,6 +1859,28 @@ function isTextEntry(t: EventTarget | null): boolean   // Đang gõ chữ/số (
 function isTypingTarget(t: EventTarget | null): boolean   // Phím tắt khác (Home…): không nuốt khi đang gõ hoặc ở một điều khiển tự xử lý phím đó.
 ```
 
+#### `apps/web/src/lib/animateFields.ts`
+
+Logic thuần của mục "Hoạt hình" (T-22): danh sách thuộc tính animate được của một widget (nhãn, giới hạn, giá trị tĩnh hiện tại),
+
+```text
+type PathKind
+interface AnimField
+function animFields(type: WidgetType): AnimField[]   // Thuộc tính animate được của loại widget, theo thứ tự: bố cục, độ đục, rồi thuộc tính của widget (nhãn lấy từ …
+function staticValue(w: Pick<WidgetSpec, 'layout' | 'properties'>, path: string): number | string   // Giá trị tĩnh hiện tại của thuộc tính (điểm xuất phát của hoạt hình mới).
+const newKeyAnimation = (w: Pick<WidgetSpec, 'layout' | 'properties'>, path: string, t: number) =>   // Hoạt hình mới: một keyframe tại `t` giữ đúng giá trị hiện tại (chưa đổi hình gì); người dùng thêm keyframe sa…
+const SOURCE_RANGE
+function newBinding(w: Pick<WidgetSpec, 'layout' | 'properties'>, f: AnimField, source: BindSource = 'note.hit'): Binding   // Binding mới: nguồn đi từ đầu tới cuối thang của nó; thuộc tính chạy từ giá trị hiện tại tới một giá trị khác …
+const withSource = (b: Binding, source: BindSource) =>   // Đổi nguồn của binding: thang `from` theo nguồn mới.
+const sortKeys = (keys: Key[]) =>   // ── keyframe ──
+function addKey(a: KeyAnimation, t: number, value: number | string): KeyAnimation   // Thêm keyframe tại `t` (giây). Giá trị: nếu đã có keyframe trước đó lấy giá trị của nó, không thì giá trị tĩnh…
+const setKey = (a: KeyAnimation, i: number, patch: Partial<Key>) =>
+function removeKey(a: KeyAnimation, i: number): KeyAnimation | null   // Bỏ keyframe thứ i; hết keyframe thì trả null (bỏ cả hoạt hình).
+function keyTimeText(at: Key['at']): string   // Mô tả mốc của keyframe không phải giây (chỉ đọc trong giao diện).
+const isKeyAnimation = (a: Animation) =>
+const SOURCES
+```
+
 #### `apps/web/src/lib/audioAsset.ts`
 
 Nạp tệp âm thanh mix (T-08, §6.2.1). Thứ tự kiểm: kích thước → thời lượng từ metadata → giải mã → thời lượng thật.
@@ -2030,6 +2087,7 @@ const reorderZ = (d: Doc, widgetId: string, where: 'front' | 'back') =>   // Đ�
 const layerOrder = (s: SceneDocument) =>   // Thứ tự lớp như danh sách Lớp hiển thị: trên cùng trước (zIndex giảm dần; cùng zIndex thì widget đứng sau tron…
 const moveLayer = (d: Doc, widgetId: string, to: number) =>   // Đưa lớp `widgetId` tới vị trí `to` trong danh sách Lớp (0 = trên cùng): kéo thả, lên/xuống một bậc, lên trên/…
 const setWidgetVisibility = (d: Doc, widgetId: string, next: WidgetVisibility | null, key?: string) =>   // Đặt khoảng hiển thị theo thời gian của widget (REQ-GRAPHICS-14); `null` = bỏ (hiện suốt bài). `key` gộp các l…
+const setWidgetAnimate = (d: Doc, widgetId: string, path: string, next: Animation | null, key?: string) =>   // Đặt hoạt hình của MỘT thuộc tính widget (T-22); `null` = bỏ. `key` gộp các lần chỉnh liên tiếp một ô thành mộ…
 const setWidgetMotion = (d: Doc, widgetId: string, next: WidgetMotion | null, key?: string) =>   // Đặt chuyển động của widget (vào, ra, lặp theo nhịp; mọi loại widget); `null` = bỏ. `key` gộp các lần chỉnh li…
 const setPhases = (d: Doc, phases: Phase[], key?: string) =>   // Đặt danh sách phase của bài (đã sắp theo `start`, tên không rỗng). Rỗng = bỏ hết.
 const setTonic = (d: Doc, tonic: number | null) =>   // Đặt nốt chủ của bài (0 = C … 11 = B); `null` = bỏ (chỗ giữ `{bass}` hiện tên nốt thay vì bậc).
@@ -2980,6 +3038,7 @@ type SpectrumOut
 
 ## 4. Tệp test
 
+- `apps/web/src/lib/animateFields.test.ts`
 - `apps/web/src/lib/audioAsset.test.ts`
 - `apps/web/src/lib/audioEngine.test.ts`
 - `apps/web/src/lib/audioLength.test.ts`
@@ -3024,6 +3083,7 @@ type SpectrumOut
 - `apps/web/src/lib/workspaceStore.test.ts`
 - `apps/web/test/app.test.tsx`
 - `apps/web/test/components.test.tsx`
+- `packages/render-core/test/animation.test.ts`
 - `packages/render-core/test/audioFeatures.test.ts`
 - `packages/render-core/test/background.test.ts`
 - `packages/render-core/test/barpages.test.ts`
@@ -3058,4 +3118,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 1325 ký hiệu công khai -->
+<!-- 10 thư mục src, 1357 ký hiệu công khai -->

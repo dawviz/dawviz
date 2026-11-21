@@ -1,6 +1,6 @@
 // Tài liệu có hoàn tác và các lệnh (T-07, Technical Design §6.4). Hàm dựng lệnh nhận `doc` hiện tại để lấy giá trị "trước";
 // trả null khi không có gì đổi (không ghi mục lịch sử rỗng). `redo`/`undo` là hàm thuần trên Doc bất biến.
-import type { BrightnessConfig, NoteNaming, WidgetMotion, NoteStyle, KeyboardStyle, PianoRollProps, Phase, SceneDocument, TextRef, TextStyleSet, WidgetLayout, WidgetSpec, WidgetVisibility } from '@dawviz/render-core';
+import type { Animation, BrightnessConfig, NoteNaming, WidgetMotion, NoteStyle, KeyboardStyle, PianoRollProps, Phase, SceneDocument, TextRef, TextStyleSet, WidgetLayout, WidgetSpec, WidgetVisibility } from '@dawviz/render-core';
 import { ASPECTS, DEFAULT_BACKGROUND, hasMotion, widgetDefaults, type BackgroundImageSpec } from '@dawviz/render-core';
 import type { Command } from './store.ts';
 import { clampOffsetMs } from './audioMap.ts';
@@ -324,6 +324,16 @@ export const setWidgetVisibility = (d: Doc, widgetId: string, next: WidgetVisibi
   const get = (x: Doc): WidgetVisibility | null => x.scene.widgets.find((q) => q.id === widgetId)!.visibility ?? null;
   const set = (x: Doc, v: WidgetVisibility | null) => withWidget(x, widgetId, (q) => { const { visibility: _v, ...rest } = q; return v ? { ...rest, visibility: v } : rest; });
   return slice(d, 'setWidgetVisibility', 'web.cmd.visibility', get, set, next, key ? `vis:${widgetId}:${key}` : undefined, { widget: widgetId });
+};
+/** Đặt hoạt hình của MỘT thuộc tính widget (T-22); `null` = bỏ. `key` gộp các lần chỉnh liên tiếp một ô thành một bước hoàn tác. */
+export const setWidgetAnimate = (d: Doc, widgetId: string, path: string, next: Animation | null, key?: string): Cmd | null => {
+  if (!d.scene.widgets.some((x) => x.id === widgetId)) return null;
+  const get = (x: Doc): Animation | null => x.scene.widgets.find((q) => q.id === widgetId)!.animate?.[path] ?? null;
+  const set = (x: Doc, v: Animation | null) => withWidget(x, widgetId, (q) => {
+    const an = { ...(q.animate ?? {}) }; if (v) an[path] = v; else delete an[path];
+    const { animate: _a, ...rest } = q; return Object.keys(an).length ? { ...rest, animate: an } : rest;
+  });
+  return slice(d, 'setWidgetAnimate', 'web.cmd.animate', get, set, next, key ? `anim:${widgetId}:${path}:${key}` : undefined, { widget: widgetId, property: path });
 };
 /** Đặt chuyển động của widget (vào, ra, lặp theo nhịp; mọi loại widget); `null` = bỏ. `key` gộp các lần chỉnh liên tiếp một ô thành một bước hoàn tác. */
 export const setWidgetMotion = (d: Doc, widgetId: string, next: WidgetMotion | null, key?: string): Cmd | null => {

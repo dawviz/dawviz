@@ -671,10 +671,31 @@ describe('thẻ Editor (T-68)', () => {
     const ids = [...screen.getByTestId('editor-props').querySelectorAll('section')].map((x) => x.getAttribute('data-testid'));
     expect(ids.slice(0, 2)).toEqual(['section-transform', 'section-settings']);
     expect(screen.getByRole('spinbutton', { name: /^(Particles per note|Số hạt mỗi nốt)$/ })).toBeInTheDocument();
-    expect(screen.queryByLabelText(/^(Particle colour|Màu hạt)/)).toBeNull();
+    const settings = () => within(screen.getByTestId('section-settings')); // mục Hoạt hình cũng liệt kê "Màu hạt" trong danh sách thuộc tính, nên chỉ xét mục Thiết lập
+    expect(settings().queryByLabelText(/^(Particle colour|Màu hạt)/)).toBeNull();
     fireEvent.click(within(screen.getByTestId('editor-props')).getByRole('radio', { name: /^(One colour|Một màu)$/ }));
-    await waitFor(() => expect(screen.getAllByText(/^(Particle colour|Màu hạt)$/).length).toBeGreaterThan(0));
-    ctrlZ(); await waitFor(() => expect(screen.queryAllByText(/^(Particle colour|Màu hạt)$/)).toHaveLength(0));
+    await waitFor(() => expect(settings().getAllByText(/^(Particle colour|Màu hạt)$/).length).toBeGreaterThan(0));
+    ctrlZ(); await waitFor(() => expect(settings().queryAllByText(/^(Particle colour|Màu hạt)$/)).toHaveLength(0));
+  });
+  it('T-22: Hoạt hình thuộc tính: thêm cho Vị trí X, thêm keyframe, đổi sang theo nhạc, bỏ; hoàn tác được', async () => {
+    await openProject();
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    fireEvent.click(screen.getByTestId('layers-add'));
+    fireEvent.click(screen.getByRole('menuitem', { name: /^(Text box|Ô chữ)$/ }));
+    await waitFor(() => expect(screen.getByTestId('editor-selected').textContent).toMatch(/(Text box|Ô chữ)/));
+    const sec = () => within(screen.getByTestId('section-animate'));
+    expect(sec().getByTestId('anim-none')).toBeInTheDocument();
+    fireEvent.click(sec().getByTestId('anim-add'));
+    await waitFor(() => expect(sec().getByTestId('anim-item-layout.x')).toBeInTheDocument());
+    expect(sec().getByTestId('anim-keys-layout.x').querySelectorAll('li')).toHaveLength(1);
+    fireEvent.click(sec().getByTestId('anim-key-add-layout.x')); // cùng mốc 0 với keyframe đầu: thay giá trị, vẫn một keyframe
+    expect(sec().getByTestId('anim-keys-layout.x').querySelectorAll('li').length).toBeGreaterThanOrEqual(1);
+    fireEvent.change(sec().getByTestId('anim-mode-layout.x'), { target: { value: 'bind' } });
+    await waitFor(() => expect(sec().getByTestId('anim-bind-layout.x')).toBeInTheDocument());
+    expect(sec().queryByTestId('anim-keys-layout.x')).toBeNull();
+    fireEvent.click(sec().getByTestId('anim-remove-layout.x'));
+    await waitFor(() => expect(sec().getByTestId('anim-none')).toBeInTheDocument());
+    ctrlZ(); await waitFor(() => expect(sec().getByTestId('anim-bind-layout.x')).toBeInTheDocument());
   });
   it('T-73: thêm Ô chữ, gõ { hiện gợi ý chỗ giữ, bấm gợi ý điền {tên}; Enter ở ô nhiều dòng không áp, rời ô mới áp (một bước hoàn tác)', async () => {
     await openProject();

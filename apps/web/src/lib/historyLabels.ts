@@ -123,6 +123,7 @@ export function describeCommand(cmd: Cmd, c: LabelCtx): string {
     case 'duplicateWidgets': return i18n.t('web.hist.duplicate', { n: Number(p.n) });
     case 'removeWidgets': return i18n.t('web.hist.removeWidget', { n: Number(p.n) });
     case 'renameWidget': return cmd.after === null ? i18n.t('web.hist.renameReset') : i18n.t('web.hist.rename', { name: String(cmd.after) });
+    case 'setWidgetAnimate': return i18n.t(cmd.after ? 'web.hist.animate' : 'web.hist.animateOff', { widget, property: String(p.property) });
     case 'setWidgetMotion': return i18n.t(cmd.after ? 'web.hist.motion' : 'web.hist.motionOff', { widget });
     case 'setWidgetVisibility': return i18n.t(cmd.after ? 'web.hist.visibility' : 'web.hist.visibilityOff', { widget });
     case 'setBackgroundSpec': return changeLabel(c, i18n.t('web.hist.what.background'), { fit: 'web.bg.fit', opacity: 'web.bg.opacity', dim: 'web.bg.dim' }, cmd);

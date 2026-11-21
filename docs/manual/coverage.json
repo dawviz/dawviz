@@ -113,11 +113,11 @@
         "locales/en.json#web.bg.",
         "locales/en.json#web.page."
       ],
-      "uiHash": "a69b0d24a814",
-      "viHash": "37e279aeab52",
-      "enHash": "23588756f681",
+      "uiHash": "6f54b4da19b5",
+      "viHash": "67c9eb1747a1",
+      "enHash": "9dd0e0179f2d",
       "coverHashes": {
-        "apps/web/src/components/Editor.tsx": "440a516b44c6",
+        "apps/web/src/components/Editor.tsx": "1bc7368fd962",
         "apps/web/src/components/EditorOverlay.tsx": "c813801e06af",
         "apps/web/src/components/StylePanel.tsx": "26c35e084860",
         "locales/en.json#web.editor.": "7be8167cea49",
@@ -180,7 +180,7 @@
         "apps/web/src/lib/numberInput.ts",
         "apps/web/src/components/Editor.tsx"
       ],
-      "uiHash": "4b6add9a3542",
+      "uiHash": "a8f0e6d5103c",
       "viHash": "a4fc2ae2b94b",
       "enHash": "f0eff66dc8fc",
       "coverHashes": {
@@ -188,7 +188,7 @@
         "apps/web/src/lib/undoKeys.ts": "07c2c99f5cf4",
         "apps/web/src/components/EditorOverlay.tsx": "c813801e06af",
         "apps/web/src/lib/numberInput.ts": "8e27c53523c3",
-        "apps/web/src/components/Editor.tsx": "440a516b44c6"
+        "apps/web/src/components/Editor.tsx": "1bc7368fd962"
       }
     },
     "06-xuat-video": {
@@ -275,11 +275,14 @@
         "packages/render-core/src/widgetMotion.ts",
         "packages/render-core/src/noteTransition.ts",
         "locales/en.json#web.motion.",
-        "locales/en.json#web.ws.pianoTransition"
+        "locales/en.json#web.ws.pianoTransition",
+        "packages/render-core/src/animation.ts",
+        "apps/web/src/components/AnimateSection.tsx",
+        "locales/en.json#web.anim."
       ],
-      "uiHash": "136d7a4e5436",
-      "viHash": "dfda79637ffd",
-      "enHash": "9f90555a5e23",
+      "uiHash": "1fd9aebadcce",
+      "viHash": "cdc675fe8d9d",
+      "enHash": "9bd40a2b8514",
       "coverHashes": {
         "packages/render-core/src/insight.ts": "37e1f3014ac3",
         "packages/render-core/src/naming.ts": "9a90045d7e7c",
@@ -289,7 +292,10 @@
         "packages/render-core/src/widgetMotion.ts": "a1e4bd858cf0",
         "packages/render-core/src/noteTransition.ts": "66a84098fe30",
         "locales/en.json#web.motion.": "ab9500a2f7bb",
-        "locales/en.json#web.ws.pianoTransition": "549cfa5d542f"
+        "locales/en.json#web.ws.pianoTransition": "549cfa5d542f",
+        "packages/render-core/src/animation.ts": "961a6fc8312d",
+        "apps/web/src/components/AnimateSection.tsx": "ec33768b7fcd",
+        "locales/en.json#web.anim.": "126441792084"
       }
     }
   }

@@ -54,3 +54,14 @@ Các chuyển động có thể dùng chung: ví dụ hiệu ứng vào "Trượ
 ## Hoạt hình của từng nốt
 
 Piano Roll còn có mục **Hoạt hình của nốt** trong **Thiết lập**: mỗi nốt đi qua bốn pha (đang tới, chạm, đang kêu, vừa tắt) với kiểu bạn chọn: bật to dần, mờ và co giãn, rơi và nảy, bay lên, biến hình (chấm thành thanh), nổ tung khi tắt, nảy khi chạm. Chọn **Không** thì nốt chỉ trôi như cũ. Muốn nốt rơi từ trên xuống hoặc bay lên, xoay cả widget Piano Roll.
+
+## Hoạt hình thuộc tính
+
+Muốn một thuộc tính **đổi theo thời gian hoặc theo nhạc** thay vì đứng yên: chọn widget, mở mục **Hoạt hình thuộc tính**, chọn thuộc tính rồi bấm **Thêm**. Thuộc tính nào là số hoặc màu cũng animate được: vị trí, cỡ, góc xoay, độ đục cả widget, và mọi ô số hay ô màu trong **Thiết lập** của widget (ví dụ màu cột, độ dày vạch, độ phát sáng).
+
+Mỗi thuộc tính chọn một **Cách thay đổi**:
+
+- **Keyframe**: bấm **Thêm keyframe tại vạch phát** để đặt giá trị tại thời điểm đang xem. Mỗi keyframe có thời điểm, giá trị và **Đường cong** để đi tới nó (đều, bật vọt, nảy, lò xo…). Giữa hai keyframe chọn đều, giữ rồi nhảy, hoặc cong mượt. **Sau keyframe cuối** thuộc tính giữ nguyên, hoặc lặp lại, tới lui, lặp và cộng dồn. Màu chuyển mượt, không bị xỉn ở giữa.
+- **Theo nhạc**: giá trị chạy theo một nguồn dữ liệu của bài: phách, ô nhịp, tiến độ bài, số nốt đang vang, nốt mạnh nhất đang vang, nốt vừa chạm (vọt lên rồi tắt dần), automation âm lượng hoặc pan của track, độ to của âm thanh. Bạn đặt khoảng nguồn chạy từ đâu tới đâu và giá trị tương ứng, ví dụ độ phát sáng từ 0 tới 1 khi nốt vừa chạm.
+
+Giá trị luôn được giữ trong miền hợp lệ của thuộc tính: kéo quá giới hạn thì dừng ở giới hạn chứ không làm hỏng hình. Hai thuộc tính khác nhau chạy độc lập, và Preview giống hệt video xuất ra. Piano Roll và Bản nhạc chỉ nhận vị trí, cỡ, góc và độ đục (đổi thuộc tính bản nhạc phải viết lại bản nhạc).

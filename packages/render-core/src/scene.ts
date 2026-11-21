@@ -19,6 +19,7 @@ import {
 } from './insight.ts';
 import { DEFAULT_NOTATION, notationInkFor, type NotationProps } from './notation/widget.ts';
 import { DEFAULT_SPECTRUM, type SpectrumProps } from './spectrum.ts';
+import { sanitizeAnimate, type Animation } from './animation.ts';
 import { DEFAULT_LOOP, DEFAULT_PHASE, LOOP_EFFECT_NAMES, WIDGET_EFFECT_NAMES, hasMotion, type MotionLoop, type MotionPhase, type WidgetMotion } from './widgetMotion.ts';
 import { parseEase } from './motion.ts';
 import { MAX_FADE, MAX_PHASES, MAX_PHASE_NAME, MAX_RANGES, type Phase, type TimeRange, type WidgetVisibility } from './visibility.ts';
@@ -46,6 +47,8 @@ export interface WidgetSpec<P = unknown> {
   visibility?: WidgetVisibility;
   /** Chuyển động cấp widget (vào, ra, lặp theo nhịp), dùng được cho mọi loại widget. Vắng = không chuyển động. */
   motion?: WidgetMotion;
+  /** Hoạt hình thuộc tính (T-22): đường dẫn thuộc tính (`properties.*` không tiền tố, hoặc `layout.x`…, `opacity`) → keyframe hoặc binding vào dữ liệu nhạc. Vắng = mọi thuộc tính tĩnh. */
+  animate?: Record<string, Animation>;
   trackMappingMode: TrackMappingMode;
   /** Chỉ số track trong AST (khớp `ProjectTrack.index`), dùng khi `trackMappingMode = MANUAL`. */
   assignedTrackIndices: number[];
@@ -350,6 +353,7 @@ export function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] 
       visible: bool(rw.visible, true, `${p}.visible`), layout, trackMappingMode: mode, assignedTrackIndices: idx,
     };
     if (rw.motion !== undefined) { const mo = sanitizeMotion(S, rw.motion, `${p}.motion`); if (mo) base.motion = mo; }
+    if (rw.animate !== undefined) { const an = sanitizeAnimate(S, rw.animate, `${p}.animate`, rw.type as WidgetType); if (an) base.animate = an; }
     if (rw.visibility !== undefined) { const vis = sanitizeVisibility(S, rw.visibility, `${p}.visibility`); if (vis) base.visibility = vis; }
     if (rw.name !== undefined) { // tên lớp: chuỗi 1–60 ký tự, không trùng (trùng thì bỏ tên, dùng tên theo loại)
       const nm = typeof rw.name === 'string' ? normalizeWidgetName(rw.name) : '';
@@ -438,6 +442,22 @@ export interface Sanitizer {
   warn(path: string, value: unknown, message: string): void;
   /** Id kiểu chữ có trong scene (để kiểm `styleId` của chữ). */
   styleIds?: ReadonlySet<string>;
+}
+/** Bộ kiểm im lặng: kẹp về miền hợp lệ, không ghi cảnh báo. Dùng cho giá trị tính mỗi khung (thuộc tính đã animate) để widget luôn nhận giá trị hợp lệ. */
+export function silentSanitizer(styleIds?: ReadonlySet<string>): Sanitizer {
+  const fin = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
+  return {
+    num: (v, d, lo, hi) => (fin(v) ? Math.min(hi, Math.max(lo, v)) : d),
+    str: (v, d, _p, ok) => (typeof v === 'string' && (!ok || ok(v)) ? v : d),
+    bool: (v, d) => (typeof v === 'boolean' ? v : d),
+    oneOf: (v, list, d) => (list.includes(v as never) ? (v as never) : d),
+    warn: () => {}, styleIds,
+  };
+}
+/** Thuộc tính của widget (trừ Piano Roll) qua đúng bộ kiểm của loại đó. Loại không có bộ kiểm (Piano Roll) → null. */
+export function sanitizeWidgetProps(type: WidgetType, props: unknown, S: Sanitizer): Record<string, unknown> | null {
+  const f = (HUD_SANITIZERS as Record<string, ((P: Obj, p: string, S: Sanitizer) => unknown) | undefined>)[type];
+  return f ? (f(isObj(props) ? props : {}, '$', S) as Record<string, unknown>) : null;
 }
 /** Khoảng hiển thị: danh sách khoảng (≤ MAX_RANGES), mỗi khoảng from ≥ 0, to > from hoặc null (tới hết bài); khoảng sai bị bỏ kèm cảnh báo. */
 export function sanitizeVisibility(S: Sanitizer, v: unknown, path: string): WidgetVisibility | undefined {

@@ -27,6 +27,7 @@ export * from './motion.ts';
 export * from './keyframes.ts';
 export * from './noteTransition.ts';
 export * from './widgetMotion.ts';
+export * from './animation.ts';
 export * from './naming.ts';
 export * from './insight.ts';
 export * from './notation/types.ts';

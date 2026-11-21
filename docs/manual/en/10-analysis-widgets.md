@@ -54,3 +54,14 @@ You can combine them: for example the entrance "Slide from the left" with the re
 ## Per-note animation
 
 The Piano roll also has **Note animation** under **Settings**: each note goes through four phases (arriving, hit, sounding, just ended) in the style you pick: pop in, fade and scale, drop and bounce, rise up, morph (dot to bar), burst when it ends, pulse on hit. Choose **None** and notes just scroll as before. To make notes fall from above or rise from below, rotate the whole Piano roll widget.
+
+## Animate properties
+
+To make a property **change over time or with the music** instead of staying still: select the widget, open **Animate properties**, pick a property and press **Add**. Any number or colour can be animated: position, size, rotation, the opacity of the whole widget, and every number or colour field in the widget's **Settings** (for example bar colour, line thickness, glow).
+
+For each property you choose **How it changes**:
+
+- **Keyframes**: press **Add keyframe here** to set the value at the moment you are viewing. Each keyframe has a time, a value and a **Curve** for getting to it (even, overshoot, bounce, spring…). Between two keyframes choose even, hold then jump, or soft curve. **After the last keyframe** the property stays, or repeats, goes back and forth, or repeats and keeps adding. Colours blend smoothly, without going muddy in the middle.
+- **Follow the music**: the value follows a source of the song's data: beat, bar, song progress, the number of notes sounding, the loudest note sounding, a note that just hit (jumps, then fades), a track's volume or pan automation, the loudness of the audio. You set where the source runs from and to and the matching values, for example glow from 0 to 1 when a note has just hit.
+
+The value always stays inside the property's valid range: pushing past a limit stops at the limit instead of breaking the picture. Different properties run independently, and Preview is identical to the exported video. The Piano roll and Sheet music accept only position, size, rotation and opacity (changing sheet-music properties means rewriting the score).

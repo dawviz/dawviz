@@ -117,6 +117,10 @@ When no widget is selected, the **Key** section lets you pick the song's key not
 
 Select a widget and open **Motion** to give it an entrance, an exit and a repeating move on the beat. It works for every kind of widget. Details in [Analysis widgets](10-analysis-widgets.md#motion-for-every-widget).
 
+## Animate properties
+
+The **Animate properties** section lets any number or colour field (including position, size, rotation, opacity) follow keyframes or the music. Details in [Analysis widgets](10-analysis-widgets.md#animate-properties).
+
 ## Note names
 
 Also with no widget selected, the **Note names** section changes the names of notes and chords in every widget at once (letters, Do Re Mi, German; sharps or flats; C4 or C3). Details in [Analysis widgets](10-analysis-widgets.md#note-names).

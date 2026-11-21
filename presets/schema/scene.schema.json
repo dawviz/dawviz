@@ -59,6 +59,12 @@
           "name": { "type": "string", "minLength": 1, "maxLength": 60, "description": "Tên lớp do người dùng đặt; không trùng nhau. Vắng thì dùng tên theo loại." },
           "zIndex": { "type": "integer", "minimum": -10000, "maximum": 10000 },
           "visible": { "type": "boolean" },
+          "animate": { "type": "object", "description": "Hoạt hình thuộc tính (T-22): khoá là đường dẫn thuộc tính (layout.x…, opacity, hoặc thuộc tính số/màu của widget); giá trị là { keys: [...] } hoặc { bind, from, to }.",
+            "maxProperties": 24, "additionalProperties": { "type": "object", "properties": {
+              "keys": { "type": "array", "maxItems": 256, "items": { "type": "object", "required": ["at", "value"], "properties": { "at": { "type": "object" }, "value": { "type": ["number", "string"] }, "ease": {}, "interp": { "enum": ["linear", "hold", "smooth"] } } } },
+              "loop": { "enum": ["NONE", "CYCLE", "PINGPONG", "OFFSET"] },
+              "bind": { "enum": ["beat.phase", "bar.phase", "progress", "notes.count", "notes.velocity", "note.hit", "track.volume", "track.pan", "audio.level"] },
+              "from": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 }, "to": { "type": "array", "minItems": 2, "maxItems": 2 }, "ease": {} } } },
           "motion": { "type": "object", "description": "Chuyển động cấp widget (vào, ra, lặp theo nhịp) cho mọi loại widget. Vắng = không chuyển động.", "additionalProperties": false,
             "properties": {
               "enter": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/motionPhase" }] },
