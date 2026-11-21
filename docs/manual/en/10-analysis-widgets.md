@@ -57,11 +57,41 @@ The Piano roll also has **Note animation** under **Settings**: each note goes th
 
 ## Animate properties
 
-To make a property **change over time or with the music** instead of staying still: select the widget, open **Animate properties**, pick a property and press **Add**. Any number or colour can be animated: position, size, rotation, the opacity of the whole widget, and every number or colour field in the widget's **Settings** (for example bar colour, line thickness, glow).
+To make a property **change over time or with the music** instead of staying still, use the **Timeline & keyframes** panel at the bottom of the Editor tab (open it with the button at the start of its bar, or Ctrl+J). Any number or colour can be animated: position, size, rotation, the opacity of the whole widget (the **Transform** group), and every number or colour field in the widget's **Settings** (the **Widget properties** group, for example bar colour, line thickness, glow).
 
-For each property you choose **How it changes**:
+### Setting keyframes
 
-- **Keyframes**: press **Add keyframe here** to set the value at the moment you are viewing. Each keyframe has a time, a value and a **Curve** for getting to it (even, overshoot, bounce, spring…). Between two keyframes choose even, hold then jump, or soft curve. **After the last keyframe** the property stays, or repeats, goes back and forth, or repeats and keeps adding. Colours blend smoothly, without going muddy in the middle.
-- **Follow the music**: the value follows a source of the song's data: beat, bar, song progress, the number of notes sounding, the loudest note sounding, a note that just hit (jumps, then fades), a track's volume or pan automation, the loudness of the audio. You set where the source runs from and to and the matching values, for example glow from 0 to 1 when a note has just hit.
+1. Select the widget on the frame or in Layers. The Timeline shows its properties.
+2. Move the playhead to the moment you want: play the song, or click/drag on the Timeline's time ruler.
+3. Press the **stopwatch** at the start of the property's row. A keyframe is set at the playhead with the current value.
+4. Move the playhead somewhere else and type a new value in that row's value field (or drag on the field). A new keyframe is added at the playhead. The diamond button between the two arrows also adds a keyframe at the playhead (press it again to remove it); the arrows move the playhead to the previous or next keyframe.
+
+Press the stopwatch again to stop animating that property (its keyframes are removed). The funnel button at the top corner shows only the properties that are animated (key U).
+
+### Editing keyframes on the Timeline
+
+- **Select:** click a diamond. Hold Shift (or Ctrl/⌘) to add more. Drag on an empty part of the Timeline to select with a box. Ctrl+A selects every keyframe of the widget.
+- **Move:** drag a diamond left or right; every selected keyframe moves with it. Keyframes snap to the playhead, to other keyframes and to the song's beats; hold Alt while dragging to place them freely. Alt+Left/Right moves them one frame (add Shift: one second).
+- **Add:** double-click a property's row at the moment you want.
+- **Delete:** select and press Delete.
+- **Look closer:** hold Ctrl and scroll over the Timeline, or use zoom in, zoom out and **Fit the whole song** at the top corner.
+
+A keyframe's shape tells how the value moves on to the next one: a diamond is even, a square is hold then jump, a circle is a soft curve. Selected keyframes are highlighted. A small dot under a keyframe means it is anchored to the music (beat, bar); dragging it turns it into a time in seconds.
+
+### Shaping the curve
+
+When you select keyframes, the **Keyframe** section appears first in the right column:
+
+- **Time** and **Value** (when one keyframe is selected).
+- **Curve into this keyframe**: a graph with time across and value up. Drag the two round handles to shape how the value arrives at this keyframe (slow then fast, overshoot and settle…). The four fields **x1, y1, x2, y2** below take exact numbers. The first keyframe has nothing before it, so its curve can't be shaped.
+- **Curve**: pick a ready-made curve (even, overshoot, bounce, spring…).
+- **Between keyframes**: smooth to the next, hold then jump, or soft curve.
+- **After the last keyframe**: stay, repeat, back and forth, or repeat and keep adding.
+
+Select several keyframes and change a field to change all of them; a field where they differ reads **Several values**. Colours blend smoothly, without going muddy in the middle.
+
+### Following the music
+
+Click a property's name on the Timeline (not a keyframe), then choose **Follow the music** in the **Keyframe** section on the right. The value follows a source of the song's data: beat, bar, song progress, the number of notes sounding, the loudest note sounding, a note that just hit (jumps, then fades), a track's volume or pan automation, the loudness of the audio. You set where the source runs from and to and the matching values, for example glow from 0 to 1 when a note has just hit. On the Timeline that property shows a **Follows the music** bar instead of keyframes. **Stop animating** puts the property back to a fixed value.
 
 The value always stays inside the property's valid range: pushing past a limit stops at the limit instead of breaking the picture. Different properties run independently, and Preview is identical to the exported video. The Piano roll and Sheet music accept only position, size, rotation and opacity (changing sheet-music properties means rewriting the score).

@@ -43,6 +43,36 @@ Khi đang gõ trong một ô nhập, các phím này dùng cho ô đó.
 | Giữ Shift khi xoay | Xoay tự do (không nhảy 15°) |
 | Nhấp đúp ô xoay | Về 0° |
 
+## Panel (thẻ Chỉnh sửa)
+
+| Phím | Việc |
+|---|---|
+| Ctrl+B | Thu gọn hoặc mở Lớp |
+| Ctrl+Alt+B | Thu gọn hoặc mở Thuộc tính widget |
+| Ctrl+J | Thu gọn hoặc mở Timeline |
+| Mũi tên (trên đường ranh panel) | Đổi cỡ panel (Shift: bước lớn hơn) |
+| Enter (trên đường ranh panel) | Thu gọn panel |
+| Nhấp đúp đường ranh panel | Về cỡ mặc định |
+
+## Timeline và keyframe
+
+| Phím | Việc |
+|---|---|
+| Shift + bấm keyframe | Chọn thêm keyframe |
+| Kéo trên chỗ trống | Chọn bằng khung (giữ Shift để cộng thêm) |
+| Ctrl+A | Chọn mọi keyframe của widget |
+| Delete | Xoá keyframe đang chọn |
+| Esc | Bỏ chọn keyframe |
+| Alt+Trái / Alt+Phải | Dời keyframe đang chọn một khung (thêm Shift: một giây) |
+| Trái / Phải (trên keyframe) | Sang keyframe trước / sau cùng dòng |
+| Lên / Xuống (trên keyframe) | Sang dòng trên / dưới |
+| Enter (trên keyframe) | Đưa vạch phát tới keyframe |
+| Giữ Alt khi kéo keyframe | Đặt tự do, không bắt dính |
+| Nhấp đúp vào dòng | Thêm keyframe tại chỗ nhấp |
+| Ctrl + cuộn chuột | Phóng to / thu nhỏ quanh con trỏ |
+| U | Chỉ hiện thuộc tính đang animate |
+| Mũi tên (trên tay nắm đường cong) | Chỉnh tay nắm (Shift ×10, Alt ×0,1) |
+
 ## Ô nhập số
 
 | Thao tác | Việc |

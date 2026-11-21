@@ -4,7 +4,14 @@
 
 The Editor tab is where you arrange the blocks on the video frame and change how notes and text look. Each block (a widget) does one job: piano roll, title and artist, note counter, live notes, time and bar, chord, progress bar.
 
-The screen has three parts: **Layers** on the left, the frame in the middle, and the **properties** of the selected widget on the right.
+The screen has four parts: **Layers** on the left, the frame in the middle, **Widget properties** on the right, and the **Timeline & keyframes** panel along the bottom.
+
+## Resize and collapse panels
+
+- **Resize:** drag the border between two panels (the pointer turns into a two-headed arrow). Double-click the border to go back to the default size. You can also Tab to the border and use the arrow keys (Shift: bigger steps).
+- **Collapse:** press the panel button at the top corner of Layers or Widget properties, or the button at the start of the **Timeline & keyframes** bar. A collapsed panel leaves a thin strip; click the strip to open it again. Shortcuts: Ctrl+B (Layers), Ctrl+Alt+B (Widget properties), Ctrl+J (Timeline).
+- **Fold sections:** click a section title (for example **Position and size**) to fold it away when you don't need it, click again to open it. The right column gets much shorter. The app remembers which sections are folded, on the Preview tab too.
+- Panel sizes and states are remembered in this browser. On screens narrower than 1024 points the panels stack as before.
 
 ## Selecting
 
@@ -117,9 +124,9 @@ When no widget is selected, the **Key** section lets you pick the song's key not
 
 Select a widget and open **Motion** to give it an entrance, an exit and a repeating move on the beat. It works for every kind of widget. Details in [Analysis widgets](10-analysis-widgets.md#motion-for-every-widget).
 
-## Animate properties
+## Timeline & keyframes
 
-The **Animate properties** section lets any number or colour field (including position, size, rotation, opacity) follow keyframes or the music. Details in [Analysis widgets](10-analysis-widgets.md#animate-properties).
+The **Timeline & keyframes** panel at the bottom shows the selected widget's properties over time: the property list on the left, the time ruler and diamond-shaped keyframes on the right. Press the stopwatch on a property to start animating it, drag keyframes to change their time, and select a keyframe to shape its curve in the **Keyframe** section on the right. Details in [Analysis widgets](10-analysis-widgets.md#animate-properties).
 
 ## Note names
 

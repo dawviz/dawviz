@@ -4,7 +4,7 @@
  "docs": {
   "BRD.md": {
    "title": "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)",
-   "sha1": "a7085f608b",
+   "sha1": "561455f4eb",
    "chunks": [
     {
      "n": 0,
@@ -330,10 +330,10 @@
      "path": [
       "7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)"
      ],
-     "chars": 28972,
+     "chars": 30229,
      "lines": [
       204,
-      275
+      276
      ],
      "ids": [
       "AD-08",
@@ -406,6 +406,7 @@
       "D-61",
       "D-62",
       "D-63",
+      "D-64",
       "KPI-04",
       "NFR-ACC-02",
       "NFR-SEC-01",
@@ -451,8 +452,8 @@
      ],
      "chars": 7755,
      "lines": [
-      276,
-      299
+      277,
+      300
      ],
      "ids": [
       "D-01",
@@ -4694,7 +4695,7 @@
   },
   "UI-DIRECTION.md": {
    "title": "Định hướng hình ảnh: khung preview và giao diện web",
-   "sha1": "4b6c40ad59",
+   "sha1": "7e6ce0b584",
    "chunks": [
     {
      "n": 0,
@@ -4947,14 +4948,15 @@
       "5. Theme giao diện chỉ đổi màu (D-52)",
       "5.3 Cấu trúc giao diện: D + A + E (D-53, đã chốt 2026-11-13)"
      ],
-     "chars": 3345,
+     "chars": 4174,
      "lines": [
       329,
-      350
+      351
      ],
      "ids": [
       "D-53",
       "D-57",
+      "D-64",
       "REQ-UI-13",
       "REQ-UI-15"
      ]
@@ -4969,8 +4971,8 @@
      ],
      "chars": 4454,
      "lines": [
-      351,
-      413
+      352,
+      414
      ],
      "ids": [
       "REQ-GRAPHICS-02"
@@ -4985,8 +4987,8 @@
      ],
      "chars": 988,
      "lines": [
-      414,
-      420
+      415,
+      421
      ],
      "ids": [
       "D-57",
@@ -5006,8 +5008,8 @@
      ],
      "chars": 1117,
      "lines": [
-      421,
-      431
+      422,
+      432
      ],
      "ids": [
       "D-15",
@@ -7885,6 +7887,10 @@
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/5-3-yeu-cau-giao-dien.md",
    "TECHNICAL-DESIGN/5-1-giao-dien-chinh.md"
+  ],
+  "D-64": [
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
+   "UI-DIRECTION/5-3-cau-truc-giao-dien-d-a-e-d-53-da-chot-2026-1.md"
   ],
   "NFR-ACC-02": [
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",

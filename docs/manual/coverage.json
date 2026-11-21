@@ -111,13 +111,18 @@
         "locales/en.json#web.tonic.",
         "apps/web/src/components/BackgroundSection.tsx",
         "locales/en.json#web.bg.",
-        "locales/en.json#web.page."
+        "locales/en.json#web.page.",
+        "apps/web/src/components/Splitter.tsx",
+        "apps/web/src/components/TimelinePanel.tsx",
+        "apps/web/src/lib/panelLayout.ts",
+        "locales/en.json#web.panel.",
+        "locales/en.json#web.section."
       ],
-      "uiHash": "6f54b4da19b5",
-      "viHash": "67c9eb1747a1",
-      "enHash": "9dd0e0179f2d",
+      "uiHash": "011874c02aaa",
+      "viHash": "483d3cc90bbc",
+      "enHash": "63045a1230f3",
       "coverHashes": {
-        "apps/web/src/components/Editor.tsx": "1bc7368fd962",
+        "apps/web/src/components/Editor.tsx": "1da92b659b85",
         "apps/web/src/components/EditorOverlay.tsx": "c813801e06af",
         "apps/web/src/components/StylePanel.tsx": "26c35e084860",
         "locales/en.json#web.editor.": "7be8167cea49",
@@ -136,7 +141,12 @@
         "locales/en.json#web.tonic.": "2b1a6b41c82b",
         "apps/web/src/components/BackgroundSection.tsx": "6cd36993d2b7",
         "locales/en.json#web.bg.": "ddb0f8fad7f2",
-        "locales/en.json#web.page.": "0a9b9e917e7c"
+        "locales/en.json#web.page.": "0a9b9e917e7c",
+        "apps/web/src/components/Splitter.tsx": "7ae82f8548cb",
+        "apps/web/src/components/TimelinePanel.tsx": "0b618f92ef83",
+        "apps/web/src/lib/panelLayout.ts": "d5ea5ea3fe16",
+        "locales/en.json#web.panel.": "b0c8bed5d17f",
+        "locales/en.json#web.section.": "8001c069c069"
       }
     },
     "04-cai-dat": {
@@ -178,17 +188,21 @@
         "apps/web/src/lib/undoKeys.ts",
         "apps/web/src/components/EditorOverlay.tsx",
         "apps/web/src/lib/numberInput.ts",
-        "apps/web/src/components/Editor.tsx"
+        "apps/web/src/components/Editor.tsx",
+        "apps/web/src/components/KeyframeTimeline.tsx",
+        "apps/web/src/components/Splitter.tsx"
       ],
-      "uiHash": "a8f0e6d5103c",
-      "viHash": "a4fc2ae2b94b",
-      "enHash": "f0eff66dc8fc",
+      "uiHash": "322623d48878",
+      "viHash": "f672b2e10ca7",
+      "enHash": "22ffab689b3f",
       "coverHashes": {
         "apps/web/src/lib/transportKeys.ts": "3c74099d457e",
         "apps/web/src/lib/undoKeys.ts": "07c2c99f5cf4",
         "apps/web/src/components/EditorOverlay.tsx": "c813801e06af",
         "apps/web/src/lib/numberInput.ts": "8e27c53523c3",
-        "apps/web/src/components/Editor.tsx": "1bc7368fd962"
+        "apps/web/src/components/Editor.tsx": "1da92b659b85",
+        "apps/web/src/components/KeyframeTimeline.tsx": "f5c8878e9a22",
+        "apps/web/src/components/Splitter.tsx": "7ae82f8548cb"
       }
     },
     "06-xuat-video": {
@@ -277,12 +291,16 @@
         "locales/en.json#web.motion.",
         "locales/en.json#web.ws.pianoTransition",
         "packages/render-core/src/animation.ts",
-        "apps/web/src/components/AnimateSection.tsx",
-        "locales/en.json#web.anim."
+        "locales/en.json#web.anim.",
+        "apps/web/src/components/KeyframeTimeline.tsx",
+        "apps/web/src/components/AnimationInspector.tsx",
+        "apps/web/src/components/EaseGraph.tsx",
+        "locales/en.json#web.timeline.",
+        "locales/en.json#web.keyinsp."
       ],
-      "uiHash": "1fd9aebadcce",
-      "viHash": "cdc675fe8d9d",
-      "enHash": "9bd40a2b8514",
+      "uiHash": "9ec4d0cfdb87",
+      "viHash": "552d1277ec96",
+      "enHash": "74007dd05c15",
       "coverHashes": {
         "packages/render-core/src/insight.ts": "37e1f3014ac3",
         "packages/render-core/src/naming.ts": "9a90045d7e7c",
@@ -294,8 +312,12 @@
         "locales/en.json#web.motion.": "ab9500a2f7bb",
         "locales/en.json#web.ws.pianoTransition": "549cfa5d542f",
         "packages/render-core/src/animation.ts": "961a6fc8312d",
-        "apps/web/src/components/AnimateSection.tsx": "ec33768b7fcd",
-        "locales/en.json#web.anim.": "126441792084"
+        "locales/en.json#web.anim.": "a8ba882b0153",
+        "apps/web/src/components/KeyframeTimeline.tsx": "f5c8878e9a22",
+        "apps/web/src/components/AnimationInspector.tsx": "ba2894fa3378",
+        "apps/web/src/components/EaseGraph.tsx": "b80587e3416d",
+        "locales/en.json#web.timeline.": "ebcb65532237",
+        "locales/en.json#web.keyinsp.": "26d5572bfc39"
       }
     }
   }

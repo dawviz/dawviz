@@ -4,7 +4,14 @@
 
 Thẻ Chỉnh sửa dùng để sắp xếp các khối trên khung video, đổi hình thức nốt và chữ. Mỗi khối (gọi là widget) làm một việc: piano roll, tên bài và nghệ sĩ, bộ đếm nốt, nốt đang phát, thời gian và ô nhịp, hợp âm, thanh tiến độ.
 
-Màn hình chia ba phần: danh sách **Lớp** bên trái, khung video ở giữa, **Thuộc tính** của widget đang chọn bên phải.
+Màn hình có bốn phần: danh sách **Lớp** bên trái, khung video ở giữa, **Thuộc tính widget** bên phải, và panel **Timeline và keyframe** ở dưới cùng.
+
+## Đổi cỡ và thu gọn panel
+
+- **Đổi cỡ:** kéo đường ranh giữa hai panel (con trỏ đổi thành mũi tên hai đầu). Nhấp đúp vào đường ranh để về cỡ mặc định. Cũng có thể bấm Tab tới đường ranh rồi dùng phím mũi tên (Shift: bước lớn hơn).
+- **Thu gọn:** bấm nút panel ở góc trên của Lớp hoặc Thuộc tính widget, hoặc nút ở đầu thanh **Timeline và keyframe**. Panel thu gọn còn một dải mỏng; bấm dải đó để mở lại. Phím tắt: Ctrl+B (Lớp), Ctrl+Alt+B (Thuộc tính widget), Ctrl+J (Timeline).
+- **Gấp mục:** bấm tiêu đề một mục (ví dụ **Vị trí và kích thước**) để gấp lại khi không dùng tới, bấm lần nữa để mở. Cột bên phải ngắn đi rất nhiều. Ứng dụng nhớ mục nào đang gấp, cả ở thẻ Xem trước.
+- Cỡ và trạng thái các panel được nhớ trong trình duyệt này. Màn hình hẹp hơn 1024 điểm thì các panel xếp dọc như cũ.
 
 ## Chọn widget
 
@@ -117,9 +124,9 @@ Khi không chọn widget nào, mục **Nốt chủ** cho bạn chọn nốt ch�
 
 Chọn widget rồi mở mục **Chuyển động** để cho nó hiệu ứng vào, hiệu ứng ra và một chuyển động lặp theo nhịp. Dùng được cho mọi loại widget. Chi tiết ở [Widget phân tích](10-phan-tich.md#chuyển-động-cho-mọi-widget).
 
-## Hoạt hình thuộc tính
+## Timeline và keyframe
 
-Mục **Hoạt hình thuộc tính** cho phép bất kỳ ô số hoặc ô màu nào (kể cả vị trí, cỡ, góc, độ đục) chạy theo keyframe hoặc theo nhạc. Chi tiết ở [Widget phân tích](10-phan-tich.md#hoạt-hình-thuộc-tính).
+Panel **Timeline và keyframe** ở dưới cùng cho thấy các thuộc tính của widget đang chọn theo thời gian: bên trái là danh sách thuộc tính, bên phải là thước thời gian và các keyframe hình thoi. Bấm đồng hồ ở một thuộc tính để bắt đầu animate, kéo keyframe để đổi thời điểm, chọn keyframe để chỉnh đường cong ở mục **Keyframe** bên phải. Chi tiết ở [Widget phân tích](10-phan-tich.md#hoạt-hình-thuộc-tính).
 
 ## Cách ghi tên nốt
 

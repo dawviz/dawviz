@@ -95,7 +95,7 @@ Nguồn: `docs/product/BRD.md` · [thứ tự đọc](docs/split/BRD/_index.md)
 - [4. PHẠM VI DỰ ÁN (PROJECT SCOPE) › 4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](docs/split/BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1.2k
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](docs/split/BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4.3k
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](docs/split/BRD/6-gia-dinh-assumptions.md) · 0.6k
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 29.0k
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 30.2k
 - [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](docs/split/BRD/8-cac-van-de-con-mo-open-issues.md) · 7.8k
 
 ### SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
@@ -348,7 +348,7 @@ Nguồn: `docs/design/UI-DIRECTION.md` · [thứ tự đọc](docs/split/UI-DIRE
 - [4. Nhật ký thử và hướng được chọn](docs/split/UI-DIRECTION/4-nhat-ky-thu-va-huong-duoc-chon.md) · 3.5k
 - [5. Theme giao diện chỉ đổi màu (D-52) › 5.1 Quyết định](docs/split/UI-DIRECTION/5-1-quyet-dinh.md) · 0.8k
 - [5. Theme giao diện chỉ đổi màu (D-52) › 5.2 Bộ token (đề xuất, chốt khi làm)](docs/split/UI-DIRECTION/5-2-bo-token-de-xuat-chot-khi-lam.md) · 1.0k
-- [5. Theme giao diện chỉ đổi màu (D-52) › 5.3 Cấu trúc giao diện: D + A + E (D-53, đã chốt 2026-11-13)](docs/split/UI-DIRECTION/5-3-cau-truc-giao-dien-d-a-e-d-53-da-chot-2026-1.md) · 3.3k
+- [5. Theme giao diện chỉ đổi màu (D-52) › 5.3 Cấu trúc giao diện: D + A + E (D-53, đã chốt 2026-11-13)](docs/split/UI-DIRECTION/5-3-cau-truc-giao-dien-d-a-e-d-53-da-chot-2026-1.md) · 4.2k
 - [5. Theme giao diện chỉ đổi màu (D-52) › 5.4 Bảng màu dựng sẵn (đã kiểm AA, v0.5)](docs/split/UI-DIRECTION/5-4-bang-mau-dung-san-da-kiem-aa-v0-5.md) · 4.5k
 - [6. Việc tiếp theo đề xuất](docs/split/UI-DIRECTION/6-viec-tiep-theo-de-xuat.md) · 1.0k
 - [7. Nguyên tắc sản phẩm: trình dựng thật, mặc định đơn giản (D-54)](docs/split/UI-DIRECTION/7-nguyen-tac-san-pham-trinh-dung-that-mac-dinh-d.md) · 1.1k
