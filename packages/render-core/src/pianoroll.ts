@@ -21,7 +21,7 @@ export interface PianoRollOptions {
   /** Chuyển cảnh nốt bốn pha (T-18). `beatPhase`: 0..1 trong nhịp tại t, cho pha kêu. Vắng = không biến đổi. */
   transition?: { spec: NoteTransitionSpec; beatPhase: number };
 }
-export interface NoteRect { id: string; trackId: string; x: number; y: number; w: number; h: number; color: string; brightness: number; active: boolean; velocity: number;
+export interface NoteRect { id: string; trackId: string; x: number; y: number; w: number; h: number; color: string; brightness: number; active: boolean; velocity: number; /** giây bắt đầu của nốt */ start?: number;
   pitch: number; opacity: number; radius: number; glow: number; glowRadius: number; borderWidth: number; borderColor: string }
 
 export function layoutPianoRoll(index: TimelineIndex, tempoMap: TempoPoint[], t: number, o: PianoRollOptions): NoteRect[] {
@@ -47,7 +47,7 @@ export function layoutPianoRoll(index: TimelineIndex, tempoMap: TempoPoint[], t:
       const rect: NoteRect = {
         id: n.id, trackId: ti.track.id, x, w, y: (o.pitchMax - n.pitch) * rowH + (rowH - h) / 2, h, color,
         brightness: trackBrightness(ti.track, tempoMap, Math.max(0, n.startTimeSeconds), cfg),
-        active, velocity: n.velocity, pitch: n.pitch,
+        active, velocity: n.velocity, pitch: n.pitch, start: n.startTimeSeconds,
         opacity: st.opacity * (active ? 1 : st.inactiveOpacity), radius: Math.min(st.cornerRadius, h / 2, w / 2),
         glow: st.glow > 0 ? st.glow * glowAmount(st, { track: ti.track, note: n, t, tempoMap, pitchMin: o.pitchMin, pitchMax: o.pitchMax }) : 0, glowRadius: st.glowRadius,
         borderWidth: st.borderWidth, borderColor: st.borderColor || shade(color, 0.45),

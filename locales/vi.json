@@ -1238,6 +1238,7 @@
   "web.ws.pianoTransition.morph": "Biến hình (chấm thành thanh)",
   "web.ws.pianoTransition.shatter": "Nổ tung khi tắt",
   "web.ws.pianoTransition.pulse": "Nảy khi chạm",
+  "web.ws.pianoTransition.ripple": "Gợn sóng khi chạm",
   "web.ws.taOn": "Hiệu ứng chữ",
   "web.ws.taEffect": "Hiệu ứng",
   "web.ws.taEffect.typewriter": "Gõ chữ",

@@ -4,7 +4,7 @@ import type { Ctx2D } from './draw.ts';
 import type { TimelineIndex, TrackIndex } from './notes.ts';
 import type { UnifiedProjectAST } from './types.ts';
 import { layoutPianoRoll, layoutKeyboard } from './pianoroll.ts';
-import { NOTE_TRANSITIONS } from './noteTransition.ts';
+import { NOTE_TRANSITIONS, rippleAt } from './noteTransition.ts';
 import { barPosAt } from './hud.ts';
 import { DEFAULT_KEYBOARD_STYLE } from './style.ts';
 import type { PianoRollProps, SceneDocument, WidgetSpec } from './scene.ts';
@@ -123,6 +123,14 @@ export const pianoRollRenderer: WidgetRenderer<PianoRollProps> = {
       out.push({ kind: 'rect', x: r.x, y: r.y, w: r.w, h: r.h, fill: r.color, alpha: Math.max(0.05, alpha), radius: r.radius > 0.5 ? r.radius : 0,
         glowColor: r.color, glowBlur: r.glow > 0 && r.glowRadius > 0 ? r.glowRadius * r.glow * (0.4 + 0.6 * r.brightness) : 0,
         stroke: r.borderColor, strokeWidth: r.borderWidth });
+    }
+    // Vòng gợn (template ripple, T-18): viền tròn toả từ đầu nốt, không tô; vẽ trên nốt, dưới vạch phát.
+    const tr = p.transition ? NOTE_TRANSITIONS[p.transition] : undefined;
+    if (tr?.ripple) for (const r of rects) {
+      if (r.start === undefined) continue;
+      const g = rippleAt(tr, r.start, t, r.h); if (!g) continue;
+      const alpha = a01(r.brightness * g.alpha); if (alpha <= 0.004) continue;
+      out.push({ kind: 'rect', x: r.x - g.r, y: r.y + r.h / 2 - g.r, w: 2 * g.r, h: 2 * g.r, fill: '#00000000', alpha, radius: g.r, glowColor: '', glowBlur: 0, stroke: r.color, strokeWidth: Math.max(1, r.h * 0.12) });
     }
     if (p.playheadVisible && p.playheadWidth > 0) out.push(rect(playX - p.playheadWidth / 2, 0, p.playheadWidth, height, p.playheadColor));
     if (kb > 0) {
