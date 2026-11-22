@@ -41,6 +41,8 @@ Muốn ghép phần hình của DAW Visualizer lên video khác (After Effects, 
 
 Nhập vào After Effects: **File › Import**, chọn ảnh đầu tiên, đánh dấu **PNG Sequence**, rồi đặt tốc độ khung bằng đúng số khung hình/giây đã xuất.
 
+Nếu widget **Ảnh** dùng một ảnh chưa có trong phiên (ví dụ mở preset từ máy khác), hộp thoại báo trước khi xuất; widget đó sẽ trống trong video cho tới khi bạn chọn lại tệp.
+
 ## Kiểm tra máy
 
 Nút **Kiểm tra máy này** ở cuối phần cấu hình thử mã hoá thật vài khung hình và một giây âm thanh, rồi cho bạn bản kết quả để chép. Dùng khi xuất không được hoặc khi bạn muốn giúp thử nghiệm: xem [Thử nghiệm xuất video](07-thu-nghiem.md).

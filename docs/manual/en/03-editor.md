@@ -96,6 +96,14 @@ When no widget is selected, the **Background image** section lets you pick a PNG
 - **Opacity** and **Darken** (a black layer over the image so text and notes read well).
 - The image is saved with the session and the project pack. **Presets don't contain the image**, only how it is placed, so someone who opens your preset picks their own image.
 
+## Image
+
+The **Image** widget (from **Add** at the top of the Layers list) draws one of your pictures on the frame, such as a logo or a character. In **Settings**, press **Choose an image file…** to add a PNG, JPEG, WebP, GIF (first frame) or SVG; added images show in the **Image** box so other widgets can reuse them. **Fit**: **Fit inside** (whole picture visible), **Fill** (crop the overflow) or **Stretch**.
+
+Each file can be up to 20 MB, images up to 8192 px on the long side, and the whole session up to 200 MB. The app recognises the file type from its content, not its name. An SVG with scripts, event handlers or external links is refused. Adding the same file twice keeps one copy.
+
+**Sprite sheet** (Advanced): a picture made of several frames in a grid. Set **Sprite columns**, **Sprite rows**, **Frames used** and **Frames per second**; the widget steps through the frames (row by row) from when it starts showing, and **Loop**s or stops on the last frame. Turn off **Smooth when scaled** for pixel art.
+
 ## Spectrum
 
 The **Spectrum** widget draws bars that jump with the sound. You need to load audio in the Preview tab (after loading, the app takes a few seconds to analyse it; until then, and when there is no audio, the bars rest at their lowest height so you can still see where the widget is). The spectrum follows the project's **Audio offset**.
@@ -204,7 +212,7 @@ Select a widget that has text (title, note counter, live notes, time, chord, pro
 Each piece of text uses a **text style** (Title, Subtitle, Counter, Clock…). Whatever you change differs from the style; everything else keeps following it. Next to each change there is a ↺ button that goes back to the style's value.
 
 - **Text:** when a widget has several pieces of text, pick the one to edit here, for example Title or Artist. Some entries are part of a line, such as **Numbers in the lines** of the note counter or **Bass note after /** of the chord: changes there apply only to that part, the rest of the line stays the same. Text you have changed is marked • in the list.
-- **Text style**, **Font**, **Size**, **Colour**, **Bold**, **Italic**.
+- **Text style**, **Font**, **Size**, **Colour**, **Bold**, **Italic**. At the end of the **Font** list, **Load a font file…** lets you use your own font (WOFF2, WOFF, TTF, OTF, up to 20 MB); it travels with the session, the project pack and the exported video. Only use fonts you are allowed to use.
 - **Align:** left, centre or right inside the widget box.
 
 In Advanced mode (or after **More options**):

@@ -803,3 +803,35 @@ describe('Graph Editor cơ bản (T-33)', () => {
     expect(screen.getByTestId('graph-empty')).toBeInTheDocument();
   });
 });
+
+describe('Tài nguyên của phiên (T-21)', () => {
+  it('widget Ảnh: chọn tệp thêm vào phiên và gán cho widget; tệp bị từ chối báo theo mã; danh sách Tệp của phiên bỏ được', async () => {
+    const { WidgetSettings } = await import('../src/components/WidgetSettings.tsx');
+    const { SessionSettings } = await import('../src/components/SessionSettings.tsx');
+    const { AssetsContext } = await import('../src/lib/assetsRuntime.ts');
+    const { AssetError } = await import('../src/lib/sessionAssets.ts');
+    const { createWidget, defaultScene } = await import('@dawviz/render-core');
+    const id = 'sha256:' + 'a'.repeat(64);
+    let list = [] as { id: string; kind: 'image'; name: string; size: number }[];
+    const removed: string[] = [];
+    const api = {
+      get list() { return list; },
+      add: async (f: File) => { if (f.name.endsWith('.exe')) throw new AssetError('ERR_ASSET_UNSUPPORTED', 'x'); const m = { id, kind: 'image' as const, name: f.name, size: 1234567 }; list = [m]; return m; },
+      remove: (x: string) => { removed.push(x); }, exportPayload: async () => ({ images: [], fonts: [] }),
+    };
+    const w = createWidget(defaultScene('16:9'), 'IMAGE'), patches: Record<string, unknown>[] = [];
+    const ui = () => wrap(<AssetsContext.Provider value={api}><WidgetSettings widget={w} advanced={false} onProps={(p) => patches.push(p)} /><SessionSettings hasProject busy={false} state={{ kind: 'idle' }} missing={[]} onSavePack={() => {}} onOpenPack={() => {}} onDiscard={() => {}} /></AssetsContext.Provider>);
+    const { unmount } = ui();
+    expect(screen.getByTestId('session-files').textContent).toMatch(/No images|Chưa thêm/);
+    const file = screen.getByTestId('ws-asset-file');
+    fireEvent.change(file, { target: { files: [new File(['x'], 'virus.exe')] } });
+    expect(await screen.findByTestId('ws-asset-error')).toHaveTextContent(/not supported|không dùng được/);
+    fireEvent.change(file, { target: { files: [new File(['x'], 'logo.png')] } });
+    await waitFor(() => expect(patches.at(-1)).toEqual({ asset: id }));
+    unmount(); ui();
+    const row = screen.getByTestId('session-files');
+    expect(row.textContent).toMatch(/logo\.png/); expect(row.textContent).toMatch(/1[.,]2 MB/);
+    fireEvent.click(screen.getByRole('button', { name: /Remove logo.png|Bỏ logo.png/ }));
+    expect(removed).toEqual([id]);
+  });
+});

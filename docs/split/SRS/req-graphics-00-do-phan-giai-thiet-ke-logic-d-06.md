@@ -5,7 +5,7 @@ section: "REQ-GRAPHICS-00: Độ phân giải thiết kế logic (D-06)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-00: Độ phân giải thiết kế logic (D-06)"
 chunk: req-graphics-00-do-phan-giai-thiet-ke-logic-d-06.md
 source_lines: 424-428
-source_sha1: b5e2600ec6
+source_sha1: 49d4aaf8cd
 ids: [D-06, REQ-GRAPHICS-00]
 ---
 #### REQ-GRAPHICS-00: Độ phân giải thiết kế logic (D-06)

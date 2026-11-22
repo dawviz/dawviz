@@ -7,6 +7,8 @@ import type { AudioAsset } from '../lib/audioAsset.ts';
 import { startExport, type ExportHandle } from '../lib/exportClient.ts';
 import { ZIP_WARN_BYTES, estimatePngBytes, safeBase, vp9AlphaSupported, type DirTarget } from '../lib/pngSequence.ts';
 import { radioKeys } from '../lib/a11y.ts';
+import { useAssets, type ExportAssets } from '../lib/assetsRuntime.ts';
+import { missingAssets } from '../lib/sessionAssets.ts';
 import type { FileTarget } from '../lib/exportProtocol.ts';
 import { AUDIO_LABEL, CONTAINER_EXT, CONTAINER_LABEL, CONTAINER_MIME, FPS_CHOICES, VIDEO_LABEL, autoChoice, detectSupport, exportDuration, manualChoice, normalizeSelection, optionsFor, preflight, sizeForClass, sliceAudioForRange, usableContainers, type AudioId, type CodecChoice, type CodecProbe, type ContainerId, type Fps, type ProgressInfo, type Quality, type ResolutionClass, type Selection, type Support, type VideoId } from '../lib/exportPlan.ts';
 import { downsample, formatExportReport, type ExportReport, type ExportStats } from '../lib/exportStats.ts';
@@ -37,6 +39,7 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
   styleId?: string; styleName?: string; scene: SceneDocument; ast: UnifiedProjectAST; derived: Derived; audio: AudioAsset | null; offsetMs: number; projectSec: number; fileName: string; advanced?: boolean; onClose(): void;
 }) {
   const { i18n } = useI18n();
+  const assetsApi = useAssets();
   const [cls, setCls] = useState<ResolutionClass>(1080);
   const [fps, setFps] = useState<Fps>(30);
   const [quality, setQuality] = useState<Quality>('medium');
@@ -119,6 +122,9 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
   for (const n of size.notes) notes.push(NOTE[n]);
   if (choice && choice !== 'checking') for (const n of choice.notices) notes.push(NOTE[n]);
   for (const w of pre.warnings) notes.push(NOTE[w]);
+  // Pre-flight tài nguyên (T-21): ảnh widget dùng mà phiên chưa có thì báo trước khi xuất.
+  const missing = missingAssets(scene, new Set(derived.images?.keys() ?? []));
+  if (missing.length) notes.push(i18n.t('web.export.note.MISSING_ASSETS', { n: missing.length }));
   if (!hasFsa) notes.push(NOTE.SAVE_AFTER);
 
   const format = choice && choice !== 'checking'
@@ -156,8 +162,11 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
     // Ảnh nền: bản sao riêng cho Worker (bản của Xem trước vẫn dùng tiếp, vì chuyển quyền sở hữu sẽ làm nó rỗng).
     let background: NonNullable<typeof derived.background> | undefined;
     try { if (derived.background) background = { image: await createImageBitmap(derived.background.image as ImageBitmap), width: derived.background.width, height: derived.background.height }; } catch { background = undefined; }
+    let payload: ExportAssets = { images: [], fonts: [] };
+    try { payload = await assetsApi.exportPayload(); } catch { /* thiếu tài nguyên: pre-flight đã báo, vẫn xuất phần còn lại */ }
     let h: ExportHandle;
     try { h = startExport({
+      ...(payload.images.length ? { images: payload.images } : {}), ...(payload.fonts.length ? { userFonts: payload.fonts } : {}),
       ast, scene, brightness: derived.brightness, spectrum: derived.audio, background, ...(derived.notation?.size ? { notation: [...derived.notation] } : {}), width: size.width, height: size.height, fps, bitrate: pre.bitrate, choice: codec,
       start: range.start, duration: range.duration, style: styleId,
       audio: slice ? { channels: slice.channels, sampleRate: audio!.buffer.sampleRate, offsetMs: slice.offsetMs } : undefined,

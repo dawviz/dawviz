@@ -2,6 +2,7 @@
 import { buildPack, readPack, safeName, type PackContents } from './projectPack.ts';
 import type { StoredBlob, Snapshot } from './workspaceStore.ts';
 import { hasImageExtension, imageExt } from './backgroundImage.ts';
+import { packAssetName, parsePackAssetName, type AssetMeta } from './sessionAssets.ts';
 import { sanitizeDraft, type TempoDraft, type TempoOverride } from './tempoRows.ts';
 
 export interface SchemaItem { name: string; schema: object }
@@ -10,10 +11,13 @@ export interface SessionData {
   scene: unknown; workspace: unknown; audio?: { file: File; offsetMs: number };
   /** Ảnh nền của phiên (T-21). */
   background?: File;
+  /** Tài nguyên của phiên (T-21): ảnh, SVG, phông; nạp lại qua kho tài nguyên (tính lại SHA-256). */
+  assets?: File[];
 }
 export interface SessionParts {
   title: string; source: File; extras: File[]; schemas: SchemaItem[]; tempo: { override: TempoOverride; draft: TempoDraft } | null;
   scene: unknown; workspace: unknown; audio: File | null; audioOffsetMs: number; background: File | null;
+  assets?: { meta: AssetMeta; file: File }[];
 }
 
 const cache = new WeakMap<Blob, Promise<Uint8Array>>();
@@ -33,6 +37,7 @@ export async function blobsOf(p: SessionParts): Promise<StoredBlob[]> {
   await add('source', p.source);
   if (p.audio) await add('audio', p.audio);
   if (p.background) await add('background', p.background);
+  for (const a of p.assets ?? []) await add(`asset:${a.meta.id.slice(7)}`, a.file);
   for (const [i, f] of p.extras.entries()) await add(`extra:${i}`, f);
   return out;
 }
@@ -47,6 +52,7 @@ export async function packOf(p: SessionParts, now: Date): Promise<Uint8Array> {
   const assets = [
     ...(await Promise.all(p.extras.map(async (f) => ({ name: f.name, bytes: await bytesOf(f) })))),
     ...(p.background ? [{ name: `background.${imageExt(p.background.name)}`, bytes: await bytesOf(p.background) }] : []),
+    ...(await Promise.all((p.assets ?? []).map(async (a) => ({ name: packAssetName(a.meta), bytes: await bytesOf(a.file) })))),
     ...p.schemas.map((s, i) => ({ name: `${safeName(s.name, 'schema')}-${i + 1}${SCHEMA_SUFFIX}`, bytes: enc.encode(JSON.stringify(s.schema)) })),
   ];
   return buildPack({
@@ -63,12 +69,14 @@ export async function sessionFromPack(bytes: Uint8Array): Promise<{ data: Sessio
   const dec = new TextDecoder();
   const extras: File[] = [], schemas: SchemaItem[] = [];
   let background: File | undefined;
+  const assets: File[] = [];
   const warnings = [...c.warnings];
   for (const a of c.assets) {
     if (a.name.endsWith(SCHEMA_SUFFIX)) {
       try { const schema = JSON.parse(dec.decode(a.bytes)); if (schema && typeof schema === 'object') schemas.push({ name: String(schema.name ?? schema.id ?? a.name).slice(0, 60), schema }); } catch { warnings.push({ code: 'WARN_PACK_UNLISTED_FILE', message: `bỏ qua schema hỏng: ${a.name}`, details: { path: a.name } }); }
     } else if (MIDI_RE.test(a.name)) extras.push(toFile(a.name, a.bytes));
     else if (/^background\.[a-z]+$/.test(a.name) && hasImageExtension(a.name)) background = toFile(a.name, a.bytes);
+    else { const pa = parsePackAssetName(a.name); if (pa) assets.push(toFile(pa.name, a.bytes)); }
   }
   const ws = (c.workspace ?? {}) as { tempoDraft?: unknown };
   const o = c.manifest.tempoOverride;
@@ -77,6 +85,7 @@ export async function sessionFromPack(bytes: Uint8Array): Promise<{ data: Sessio
     tempo: o === undefined ? null : { override: o as TempoOverride, draft: sanitizeDraft(ws.tempoDraft) },
     ...(c.audio ? { audio: { file: toFile(c.audio.name, c.audio.bytes), offsetMs: c.audio.offsetMs } } : {}),
     ...(background ? { background } : {}),
+    ...(assets.length ? { assets } : {}),
   } };
 }
 

@@ -5,7 +5,7 @@ section: "REQ-WIDGET-09: Bản nhạc (Notation) (D-63; đã làm 2026-11-21, T-
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-09: Bản nhạc (Notation) (D-63; đã làm 2026-11-21, T-90…T-95)"
 chunk: req-widget-09-ban-nhac-notation-d-63-da-lam-2026.md
 source_lines: 670-681
-source_sha1: b5e2600ec6
+source_sha1: 49d4aaf8cd
 ids: [D-63, OI-20, REQ-GRAPHICS-05, REQ-WIDGET-09]
 ---
 #### REQ-WIDGET-09: Bản nhạc (Notation) (D-63; đã làm 2026-11-21, T-90…T-95)

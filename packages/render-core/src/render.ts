@@ -23,6 +23,7 @@ import { spectrumRenderer } from './spectrum.ts';
 import { particleRenderer, particlesInCanvasSpace } from './particles.ts';
 import { DEFAULT_BACKGROUND, placeImage, type BackgroundImage } from './background.ts';
 import { notationRenderer } from './notation/widget.ts';
+import { imageRenderer } from './image.ts';
 import { drawPathPrim } from './notation/draw.ts';
 
 /** Ngữ cảnh vẽ đủ cho renderFrame (Canvas 2D và OffscreenCanvas đều có). */
@@ -47,6 +48,8 @@ export interface CanvasGradientLike { addColorStop(offset: number, color: string
 /** Phép biến đổi đang áp khi vẽ một widget: cần cho đổ bóng chữ, vì shadowOffset/shadowBlur của Canvas tính theo điểm ảnh thiết bị, không theo transform. */
 export interface DrawEnv {
   scale: number; rotation: number;
+  /** Bitmap của phiên cho ImagePrim (Derived.images). */
+  images?: Derived['images'];
   /**
    * Phông đang đặt trên ctx (trong phạm vi save/restore hiện tại). Gán `g.font` rất tốn trên Firefox khi phông web nạp nhiều mặt,
    * nên chỉ gán khi đổi (docs/design/FIREFOX-FONT-SLOWDOWN.md). Mỗi lần gọi `drawPrimitives` bắt đầu từ '' (chưa biết) nên luôn gán lần đầu.
@@ -137,7 +140,7 @@ export const pianoRollRenderer: WidgetRenderer<PianoRollProps> = {
 const rect = (x: number, y: number, w: number, h: number, fill: string): RectPrim => ({ kind: 'rect', x, y, w, h, fill, alpha: 1, radius: 0, glowColor: '', glowBlur: 0, stroke: '', strokeWidth: 0 });
 
 /** Bảng renderer theo loại. Widget chưa có renderer được bỏ qua khi vẽ (vẫn giữ trong Scene). */
-export const WIDGET_RENDERERS: Partial<Record<WidgetSpec['type'], WidgetRenderer<any>>> = { PIANO_ROLL: pianoRollRenderer, AUDIO_SPECTRUM: spectrumRenderer, PARTICLES: particleRenderer, NOTATION: notationRenderer, ...INSIGHT_RENDERERS, ...HUD_RENDERERS };
+export const WIDGET_RENDERERS: Partial<Record<WidgetSpec['type'], WidgetRenderer<any>>> = { IMAGE: imageRenderer, PIANO_ROLL: pianoRollRenderer, AUDIO_SPECTRUM: spectrumRenderer, PARTICLES: particleRenderer, NOTATION: notationRenderer, ...INSIGHT_RENDERERS, ...HUD_RENDERERS };
 
 /** Bố cục toàn khung (thuần): danh sách widget đã sắp theo zIndex kèm primitive của từng widget. Dùng để test tất định. */
 /** HudData cho một scene: số đếm, lưới ô nhịp và hợp âm của mọi widget Chord Detection. Gọi ở bước derived (một lần cho mỗi dự án × scene). */
@@ -236,7 +239,7 @@ export function renderFrame(scene: SceneDocument, derived: Derived, ast: Unified
     const L = widget.layout;
     g.save();
     if (pm && !particlesInCanvasSpace(widget)) g.transform(pm[0], pm[1], pm[2], pm[3], pm[4], pm[5]); // parenting: theo thay đổi của cha
-    if (particlesInCanvasSpace(widget)) { drawPrimitives(g, prims, { scale, rotation: 0 }); g.restore(); continue; }
+    if (particlesInCanvasSpace(widget)) { drawPrimitives(g, prims, { scale, rotation: 0, images: derived.images }); g.restore(); continue; }
     const rot = normalizeAngle(L.rotation) + (fx ? fx.rot : 0);
     if (fx) { // chuyển động cấp widget: dời, xoay thêm và co giãn quanh điểm neo
       const ax = L.anchor.x * L.width, ay = L.anchor.y * L.height;
@@ -247,7 +250,7 @@ export function renderFrame(scene: SceneDocument, derived: Derived, ast: Unified
       g.translate(L.x + ax, L.y + ay); g.rotate(rot * Math.PI / 180); g.translate(-ax, -ay);
     }
     g.beginPath(); g.rect(0, 0, L.width, L.height); g.clip();
-    drawPrimitives(g, derived.fontsReady === false ? prims.filter((p) => p.kind !== 'text') : prims, { scale, rotation: rot }); // phông chưa nạp: không vẽ chữ (TECHNICAL-DESIGN 5.7)
+    drawPrimitives(g, derived.fontsReady === false ? prims.filter((p) => p.kind !== 'text') : prims, { scale, rotation: rot, images: derived.images }); // phông chưa nạp: không vẽ chữ (TECHNICAL-DESIGN 5.7)
     g.restore();
   }
 }
@@ -272,6 +275,16 @@ export function drawPrimitives(g: RenderCtx, prims: Primitive[], env0: DrawEnv =
   for (const p of prims) {
     if (p.kind === 'text') { if (p.rich) drawRichText(g, p, p.rich, env); else drawText(g, p, env); continue; }
     if (p.kind === 'path') { drawPathPrim(g, p, env.scale); continue; }
+    if (p.kind === 'image') {
+      const img = env.images?.get(p.asset);
+      if (img && p.alpha > 0 && p.w > 0 && p.h > 0 && p.sw > 0 && p.sh > 0) {
+        const c = g as unknown as { imageSmoothingEnabled: boolean; drawImage(...a: unknown[]): void };
+        g.globalAlpha = p.alpha; c.imageSmoothingEnabled = p.smooth;
+        c.drawImage(img.image, p.sx, p.sy, p.sw, p.sh, p.x, p.y, p.w, p.h);
+        c.imageSmoothingEnabled = true;
+      }
+      continue;
+    }
     g.globalAlpha = p.alpha; g.fillStyle = p.fill;
     const rot = p.rotation ? p.rotation * Math.PI / 180 : 0;
     if (rot) { g.save(); g.translate(p.x + p.w / 2, p.y + p.h / 2); g.rotate(rot); } // xoay quanh tâm hình; vẽ như hộp đặt tại gốc

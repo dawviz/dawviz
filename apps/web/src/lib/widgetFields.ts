@@ -5,7 +5,7 @@ import { NOTE_TRANSITION_NAMES, type WidgetSpec, type WidgetType } from '@dawviz
 import { ANIM_EFFECTS, ANIM_ORDERS, ANIM_UNITS, DEFAULT_TEXT_ANIMATOR, EASING_NAMES, SPECTRUM_STYLES } from '@dawviz/render-core';
 
 type Obj = Record<string, unknown>;
-export type FieldKind = 'check' | 'num' | 'choice' | 'select' | 'color' | 'colorOpt' | 'text';
+export type FieldKind = 'check' | 'num' | 'choice' | 'select' | 'color' | 'colorOpt' | 'text' | 'asset';
 
 export interface FieldDef {
   /** Đường dẫn tới giá trị trong `properties` (có thể lồng: ['lines', 'played', 'enabled']). */
@@ -273,6 +273,17 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
   ],
   PIANO_ROLL: [
     L(['transition'], 'select', 'pianoTransition', { options: NOTE_TRANSITION_NAMES, prefix: 'web.ws.pianoTransition.' }),
+  ],
+  // Ảnh của phiên (T-21): chọn ảnh/SVG, cách khớp; sprite sheet (lưới, số khung, tốc độ) ở Nâng cao.
+  IMAGE: [
+    L(['asset'], 'asset', 'imgAsset', { testId: 'ws-img-asset' }),
+    L(['fit'], 'choice', 'imgFit', { options: ['contain', 'cover', 'stretch'], prefix: 'web.ws.imgFit.' }),
+    L(['smooth'], 'check', 'imgSmooth', { adv: true }),
+    L(['cols'], 'num', 'imgCols', { adv: true, num: { min: 1, max: 64, step: 1 } }),
+    L(['rows'], 'num', 'imgRows', { adv: true, num: { min: 1, max: 64, step: 1 } }),
+    L(['frames'], 'num', 'imgFrames', { adv: true, when: (P) => Number(P.cols) * Number(P.rows) > 1, num: { min: 1, max: 4096, step: 1 } }),
+    L(['fps'], 'num', 'imgFps', { adv: true, when: (P) => Number(P.cols) * Number(P.rows) > 1, num: { min: 0, max: 120, step: 1, range: [0, 60] } }),
+    L(['loop'], 'check', 'imgLoop', { adv: true, when: (P) => Number(P.cols) * Number(P.rows) > 1 }),
   ],
   TEXT: [
     L(['text'], 'text', 'boxText', { text: { max: 2000, multiline: true } }),
