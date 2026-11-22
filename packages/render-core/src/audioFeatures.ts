@@ -16,7 +16,11 @@ export interface AudioFeatures {
   spectrum: Uint8Array;
   /** Đỉnh và RMS mỗi khung, cùng thang. */
   peak: Uint8Array; rms: Uint8Array;
+  /** Dạng sóng thu nhỏ cho Oscilloscope (T-53): trung bình mỗi `scopeStep` mẫu, −127…127 (≈ 4 kHz). Vắng ở bảng cũ. */
+  scope?: Int8Array; scopeRate?: number;
 }
+/** Tốc độ mẫu (Hz) xấp xỉ của bảng dạng sóng thu nhỏ. */
+export const SCOPE_RATE = 4000;
 export interface AnalysisOptions { bands?: number; minHz?: number; maxHz?: number; hopSamples?: number }
 export const DEFAULT_ANALYSIS = Object.freeze({ bands: 128, minHz: 30, maxHz: 16000 });
 
@@ -78,6 +82,18 @@ export function createSpectralAccumulator(sampleRate: number, opt: AnalysisOptio
   let spec = new Uint8Array(bands * 1024), pk = new Uint8Array(1024), rm = new Uint8Array(1024), frames = 0;
   let buf = new Float32Array(N * 4), base = 0, len = 0; // buf[0] là mẫu tuyệt đối `base`; `len` mẫu đang giữ
   let total = 0;
+  // Dạng sóng thu nhỏ: trung bình từng nhóm `scopeStep` mẫu theo vị trí TUYỆT ĐỐI (không phụ thuộc cách chia khối).
+  const scopeStep = Math.max(1, Math.round(sampleRate / SCOPE_RATE));
+  let scope = new Int8Array(4096), sn = 0, sacc = 0, scnt = 0;
+  const scopePush = (mono: Float32Array) => {
+    for (let i = 0; i < mono.length; i++) {
+      sacc += mono[i];
+      if (++scnt === scopeStep) {
+        if (sn === scope.length) { const g = new Int8Array(scope.length * 2); g.set(scope); scope = g; }
+        scope[sn++] = Math.max(-127, Math.min(127, Math.round((sacc / scopeStep) * 127))); sacc = 0; scnt = 0;
+      }
+    }
+  };
   const grow = () => {
     if (frames < pk.length) return;
     const n = pk.length * 2, s2 = new Uint8Array(bands * n); s2.set(spec); spec = s2;
@@ -137,12 +153,14 @@ export function createSpectralAccumulator(sampleRate: number, opt: AnalysisOptio
     push(mono) {
       if (len + mono.length > buf.length) { const g = new Float32Array(Math.max(buf.length * 2, len + mono.length)); g.set(buf.subarray(0, len)); buf = g; }
       buf.set(mono, len); len += mono.length; total += mono.length;
+      scopePush(mono);
       drain(false);
     },
     finish() {
       drain(true);
       return { sampleRate, hopSamples, hop: hopSamples / sampleRate, frames, bands, minHz, maxHz,
-        spectrum: spec.slice(0, frames * bands), peak: pk.slice(0, frames), rms: rm.slice(0, frames) };
+        spectrum: spec.slice(0, frames * bands), peak: pk.slice(0, frames), rms: rm.slice(0, frames),
+        scope: scope.slice(0, sn), scopeRate: sampleRate / scopeStep };
     },
   };
 }

@@ -2,6 +2,7 @@
 import type { BackgroundImage, Derived, DerivedAudio, NotationLayout, SceneDocument, UnifiedProjectAST } from '@dawviz/render-core';
 import type { CodecChoice, ProgressInfo } from './exportPlan.ts';
 import type { ExportReport, ExportStats } from './exportStats.ts';
+import type { DirTarget } from './pngSequence.ts';
 
 export interface ExportJob {
   ast: UnifiedProjectAST;
@@ -25,11 +26,13 @@ export interface ExportJob {
   background?: BackgroundImage;
   /** Bản nhạc đã dựng ở Xem trước theo id widget Bản nhạc (D-63): Export vẽ đúng bản đó (Preview = Export). */
   notation?: [string, NotationLayout][];
+  /** Xuất chuỗi PNG (T-55): `base` tên gốc, `wav` kèm âm thanh, `transparent` bỏ nền, `layers` chỉ các widget này. Vắng = xuất video. */
+  png?: { base: string; wav: boolean; transparent: boolean; layers?: string[] };
 }
 /** Tay cầm tệp từ showSaveFilePicker: clone được sang Worker (FileSystemWritableFileStream thì KHÔNG, Chrome ném DataCloneError). */
 export interface FileTarget { createWritable(): Promise<WritableStream<{ type: 'write'; data: Uint8Array; position: number }>> }
 export type ExportIn =
-  | { type: 'start'; job: ExportJob; file?: FileTarget }
+  | { type: 'start'; job: ExportJob; file?: FileTarget; dir?: DirTarget }
   | { type: 'cancel' };
 export type ExportOut =
   /** `stats` mỗi lần báo; `thumb` (ảnh thu nhỏ khung đang vẽ, ~2 lần/giây) khi có. */

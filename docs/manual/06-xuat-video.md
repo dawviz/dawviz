@@ -30,6 +30,17 @@ Nếu không cái nào được, ứng dụng nói rõ và gợi ý thử kích 
 
 Đổi định dạng thì ứng dụng giữ codec cũ nếu còn hợp, không thì chọn codec đầu danh sách. Định dạng nào máy không mã hoá được video thì không hiện. PCM cho tiếng không nén nên tệp lớn hơn nhiều.
 
+## Chuỗi PNG trong suốt
+
+Muốn ghép phần hình của DAW Visualizer lên video khác (After Effects, Premiere, DaVinci Resolve), chọn **Chuỗi PNG trong suốt** ở đầu hộp thoại. Mỗi khung thành một ảnh PNG có nền trong suốt (màu nền và ảnh nền của khung không được vẽ), đặt tên `tên_000001.png`, `tên_000002.png`… theo đúng số khung hình/giây đã chọn.
+
+- **Kèm âm thanh thành tệp .wav:** ghi âm thanh của đúng đoạn xuất thành một tệp `.wav` cùng chỗ, để ghép lại khớp hình.
+- Trên Chrome và Edge, bấm **Bắt đầu xuất** rồi chọn một thư mục: ảnh được ghi thẳng vào đó, không chiếm bộ nhớ. Trình duyệt khác nhận một tệp `.zip`; tệp này được giữ trong bộ nhớ tới khi xong, nên hộp thoại cảnh báo khi ước tính vượt 1 GB.
+- Dòng ước tính cho biết số ảnh và dung lượng (ước tính dư; thực tế thường nhỏ hơn vì phần trong suốt nén rất tốt).
+- Hộp thoại cũng cho biết trình duyệt có mã hoá được video WebM trong suốt (VP9 có alpha) hay không. Bản này luôn xuất chuỗi PNG.
+
+Nhập vào After Effects: **File › Import**, chọn ảnh đầu tiên, đánh dấu **PNG Sequence**, rồi đặt tốc độ khung bằng đúng số khung hình/giây đã xuất.
+
 ## Kiểm tra máy
 
 Nút **Kiểm tra máy này** ở cuối phần cấu hình thử mã hoá thật vài khung hình và một giây âm thanh, rồi cho bạn bản kết quả để chép. Dùng khi xuất không được hoặc khi bạn muốn giúp thử nghiệm: xem [Thử nghiệm xuất video](07-thu-nghiem.md).

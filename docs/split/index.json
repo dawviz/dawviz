@@ -503,7 +503,7 @@
   },
   "SRS.md": {
    "title": "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)",
-   "sha1": "47b83a06d8",
+   "sha1": "b5e2600ec6",
    "chunks": [
     {
      "n": 0,
@@ -1609,7 +1609,7 @@
       "3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04)",
       "REQ-WIDGET-07: Audio Spectrum & Meter (D-10, ARC-03, ARC-06)"
      ],
-     "chars": 3470,
+     "chars": 3598,
      "lines": [
       629,
       642

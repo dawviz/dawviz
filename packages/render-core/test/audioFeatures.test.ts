@@ -84,6 +84,6 @@ test('FFT thực (N/2 phức) + dồn bộ đệm thưa: bảng giống hệt c�
     const acc = createSpectralAccumulator(sr);
     for (let i = 0; i < n; i += chunk) acc.push(x.subarray(i, Math.min(n, i + chunk)));
     const g = acc.finish();
-    assert.deepEqual([g.frames, Buffer.compare(g.spectrum, f.spectrum), Buffer.compare(g.peak, f.peak), Buffer.compare(g.rms, f.rms)], [f.frames, 0, 0, 0], `khối ${chunk}`);
+    assert.deepEqual([g.frames, Buffer.compare(g.spectrum, f.spectrum), Buffer.compare(g.peak, f.peak), Buffer.compare(g.rms, f.rms), Buffer.compare(Buffer.from(g.scope!.buffer), Buffer.from(f.scope!.buffer))], [f.frames, 0, 0, 0, 0], `khối ${chunk}`);
   }
 });

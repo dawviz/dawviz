@@ -224,3 +224,16 @@ test('Piano Roll chế độ trang (PAGE): nốt đứng yên theo trang, vạch
   assert.deepEqual(run(1, 0).map((r) => r.id), ['a']); // trang 1: c ở trang 3, b bắt đầu ở 5 ≥ biên 4
   assert.equal(run(5, 4).find((r) => r.id === 'b')!.active, true);
 });
+
+test('T-55: renderFrame trong suốt không tô nền; chỉ vẽ lớp đã chọn (cha vẫn dẫn con nhưng không vẽ)', async () => {
+  const { ast, derived } = await load();
+  const s = defaultScene();
+  s.canvas.backgroundColor = '#123456';
+  const { ctx, log } = recCtx();
+  renderFrame(s, derived, ast, 3, { ctx, width: 1920, height: 1080 }, 1, undefined, { transparent: true });
+  assert.ok(!log.some((l) => l.startsWith('fillStyle=#123456')) && !log.includes('fillRect(0,0,1920,1080)'), 'không tô nền');
+  const r2 = recCtx();
+  renderFrame(s, derived, ast, 3, { ctx: r2.ctx, width: 1920, height: 1080 }, 1, undefined, { layers: new Set(['không-có']) });
+  assert.ok(r2.log.includes('fillRect(0,0,1920,1080)'), 'vẫn tô nền khi không trong suốt');
+  assert.ok(!r2.log.some((l) => l.startsWith('save')), 'không vẽ widget nào');
+});

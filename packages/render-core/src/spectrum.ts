@@ -1,11 +1,26 @@
 // Widget Audio Spectrum (T-53, REQ-WIDGET-07): MỘT widget, hai hình dạng — LINE (cột xếp thẳng theo một đường, xoay mọi góc 0–360°)
 // và CIRCLE (cột toả quanh tâm). Mỗi hình có kích thước riêng (LINE: chiều dài đường + độ cao cột; CIRCLE: bán kính trong + độ dài cột).
 // Layout là hàm thuần của (props, t, bảng đặc trưng): không FFT lúc vẽ. Chưa có âm thanh thì vẽ cột thấp nhất, để thấy chỗ đặt widget.
-import type { Derived, LayoutCtx, Primitive, RectPrim, WidgetRenderer } from './prims.ts';
+import type { Derived, LayoutCtx, PathPrim, Primitive, RectPrim, WidgetRenderer } from './prims.ts';
 import type { WidgetSpec } from './scene.ts';
 import { frameAt, u8ToDb, type AudioFeatures } from './audioFeatures.ts';
 
+/** Kiểu hiển thị (REQ-WIDGET-07, T-53): cột, vùng, đường, chấm (phổ tại t); dao động ký (sóng tức thời); sóng âm cả bài; đồng hồ đỉnh/RMS. */
+export type SpectrumStyle = 'BARS' | 'AREA' | 'LINE' | 'DOTS' | 'OSCILLOSCOPE' | 'WAVEFORM' | 'METER';
+export const SPECTRUM_STYLES: readonly SpectrumStyle[] = ['BARS', 'AREA', 'LINE', 'DOTS', 'OSCILLOSCOPE', 'WAVEFORM', 'METER'];
+/** Thang tần số của trục cột. */
+export type FreqScale = 'LOG' | 'LINEAR' | 'MEL';
 export interface SpectrumProps {
+  style: SpectrumStyle;
+  scale: FreqScale;
+  /** Chấm đỉnh rơi chậm trên mỗi cột (BARS/DOTS). */
+  peakCap: boolean;
+  /** Tốc độ rơi của chấm đỉnh (phần thang mỗi giây). */
+  capFall: number;
+  /** Oscilloscope: cửa sổ thời gian hiển thị (ms). */
+  scopeMs: number;
+  /** Waveform: màu phần đã phát. */
+  playedColor: string;
   shape: 'LINE' | 'CIRCLE';
   /** Số cột 8–128 (nội suy/gộp từ bảng 128 dải log). */
   bars: number;
@@ -39,6 +54,7 @@ export interface SpectrumProps {
   glow: number;
 }
 export const DEFAULT_SPECTRUM: Readonly<SpectrumProps> = Object.freeze({
+  style: 'BARS', scale: 'LOG', peakCap: false, capFall: 0.6, scopeMs: 30, playedColor: '#7aa2ff',
   shape: 'LINE', bars: 48, minHz: 40, maxHz: 14000, reverse: false, mirror: false, angle: 0, length: 800, radius: 120, startAngle: 0,
   thickness: 160, minLen: 2, barWidth: 0.6, roundness: 0, attackMs: 15, releaseMs: 180, floorDb: -70, ceilDb: -25,
   colorMode: 'SOLID', color: '#e6e6e6', colorB: '#7aa2ff', opacity: 1, glow: 0,
@@ -72,12 +88,20 @@ export function smoothedBands(ft: AudioFeatures, f: number, attackMs: number, re
 }
 
 /** Gộp các dải log của bảng thành `n` cột trong [minHz, maxHz]: lấy lớn nhất trong khoảng; khoảng hẹp hơn một dải thì nội suy tuyến tính. */
-export function poolBands(bands: Float64Array, ft: Pick<AudioFeatures, 'minHz' | 'maxHz' | 'bands'>, n: number, minHz: number, maxHz: number): Float64Array {
+const mel = (hz: number) => 2595 * Math.log10(1 + hz / 700), melHz = (m: number) => 700 * (10 ** (m / 2595) - 1);
+/** Biên tần số (Hz) thứ `k`/`n` giữa minHz và maxHz theo thang. */
+export function scaleEdge(scale: FreqScale, minHz: number, maxHz: number, k: number, n: number): number {
+  const u = k / n;
+  if (scale === 'LINEAR') return minHz + (maxHz - minHz) * u;
+  if (scale === 'MEL') return melHz(mel(minHz) + (mel(maxHz) - mel(minHz)) * u);
+  return minHz * Math.pow(maxHz / minHz, u);
+}
+export function poolBands(bands: Float64Array, ft: Pick<AudioFeatures, 'minHz' | 'maxHz' | 'bands'>, n: number, minHz: number, maxHz: number, scale: FreqScale = 'LOG'): Float64Array {
   const B = ft.bands, span = Math.log(ft.maxHz / ft.minHz);
   const pos = (hz: number) => Math.min(B, Math.max(0, Math.log(Math.max(hz, 1e-6) / ft.minHz) / span * B));
-  const p0 = pos(minHz), p1 = Math.max(p0 + 1e-6, pos(maxHz)), out = new Float64Array(n);
+  const out = new Float64Array(n);
   for (let j = 0; j < n; j++) {
-    const a = p0 + (p1 - p0) * j / n, b = p0 + (p1 - p0) * (j + 1) / n;
+    const a = pos(scaleEdge(scale, minHz, maxHz, j, n)), b = Math.max(a + 1e-6, pos(scaleEdge(scale, minHz, maxHz, j + 1, n)));
     if (b - a < 1) { // nội suy giữa tâm các dải
       const c = (a + b) / 2 - 0.5, i0 = Math.min(B - 1, Math.max(0, Math.floor(c))), i1 = Math.min(B - 1, i0 + 1), k = clamp01(c - i0);
       out[j] = lerp(bands[i0], bands[i1], k);
@@ -96,7 +120,7 @@ export function spectrumLevels(p: SpectrumProps, audio: Derived['audio'], t: num
   if (!audio) return out;
   const ft = audio.features, f = frameAt(ft, t - audio.offsetSec);
   if (f < 0) return out;
-  const pooled = poolBands(smoothedBands(ft, f, p.attackMs, p.releaseMs), ft, p.bars, p.minHz, p.maxHz);
+  const pooled = poolBands(smoothedBands(ft, f, p.attackMs, p.releaseMs), ft, p.bars, p.minHz, p.maxHz, p.scale);
   const lo = p.floorDb, hi = Math.max(p.ceilDb, lo + 1);
   for (let j = 0; j < p.bars; j++) out[j] = pooled[j] <= 0 ? 0 : clamp01((u8ToDb(pooled[j]) - lo) / (hi - lo));
   return out;
@@ -135,9 +159,148 @@ export function spectrumPrims(p: SpectrumProps, W: number, H: number, levels: Ar
   return out;
 }
 
+// ───────────── kiểu hiển thị khác (T-53) ─────────────
+const MAX_SCOPE_POINTS = 512, HOLD_SEC = 1.5;
+/** Điểm trên hình: LINE = vị trí `frac` dọc đường, lệch `out` (pt) về phía cột mọc; CIRCLE = góc `frac` quanh vòng, cách tâm radius + out. */
+function placer(p: SpectrumProps, W: number, H: number) {
+  const cx = W / 2, cy = H / 2, rad = Math.PI / 180;
+  if (p.shape === 'CIRCLE') return (frac: number, out: number): [number, number] => { const phi = (p.startAngle + frac * 360) * rad; return [cx + Math.sin(phi) * (p.radius + out), cy - Math.cos(phi) * (p.radius + out)]; };
+  const th = p.angle * rad, ux = Math.cos(th), uy = Math.sin(th), gx = Math.sin(th), gy = -Math.cos(th), base = p.mirror ? 0 : p.thickness / 2;
+  return (frac: number, out: number): [number, number] => { const sAl = -p.length / 2 + frac * p.length; return [cx + ux * sAl - gx * base + gx * out, cy + uy * sAl - gy * base + gy * out]; };
+}
+/** Đường/vùng bằng PathPrim (cùng primitive với Bản nhạc): k = 0 tô, 1 nét. */
+function poly(pts: [number, number][], closed: boolean, fill: boolean, color: string, p: SpectrumProps, lw = 2): PathPrim {
+  const d: number[] = [];
+  pts.forEach(([x, y], i) => d.push(i ? 1 : 0, x, y));
+  if (closed) d.push(4);
+  const prim: PathPrim = { kind: 'path', item: { o: -1, k: fill ? 0 : 1, d, lw, cap: 1 }, glyphs: [], color, alpha: p.opacity, tx: 0, ty: 0, s: 1 };
+  if (p.glow > 0) prim.glow = { mode: 'SOFT', color, width: p.glow * 24, alpha: 0.8 };
+  return prim;
+}
+/** Chấm đỉnh rơi chậm (tất định): đỉnh của từng cột trong ~1,5 s trước, trừ đi tốc độ rơi × thời gian đã qua. Dùng mức thô (không làm mượt) của từng khung. */
+export function peakCaps(p: SpectrumProps, audio: Derived['audio'], t: number): Float64Array {
+  const out = new Float64Array(p.bars);
+  if (!audio) return out;
+  const ft = audio.features, f = frameAt(ft, t - audio.offsetSec);
+  if (f < 0) return out;
+  const K = Math.min(f, Math.round(HOLD_SEC / ft.hop)), lo = p.floorDb, hi = Math.max(p.ceilDb, lo + 1), row = new Float64Array(ft.bands);
+  for (let k = 0; k <= K; k++) {
+    const g = f - k;
+    for (let b = 0; b < ft.bands; b++) row[b] = ft.spectrum[g * ft.bands + b];
+    const pooled = poolBands(row, ft, p.bars, p.minHz, p.maxHz, p.scale), drop = p.capFall * k * ft.hop;
+    for (let j = 0; j < p.bars; j++) { const v = (pooled[j] <= 0 ? 0 : clamp01((u8ToDb(pooled[j]) - lo) / (hi - lo))) - drop; if (v > out[j]) out[j] = v; }
+  }
+  return out;
+}
+/** Mẫu dạng sóng (−1…1) trong cửa sổ `scopeMs` kết thúc tại t; bảng cũ không có `scope` → rỗng. */
+export function scopeSamples(p: SpectrumProps, audio: Derived['audio'], t: number): Float64Array {
+  const ft = audio?.features;
+  if (!ft?.scope || !ft.scopeRate) return new Float64Array(0);
+  const rate = ft.scopeRate, end = Math.floor((t - audio!.offsetSec) * rate), n = Math.max(2, Math.round((p.scopeMs / 1000) * rate)), m = Math.min(MAX_SCOPE_POINTS, n);
+  const out = new Float64Array(m);
+  for (let i = 0; i < m; i++) { const k = end - n + Math.floor((i * n) / m); out[i] = k >= 0 && k < ft.scope.length ? ft.scope[k] / 127 : 0; }
+  return out;
+}
+const waveCache = new WeakMap<AudioFeatures, Map<number, Float64Array>>();
+/** Bao sóng cả bài chia `n` cột (biên độ tuyến tính 0..1 từ đỉnh mỗi khung), đệm theo bảng đặc trưng. */
+export function waveformColumns(ft: AudioFeatures, n: number): Float64Array {
+  let m = waveCache.get(ft); if (!m) waveCache.set(ft, m = new Map());
+  const hit = m.get(n); if (hit) return hit;
+  const out = new Float64Array(n);
+  for (let j = 0; j < n; j++) {
+    const a = Math.floor((j * ft.frames) / n), b = Math.max(a + 1, Math.floor(((j + 1) * ft.frames) / n));
+    let v = 0; for (let f = a; f < Math.min(b, ft.frames); f++) if (ft.peak[f] > v) v = ft.peak[f];
+    out[j] = v <= 0 ? 0 : Math.pow(10, u8ToDb(v) / 20);
+  }
+  m.set(n, out);
+  return out;
+}
+/** Đồng hồ: đỉnh, RMS (0..1 theo sàn/trần dB) tại t và đỉnh giữ trong ~1,5 s. */
+export function meterLevels(p: SpectrumProps, audio: Derived['audio'], t: number): { peak: number; rms: number; hold: number } {
+  if (!audio) return { peak: 0, rms: 0, hold: 0 };
+  const ft = audio.features, f = frameAt(ft, t - audio.offsetSec);
+  if (f < 0) return { peak: 0, rms: 0, hold: 0 };
+  const lo = p.floorDb, hi = Math.max(p.ceilDb, lo + 1), lv = (u: number) => (u <= 0 ? 0 : clamp01((u8ToDb(u) - lo) / (hi - lo)));
+  let hold = 0; for (let k = 0, K = Math.min(f, Math.round(HOLD_SEC / ft.hop)); k <= K; k++) hold = Math.max(hold, lv(ft.peak[f - k]));
+  return { peak: lv(ft.peak[f]), rms: lv(ft.rms[f]), hold };
+}
+
+export function styledPrims(p: SpectrumProps, W: number, H: number, audio: Derived['audio'], t: number): Primitive[] {
+  const N = p.bars, at = placer(p, W, H), lenOf = (v: number) => p.minLen + v * Math.max(0, p.thickness - p.minLen);
+  const colorOf = (j: number) => (p.colorMode === 'GRADIENT' ? mix(p.color, p.colorB, N > 1 ? j / (N - 1) : 0) : p.color);
+  const frac = (j: number) => (p.reverse ? 1 - (j + 0.5) / N : (j + 0.5) / N);
+  const lw = Math.max(1, p.barWidth * 4);
+  switch (p.style) {
+    case 'AREA': case 'LINE': case 'DOTS': {
+      const lv = spectrumLevels(p, audio, t), out: Primitive[] = [];
+      const pts: [number, number][] = Array.from({ length: N }, (_, j) => at(frac(j), lenOf(lv[j])));
+      if (p.style === 'DOTS') {
+        const pitch = p.shape === 'CIRCLE' ? (2 * Math.PI * Math.max(1, p.radius)) / N : p.length / N, d = Math.max(1, pitch * p.barWidth);
+        pts.forEach(([x, y], j) => out.push(bar(x, y, d, d, 0, colorOf(j), { ...p, roundness: 1 })));
+        if (p.mirror && p.shape === 'LINE') lv.forEach((v, j) => { const [x, y] = at(frac(j), -lenOf(v)); out.push(bar(x, y, d, d, 0, colorOf(j), { ...p, roundness: 1 })); });
+      } else if (p.style === 'LINE') {
+        out.push(poly(pts, p.shape === 'CIRCLE', false, p.color, p, lw));
+        if (p.mirror && p.shape === 'LINE') out.push(poly(Array.from(lv, (v, j) => at(frac(j), -lenOf(v))), false, false, p.color, p, lw));
+      } else if (p.shape === 'CIRCLE') {
+        const inner = Array.from({ length: N }, (_, j) => at(frac(N - 1 - j), 0));
+        out.push(poly([...pts, pts[0], inner[0], ...inner], true, true, p.color, p));
+      } else {
+        // đường nền: từ đầu tới cuối theo thứ tự các điểm (đảo chiều thì từ phải sang trái); đối xứng thì đáy là các điểm soi gương
+        const start = at(p.reverse ? 1 : 0, 0), end = at(p.reverse ? 0 : 1, 0);
+        const low: [number, number][] = p.mirror ? Array.from(lv, (v, j) => at(frac(j), -lenOf(v))).reverse() : [end];
+        out.push(poly(p.mirror ? [...pts, ...low] : [start, ...pts, ...low], true, true, p.color, p));
+      }
+      return out;
+    }
+    case 'OSCILLOSCOPE': {
+      const sm = scopeSamples(p, audio, t), half = p.thickness / 2;
+      if (!sm.length) return [poly([at(0, 0), at(1, 0)], p.shape === 'CIRCLE', false, p.color, p, lw)];
+      const pts = Array.from(sm, (v, i) => at(sm.length > 1 ? i / (sm.length - 1) : 0, (p.shape === 'CIRCLE' || p.mirror ? 0 : half) + v * half));
+      return [poly(pts, p.shape === 'CIRCLE', false, p.color, p, lw)];
+    }
+    case 'WAVEFORM': {
+      const ft = audio?.features, out: Primitive[] = [];
+      if (!ft || !ft.frames) return out;
+      const cols = waveformColumns(ft, N), audioDur = ft.frames * ft.hop, playedFrac = clamp01((t - audio!.offsetSec) / Math.max(audioDur, 1e-6));
+      const pitch = p.shape === 'CIRCLE' ? (2 * Math.PI * Math.max(1, p.radius)) / N : p.length / N, w = Math.max(0.5, pitch * p.barWidth);
+      for (let j = 0; j < N; j++) {
+        const fr = (j + 0.5) / N, L = lenOf(cols[j]), played = fr <= playedFrac;
+        const [x, y] = at(fr, p.mirror || p.shape === 'CIRCLE' ? 0 : L / 2);
+        const rot = p.shape === 'CIRCLE' ? p.startAngle + fr * 360 : p.angle;
+        const [cx2, cy2] = p.shape === 'CIRCLE' ? at(fr, L / 2) : [x, y];
+        out.push(bar(cx2, cy2, w, p.mirror && p.shape === 'LINE' ? L * 2 : L, rot, played ? p.playedColor : p.color, p));
+      }
+      if (p.shape === 'LINE') { const [x, y] = at(playedFrac, p.mirror ? 0 : p.thickness / 2); out.push(bar(x, y, 2, p.mirror ? p.thickness * 2 : p.thickness, p.angle, p.playedColor, { ...p, glow: 0, roundness: 0 })); }
+      return out;
+    }
+    case 'METER': {
+      // Hai thanh song song dọc đường (đồng hồ luôn theo hình LINE): đỉnh ở nửa trên, RMS ở nửa dưới; vạch giữ đỉnh màu `playedColor`.
+      const m = meterLevels(p, audio, t), half = Math.max(1, p.thickness / 2 - 2), out: Primitive[] = [];
+      const on = placer({ ...p, shape: 'LINE', mirror: true }, W, H);
+      const seg = (v: number, off: number, color: string) => { if (v <= 0) return; const [x, y] = on(v / 2, off); out.push(bar(x, y, v * p.length, half, p.angle, color, p)); };
+      seg(m.peak, p.thickness / 4, colorOf(N - 1));
+      seg(m.rms, -p.thickness / 4, colorOf(0));
+      if (m.hold > 0) { const [x, y] = on(m.hold, p.thickness / 4); out.push(bar(x, y, 2, half, p.angle, p.playedColor, { ...p, glow: 0, roundness: 0 })); }
+      return out;
+    }
+    default: {
+      const lv = spectrumLevels(p, audio, t), out = spectrumPrims(p, W, H, lv);
+      if (p.peakCap) {
+        const caps = peakCaps(p, audio, t), pitch = p.shape === 'CIRCLE' ? (2 * Math.PI * Math.max(1, p.radius)) / N : p.length / N, w = Math.max(0.5, pitch * p.barWidth);
+        for (let j = 0; j < N; j++) {
+          if (caps[j] <= 0) continue;
+          const k = p.reverse ? N - 1 - j : j, fr = (j + 0.5) / N, [x, y] = at(fr, lenOf(caps[k]) + 2);
+          out.push(bar(x, y, w, 2, p.shape === 'CIRCLE' ? p.startAngle + fr * 360 : p.angle, colorOf(k), { ...p, roundness: 0 }));
+        }
+      }
+      return out;
+    }
+  }
+}
+
 export const spectrumRenderer: WidgetRenderer<SpectrumProps> = {
   type: 'AUDIO_SPECTRUM',
   layout({ derived }: LayoutCtx, spec: WidgetSpec<SpectrumProps>, t: number) {
-    return spectrumPrims(spec.properties, spec.layout.width, spec.layout.height, spectrumLevels(spec.properties, derived.audio, t));
+    return styledPrims({ ...DEFAULT_SPECTRUM, ...spec.properties }, spec.layout.width, spec.layout.height, derived.audio, t);
   },
 };

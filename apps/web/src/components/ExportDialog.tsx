@@ -5,6 +5,8 @@ import type { Derived, SceneDocument, UnifiedProjectAST } from '@dawviz/render-c
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import type { AudioAsset } from '../lib/audioAsset.ts';
 import { startExport, type ExportHandle } from '../lib/exportClient.ts';
+import { ZIP_WARN_BYTES, estimatePngBytes, safeBase, vp9AlphaSupported, type DirTarget } from '../lib/pngSequence.ts';
+import { radioKeys } from '../lib/a11y.ts';
 import type { FileTarget } from '../lib/exportProtocol.ts';
 import { AUDIO_LABEL, CONTAINER_EXT, CONTAINER_LABEL, CONTAINER_MIME, FPS_CHOICES, VIDEO_LABEL, autoChoice, detectSupport, exportDuration, manualChoice, normalizeSelection, optionsFor, preflight, sizeForClass, sliceAudioForRange, usableContainers, type AudioId, type CodecChoice, type CodecProbe, type ContainerId, type Fps, type ProgressInfo, type Quality, type ResolutionClass, type Selection, type Support, type VideoId } from '../lib/exportPlan.ts';
 import { downsample, formatExportReport, type ExportReport, type ExportStats } from '../lib/exportStats.ts';
@@ -58,6 +60,10 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
   const startBtn = useRef<HTMLButtonElement>(null);
   const [report, setReport] = useState<string | 'running' | null>(null);
   const [copied, setCopied] = useState(false);
+  // T-55: video hoặc chuỗi PNG trong suốt (+ .wav). VP9 có alpha chỉ phát hiện để báo.
+  const [kind, setKind] = useState<'video' | 'png'>('video');
+  const [wav, setWav] = useState(true);
+  const [vp9Alpha, setVp9Alpha] = useState<boolean | null>(null);
 
   const size = useMemo(() => sizeForClass(scene.canvas.designWidth, scene.canvas.designHeight, cls), [scene, cls]);
   const range = useMemo(() => exportDuration({ projectSec, audioSec: audio ? Math.max(0, offsetMs / 1000 + audio.durationSec) : 0 }), [projectSec, audio, offsetMs]);
@@ -66,6 +72,9 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
   const hasFsa = typeof window !== 'undefined' && 'showSaveFilePicker' in window;
   const pre = useMemo(() => preflight({ width: size.width, height: size.height, fps, quality, duration: range.duration, hasAudio: !!audio, hasFileSystemAccess: hasFsa }), [size, fps, quality, range, audio, hasFsa]);
 
+  const hasDirPicker = typeof window !== 'undefined' && 'showDirectoryPicker' in window;
+  const pngBytes = useMemo(() => estimatePngBytes({ width: size.width, height: size.height, frames: pre.frames, ...(audio && wav ? { wavSeconds: range.duration, sampleRate: audio.buffer.sampleRate, channels: audio.buffer.numberOfChannels } : {}) }), [size, pre.frames, audio, wav, range]);
+  useEffect(() => { let live = true; void vp9AlphaSupported(size.width, size.height).then((v) => live && setVp9Alpha(v)); return () => { live = false; }; }, [size]);
   useEffect(() => {
     let live = true;
     setSupport('checking');
@@ -117,22 +126,29 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
     : null;
 
   const start = async () => {
-    if (!choice || choice === 'checking') return;
+    if (kind === 'video' && (!choice || choice === 'checking')) return;
+    // Chuỗi PNG không cần bộ mã hoá video: giữ chỗ để thông điệp đủ trường (Worker bỏ qua).
+    const codec: CodecChoice = choice && choice !== 'checking' ? choice : { container: 'mp4', video: 'avc', videoCodec: 'png', audioCodec: null, notices: [] };
     setError(null);
     // Một tab xuất mỗi lần: lấy khoá trước khi hỏi nơi lưu để không bắt người dùng chọn tệp rồi mới báo bận.
     const got = await tryExportLock();
     if (!got) { setBusy(true); return; }
     exportLock.current = got;
     const freeLock = () => { exportLock.current?.release(); exportLock.current = null; };
-    const ext = CONTAINER_EXT[choice.container];
-    const suggestedName = `${baseOf(fileName)}.${ext}`;
+    const isPng = kind === 'png', base = safeBase(baseOf(fileName));
+    const ext = isPng ? 'zip' : CONTAINER_EXT[codec.container];
+    const suggestedName = `${isPng ? base : baseOf(fileName)}.${ext}`;
     let file: SaveHandle | undefined;
-    if (hasFsa) {
+    let dir: DirTarget | undefined;
+    if (isPng && hasDirPicker) {
+      try { dir = await (window as unknown as { showDirectoryPicker(o: object): Promise<DirTarget> }).showDirectoryPicker({ id: 'dawviz-png', mode: 'readwrite' }); }
+      catch (e) { if ((e as DOMException)?.name === 'AbortError') { freeLock(); return; } dir = undefined; }
+    } else if (!isPng && hasFsa) {
       try {
-        file = await (window as unknown as { showSaveFilePicker: SavePicker }).showSaveFilePicker({ suggestedName, types: [{ description: ext.toUpperCase(), accept: { [CONTAINER_MIME[choice.container]]: [`.${ext}`] } }] });
+        file = await (window as unknown as { showSaveFilePicker: SavePicker }).showSaveFilePicker({ suggestedName, types: [{ description: ext.toUpperCase(), accept: { [CONTAINER_MIME[codec.container]]: [`.${ext}`] } }] });
       } catch (e) { if ((e as DOMException)?.name === 'AbortError') { freeLock(); return; } file = undefined; }
     }
-    const slice = audio && choice.audioCodec
+    const slice = audio && (isPng ? wav : codec.audioCodec)
       ? sliceAudioForRange(Array.from({ length: audio.buffer.numberOfChannels }, (_, c) => audio.buffer.getChannelData(c)), audio.buffer.sampleRate, range.start, range.duration, offsetMs)
       : null;
     setPhase('running'); setProgress(null); setStats(null); setFinalReport(null); setCopiedRun(false); points.current = []; startedAt.current = performance.now(); lastProgress.current = null;
@@ -142,11 +158,12 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
     try { if (derived.background) background = { image: await createImageBitmap(derived.background.image as ImageBitmap), width: derived.background.width, height: derived.background.height }; } catch { background = undefined; }
     let h: ExportHandle;
     try { h = startExport({
-      ast, scene, brightness: derived.brightness, spectrum: derived.audio, background, ...(derived.notation?.size ? { notation: [...derived.notation] } : {}), width: size.width, height: size.height, fps, bitrate: pre.bitrate, choice,
+      ast, scene, brightness: derived.brightness, spectrum: derived.audio, background, ...(derived.notation?.size ? { notation: [...derived.notation] } : {}), width: size.width, height: size.height, fps, bitrate: pre.bitrate, choice: codec,
       start: range.start, duration: range.duration, style: styleId,
       audio: slice ? { channels: slice.channels, sampleRate: audio!.buffer.sampleRate, offsetMs: slice.offsetMs } : undefined,
+      ...(isPng ? { png: { base, wav: !!slice, transparent: true } } : {}),
     }, makeExportWorker, {
-      file,
+      file, ...(dir ? { dir } : {}),
       onProgress: (p, st, thumb) => {
         setProgress(p); lastProgress.current = p;
         if (st) { setStats(st); points.current.push([p.frame, st.drawMs]); }
@@ -158,7 +175,7 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
     try {
       const r = await h.result;
       if (r.status === 'cancelled') { setPhase('setup'); return; }
-      setResult({ url: r.blob ? URL.createObjectURL(r.blob) : null, name: suggestedName, bytes: r.bytes, ms: r.ms });
+      setResult({ url: r.blob ? URL.createObjectURL(r.blob) : null, name: isPng && !r.blob ? i18n.t('web.export.png.folder') : suggestedName, bytes: r.bytes, ms: r.ms });
       setFinalReport(r.report ?? null);
       setPhase('done');
     } catch (e) {
@@ -186,17 +203,30 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
 
         {phase !== 'running' && phase !== 'done' && (
           <div className="space-y-3">
+            <div className="seg w-full" role="radiogroup" aria-label={i18n.t('web.export.kind')} onKeyDown={radioKeys} data-testid="export-kind">
+              {(['video', 'png'] as const).map((k) => <button key={k} type="button" role="radio" aria-checked={kind === k} tabIndex={kind === k ? 0 : -1} className="seg-btn flex-1" onClick={() => setKind(k)} data-testid={`export-kind-${k}`}>{i18n.t(`web.export.kind.${k}`)}</button>)}
+            </div>
             <div className="grid grid-cols-[7rem_1fr] items-center gap-2 text-[13px]">
               <label htmlFor="exp-size" className="text-muted">{i18n.t('web.export.size')}</label>
               <Select id="exp-size" value={cls} onChange={(e) => setCls(Number(e.target.value) as ResolutionClass)}>{CLASSES.map((c) => <option key={c} value={c}>{CLASS_LABEL[c]}</option>)}</Select>
               <label htmlFor="exp-fps" className="text-muted">{i18n.t('web.export.fps')}</label>
               <Select id="exp-fps" value={fps} onChange={(e) => setFps(Number(e.target.value) as Fps)}>{FPS_CHOICES.map((f) => <option key={f} value={f}>{f}</option>)}</Select>
+              {kind === 'video' && <>
               <label htmlFor="exp-q" className="text-muted">{i18n.t('web.export.quality')}</label>
               <Select id="exp-q" value={quality} onChange={(e) => setQuality(e.target.value as Quality)}>
                 {QUALITIES.map((q) => <option key={q} value={q}>{QUALITY_LABEL[q]}</option>)}
               </Select>
+              </>}
             </div>
-            {advanced && support !== 'checking' && effSel && (
+            {kind === 'png' && (
+              <div className="space-y-1.5 text-[13px]" data-testid="export-png">
+                <label className="flex items-center gap-2"><input type="checkbox" checked={wav && !!audio} disabled={!audio} onChange={(e) => setWav(e.target.checked)} data-testid="export-png-wav" />{i18n.t('web.export.png.wav')}</label>
+                <p className="tabular-nums text-muted" data-testid="export-png-summary">{i18n.t('web.export.png.summary', { frames: i18n.number(pre.frames), size: mb(pngBytes), where: i18n.t(hasDirPicker ? 'web.export.png.toFolder' : 'web.export.png.toZip') })}</p>
+                {!hasDirPicker && pngBytes > ZIP_WARN_BYTES && <p role="alert" className="text-warning" data-testid="export-png-big">{i18n.t('web.export.png.big')}</p>}
+                <p className="text-muted" data-testid="export-vp9-alpha">{vp9Alpha === null ? '' : i18n.t(vp9Alpha ? 'web.export.png.alphaYes' : 'web.export.png.alphaNo')}</p>
+              </div>
+            )}
+            {kind === 'video' && advanced && support !== 'checking' && effSel && (
               <div className="grid grid-cols-[7rem_1fr] items-center gap-2 text-[13px]" data-testid="export-format-pickers">
                 <label htmlFor="exp-container" className="text-muted">{i18n.t('web.export.container')}</label>
                 <Select id="exp-container" value={effSel.container} onChange={(e) => setSel({ ...effSel, container: e.target.value as ContainerId })}>
@@ -213,16 +243,16 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
                 </Select>
               </div>
             )}
-            <p className="text-[13px] tabular-nums text-muted" data-testid="export-summary">
+            {kind === 'video' && <p className="text-[13px] tabular-nums text-muted" data-testid="export-summary">
               {i18n.t('web.export.summary', { width: String(size.width), height: String(size.height), fps: String(fps), duration: mmss(range.duration), frames: i18n.number(pre.frames), size: mb(pre.bytes) })}
-            </p>
+            </p>}
             <p className="text-[13px]" aria-live="polite">
-              {choice === 'checking' ? i18n.t('web.export.checking') : unsupported ? '' : i18n.t('web.export.format', { format: format ?? '' })}
+              {kind === 'png' ? i18n.t('web.export.format', { format: `PNG ${i18n.t('web.export.png.alpha')}${audio && wav ? ' + WAV' : ''}` }) : choice === 'checking' ? i18n.t('web.export.checking') : unsupported ? '' : i18n.t('web.export.format', { format: format ?? '' })}
             </p>
             {busy && <p role="alert" className="text-[13px] text-warning" data-testid="export-busy">{i18n.t('web.export.busy')}</p>}
             {notationPending && <p role="status" className="text-[13px] text-warning" data-testid="export-notation-pending">{i18n.t('web.export.notationPending')}</p>}
-            {unsupported && <p role="alert" className="text-[13px] text-danger">{i18n.t('errors.ERR_NO_SUPPORTED_ENCODER')}</p>}
-            {notes.length > 0 && <ul className="space-y-1 text-[13px] text-warning">{notes.map((n, i) => <li key={i}>{n}</li>)}</ul>}
+            {kind === 'video' && unsupported && <p role="alert" className="text-[13px] text-danger">{i18n.t('errors.ERR_NO_SUPPORTED_ENCODER')}</p>}
+            {kind === 'video' && notes.length > 0 && <ul className="space-y-1 text-[13px] text-warning">{notes.map((n, i) => <li key={i}>{n}</li>)}</ul>}
             <div className="space-y-2">
               <button type="button" className="btn-ghost border border-control" disabled={report === 'running'} data-testid="export-diagnose"
                 onClick={() => { setReport('running'); setCopied(false); runDiagnostics(pkg.version).then(setReport, (e) => setReport(`Diagnostics failed: ${e}`)); }}>
@@ -290,7 +320,7 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
             ? <button type="button" className="btn-ghost border border-control" onClick={() => handle.current?.cancel()} data-testid="export-cancel">{i18n.t('web.export.cancel')}</button>
             : <>
                 <button type="button" className="btn-ghost border border-control" onClick={onClose} data-testid="export-close">{i18n.t('web.export.close')}</button>
-                {phase !== 'done' && <button ref={startBtn} type="button" disabled={choice === 'checking' || unsupported || busy || notationPending} onClick={() => void start()}
+                {phase !== 'done' && <button ref={startBtn} type="button" disabled={(kind === 'video' && (choice === 'checking' || unsupported)) || busy || notationPending} onClick={() => void start()}
                   className="rounded border border-accent px-3 py-1.5 text-[13px] font-medium text-accent disabled:cursor-not-allowed disabled:opacity-50" data-testid="export-start">{i18n.t('web.export.start')}</button>}
               </>}
         </div>
