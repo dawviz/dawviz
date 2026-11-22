@@ -129,6 +129,7 @@
   "web.play": "Play",
   "web.pause": "Pause",
   "web.seek": "Seek",
+  "web.seekTo": "Current time: type a time (e.g. 1:30 or 90.5) and press Enter to jump there",
   "web.track.notes": "{n, plural, one {# note} other {# notes}}",
   "web.brightness.source": "Base brightness",
   "web.brightness.volume": "Volume",

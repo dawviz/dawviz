@@ -95,7 +95,7 @@ Nguồn: `docs/product/BRD.md` · [thứ tự đọc](docs/split/BRD/_index.md)
 - [4. PHẠM VI DỰ ÁN (PROJECT SCOPE) › 4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](docs/split/BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1.2k
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](docs/split/BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4.3k
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](docs/split/BRD/6-gia-dinh-assumptions.md) · 0.6k
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 33.6k
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 33.9k
 - [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](docs/split/BRD/8-cac-van-de-con-mo-open-issues.md) · 7.8k
 
 ### SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
