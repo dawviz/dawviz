@@ -1,7 +1,7 @@
-// Ô nhập thời gian `m:ss` / `m:ss.s` / giây (T-81). Enter hoặc rời ô để áp; sai cú pháp thì trả về giá trị cũ; Esc huỷ.
+// Ô nhập thời gian `m:ss` / `m:ss.s` / giây (T-81), nhận cả phép tính và dạng tương đối `+=` `-=` `*=` `/=` như ô số. Enter hoặc rời ô để áp; sai cú pháp thì trả về giá trị cũ; Esc huỷ.
 // `value = null` cùng `emptyText`: ô trống có nghĩa riêng (vd. "hết bài" của mốc kết thúc khoảng hiển thị).
 import { useEffect, useState } from 'react';
-import { formatTime, parseTime } from '../lib/timeText.ts';
+import { formatTime, parseTimeInput } from '../lib/timeText.ts';
 
 export function TimeField({ id, label, value, onChange, emptyText, min = 0, max = 86400, className = '', disabled }: {
   id?: string; label: string; value: number | null; onChange(v: number | null): void; disabled?: boolean;
@@ -14,7 +14,7 @@ export function TimeField({ id, label, value, onChange, emptyText, min = 0, max 
   useEffect(() => { setText(shown); setBad(false); }, [shown]);
   const commit = () => {
     if (!text.trim() && emptyText !== undefined) { setBad(false); if (value !== null) onChange(null); return; }
-    const v = parseTime(text);
+    const v = parseTimeInput(text, value);
     if (v === null || v < min || v > max) { setText(shown); setBad(true); return; }
     setBad(false); setText(formatTime(v)); if (v !== value) onChange(v);
   };

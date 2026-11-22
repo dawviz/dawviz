@@ -62,7 +62,7 @@ const ts = (styleId: string): TextRef => ({ styleId });
 export const DEFAULT_TRACK_INFO: Readonly<TrackInfoProps> = Object.freeze({ align: 'left', titleText: '', titleStyle: ts('title'), artistText: '', artistStyle: ts('subtitle') });
 export const DEFAULT_EVENT_COUNTER: Readonly<EventCounterProps> = Object.freeze({
   align: 'right', style: ts('counter'), valueStyle: {}, lineHeight: 1.45, decimals: 2,
-  lines: { played: { enabled: true, template: 'Num played notes: {played}/{total} ({pct})' }, total: { enabled: false, template: 'Num events: {total}' },
+  lines: { played: { enabled: true, template: 'Num played notes: {played}/{total} ({pct})' }, total: { enabled: false, template: 'Num events: {events_total}' },
     progress: { enabled: false, template: 'Progress: {pct}' }, tempo: { enabled: false, template: 'Tempo: {bpm} BPM' } },
 });
 export const DEFAULT_LIVE_TRIGGER: Readonly<LiveTriggerProps> = Object.freeze({
@@ -88,14 +88,14 @@ export const DEFAULT_TEXT_BOX: Readonly<TextBoxProps> = Object.freeze({ align: '
 
 /** Chỗ giữ RIÊNG của từng widget (che chỗ giữ chung cùng tên). Chỗ giữ chung (GLOBAL_KEYS) dùng được ở mọi chữ; preset dùng chỗ giữ lạ → cảnh báo, chữ giữ nguyên. */
 export const TEMPLATE_KEYS = {
-  EVENT_COUNTER: ['played', 'total', 'pct'], LIVE_TRIGGER: ['name', 'velocity', 'track', 'pitch'],
+  EVENT_COUNTER: ['played', 'total', 'pct', 'events', 'events_total'], LIVE_TRIGGER: ['name', 'velocity', 'track', 'pitch'],
   CHORD_DETECTION: ['notes', 'chord'], PROGRESS_BAR: ['elapsed', 'total', 'remaining', 'pct'], TRACK_INFO: [], TIME_BAR: [], TEXT: [],
 } as const;
 
 // ───────────────────────────── dữ liệu dẫn xuất ─────────────────────────────
 interface SigSeg { tick: number; num: number; den: number; barStart: number }
 export interface BarGrid { ppq: number; tempo: { tick: number; sec: number; bpm: number }[]; sigs: SigSeg[] }
-export interface HudData { starts: Map<string, Float64Array>; bars: BarGrid; chords: Map<string, ChordSeg[]> }
+export interface HudData { starts: Map<string, Float64Array>; /** Thời điểm kết thúc nốt, đã sắp tăng dần (không cùng thứ tự với `starts`). */ ends: Map<string, Float64Array>; bars: BarGrid; chords: Map<string, ChordSeg[]> }
 export interface ChordSeg { start: number; end: number; pitches: number[]; name: string | null }
 export interface BarPos { bar: number; beat: number; sub: number; beatPhase: number; barPhase: number; bpm: number; num: number; den: number }
 
@@ -146,7 +146,9 @@ export interface ChordGroup { tracks: TrackIndex[]; mode: ChordMode }
 export function buildHud(ast: UnifiedProjectAST, index: TimelineIndex, chordGroups: ChordGroup[] = []): HudData {
   const starts = new Map<string, Float64Array>();
   for (const ti of index.tracks) starts.set(ti.track.id, Float64Array.from(ti.notes, (n) => n.startTimeSeconds)); // đã sắp theo bắt đầu
-  const hud: HudData = { starts, bars: buildBarGrid(ast.tempoMap, ast.meta.internalPPQ || 960), chords: new Map() };
+  const ends = new Map<string, Float64Array>();
+  for (const ti of index.tracks) ends.set(ti.track.id, Float64Array.from(ti.notes, (n) => n.endTimeSeconds).sort());
+  const hud: HudData = { starts, ends, bars: buildBarGrid(ast.tempoMap, ast.meta.internalPPQ || 960), chords: new Map() };
   for (const g of chordGroups) chordTimeline(hud, shown(g.tracks), g.mode);
   return hud;
 }
@@ -244,12 +246,12 @@ export function globalValues(src: PlaceholderSource, t: number): Record<string, 
   const ppq = ast.meta.internalPPQ || 960;
   let on: ReturnType<typeof recentOnsets> | null = null; const onsets = () => (on ??= recentOnsets(shown(tracks), t, RECENT_ONSETS + 1));
   let ph: PhaseInfo | null = null; const phase = () => (ph ??= phaseInfoAt(derived.phases, t, dur));
-  let counts: { played: number; total: number } | null = null;
+  let counts: { played: number; total: number; events: number; eventsTotal: number } | null = null;
   const count = () => {
     if (counts) return counts;
-    let played = 0, total = 0;
-    for (const ti of shown(tracks)) { const s = hud().starts.get(ti.track.id); if (!s) continue; total += s.length; played += upperBound(s, t); }
-    return (counts = { played, total });
+    let played = 0, total = 0, events = 0;
+    for (const ti of shown(tracks)) { const s = hud().starts.get(ti.track.id), e = hud().ends.get(ti.track.id); if (!s || !e) continue; total += s.length; played += upperBound(s, t); events += upperBound(s, t) + upperBound(e, t); }
+    return (counts = { played, total, events, eventsTotal: total * 2 });
   };
   const activePitches = () => { // mọi cao độ đang vang của các track đã chọn, thấp → cao
     const set = new Set<number>();
@@ -269,7 +271,7 @@ export function globalValues(src: PlaceholderSource, t: number): Record<string, 
     bar: () => bar().bar, beat: () => bar().beat, sig: () => `${bar().num}/${bar().den}`,
     title: () => ast.meta.title ?? '', artist: () => (ast.meta as { artist?: string }).artist ?? '',
     chord: () => { const c = chordAt(hud().chords.get(chordKey(shown(tracks))) ?? [], t)?.name ?? ''; return c && nm ? chordNameFor(c, nm) : c; }, notes: () => listV(active()),
-    played: () => count().played, total: () => count().total,
+    played: () => count().played, total: () => count().total, events: () => count().events, events_total: () => count().eventsTotal,
     pct: () => { const c = count(), v = c.total ? c.played / c.total * 100 : 0; return numV(v, String(Math.round(v))); },
   };
   const out: Record<string, PV> = {};
@@ -329,11 +331,11 @@ export const eventCounterRenderer: WidgetRenderer<EventCounterProps> = {
   layout({ ast, derived, tracks, measure, textStyles, fonts }, spec, t) {
     const p = spec.properties, W = spec.layout.width, x = xFor(p.align, W), hud = hudOf(derived, ast), out: Primitive[] = [], T = typo(textStyles, measure, fonts);
     const st = T.style(p.style, 'counter');
-    let played = 0, total = 0;
-    for (const ti of shown(tracks)) { const s = hud.starts.get(ti.track.id); if (!s) continue; total += s.length; played += upperBound(s, t); }
+    let played = 0, total = 0, events = 0;
+    for (const ti of shown(tracks)) { const s = hud.starts.get(ti.track.id), e = hud.ends.get(ti.track.id); if (!s || !e) continue; total += s.length; played += upperBound(s, t); events += upperBound(s, t) + upperBound(e, t); }
     const share = total ? played / total * 100 : 0;
     // `{pct}` giữ chữ cũ kèm "%" (số chữ số theo `decimals`); có định dạng thì ra số trần: `{pct:0.0}`.
-    const v = withLocals(globalValues({ ast, derived, tracks }, t), { played, total, pct: numV(share, `${fixed(share, p.decimals)}%`) });
+    const v = withLocals(globalValues({ ast, derived, tracks }, t), { played, total, events, events_total: total * 2, pct: numV(share, `${fixed(share, p.decimals)}%`) });
     let row = 0;
     for (const k of ['played', 'total', 'progress', 'tempo'] as const) {
       const cfg = p.lines[k]; if (!cfg.enabled) continue;

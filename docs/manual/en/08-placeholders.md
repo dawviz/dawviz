@@ -39,6 +39,7 @@ Built-in widgets look the same as before. In **Advanced** mode, the text of ever
 | `{lengths}` | lengths of the most recent notes as **fractions of a quarter note**, like `1/2 1/8 3/2` |
 | `{pitch_classes}` | names of the notes sounding now, without octave, low to high: `C E G` |
 | `{played}`, `{total}` | notes played so far, all notes |
+| `{events}`, `{events_total}` | events so far, all events; each note has two events (start and end), so the total is twice the note count |
 | `{pct}` | share of notes played, whole number |
 
 `{tempo}` is the old name of `{bpm}`: it still works and gives exactly the same result, but the app no longer suggests it.

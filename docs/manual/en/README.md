@@ -32,6 +32,7 @@ All number fields work the same way:
 
 - Click the field, type a number, press Enter.
 - You can type a sum: `120+40`, `1920/2`.
+- Time fields (`1:30`, `90.5`) also accept arithmetic (`1:30+15`, `(2:00-0:10)/2`) and `+=10`, `-=0:05`, `*=2`, `/=2` like number fields.
 - Type `+=10` to add 10 to the current value, `-=10` to subtract, `*=2` to double, `/=2` to halve.
 - Hold the mouse on the field and drag up or down to change the value. Hold Shift while dragging for 10× faster, Alt for 10× slower.
 - If the input can't be read, the field keeps its old value and says why just below.

@@ -33,11 +33,13 @@ test('animate: đọc preset — giữ mục hợp lệ, bỏ mục sai kèm c�
   const mix = mk('TIME_BAR', { barLength: { bind: 'progress', from: [0, 1], to: ['#fff', '#000'] } }); assert.equal(mix.scene.widgets[0].animate, undefined, 'đích màu cho thuộc tính số');
 });
 
-test('animate: Piano Roll nhận danh sách đường dẫn riêng, Bản nhạc chỉ layout/opacity/scale; bật-tắt và lựa chọn theo bậc; giới hạn số lượng', () => {
+test('animate: Piano Roll nhận danh sách đường dẫn riêng, Bản nhạc chỉ thuộc tính hình vẽ (không có thuộc tính dựng); bật-tắt và lựa chọn theo bậc; giới hạn số lượng', () => {
   const pr = animatablePaths('PIANO_ROLL');
   assert.ok(pr.has('layout.rotation') && pr.has('opacity') && pr.get('playheadWidth') === 'number' && pr.get('noteStyle.base.glow') === 'number' && pr.get('playheadColor') === 'color' && pr.get('keyboard.enabled') === 'bool');
   assert.ok(!pr.has('pitchMin') && !pr.has('scrollMode') && !pr.has('noteStyle.tracks')); // cấu trúc: không animate
-  assert.ok(!animatablePaths('NOTATION').has('zoom') && animatablePaths('NOTATION').has('layout.x'));
+  const nt = animatablePaths('NOTATION');
+  assert.ok(nt.get('activeColor') === 'color' && nt.get('auraColor') === 'color' && nt.get('glow') === 'number' && nt.get('glowMode') === 'choice' && nt.has('layout.x'));
+  assert.ok(!nt.has('musicFont') && !nt.has('division') && !nt.has('barsPerSystem')); // thuộc tính dựng: không animate
   assert.ok(animatablePaths('TIME_BAR').get('barColor') === 'color' && animatablePaths('TIME_BAR').get('barLength') === 'number' && animatablePaths('TIME_BAR').get('showBars') === 'bool');
   assert.ok(animatablePaths('EVENT_COUNTER').get('lines.played.enabled') === 'bool' && animatablePaths('EVENT_COUNTER').has('lineHeight'));
   const many = Array.from({ length: 300 }, (_, i) => ({ at: { sec: i }, value: i })), warns: string[] = [];
@@ -160,4 +162,20 @@ test('T-18 ripple: vòng gợn toả từ đầu nốt trong 0,6 s rồi tắt; 
   const rings = (t: number) => frame(sc, t)[0].prims.filter((p) => p.kind === 'rect' && p.fill === '#00000000');
   const n0 = ast.tracks[0].notes[0].startTimeSeconds;
   assert.ok(rings(n0 + 0.1).length > 0); assert.deepEqual(rings(n0 + 0.1), rings(n0 + 0.1));
+});
+
+test('animate: Bản nhạc — màu mực/nốt đang ngân/quầng sáng đổi theo keyframe, giá trị luôn hợp lệ', () => {
+  const r = mk('NOTATION', {
+    activeColor: { keys: [{ at: { sec: 0 }, value: '#ff0000' }, { at: { sec: 10 }, value: '#0000ff' }] },
+    auraColor: { keys: [{ at: { sec: 0 }, value: '#00ff00' }, { at: { sec: 10 }, value: '#ffffff' }] },
+    glow: { keys: [{ at: { sec: 0 }, value: 0 }, { at: { sec: 10 }, value: 1 }] },
+    glowMode: { kind: 'discrete', keys: [{ at: { sec: 0 }, value: 'HALO' }, { at: { sec: 5 }, value: 'SOFT' }] },
+    musicFont: { kind: 'discrete', keys: [{ at: { sec: 0 }, value: 'PETALUMA' }] }, // thuộc tính dựng: bị bỏ
+  });
+  assert.equal(r.warnings.length > 0, true);
+  const w = r.scene.widgets[0], at = (t: number) => resolveAnimated(w, ctxAt(t), r.scene.canvas).widget.properties as unknown as Record<string, unknown>;
+  assert.deepEqual(Object.keys(w.animate!).sort(), ['activeColor', 'auraColor', 'glow', 'glowMode']);
+  assert.equal(at(0).activeColor, '#ff0000'); assert.equal(at(10).activeColor, '#0000ff');
+  const mid = String(at(5).activeColor); assert.match(mid, /^#[0-9a-f]{6}$/i); assert.notEqual(mid, '#ff0000');
+  near(Number(at(5).glow), 0.5); assert.equal(at(2).glowMode, 'HALO'); assert.equal(at(6).glowMode, 'SOFT');
 });

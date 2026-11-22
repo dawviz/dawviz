@@ -39,6 +39,7 @@ Chữ của widget có sẵn vẫn như cũ. Ở chế độ **Nâng cao**, ô c
 | `{lengths}` | độ dài của các nốt gần nhất theo **phân số nốt đen**, ví dụ `1/2 1/8 3/2` |
 | `{pitch_classes}` | tên các nốt đang vang, không kèm quãng tám, thấp đến cao: `C E G` |
 | `{played}`, `{total}` | số nốt đã phát, tổng số nốt |
+| `{events}`, `{events_total}` | số sự kiện đã xảy ra, tổng số sự kiện; mỗi nốt có hai sự kiện (bắt đầu và kết thúc) nên tổng gấp đôi số nốt |
 | `{pct}` | phần trăm nốt đã phát, số nguyên |
 
 `{tempo}` là tên cũ của `{bpm}`: vẫn dùng được và cho đúng cùng kết quả, nhưng ứng dụng không gợi ý nữa.

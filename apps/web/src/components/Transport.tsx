@@ -2,7 +2,7 @@
 // Theo dõi kho đồng hồ trực tiếp nên chỉ thanh này vẽ lại mỗi khung hình. Sóng âm (T-08) là SVG nằm trên thanh tua: vạch muted cho cả bài,
 // vạch nhấn cho phần đã phát (clip-path theo t); màu theo theme nhờ currentColor, tính lại chỉ khi đổi đỉnh/offset/độ dài.
 import { useMemo, useRef, useState } from 'react';
-import { parseTime } from '../lib/timeText.ts';
+import { parseTimeInput } from '../lib/timeText.ts';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { usePlayback, usePlaybackLoop, type Playback } from '../lib/playback.ts';
 import { peaksPath, placePeaks } from '../lib/audioPeaks.ts';
@@ -78,7 +78,7 @@ function ClockField({ t, duration, playing, label, onSeek }: { t: number; durati
   const commit = (): boolean => {
     const s = cur.current;
     if (s === null) return true;
-    const v = parseTime(s);
+    const v = parseTimeInput(s, t);
     if (v === null || v > duration + 1e-9) { setBad(true); return false; }
     setText(null); setBad(false); onSeek(v); return true;
   };

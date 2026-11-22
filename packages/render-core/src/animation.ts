@@ -78,6 +78,15 @@ export const PIANO_PATHS: ReadonlyMap<string, AnimKind> = new Map<string, AnimKi
   ['noteStyle.base.customColor', 'color'], ['playheadColor', 'color'], ['keyboard.whiteColor', 'color'], ['keyboard.blackColor', 'color'],
   ['noteStyle.base.glowActiveOnly', 'bool'], ['noteStyle.base.colorMode', 'choice'], ['playheadVisible', 'bool'], ['keyboard.enabled', 'bool'], ['keyboard.useTrackColor', 'bool'],
 ]);
+/**
+ * Đường dẫn animate được của Bản nhạc: chỉ thuộc tính hình vẽ (màu, quầng sáng, độ đục, phóng to, vạch phát). Thuộc tính dựng bản nhạc
+ * (`NOTATION_ENGRAVE_KEYS`) không animate được vì đổi là phải dựng lại.
+ */
+export const NOTATION_PATHS: ReadonlyMap<string, AnimKind> = new Map<string, AnimKind>([
+  ['inkColor', 'color'], ['playedColor', 'color'], ['activeColor', 'color'], ['playheadColor', 'color'], ['auraColor', 'color'],
+  ...['upcomingOpacity', 'playedOpacity', 'staticOpacity', 'zoom', 'glow', 'glowSize', 'playheadWidth', 'auraGlow', 'auraMin'].map((k) => [k, 'number'] as [string, AnimKind]),
+  ['colorMode', 'choice'], ['glowMode', 'choice'],
+]);
 const CHOICE_OK: Readonly<Record<string, readonly string[]>> = { 'noteStyle.base.colorMode': ['track', 'custom', 'pitch', 'velocity'] };
 
 type Obj = Record<string, unknown>;
@@ -105,7 +114,8 @@ export function animatablePaths(type: WidgetType): Map<string, AnimKind> {
   out.set('opacity', 'number');
   out.set('scale', 'number');
   if (type === 'PIANO_ROLL') for (const [p, k] of PIANO_PATHS) out.set(p, k);
-  else if (type !== 'NOTATION') leaves(widgetDefaults(type), [], out);
+  else if (type === 'NOTATION') for (const [p, k] of NOTATION_PATHS) out.set(p, k);
+  else leaves(widgetDefaults(type), [], out);
   pathCache.set(type, out);
   return out;
 }
