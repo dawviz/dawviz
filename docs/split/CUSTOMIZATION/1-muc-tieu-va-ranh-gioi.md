@@ -5,7 +5,7 @@ section: "1. Mục tiêu và ranh giới"
 path: "1. Mục tiêu và ranh giới"
 chunk: 1-muc-tieu-va-ranh-gioi.md
 source_lines: 5-14
-source_sha1: 2e38933ae5
+source_sha1: a657f5d146
 ids: [AD-07, AD-08, ARC-01, D-06]
 ---
 ## 1. Mục tiêu và ranh giới

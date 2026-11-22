@@ -5,7 +5,7 @@ section: "4. GC (CDP tracing, Chrome)"
 path: "4. GC (CDP tracing, Chrome)"
 chunk: 4-gc-cdp-tracing-chrome.md
 source_lines: 54-62
-source_sha1: aac793689f
+source_sha1: 53acc77056
 ids: []
 ---
 ## 4. GC (CDP tracing, Chrome)

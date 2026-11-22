@@ -403,6 +403,8 @@ dawviz/
 │  └─ README.md
 ├─ schemas/
 ├─ scripts/
+│  ├─ a11y/
+│  │  └─ run.mjs
 │  ├─ docs-site/
 │  │  ├─ assets/
 │  │  │  ├─ app.js
@@ -3544,6 +3546,7 @@ type SpectrumOut
 ## 3. Công cụ dòng lệnh và script
 
 - `bin/dawparse.mjs` — CLI kiểm chứng: node bin/dawparse.mjs <file> [--json] [--inventory] [--tempo 128] [--show-muted] [--schema s.json]... [--files dir] [--ref ref.mid]
+- `scripts/a11y/run.mjs` — Kiểm trợ năng tự động (M5, G8): axe-core (WCAG 2.0/2.1/2.2 mức A–AA, gồm vùng bấm 24 px `target-size`) trên ứng dụng thật (Vite dev + Chromium),
 - `scripts/bundle.mjs` — Bundler ESM tối giản, không phụ thuộc: gộp @dawviz/parser và mọi package con thành MỘT file ES module
 - `scripts/check-i18n.mjs` — Kiểm tra danh mục ngôn ngữ trong locales/ (dùng cho cộng tác viên và CI). Xem docs/I18N.md.
 - `scripts/docs-site/assets/app.js` — Giao diện trang tài liệu: đổi sáng/tối, mở menu trên di động, tìm kiếm phía máy khách (chỉ mục nằm trong search-index.js).

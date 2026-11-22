@@ -263,7 +263,7 @@ function AssetField({ label, value, disabled, onChange, testId, reset }: { label
         </Select>
         {reset}
       </div>
-      <input ref={input} type="file" accept={IMAGE_ACCEPT} className="sr-only" tabIndex={-1} onChange={(e) => void pick(e.target.files?.[0])} data-testid="ws-asset-file" />
+      <input ref={input} type="file" accept={IMAGE_ACCEPT} className="sr-only" tabIndex={-1} aria-label={i18n.t('web.asset.pick')} onChange={(e) => void pick(e.target.files?.[0])} data-testid="ws-asset-file" />
       <button type="button" className="btn-ghost border border-control" disabled={disabled || busy} onClick={() => input.current?.click()} data-testid="ws-asset-pick">{busy ? i18n.t('web.asset.loading') : i18n.t('web.asset.pick')}</button>
       {err && <p role="alert" className="text-xs leading-snug text-danger" data-testid="ws-asset-error">{i18n.t(`errors.${err}`)}</p>}
       {!known && <p className="text-xs leading-snug text-warning">{i18n.t('web.asset.missingHint')}</p>}

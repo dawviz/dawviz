@@ -5,7 +5,7 @@ section: "6. Từng mục của đề xuất"
 path: "6. Từng mục của đề xuất"
 chunk: 6-tung-muc-cua-de-xuat.md
 source_lines: 80-92
-source_sha1: aac793689f
+source_sha1: 53acc77056
 ids: [AD-13]
 ---
 ## 6. Từng mục của đề xuất

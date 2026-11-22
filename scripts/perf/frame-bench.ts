@@ -50,7 +50,30 @@ async function runOne(name: string, ast: Ast, scene: SceneDocument, frames: numb
   for (let i = 0; i < frames; i++) { const t = t0 + i / 60; const a = performance.now(); const out = layoutFrame(scene, derived, ast, t); lay.push(performance.now() - a); prims.push(out.reduce((s, w) => s + w.prims.length, 0)); }
   for (let i = 0; i < frames; i++) { const t = t0 + i / 60; const a = performance.now(); renderFrame(scene, derived, ast, t, { ctx: g as any, width: 1920, height: 1080 }, 1); full.push(performance.now() - a); }
   for (let i = 0; i < frames; i++) { const t = t0 + i / 60; const a = performance.now(); renderFrame(scene, derived, ast, t, { ctx: g as any, width: 1920, height: 1080 }, 1); g.getImageData(0, 0, 1, 1); sync.push(performance.now() - a); }
-  return { name, indexMs, hudMs, firstMs, layout: stats(lay), render: stats(full), renderSync: stats(sync), primsAvg: Math.round(prims.reduce((a, b) => a + b, 0) / prims.length), primsMax: Math.max(...prims) };
+  // Xuất thật (T-27): vẽ + mã hoá H.264 1080p60 bằng VideoEncoder (như Export Worker), đo khung/giây xuất được. Bật bằng ?encode=1.
+  let encode: { fps: number; frames: number; codec: string } | null = null;
+  if (new URLSearchParams(location.search).get('encode')) encode = await encodeRun(scene, derived, ast, frames, t0, cv, g);
+  return { name, indexMs, hudMs, firstMs, encode, layout: stats(lay), render: stats(full), renderSync: stats(sync), primsAvg: Math.round(prims.reduce((a, b) => a + b, 0) / prims.length), primsMax: Math.max(...prims) };
+}
+
+async function encodeRun(scene: SceneDocument, derived: Derived, ast: Ast, frames: number, t0: number, cv: HTMLCanvasElement, g: CanvasRenderingContext2D) {
+  const codecs = ['avc1.640033', 'avc1.640028', 'avc1.4d0028'];
+  let codec = '';
+  for (const c of codecs) if ((await VideoEncoder.isConfigSupported({ codec: c, width: 1920, height: 1080, bitrate: 12e6, framerate: 60 })).supported) { codec = c; break; }
+  if (!codec) return null;
+  let out = 0;
+  const enc = new VideoEncoder({ output: () => { out++; }, error: (e) => { throw e; } });
+  enc.configure({ codec, width: 1920, height: 1080, bitrate: 12e6, framerate: 60, latencyMode: 'quality' });
+  const a = performance.now();
+  for (let i = 0; i < frames; i++) {
+    renderFrame(scene, derived, ast, t0 + i / 60, { ctx: g as any, width: 1920, height: 1080 }, 1);
+    const f = new VideoFrame(cv, { timestamp: Math.round((i * 1e6) / 60) });
+    enc.encode(f, { keyFrame: i % 120 === 0 }); f.close();
+    while (enc.encodeQueueSize > 4) await new Promise((r) => setTimeout(r, 0)); // dòng chảy như Export Worker
+  }
+  await enc.flush(); enc.close();
+  const s = (performance.now() - a) / 1000;
+  return { fps: Math.round((out / s) * 10) / 10, frames: out, codec };
 }
 
 async function main() {

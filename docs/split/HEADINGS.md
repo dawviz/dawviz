@@ -799,6 +799,8 @@
   - [5. Phân tích âm thanh và sóng âm](SPIKE-5-PERF-WASM/5-phan-tich-am-thanh-va-song-am.md#5-phân-tích-âm-thanh-và-sóng-âm)
 - [6. Từng mục của đề xuất](SPIKE-5-PERF-WASM/6-tung-muc-cua-de-xuat.md)
   - [6. Từng mục của đề xuất](SPIKE-5-PERF-WASM/6-tung-muc-cua-de-xuat.md#6-từng-mục-của-đề-xuất)
+- [6b. Xuất thật (bổ sung 2026-11-22, G8)](SPIKE-5-PERF-WASM/6b-xuat-that-bo-sung-2026-11-22-g8.md)
+  - [6b. Xuất thật (bổ sung 2026-11-22, G8)](SPIKE-5-PERF-WASM/6b-xuat-that-bo-sung-2026-11-22-g8.md#6b-xuất-thật-bổ-sung-2026-11-22-g8)
 - [7. Bước tiếp theo đề xuất (chưa làm)](SPIKE-5-PERF-WASM/7-buoc-tiep-theo-de-xuat-chua-lam.md)
   - [7. Bước tiếp theo đề xuất (chưa làm)](SPIKE-5-PERF-WASM/7-buoc-tiep-theo-de-xuat-chua-lam.md#7-bước-tiếp-theo-đề-xuất-chưa-làm)
 

@@ -1,5 +1,6 @@
 // Đo thời gian khung hình trong trình duyệt thật (T-27, SPIKE-5). Không phải mã ứng dụng, không vào bản build.
-// node scripts/perf/run.mjs <tệp dự án> [--browser=chrome|firefox|chromium] [--headless] [--rep=N] [--frames=600] [--t0=30] [--only=a,b] [--audio=giây]
+// node scripts/perf/run.mjs <tệp dự án> [--browser=chrome|firefox|chromium] [--headless] [--rep=N] [--frames=600] [--t0=30] [--only=a,b] [--audio=giây] [--encode]
+//   --encode: đo thêm xuất thật (vẽ + mã hoá H.264 1080p60 bằng VideoEncoder), in khung/giây xuất được của từng cảnh.
 //   chrome   = Google Chrome cài trên máy (CHROME=<đường dẫn> để chỉ định), có giao diện nên dùng GPU thật.
 //   chromium = Chromium của Playwright; --headless trên máy không màn hình sẽ vẽ bằng phần mềm (SwiftShader): số liệu KHÔNG đại diện.
 // In một dòng JSON: mỗi cảnh có p50/p95/p99/max (ms) của layoutFrame, renderFrame và renderFrame + đồng bộ GPU.
@@ -38,7 +39,7 @@ const chromePath = process.env.CHROME ?? ['/usr/bin/google-chrome', '/Applicatio
 const b = which === 'firefox' ? await firefox.launch({ headless }) : await chromium.launch({ headless, ...(which === 'chrome' && chromePath ? { executablePath: chromePath } : {}) });
 try {
   const pg = await b.newPage({ viewport: { width: 1920, height: 1080 } });
-  const q = new URLSearchParams({ ast: 'ast.json', rep: args.rep ?? '1', frames: args.frames ?? '600', t0: args.t0 ?? '30', ...(args.only ? { only: args.only } : {}), ...(args.audio ? { audio: args.audio } : {}) });
+  const q = new URLSearchParams({ ast: 'ast.json', rep: args.rep ?? '1', frames: args.frames ?? '600', t0: args.t0 ?? '30', ...(args.only ? { only: args.only } : {}), ...(args.audio ? { audio: args.audio } : {}), ...(args.encode ? { encode: '1' } : {}) });
   await pg.goto(`http://localhost:${server.address().port}/index.html?${q}`);
   await pg.waitForFunction(() => window.__result, null, { timeout: 30 * 60_000 });
   const r = await pg.evaluate(() => window.__result);

@@ -4,7 +4,7 @@
  "docs": {
   "BRD.md": {
    "title": "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)",
-   "sha1": "9dcfa6038b",
+   "sha1": "34a0d66028",
    "chunks": [
     {
      "n": 0,
@@ -330,10 +330,10 @@
      "path": [
       "7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)"
      ],
-     "chars": 33866,
+     "chars": 34421,
      "lines": [
       204,
-      279
+      280
      ],
      "ids": [
       "AD-08",
@@ -410,6 +410,7 @@
       "D-65",
       "D-66",
       "D-67",
+      "D-68",
       "KPI-04",
       "NFR-ACC-02",
       "NFR-SEC-01",
@@ -456,8 +457,8 @@
      ],
      "chars": 7755,
      "lines": [
-      280,
-      303
+      281,
+      304
      ],
      "ids": [
       "D-01",
@@ -3913,7 +3914,7 @@
   },
   "CUSTOMIZATION.md": {
    "title": "Tùy biến tối đa: storyboard, chuyển cảnh nốt, đường cong easing, hạt, tài nguyên và preset cộng đồng",
-   "sha1": "2e38933ae5",
+   "sha1": "a657f5d146",
    "chunks": [
     {
      "n": 0,
@@ -4056,10 +4057,10 @@
      "path": [
       "7. Hiệu năng và giới hạn"
      ],
-     "chars": 1031,
+     "chars": 2225,
      "lines": [
       181,
-      193
+      206
      ],
      "ids": []
     },
@@ -4072,8 +4073,8 @@
      ],
      "chars": 1060,
      "lines": [
-      194,
-      205
+      207,
+      218
      ],
      "ids": [
       "AD-08",
@@ -4095,8 +4096,8 @@
      ],
      "chars": 894,
      "lines": [
-      206,
-      216
+      219,
+      229
      ],
      "ids": [
       "REQ-GRAPHICS-09",
@@ -4116,8 +4117,8 @@
      ],
      "chars": 1646,
      "lines": [
-      217,
-      235
+      230,
+      248
      ],
      "ids": [
       "D-40"
@@ -4132,8 +4133,8 @@
      ],
      "chars": 399,
      "lines": [
-      236,
-      241
+      249,
+      254
      ],
      "ids": [
       "D-44",
@@ -4150,8 +4151,8 @@
      ],
      "chars": 3061,
      "lines": [
-      242,
-      270
+      255,
+      283
      ],
      "ids": [
       "AD-07",
@@ -6902,7 +6903,7 @@
   },
   "SPIKE-5-PERF-WASM.md": {
    "title": "Spike 5: đo hiệu năng và xét đề xuất chuyển phần tính toán sang Rust/WASM",
-   "sha1": "aac793689f",
+   "sha1": "53acc77056",
    "chunks": [
     {
      "n": 0,
@@ -7006,6 +7007,20 @@
     },
     {
      "n": 7,
+     "file": "SPIKE-5-PERF-WASM/6b-xuat-that-bo-sung-2026-11-22-g8.md",
+     "title": "6b. Xuất thật (bổ sung 2026-11-22, G8)",
+     "path": [
+      "6b. Xuất thật (bổ sung 2026-11-22, G8)"
+     ],
+     "chars": 318,
+     "lines": [
+      93,
+      96
+     ],
+     "ids": []
+    },
+    {
+     "n": 8,
      "file": "SPIKE-5-PERF-WASM/7-buoc-tiep-theo-de-xuat-chua-lam.md",
      "title": "7. Bước tiếp theo đề xuất (chưa làm)",
      "path": [
@@ -7013,8 +7028,8 @@
      ],
      "chars": 547,
      "lines": [
-      93,
-      97
+      97,
+      101
      ],
      "ids": []
     }
@@ -8045,6 +8060,9 @@
   "D-67": [
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "ANIMATION-CATALOG/6-hieu-ung-bien-doi-co-ban-transform.md"
+  ],
+  "D-68": [
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md"
   ],
   "NFR-ACC-02": [
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",

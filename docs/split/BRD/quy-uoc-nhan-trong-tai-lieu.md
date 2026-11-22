@@ -5,7 +5,7 @@ section: "Quy ước nhãn trong tài liệu"
 path: "DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) > Quy ước nhãn trong tài liệu"
 chunk: quy-uoc-nhan-trong-tai-lieu.md
 source_lines: 25-33
-source_sha1: 9dcfa6038b
+source_sha1: 34a0d66028
 ids: []
 ---
 ### Quy ước nhãn trong tài liệu

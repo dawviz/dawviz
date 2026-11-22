@@ -90,6 +90,10 @@ Test mới so với cách tính tham chiếu (FFT phức đủ cỡ, `hypot`) tr
 
 Chi phí nếu dùng WASM: Rust + target `wasm32` cho CI cả Linux và Windows, bước build mới cho `packages/*` (hiện là TS/JS chạy thẳng bằng `node --test`), mã tất định phải giữ khớp bit giữa hai cách cài (Preview ↔ Export), và tăng cỡ tải về.
 
+## 6b. Xuất thật (bổ sung 2026-11-22, G8)
+
+Đo vẽ + mã hoá H.264 1080p60 bằng `VideoEncoder` (`run.mjs --encode`): Chrome 64–200 khung/giây với dự án 33.487 nốt, 33–102 ở 502.305 nốt; Firefox 33–85. Bảng đầy đủ ở [CUSTOMIZATION §7](../design/CUSTOMIZATION.md). Kết luận không đổi: nút thắt là vẽ, không phải tính toán.
+
 ## 7. Bước tiếp theo đề xuất (chưa làm)
 
 * Phần vẽ: gom `fillRect` theo màu/độ đục (một `Path2D` mỗi nhóm), thay `shadowBlur` bằng ảnh phát sáng dựng sẵn khi vượt ngân sách (CUSTOMIZATION §7 đã ghi), WebGL2 cho nốt và hạt (Spike riêng như T-27/T-36).

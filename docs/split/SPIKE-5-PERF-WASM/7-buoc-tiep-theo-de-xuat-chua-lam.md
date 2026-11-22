@@ -4,8 +4,8 @@ doc_title: "Spike 5: đo hiệu năng và xét đề xuất chuyển phần tín
 section: "7. Bước tiếp theo đề xuất (chưa làm)"
 path: "7. Bước tiếp theo đề xuất (chưa làm)"
 chunk: 7-buoc-tiep-theo-de-xuat-chua-lam.md
-source_lines: 93-97
-source_sha1: aac793689f
+source_lines: 97-101
+source_sha1: 53acc77056
 ids: []
 ---
 ## 7. Bước tiếp theo đề xuất (chưa làm)

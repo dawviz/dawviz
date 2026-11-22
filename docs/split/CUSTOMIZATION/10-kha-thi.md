@@ -4,8 +4,8 @@ doc_title: "Tùy biến tối đa: storyboard, chuyển cảnh nốt, đường 
 section: "10. Khả thi"
 path: "10. Khả thi"
 chunk: 10-kha-thi.md
-source_lines: 217-235
-source_sha1: 2e38933ae5
+source_lines: 230-248
+source_sha1: a657f5d146
 ids: [D-40]
 ---
 ## 10. Khả thi

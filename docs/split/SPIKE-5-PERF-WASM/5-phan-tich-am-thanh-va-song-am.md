@@ -5,7 +5,7 @@ section: "5. Phân tích âm thanh và sóng âm"
 path: "5. Phân tích âm thanh và sóng âm"
 chunk: 5-phan-tich-am-thanh-va-song-am.md
 source_lines: 63-79
-source_sha1: aac793689f
+source_sha1: 53acc77056
 ids: []
 ---
 ## 5. Phân tích âm thanh và sóng âm

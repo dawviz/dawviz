@@ -5,7 +5,7 @@ section: "2. Môi trường đo (thật, không giả lập)"
 path: "2. Môi trường đo (thật, không giả lập)"
 chunk: 2-moi-truong-do-that-khong-gia-lap.md
 source_lines: 13-24
-source_sha1: aac793689f
+source_sha1: 53acc77056
 ids: []
 ---
 ## 2. Môi trường đo (thật, không giả lập)

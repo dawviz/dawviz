@@ -57,7 +57,7 @@ export function VideoStyles({ value, edited, onPick, thumb, presets, headerActio
   const tile = (id: string, label: string, pick: () => void, on: boolean, isEdited: boolean, removable: boolean) => {
     const src = thumb?.(id);
     return (
-      <li key={id} className="group relative" data-testid={removable ? `user-preset-${id}` : undefined}>
+      <li key={id} role="none" className="group relative" data-testid={removable ? `user-preset-${id}` : undefined}>
         <button type="button" role="radio" aria-checked={on} tabIndex={radioTab(on, id === first, selected !== undefined)} onClick={pick}
           className={`relative flex w-full flex-col gap-1.5 py-2 pl-4 pr-3 text-left text-[13px] transition ${on ? 'bg-raised font-medium text-fg' : 'text-muted hover:bg-raised hover:text-fg'}`}>
           {on && <span aria-hidden className="absolute inset-y-0 left-0 w-0.5 bg-accent" />}
