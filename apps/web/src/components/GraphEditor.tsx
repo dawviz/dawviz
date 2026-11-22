@@ -5,7 +5,7 @@
 // Mọi chỉnh sửa đi qua `onAnimateMany` (lệnh editWidgetAnimation): một lần kéo = một bước hoàn tác (bọc trong cử chỉ).
 // Vùng chọn dùng chung với chế độ Danh sách (KeySel). Logic thuần ở lib/graphEditor.ts. Tải lười (Editor.tsx) nên không vào gói đầu.
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent as RPointerEvent } from 'react';
-import { isBinding, type Animation, type EaseSpec, type KeyAnimation, type TempoPoint, type WidgetSpec } from '@dawviz/render-core';
+import { isBinding, isKeyAnim, type Animation, type EaseSpec, type KeyAnimation, type TempoPoint, type WidgetSpec } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { usePlayback, type Playback } from '../lib/playback.ts';
 import type { Gesture } from '../lib/storeReact.ts';
@@ -43,7 +43,7 @@ export function GraphEditor({ widget, tempoMap, duration, playback, locked, sel,
   const { i18n } = useI18n();
   const animate = widget.animate ?? {};
   const rows = useMemo(() => timelineRows(widget.type, animate), [widget.type, animate]);
-  const keyAnim = (p: string): KeyAnimation | null => { const a = animate[p]; return a && !isBinding(a) ? a : null; };
+  const keyAnim = (p: string): KeyAnimation | null => { const a = animate[p]; return a && isKeyAnim(a) ? a : null; };
   // Dòng hiện trên đồ thị: dòng đang chọn, hoặc dòng của keyframe đang chọn, hoặc dòng đầu tiên có đường cong số.
   const firstSelPath = sel.keys.map((r) => parseKeyRef(r)?.path).find((p): p is string => !!p);
   const row: RowDef | undefined = rows.find((r) => r.id === sel.row && r.paths.some((p) => graphable(keyAnim(p))))

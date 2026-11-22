@@ -73,6 +73,8 @@ function animLabel(c: LabelCtx, widget: string, changes: AnimChange[]): string |
     case 'toKeys': return i18n.t('web.hist.anim.toKeys', vars);
     case 'toBind': return i18n.t('web.hist.anim.toBind', vars);
     case 'bind': return i18n.t('web.hist.anim.bind', vars);
+    case 'toExpr': return i18n.t('web.hist.anim.toExpr', vars);
+    case 'expr': return i18n.t('web.hist.anim.expr', vars);
     case 'loop': return i18n.t('web.hist.anim.loop', vars);
     case 'add': return i18n.t('web.hist.anim.add', { ...vars, time: time(first.at), value: join((x) => (x.kind === 'add' ? num(x.value) : '')) });
     case 'remove': return i18n.t('web.hist.anim.remove', { ...vars, time: time(first.at) });

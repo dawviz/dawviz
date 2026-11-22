@@ -268,6 +268,15 @@ dawviz/
 │  │  │  ├─ dawproject.js
 │  │  │  └─ index.js
 │  │  └─ package.json
+│  ├─ expr/
+│  │  ├─ src/
+│  │  │  ├─ compile.ts
+│  │  │  ├─ index.ts
+│  │  │  └─ parse.ts
+│  │  ├─ test/
+│  │  │  └─ expr.test.ts
+│  │  ├─ package.json
+│  │  └─ tsconfig.json
 │  ├─ i18n/   # @dawviz/i18n
 │  │  ├─ src/
 │  │  │  └─ index.js
@@ -334,6 +343,7 @@ dawviz/
 │  │  │  ├─ audioFeatures.test.ts
 │  │  │  ├─ background.test.ts
 │  │  │  ├─ barpages.test.ts
+│  │  │  ├─ expr.test.ts
 │  │  │  ├─ fonts.test.ts
 │  │  │  ├─ glow.test.ts
 │  │  │  ├─ helpers.ts
@@ -405,6 +415,10 @@ dawviz/
 │  ├─ perf/
 │  │  ├─ frame-bench.ts
 │  │  └─ run.mjs
+│  ├─ preset-check/
+│  │  ├─ check.mjs
+│  │  ├─ check.test.mjs
+│  │  └─ cli.mjs
 │  ├─ bundle.mjs
 │  ├─ check-i18n.mjs
 │  ├─ gen-builtin-schemas.mjs
@@ -646,6 +660,52 @@ Cổng vào của @dawviz/parser-dawproject.
 re-export { parseDawproject, parseDawprojectXml, dawprojectInventory } from './dawproject.js'
 ```
 
+### packages/expr
+
+#### `packages/expr/src/compile.ts`
+
+Kiểm ngữ nghĩa + "biên dịch" thành cây closure (AD-13, EXPRESSIONS §3–4). KHÔNG sinh chuỗi JavaScript, không eval/new Function.
+
+```text
+type Type
+interface Color   // Màu: sRGB 0..1 + alpha. Vec2: x, y. Biểu thức chỉ thấy các giá trị này, không thấy đối tượng nào của ứng dụng.
+interface Vec
+type Value
+interface Budget   // Ngân sách bước dùng chung (vd. cả một khung hình, EXPRESSIONS §3.4: 2.000.000). Hết thì ném ERR_EXPR_BUDGET.
+const FRAME_BUDGET
+interface EvalCtx   // Dữ liệu một lần đánh giá: biến (bản chụp số), `seed` của phần tử, và các móc tuỳ chọn đọc keyframe/tempo của …
+interface CompileOptions
+interface Compiled
+const colorToHex = (c: Color) =>   // Màu → `#rrggbb` (như Render Core nhận); alpha bỏ.
+function hexToColor(h: string): Color | null
+const BUILTIN_NAMES   // Tên hàm có sẵn (cho gợi ý, tài liệu và kiểm duyệt).
+function compile(src: string, opts: CompileOptions): Compiled
+function isFiniteValue(v: Value): boolean   // Kết quả hữu hạn? (NaN/∞ hoặc màu/vec có thành phần NaN → người gọi dùng giá trị dự phòng.)
+```
+
+#### `packages/expr/src/index.ts`
+
+@dawviz/expr (AD-13, T-29): ngôn ngữ biểu thức an toàn cho thuộc tính widget. Zero-dependency; chạy được ở Node, trình duyệt, Worker và CI.
+
+```text
+re-export { ExprError, LIMITS, parse, tokenize, type ExprErrorCode, type Node, type Program } from './parse.ts'
+```
+
+#### `packages/expr/src/parse.ts`
+
+Tokenizer + parser Pratt viết tay (AD-13, EXPRESSIONS §4). Chỉ nhận ký tự ASCII in được và khoảng trắng; từ chối Unicode lạ và ký tự điều khiển
+
+```text
+const LIMITS
+type ExprErrorCode
+class ExprError extends Error   // Lỗi duy nhất mà package ném ra: có mã và vị trí (ký tự) trong mã nguồn.
+  constructor(code: ExprErrorCode, message: string, pos = 0)
+function tokenize(src: string): Tok[]
+type Node
+interface Program
+function parse(src: string): Program
+```
+
 ### packages/i18n — @dawviz/i18n
 
 #### `packages/i18n/src/index.js`
@@ -713,8 +773,14 @@ const BIND_SOURCES
 type BindSource
 interface Binding   // Giá trị = `to[0]` khi nguồn ở `from[0]`, `to[1]` khi ở `from[1]`, nội suy (kẹp ngoài biên) qua `ease`. `to` l…
 type KeyAnimation
+interface ExprAnimation   // Biểu thức (T-29, AD-13): `{ expr: "0.5 + note.velocity / 127" }`, ngôn ngữ của
 type Animation
 const isBinding = (a: Animation) =>
+const isExpr = (a: Animation) =>
+const isKeyAnim = (a: Animation | null | undefined) =>   // Hoạt hình bằng keyframe (không phải binding hay biểu thức).
+const EXPR_VARS   // Biến đọc được trong biểu thức (danh sách trắng, EXPRESSIONS §3.2): bản chụp số của dữ liệu nhạc tại t, không …
+function compileExpr(src: string, kind: AnimKind): Compiled   // Biên dịch biểu thức cho một đường dẫn kiểu `kind` (lựa chọn/chữ không nhận biểu thức). Ném ExprError khi sai.
+interface ExprIssue   // Nơi báo biểu thức lỗi lúc chạy (vượt ngân sách, NaN/∞): Render Core không ném, chỉ báo và dùng giá trị dự phò…
 const MAX_ANIMATIONS
 const MAX_SCALE   // Giới hạn của `scale` (%): 0 (biến mất) tới 2000.
 type AnimKind   // Kiểu giá trị của một đường dẫn animate được. `bool`/`choice` animate theo bậc (track `kind: 'discrete'`).
@@ -927,6 +993,7 @@ re-export * from './notation/quantize.ts'
 re-export * from './notation/spelling.ts'
 re-export * from './notation/widget.ts'
 re-export { roughPathData, roughGlyph, hashSigned } from './notation/draw.ts'
+re-export { ExprError, FRAME_BUDGET, LIMITS as EXPR_LIMITS, BUILTIN_NAMES as EXPR_FUNCTIONS, type ExprErrorCode, type Budget } from '@dawviz/expr'
 ```
 
 #### `packages/render-core/src/insight.ts`
@@ -3377,6 +3444,9 @@ type SpectrumOut
 - `scripts/notation/quantize-check.mjs` — Lượng tử hoá trên tệp thật; đo lỗi cấu trúc, sai số điểm bắt đầu, thời gian chạy.
 - `scripts/perf/frame-bench.ts` — Trang đo thời gian khung hình (T-27, SPIKE-5). Tách layoutFrame (tính toán thuần) với renderFrame (tính + vẽ Canvas 2D) và đồng bộ GPU (getImageData 1 px).
 - `scripts/perf/run.mjs` — Đo thời gian khung hình trong trình duyệt thật (T-27, SPIKE-5). Không phải mã ứng dụng, không vào bản build.
+- `scripts/preset-check/check.mjs` — Kiểm preset cộng đồng (T-31, EXPRESSIONS §6.2, COMMUNITY-CONTENT §3): hàm thuần `checkPreset` + CLI. Không cần mạng, không có secret: chạy được trong CI
+- `scripts/preset-check/check.test.mjs` — Test của checkPreset (T-31): preset dựng sẵn và preset cộng đồng hợp lệ đạt; giấy phép, URL ngoài, biểu thức lỗi, khoá nguy hiểm, tên tệp bị chặn.
+- `scripts/preset-check/cli.mjs` — npm run preset:check -- [--community] <tệp.json…> (thoát mã 1 nếu có lỗi; in cảnh báo để người duyệt xem)
 - `scripts/rewrite-imports.mjs` — Công cụ một lần: viết lại import tương đối giữa các package khi tách monorepo.
 - `scripts/split_doc.py` — Tách tài liệu Markdown (SRS/SDD/TDD...) thành các mảnh nhỏ để đưa cho AI tham chiếu.
 - `scripts/sync-docs.mjs` — Đồng bộ "hệ thống ngữ cảnh AI" của repo và kiểm tra liên kết. Không phụ thuộc thư viện ngoài (Node >= 18; split dùng python3).
@@ -3434,11 +3504,13 @@ type SpectrumOut
 - `apps/web/src/lib/workspaceStore.test.ts`
 - `apps/web/test/app.test.tsx`
 - `apps/web/test/components.test.tsx`
+- `packages/expr/test/expr.test.ts`
 - `packages/render-core/test/animate-scale.test.ts`
 - `packages/render-core/test/animation.test.ts`
 - `packages/render-core/test/audioFeatures.test.ts`
 - `packages/render-core/test/background.test.ts`
 - `packages/render-core/test/barpages.test.ts`
+- `packages/render-core/test/expr.test.ts`
 - `packages/render-core/test/fonts.test.ts`
 - `packages/render-core/test/glow.test.ts`
 - `packages/render-core/test/hud.test.ts`
@@ -3472,4 +3544,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 1536 ký hiệu công khai -->
+<!-- 11 thư mục src, 1566 ký hiệu công khai -->

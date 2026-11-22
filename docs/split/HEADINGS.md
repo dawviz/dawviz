@@ -455,6 +455,8 @@
 ## EXPRESSIONS.md
 
 - [Biểu thức người dùng, mô hình bảo mật và kiểm duyệt cộng đồng (mở đầu)](EXPRESSIONS/bieu-thuc-nguoi-dung-mo-hinh-bao-mat-va-kiem-duy.md)
+- [0. Trạng thái cài đặt (2026-11-22)](EXPRESSIONS/0-trang-thai-cai-dat-2026-11-22.md)
+  - [0. Trạng thái cài đặt (2026-11-22)](EXPRESSIONS/0-trang-thai-cai-dat-2026-11-22.md#0-trạng-thái-cài-đặt-2026-11-22)
 - [1. Nguyên tắc nền](EXPRESSIONS/1-nguyen-tac-nen.md)
   - [1. Nguyên tắc nền](EXPRESSIONS/1-nguyen-tac-nen.md#1-nguyên-tắc-nền)
 - [2. "Mã độc" ở đây là gì](EXPRESSIONS/2-ma-doc-o-day-la-gi.md)

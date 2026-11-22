@@ -2,6 +2,13 @@
 
 > **[ĐÃ CHỐT ở tài liệu v1.1, 2026-11-12]** (D-39, D-41, D-43; yêu cầu SRS REQ-GRAPHICS-13, NFR-SEC-05…07). OI-16 đã chốt: **có** cho người dùng gõ biểu thức (giống expression trong After Effects) để điều khiển thuộc tính. Tài liệu này mô tả: (1) mã độc có thể làm gì với một ứng dụng web host trên GitHub Pages và chạy trên máy người dùng, (2) ngôn ngữ biểu thức và trình thông dịch an toàn (AD-13), (3) các lớp phòng thủ của ứng dụng (AD-14), (4) quy trình kiểm duyệt template và preset qua cộng đồng (AD-15). Liên quan: [CUSTOMIZATION.md](CUSTOMIZATION.md) (mô hình dữ liệu), [ANIMATION-CATALOG.md](ANIMATION-CATALOG.md), [COMMUNITY-CONTENT.md](../COMMUNITY-CONTENT.md), SRS NFR-SEC-01…04, BRD R-05. Task: T-29…T-31.
 
+## 0. Trạng thái cài đặt (2026-11-22)
+
+* **T-29 lõi:** `packages/expr` (zero-dependency) đúng §3–4: tokenizer chỉ nhận ASCII in được, parser Pratt, kiểm kiểu và số đối số lúc biên dịch, cây closure, giới hạn §3.4, hàm §3.3. Thêm so với §3.2: chú thích `//`; `vec2` viết `[x, y]` hoặc `vec(x, y)`; dấu trừ một ngôi đứng dưới `**` (`-2**2 = -4`). Chuỗi chỉ dùng làm tên hằng (chữ và số, ≤ 32 ký tự) và chỉ nhận ở đối số được khai báo (`ease`, `oscillate`, `loop`).
+* **Cắm vào thuộc tính:** `WidgetSpec.animate[đường dẫn] = { expr: "…" }` (preset 0.7.0). Biến cấp cho biểu thức (`EXPR_VARS`): `t`, `time.sec|progress|duration`, `beat.phase|index`, `bar.phase|index|bpm`, `notes.count`, `note.velocity|pitch|hit|active`, `track.volume|pan`, `audio.level`, `value` (giá trị tĩnh của thuộc tính), `width`, `height`, `index`, `count`, `seed`. Chưa có: `layer.*`, `note.sinceEnd`, `valueAt`/`loop` đọc keyframe thật (một thuộc tính chỉ có một kiểu hoạt hình nên hiện trả `value`).
+* **T-30 (một phần):** ngân sách bước cả khung trong `layoutFrame` (tất định; vượt thì giá trị tĩnh + `derived.onExprIssue`). Watchdog theo thời gian thật chưa làm.
+* **T-31 (script):** `npm run preset:check`; phần hạ tầng GitHub là thủ công (T-16/T-39).
+
 ## 1. Nguyên tắc nền
 
 1. **An toàn không được phụ thuộc vào người duyệt.** Người duyệt có thể sơ suất hoặc bị lừa. Thiết kế phải đảm bảo một preset **dù độc hại đến đâu cũng không làm hại được** máy người dùng. Kiểm duyệt cộng đồng chỉ để đảm bảo chất lượng, giấy phép và nội dung phù hợp, là lớp bảo vệ thêm chứ không phải lớp duy nhất.

@@ -16,6 +16,7 @@ import { DEFAULT_TEXT_STYLES, TEXT_METRICS, type PlacedRun, type RichText, type 
 import { normalizeAngle } from './snap.ts';
 import { visibilityAlpha } from './visibility.ts';
 import { resolveAnimated } from './animation.ts';
+import { FRAME_BUDGET } from '@dawviz/expr';
 import { deltaMatrix, mul, resolveParents, widgetMatrix, type Mat } from './parenting.ts';
 import { activeRange, hasMotion, NEUTRAL_WFX, widgetFxAt, type WidgetFx } from './widgetMotion.ts';
 import { spectrumRenderer } from './spectrum.ts';
@@ -167,13 +168,16 @@ export function layoutFrame(scene: SceneDocument, derived0: Derived, ast: Unifie
     const rowH = height / (hi - lo + 1);
     return { x: x + pianoRollGeometry(p, width, ts, page).playX, y: y + (hi - pitch) * rowH + rowH / 2 };
   });
+  // Ngân sách bước của mọi biểu thức trong khung (T-30, EXPRESSIONS §3.4): hết thì phần tử còn lại dùng giá trị tĩnh và báo qua derived.onExprIssue.
+  // Đếm bước (không đo giờ) nên Preview và Export cắt đúng cùng chỗ: tất định.
+  const budget = { left: FRAME_BUDGET };
   // Biến đổi riêng của từng widget trong khung này (hoạt hình + motion), tính một lần: dùng cho chính nó và cho các widget con (parenting).
   type Own = { we: WidgetSpec; opacity: number; sc: number; fx?: WidgetFx };
   const owns = new Map<string, Own>(), byId = new Map(scene.widgets.map((w) => [w.id, w]));
   const ownOf = (w: WidgetSpec): Own => {
     let o = owns.get(w.id); if (o) return o;
     let we = w, opacity = 1, sc = 1; // `scale` animate được (%, quanh điểm neo): gộp vào phép co giãn của chuyển động cấp widget
-    if (w.animate) { const r = resolveAnimated(w, { ast, derived, tracks: tracksFor(w, derived.index), t }, scene.canvas); we = r.widget; opacity = r.opacity; sc = r.scale; } // hoạt hình thuộc tính (T-22)
+    if (w.animate) { const r = resolveAnimated(w, { ast, derived, tracks: tracksFor(w, derived.index), t, budget, onExprIssue: derived.onExprIssue }, scene.canvas); we = r.widget; opacity = r.opacity; sc = r.scale; } // hoạt hình thuộc tính (T-22)
     let fx = hasMotion(w.motion) ? widgetFxAt(w.motion, activeRange(w.visibility, t, dur), t, ast.tempoMap) : undefined;
     if (sc !== 1) fx = { ...(fx ?? NEUTRAL_WFX), sx: (fx?.sx ?? 1) * sc, sy: (fx?.sy ?? 1) * sc };
     if (fx && fx.dx === 0 && fx.dy === 0 && fx.sx === 1 && fx.sy === 1 && fx.rot === 0 && fx.alpha === 1) fx = undefined; // trung tính: chuỗi lệnh vẽ giữ như không có motion

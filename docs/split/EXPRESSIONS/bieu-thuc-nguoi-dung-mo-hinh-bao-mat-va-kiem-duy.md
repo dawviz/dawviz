@@ -5,7 +5,7 @@ section: "Biểu thức người dùng, mô hình bảo mật và kiểm duyệt
 path: "Biểu thức người dùng, mô hình bảo mật và kiểm duyệt cộng đồng (mở đầu)"
 chunk: bieu-thuc-nguoi-dung-mo-hinh-bao-mat-va-kiem-duy.md
 source_lines: 1-4
-source_sha1: 19ec9a9aa3
+source_sha1: 0045fe9aeb
 ids: [AD-13, AD-14, AD-15, D-39, D-41, D-43, NFR-SEC-01, NFR-SEC-05, OI-16, REQ-GRAPHICS-13]
 ---
 # Biểu thức người dùng, mô hình bảo mật và kiểm duyệt cộng đồng

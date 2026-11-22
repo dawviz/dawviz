@@ -33,6 +33,8 @@ export interface Derived {
   naming?: NoteNaming;
   /** Ảnh nền đã nạp của phiên (vẽ trước mọi widget theo `scene.canvas.backgroundImage`); vắng = không có ảnh. */
   background?: BackgroundImage;
+  /** Báo biểu thức lỗi lúc chạy (T-30: vượt ngân sách khung, NaN/∞); Render Core đã dùng giá trị tĩnh. Vắng = không báo. */
+  onExprIssue?(i: { widgetId: string; path: string; code: string }): void;
   /** Bản nhạc đã dựng theo id widget Bản nhạc (D-63); thiếu = đang dựng, widget không vẽ gì. */
   notation?: ReadonlyMap<string, NotationLayout>;
 }

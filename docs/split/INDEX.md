@@ -225,6 +225,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 ## EXPRESSIONS.md — Biểu thức người dùng, mô hình bảo mật và kiểm duyệt cộng đồng
 
 - [Biểu thức người dùng, mô hình bảo mật và kiểm duyệt cộng đồng (mở đầu)](EXPRESSIONS/bieu-thuc-nguoi-dung-mo-hinh-bao-mat-va-kiem-duy.md) · 785 ký tự
+- [0. Trạng thái cài đặt (2026-11-22)](EXPRESSIONS/0-trang-thai-cai-dat-2026-11-22.md) · 1229 ký tự
 - [1. Nguyên tắc nền](EXPRESSIONS/1-nguyen-tac-nen.md) · 690 ký tự
 - [2. "Mã độc" ở đây là gì](EXPRESSIONS/2-ma-doc-o-day-la-gi.md) · 2998 ký tự
 - [3. Ngôn ngữ biểu thức (AD-13)](EXPRESSIONS/3-ngon-ngu-bieu-thuc-ad-13.md) · 3509 ký tự

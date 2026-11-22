@@ -37,3 +37,4 @@ export * from './notation/quantize.ts';
 export * from './notation/spelling.ts';
 export * from './notation/widget.ts';
 export { roughPathData, roughGlyph, hashSigned } from './notation/draw.ts';
+export { ExprError, FRAME_BUDGET, LIMITS as EXPR_LIMITS, BUILTIN_NAMES as EXPR_FUNCTIONS, type ExprErrorCode, type Budget } from '@dawviz/expr';
