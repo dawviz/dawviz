@@ -77,7 +77,7 @@ node scripts/sync-docs.mjs --find "độ sáng"   # lấy liên kết mảnh#hea
 <!-- sync:begin docs-index -->
 <!-- Khối này do scripts/sync-docs.mjs sinh ra; đừng sửa tay. -->
 
-Có 21 tài liệu, 330 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
+Có 22 tài liệu, 338 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
 
 ### BRD.md — TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)
 
@@ -95,7 +95,7 @@ Nguồn: `docs/product/BRD.md` · [thứ tự đọc](docs/split/BRD/_index.md)
 - [4. PHẠM VI DỰ ÁN (PROJECT SCOPE) › 4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](docs/split/BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1.2k
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](docs/split/BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4.3k
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](docs/split/BRD/6-gia-dinh-assumptions.md) · 0.6k
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 30.5k
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 31.4k
 - [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](docs/split/BRD/8-cac-van-de-con-mo-open-issues.md) · 7.8k
 
 ### SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
@@ -280,7 +280,7 @@ Nguồn: `docs/design/CUSTOMIZATION.md` · [thứ tự đọc](docs/split/CUSTOM
 - [4. Đường cong chuyển động (easing) (AD-09)](docs/split/CUSTOMIZATION/4-duong-cong-chuyen-dong-easing-ad-09.md) · 1.2k
 - [5. Hạt (particles) không trạng thái (AD-10)](docs/split/CUSTOMIZATION/5-hat-particles-khong-trang-thai-ad-10.md) · 1.4k
 - [6. Tài nguyên (assets) của phiên và của cộng đồng (AD-12)](docs/split/CUSTOMIZATION/6-tai-nguyen-assets-cua-phien-va-cua-cong-dong-a.md) · 2.3k
-- [7. Hiệu năng và giới hạn](docs/split/CUSTOMIZATION/7-hieu-nang-va-gioi-han.md) · 0.6k
+- [7. Hiệu năng và giới hạn](docs/split/CUSTOMIZATION/7-hieu-nang-va-gioi-han.md) · 1.0k
 - [8. Quyết định đề xuất](docs/split/CUSTOMIZATION/8-quyet-dinh-de-xuat.md) · 1.1k
 - [9. Yêu cầu tương ứng (đã đưa vào SRS §3.8)](docs/split/CUSTOMIZATION/9-yeu-cau-tuong-ung-da-dua-vao-srs-3-8.md) · 0.9k
 - [10. Khả thi](docs/split/CUSTOMIZATION/10-kha-thi.md) · 1.6k
@@ -513,5 +513,18 @@ Nguồn: `docs/spikes/SPIKE-4-NOTATION.md` · [thứ tự đọc](docs/split/SPI
 - [6. Kết quả](docs/split/SPIKE-4-NOTATION/6-ket-qua.md) · 5.0k
 - [7. Quyết định](docs/split/SPIKE-4-NOTATION/7-quyet-dinh.md) · 0.2k
 - [8. Còn lại](docs/split/SPIKE-4-NOTATION/8-con-lai.md) · 1.2k
+
+### SPIKE-5-PERF-WASM.md — Spike 5: đo hiệu năng và xét đề xuất chuyển phần tính toán sang Rust/WASM
+
+Nguồn: `docs/spikes/SPIKE-5-PERF-WASM.md` · [thứ tự đọc](docs/split/SPIKE-5-PERF-WASM/_index.md)
+
+- [Spike 5: đo hiệu năng và xét đề xuất chuyển phần tính toán sang Rust/WASM (mở đầu)](docs/split/SPIKE-5-PERF-WASM/spike-5-do-hieu-nang-va-xet-de-xuat-chuyen-phan.md) · 0.4k
+- [1. Kết luận](docs/split/SPIKE-5-PERF-WASM/1-ket-luan.md) · 1.1k
+- [2. Môi trường đo (thật, không giả lập)](docs/split/SPIKE-5-PERF-WASM/2-moi-truong-do-that-khong-gia-lap.md) · 0.9k
+- [3. Số đo khung hình (Chrome, GPU thật)](docs/split/SPIKE-5-PERF-WASM/3-so-do-khung-hinh-chrome-gpu-that.md) · 1.8k
+- [4. GC (CDP tracing, Chrome)](docs/split/SPIKE-5-PERF-WASM/4-gc-cdp-tracing-chrome.md) · 0.6k
+- [5. Phân tích âm thanh và sóng âm](docs/split/SPIKE-5-PERF-WASM/5-phan-tich-am-thanh-va-song-am.md) · 1.0k
+- [6. Từng mục của đề xuất](docs/split/SPIKE-5-PERF-WASM/6-tung-muc-cua-de-xuat.md) · 1.2k
+- [7. Bước tiếp theo đề xuất (chưa làm)](docs/split/SPIKE-5-PERF-WASM/7-buoc-tiep-theo-de-xuat-chua-lam.md) · 0.5k
 
 <!-- sync:end docs-index -->

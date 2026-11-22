@@ -4,7 +4,7 @@
  "docs": {
   "BRD.md": {
    "title": "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)",
-   "sha1": "27bbfd5d90",
+   "sha1": "7fc79e8f2a",
    "chunks": [
     {
      "n": 0,
@@ -330,10 +330,10 @@
      "path": [
       "7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)"
      ],
-     "chars": 30502,
+     "chars": 31430,
      "lines": [
       204,
-      276
+      277
      ],
      "ids": [
       "AD-08",
@@ -407,6 +407,7 @@
       "D-62",
       "D-63",
       "D-64",
+      "D-65",
       "KPI-04",
       "NFR-ACC-02",
       "NFR-SEC-01",
@@ -452,8 +453,8 @@
      ],
      "chars": 7755,
      "lines": [
-      277,
-      300
+      278,
+      301
      ],
      "ids": [
       "D-01",
@@ -3906,7 +3907,7 @@
   },
   "CUSTOMIZATION.md": {
    "title": "Tùy biến tối đa: storyboard, chuyển cảnh nốt, đường cong easing, hạt, tài nguyên và preset cộng đồng",
-   "sha1": "7e5b12f60b",
+   "sha1": "2e38933ae5",
    "chunks": [
     {
      "n": 0,
@@ -4049,10 +4050,10 @@
      "path": [
       "7. Hiệu năng và giới hạn"
      ],
-     "chars": 579,
+     "chars": 1031,
      "lines": [
       181,
-      191
+      193
      ],
      "ids": []
     },
@@ -4065,8 +4066,8 @@
      ],
      "chars": 1060,
      "lines": [
-      192,
-      203
+      194,
+      205
      ],
      "ids": [
       "AD-08",
@@ -4088,8 +4089,8 @@
      ],
      "chars": 894,
      "lines": [
-      204,
-      214
+      206,
+      216
      ],
      "ids": [
       "REQ-GRAPHICS-09",
@@ -4109,8 +4110,8 @@
      ],
      "chars": 1646,
      "lines": [
-      215,
-      233
+      217,
+      235
      ],
      "ids": [
       "D-40"
@@ -4125,8 +4126,8 @@
      ],
      "chars": 399,
      "lines": [
-      234,
-      239
+      236,
+      241
      ],
      "ids": [
       "D-44",
@@ -4143,8 +4144,8 @@
      ],
      "chars": 3061,
      "lines": [
-      240,
-      268
+      242,
+      270
      ],
      "ids": [
       "AD-07",
@@ -6877,6 +6878,126 @@
      ]
     }
    ]
+  },
+  "SPIKE-5-PERF-WASM.md": {
+   "title": "Spike 5: đo hiệu năng và xét đề xuất chuyển phần tính toán sang Rust/WASM",
+   "sha1": "aac793689f",
+   "chunks": [
+    {
+     "n": 0,
+     "file": "SPIKE-5-PERF-WASM/spike-5-do-hieu-nang-va-xet-de-xuat-chuyen-phan.md",
+     "title": "Spike 5: đo hiệu năng và xét đề xuất chuyển phần tính toán sang Rust/WASM (mở đầu)",
+     "path": [],
+     "chars": 385,
+     "lines": [
+      1,
+      4
+     ],
+     "ids": [
+      "D-65"
+     ]
+    },
+    {
+     "n": 1,
+     "file": "SPIKE-5-PERF-WASM/1-ket-luan.md",
+     "title": "1. Kết luận",
+     "path": [
+      "1. Kết luận"
+     ],
+     "chars": 1139,
+     "lines": [
+      5,
+      12
+     ],
+     "ids": []
+    },
+    {
+     "n": 2,
+     "file": "SPIKE-5-PERF-WASM/2-moi-truong-do-that-khong-gia-lap.md",
+     "title": "2. Môi trường đo (thật, không giả lập)",
+     "path": [
+      "2. Môi trường đo (thật, không giả lập)"
+     ],
+     "chars": 934,
+     "lines": [
+      13,
+      24
+     ],
+     "ids": []
+    },
+    {
+     "n": 3,
+     "file": "SPIKE-5-PERF-WASM/3-so-do-khung-hinh-chrome-gpu-that.md",
+     "title": "3. Số đo khung hình (Chrome, GPU thật)",
+     "path": [
+      "3. Số đo khung hình (Chrome, GPU thật)"
+     ],
+     "chars": 1812,
+     "lines": [
+      25,
+      53
+     ],
+     "ids": []
+    },
+    {
+     "n": 4,
+     "file": "SPIKE-5-PERF-WASM/4-gc-cdp-tracing-chrome.md",
+     "title": "4. GC (CDP tracing, Chrome)",
+     "path": [
+      "4. GC (CDP tracing, Chrome)"
+     ],
+     "chars": 561,
+     "lines": [
+      54,
+      62
+     ],
+     "ids": []
+    },
+    {
+     "n": 5,
+     "file": "SPIKE-5-PERF-WASM/5-phan-tich-am-thanh-va-song-am.md",
+     "title": "5. Phân tích âm thanh và sóng âm",
+     "path": [
+      "5. Phân tích âm thanh và sóng âm"
+     ],
+     "chars": 1011,
+     "lines": [
+      63,
+      79
+     ],
+     "ids": []
+    },
+    {
+     "n": 6,
+     "file": "SPIKE-5-PERF-WASM/6-tung-muc-cua-de-xuat.md",
+     "title": "6. Từng mục của đề xuất",
+     "path": [
+      "6. Từng mục của đề xuất"
+     ],
+     "chars": 1164,
+     "lines": [
+      80,
+      92
+     ],
+     "ids": [
+      "AD-13"
+     ]
+    },
+    {
+     "n": 7,
+     "file": "SPIKE-5-PERF-WASM/7-buoc-tiep-theo-de-xuat-chua-lam.md",
+     "title": "7. Bước tiếp theo đề xuất (chưa làm)",
+     "path": [
+      "7. Bước tiếp theo đề xuất (chưa làm)"
+     ],
+     "chars": 547,
+     "lines": [
+      93,
+      97
+     ],
+     "ids": []
+    }
+   ]
   }
  },
  "ids": {
@@ -7754,7 +7875,8 @@
    "ANIMATION-CATALOG/danh-muc-hieu-ung-chuyen-dong-va-duong-cong-noi.md",
    "ANIMATION-CATALOG/2-thu-vien-easing-dat-san.md",
    "EXPRESSIONS/bieu-thuc-nguoi-dung-mo-hinh-bao-mat-va-kiem-duy.md",
-   "EXPRESSIONS/3-ngon-ngu-bieu-thuc-ad-13.md"
+   "EXPRESSIONS/3-ngon-ngu-bieu-thuc-ad-13.md",
+   "SPIKE-5-PERF-WASM/6-tung-muc-cua-de-xuat.md"
   ],
   "AD-15": [
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
@@ -7891,6 +8013,10 @@
   "D-64": [
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "UI-DIRECTION/5-3-cau-truc-giao-dien-d-a-e-d-53-da-chot-2026-1.md"
+  ],
+  "D-65": [
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
+   "SPIKE-5-PERF-WASM/spike-5-do-hieu-nang-va-xet-de-xuat-chuyen-phan.md"
   ],
   "NFR-ACC-02": [
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",

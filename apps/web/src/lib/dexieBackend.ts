@@ -1,4 +1,4 @@
-// Lớp mỏng bọc Dexie cho Backend lưu phiên (T-10). Chỉ nạp động qua lazyDexieBackend (workspaceStore.ts) để tách khỏi gói đầu (T-100).
+// Lớp mỏng bọc Dexie cho Backend lưu phiên (T-10). Chỉ nạp động qua lazyDexieBackend (workspaceStore.ts) để tách khỏi gói đầu (T-102).
 import Dexie, { type Table } from 'dexie';
 import { CURRENT_ID, type Backend, type StoredBlob, type WorkspaceState } from './workspaceStore.ts';
 

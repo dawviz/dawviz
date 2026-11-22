@@ -397,6 +397,9 @@ dawviz/
 │  │  ├─ make-short-mid.mjs
 │  │  ├─ quantize-check.mjs
 │  │  └─ README.md
+│  ├─ perf/
+│  │  ├─ frame-bench.ts
+│  │  └─ run.mjs
 │  ├─ bundle.mjs
 │  ├─ check-i18n.mjs
 │  ├─ gen-builtin-schemas.mjs
@@ -2228,7 +2231,7 @@ const CSP
 
 #### `apps/web/src/lib/dexieBackend.ts`
 
-Lớp mỏng bọc Dexie cho Backend lưu phiên (T-10). Chỉ nạp động qua lazyDexieBackend (workspaceStore.ts) để tách khỏi gói đầu (T-100).
+Lớp mỏng bọc Dexie cho Backend lưu phiên (T-10). Chỉ nạp động qua lazyDexieBackend (workspaceStore.ts) để tách khỏi gói đầu (T-102).
 
 ```text
 function dexieBackend(dbName?: string): Backend
@@ -3302,6 +3305,8 @@ type SpectrumOut
 - `scripts/notation/lib/loadAst.mjs` — Nạp AST thật bằng thư viện parser của repo (công cụ đo Bản nhạc; tệp bên thứ ba không commit).
 - `scripts/notation/make-short-mid.mjs` — Sinh scripts/notation/out/short.mid: 8 ô 4/4 ở 100 BPM (~19 s), tay phải giai điệu (móc đơn, liên ba, nốt nối qua vạch nhịp), tay trái hợp âm.
 - `scripts/notation/quantize-check.mjs` — Lượng tử hoá trên tệp thật; đo lỗi cấu trúc, sai số điểm bắt đầu, thời gian chạy.
+- `scripts/perf/frame-bench.ts` — Trang đo thời gian khung hình (T-27, SPIKE-5). Tách layoutFrame (tính toán thuần) với renderFrame (tính + vẽ Canvas 2D) và đồng bộ GPU (getImageData 1 px).
+- `scripts/perf/run.mjs` — Đo thời gian khung hình trong trình duyệt thật (T-27, SPIKE-5). Không phải mã ứng dụng, không vào bản build.
 - `scripts/rewrite-imports.mjs` — Công cụ một lần: viết lại import tương đối giữa các package khi tách monorepo.
 - `scripts/split_doc.py` — Tách tài liệu Markdown (SRS/SDD/TDD...) thành các mảnh nhỏ để đưa cho AI tham chiếu.
 - `scripts/sync-docs.mjs` — Đồng bộ "hệ thống ngữ cảnh AI" của repo và kiểm tra liên kết. Không phụ thuộc thư viện ngoài (Node >= 18; split dùng python3).
