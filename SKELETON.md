@@ -1267,6 +1267,7 @@ function morphRoundRect(a: { w: number; h: number; radius: number }, b: { w: num
 type Pt
 function resamplePolygon(poly: readonly Pt[], n: number): Pt[]   // Lấy mẫu lại một đa giác kín về đúng `n` đỉnh, cách đều theo chu vi, bắt đầu từ đỉnh đầu: điều kiện để morph đ…
 function morphPolygon(a: readonly Pt[], b: readonly Pt[], k: number): Pt[]   // Morph hai đa giác bất kỳ: cùng lấy mẫu về cùng số đỉnh (lớn hơn trong hai, tối thiểu 3) rồi nội suy từng đỉnh.
+function rippleAt(spec: NoteTransitionSpec, start: number, t: number, h: number):    // Vòng gợn tại t (thuần): bán kính (theo chiều cao nốt `h`) và độ đục; ngoài khoảng gợn → null.
 ```
 
 #### `packages/render-core/src/parenting.ts`
@@ -3668,4 +3669,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 11 thư mục src, 1640 ký hiệu công khai -->
+<!-- 11 thư mục src, 1641 ký hiệu công khai -->

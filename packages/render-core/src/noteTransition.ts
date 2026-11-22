@@ -18,6 +18,8 @@ export interface NoteTransitionSpec {
   exitSec: number; exit: Partial<NoteFx>; exitEase: EaseSpec;
   /** Morph (AD-11): nốt chờ là viên tròn (dài = cao, bo hết cỡ) rồi duỗi thành thanh khi bắt đầu; `exit` thu lại thành viên tròn. */
   morphEnter: boolean; morphExit: boolean;
+  /** Vòng gợn (T-18): khi nốt chạm vạch phát, một vòng toả từ đầu nốt trong `sec` giây, lớn tới `size` × chiều cao nốt, mờ dần. Vắng = không. */
+  ripple?: { sec: number; size: number };
 }
 const T = (o: Partial<NoteTransitionSpec>): NoteTransitionSpec => ({
   lead: 0, enter: {}, enterEase: 'easeOutCubic', hitSec: 0, hit: {}, hitEase: 'easeOutCubic', breathe: 0, exitSec: 0, exit: {}, exitEase: 'easeOutCubic', morphEnter: false, morphExit: false, ...o,
@@ -32,6 +34,7 @@ export const NOTE_TRANSITIONS: Readonly<Record<string, NoteTransitionSpec>> = Ob
   morph: T({ lead: 0.5, enterEase: 'easeOutQuad', exitSec: 0.35, exitEase: 'easeInQuad', morphEnter: true, morphExit: true }),
   shatter: T({ hitSec: 0.2, hit: { glow: 0.6 }, exitSec: 0.35, exit: { sx: 1.6, sy: 2.2, alpha: 0 }, exitEase: 'easeOutExpo' }),
   pulse: T({ hitSec: 0.25, hit: { sy: 1.6, glow: 0.5 }, hitEase: 'easeOutCubic', breathe: 0.08 }),
+  ripple: T({ hitSec: 0.15, hit: { glow: 0.4 }, ripple: { sec: 0.6, size: 3.5 } }),
 });
 export const NOTE_TRANSITION_NAMES: readonly string[] = Object.freeze(Object.keys(NOTE_TRANSITIONS));
 
@@ -105,4 +108,13 @@ export function resamplePolygon(poly: readonly Pt[], n: number): Pt[] {
 export function morphPolygon(a: readonly Pt[], b: readonly Pt[], k: number): Pt[] {
   const n = Math.max(3, a.length, b.length), A = resamplePolygon(a, n), B = resamplePolygon(b, n);
   return A.map((p, i) => [p[0] + (B[i][0] - p[0]) * k, p[1] + (B[i][1] - p[1]) * k] as Pt);
+}
+
+/** Vòng gợn tại t (thuần): bán kính (theo chiều cao nốt `h`) và độ đục; ngoài khoảng gợn → null. */
+export function rippleAt(spec: NoteTransitionSpec, start: number, t: number, h: number): { r: number; alpha: number } | null {
+  const rp = spec.ripple; if (!rp || !(rp.sec > 0)) return null;
+  const k = (t - start) / rp.sec;
+  if (k < 0 || k >= 1) return null;
+  const e = 1 - (1 - k) ** 3; // easeOutCubic
+  return { r: h * (0.5 + (rp.size - 0.5) * e), alpha: (1 - k) * 0.9 };
 }

@@ -1238,6 +1238,7 @@
   "web.ws.pianoTransition.morph": "Morph (dot to bar)",
   "web.ws.pianoTransition.shatter": "Burst when it ends",
   "web.ws.pianoTransition.pulse": "Pulse on hit",
+  "web.ws.pianoTransition.ripple": "Ripple on hit",
   "web.ws.taOn": "Animate the text",
   "web.ws.taEffect": "Effect",
   "web.ws.taEffect.typewriter": "Typewriter",
