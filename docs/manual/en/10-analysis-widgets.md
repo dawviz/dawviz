@@ -53,7 +53,7 @@ You can combine them: for example the entrance "Slide from the left" with the re
 
 ## Per-note animation
 
-The Piano roll also has **Note animation** under **Settings**: each note goes through four phases (arriving, hit, sounding, just ended) in the style you pick: pop in, fade and scale, drop and bounce, rise up, morph (dot to bar), burst when it ends, pulse on hit. Choose **None** and notes just scroll as before. To make notes fall from above or rise from below, rotate the whole Piano roll widget.
+The Piano roll also has **Note animation** under **Settings**: each note goes through four phases (arriving, hit, sounding, just ended) in the style you pick: pop in, fade and scale, drop and bounce, rise up, morph (dot to bar), burst when it ends, pulse on hit, ripple on hit (a ring spreading from the start of the note). Choose **None** and notes just scroll as before. To make notes fall from above or rise from below, rotate the whole Piano roll widget.
 
 ## Animate properties
 

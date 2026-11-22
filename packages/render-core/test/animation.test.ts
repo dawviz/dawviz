@@ -148,3 +148,16 @@ test('fuzz: animate MỌI thuộc tính số/màu của MỌI loại widget bằ
   }
   assert.ok(total > 1000, `chỉ ${total} trường hợp`);
 });
+
+test('T-18 ripple: vòng gợn toả từ đầu nốt trong 0,6 s rồi tắt; tất định; template khác không có vòng', async () => {
+  const { rippleAt, NOTE_TRANSITIONS: NT, pianoRollWidget } = await import('../src/index.ts');
+  const sp = NT.ripple;
+  assert.equal(rippleAt(sp, 1, 0.9, 10), null); assert.equal(rippleAt(sp, 1, 1.6, 10), null);
+  const a = rippleAt(sp, 1, 1.1, 10)!, b = rippleAt(sp, 1, 1.4, 10)!;
+  assert.ok(b.r > a.r && b.alpha < a.alpha);
+  assert.equal(rippleAt(NT.pulse, 1, 1.1, 10), null);
+  const sc = { ...defaultScene('16:9'), widgets: [pianoRollWidget({ x: 0, y: 0, width: 1920, height: 1080, rotation: 0 }, { transition: 'ripple' })] };
+  const rings = (t: number) => frame(sc, t)[0].prims.filter((p) => p.kind === 'rect' && p.fill === '#00000000');
+  const n0 = ast.tracks[0].notes[0].startTimeSeconds;
+  assert.ok(rings(n0 + 0.1).length > 0); assert.deepEqual(rings(n0 + 0.1), rings(n0 + 0.1));
+});

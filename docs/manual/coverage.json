@@ -129,7 +129,7 @@
         "apps/web/src/lib/sessionAssets.ts",
         "locales/en.json#web.asset."
       ],
-      "uiHash": "c39d781c77e0",
+      "uiHash": "3c2894e99546",
       "viHash": "ef1bd0b21308",
       "enHash": "c8444f049efc",
       "coverHashes": {
@@ -144,7 +144,7 @@
         "apps/web/src/components/TextPanel.tsx": "bb3fb861e285",
         "locales/en.json#web.text.": "1dcb3963c82b",
         "apps/web/src/components/WidgetSettings.tsx": "ea89cc6d2399",
-        "locales/en.json#web.ws.": "6512a2b19a44",
+        "locales/en.json#web.ws.": "3d1c968fd76d",
         "apps/web/src/components/TimeSections.tsx": "513bfa5bff02",
         "apps/web/src/components/TimeField.tsx": "6495c126538a",
         "locales/en.json#web.vis.": "8bbfd1495bf1",
@@ -272,12 +272,12 @@
         "locales/en.json#web.widget.",
         "locales/en.json#web.tonic."
       ],
-      "uiHash": "4ed4ecf1aac7",
+      "uiHash": "d5a39c874e13",
       "viHash": "b2804221e8d3",
       "enHash": "47521b48927d",
       "coverHashes": {
         "apps/web/src/components/WidgetSettings.tsx": "ea89cc6d2399",
-        "locales/en.json#web.ws.": "6512a2b19a44",
+        "locales/en.json#web.ws.": "3d1c968fd76d",
         "locales/en.json#web.widget.": "15516b238edd",
         "locales/en.json#web.tonic.": "2b1a6b41c82b"
       }
@@ -333,9 +333,9 @@
         "apps/web/src/lib/animateFields.ts",
         "packages/render-core/src/parenting.ts"
       ],
-      "uiHash": "90ca84835d59",
-      "viHash": "9e10b78b14cf",
-      "enHash": "680816d7c8bf",
+      "uiHash": "7d3729d6b7bc",
+      "viHash": "e7474ba2d15b",
+      "enHash": "a0c79015e6a8",
       "coverHashes": {
         "packages/render-core/src/insight.ts": "37e1f3014ac3",
         "packages/render-core/src/naming.ts": "9a90045d7e7c",
@@ -343,9 +343,9 @@
         "locales/en.json#web.naming.": "2386cbe2d200",
         "locales/en.json#web.ws.in": "e60a0bc99d56",
         "packages/render-core/src/widgetMotion.ts": "a1e4bd858cf0",
-        "packages/render-core/src/noteTransition.ts": "66a84098fe30",
+        "packages/render-core/src/noteTransition.ts": "0ca2c2677905",
         "locales/en.json#web.motion.": "ab9500a2f7bb",
-        "locales/en.json#web.ws.pianoTransition": "549cfa5d542f",
+        "locales/en.json#web.ws.pianoTransition": "5f35625be938",
         "packages/render-core/src/animation.ts": "89bc9af679b3",
         "locales/en.json#web.anim.": "190a7295fc2c",
         "apps/web/src/components/KeyframeTimeline.tsx": "df3863906ce0",

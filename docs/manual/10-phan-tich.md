@@ -53,7 +53,7 @@ Các chuyển động có thể dùng chung: ví dụ hiệu ứng vào "Trượ
 
 ## Hoạt hình của từng nốt
 
-Piano Roll còn có mục **Hoạt hình của nốt** trong **Thiết lập**: mỗi nốt đi qua bốn pha (đang tới, chạm, đang kêu, vừa tắt) với kiểu bạn chọn: bật to dần, mờ và co giãn, rơi và nảy, bay lên, biến hình (chấm thành thanh), nổ tung khi tắt, nảy khi chạm. Chọn **Không** thì nốt chỉ trôi như cũ. Muốn nốt rơi từ trên xuống hoặc bay lên, xoay cả widget Piano Roll.
+Piano Roll còn có mục **Hoạt hình của nốt** trong **Thiết lập**: mỗi nốt đi qua bốn pha (đang tới, chạm, đang kêu, vừa tắt) với kiểu bạn chọn: bật to dần, mờ và co giãn, rơi và nảy, bay lên, biến hình (chấm thành thanh), nổ tung khi tắt, nảy khi chạm, gợn sóng khi chạm (một vòng tròn toả ra từ đầu nốt). Chọn **Không** thì nốt chỉ trôi như cũ. Muốn nốt rơi từ trên xuống hoặc bay lên, xoay cả widget Piano Roll.
 
 ## Hoạt hình thuộc tính
 
