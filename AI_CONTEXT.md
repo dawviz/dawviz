@@ -305,7 +305,7 @@ Nguồn: `docs/design/ANIMATION-CATALOG.md` · [thứ tự đọc](docs/split/AN
 - [10. Hiệu ứng thủ tục (procedural)](docs/split/ANIMATION-CATALOG/10-hieu-ung-thu-tuc-procedural.md) · 0.6k
 - [11. Màu và ánh sáng](docs/split/ANIMATION-CATALOG/11-mau-va-anh-sang.md) · 0.9k
 - [12. Làm mờ, biến dạng điểm ảnh và phong cách hoá](docs/split/ANIMATION-CATALOG/12-lam-mo-bien-dang-diem-anh-va-phong-cach-hoa.md) · 1.0k
-- [13. Chữ (text)](docs/split/ANIMATION-CATALOG/13-chu-text.md) · 0.7k
+- [13. Chữ (text)](docs/split/ANIMATION-CATALOG/13-chu-text.md) · 0.8k
 - [14. Chuyển cảnh (giữa hai cảnh hoặc hai đoạn)](docs/split/ANIMATION-CATALOG/14-chuyen-canh-giua-hai-canh-hoac-hai-doan.md) · 0.7k
 - [15. Camera](docs/split/ANIMATION-CATALOG/15-camera.md) · 0.6k
 - [16. Nhân bản và vệt](docs/split/ANIMATION-CATALOG/16-nhan-ban-va-vet.md) · 0.4k

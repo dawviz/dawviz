@@ -9,7 +9,7 @@ import { useI18n } from '../i18n/I18nProvider.tsx';
 import { radioKeys, radioTab } from '../lib/a11y.ts';
 import { clickIsKeyboard, startPaintDrag } from '../lib/paintDrag.ts';
 import { GestureContext } from '../lib/storeReact.ts';
-import { TRACK_WIDGETS, WIDGET_FIELDS, fieldChanged, getIn, hasWidgetFields, resetPatch, setIn, type FieldDef } from '../lib/widgetFields.ts';
+import { TRACK_WIDGETS, WIDGET_FIELDS, fieldChanged, getIn, hasWidgetFields, resetPatch, setIn, withNestedDefaults, type FieldDef } from '../lib/widgetFields.ts';
 import { NumberField } from './NumberField.tsx';
 import { ResetButton } from './Inspector.tsx';
 import { Select } from './Select.tsx';
@@ -36,7 +36,7 @@ export interface WidgetSettingsProps {
 export function WidgetSettings({ widget, advanced, disabled, reference, onProps, tracks, onTracks }: WidgetSettingsProps) {
   const { i18n } = useI18n();
   const gesture = useContext(GestureContext);
-  const P = widget.properties as Obj, fields = WIDGET_FIELDS[widget.type] ?? [];
+  const P = withNestedDefaults(widget.type, widget.properties as Obj), fields = WIDGET_FIELDS[widget.type] ?? [];
   const T = (k: string) => i18n.t(`web.ws.${k}`);
   const names = placeholderNames(widget.type);
   const hint = i18n.t('web.ws.placeholders', { list: names.map((k) => `{${k}}`).join(' ') });
@@ -76,8 +76,8 @@ export function WidgetSettings({ widget, advanced, disabled, reference, onProps,
       case 'select': return (
         <div key={f.path.join('.')} className="grid grid-cols-[minmax(0,1fr)_minmax(0,9.5rem)_1.5rem] items-center gap-2 text-xs text-muted">
           <label>{T(f.label)}</label>
-          <Select value={String(v)} disabled={disabled} aria-label={label} onChange={(e) => set(f)(f.options!.find((o) => String(o) === e.target.value) ?? e.target.value)} className="py-1 pl-2" wrapClassName="min-w-0">
-            {f.options!.map((o) => <option key={o} value={o}>{i18n.t(`${f.prefix}${o}`)}</option>)}
+          <Select value={String(v)} disabled={disabled} aria-label={label} onChange={(e) => set(f)(f.options!.find((o) => String(o) === e.target.value) ?? e.target.value)} className="py-1 pl-2" wrapClassName="min-w-0" data-testid={f.testId}>
+            {f.options!.map((o) => <option key={o} value={o}>{f.raw ? String(o) : i18n.t(`${f.prefix}${o}`)}</option>)}
           </Select>
           {resetBtn(f)}
         </div>);

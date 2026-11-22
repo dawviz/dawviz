@@ -2,6 +2,7 @@
 // `WidgetSettings` vẽ điều khiển, nút ↺ và dấu "đã chỉnh nâng cao" từ chính bảng này, nên thêm một thiết lập mới là tự có ↺
 // (test `widgetFields.test.ts` bắt thiết lập có trong mặc định mà thiếu trong bảng). Hàm thuần, không DOM.
 import { NOTE_TRANSITION_NAMES, type WidgetSpec, type WidgetType } from '@dawviz/render-core';
+import { ANIM_EFFECTS, ANIM_ORDERS, ANIM_UNITS, DEFAULT_TEXT_ANIMATOR, EASING_NAMES } from '@dawviz/render-core';
 
 type Obj = Record<string, unknown>;
 export type FieldKind = 'check' | 'num' | 'choice' | 'select' | 'color' | 'colorOpt' | 'text';
@@ -23,12 +24,25 @@ export interface FieldDef {
   /** kind 'choice' | 'select': giá trị và tiền tố khoá nhãn (`${prefix}${giá trị}`). */
   options?: readonly (string | number)[];
   prefix?: string;
+  /** Lựa chọn hiện đúng giá trị (tên kỹ thuật như tên easing), không dịch qua `prefix`. */
+  raw?: boolean;
   /** kind 'text'. `placeholder`: khoá con của `web.ws.*` khi để trống. */
   text?: { max?: number; multiline?: boolean; placeholder?: string };
   testId?: string;
 }
 
 const L = (path: string[], kind: FieldKind, label: string, rest: Partial<FieldDef> = {}): FieldDef => ({ path, kind, label, ...rest });
+const ta = (P: Obj) => (P.animator ?? {}) as Obj;
+const taOn = (P: Obj) => !!ta(P).enabled;
+const taCustom = (P: Obj) => taOn(P) && ta(P).effect === 'custom';
+/** Đối tượng lồng tuỳ chọn và giá trị mặc định của nó: bảng Thiết lập đọc/ghi trên bản đã trộn, nên bật lần đầu ghi đủ trường. */
+const NESTED_DEFAULTS: Partial<Record<WidgetType, Obj>> = { TEXT: { animator: DEFAULT_TEXT_ANIMATOR as unknown as Obj } };
+export function withNestedDefaults(type: WidgetType, P: Obj): Obj {
+  const d = NESTED_DEFAULTS[type]; if (!d) return P;
+  let out = P;
+  for (const [k, v] of Object.entries(d)) out = { ...out, [k]: { ...(v as Obj), ...((P[k] as Obj | undefined) ?? {}) } };
+  return out;
+}
 const LINES = ['played', 'total', 'progress', 'tempo'] as const;
 /** Số chữ số tối thiểu của mỗi nhóm trong kiểu "nhóm số" (001 35 083): 1–8, như lược đồ preset. */
 const DIGITS = { min: 1, max: 8, step: 1 } as const;
@@ -254,6 +268,23 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
   ],
   TEXT: [
     L(['text'], 'text', 'boxText', { text: { max: 2000, multiline: true } }),
+    // Text animator (T-35): hiện các ô khi bật; trạng thái "từ" chỉ khi hiệu ứng Tuỳ chỉnh.
+    L(['animator', 'enabled'], 'check', 'taOn', { testId: 'ws-ta-on' }),
+    L(['animator', 'effect'], 'select', 'taEffect', { when: taOn, options: ANIM_EFFECTS, prefix: 'web.ws.taEffect.', testId: 'ws-ta-effect' }),
+    L(['animator', 'unit'], 'choice', 'taUnit', { when: taOn, options: ANIM_UNITS, prefix: 'web.ws.taUnit.' }),
+    L(['animator', 'order'], 'select', 'taOrder', { when: taOn, options: ANIM_ORDERS, prefix: 'web.ws.taOrder.' }),
+    L(['animator', 'direction'], 'choice', 'taDir', { when: taOn, options: ['in', 'out'], prefix: 'web.ws.taDir.' }),
+    L(['animator', 'start'], 'num', 'taStart', { when: taOn, num: { min: 0, max: 86400, step: 0.1, range: [0, 60] } }),
+    L(['animator', 'duration'], 'num', 'taDuration', { when: (P) => taOn(P) && ta(P).effect !== 'typewriter', num: { min: 0, max: 30, step: 0.05, range: [0, 3] } }),
+    L(['animator', 'stagger'], 'num', 'taStagger', { when: taOn, num: { min: 0, max: 10, step: 0.01, range: [0, 0.5] } }),
+    L(['animator', 'ease'], 'select', 'taEase', { adv: true, when: (P) => taOn(P) && ta(P).effect !== 'typewriter', options: EASING_NAMES, raw: true }),
+    L(['animator', 'fromOpacity'], 'num', 'taFromOpacity', { when: taCustom, num: { min: 0, max: 1, step: 0.05 } }),
+    L(['animator', 'fromX'], 'num', 'taFromX', { when: taCustom, num: { min: -2000, max: 2000, step: 1, range: [-200, 200] } }),
+    L(['animator', 'fromY'], 'num', 'taFromY', { when: taCustom, num: { min: -2000, max: 2000, step: 1, range: [-200, 200] } }),
+    L(['animator', 'fromScale'], 'num', 'taFromScale', { when: taCustom, num: { min: 0, max: 10, step: 0.05, range: [0, 3] } }),
+    L(['animator', 'fromColor'], 'colorOpt', 'taFromColor', { when: taCustom }),
+    L(['animator', 'countUp'], 'check', 'taCount', { when: taOn }),
+    L(['animator', 'seed'], 'num', 'taSeed', { adv: true, when: (P) => taOn(P) && ta(P).order === 'random', num: { min: 0, max: 1e9, step: 1, range: [0, 100] } }),
   ],
   // Bản nhạc (D-63): nhóm "bản nhạc" (đổi thì dựng lại, vài trăm ms) rồi nhóm "hình vẽ" (đổi ngay).
   NOTATION: [

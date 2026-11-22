@@ -5,7 +5,7 @@ section: "0. Cách đọc bảng"
 path: "0. Cách đọc bảng"
 chunk: 0-cach-doc-bang.md
 source_lines: 7-18
-source_sha1: 5777254af0
+source_sha1: cb8de95b61
 ids: [AD-07]
 ---
 ## 0. Cách đọc bảng

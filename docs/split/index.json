@@ -4164,7 +4164,7 @@
   },
   "ANIMATION-CATALOG.md": {
    "title": "Danh mục hiệu ứng chuyển động và đường cong nội suy",
-   "sha1": "5777254af0",
+   "sha1": "cb8de95b61",
    "chunks": [
     {
      "n": 0,
@@ -4385,7 +4385,7 @@
      "path": [
       "13. Chữ (text)"
      ],
-     "chars": 720,
+     "chars": 802,
      "lines": [
       209,
       221
