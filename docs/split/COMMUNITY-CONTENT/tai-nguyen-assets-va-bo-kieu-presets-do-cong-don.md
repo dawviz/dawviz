@@ -5,7 +5,7 @@ section: "Tài nguyên (assets) và bộ kiểu (presets) do cộng đồng đó
 path: "Tài nguyên (assets) và bộ kiểu (presets) do cộng đồng đóng góp (mở đầu)"
 chunk: tai-nguyen-assets-va-bo-kieu-presets-do-cong-don.md
 source_lines: 1-4
-source_sha1: d3268bcf29
+source_sha1: f89d7ee23f
 ids: []
 ---
 # Tài nguyên (assets) và bộ kiểu (presets) do cộng đồng đóng góp

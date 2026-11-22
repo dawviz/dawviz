@@ -38,6 +38,10 @@ Sau khi tách repo, thêm `index.json` (danh mục sinh tự động, có băm S
 * Tệp phải là JSON hợp lệ, dưới 16 KB, tên tệp là slug chữ thường `a-z0-9-`.
 * Trường `license` bắt buộc, giá trị SPDX (ví dụ `CC0-1.0`, `Apache-2.0`, `CC-BY-4.0`).
 
+### Gói `.dawviz-preset.zip` (T-24)
+
+Nút **Chia sẻ thành preset…** trong ứng dụng tạo gói gồm `preset.json` (lược đồ [`presets/schema/preset-pack.schema.json`](../presets/schema/preset-pack.schema.json): `format`, `formatVersion`, `kind` = `scene` / `note-style` / `easing` / `particle`, `name`, `author`, `license`, `description`, `payload`, `assets`) và thư mục `assets/` (ảnh, SVG, phông) với SHA-256 từng tệp. Kiểm trước khi gửi: `npm run preset:check -- --community <gói>.dawviz-preset.zip`.
+
 ## 4. Quy tắc cho assets
 
 * Chỉ nhận tệp **bạn có quyền phân phối**: tự tạo, hoặc giấy phép cho phép phân phối lại (CC0, CC-BY, OFL cho phông, MIT/Apache). **Không nhận** tệp không rõ nguồn.

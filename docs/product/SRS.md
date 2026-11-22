@@ -949,6 +949,7 @@ Thiết kế chi tiết: `docs/design/CUSTOMIZATION.md` (AD-08…AD-12), `docs/d
 * **Hiện trạng (T-85, 2026-11-20): ảnh nền.** Chỉ ảnh bitmap làm nền khung; nạp tối đa 20 MB (`ERR_ASSET_TOO_LARGE`), đuôi png/jpg/webp/gif kiểm trước khi giải mã, giải mã lỗi thì `ERR_ASSET_DECODE`, cạnh dài > 4096 thì thu nhỏ khi giải mã. Lưu cùng phiên (IndexedDB, Blob `background`) và Project Pack (`assets/background.<đuôi>`), không nằm trong preset: preset chỉ có `canvas.backgroundImage { fit, opacity, dim }`, preset mang `backgroundImageData` bị bỏ kèm `WARN_PRESET_UNSUPPORTED`. Export nhận bản `ImageBitmap` riêng. Chưa có: SVG, sprite sheet, phông người dùng, băm SHA-256 làm định danh, pre-flight báo thiếu ảnh, nhiều ảnh/lớp ảnh.
 
 #### REQ-STORAGE-06: Preset mới và chia sẻ
+* **Hiện trạng (T-24, 2026-11-22):** gói `.dawviz-preset.zip` cho `scene`, `note-style`, `easing`, `particle` (lược đồ `presets/schema/preset-pack.schema.json`), băm SHA-256 từng tài nguyên, giấy phép SPDX bắt buộc trong danh sách cho phép, nhập kèm nhãn "chưa kiểm duyệt". Chưa có: `note-transition`, `theme`, `effect`.
 * **1.0:** các loại `note-style`, `note-transition`, `easing`, `particle`, `theme`, `effect`, `scene`; JSON Schema, `schemaVersion` và di trú (REQ-STORAGE-04); "Chia sẻ thành preset" xuất `.dawviz-preset.zip` (JSON + tài nguyên + băm + giấy phép SPDX bắt buộc); nhập kèm nhãn "Chưa kiểm duyệt". **1.1:** thư viện cộng đồng trong ứng dụng (D-14), xác minh băm, danh sách thu hồi, kiểm duyệt theo D-43.
 
 ## 4. YÊU CẦU PHI CHỨC NĂNG (NON-FUNCTIONAL REQUIREMENTS)

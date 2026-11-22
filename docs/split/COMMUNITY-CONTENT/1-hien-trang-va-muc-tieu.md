@@ -5,7 +5,7 @@ section: "1. Hiện trạng và mục tiêu"
 path: "1. Hiện trạng và mục tiêu"
 chunk: 1-hien-trang-va-muc-tieu.md
 source_lines: 5-9
-source_sha1: d3268bcf29
+source_sha1: f89d7ee23f
 ids: []
 ---
 ## 1. Hiện trạng và mục tiêu

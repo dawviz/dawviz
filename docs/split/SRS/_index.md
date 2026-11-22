@@ -1,6 +1,6 @@
 # Chỉ mục SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
-nguồn: `SRS.md` (sha1 49d4aaf8cd)
+nguồn: `SRS.md` (sha1 410aa8419f)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -75,7 +75,7 @@ nguồn: `SRS.md` (sha1 49d4aaf8cd)
 | 68 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) > REQ-GRAPHICS-14: Khoảng hiển thị theo thời gian và theo track | [req-graphics-14-khoang-hien-thi-theo-thoi-gian-v.md](req-graphics-14-khoang-hien-thi-theo-thoi-gian-v.md) | 1148 | P-04, P-09, P-10, REQ-GRAPHICS-09, REQ-GRAPHICS-14, REQ-UI-03… |
 | 69 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) > REQ-GRAPHICS-15: Không gian 2.5D: xoay X/Y/Z và camera phối cảnh (D-47), bản 1.1 | [req-graphics-15-khong-gian-2-5d-xoay-x-y-z-va-ca.md](req-graphics-15-khong-gian-2-5d-xoay-x-y-z-va-ca.md) | 1874 | D-47, REQ-GRAPHICS-05, REQ-GRAPHICS-09, REQ-GRAPHICS-15 |
 | 70 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) > REQ-STORAGE-05: Tài nguyên của phiên | [req-storage-05-tai-nguyen-cua-phien.md](req-storage-05-tai-nguyen-cua-phien.md) | 1292 | ERR_ASSET_DECODE, ERR_ASSET_SESSION_FULL, ERR_ASSET_TOO_LARGE, ERR_ASSET_UNSAFE, ERR_ASSET_UNSUPPORTED, REQ-STORAGE-05… |
-| 71 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) > REQ-STORAGE-06: Preset mới và chia sẻ | [req-storage-06-preset-moi-va-chia-se.md](req-storage-06-preset-moi-va-chia-se.md) | 444 | D-14, D-43, REQ-STORAGE-04, REQ-STORAGE-06 |
+| 71 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) > REQ-STORAGE-06: Preset mới và chia sẻ | [req-storage-06-preset-moi-va-chia-se.md](req-storage-06-preset-moi-va-chia-se.md) | 765 | D-14, D-43, REQ-STORAGE-04, REQ-STORAGE-06 |
 | 72 | 4. YÊU CẦU PHI CHỨC NĂNG (NON-FUNCTIONAL REQUIREMENTS) | [4-yeu-cau-phi-chuc-nang-non-functional-requireme.md](4-yeu-cau-phi-chuc-nang-non-functional-requireme.md) | 5167 | ARC-07, BR-08, D-05, D-12, D-16, D-30… |
 | 73 | 5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.1. Bố cục không gian làm việc | [5-1-bo-cuc-khong-gian-lam-viec.md](5-1-bo-cuc-khong-gian-lam-viec.md) | 4893 | D-57, REQ-GRAPHICS-14 |
 | 74 | 5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.2. Chế độ tương tác | [5-2-che-do-tuong-tac.md](5-2-che-do-tuong-tac.md) | 364 | REQ-GRAPHICS-05 |

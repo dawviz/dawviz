@@ -75,6 +75,9 @@ import { parseInWorker } from './lib/parseInWorker.ts';
 import { AssetsContext, decodeImage, loadFontBytes, type SessionAsset } from './lib/assetsRuntime.ts';
 import { acceptAsset, type AssetMeta } from './lib/sessionAssets.ts';
 import { BUNDLED_FONTS } from '@dawviz/render-core';
+import { buildPresetPack, presetFileName as packFileName, readPresetPack } from './lib/presetPack.ts';
+import { EASE_LIBRARY_KEY, addSavedEase, parseEaseLibrary } from './lib/graphEditor.ts';
+import { referencedAssets } from './lib/sessionAssets.ts';
 
 interface Loaded { name: string; ast: UnifiedProjectAST; warnings: ParseWarning[]; format: string; ms: number }
 type Tab = 'preview' | 'editor' | 'settings';
@@ -477,6 +480,7 @@ export function App() {
   // Preset .json: mở = một bước hoàn tác; cảnh báo WARN_PRESET_* và lỗi hiện cho người dùng (REQ-STORAGE-02).
   const onOpenPreset = useCallback(async (file: File) => {
     try {
+      if (/\.zip$/i.test(file.name)) { await openPresetPack(file); return; }
       const r = await readPresetFile(file);
       stashCurrent();
       const added = addUserPreset(userPresets, r.scene.presetName || r.fileName.replace(/\.json$/i, ''), r.scene);
@@ -489,6 +493,37 @@ export function App() {
       setPresetProblems([describeProblem(i18n, 'error', f.code?.startsWith('ERR_') ? f.code : 'ERR_PRESET_INVALID', f.message, f.details)]); setPresetOpened(null);
     }
   }, [run, i18n, userPresets, tileId, working]);
+  // Gói .dawviz-preset.zip (T-24): tài nguyên vào phiên trước, rồi áp theo loại; luôn ghi "chưa kiểm duyệt".
+  const openPresetPack = async (file: File) => {
+    const r = await readPresetPack(await bytesOf(file));
+    for (const a of r.assets) await addAsset(new File([a.bytes.slice().buffer as ArrayBuffer], a.name)).catch(() => { /* tài nguyên hỏng: pre-flight báo thiếu */ });
+    const warn = r.warnings.map((w) => describeProblem(i18n, 'warning', w.code, w.message, w.details as Record<string, unknown>));
+    const p = r.payload;
+    if (p.kind === 'scene') {
+      stashCurrent();
+      const added = addUserPreset(userPresets, r.info.name, { ...p.scene, presetName: r.info.name, author: r.info.author });
+      setUserPresets(added.list); setActiveUser(added.preset.id);
+      run((d) => Cmds.loadPreset(d, added.preset.scene));
+      setPresetProblems(warn); setPresetOpened(null); setPresetStatus(i18n.t('web.preset.openedUnreviewed', { name: r.info.name }));
+    } else if (p.kind === 'note-style') {
+      run((d) => { const pr = Cmds.pianoOf(d.scene); return pr ? Cmds.applyNotePreset(d, { ...pr.properties.noteStyle.base, ...p.style }) : null; });
+      setPresetProblems([]); setPresetOpened(null); setPresetStatus(i18n.t('web.preset.noteStyleApplied', { name: r.info.name }));
+    } else if (p.kind === 'easing') {
+      try { localStorage.setItem(EASE_LIBRARY_KEY, JSON.stringify(addSavedEase(parseEaseLibrary(localStorage.getItem(EASE_LIBRARY_KEY)), r.info.name, p.bezier))); } catch { /* bộ nhớ bị chặn */ }
+      setPresetProblems([]); setPresetOpened(null); setPresetStatus(i18n.t('web.preset.easingAdded', { name: r.info.name }));
+    } else {
+      run((d) => { const w = createWidget(d.scene, 'PARTICLES'); return Cmds.addWidget(d, { ...w, properties: { ...(w.properties as object), ...p.properties }, name: r.info.name.slice(0, 60) }); });
+      setPresetProblems([]); setPresetOpened(null); setPresetStatus(i18n.t('web.preset.particleAdded', { name: r.info.name }));
+    }
+  };
+  // "Chia sẻ thành preset" (T-24): khung hiện tại + ảnh widget Ảnh dùng + phông người dùng mà chữ dùng.
+  const onSharePreset = async (info: { name: string; author: string; license: string; description: string }) => {
+    const sc = store.get().scene, json = JSON.stringify(sc), used = new Set(referencedAssets(sc));
+    const files = assetsRef.current.filter((a) => used.has(a.meta.id) || (a.meta.family && json.includes(JSON.stringify(a.meta.family))));
+    const bytes = await buildPresetPack(info, { kind: 'scene', scene: { ...sc, presetName: info.name.trim().slice(0, 60) } }, await Promise.all(files.map(async (a) => ({ name: a.meta.name, bytes: await bytesOf(a.file) }))));
+    downloadBytes(bytes, packFileName(info.name));
+  };
+  const [presetStatus, setPresetStatus] = useState<string | null>(null);
   const onPickUserPreset = (id: string) => {
     const pr = userPresets.find((x) => x.id === id); if (!pr) return;
     if (id === tileId) return;
@@ -688,7 +723,8 @@ export function App() {
               <VideoStyles value={doc.videoStyle} edited={tileEdited} onPick={pickVideoStyle} thumb={(id) => thumbs[id]}
                 headerAction={<PanelCollapse label={pvHint(i18n.t('web.styles.title'), true, 'Ctrl+B')} icon={<PanelLeft className="h-3.5 w-3.5" />} onClick={() => pv.setOpen('layers', false)} testId="collapse-styles" />}
                 presets={{ items: userPresets.map(({ id, name }) => ({ id, name })), active: userActiveId, dirty: Object.keys(working).filter((k) => k !== tileId), onPick: onPickUserPreset, onAddFile: (f) => void onOpenPreset(f),
-                  onDownload: onDownloadTile, onDuplicate, onRevert, onDelete: onDeleteUserPreset, problems: [], status: presetOpened ? i18n.t('web.preset.opened', { name: presetOpened }) : undefined }} />
+                  onDownload: onDownloadTile, onDuplicate, onRevert, onDelete: onDeleteUserPreset, problems: [], status: presetOpened ? i18n.t('web.preset.opened', { name: presetOpened }) : presetStatus ?? undefined,
+                  onShare: onSharePreset, shareName: (activeUser ? userPresets.find((u) => u.id === activeUser)?.name : undefined) ?? i18n.t(`web.style.video.${doc.videoStyle}`) }} />
             </aside>
             <Splitter axis="x" grow={1} label={i18n.t('web.panel.resize', { name: i18n.t('web.styles.title') })} title={i18n.t('web.panel.resizeHint')} controls="preview-styles"
               value={pv.r.layers} min={pv.profile.limits.layers[0]} max={pv.profile.limits.layers[1]} onResize={(v) => pv.resize('layers', v)} onReset={() => pv.reset('layers')}

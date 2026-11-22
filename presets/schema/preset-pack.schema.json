@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DAW Visualizer shared preset (preset.json inside .dawviz-preset.zip, formatVersion 1)",
+  "description": "T-24, REQ-STORAGE-06. Vỏ chung cho mọi loại preset chia sẻ; nội dung theo loại nằm trong payload. Tài nguyên nằm trong assets/ của gói, liệt kê kèm SHA-256.",
+  "type": "object",
+  "required": ["format", "formatVersion", "kind", "name", "author", "license", "payload", "assets"],
+  "properties": {
+    "format": { "const": "dawviz-preset" },
+    "formatVersion": { "type": "integer", "minimum": 1, "maximum": 1 },
+    "kind": { "enum": ["scene", "note-style", "easing", "particle"] },
+    "name": { "type": "string", "minLength": 1, "maxLength": 60 },
+    "author": { "type": "string", "minLength": 1, "maxLength": 60 },
+    "license": { "enum": ["CC0-1.0", "CC-BY-4.0", "CC-BY-SA-4.0", "MIT", "Apache-2.0", "OFL-1.1", "BSD-2-Clause", "BSD-3-Clause", "ISC"] },
+    "description": { "type": "string", "maxLength": 500 },
+    "createdAt": { "type": "string" },
+    "payload": {
+      "description": "scene: { scene } theo scene.schema.json; note-style: { style } theo note-style.schema.json (một phần NoteStyle); easing: { bezier: [x1, y1, x2, y2] }, x trong 0..1, y trong -1..2; particle: { properties } của widget Hạt.",
+      "type": "object",
+      "properties": {
+        "scene": { "$ref": "scene.schema.json" },
+        "style": { "type": "object" },
+        "bezier": { "type": "array", "items": { "type": "number" }, "minItems": 4, "maxItems": 4 },
+        "properties": { "type": "object" }
+      }
+    },
+    "assets": {
+      "type": "array", "maxItems": 63,
+      "items": { "type": "object", "required": ["file", "sha256", "size"], "properties": {
+        "file": { "type": "string", "pattern": "^assets/asset-[0-9a-f]{16}-[A-Za-z0-9_.-]+$" },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "size": { "type": "integer", "minimum": 1, "maximum": 20971520 }
+      } }
+    }
+  }
+}
