@@ -4,8 +4,8 @@ doc_title: "Danh mục hiệu ứng chuyển động và đường cong nội su
 section: "7. Hiện/ẩn, che và lộ (reveal)"
 path: "7. Hiện/ẩn, che và lộ (reveal)"
 chunk: 7-hien-an-che-va-lo-reveal.md
-source_lines: 119-133
-source_sha1: 0c1c7a0731
+source_lines: 121-135
+source_sha1: e025c800f9
 ids: []
 ---
 ## 7. Hiện/ẩn, che và lộ (reveal)

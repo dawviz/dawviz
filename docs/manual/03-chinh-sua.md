@@ -126,7 +126,7 @@ Chọn widget rồi mở mục **Chuyển động** để cho nó hiệu ứng v
 
 ## Timeline và keyframe
 
-Panel **Timeline và keyframe** ở dưới cùng cho thấy các thuộc tính của widget đang chọn theo thời gian: bên trái là danh sách thuộc tính, bên phải là thước thời gian và các keyframe hình thoi. Nhóm **Biến đổi** có Vị trí, Tỉ lệ, Xoay, Độ đục. Bấm đồng hồ ở một thuộc tính để bắt đầu animate; khi đã bật, kéo widget trên khung sẽ đặt keyframe tại vạch phát. Kéo keyframe để đổi thời điểm, chọn keyframe để chỉnh đường cong ở mục **Keyframe** bên phải. Chi tiết ở [Widget phân tích](10-phan-tich.md#hoạt-hình-thuộc-tính).
+Panel **Timeline và keyframe** ở dưới cùng cho thấy các thuộc tính của widget đang chọn theo thời gian: bên trái là danh sách thuộc tính, bên phải là thước thời gian và các keyframe hình thoi. Nhóm **Biến đổi** có Vị trí, Tỉ lệ, Xoay, Độ đục. Bấm đồng hồ ở một thuộc tính để bắt đầu animate; khi đã bật, kéo widget trên khung sẽ đặt keyframe tại vạch phát. Kéo keyframe để đổi thời điểm, chọn keyframe để chỉnh đường cong ở mục **Keyframe** bên phải. Nút **Danh sách / Đồ thị** ở góc phải thanh tiêu đề panel đổi sang **Đồ thị** để xem và chỉnh đường cong giá trị, tốc độ của dòng đang chọn. Chi tiết ở [Widget phân tích](10-phan-tich.md#hoạt-hình-thuộc-tính).
 
 ## Cách ghi tên nốt
 

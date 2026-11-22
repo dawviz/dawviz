@@ -4,8 +4,8 @@ doc_title: "Danh mục hiệu ứng chuyển động và đường cong nội su
 section: "12. Làm mờ, biến dạng điểm ảnh và phong cách hoá"
 path: "12. Làm mờ, biến dạng điểm ảnh và phong cách hoá"
 chunk: 12-lam-mo-bien-dang-diem-anh-va-phong-cach-hoa.md
-source_lines: 188-206
-source_sha1: 0c1c7a0731
+source_lines: 190-208
+source_sha1: e025c800f9
 ids: []
 ---
 ## 12. Làm mờ, biến dạng điểm ảnh và phong cách hoá

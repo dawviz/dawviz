@@ -4,8 +4,8 @@ doc_title: "Danh mục hiệu ứng chuyển động và đường cong nội su
 section: "17. Hạt (bổ sung cho CUSTOMIZATION §5)"
 path: "17. Hạt (bổ sung cho CUSTOMIZATION §5)"
 chunk: 17-hat-bo-sung-cho-customization-5.md
-source_lines: 257-282
-source_sha1: 0c1c7a0731
+source_lines: 259-284
+source_sha1: e025c800f9
 ids: [REQ-STORAGE-05]
 ---
 ## 17. Hạt (bổ sung cho CUSTOMIZATION §5)

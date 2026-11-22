@@ -95,6 +95,18 @@ The ↺ button next to **Curve**, **Between keyframes** and **After the last key
 
 Select several keyframes and change a field to change all of them; a field where they differ reads **Several values**. Colours blend smoothly, without going muddy in the middle.
 
+### The graph (Graph Editor)
+
+The **List / Graph** switch at the right of the Timeline title bar changes the view. **Graph** draws the curve of the selected row (Position has two lines: x solid, y dashed):
+
+- **Value**: the vertical axis is the value over time. Drag a square to move a keyframe in time and change its value at once; hold Shift while dragging to move in one direction only. Keyframes snap to the playhead, beats, other keyframes, each frame and round numbers; hold Alt to place freely. Select a keyframe to show the round handles of the segments on both sides; drag a handle to shape that segment.
+- **Speed**: the vertical axis is how fast the value changes (per second). Drag a handle sideways to change the influence, up or down to change the velocity.
+- **In / Out**: with one keyframe selected, two pairs of boxes on the right take the **velocity** (units per second) and **influence** (%) of the incoming and outgoing segments. A linear segment has 0% influence: set an influence first so the handle moves away from the keyframe and can be dragged.
+- **Copy easing / Paste easing**: copy the curve leading into the selected keyframe, then paste it on other keyframes.
+- **Easing library**: pick a curve with a thumbnail to apply it to the selected keyframes. **Save this curve** adds the selected keyframe's curve to **Saved** (kept on this computer).
+
+Scroll to move along time, Ctrl+scroll to zoom around the pointer, and **Fit the curves** to see everything again. Delete, Ctrl+A and Esc work as in the list; Left/Right on a keyframe moves it one frame (add Shift: one second), Up/Down changes its value. Colour properties have no graph; use the list. Several properties on one graph comes in version 1.1.
+
 ### Following the music
 
 Click a property's name on the Timeline (not a keyframe), then choose **Follow the music** in the **Keyframe** section on the right. The value follows a source of the song's data: beat, bar, song progress, the number of notes sounding, the loudest note sounding, a note that just hit (jumps, then fades), a track's volume or pan automation, the loudness of the audio. You set where the source runs from and to and the matching values, for example glow from 0 to 1 when a note has just hit. On the Timeline that property shows a **Follows the music** bar instead of keyframes. **Stop animating** puts the property back to a fixed value.

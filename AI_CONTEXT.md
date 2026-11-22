@@ -295,7 +295,7 @@ Nguồn: `docs/design/ANIMATION-CATALOG.md` · [thứ tự đọc](docs/split/AN
 - [0. Cách đọc bảng](docs/split/ANIMATION-CATALOG/0-cach-doc-bang.md) · 0.6k
 - [1. Kiểu nội suy keyframe (theo thời gian)](docs/split/ANIMATION-CATALOG/1-kieu-noi-suy-keyframe-theo-thoi-gian.md) · 1.1k
 - [2. Thư viện easing đặt sẵn](docs/split/ANIMATION-CATALOG/2-thu-vien-easing-dat-san.md) · 1.3k
-- [3. Đồ thị (Graph Editor)](docs/split/ANIMATION-CATALOG/3-do-thi-graph-editor.md) · 1.2k
+- [3. Đồ thị (Graph Editor)](docs/split/ANIMATION-CATALOG/3-do-thi-graph-editor.md) · 1.5k
 - [4. Nội suy không gian và kiểu giá trị](docs/split/ANIMATION-CATALOG/4-noi-suy-khong-gian-va-kieu-gia-tri.md) · 0.7k
 - [5. Ngoại suy, lặp và bộ biến đổi đường cong](docs/split/ANIMATION-CATALOG/5-ngoai-suy-lap-va-bo-bien-doi-duong-cong.md) · 0.8k
 - [6. Hiệu ứng biến đổi cơ bản (transform)](docs/split/ANIMATION-CATALOG/6-hieu-ung-bien-doi-co-ban-transform.md) · 0.8k

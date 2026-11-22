@@ -37,6 +37,7 @@ dawviz/
 │     │  │  ├─ EditorOverlay.tsx
 │     │  │  ├─ ExportDialog.tsx
 │     │  │  ├─ FileDrop.tsx
+│     │  │  ├─ GraphEditor.tsx
 │     │  │  ├─ HistoryMenu.tsx
 │     │  │  ├─ Icons.tsx
 │     │  │  ├─ Inspector.tsx
@@ -132,6 +133,8 @@ dawviz/
 │     │  │  ├─ externalMidi.test.ts
 │     │  │  ├─ externalMidi.ts
 │     │  │  ├─ fonts.ts
+│     │  │  ├─ graphEditor.test.ts
+│     │  │  ├─ graphEditor.ts
 │     │  │  ├─ historyLabels.test.ts
 │     │  │  ├─ historyLabels.ts
 │     │  │  ├─ latencyCalibration.test.ts
@@ -1596,6 +1599,15 @@ interface Picked
 function FileDrop({ onPick, busy, compact = false, slim = false, onSample }: { onPick(p: Picked): void; busy: boolean; compact?: boolean; slim?: boolean; onSample?(): void })   // `compact`: nút nhỏ ở thanh trên. `slim`: ô thả thu gọn một dòng, dùng khi bảng thiếu .mid đang hiện (hành độn…
 ```
 
+#### `apps/web/src/components/GraphEditor.tsx`
+
+Graph Editor cơ bản (T-33, ANIMATION-CATALOG §3, DESIGN.md "Graph Editor"): chế độ "Đồ thị" của panel Timeline. Vẽ đường cong của dòng đang chọn
+
+```text
+interface GraphEditorProps
+function GraphEditor({ widget, tempoMap, duration, playback, locked, sel, onSel, onAnimateMany, gesture }: GraphEditorProps)
+```
+
 #### `apps/web/src/components/HistoryMenu.tsx`
 
 Cụm Hoàn tác / Làm lại và nút riêng "Lịch sử chỉnh sửa" (đồng hồ quay ngược, bên phải cả cụm) mở danh sách lịch sử thả xuống (T-07 bước 2b, SRS REQ-UI-02).
@@ -1865,7 +1877,8 @@ Panel "Timeline và keyframe" ở đáy thẻ Editor (UI-DIRECTION 5.3, DESIGN.m
 
 ```text
 interface TimelinePanelProps
-function TimelinePanel({ open, onOpen, toggleHint, widget, widgetName, selectedCount, hasProject, children }: TimelinePanelProps)
+type TimelineView
+function TimelinePanel({ open, onOpen, toggleHint, widget, widgetName, selectedCount, hasProject, view, onView, children }: TimelinePanelProps)
 ```
 
 #### `apps/web/src/components/TimeSections.tsx`
@@ -2459,6 +2472,43 @@ Nạp phông cho khung video ở Preview (TECHNICAL-DESIGN 5.7): FontFace + docu
 const loadBundledFont = (spec: FontFaceSpec) =>   // Nạp một mặt phông (một lần cho mỗi tệp, kể cả khi gọi lại). Lỗi được quên để lần sau thử lại.
 type FontsStatus
 function useFontsStatus(scene: SceneDocument, loader: FontLoader = loadBundledFont): FontsStatus   // Trạng thái phông của scene: scene không có chữ thì luôn sẵn sàng.
+```
+
+#### `apps/web/src/lib/graphEditor.ts`
+
+Logic thuần của Graph Editor cơ bản (T-33, ANIMATION-CATALOG §3, DESIGN.md "Graph Editor"): lấy mẫu đồ thị giá trị và đồ thị tốc độ,
+
+```text
+type GraphMode   // Chế độ đồ thị: giá trị theo thời gian, hoặc tốc độ (độ lớn đạo hàm, đơn vị/giây).
+const MIN_INFLUENCE   // Ảnh hưởng nhỏ nhất (%) để tay cầm không chồng lên keyframe (đường cong vẫn là hàm của thời gian).
+function timeOrder(a: KeyAnimation, tempoMap: readonly TempoPoint[]):    // Chỉ số keyframe theo thứ tự thời gian (mốc hỏng bỏ ra ngoài).
+const graphable = (a: KeyAnimation | null | undefined) =>   // Đồ thị đọc được: chỉ thuộc tính số hoặc góc, có ít nhất 1 keyframe. Màu thì không có trục giá trị.
+function sampleGraph(a: KeyAnimation, tempoMap: readonly TempoPoint[], t0: number, t1: number, n: number, mode: GraphMode): [number, number][]   // Lấy mẫu đều trên [t0, t1] (n + 1 điểm): giá trị hoặc tốc độ đúng như Render Core tính.
+function valueRange(samples: readonly [number, number][], extra: readonly number[] = [], zeroBased = false): [number, number]   // Khung nhìn trục giá trị: chứa mọi mẫu và mọi điểm thêm (tay cầm), lề 10%; khoảng rỗng → ±1 quanh giá trị.
+function niceTicks(lo: number, hi: number, target = 5): number[]   // Vạch chia "đẹp" cho trục giá trị: bước 1/2/5 × 10^k sao cho có khoảng `target` vạch.
+function snapValue(v: number, tickStep: number, tol: number):    // Bắt dính giá trị tròn: bước vạch chia của trục và nửa bước; trong `tol` (đơn vị giá trị) thì bắt.
+const tickStep = (ticks: readonly number[]) =>   // Bước vạch chia của một dãy vạch (0 nếu ít hơn 2 vạch).
+interface Segment   // Một đoạn A → B (theo thứ tự thời gian): chỉ số trong `keys`, thời điểm, giá trị.
+function segments(a: KeyAnimation, tempoMap: readonly TempoPoint[]): Segment[]
+function segmentBezier(a: KeyAnimation, s: Segment): Bezier | null   // Đoạn có bezier chỉnh được: đi "đều" (không giữ, không cong mượt tự động) và easing biểu diễn được bằng bezier.
+function startSlope(bz: Bezier): number   // Độ dốc chuẩn hoá ở đầu/cuối bezier (1 = như đi đều). Tay cầm trùng keyframe (x = 0) thì độ dốc do tay cầm kia…
+function endSlope(bz: Bezier): number
+interface KeyVelocity   // Vận tốc và ảnh hưởng của một keyframe (đơn vị/giây, 0..1). `null` = phía đó không có đoạn hoặc đoạn không chỉ…
+function keyVelocity(a: KeyAnimation, tempoMap: readonly TempoPoint[], keyIndex: number): KeyVelocity
+function bezierWith(bz: Bezier, s: Segment, side: 'out' | 'in', vel: number | null, inf: number | null): Bezier   // Bezier của đoạn khi đặt vận tốc/ảnh hưởng ở một đầu. Đoạn không đổi giá trị (dv = 0) thì vận tốc khác 0 không…
+function setVelocity(a: KeyAnimation, tempoMap: readonly TempoPoint[], keyIndex: number, side: 'in' | 'out', vel: number | null, inf: number | null): KeyAnimation   // Đặt vận tốc/ảnh hưởng vào hoặc ra của keyframe `keyIndex` (giá trị `null` = giữ nguyên). Đoạn đang giữ/cong m…
+function setSegmentBezier(a: KeyAnimation, s: Segment, bz: Bezier): KeyAnimation   // Gán bezier cho đoạn (easing ở keyframe cuối; keyframe đầu đi "đều").
+function handlePoints(s: Segment, bz: Bezier): [[number, number], [number, number]]   // Toạ độ (giây, giá trị) của hai tay cầm của đoạn trên đồ thị giá trị.
+function bezierFromHandle(bz: Bezier, s: Segment, which: 0 | 1, t: number, v: number): Bezier   // Tay cầm kéo tới điểm (giây, giá trị) trên đồ thị giá trị → bezier mới (x kẹp 0..1; y theo dv, kẹp miền Y_RANG…
+const easeClipboard
+interface SavedEase   // Đường cong người dùng lưu (thư viện easing, ANIMATION-CATALOG §3). Chỉ bezier: hình thu nhỏ và đường cong đún…
+const EASE_LIBRARY_KEY
+const MAX_SAVED_EASES
+function parseEaseLibrary(raw: string | null): SavedEase[]
+function addSavedEase(lib: readonly SavedEase[], name: string, bezier: Bezier): SavedEase[]   // Thêm (hoặc thay đường cong cùng tên). Đầy thì bỏ cái cũ nhất.
+function nextEaseName(lib: readonly SavedEase[], base: string): string   // Tên mặc định chưa trùng: "Đường cong 1", "Đường cong 2"… (`base` đã dịch).
+function applyEase(a: KeyAnimation, tempoMap: readonly TempoPoint[], idx: readonly number[], ease: EaseSpec | undefined): KeyAnimation   // Áp một easing cho các đoạn kết thúc ở keyframe `idx` (dán easing, chọn từ thư viện). Keyframe đầu của đoạn th…
+function easeOfKeys(a: KeyAnimation, tempoMap: readonly TempoPoint[], idx: readonly number[]): EaseSpec | 'linear' | 'mixed' | undefined   // Easing chung của các đoạn kết thúc ở `idx` (để sao chép): một giá trị nếu giống nhau, 'mixed' nếu khác, undef…
 ```
 
 #### `apps/web/src/lib/historyLabels.ts`
@@ -3279,6 +3329,7 @@ type SpectrumOut
 - `apps/web/src/lib/exportPlan.test.ts`
 - `apps/web/src/lib/exportStats.test.ts`
 - `apps/web/src/lib/externalMidi.test.ts`
+- `apps/web/src/lib/graphEditor.test.ts`
 - `apps/web/src/lib/historyLabels.test.ts`
 - `apps/web/src/lib/latencyCalibration.test.ts`
 - `apps/web/src/lib/layerName.test.ts`
@@ -3344,4 +3395,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 1459 ký hiệu công khai -->
+<!-- 10 thư mục src, 1492 ký hiệu công khai -->

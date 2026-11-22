@@ -4,8 +4,8 @@ doc_title: "Danh mục hiệu ứng chuyển động và đường cong nội su
 section: "6. Hiệu ứng biến đổi cơ bản (transform)"
 path: "6. Hiệu ứng biến đổi cơ bản (transform)"
 chunk: 6-hieu-ung-bien-doi-co-ban-transform.md
-source_lines: 104-118
-source_sha1: 0c1c7a0731
+source_lines: 106-120
+source_sha1: e025c800f9
 ids: [D-47, REQ-GRAPHICS-15]
 ---
 ## 6. Hiệu ứng biến đổi cơ bản (transform)

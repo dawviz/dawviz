@@ -4,8 +4,8 @@ doc_title: "Danh mục hiệu ứng chuyển động và đường cong nội su
 section: "9. Chuyển động \"có vật lý\" (cảm giác tự nhiên)"
 path: "9. Chuyển động \"có vật lý\" (cảm giác tự nhiên)"
 chunk: 9-chuyen-dong-co-vat-ly-cam-giac-tu-nhien.md
-source_lines: 149-160
-source_sha1: 0c1c7a0731
+source_lines: 151-162
+source_sha1: e025c800f9
 ids: []
 ---
 ## 9. Chuyển động "có vật lý" (cảm giác tự nhiên)

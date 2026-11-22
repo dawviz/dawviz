@@ -4,8 +4,8 @@ doc_title: "Danh mục hiệu ứng chuyển động và đường cong nội su
 section: "10. Hiệu ứng thủ tục (procedural)"
 path: "10. Hiệu ứng thủ tục (procedural)"
 chunk: 10-hieu-ung-thu-tuc-procedural.md
-source_lines: 161-172
-source_sha1: 0c1c7a0731
+source_lines: 163-174
+source_sha1: e025c800f9
 ids: []
 ---
 ## 10. Hiệu ứng thủ tục (procedural)

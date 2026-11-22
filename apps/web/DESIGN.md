@@ -263,6 +263,14 @@ Dải 36 px nền `surface`, cả dải là một nút mở: biểu tượng pan
 - **Vạch dẫn bắt dính**: 1 px `guide` (như đường gióng trên khung) phủ hết các làn khi keyframe hoặc vạch phát đang bắt vào một mốc. Mốc keyframe trên thước: thoi 4 px `text-muted`.
 - **Chip thời gian khi kéo**: nền `surface-raised`, viền `line-control`, 11 px số đều, nằm trên keyframe.
 
+### Graph Editor (`GraphEditor`, chế độ Đồ thị của Timeline)
+- **Chuyển chế độ**: nhóm nút `.seg` "Danh sách / Đồ thị" ở mép phải thanh tiêu đề Timeline (chỉ hiện khi panel mở và có widget). Chế độ nhớ trong localStorage; vùng chọn keyframe dùng chung hai chế độ. Thành phần tải lười, khung chờ giữ nguyên chiều cao panel.
+- **Thanh công cụ** (một hàng, xuống dòng khi hẹp): tên dòng 12 px đậm 500 · `.seg` Giá trị/Tốc độ · `.tog` vừa đường cong · vạch chia `line` · nút `.btn-ghost` Sao chép easing, Dán easing, Thư viện easing · bên phải: Vào/Ra, mỗi phía hai ô số (vận tốc 64 px, ảnh hưởng 56 px).
+- **Vùng vẽ**: thước 22 px nền `surface` như thước Timeline (nhãn 11 px số đều); trục giá trị bên trái 48 px, nhãn 11 px `text-muted`; lưới `line` 50–60%, đường 0 đậm hơn. **Đường cong không dùng màu nhấn**: đường đầu 2 px `text`, đường thứ hai (y của Vị trí) 1,5 px `text-muted` nét đứt, tên trục 11 px ở mép phải.
+- **Keyframe**: ô vuông 9 px viền 1,5 px (chưa chọn: nền `surface`, viền `text-muted`; đang chọn: nền và viền `accent`), vùng bấm 24 px, focus viền `focus`. **Tay cầm** như `EaseGraph`: vạch `line-control`, chấm r 4,5 nền `surface` viền `text`, vùng bấm r 12.
+- **Vạch phát** 1 px `text`; **vạch dẫn bắt dính** 1 px `guide` (dọc khi bắt thời điểm, ngang khi bắt giá trị tròn); **chip khi kéo** như chip thời gian của Timeline (thời điểm · giá trị, hoặc vận tốc · ảnh hưởng).
+- **Thư viện easing**: hộp nổi 256 px mở **lên trên** nút (panel nằm sát đáy màn hình), viền `line-control`, không bóng; mục 24 px gồm hình thu nhỏ 24 px (đường `text` trên nền `bg`) + tên; nhóm "Đã lưu" (có nút × bỏ) và "Dựng sẵn". Esc hoặc nhấp ra ngoài để đóng.
+
 ### Animation Inspector (`AnimationInspector`, `EaseGraph`)
 Mục 01 của cột Thiết lập khi Timeline đang chọn keyframe hoặc hàng; các mục sau lùi một số. Đồ thị đường cong vuông, rộng tối đa 15rem, nền `bg`, viền `line-control`: khung 0..1 và đường chéo "đều" bằng `line` (đứt), đường cong thật 2 px màu `text` (mờ `text-faint` khi nhiều giá trị), tay cầm là vạch `line-control` + chấm tròn nền `surface` viền `text`; tay nắm mờ 50% khi đường cong hiện tại không phải bezier. **Không dùng màu nhấn** trong đồ thị. Dưới đồ thị: ô chọn đường cong có tên, 4 ô số x1 y1 x2 y2 (D-49: mọi điều khiển kéo có ô số), "Giữa các keyframe", "Sau keyframe cuối", nút xoá. Nhiều keyframe khác nhau thì ô ghi "Nhiều giá trị".
 
