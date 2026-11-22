@@ -30,6 +30,17 @@ If none work, the app says so and suggests a smaller size or Chrome/Edge.
 
 When you change the format, the app keeps your codec if it still fits, otherwise it picks the first one in the list. Formats this computer can't encode video for aren't shown. PCM is uncompressed, so the file is much larger.
 
+## Transparent PNG sequence
+
+To lay DAW Visualizer's graphics over another video (After Effects, Premiere, DaVinci Resolve), choose **Transparent PNG sequence** at the top of the dialog. Each frame becomes a PNG with a transparent background (the frame's background colour and image are not drawn), named `name_000001.png`, `name_000002.png`… at the frame rate you chose.
+
+- **Include the audio as a .wav file:** writes the audio of exactly the exported range as a `.wav` next to the images, so it lines up when you put it back together.
+- In Chrome and Edge, press **Start export** and pick a folder: the images are written straight into it without using memory. Other browsers get one `.zip` file, which is kept in memory until it is ready, so the dialog warns when the estimate goes over 1 GB.
+- The estimate line shows the number of images and the size (a generous estimate; usually smaller, since transparent areas compress very well).
+- The dialog also tells you whether the browser can encode transparent WebM video (VP9 with alpha). This version always exports a PNG sequence.
+
+In After Effects: **File › Import**, pick the first image, tick **PNG Sequence**, then set the frame rate to the one you exported at.
+
 ## Check this computer
 
 The **Check this computer** button at the bottom of the settings really encodes a few frames and one second of audio, then gives you a result you can copy. Use it when export doesn't work or when you want to help with testing: see [Testing video export](07-testing-export.md).

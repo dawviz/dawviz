@@ -100,12 +100,14 @@ Khi không chọn widget nào, mục **Ảnh nền** cho bạn chọn một ản
 
 Widget **Phổ tần** vẽ các cột nhảy theo âm thanh. Cần nạp âm thanh ở thẻ Xem trước (sau khi nạp, ứng dụng mất vài giây để phân tích; trong lúc đó và khi chưa có âm thanh, các cột nằm ở độ cao thấp nhất để bạn vẫn thấy chỗ đặt). Phổ đi theo **Offset âm thanh** của dự án.
 
+**Kiểu** chọn cách vẽ: **Cột** (mặc định), **Vùng** (tô phần dưới đường phổ), **Đường**, **Chấm**, **Dao động ký** (dạng sóng tức thời trong **Khoảng thời gian** vài chục mili giây), **Sóng âm cả bài** (toàn bài, phần đã phát đổi sang **Màu phần đã phát / giữ đỉnh**, có vạch phát) và **Đồng hồ đỉnh/RMS** (hai thanh mức âm, vạch giữ đỉnh khoảng 1,5 giây). Với Cột và Chấm, bật **Chấm đỉnh rơi chậm** để mỗi cột có một chấm ở mức cao nhất vừa qua rồi rơi dần (**Tốc độ rơi** ở Nâng cao). Ở Nâng cao, **Thang tần số** chọn Log, Tuyến tính hoặc Mel.
+
 Có hai hình dạng, chọn ở **Hình dạng** trong mục **Thiết lập**:
 
 - **Thẳng:** các cột xếp dọc theo một đường, tần số thấp ở đầu đường. **Góc** xoay đường theo mọi góc từ -360° đến 360° (0° là nằm ngang, tăng theo chiều kim đồng hồ; 90° là đứng, tần số thấp ở trên). **Chiều dài đường** và **Độ cao cột** là kích thước của hình; cả hình luôn nằm giữa khung widget.
 - **Tròn:** các cột toả ra quanh tâm khung. **Bán kính vòng** là bán kính vòng trong, **Độ cao cột** là độ dài tối đa của cột. **Góc bắt đầu** (Nâng cao) xoay vị trí cột đầu tiên, tính từ đỉnh theo chiều kim đồng hồ.
 
-Chung cho cả hai: **Số cột** (8 đến 128), **Màu**. Ở Nâng cao còn có:
+Chung cho cả hai: **Số cột** (8 đến 256), **Màu**. Ở Nâng cao còn có:
 
 - **Đối xứng:** hình thẳng thì cột mọc về hai phía của đường; hình tròn thì hai nửa vòng đối xứng trái phải.
 - **Đảo chiều tần số**, **Chuyển màu theo tần số** (từ **Màu** sang **Màu tần số cao**), bề rộng cột, độ bo tròn, **Độ cao khi lặng**.

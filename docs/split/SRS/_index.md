@@ -1,6 +1,6 @@
 # Chỉ mục SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
-nguồn: `SRS.md` (sha1 47b83a06d8)
+nguồn: `SRS.md` (sha1 b5e2600ec6)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -46,7 +46,7 @@ nguồn: `SRS.md` (sha1 47b83a06d8)
 | 39 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-04: Live Note Trigger | [req-widget-04-live-note-trigger.md](req-widget-04-live-note-trigger.md) | 935 | REQ-WIDGET-04 |
 | 40 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-05: Time & Bar Counter | [req-widget-05-time-bar-counter.md](req-widget-05-time-bar-counter.md) | 1520 | REQ-AST-01, REQ-WIDGET-05 |
 | 41 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-06: Chord Detection (D-09) | [req-widget-06-chord-detection-d-09.md](req-widget-06-chord-detection-d-09.md) | 2250 | D-09, KPI-06, REQ-WIDGET-06, SOI-09, WARN_PRESET_ |
-| 42 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-07: Audio Spectrum & Meter (D-10, ARC-03, ARC-06) | [req-widget-07-audio-spectrum-meter-d-10-arc-03-a.md](req-widget-07-audio-spectrum-meter-d-10-arc-03-a.md) | 3470 | ARC-03, ARC-06, D-10, D-54, ERR_AUDIO_DECODE, ERR_AUDIO_TOO_LONG… |
+| 42 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-07: Audio Spectrum & Meter (D-10, ARC-03, ARC-06) | [req-widget-07-audio-spectrum-meter-d-10-arc-03-a.md](req-widget-07-audio-spectrum-meter-d-10-arc-03-a.md) | 3598 | ARC-03, ARC-06, D-10, D-54, ERR_AUDIO_DECODE, ERR_AUDIO_TOO_LONG… |
 | 43 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-AUDIO-02: Hiệu chỉnh độ trễ thiết bị cho Xem trước (T-82) | [req-audio-02-hieu-chinh-do-tre-thiet-bi-cho-xem.md](req-audio-02-hieu-chinh-do-tre-thiet-bi-cho-xem.md) | 1882 | REQ-AUDIO-02 |
 | 44 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-AUDIO-01: Âm thanh theo track (stem), bản 1.2 | [req-audio-01-am-thanh-theo-track-stem-ban-1-2.md](req-audio-01-am-thanh-theo-track-stem-ban-1-2.md) | 3254 | ERR_AUDIO_TOO_MANY, P-02, P-13, REQ-AUDIO-01, REQ-EXPORT-00, REQ-GRAPHICS-12… |
 | 45 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-WIDGET-08: Progress Bar (D-27) | [req-widget-08-progress-bar-d-27.md](req-widget-08-progress-bar-d-27.md) | 822 | D-27, REQ-EXPORT-00, REQ-GRAPHICS-05, REQ-WIDGET-08 |

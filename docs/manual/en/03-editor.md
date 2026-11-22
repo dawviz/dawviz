@@ -100,12 +100,14 @@ When no widget is selected, the **Background image** section lets you pick a PNG
 
 The **Spectrum** widget draws bars that jump with the sound. You need to load audio in the Preview tab (after loading, the app takes a few seconds to analyse it; until then, and when there is no audio, the bars rest at their lowest height so you can still see where the widget is). The spectrum follows the project's **Audio offset**.
 
+**Style** picks how it is drawn: **Bars** (default), **Area** (filled under the spectrum line), **Line**, **Dots**, **Oscilloscope** (the instant waveform over a **Time window** of a few dozen milliseconds), **Whole-song waveform** (the whole song, the played part in **Played / hold colour**, with a playhead) and **Peak/RMS meter** (two level bars and a peak-hold mark of about 1.5 seconds). For Bars and Dots, turn on **Falling peak caps** so each bar has a cap at its recent highest level that then falls (**Cap fall speed** in Advanced). In Advanced, **Frequency scale** picks Log, Linear or Mel.
+
 There are two shapes, chosen with **Shape** in the **Settings** section:
 
 - **Line:** the bars sit along a line, low frequencies at its start. **Angle** turns the line to any angle from -360° to 360° (0° is horizontal, increasing clockwise; 90° is upright with low frequencies on top). **Line length** and **Bar height** are the size of the shape; the whole shape always sits in the middle of the widget's frame.
 - **Circle:** the bars radiate from the centre of the frame. **Circle radius** is the radius of the inner ring and **Bar height** is the longest a bar can be. **Start angle** (Advanced) turns the first bar's position, measured from the top, clockwise.
 
-For both: **Bars** (8 to 128) and **Colour**. In Advanced there is also:
+For both: **Bars** (8 to 256) and **Colour**. In Advanced there is also:
 
 - **Mirror:** on the line, bars grow on both sides of it; on the circle, the left and right halves are mirror images.
 - **Reverse frequencies**, **Gradient by frequency** (from **Colour** to **High-frequency colour**), bar width, roundness, **Quiet height**.

@@ -92,7 +92,7 @@ test('sanitizeScene: mặc định, kẹp số, minHz ≥ maxHz và ceilDb ≤ f
   const ok = mk({}); assert.deepEqual(ok.warnings, []); assert.deepEqual(ok.scene.widgets[0].properties, DEFAULT_SPECTRUM);
   const bad = mk({ bars: 9999, shape: 'SPIRAL', minHz: 9000, maxHz: 100, floorDb: -20, ceilDb: -30, angle: 540, color: 'red' });
   const p = bad.scene.widgets[0].properties as SpectrumProps;
-  assert.equal(p.bars, 128); assert.equal(p.shape, 'LINE'); assert.equal(p.minHz, DEFAULT_SPECTRUM.minHz); assert.equal(p.ceilDb, DEFAULT_SPECTRUM.ceilDb); assert.equal(p.color, DEFAULT_SPECTRUM.color);
+  assert.equal(p.bars, 256); // REQ-WIDGET-07: 8–256 cột assert.equal(p.shape, 'LINE'); assert.equal(p.minHz, DEFAULT_SPECTRUM.minHz); assert.equal(p.ceilDb, DEFAULT_SPECTRUM.ceilDb); assert.equal(p.color, DEFAULT_SPECTRUM.color);
   assert.ok(p.angle > -180 && p.angle <= 180); assert.ok(bad.warnings.length >= 4);
 });
 
@@ -113,4 +113,34 @@ test('vẽ: cột xoay dùng translate/rotate quanh tâm rồi save/restore, c�
   const b = recCtx(); renderFrame(sceneOf({ bars: 8, angle: 30 }), d, ast, 0.5, { ctx: b.ctx, width: 800, height: 400 }, 1);
   assert.equal(b.log.filter((l) => l.startsWith('rotate(')).length, 8); assert.ok(b.log.some((l) => /^rotate\(0\.5236\)/.test(l)));
   assert.equal(b.log.filter((l) => l === 'save()').length, b.log.filter((l) => l === 'restore()').length);
+});
+
+test('T-53 kiểu khác: vùng/đường/chấm theo phổ; dao động ký từ bảng dạng sóng; sóng âm cả bài có phần đã phát; đồng hồ đỉnh/RMS; tất định', async () => {
+  const { styledPrims, scopeSamples, waveformColumns, meterLevels, peakCaps, scaleEdge, SPECTRUM_STYLES } = await import('../src/index.ts');
+  // bảng dạng sóng: có, ~4 kHz, chia khối không đổi kết quả
+  assert.ok(features.scope && features.scope.length > 11000 && Math.abs(features.scopeRate! - 4000) < 1);
+  const sc = scopeSamples(P({ scopeMs: 10 }), audio, 0.5);
+  assert.equal(sc.length, 40); assert.ok(Math.max(...sc) > 0.3 && Math.min(...sc) < -0.3); // sin 200 Hz biên độ 0,5
+  assert.ok(scopeSamples(P(), audio, 2.5).every((v) => v === 0)); // im lặng
+  const cols = waveformColumns(features, 30);
+  assert.ok(cols[5] > 0.3 && cols[25] === 0); assert.equal(waveformColumns(features, 30), cols); // đệm
+  const m = meterLevels(P({ floorDb: -60, ceilDb: 0 }), audio, 0.5);
+  assert.ok(m.peak > m.rms && m.rms > 0 && m.hold >= m.peak);
+  assert.ok(meterLevels(P({ floorDb: -60, ceilDb: 0 }), audio, 2.8).hold > 0); // giữ đỉnh ~1,5 s sau khi tắt
+  assert.ok(peakCaps(P({ peakCap: true }), audio, 2.2).some((v) => v > 0)); // chấm đỉnh còn rơi sau khi im
+  // thang tần số
+  assert.equal(scaleEdge('LINEAR', 100, 1100, 1, 2), 600); assert.ok(Math.abs(scaleEdge('LOG', 100, 10000, 1, 2) - 1000) < 1e-9);
+  const melMid = scaleEdge('MEL', 100, 10000, 1, 2); assert.ok(melMid > 1000 && melMid < 5050);
+  for (const style of SPECTRUM_STYLES) for (const shape of ['LINE', 'CIRCLE'] as const) for (const mirror of [false, true]) {
+    const p = P({ style, shape, mirror, peakCap: true }), a = styledPrims(p, 800, 300, audio, 0.6), b = styledPrims(p, 800, 300, audio, 0.6);
+    assert.deepEqual(a, b, `${style}/${shape}`);
+    assert.ok(a.length > 0, `${style}/${shape}/${mirror} không vẽ gì`);
+    for (const q of a) if (q.kind === 'rect') for (const v of [q.x, q.y, q.w, q.h]) assert.ok(Number.isFinite(v), `${style}/${shape}`);
+    else if (q.kind === 'path') assert.ok(q.item.d!.every(Number.isFinite), `${style}/${shape}`);
+    // không có âm thanh: không ném
+    styledPrims(p, 800, 300, undefined, 0.6);
+  }
+  // sóng âm cả bài: phần đã phát đổi màu theo t
+  const wf = (t: number) => styledPrims(P({ style: 'WAVEFORM', playedColor: '#ff0000' }), 800, 300, audio, t).filter((q) => q.kind === 'rect' && q.fill === '#ff0000').length;
+  assert.ok(wf(0.3) < wf(2.5));
 });

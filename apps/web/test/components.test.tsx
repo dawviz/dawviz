@@ -561,6 +561,16 @@ describe('ExportDialog (T-09)', () => {
     expect(sum()).toMatch(/720.720.*60 fps.*1[.,]920/);
   });
 
+  it('T-55: chuỗi PNG trong suốt — ẩn chất lượng/codec, hiện số ảnh và dung lượng ước tính; không cần bộ mã hoá video', async () => {
+    open();
+    fireEvent.click(screen.getByTestId('export-kind-png'));
+    expect(screen.queryByLabelText(/Quality|Chất lượng/)).toBeNull();
+    expect(screen.getByTestId('export-png-summary').textContent).toMatch(/960/); // (30 + 2) s × 30 fps ảnh
+    expect(screen.getByTestId('export-png-wav')).toBeDisabled(); // chưa có âm thanh
+    expect(screen.getByTestId('export-start')).not.toBeDisabled(); // jsdom không có WebCodecs vẫn xuất PNG được
+    expect(await screen.findByTestId('export-vp9-alpha')).toHaveTextContent(/cannot|không/);
+  });
+
   it('trình duyệt không có WebCodecs: báo ERR_NO_SUPPORTED_ENCODER và khoá nút Bắt đầu', async () => {
     open();
     expect(await screen.findByRole('alert')).toHaveTextContent(/can't encode video|không mã hoá được video/);

@@ -158,6 +158,8 @@ dawviz/
 │     │  │  ├─ pitchText.ts
 │     │  │  ├─ playback.test.ts
 │     │  │  ├─ playback.ts
+│     │  │  ├─ pngSequence.test.ts
+│     │  │  ├─ pngSequence.ts
 │     │  │  ├─ prefs.test.ts
 │     │  │  ├─ prefs.ts
 │     │  │  ├─ presetFile.test.ts
@@ -802,6 +804,7 @@ Phân tích âm thanh cho widget phổ (T-53, REQ-WIDGET-07). Hàm thuần, khô
 const FFT_SIZE
 const DB_FLOOR
 interface AudioFeatures
+const SCOPE_RATE   // Tốc độ mẫu (Hz) xấp xỉ của bảng dạng sóng thu nhỏ.
 interface AnalysisOptions
 const DEFAULT_ANALYSIS
 const dbToU8 = (db: number) =>   // dBFS → 0..255 (kẹp).
@@ -1336,7 +1339,8 @@ const pianoRollRenderer
 const WIDGET_RENDERERS   // Bảng renderer theo loại. Widget chưa có renderer được bỏ qua khi vẽ (vẫn giữ trong Scene).
 const buildSceneHud = (scene: SceneDocument, ast: UnifiedProjectAST, index: TimelineIndex) =>   // HudData cho một scene: số đếm, lưới ô nhịp và hợp âm của mọi widget Chord Detection. Gọi ở bước derived (một …
 function layoutFrame(scene: SceneDocument, derived0: Derived, ast: UnifiedProjectAST, t: number, renderers = WIDGET_RENDERERS)
-function renderFrame(scene: SceneDocument, derived: Derived, ast: UnifiedProjectAST, t: number, target: RenderTarget, scale: number, renderers = WIDGET_RENDERERS): void   // Vẽ một khung hình. `scale` = điểm ảnh đích / pt (Preview: bề rộng canvas × DPR / designWidth; Export: W_expor…
+interface FrameOptions   // Tuỳ chọn khung (T-55): `transparent` = không tô màu nền và không vẽ ảnh nền (xuất PNG có kênh trong suốt); `l…
+function renderFrame(scene: SceneDocument, derived: Derived, ast: UnifiedProjectAST, t: number, target: RenderTarget, scale: number, renderers = WIDGET_RENDERERS, opts: FrameOptions = {}): void
 function drawPrimitives(g: RenderCtx, prims: Primitive[], env0: DrawEnv = { scale: 1, rotation: 0 }): void   // Chỉ vẽ, không tính nghiệp vụ. Mọi trạng thái ctx bị đổi (alpha, shadow) được trả về mặc định sau mỗi hình.
 ```
 
@@ -1409,13 +1413,22 @@ function snap(i: SnapInput): SnapResult   // Thứ tự (mỗi trục độc l�
 Widget Audio Spectrum (T-53, REQ-WIDGET-07): MỘT widget, hai hình dạng — LINE (cột xếp thẳng theo một đường, xoay mọi góc 0–360°)
 
 ```text
+type SpectrumStyle   // Kiểu hiển thị (REQ-WIDGET-07, T-53): cột, vùng, đường, chấm (phổ tại t); dao động ký (sóng tức thời); sóng âm…
+const SPECTRUM_STYLES
+type FreqScale   // Thang tần số của trục cột.
 interface SpectrumProps
 const DEFAULT_SPECTRUM
 interface DerivedAudio   // Bảng đặc trưng trong `Derived` + offset (giây; dương = âm thanh trễ so với dự án, như audioOffsetMs).
 function smoothedBands(ft: AudioFeatures, f: number, attackMs: number, releaseMs: number): Float64Array   // Giá trị mượt (0..255, kiểu số thực) của mọi dải tại khung `f`: bám lên theo attack, xuống theo release; đọc n…
-function poolBands(bands: Float64Array, ft: Pick<AudioFeatures, 'minHz' | 'maxHz' | 'bands'>, n: number, minHz: number, maxHz: number): Float64Array   // Gộp các dải log của bảng thành `n` cột trong [minHz, maxHz]: lấy lớn nhất trong khoảng; khoảng hẹp hơn một dả…
+function scaleEdge(scale: FreqScale, minHz: number, maxHz: number, k: number, n: number): number   // Biên tần số (Hz) thứ `k`/`n` giữa minHz và maxHz theo thang.
+function poolBands(bands: Float64Array, ft: Pick<AudioFeatures, 'minHz' | 'maxHz' | 'bands'>, n: number, minHz: number, maxHz: number, scale: FreqScale = 'LOG'): Float64Array
 function spectrumLevels(p: SpectrumProps, audio: Derived['audio'], t: number): Float64Array   // Mức 0..1 của từng cột tại `t` (trục thời gian dự án). Không có âm thanh → toàn 0.
 function spectrumPrims(p: SpectrumProps, W: number, H: number, levels: ArrayLike<number>): Primitive[]
+function peakCaps(p: SpectrumProps, audio: Derived['audio'], t: number): Float64Array   // Chấm đỉnh rơi chậm (tất định): đỉnh của từng cột trong ~1,5 s trước, trừ đi tốc độ rơi × thời gian đã qua. Dù…
+function scopeSamples(p: SpectrumProps, audio: Derived['audio'], t: number): Float64Array   // Mẫu dạng sóng (−1…1) trong cửa sổ `scopeMs` kết thúc tại t; bảng cũ không có `scope` → rỗng.
+function waveformColumns(ft: AudioFeatures, n: number): Float64Array   // Bao sóng cả bài chia `n` cột (biên độ tuyến tính 0..1 từ đỉnh mỗi khung), đệm theo bảng đặc trưng.
+function meterLevels(p: SpectrumProps, audio: Derived['audio'], t: number):    // Đồng hồ: đỉnh, RMS (0..1 theo sàn/trần dB) tại t và đỉnh giữ trong ~1,5 s.
+function styledPrims(p: SpectrumProps, W: number, H: number, audio: Derived['audio'], t: number): Primitive[]
 const spectrumRenderer
 ```
 
@@ -2432,7 +2445,7 @@ interface ExportWorkerLike
 type ExportResult
 class ExportError extends Error
 interface ExportHandle
-function startExport( job: ExportJob, makeWorker: () => ExportWorkerLike, opts: { file?: FileTarget; onProgress?: (p: ProgressInfo, stats?: ExportStats, thumb?: ImageBitmap) => void; cancelGraceMs?: number } = {}, ): ExportHandle
+function startExport( job: ExportJob, makeWorker: () => ExportWorkerLike, opts: { file?: FileTarget; dir?: DirTarget; onProgress?: (p: ProgressInfo, stats?: ExportStats, thumb?: ImageBitmap) => void; cancelGraceMs?: number } = {}, ): ExportHandle
 ```
 
 #### `apps/web/src/lib/exportDiagnostics.ts`
@@ -2957,6 +2970,24 @@ interface Playback
 function createPlayback(frame: Frame = browserFrame, engine: AudioEngine = createAudioEngine(browserEngineDeps)): Playback   // Không có âm thanh: t tiến theo dt giữa các khung (performance.now). Có âm thanh: t đọc từ đồng hồ chủ AudioCo…
 function usePlayback<T>(p: Playback, select: (s: ClockState) => T): T   // Theo dõi một phần của đồng hồ; chọn giá trị nguyên thuỷ (số, boolean) để chỉ vẽ lại khi nó đổi.
 function usePlaybackLoop(p: Playback): boolean   // Có đang lặp không (cho nút Lặp trên thanh phát).
+```
+
+#### `apps/web/src/lib/pngSequence.ts`
+
+Xuất nền trong suốt (T-55, REQ-EXPORT-08): chuỗi PNG (kèm `.wav` nếu muốn) ghi vào thư mục (File System Access) hoặc gói `.zip`.
+
+```text
+const PNG_BYTES_PER_PIXEL   // Byte mỗi điểm ảnh ước tính của PNG khung HUD trong suốt (phần lớn trống nên nén tốt). Chỉ để pre-flight; số t…
+const ZIP_WARN_BYTES   // Gói zip giữ cả trong bộ nhớ: trên mức này khuyên chọn thư mục.
+function pngName(base: string, k: number, total: number): string   // `tên_000001.png` (đếm từ 1, đủ chữ số cho cả chuỗi, tối thiểu 6).
+const safeBase = (s: string) =>   // Tên gốc an toàn cho tệp: bỏ ký tự cấm trên Windows/macOS, tối đa 80 ký tự.
+function estimatePngBytes(o: { width: number; height: number; frames: number; wavSeconds?: number; sampleRate?: number; channels?: number }): number
+function wavBytes(channels: readonly Float32Array[], sampleRate: number): Uint8Array   // WAV PCM 16 bit little-endian, xen kẽ kênh, kẹp −1…1.
+interface SequenceSink   // Đích ghi chuỗi tệp. `finish` trả Blob zip (đích zip) hoặc null (đích thư mục: đã ghi xong từng tệp).
+function zipSink(): SequenceSink   // Gói zip phát luồng (fflate Zip + ZipPassThrough): PNG đã nén nên lưu nguyên, không tốn CPU nén lại. Các mảnh …
+interface DirTarget   // Thư mục do người dùng chọn (showDirectoryPicker): tay cầm clone được sang Worker. Ghi từng tệp ngay, không gi…
+function dirSink(dir: DirTarget): SequenceSink
+async function vp9AlphaSupported(width: number, height: number, encoder?: { isConfigSupported(c: object): Promise<{ supported?: boolean }> }): Promise<boolean>   // Pre-flight của VP9 có alpha (chỉ phát hiện). `encoder` tiêm vào để test; vắng VideoEncoder → false.
 ```
 
 #### `apps/web/src/lib/prefs.ts`
@@ -3485,6 +3516,7 @@ type SpectrumOut
 - `apps/web/src/lib/parserClient.test.ts`
 - `apps/web/src/lib/pitchText.test.ts`
 - `apps/web/src/lib/playback.test.ts`
+- `apps/web/src/lib/pngSequence.test.ts`
 - `apps/web/src/lib/prefs.test.ts`
 - `apps/web/src/lib/presetFile.test.ts`
 - `apps/web/src/lib/problems.test.ts`
@@ -3544,4 +3576,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 11 thư mục src, 1566 ký hiệu công khai -->
+<!-- 11 thư mục src, 1588 ký hiệu công khai -->

@@ -18,7 +18,7 @@ import {
   INSIGHT_TEMPLATE_KEYS, INSIGHT_TYPES, type ArrangementProps, type AutomationProps, type BarBeatProps, type DensityProps, type DrumPadProps, type KeyScaleProps, type LyricsProps, type PitchWheelProps, type SectionProps, type TempoInfoProps, type VelocityProps,
 } from './insight.ts';
 import { DEFAULT_NOTATION, notationInkFor, type NotationProps } from './notation/widget.ts';
-import { DEFAULT_SPECTRUM, type SpectrumProps } from './spectrum.ts';
+import { DEFAULT_SPECTRUM, SPECTRUM_STYLES, type SpectrumProps } from './spectrum.ts';
 import { sanitizeAnimate, type Animation } from './animation.ts';
 import { DEFAULT_LOOP, DEFAULT_PHASE, LOOP_EFFECT_NAMES, WIDGET_EFFECT_NAMES, hasMotion, type MotionLoop, type MotionPhase, type WidgetMotion } from './widgetMotion.ts';
 import { parseEase } from './motion.ts';
@@ -695,7 +695,10 @@ const HUD_SANITIZERS = {
     if (lo >= hi) { S.warn(`${p}.minHz`, lo, 'minHz phải nhỏ hơn maxHz; dùng mặc định'); lo = d.minHz; hi = d.maxHz; }
     let fl = S.num(P.floorDb, d.floorDb, -80, -10, `${p}.floorDb`), ce = S.num(P.ceilDb, d.ceilDb, -60, 0, `${p}.ceilDb`);
     if (ce <= fl) { S.warn(`${p}.ceilDb`, ce, 'ceilDb phải lớn hơn floorDb; dùng mặc định'); fl = d.floorDb; ce = d.ceilDb; }
-    return { shape: S.oneOf(P.shape, ['LINE', 'CIRCLE'] as const, d.shape, `${p}.shape`), bars: Math.round(S.num(P.bars, d.bars, 8, 128, `${p}.bars`)), minHz: lo, maxHz: hi,
+    return { style: S.oneOf(P.style, SPECTRUM_STYLES, d.style, `${p}.style`), scale: S.oneOf(P.scale, ['LOG', 'LINEAR', 'MEL'] as const, d.scale, `${p}.scale`),
+      peakCap: S.bool(P.peakCap, d.peakCap, `${p}.peakCap`), capFall: S.num(P.capFall, d.capFall, 0.05, 10, `${p}.capFall`), scopeMs: S.num(P.scopeMs, d.scopeMs, 5, 500, `${p}.scopeMs`),
+      playedColor: col(P.playedColor, d.playedColor, `${p}.playedColor`),
+      shape: S.oneOf(P.shape, ['LINE', 'CIRCLE'] as const, d.shape, `${p}.shape`), bars: Math.round(S.num(P.bars, d.bars, 8, 256, `${p}.bars`)), minHz: lo, maxHz: hi,
       reverse: S.bool(P.reverse, d.reverse, `${p}.reverse`), mirror: S.bool(P.mirror, d.mirror, `${p}.mirror`), angle: normalizeAngle(S.num(P.angle, d.angle, -360, 360, `${p}.angle`)),
       length: S.num(P.length, d.length, 16, 8192, `${p}.length`), radius: S.num(P.radius, d.radius, 0, 4096, `${p}.radius`), startAngle: S.num(P.startAngle, d.startAngle, -360, 360, `${p}.startAngle`),
       thickness: S.num(P.thickness, d.thickness, 1, 4096, `${p}.thickness`), minLen: S.num(P.minLen, d.minLen, 0, 100, `${p}.minLen`), barWidth: S.num(P.barWidth, d.barWidth, 0.1, 1, `${p}.barWidth`),

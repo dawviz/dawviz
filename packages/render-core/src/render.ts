@@ -218,15 +218,21 @@ const fadePrim = (p: Primitive, k: number): Primitive => (p.kind === 'rect' ? { 
  * Vẽ một khung hình. `scale` = điểm ảnh đích / pt (Preview: bề rộng canvas × DPR / designWidth; Export: W_export / designWidth).
  * (1) nền; (2) widget theo zIndex, mỗi widget cắt theo khung của nó (đã xoay quanh điểm neo, REQ-GRAPHICS-03); (3) primitive.
  */
-export function renderFrame(scene: SceneDocument, derived: Derived, ast: UnifiedProjectAST, t: number, target: RenderTarget, scale: number, renderers = WIDGET_RENDERERS): void {
+/** Tuỳ chọn khung (T-55): `transparent` = không tô màu nền và không vẽ ảnh nền (xuất PNG có kênh trong suốt); `layers` = chỉ vẽ các widget có id trong tập (xuất nền và tiền cảnh riêng). */
+export interface FrameOptions { transparent?: boolean; layers?: ReadonlySet<string> }
+export function renderFrame(scene: SceneDocument, derived: Derived, ast: UnifiedProjectAST, t: number, target: RenderTarget, scale: number, renderers = WIDGET_RENDERERS, opts: FrameOptions = {}): void {
   const g = target.ctx, { designWidth: W, designHeight: H } = scene.canvas;
   g.setTransform(1, 0, 0, 1, 0, 0);
   g.globalAlpha = 1; g.shadowBlur = 0;
   g.clearRect(0, 0, target.width, target.height);
   g.setTransform(scale, 0, 0, scale, 0, 0);
-  g.fillStyle = scene.canvas.backgroundColor; g.fillRect(0, 0, W, H);
-  if (derived.background) drawBackground(g, scene, derived.background, W, H);
-  for (const { widget, prims, fx, pm } of layoutFrame(scene, derived, ast, t, renderers)) {
+  if (!opts.transparent) {
+    g.fillStyle = scene.canvas.backgroundColor; g.fillRect(0, 0, W, H);
+    if (derived.background) drawBackground(g, scene, derived.background, W, H);
+  }
+  const only = opts.layers;
+  for (const { widget, prims, fx, pm } of layoutFrame(only ? { ...scene, widgets: scene.widgets.filter((w) => only.has(w.id) || scene.widgets.some((c) => c.parent === w.id && only.has(c.id))) } : scene, derived, ast, t, renderers)) {
+    if (only && !only.has(widget.id)) continue; // cha chỉ được giữ để dẫn con (parenting), không vẽ
     const L = widget.layout;
     g.save();
     if (pm && !particlesInCanvasSpace(widget)) g.transform(pm[0], pm[1], pm[2], pm[3], pm[4], pm[5]); // parenting: theo thay đổi của cha
