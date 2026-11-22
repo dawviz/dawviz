@@ -34,3 +34,5 @@ test/fixtures/generated/
 # Công cụ đo Bản nhạc (scripts/notation): kết quả chạy và dữ liệu thử của bên thứ ba (MAESTRO: CC BY-NC-SA 4.0, không phân phối lại)
 scripts/notation/out/
 scripts/notation/data/
+# Công cụ đo khung hình (scripts/perf): AST tạm và bản dựng trang đo
+scripts/perf/out/

@@ -25,24 +25,34 @@ export const dbToU8 = (db: number): number => Math.round(Math.min(1, Math.max(0,
 export const u8ToDb = (v: number): number => DB_FLOOR + (v / 255) * -DB_FLOOR;
 const toDb = (amp: number) => (amp > 1e-9 ? 20 * Math.log10(amp) : -200);
 
+/** Bảng dùng lại cho mỗi cỡ FFT: hoán vị đảo bit và hệ số xoay cos/sin (tính trực tiếp, không truy hồi, nên chính xác hơn và không phụ thuộc thứ tự lặp). */
+interface FftPlan { rev: Uint32Array; cos: Float64Array; sin: Float64Array }
+const plans = new Map<number, FftPlan>();
+function planFor(n: number): FftPlan {
+  let p = plans.get(n);
+  if (p) return p;
+  const rev = new Uint32Array(n), bits = Math.log2(n);
+  for (let i = 0; i < n; i++) { let r = 0; for (let b = 0, x = i; b < bits; b++, x >>= 1) r = (r << 1) | (x & 1); rev[i] = r; }
+  const half = n >> 1, cos = new Float64Array(half), sin = new Float64Array(half);
+  for (let k = 0; k < half; k++) { cos[k] = Math.cos(-2 * Math.PI * k / n); sin[k] = Math.sin(-2 * Math.PI * k / n); }
+  plans.set(n, p = { rev, cos, sin });
+  return p;
+}
+
 /** FFT cơ số 2 tại chỗ (re, im cùng độ dài, luỹ thừa của 2). */
 export function fft(re: Float64Array, im: Float64Array): void {
-  const n = re.length;
-  for (let i = 1, j = 0; i < n; i++) { // đảo bit
-    let bit = n >> 1;
-    for (; j & bit; bit >>= 1) j ^= bit;
-    j ^= bit;
+  const n = re.length, { rev, cos, sin } = planFor(n);
+  for (let i = 1; i < n; i++) { // đảo bit
+    const j = rev[i];
     if (i < j) { const a = re[i]; re[i] = re[j]; re[j] = a; const b = im[i]; im[i] = im[j]; im[j] = b; }
   }
   for (let len = 2; len <= n; len <<= 1) {
-    const ang = -2 * Math.PI / len, wr = Math.cos(ang), wi = Math.sin(ang), half = len >> 1;
+    const half = len >> 1, step = n / len; // hệ số xoay của tầng = bảng cỡ n lấy cách `step`
     for (let i = 0; i < n; i += len) {
-      let cr = 1, ci = 0;
-      for (let k = 0; k < half; k++) {
-        const a = i + k, b = a + half;
+      for (let k = 0, w = 0; k < half; k++, w += step) {
+        const a = i + k, b = a + half, cr = cos[w], ci = sin[w];
         const xr = re[b] * cr - im[b] * ci, xi = re[b] * ci + im[b] * cr;
         re[b] = re[a] - xr; im[b] = im[a] - xi; re[a] += xr; im[a] += xi;
-        const t = cr * wr - ci * wi; ci = cr * wi + ci * wr; cr = t;
       }
     }
   }
@@ -62,7 +72,8 @@ export function createSpectralAccumulator(sampleRate: number, opt: AnalysisOptio
   // Dải → khoảng bin [lo, hi] (thực): biên log giữa minHz và maxHz.
   const edges = Array.from({ length: bands + 1 }, (_, b) => minHz * Math.pow(maxHz / minHz, b / bands));
   const binHz = sampleRate / N;
-  const re = new Float64Array(N), im = new Float64Array(N), mag = new Float64Array(H + 1);
+  // FFT thực cỡ N qua FFT phức cỡ N/2: z[k] = x[2k] + i·x[2k+1], rồi tách phổ chẵn/lẻ (một nửa khối lượng so với FFT phức cỡ N).
+  const zr = new Float64Array(H), zi = new Float64Array(H), mag = new Float64Array(H + 1), { cos: twr, sin: twi } = planFor(N);
 
   let spec = new Uint8Array(bands * 1024), pk = new Uint8Array(1024), rm = new Uint8Array(1024), frames = 0;
   let buf = new Float32Array(N * 4), base = 0, len = 0; // buf[0] là mẫu tuyệt đối `base`; `len` mẫu đang giữ
@@ -76,9 +87,21 @@ export function createSpectralAccumulator(sampleRate: number, opt: AnalysisOptio
   const frame = () => {
     grow();
     const centre = frames * hopSamples, start = centre - H;
-    for (let i = 0; i < N; i++) { re[i] = at(start + i) * win[i]; im[i] = 0; }
-    fft(re, im);
-    for (let k = 0; k <= H; k++) mag[k] = 4 * Math.hypot(re[k], im[k]) / N; // sin đầy thang → ≈ 1
+    // Chép cửa sổ (mẫu ngoài tệp là 0) thẳng vào z: chẵn → phần thực, lẻ → phần ảo. Cùng giá trị với at(start + i) · win[i].
+    const k0 = start - base;
+    for (let k = 0; k < H; k++) {
+      const i = 2 * k, a = k0 + i, b = a + 1;
+      zr[k] = a >= 0 && a < len ? buf[a] * win[i] : 0;
+      zi[k] = b >= 0 && b < len ? buf[b] * win[i + 1] : 0;
+    }
+    fft(zr, zi);
+    for (let k = 0; k <= H; k++) {
+      const p = k === H ? 0 : k, q = k === 0 ? 0 : H - k; // Z[k mod H] và Z[(H − k) mod H]
+      const er = (zr[p] + zr[q]) / 2, ei = (zi[p] - zi[q]) / 2, or = (zi[p] + zi[q]) / 2, oi = -(zr[p] - zr[q]) / 2;
+      const wr = k === H ? -1 : twr[k], wi = k === H ? 0 : twi[k];
+      const xr = er + wr * or - wi * oi, xi = ei + wr * oi + wi * or;
+      mag[k] = 4 * Math.sqrt(xr * xr + xi * xi) / N; // sin đầy thang → ≈ 1
+    }
     const row = frames * bands;
     for (let b = 0; b < bands; b++) {
       const lo = edges[b] / binHz, hi = edges[b + 1] / binHz;
@@ -99,7 +122,9 @@ export function createSpectralAccumulator(sampleRate: number, opt: AnalysisOptio
   const trim = () => {
     const keepFrom = Math.min(frames * hopSamples - H, frames * hopSamples - (hopSamples >> 1)); // khung kế cần từ đây
     const drop = Math.max(0, Math.min(len, keepFrom - base));
-    if (drop > 0) { buf.copyWithin(0, drop, len); base += drop; len -= drop; }
+    // Chỉ dồn khi phần bỏ đi ≥ nửa phần đang giữ: mỗi mẫu bị chép O(1) lần. Trước đây dồn sau MỖI khung (chép lại cả khối còn lại),
+    // nên khối 1 triệu mẫu tốn ~O(n²) và chiếm 75% thời gian phân tích. Mẫu giữ lâu hơn không đổi kết quả (at/frame đọc theo `base`).
+    if (drop > 0 && drop * 2 >= len) { buf.copyWithin(0, drop, len); base += drop; len -= drop; }
   };
   const drain = (final: boolean) => {
     for (;;) {

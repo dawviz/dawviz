@@ -29,7 +29,7 @@ HERE = DOCS  # đường dẫn tương đối của file .md tính từ docs/
 # Tài liệu sản phẩm (BRD, SRS), thiết kế ứng dụng (SDD, TDD), thư viện parser (PARSER-*), i18n. Tên (stem) phải duy nhất.
 DEFAULT_DOCS = ["product/BRD.md", "product/SRS.md", "design/SDD.md", "design/TECHNICAL-DESIGN.md", "design/TDD.md", "design/ANIMATION.md", "design/CUSTOMIZATION.md", "design/ANIMATION-CATALOG.md", "design/EXPRESSIONS.md", "design/UI-DIRECTION.md", "design/FIREFOX-FONT-SLOWDOWN.md",
                 "parser/PARSER-SRS.md", "parser/PARSER-SDD.md", "parser/PARSER-TDD.md", "I18N.md", "PUBLISHING.md", "COMMUNITY-CONTENT.md",
-                "spikes/SPIKE-1-EXPORT.md", "spikes/SPIKE-2-PARSER.md", "spikes/SPIKE-3-FLP.md", "spikes/SPIKE-4-NOTATION.md"]
+                "spikes/SPIKE-1-EXPORT.md", "spikes/SPIKE-2-PARSER.md", "spikes/SPIKE-3-FLP.md", "spikes/SPIKE-4-NOTATION.md", "spikes/SPIKE-5-PERF-WASM.md"]
 ID_RE = re.compile(r"\b(?:REQ-[A-Z]+-\d+|PD-\d+|AD-\d+|BR-\d+|D-\d+|OI-\d+|SOI-\d+|AT-\d+|NFR-[A-Z]+-\d+|ARC-\d+|P-\d+|KPI-\d+|(?:ERR|WARN)_[A-Z0-9_]+)\b")
 HEAD_RE = re.compile(r"^(#{1,6})\s+(.*?)\s*#*\s*$")
 
