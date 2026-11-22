@@ -1,7 +1,9 @@
 // Cột "Video styles" / "Phong cách video" (UI-DIRECTION 5.3): chọn phong cách của KHUNG VIDEO, không phải theme app (D-52).
 // "Paper" (D-51) là phong cách mặc định; các bộ kiểu nốt dựng sẵn của Render Core đứng sau. Mỗi mục có ảnh thu nhỏ do Render Core vẽ (lib/thumbnails.ts).
 import type { ReactNode } from 'react';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
+import { PRESET_LICENSES } from '../lib/presetPack.ts';
+import { Select } from './Select.tsx';
 import type { NoteStyle } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { radioKeys, radioTab } from '../lib/a11y.ts';
@@ -29,6 +31,10 @@ export interface UserPresets {
   onPick(id: string): void;
   /** Dấu cộng: nạp một tệp .json thành preset mới (và áp luôn). */
   onAddFile(file: File): void;
+  /** "Chia sẻ thành preset" (T-24): đóng gói khung hiện tại thành `.dawviz-preset.zip`. Vắng = ẩn nút. */
+  onShare?(info: { name: string; author: string; license: string; description: string }): Promise<void>;
+  /** Tên gợi ý cho gói (tên preset đang chọn). */
+  shareName?: string;
   /** Tải xuống tệp .json của ô, đúng như đang thấy (kể cả phần đã chỉnh). */
   onDownload(id: string): void;
   /** Nhân bản bản đang thấy của ô (kể cả phần đã chỉnh) thành preset mới của người dùng; ô nguồn về nguyên gốc. */
@@ -90,7 +96,8 @@ export function VideoStyles({ value, edited, onPick, thumb, presets, headerActio
             <span aria-hidden className="text-2xl leading-none">+</span>
             <span className="text-xs leading-tight">{i18n.t('web.preset.add')}</span>
           </button>
-          <input ref={input} type="file" accept=".json,application/json" className="hidden" tabIndex={-1} data-testid="preset-input"
+          {presets.onShare && <SharePreset onShare={presets.onShare} defaultName={presets.shareName ?? ''} />}
+          <input ref={input} type="file" accept=".json,application/json,.zip,application/zip" className="hidden" tabIndex={-1} data-testid="preset-input"
             onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) presets.onAddFile(f); }} />
           <div role="status" className="text-xs text-muted" data-testid="preset-status">{presets.status ?? ''}</div>
           <Notices problems={presets.problems} basic={false} />
@@ -99,3 +106,40 @@ export function VideoStyles({ value, edited, onPick, thumb, presets, headerActio
     </nav>
   );
 }
+
+/**
+ * "Chia sẻ thành preset" (T-24, CUSTOMIZATION §6.2): biểu mẫu tại chỗ (tên, tác giả, giấy phép SPDX bắt buộc, mô tả) rồi tải gói `.dawviz-preset.zip`
+ * gồm khung hiện tại và ảnh/phông nó dùng. Tác giả nhớ cho lần sau (localStorage), không gửi đi đâu.
+ */
+function SharePreset({ onShare, defaultName }: { onShare(info: { name: string; author: string; license: string; description: string }): Promise<void>; defaultName: string }) {
+  const { i18n } = useI18n();
+  const [open, setOpen] = useState(false), [busy, setBusy] = useState(false), [err, setErr] = useState<string | null>(null);
+  const [name, setName] = useState(defaultName), [author, setAuthor] = useState(() => { try { return localStorage.getItem(AUTHOR_KEY) ?? ''; } catch { return ''; } });
+  const [license, setLicense] = useState('CC-BY-4.0'), [description, setDescription] = useState('');
+  const field = 'field w-full text-xs';
+  if (!open) return <button type="button" className="btn-ghost w-full border border-control" onClick={() => { setName(defaultName); setErr(null); setOpen(true); }} data-testid="preset-share">{i18n.t('web.share.open')}</button>;
+  const submit = async () => {
+    if (!name.trim() || !author.trim()) { setErr('missing'); return; }
+    setBusy(true); setErr(null);
+    try { try { localStorage.setItem(AUTHOR_KEY, author.trim()); } catch { /* không lưu được: bỏ qua */ } await onShare({ name, author, license, description }); setOpen(false); }
+    catch (e) { setErr((e as { code?: string }).code ?? 'ERR_PRESET_INVALID'); }
+    finally { setBusy(false); }
+  };
+  return (
+    <form className="space-y-2 rounded border border-line p-2" onSubmit={(e) => { e.preventDefault(); void submit(); }} aria-label={i18n.t('web.share.title')} data-testid="preset-share-form">
+      <p className="text-xs font-medium text-fg">{i18n.t('web.share.title')}</p>
+      <label className="block space-y-0.5 text-xs text-muted">{i18n.t('web.share.name')}<input className={field} value={name} maxLength={60} required onChange={(e) => setName(e.target.value)} data-testid="share-name" /></label>
+      <label className="block space-y-0.5 text-xs text-muted">{i18n.t('web.share.author')}<input className={field} value={author} maxLength={60} required onChange={(e) => setAuthor(e.target.value)} data-testid="share-author" /></label>
+      <label className="block space-y-0.5 text-xs text-muted">{i18n.t('web.share.license')}
+        <Select value={license} onChange={(e) => setLicense(e.target.value)} wrapClassName="w-full" data-testid="share-license">{PRESET_LICENSES.map((l) => <option key={l} value={l}>{l}</option>)}</Select>
+      </label>
+      <label className="block space-y-0.5 text-xs text-muted">{i18n.t('web.share.description')}<textarea className={field} rows={2} maxLength={500} value={description} onChange={(e) => setDescription(e.target.value)} data-testid="share-description" /></label>
+      {err && <p role="alert" className="text-xs text-danger" data-testid="share-error">{err === 'missing' ? i18n.t('web.share.missing') : i18n.t(`errors.${err}`)}</p>}
+      <div className="flex flex-wrap gap-2">
+        <button type="submit" className="btn-ghost flex-1 border border-control" disabled={busy} title=".dawviz-preset.zip" data-testid="share-download">{i18n.t('web.share.download')}</button>
+        <button type="button" className="btn-ghost" onClick={() => setOpen(false)}>{i18n.t('web.share.cancel')}</button>
+      </div>
+    </form>
+  );
+}
+const AUTHOR_KEY = 'dawviz.share.author';

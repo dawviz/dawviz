@@ -165,6 +165,8 @@ dawviz/
 │     │  │  ├─ prefs.ts
 │     │  │  ├─ presetFile.test.ts
 │     │  │  ├─ presetFile.ts
+│     │  │  ├─ presetPack.test.ts
+│     │  │  ├─ presetPack.ts
 │     │  │  ├─ problems.test.ts
 │     │  │  ├─ problems.ts
 │     │  │  ├─ projectPack.test.ts
@@ -396,6 +398,7 @@ dawviz/
 │  │  └─ paper-1x1.json
 │  ├─ schema/
 │  │  ├─ note-style.schema.json
+│  │  ├─ preset-pack.schema.json
 │  │  └─ scene.schema.json
 │  └─ README.md
 ├─ schemas/
@@ -3048,6 +3051,29 @@ function presetFileName(name: string): string   // Tên tệp an toàn từ tên
 function downloadPreset(scene: SceneDocument): void   // Tải xuống bằng Blob + liên kết (không cần quyền, chạy với CSP của ứng dụng).
 ```
 
+#### `apps/web/src/lib/presetPack.ts`
+
+Gói preset để chia sẻ (T-24, REQ-STORAGE-06, CUSTOMIZATION §6.2–6.3): `.dawviz-preset.zip` gồm `preset.json` (vỏ chung + nội dung theo loại)
+
+```text
+const PRESET_FORMAT
+const PRESET_KINDS
+type PresetKind
+const PRESET_LICENSES   // Giấy phép SPDX được nhận (cùng danh sách với scripts/preset-check, COMMUNITY-CONTENT §3–4).
+const PRESET_PACK_LIMITS
+const PRESET_EXT
+type PresetPayload
+interface PresetInfo
+interface PresetAsset
+type PresetPackErrorCode
+class PresetPackError extends Error
+  constructor(code: PresetPackErrorCode, message: string, details?: Record<string, unknown>)
+function presetFileName(name: string): string   // Tên tệp gói: slug chữ thường a-z0-9- (bỏ dấu), thêm đuôi `.dawviz-preset.zip`.
+async function buildPresetPack(info: PresetInfo, payload: PresetPayload, assets: readonly PresetAsset[] = [], now = new Date()): Promise<Uint8Array>   // Đóng gói. Ném PresetPackError khi thiếu tên/tác giả hoặc giấy phép không nằm trong danh sách.
+interface ReadPreset
+async function readPresetPack(bytes: Uint8Array, limits = PRESET_PACK_LIMITS): Promise<ReadPreset>   // Đọc gói: kiểm cỡ, số tệp, tỉ lệ nén, băm; nội dung qua bộ kiểm của loại. Lỗi → PresetPackError có mã.
+```
+
 #### `apps/web/src/lib/problems.ts`
 
 Lỗi/cảnh báo của thư viện → chuỗi đã dịch theo mã (REQ-I18N-04). Thông điệp gốc của thư viện chỉ là "chi tiết kỹ thuật".
@@ -3538,7 +3564,7 @@ type SpectrumOut
 - `scripts/perf/run.mjs` — Đo thời gian khung hình trong trình duyệt thật (T-27, SPIKE-5). Không phải mã ứng dụng, không vào bản build.
 - `scripts/preset-check/check.mjs` — Kiểm preset cộng đồng (T-31, EXPRESSIONS §6.2, COMMUNITY-CONTENT §3): hàm thuần `checkPreset` + CLI. Không cần mạng, không có secret: chạy được trong CI
 - `scripts/preset-check/check.test.mjs` — Test của checkPreset (T-31): preset dựng sẵn và preset cộng đồng hợp lệ đạt; giấy phép, URL ngoài, biểu thức lỗi, khoá nguy hiểm, tên tệp bị chặn.
-- `scripts/preset-check/cli.mjs` — npm run preset:check -- [--community] <tệp.json…> (thoát mã 1 nếu có lỗi; in cảnh báo để người duyệt xem)
+- `scripts/preset-check/cli.mjs` — npm run preset:check -- [--community] <tệp.json | tệp.dawviz-preset.zip…> (thoát mã 1 nếu có lỗi; in cảnh báo để người duyệt xem)
 - `scripts/rewrite-imports.mjs` — Công cụ một lần: viết lại import tương đối giữa các package khi tách monorepo.
 - `scripts/split_doc.py` — Tách tài liệu Markdown (SRS/SDD/TDD...) thành các mảnh nhỏ để đưa cho AI tham chiếu.
 - `scripts/sync-docs.mjs` — Đồng bộ "hệ thống ngữ cảnh AI" của repo và kiểm tra liên kết. Không phụ thuộc thư viện ngoài (Node >= 18; split dùng python3).
@@ -3580,6 +3606,7 @@ type SpectrumOut
 - `apps/web/src/lib/pngSequence.test.ts`
 - `apps/web/src/lib/prefs.test.ts`
 - `apps/web/src/lib/presetFile.test.ts`
+- `apps/web/src/lib/presetPack.test.ts`
 - `apps/web/src/lib/problems.test.ts`
 - `apps/web/src/lib/projectPack.test.ts`
 - `apps/web/src/lib/session.test.ts`
@@ -3638,4 +3665,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 11 thư mục src, 1624 ký hiệu công khai -->
+<!-- 11 thư mục src, 1640 ký hiệu công khai -->

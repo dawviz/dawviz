@@ -697,6 +697,7 @@
   - [2. Cấu trúc](COMMUNITY-CONTENT/2-cau-truc.md#2-cấu-trúc)
 - [3. Định dạng preset kiểu nốt](COMMUNITY-CONTENT/3-dinh-dang-preset-kieu-not.md)
   - [3. Định dạng preset kiểu nốt](COMMUNITY-CONTENT/3-dinh-dang-preset-kieu-not.md#3-định-dạng-preset-kiểu-nốt)
+    - [Gói .dawviz-preset.zip (T-24)](COMMUNITY-CONTENT/3-dinh-dang-preset-kieu-not.md#gói-dawviz-presetzip-t-24)
 - [4. Quy tắc cho assets](COMMUNITY-CONTENT/4-quy-tac-cho-assets.md)
   - [4. Quy tắc cho assets](COMMUNITY-CONTENT/4-quy-tac-cho-assets.md#4-quy-tắc-cho-assets)
 - [5. Cách đóng góp](COMMUNITY-CONTENT/5-cach-dong-gop.md)

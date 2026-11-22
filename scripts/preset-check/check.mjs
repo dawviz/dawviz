@@ -91,3 +91,22 @@ export function checkPreset(name, bytes, opts = {}) {
   if (now) { stats.worstFrameMs = Math.round(worst * 10) / 10; if (worst > LIMITS.frameMsWarn) warnings.push(`khung chậm nhất ${stats.worstFrameMs} ms (> ${LIMITS.frameMsWarn} ms trên máy CI)`); }
   return { ok: errors.length === 0, kind, errors, warnings, stats };
 }
+
+/**
+ * Gói `.dawviz-preset.zip` (T-24): đọc bằng đúng bộ đọc của ứng dụng (băm, giấy phép, cỡ, đường dẫn), rồi kiểm nội dung như preset .json.
+ * Bất đồng bộ vì băm SHA-256 dùng WebCrypto.
+ */
+export async function checkPresetPack(name, bytes, opts = {}) {
+  const { readPresetPack } = await import('../../apps/web/src/lib/presetPack.ts');
+  let r;
+  try { r = await readPresetPack(bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes)); }
+  catch (e) { return { ok: false, kind: 'pack', errors: [`${e.code ?? 'ERR_PRESET_INVALID'}: ${e.message}`], warnings: [], stats: {} }; }
+  const base = path.basename(name).replace(/\.dawviz-preset\.zip$/i, '.json');
+  const p = r.payload;
+  const raw = p.kind === 'scene' ? { ...p.scene, license: r.info.license }
+    : p.kind === 'note-style' ? { kind: 'note-style', license: r.info.license, style: p.style }
+    : null;
+  if (!raw) return { ok: true, kind: p.kind, errors: [], warnings: [], stats: { assets: r.assets.length } };
+  const res = checkPreset(base, new TextEncoder().encode(JSON.stringify(raw)), opts);
+  return { ...res, stats: { ...res.stats, assets: r.assets.length } };
+}

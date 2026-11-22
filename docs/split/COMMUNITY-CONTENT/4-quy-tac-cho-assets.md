@@ -4,8 +4,8 @@ doc_title: "Tài nguyên (assets) và bộ kiểu (presets) do cộng đồng đ
 section: "4. Quy tắc cho assets"
 path: "4. Quy tắc cho assets"
 chunk: 4-quy-tac-cho-assets.md
-source_lines: 41-47
-source_sha1: d3268bcf29
+source_lines: 45-51
+source_sha1: f89d7ee23f
 ids: []
 ---
 ## 4. Quy tắc cho assets

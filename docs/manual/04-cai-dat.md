@@ -45,10 +45,12 @@ Preset là một tệp `.json` lưu cách bày video: phong cách, vị trí cá
 
 Preset nằm ở cột **Phong cách video** của thẻ Xem trước, ngay dưới Bản in và Tối, không còn ở Cài đặt.
 
-- **Ô dấu cộng** (khung nét đứt): chọn một tệp preset `.json`. Preset được thêm thành ô mới, áp lên bài đang mở và nhớ trong trình duyệt này. Hoàn tác được nếu không ưng.
+- **Ô dấu cộng** (khung nét đứt): chọn một tệp preset `.json` (hoặc gói `.dawviz-preset.zip`, xem bên dưới). Preset được thêm thành ô mới, áp lên bài đang mở và nhớ trong trình duyệt này. Hoàn tác được nếu không ưng.
 - **Mỗi ô giữ bản chỉnh dở của riêng nó.** Chỉnh Bản in rồi chuyển sang Tối, khi quay lại Bản in thì các chỉnh sửa vẫn còn, ô hiện nhãn "đã chỉnh". Ghi đè màu theo track thì đi theo dự án, không tính là chỉnh của ô.
 - Rê chuột vào một ô để thấy nút: **↓ tải xuống** tệp `.json` đúng như đang thấy (kể cả phần đã chỉnh), **×** (chỉ hiện khi ô đã chỉnh) đưa ô về **bản gốc**, và với preset của bạn có thêm **thùng rác** để xoá khỏi danh sách. Về gốc vẫn hoàn tác được bằng Ctrl+Z.
 - Nút **nhân bản** (hai ô chồng nhau) tạo preset mới từ bản bạn đang thấy, kể cả phần đã chỉnh. Ô nguồn về nguyên gốc, phần chỉnh chuyển sang ô mới.
+- **Chia sẻ thành preset…** (dưới ô dấu cộng): điền **Tên**, **Tác giả**, **Giấy phép (SPDX)** và **Mô tả**, rồi **Tải gói**. Bạn nhận một tệp `.dawviz-preset.zip` gồm khung hiện tại cùng ảnh (widget Ảnh) và phông bạn nạp mà khung dùng. Giấy phép là bắt buộc và chỉ nhận các loại cho phép chia sẻ lại (CC0-1.0, CC-BY-4.0, CC-BY-SA-4.0, MIT, Apache-2.0, OFL-1.1, BSD, ISC). Chỉ chia sẻ ảnh và phông bạn có quyền chia sẻ.
+- Ô dấu cộng mở được cả gói `.dawviz-preset.zip`. Ảnh và phông trong gói được thêm vào phiên. Gói chứa kiểu nốt, đường cong easing hay cấu hình hạt thì được áp tương ứng (kiểu nốt lên Piano roll, đường cong vào Thư viện easing, hạt thành một widget Hạt mới). Preset mở từ gói luôn ghi "chưa kiểm duyệt"; gói bị sửa (sai băm) hoặc có giấy phép không được nhận thì không mở.
 - Bản chỉnh dở của mọi ô được nhớ theo trình duyệt này, nên tải lại trang vẫn còn; xoá dữ liệu trình duyệt thì mất.
 - Preset từ bản cũ hơn vẫn mở được; ứng dụng báo đã nâng phiên bản. Lưu lại để giữ bản đã nâng.
 - Preset từ bản mới hơn thì cần cập nhật ứng dụng mới mở được.

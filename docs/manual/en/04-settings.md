@@ -43,10 +43,12 @@ A preset is a `.json` file that stores how the video is laid out: style, widget 
 
 Presets live in the **Video styles** column of the Preview tab, below Paper and Dark, not in Settings.
 
-- **The plus tile** (dashed frame): pick a preset `.json` file. It becomes a new tile, is applied to the open song and is remembered in this browser. You can undo it.
+- **The plus tile** (dashed frame): pick a preset `.json` file (or a `.dawviz-preset.zip` pack, see below). It becomes a new tile, is applied to the open song and is remembered in this browser. You can undo it.
 - **Each tile keeps its own work in progress.** Edit Paper, switch to Dark, and when you return to Paper your changes are still there; the tile shows "edited". Per-track colour overrides belong to the song and don't count as edits of the tile.
 - Hover a tile to see its buttons: **↓ download** a `.json` of what you see (including edits), **×** (only shown when the tile is edited) returns the tile to its **original**, and your own presets also have a **bin** to remove them from the list. Reverting can still be undone with Ctrl+Z.
 - The **duplicate** button (two stacked squares) creates a new preset from what you see, including edits. The source tile returns to its original and the edits move to the new tile.
+- **Share as preset…** (below the plus tile): fill in **Name**, **Author**, **Licence (SPDX)** and **Description**, then **Download pack**. You get a `.dawviz-preset.zip` with the current frame plus the images (Image widget) and loaded fonts it uses. The licence is required and must allow sharing (CC0-1.0, CC-BY-4.0, CC-BY-SA-4.0, MIT, Apache-2.0, OFL-1.1, BSD, ISC). Only share images and fonts you are allowed to share.
+- The plus tile also opens `.dawviz-preset.zip` packs. Images and fonts in the pack are added to the session. A pack with a note style, an easing curve or a particle setup is applied accordingly (note style on the Piano roll, curve into the Easing library, particles as a new Particles widget). Presets opened from a pack are always marked "not reviewed"; a pack that was edited (hash mismatch) or has a licence that is not allowed won't open.
 - Every tile's work in progress is remembered in this browser, so reloading the page keeps it; clearing browser data removes it.
 - Presets from an older version still open; the app says it upgraded them. Save again to keep the upgrade.
 - Presets from a newer version need a newer app.

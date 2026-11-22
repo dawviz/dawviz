@@ -4,8 +4,8 @@ doc_title: "Tài nguyên (assets) và bộ kiểu (presets) do cộng đồng đ
 section: "6. Kế hoạch tách repo (T-16)"
 path: "6. Kế hoạch tách repo (T-16)"
 chunk: 6-ke-hoach-tach-repo-t-16.md
-source_lines: 54-63
-source_sha1: d3268bcf29
+source_lines: 58-67
+source_sha1: f89d7ee23f
 ids: []
 ---
 ## 6. Kế hoạch tách repo (T-16)

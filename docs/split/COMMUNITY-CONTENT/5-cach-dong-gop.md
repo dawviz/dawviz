@@ -4,8 +4,8 @@ doc_title: "Tài nguyên (assets) và bộ kiểu (presets) do cộng đồng đ
 section: "5. Cách đóng góp"
 path: "5. Cách đóng góp"
 chunk: 5-cach-dong-gop.md
-source_lines: 48-53
-source_sha1: d3268bcf29
+source_lines: 52-57
+source_sha1: f89d7ee23f
 ids: [D-42, D-43]
 ---
 ## 5. Cách đóng góp

@@ -5,7 +5,7 @@ section: "REQ-PARSER-08: FL Studio (`.flp`, D-62)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) > REQ-PARSER-08: FL Studio (`.flp`, D-62)"
 chunk: req-parser-08-fl-studio-flp-d-62.md
 source_lines: 335-346
-source_sha1: 49d4aaf8cd
+source_sha1: 410aa8419f
 ids: [D-62, ERR_AST_INVALID, ERR_NO_NOTES, OI-19, REQ-PARSER-08, WARN_FLP_CLIPS_SKIPPED, WARN_TEMPO_FALLBACK, WARN_TEMPO_RAMP, WARN_TEMPO_SHAPE]
 ---
 #### REQ-PARSER-08: FL Studio (`.flp`, D-62)

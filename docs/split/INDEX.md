@@ -92,7 +92,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [REQ-GRAPHICS-14: Khoảng hiển thị theo thời gian và theo track](SRS/req-graphics-14-khoang-hien-thi-theo-thoi-gian-v.md) · 1148 ký tự
 - [REQ-GRAPHICS-15: Không gian 2.5D: xoay X/Y/Z và camera phối cảnh (D-47), bản 1.1](SRS/req-graphics-15-khong-gian-2-5d-xoay-x-y-z-va-ca.md) · 1874 ký tự
 - [REQ-STORAGE-05: Tài nguyên của phiên](SRS/req-storage-05-tai-nguyen-cua-phien.md) · 1292 ký tự
-- [REQ-STORAGE-06: Preset mới và chia sẻ](SRS/req-storage-06-preset-moi-va-chia-se.md) · 444 ký tự
+- [REQ-STORAGE-06: Preset mới và chia sẻ](SRS/req-storage-06-preset-moi-va-chia-se.md) · 765 ký tự
 - [4. YÊU CẦU PHI CHỨC NĂNG (NON-FUNCTIONAL REQUIREMENTS)](SRS/4-yeu-cau-phi-chuc-nang-non-functional-requireme.md) · 5167 ký tự
 - [5.1. Bố cục không gian làm việc](SRS/5-1-bo-cuc-khong-gian-lam-viec.md) · 4893 ký tự
 - [5.2. Chế độ tương tác](SRS/5-2-che-do-tuong-tac.md) · 364 ký tự
@@ -348,7 +348,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [Tài nguyên (assets) và bộ kiểu (presets) do cộng đồng đóng góp (mở đầu)](COMMUNITY-CONTENT/tai-nguyen-assets-va-bo-kieu-presets-do-cong-don.md) · 242 ký tự
 - [1. Hiện trạng và mục tiêu](COMMUNITY-CONTENT/1-hien-trang-va-muc-tieu.md) · 420 ký tự
 - [2. Cấu trúc](COMMUNITY-CONTENT/2-cau-truc.md) · 399 ký tự
-- [3. Định dạng preset kiểu nốt](COMMUNITY-CONTENT/3-dinh-dang-preset-kieu-not.md) · 636 ký tự
+- [3. Định dạng preset kiểu nốt](COMMUNITY-CONTENT/3-dinh-dang-preset-kieu-not.md) · 1134 ký tự
 - [4. Quy tắc cho assets](COMMUNITY-CONTENT/4-quy-tac-cho-assets.md) · 531 ký tự
 - [5. Cách đóng góp](COMMUNITY-CONTENT/5-cach-dong-gop.md) · 356 ký tự
 - [6. Kế hoạch tách repo (T-16)](COMMUNITY-CONTENT/6-ke-hoach-tach-repo-t-16.md) · 823 ký tự

@@ -5,7 +5,7 @@ section: "2. Cấu trúc"
 path: "2. Cấu trúc"
 chunk: 2-cau-truc.md
 source_lines: 10-22
-source_sha1: d3268bcf29
+source_sha1: f89d7ee23f
 ids: []
 ---
 ## 2. Cấu trúc
