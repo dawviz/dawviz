@@ -12,7 +12,7 @@ import type { Gesture } from '../lib/storeReact.ts';
 import { isTextEntry } from '../lib/a11y.ts';
 import { formatClock } from '../lib/timeFormat.ts';
 import { EASE_BEZIER, bezierOf, easeSamples, type Bezier } from '../lib/easeCurve.ts';
-import { DRAG_SLOP, beatTimes, groupRefs, keyRef, keySecs, moveKeys, parseKeyRef, removeKeys, rulerLabel, rulerStep, rulerTicks, snapTime } from '../lib/timeline.ts';
+import { DRAG_SLOP, beatTimes, copyKeys, groupRefs, keyClipboard, pasteIntoWidget, keyRef, keySecs, moveKeys, parseKeyRef, removeKeys, rulerLabel, rulerStep, rulerTicks, snapTime } from '../lib/timeline.ts';
 import { rowOfPath, timelineRows, type RowDef } from '../lib/timelineRows.ts';
 import {
   EASE_LIBRARY_KEY, addSavedEase, applyEase, bezierFromHandle, easeClipboard, easeOfKeys, graphable, handlePoints, keyVelocity, nextEaseName, niceTicks,
@@ -228,6 +228,19 @@ export function GraphEditor({ widget, tempoMap, duration, playback, locked, sel,
     if (isTextEntry(e.target)) return;
     if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); e.stopPropagation(); removeSelected(); return; }
     if (e.key === 'Escape' && sel.keys.length) { e.preventDefault(); e.stopPropagation(); onSel(NO_SEL); return; }
+    const mod = e.ctrlKey || e.metaKey;
+    if (mod && !e.shiftKey && !e.altKey && e.code === 'KeyC' && sel.keys.length) {
+      e.preventDefault(); e.stopPropagation();
+      const keyed: Record<string, KeyAnimation> = {}; for (const p of groupRefs(sel.keys).keys()) { const a = keyAnim(p); if (a) keyed[p] = a; }
+      keyClipboard.set(copyKeys(keyed, sel.keys, tempoMap)); return;
+    }
+    if (mod && !e.shiftKey && !e.altKey && e.code === 'KeyV' && keyClipboard.get()) {
+      e.preventDefault(); e.stopPropagation();
+      if (locked) return;
+      const r = pasteIntoWidget(widget, keyClipboard.get()!, playback.get().t, duration);
+      if (Object.keys(r.changes).length) { onAnimateMany(r.changes); onSel({ keys: r.refs, row: row?.id ?? sel.row }); }
+      return;
+    }
     if ((e.ctrlKey || e.metaKey) && e.code === 'KeyA') { e.preventDefault(); e.stopPropagation(); onSel({ keys: keyPts.map((k) => k.ref), row: row?.id ?? sel.row }); }
   };
   const onKeyKey = (e: KeyboardEvent<SVGElement>, k: (typeof keyPts)[number]) => {

@@ -137,3 +137,16 @@ test('khung chọn: chọn widget hiện, không khoá, có khung bao giao với
   assert.deepEqual(marqueeHits(ws, { x: 50, y: 50, width: 10, height: 10 }, new Set()), ['a']);
   assert.deepEqual(marqueeHits(ws, { x: 0, y: 0, width: 400, height: 400 }, new Set(['d'])), ['a', 'c']);
 });
+
+test('khung theo scale: co giãn quanh điểm neo; dời/đổi cỡ trên khung đang thấy đổi ngược về bố cục gốc', async () => {
+  const { scaledLayout, unscalePatch } = await import('./editorGeometry.ts');
+  const L = { x: 100, y: 100, width: 200, height: 100, rotation: 0, anchor: { x: 0.5, y: 0.5 } };
+  const S = scaledLayout(L, 2);
+  assert.deepEqual([S.x, S.y, S.width, S.height], [0, 50, 400, 200]); // tâm giữ nguyên (200, 150)
+  assert.equal(scaledLayout(L, 1), L); assert.equal(scaledLayout(L, 0), L);
+  assert.deepEqual(unscalePatch(S, { x: S.x + 30, y: S.y - 10 }, 2), { x: 130, y: 90 }); // dời: cùng khoảng dời
+  const r = unscalePatch(S, { width: 600 }, 2); // kéo khung đang thấy rộng thêm 200 → gốc rộng thêm 100
+  assert.equal(r.width, 300); assert.equal(r.x, 150); assert.ok(!('height' in r)); // mép trái khung đang thấy giữ ở 0: scaledLayout(gốc mới).x = 0
+  assert.equal(scaledLayout({ ...L, x: r.x!, width: r.width! }, 2).x, 0);
+  assert.deepEqual(unscalePatch(L, { x: 5 }, 1), { x: 5 });
+});

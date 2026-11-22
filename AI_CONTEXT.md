@@ -95,7 +95,7 @@ Nguồn: `docs/product/BRD.md` · [thứ tự đọc](docs/split/BRD/_index.md)
 - [4. PHẠM VI DỰ ÁN (PROJECT SCOPE) › 4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](docs/split/BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1.2k
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](docs/split/BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4.3k
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](docs/split/BRD/6-gia-dinh-assumptions.md) · 0.6k
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 31.4k
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 33.6k
 - [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](docs/split/BRD/8-cac-van-de-con-mo-open-issues.md) · 7.8k
 
 ### SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
@@ -298,7 +298,7 @@ Nguồn: `docs/design/ANIMATION-CATALOG.md` · [thứ tự đọc](docs/split/AN
 - [3. Đồ thị (Graph Editor)](docs/split/ANIMATION-CATALOG/3-do-thi-graph-editor.md) · 1.5k
 - [4. Nội suy không gian và kiểu giá trị](docs/split/ANIMATION-CATALOG/4-noi-suy-khong-gian-va-kieu-gia-tri.md) · 0.7k
 - [5. Ngoại suy, lặp và bộ biến đổi đường cong](docs/split/ANIMATION-CATALOG/5-ngoai-suy-lap-va-bo-bien-doi-duong-cong.md) · 0.8k
-- [6. Hiệu ứng biến đổi cơ bản (transform)](docs/split/ANIMATION-CATALOG/6-hieu-ung-bien-doi-co-ban-transform.md) · 0.8k
+- [6. Hiệu ứng biến đổi cơ bản (transform)](docs/split/ANIMATION-CATALOG/6-hieu-ung-bien-doi-co-ban-transform.md) · 0.9k
 - [7. Hiện/ẩn, che và lộ (reveal)](docs/split/ANIMATION-CATALOG/7-hien-an-che-va-lo-reveal.md) · 0.8k
 - [8. Hình dạng (shape) và biến dạng hình học](docs/split/ANIMATION-CATALOG/8-hinh-dang-shape-va-bien-dang-hinh-hoc.md) · 0.7k
 - [9. Chuyển động "có vật lý" (cảm giác tự nhiên)](docs/split/ANIMATION-CATALOG/9-chuyen-dong-co-vat-ly-cam-giac-tu-nhien.md) · 0.6k

@@ -33,11 +33,13 @@ test('animate: đọc preset — giữ mục hợp lệ, bỏ mục sai kèm c�
   const mix = mk('TIME_BAR', { barLength: { bind: 'progress', from: [0, 1], to: ['#fff', '#000'] } }); assert.equal(mix.scene.widgets[0].animate, undefined, 'đích màu cho thuộc tính số');
 });
 
-test('animate: Piano Roll và Bản nhạc chỉ nhận layout và opacity; số lượng keyframe và hoạt hình bị giới hạn', () => {
-  assert.ok(animatablePaths('PIANO_ROLL').has('layout.rotation') && animatablePaths('PIANO_ROLL').has('opacity') && !animatablePaths('PIANO_ROLL').has('playheadWidth'));
+test('animate: Piano Roll nhận danh sách đường dẫn riêng, Bản nhạc chỉ layout/opacity/scale; bật-tắt và lựa chọn theo bậc; giới hạn số lượng', () => {
+  const pr = animatablePaths('PIANO_ROLL');
+  assert.ok(pr.has('layout.rotation') && pr.has('opacity') && pr.get('playheadWidth') === 'number' && pr.get('noteStyle.base.glow') === 'number' && pr.get('playheadColor') === 'color' && pr.get('keyboard.enabled') === 'bool');
+  assert.ok(!pr.has('pitchMin') && !pr.has('scrollMode') && !pr.has('noteStyle.tracks')); // cấu trúc: không animate
   assert.ok(!animatablePaths('NOTATION').has('zoom') && animatablePaths('NOTATION').has('layout.x'));
-  assert.ok(animatablePaths('TIME_BAR').get('barColor') === 'color' && animatablePaths('TIME_BAR').get('barLength') === 'number' && !animatablePaths('TIME_BAR').has('showBars'));
-  assert.ok(animatablePaths('EVENT_COUNTER').has('lines.played.enabled') === false && animatablePaths('EVENT_COUNTER').has('lineHeight'));
+  assert.ok(animatablePaths('TIME_BAR').get('barColor') === 'color' && animatablePaths('TIME_BAR').get('barLength') === 'number' && animatablePaths('TIME_BAR').get('showBars') === 'bool');
+  assert.ok(animatablePaths('EVENT_COUNTER').get('lines.played.enabled') === 'bool' && animatablePaths('EVENT_COUNTER').has('lineHeight'));
   const many = Array.from({ length: 300 }, (_, i) => ({ at: { sec: i }, value: i })), warns: string[] = [];
   const S = { ...silentSanitizer(), warn: (_p: string, _v: unknown, m: string) => { warns.push(m); } };
   const out = sanitizeAnimate(S, { 'layout.x': { keys: many } }, '$', 'TEXT')!; assert.equal((out['layout.x'] as { keys: unknown[] }).keys.length, 256); assert.ok(warns.some((m) => m.includes('cắt bớt')));
@@ -94,10 +96,37 @@ test('binding + layoutFrame: thuộc tính đổi theo nhạc, widget vẽ ra kh
   assert.equal(frame({ ...sc, widgets: [{ ...sc.widgets[0], animate: { opacity: { keys: [{ at: { sec: 0 }, value: 0 }] } } }] }, 1).length, 0, 'opacity 0: không dựng');
 });
 
-test('animate Piano Roll: layout và opacity hoạt động; thuộc tính piano bị từ chối', () => {
-  const r = sanitizeScene({ schemaVersion: SCENE_SCHEMA_VERSION, canvas: {}, widgets: [{ id: 'p', type: 'PIANO_ROLL', layout: { x: 0, y: 0, width: 600, height: 200 }, properties: {}, animate: { 'layout.y': { keys: [{ at: { sec: 0 }, value: 0 }, { at: { sec: 2 }, value: 100 }] }, playheadWidth: { keys: [{ at: { sec: 0 }, value: 5 }] } } }] });
-  assert.equal(r.warnings.length, 1); const w = r.scene.widgets[0]; assert.deepEqual(Object.keys(w.animate!), ['layout.y']);
-  const f = layoutFrame(r.scene, derivedOf(ast), ast, 1); assert.equal(f[0].widget.layout.y, 50);
+test('animate Piano Roll: layout, tỉ lệ thời gian, vạch phát, kiểu nốt; giá trị kẹp theo bộ kiểm; dải cao độ bị từ chối', () => {
+  const r = sanitizeScene({ schemaVersion: SCENE_SCHEMA_VERSION, canvas: {}, widgets: [{ id: 'p', type: 'PIANO_ROLL', layout: { x: 0, y: 0, width: 600, height: 200 }, properties: {}, animate: {
+    'layout.y': { keys: [{ at: { sec: 0 }, value: 0 }, { at: { sec: 2 }, value: 100 }] },
+    visibleSeconds: { keys: [{ at: { sec: 0 }, value: 2 }, { at: { sec: 2 }, value: 1e6 }] },
+    'noteStyle.base.glow': { keys: [{ at: { sec: 0 }, value: -5 }] },
+    playheadVisible: { keys: [{ at: { sec: 0 }, value: true }, { at: { sec: 1.5 }, value: false }] },
+    pitchMin: { keys: [{ at: { sec: 0 }, value: 10 }] } } }] });
+  assert.equal(r.warnings.length, 1); const w = r.scene.widgets[0];
+  assert.deepEqual(Object.keys(w.animate!).sort(), ['layout.y', 'noteStyle.base.glow', 'playheadVisible', 'visibleSeconds']);
+  assert.equal((w.animate!.playheadVisible as { kind?: string }).kind, 'discrete');
+  const at = (t: number) => layoutFrame(r.scene, derivedOf(ast), ast, t)[0].widget as WidgetSpec<{ visibleSeconds: number; playheadVisible: boolean; noteStyle: { base: { glow: number } } }>;
+  assert.equal(at(1).layout.y, 50);
+  assert.equal(at(3).properties.visibleSeconds, 60); // kẹp
+  assert.equal(at(1).properties.noteStyle.base.glow, 0);
+  assert.equal(at(1.49).properties.playheadVisible, true); assert.equal(at(1.5).properties.playheadVisible, false); // theo bậc: đổi đúng tại keyframe
+});
+
+test('animate theo bậc: bật/tắt và lựa chọn giữ rồi đổi tại keyframe, không nội suy; binding bị từ chối; giá trị sai kiểu bị bỏ', () => {
+  const warns: string[] = [];
+  const S = { ...silentSanitizer(), warn: (_p: string, _v: unknown, m: string) => { warns.push(m); } };
+  const out = sanitizeAnimate(S, {
+    showBars: { keys: [{ at: { sec: 0 }, value: true }, { at: { sec: 2 }, value: 'yes' }, { at: { sec: 4 }, value: false }] },
+    barColor: { keys: [{ at: { sec: 0 }, value: '#ff0000' }] },
+    'time.enabled': { bind: 'progress', from: [0, 1], to: [0, 1] },
+  }, '$', 'TIME_BAR')!;
+  assert.deepEqual(Object.keys(out).sort(), ['barColor', 'showBars']);
+  assert.equal((out.showBars as { keys: unknown[] }).keys.length, 2);
+  assert.ok(warns.some((m) => m.includes('theo bậc')));
+  const sc = mk('TIME_BAR', { showBars: { keys: [{ at: { sec: 0 }, value: true }, { at: { sec: 4 }, value: false }] } }).scene;
+  const vals = [0, 2, 3.99, 4, 9].map((t) => (frame(sc, t)[0].widget.properties as { showBars: boolean }).showBars);
+  assert.deepEqual(vals, [true, true, true, false, false]);
 });
 
 test('fuzz: animate MỌI thuộc tính số/màu của MỌI loại widget bằng giá trị cực đoan — không ném, luôn qua bộ kiểm, không NaN', () => {
@@ -105,14 +134,17 @@ test('fuzz: animate MỌI thuộc tính số/màu của MỌI loại widget bằ
   for (const type of ADDABLE_WIDGETS) {
     const base = defaultScene('16:9'), w0 = createWidget(base, type);
     for (const [path, kind] of animatablePaths(type)) {
-      for (const val of kind === 'number' ? [-1e9, 0, 3.7, 1e9] : ['#000000', '#ff00ff']) {
-        const w: WidgetSpec = { ...w0, animate: { [path]: { keys: [{ at: { sec: 0 }, value: val }] } as Animation } };
+      const vals = kind === 'number' ? [-1e9, 0, 3.7, 1e9] : kind === 'color' ? ['#000000', '#ff00ff'] : [true, false, '', 'x'.repeat(300), 42, '#00ff00'];
+      for (const val of vals) {
+        const keys = [{ at: { sec: 0 }, value: val }, { at: { sec: 1 }, value: kind === 'bool' ? !val : val }];
+        const w: WidgetSpec = { ...w0, animate: { [path]: { keys, ...(kind === 'bool' || kind === 'choice' ? { kind: 'discrete' } : {}) } as Animation } };
         const sc = { ...base, widgets: [w] };
         const f = layoutFrame(sc, derivedOf(ast), ast, 1.3);
         for (const e of f) for (const p of e.prims) if (p.kind === 'rect') for (const v of [p.x, p.y, p.w, p.h, p.alpha]) assert.ok(Number.isFinite(v), `${type}.${path}=${val}`);
+        assert.deepEqual(layoutFrame(sc, derivedOf(ast), ast, 1.3).map((e) => e.prims.length), f.map((e) => e.prims.length), `tất định ${type}.${path}`);
         total++;
       }
     }
   }
-  assert.ok(total > 300, `chỉ ${total} trường hợp`);
+  assert.ok(total > 1000, `chỉ ${total} trường hợp`);
 });

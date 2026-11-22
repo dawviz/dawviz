@@ -9,10 +9,13 @@ import type { TempoPoint } from './types.ts';
 export type KeyTime = { sec: number } | { beat: number } | { tick: number } | { bar: number; beat?: number };
 export type InterpMode = 'linear' | 'hold' | 'smooth';
 /** `ease` của keyframe áp cho đoạn ĐI TỚI keyframe đó (như After Effects); `interp` của keyframe là cách đi từ nó tới keyframe kế. */
-export interface Key<V = number | string> { at: KeyTime; value: V; ease?: EaseSpec; interp?: InterpMode }
+/** Giá trị keyframe: số, màu `#rrggbb`, hoặc (kiểu `discrete`) chuỗi lựa chọn / bật-tắt. */
+export type KeyValue = number | string | boolean;
+export interface Key<V = KeyValue> { at: KeyTime; value: V; ease?: EaseSpec; interp?: InterpMode }
 export type LoopMode = 'NONE' | 'CYCLE' | 'PINGPONG' | 'OFFSET';
-export type ValueKind = 'number' | 'angle' | 'color';
-export interface TrackSpec<V = number | string> { keys: Key<V>[]; kind?: ValueKind; loop?: LoopMode }
+/** `discrete`: bật/tắt, lựa chọn, kiểu chữ… không nội suy được: luôn giữ giá trị keyframe trước rồi đổi đúng tại keyframe kế (T-22). */
+export type ValueKind = 'number' | 'angle' | 'color' | 'discrete';
+export interface TrackSpec<V = KeyValue> { keys: Key<V>[]; kind?: ValueKind; loop?: LoopMode }
 export interface TimeCtx { tempoMap: readonly TempoPoint[]; grid?: BarGrid }
 
 const PPQ = 960;
@@ -62,7 +65,7 @@ export const mixAngle = (a: number, b: number, k: number): number => { let d = (
 
 // ───────────── biên dịch và lấy mẫu ─────────────
 export interface CompiledTrack {
-  kind: ValueKind; loop: LoopMode; times: number[]; values: (number | Lab)[]; eases: EaseFn[]; interps: InterpMode[]; tangents: number[]; warnings: string[];
+  kind: ValueKind; loop: LoopMode; times: number[]; values: (number | Lab | string | boolean)[]; eases: EaseFn[]; interps: InterpMode[]; tangents: number[]; warnings: string[];
 }
 const EMPTY = (kind: ValueKind): CompiledTrack => ({ kind, loop: 'NONE', times: [], values: [], eases: [], interps: [], tangents: [], warnings: [] });
 
@@ -71,19 +74,21 @@ export function compileTrack(spec: TrackSpec, ctx: TimeCtx): CompiledTrack {
   const kind: ValueKind = spec?.kind ?? (typeof keys[0]?.value === 'string' ? 'color' : 'number');
   const out = EMPTY(kind), loop = spec?.loop;
   out.loop = loop === 'CYCLE' || loop === 'PINGPONG' || loop === 'OFFSET' ? loop : 'NONE';
-  const rows: { t: number; v: number | Lab; ease: EaseFn; interp: InterpMode; i: number }[] = [];
+  const rows: { t: number; v: number | Lab | string | boolean; ease: EaseFn; interp: InterpMode; i: number }[] = [];
   keys.forEach((k, i) => {
     const t = k && k.at ? keyTimeSec(k.at, ctx) : NaN;
     if (!Number.isFinite(t) || t < 0) { out.warnings.push(`keyframe ${i}: mốc không hợp lệ; bỏ qua`); return; }
-    let v: number | Lab | null;
-    if (kind === 'color') v = typeof k.value === 'string' ? hexToLab(k.value) : null; else v = typeof k.value === 'number' && Number.isFinite(k.value) ? k.value : null;
+    let v: number | Lab | string | boolean | null;
+    if (kind === 'color') v = typeof k.value === 'string' ? hexToLab(k.value) : null;
+    else if (kind === 'discrete') v = typeof k.value === 'string' || typeof k.value === 'boolean' || (typeof k.value === 'number' && Number.isFinite(k.value)) ? k.value : null;
+    else v = typeof k.value === 'number' && Number.isFinite(k.value) ? k.value : null;
     if (v === null) { out.warnings.push(`keyframe ${i}: giá trị không hợp lệ; bỏ qua`); return; }
     const pe = parseEase(k.ease); if (!pe.ok) out.warnings.push(`keyframe ${i}: easing lạ; dùng linear`);
     rows.push({ t, v, ease: pe.fn, interp: k.interp === 'hold' || k.interp === 'smooth' ? k.interp : 'linear', i });
   });
   rows.sort((a, b) => a.t - b.t || a.i - b.i);
   out.times = rows.map((r) => r.t); out.values = rows.map((r) => r.v); out.eases = rows.map((r) => r.ease); out.interps = rows.map((r) => r.interp);
-  if (kind !== 'color') { // tiếp tuyến đơn điệu (Fritsch–Carlson) cho đoạn `smooth`
+  if (kind !== 'color' && kind !== 'discrete') { // tiếp tuyến đơn điệu (Fritsch–Carlson) cho đoạn `smooth`
     const n = rows.length, v = out.values as number[], t = out.times, d = new Array<number>(n).fill(0), sl: number[] = [];
     for (let i = 0; i < n - 1; i++) sl.push(t[i + 1] > t[i] ? (v[i + 1] - v[i]) / (t[i + 1] - t[i]) : 0);
     if (n > 1) { d[0] = sl[0]; d[n - 1] = sl[n - 2]; }
@@ -100,7 +105,7 @@ export function compileTrack(spec: TrackSpec, ctx: TimeCtx): CompiledTrack {
 
 const upper = (a: readonly number[], t: number) => { let lo = 0, hi = a.length; while (lo < hi) { const m = (lo + hi) >> 1; if (a[m] <= t) lo = m + 1; else hi = m; } return lo; };
 /** Giá trị tại t. Track rỗng → 0 (hoặc `#000000` với màu). */
-export function sampleTrack(ct: CompiledTrack, t: number): number | string {
+export function sampleTrack(ct: CompiledTrack, t: number): KeyValue {
   const n = ct.times.length;
   if (n === 0) return ct.kind === 'color' ? '#000000' : 0;
   const t0 = ct.times[0], t1 = ct.times[n - 1], T = t1 - t0;
@@ -108,12 +113,12 @@ export function sampleTrack(ct: CompiledTrack, t: number): number | string {
   if (ct.loop !== 'NONE' && T > 0 && tt > t1) {
     const cycles = Math.floor((tt - t0) / T), m = (tt - t0) - cycles * T;
     if (ct.loop === 'PINGPONG') { const m2 = (tt - t0) % (2 * T); tt = t0 + (m2 <= T ? m2 : 2 * T - m2); }
-    else { tt = t0 + m; if (ct.loop === 'OFFSET' && ct.kind !== 'color') offset = cycles * ((ct.values[n - 1] as number) - (ct.values[0] as number)); }
+    else { tt = t0 + m; if (ct.loop === 'OFFSET' && ct.kind !== 'color' && ct.kind !== 'discrete') offset = cycles * ((ct.values[n - 1] as number) - (ct.values[0] as number)); }
   }
   const i = upper(ct.times, tt) - 1;
-  const at = (k: number): number | string => (ct.kind === 'color' ? labToHex(ct.values[k] as Lab) : (ct.values[k] as number) + offset);
+  const at = (k: number): KeyValue => (ct.kind === 'color' ? labToHex(ct.values[k] as Lab) : ct.kind === 'discrete' ? ct.values[k] as KeyValue : (ct.values[k] as number) + offset);
   if (i < 0) return at(0);
-  if (i >= n - 1) return at(n - 1);
+  if (i >= n - 1 || ct.kind === 'discrete') return at(Math.min(i, n - 1)); // rời rạc: luôn giữ giá trị keyframe trước
   const a = ct.times[i], b = ct.times[i + 1], u = (tt - a) / (b - a), mode = ct.interps[i];
   if (mode === 'hold') return at(i);
   if (ct.kind === 'color') return labToHex(mixLab(ct.values[i] as Lab, ct.values[i + 1] as Lab, ct.eases[i + 1](u)));
@@ -127,6 +132,6 @@ export function sampleTrack(ct: CompiledTrack, t: number): number | string {
 }
 /** Tốc độ thay đổi (đơn vị/giây) tại t, sai phân trung tâm: dữ liệu cho đồ thị tốc độ (speed graph) của Graph Editor. Chỉ cho track số hoặc góc. */
 export function trackSpeed(ct: CompiledTrack, t: number, dt = 1 / 240): number {
-  if (ct.kind === 'color' || !ct.times.length) return 0;
+  if (ct.kind === 'color' || ct.kind === 'discrete' || !ct.times.length) return 0;
   return ((sampleTrack(ct, t + dt) as number) - (sampleTrack(ct, Math.max(0, t - dt)) as number)) / (t - Math.max(0, t - dt) + dt);
 }

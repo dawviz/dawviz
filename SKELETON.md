@@ -32,6 +32,7 @@ dawviz/
 │     │  │  ├─ AudioPanel.tsx
 │     │  │  ├─ BackgroundSection.tsx
 │     │  │  ├─ DeviceLatency.tsx
+│     │  │  ├─ DiscreteValue.tsx
 │     │  │  ├─ EaseGraph.tsx
 │     │  │  ├─ Editor.tsx
 │     │  │  ├─ EditorOverlay.tsx
@@ -306,6 +307,7 @@ dawviz/
 │  │  │  ├─ naming.ts
 │  │  │  ├─ notes.ts
 │  │  │  ├─ noteTransition.ts
+│  │  │  ├─ parenting.ts
 │  │  │  ├─ parser-core.d.ts
 │  │  │  ├─ particles.ts
 │  │  │  ├─ pianoroll.ts
@@ -341,6 +343,7 @@ dawviz/
 │  │  │  ├─ musicAnalysis.test.ts
 │  │  │  ├─ notation.test.ts
 │  │  │  ├─ paper.test.ts
+│  │  │  ├─ parenting.test.ts
 │  │  │  ├─ particles.test.ts
 │  │  │  ├─ placeholders.test.ts
 │  │  │  ├─ preset.test.ts
@@ -712,7 +715,11 @@ type Animation
 const isBinding = (a: Animation) =>
 const MAX_ANIMATIONS
 const MAX_SCALE   // Giới hạn của `scale` (%): 0 (biến mất) tới 2000.
-function animatablePaths(type: WidgetType): Map<string, 'number' | 'color'>   // Các đường dẫn animate được của một loại widget và kiểu giá trị của chúng.
+type AnimKind   // Kiểu giá trị của một đường dẫn animate được. `bool`/`choice` animate theo bậc (track `kind: 'discrete'`).
+const MAX_CHOICE_LEN   // Độ dài tối đa của một giá trị lựa chọn/chữ trong keyframe.
+const PIANO_PATHS
+function animatablePaths(type: WidgetType): Map<string, AnimKind>   // Các đường dẫn animate được của một loại widget và kiểu giá trị của chúng (bản đệm: đừng sửa Map trả về).
+const isDiscreteKind = (k: AnimKind) =>   // Track của kiểu này nội suy được không (số, màu) hay theo bậc (bật/tắt, lựa chọn).
 function sanitizeAnimate(S: Sanitizer, v: unknown, path: string, type: WidgetType): Record<string, Animation> | undefined   // Đọc `animate` của một widget. Mục sai bị bỏ kèm cảnh báo; không còn mục nào → undefined.
 interface BindCtx   // ───────────── tính giá trị mỗi khung ─────────────
 function bindSourceValue(src: BindSource, c: BindCtx): number   // Giá trị thô của một nguồn dữ liệu nhạc tại t (thang riêng của từng nguồn; ánh xạ sang thuộc tính bằng `from`/…
@@ -909,6 +916,7 @@ re-export * from './keyframes.ts'
 re-export * from './noteTransition.ts'
 re-export * from './widgetMotion.ts'
 re-export * from './animation.ts'
+re-export * from './parenting.ts'
 re-export * from './naming.ts'
 re-export * from './insight.ts'
 re-export * from './notation/types.ts'
@@ -974,9 +982,10 @@ Bộ máy keyframe (T-32, CUSTOMIZATION §3.1): một thuộc tính số, góc h
 ```text
 type KeyTime
 type InterpMode
-interface Key   // `ease` của keyframe áp cho đoạn ĐI TỚI keyframe đó (như After Effects); `interp` của keyframe là cách đi từ n…
+type KeyValue   // Giá trị keyframe: số, màu `#rrggbb`, hoặc (kiểu `discrete`) chuỗi lựa chọn / bật-tắt.
+interface Key
 type LoopMode
-type ValueKind
+type ValueKind   // `discrete`: bật/tắt, lựa chọn, kiểu chữ… không nội suy được: luôn giữ giá trị keyframe trước rồi đổi đúng tại…
 interface TrackSpec
 interface TimeCtx
 function barBeatToTick(g: BarGrid, bar: number, beat = 1): number   // Tick của `bar.beat` (cả hai đếm từ 1) theo lưới ô nhịp: đúng cả khi đổi dấu nhịp giữa bài.
@@ -987,7 +996,7 @@ function mixColor(a: string, b: string, k: number): string   // Nội suy màu t
 const mixAngle = (a: number, b: number, k: number) =>   // Nội suy góc (độ) theo đường ngắn nhất, kết quả trong (−180, 180] cộng với góc đầu (không bó lại: giữ liên tục…
 interface CompiledTrack   // ───────────── biên dịch và lấy mẫu ─────────────
 function compileTrack(spec: TrackSpec, ctx: TimeCtx): CompiledTrack
-function sampleTrack(ct: CompiledTrack, t: number): number | string   // Giá trị tại t. Track rỗng → 0 (hoặc `#000000` với màu).
+function sampleTrack(ct: CompiledTrack, t: number): KeyValue   // Giá trị tại t. Track rỗng → 0 (hoặc `#000000` với màu).
 function trackSpeed(ct: CompiledTrack, t: number, dt = 1 / 240): number   // Tốc độ thay đổi (đơn vị/giây) tại t, sai phân trung tâm: dữ liệu cho đồ thị tốc độ (speed graph) của Graph Ed…
 ```
 
@@ -1159,6 +1168,23 @@ function morphRoundRect(a: { w: number; h: number; radius: number }, b: { w: num
 type Pt
 function resamplePolygon(poly: readonly Pt[], n: number): Pt[]   // Lấy mẫu lại một đa giác kín về đúng `n` đỉnh, cách đều theo chu vi, bắt đầu từ đỉnh đầu: điều kiện để morph đ…
 function morphPolygon(a: readonly Pt[], b: readonly Pt[], k: number): Pt[]   // Morph hai đa giác bất kỳ: cùng lấy mẫu về cùng số đỉnh (lớn hơn trong hai, tối thiểu 3) rồi nội suy từng đỉnh.
+```
+
+#### `packages/render-core/src/parenting.ts`
+
+Parenting (ANIMATION-CATALOG §6, v1.0): `WidgetSpec.parent` = id widget cha. Mỗi khung, con nhận thêm phần THAY ĐỔI của cha so với tư thế tĩnh
+
+```text
+const MAX_PARENT_DEPTH   // Sâu tối đa của chuỗi cha (chặn dữ liệu bệnh lý).
+type ParentProblem
+function resolveParents(widgets: readonly { id: string; parent?: string }[]):    // Cha hợp lệ của từng widget (id → id cha), xét theo thứ tự trong tài liệu: bỏ cha không tồn tại, cạnh tạo vòng…
+type Mat   // Ma trận affine 2D [a, b, c, d, e, f]: x' = a·x + c·y + e, y' = b·x + d·y + f (như CanvasRenderingContext2D.tr…
+const IDENTITY
+const mul = (m: Mat, n: Mat) =>
+function invert(m: Mat): Mat
+const apply = (m: Mat, x: number, y: number) =>
+function widgetMatrix(L: WidgetLayout, rotDeg: number, fx?: Pick<WidgetFx, 'dx' | 'dy' | 'sx' | 'sy'>): Mat   // Toạ độ trong widget (góc trái trên = 0,0) → toạ độ khung, đúng chuỗi phép của renderFrame: dời tới điểm neo (…
+const deltaMatrix = (current: Mat, rest: Mat) =>   // Phần thay đổi của một widget so với tư thế tĩnh: hiện tại · tĩnh⁻¹ (toạ độ khung → toạ độ khung).
 ```
 
 #### `packages/render-core/src/particles.ts`
@@ -1558,6 +1584,14 @@ Thẻ Cài đặt, mục "Độ trễ thiết bị" (T-82): hồ sơ thiết b�
 function DeviceLatency({ prefs, onChange, makeCalibration = () => createCalibration(browserDeps) }: { prefs: DevicePrefs; onChange(p: DevicePrefs): void; makeCalibration?(): Calibration })
 ```
 
+#### `apps/web/src/components/DiscreteValue.tsx`
+
+Ô giá trị của thuộc tính animate theo bậc (T-22: bật/tắt, lựa chọn, chữ): dùng chung cho cây Timeline và mục Keyframe.
+
+```text
+function DiscreteValue({ f, value, label, disabled, compact, onChange }: { f: AnimField; value: KeyValue; label: string; disabled?: boolean; compact?: boolean; onChange(v: KeyValue): void })
+```
+
 #### `apps/web/src/components/EaseGraph.tsx`
 
 Đồ thị đường cong của Animation Inspector (DESIGN.md "Animation Inspector"): trục ngang là thời gian của đoạn (0 → 1), trục dọc là tiến độ
@@ -1716,7 +1750,7 @@ interface LiveCtx
 const hasLayoutAnim = (w: WidgetSpec) =>
 function layoutAt(w: WidgetSpec, ctx: Omit<LiveCtx, 'playback'>, canvas: SceneDocument['canvas'], t: number): WidgetLayout   // Bố cục của `w` tại `t` (chỉ phần layout.* được áp; thuộc tính khác giữ nguyên).
 function LiveLayout({ w, ctx, canvas, children }: { w: WidgetSpec; ctx: LiveCtx; canvas: SceneDocument['canvas']; children(l: WidgetLayout): ReactNode })   // Render-prop: con nhận bố cục tại vạch phát của widget.
-function LiveOverlay({ ctx, scene, ...rest }: { ctx: LiveCtx } & Parameters<typeof EditorOverlay>[0])   // Lớp chỉnh sửa trên khung, với widget đang animate bố cục được đặt đúng chỗ tại vạch phát.
+function LiveOverlay({ ctx, scene, onLayouts, ...rest }: { ctx: LiveCtx } & Parameters<typeof EditorOverlay>[0])   // Lớp chỉnh sửa trên khung, với widget đang animate bố cục được đặt đúng chỗ tại vạch phát. `scale` đang animat…
 ```
 
 #### `apps/web/src/components/MissingMidiPanel.tsx`
@@ -1973,16 +2007,16 @@ function isTypingTarget(t: EventTarget | null): boolean   // Phím tắt khác (
 Logic thuần của mục "Hoạt hình" (T-22): danh sách thuộc tính animate được của một widget (nhãn, giới hạn, giá trị tĩnh hiện tại),
 
 ```text
-type PathKind
+type PathKind   // `bool`/`choice` animate theo bậc (giữ rồi đổi tại keyframe).
 interface AnimField
 function animFields(type: WidgetType): AnimField[]   // Thuộc tính animate được của loại widget, theo thứ tự: bố cục, độ đục, rồi thuộc tính của widget (nhãn lấy từ …
-function staticValue(w: Pick<WidgetSpec, 'layout' | 'properties'>, path: string): number | string   // Giá trị tĩnh hiện tại của thuộc tính (điểm xuất phát của hoạt hình mới).
+function staticValue(w: Pick<WidgetSpec, 'layout' | 'properties'>, path: string): KeyValue   // Giá trị tĩnh hiện tại của thuộc tính (điểm xuất phát của hoạt hình mới).
 const newKeyAnimation = (w: Pick<WidgetSpec, 'layout' | 'properties'>, path: string, t: number) =>   // Hoạt hình mới: một keyframe tại `t` giữ đúng giá trị hiện tại (chưa đổi hình gì); người dùng thêm keyframe sa…
 const SOURCE_RANGE
 function newBinding(w: Pick<WidgetSpec, 'layout' | 'properties'>, f: AnimField, source: BindSource = 'note.hit'): Binding   // Binding mới: nguồn đi từ đầu tới cuối thang của nó; thuộc tính chạy từ giá trị hiện tại tới một giá trị khác …
 const withSource = (b: Binding, source: BindSource) =>   // Đổi nguồn của binding: thang `from` theo nguồn mới.
 const sortKeys = (keys: Key[]) =>   // ── keyframe ──
-function addKey(a: KeyAnimation, t: number, value: number | string): KeyAnimation   // Thêm keyframe tại `t` (giây). Giá trị: nếu đã có keyframe trước đó lấy giá trị của nó, không thì giá trị tĩnh…
+function addKey(a: KeyAnimation, t: number, value: KeyValue): KeyAnimation   // Thêm keyframe tại `t` (giây). Giá trị: nếu đã có keyframe trước đó lấy giá trị của nó, không thì giá trị tĩnh…
 const setKey = (a: KeyAnimation, i: number, patch: Partial<Key>) =>
 function removeKey(a: KeyAnimation, i: number): KeyAnimation | null   // Bỏ keyframe thứ i; hết keyframe thì trả null (bỏ cả hoạt hình).
 function keyTimeText(at: Key['at']): string   // Mô tả mốc của keyframe không phải giây (chỉ đọc trong giao diện).
@@ -2197,7 +2231,9 @@ const patchTextRef = (d: Doc, widgetId: string, field: string, next: TextRef, pa
 const setTextStyles = (d: Doc, styles: TextStyleSet, widgetId: string, field: string, ref: TextRef, kind: 'save' | 'update') =>   // Đổi bộ kiểu chữ của scene ("Lưu thành kiểu mới", "Cập nhật kiểu"), kèm ghi đè mới của chỗ chữ vừa dùng. Một b…
 const addWidget = (d: Doc, w: WidgetSpec) =>   // Thêm widget (T-68). Một bước hoàn tác.
 const addWidgets = (d: Doc, ws: WidgetSpec[], refs: Doc['propsRef'] = {}) =>   // Thêm nhiều widget một lúc (nhân bản vùng chọn).
-const removeWidgets = (d: Doc, ids: readonly string[]) =>   // Xoá widget (T-68). Hoàn tác trả widget về đúng chỗ trong tài liệu (giữ thứ tự và zIndex).
+const removeWidgets = (d: Doc, ids: readonly string[]) =>   // Xoá widget (T-68). Hoàn tác trả widget về đúng chỗ trong tài liệu (giữ thứ tự và zIndex). Con của widget bị x…
+function parentCandidates(scene: SceneDocument, id: string): string[]   // Widget có thể làm cha của `id`: mọi widget khác trừ chính nó và con cháu của nó (tránh vòng lặp).
+const setWidgetParent = (d: Doc, widgetId: string, parent: string | null) =>   // Đặt (hoặc bỏ, `null`) widget cha (parenting, 0.7.0). Cha tạo vòng lặp hoặc không tồn tại → không làm gì. Hoàn…
 const setWidgetVisible = (d: Doc, widgetId: string, visible: boolean) =>
 const paintWidgetVisible = (d: Doc, widgetId: string, visible: boolean) =>   // Kéo qua các mắt của danh sách Lớp: đặt thẳng giá trị (không đảo). Lệnh nắm toàn bộ bảng hiện/ẩn nên gộp cả lầ…
 const toggleAllWidgetsVisible = (d: Doc) =>   // Ô mắt ở hàng đầu danh sách Lớp: còn lớp ẩn thì hiện hết trước, đã hiện hết thì ẩn hết. Một bước hoàn tác.
@@ -2290,6 +2326,8 @@ function alignLayouts(items: { id: string; layout: WidgetLayout }[], mode: Align
 function distributeLayouts(items: { id: string; layout: WidgetLayout }[], axis: 'x' | 'y'): Record<string,   // Chia đều khoảng trống giữa các widget theo trục (cần ≥ 3): hai widget ngoài cùng đứng yên, các widget giữa dờ…
 function marqueeHits(widgets: readonly { id: string; visible: boolean; layout: WidgetLayout }[], r: { x: number; y: number; width: number; height: number }, locked: ReadonlySet<string>): string[]   // Widget hiện, không khoá, có khung bao (đã xoay) giao với khung chọn.
 const hasCanvasFrame = (w: { type: string; properties: unknown }) =>   // Widget có khung chọn trên khung hình không? Hạt "Tại nốt, chỗ chạm vạch phát" sinh ra từ Piano Roll chứ không…
+function scaledLayout(l: WidgetLayout, s: number): WidgetLayout   // Khung đang thấy của widget có `scale` (hệ số, 1 = nguyên cỡ): co giãn quanh điểm neo, như Render Core vẽ (ren…
+function unscalePatch(shown: WidgetLayout, patch: Partial<WidgetLayout>, s: number): Partial<WidgetLayout>   // Đổi một thay đổi làm trên khung đang thấy (`shown` = scaledLayout(gốc, s)) về bố cục gốc. Chỉ trả các trường …
 ```
 
 #### `apps/web/src/lib/exportClient.ts`
@@ -3049,7 +3087,7 @@ const rulerStep = (pps: number, minPx = 72) =>   // Bước vạch chính của 
 function rulerTicks(from: number, to: number, step: number): number[]   // Các mốc vạch chính trong [from, to] (giây), kể cả 0.
 function rulerLabel(t: number, step: number): string   // Nhãn thước: m:ss, thêm phần lẻ khi bước dưới 1 giây (đủ chữ số cho bước đó).
 function keySecs(a: KeyAnimation, tempoMap: readonly TempoPoint[]): number[]   // Giây của từng keyframe (mốc theo nhạc đổi qua tempo map; mốc hỏng → NaN).
-function valueAt(a: KeyAnimation, t: number, tempoMap: readonly TempoPoint[]): number | string   // Giá trị của hoạt hình keyframe tại `t` (đúng như Render Core vẽ).
+function valueAt(a: KeyAnimation, t: number, tempoMap: readonly TempoPoint[]): KeyValue   // Giá trị của hoạt hình keyframe tại `t` (đúng như Render Core vẽ).
 function beatTimes(tempoMap: readonly TempoPoint[], duration: number): number[]   // Mốc phách (giây) trong [0, duration]: đích bắt dính theo nhạc. Tối đa 20 000 mốc.
 function snapTime(t: number, targets: readonly number[], pps: number, tolPx = SNAP_PX):    // Bắt dính: đích gần nhất trong SNAP_PX px (theo thu phóng hiện tại); không có thì giữ nguyên.
 function moveKeys(a: KeyAnimation, idx: readonly number[], dt: number, duration: number, tempoMap: readonly TempoPoint[]):    // Dời các keyframe `idx` của một hoạt hình thêm `dt` giây (kẹp trong [0, duration]). Mốc theo nhạc bị dời trở t…
@@ -3062,6 +3100,11 @@ function keysInBox(rows: readonly { path: string; times: readonly number[] }[], 
 function prevKey(times: readonly number[], t: number): number | null   // Keyframe trước/sau `t` (bỏ qua keyframe đúng tại `t`); không có thì null.
 function nextKey(times: readonly number[], t: number): number | null
 const keyAt = (times: readonly number[], t: number) =>   // Chỉ số keyframe nằm tại `t` (trong SAME_TIME), hoặc -1.
+interface KeyClip   // Keyframe đã sao chép: theo đường dẫn, thời điểm tương đối so với keyframe sớm nhất (giây), kèm giá trị và đườ…
+function copyKeys(animate: Readonly<Record<string, KeyAnimation>>, refs: readonly string[], tempoMap: readonly TempoPoint[]): KeyClip | null   // Sao chép các keyframe `refs` (mốc nhạc đổi ra giây). Rỗng → null.
+function pasteKeys(animate: Readonly<Record<string, KeyAnimation | undefined>>, clip: KeyClip, t: number, duration: number, allowed: (path: string) => boolean, maxKeys = 256):    // Dán tại `t` (keyframe sớm nhất của bản sao rơi vào `t`, các keyframe khác giữ khoảng cách). Chỉ dán vào đường…
+const keyClipboard
+function pasteIntoWidget(w: Pick<WidgetSpec, 'type' | 'animate'>, clip: KeyClip, t: number, duration: number)   // Dán vào một widget: chỉ đường dẫn loại widget nhận, không đè binding, không vượt trần số hoạt hình.
 ```
 
 #### `apps/web/src/lib/timelineRows.ts`
@@ -3378,6 +3421,7 @@ type SpectrumOut
 - `packages/render-core/test/musicAnalysis.test.ts`
 - `packages/render-core/test/notation.test.ts`
 - `packages/render-core/test/paper.test.ts`
+- `packages/render-core/test/parenting.test.ts`
 - `packages/render-core/test/particles.test.ts`
 - `packages/render-core/test/placeholders.test.ts`
 - `packages/render-core/test/preset.test.ts`
@@ -3400,4 +3444,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 10 thư mục src, 1492 ký hiệu công khai -->
+<!-- 10 thư mục src, 1518 ký hiệu công khai -->

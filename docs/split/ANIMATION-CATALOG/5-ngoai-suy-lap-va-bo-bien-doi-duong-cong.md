@@ -5,7 +5,7 @@ section: "5. Ngoại suy, lặp và bộ biến đổi đường cong"
 path: "5. Ngoại suy, lặp và bộ biến đổi đường cong"
 chunk: 5-ngoai-suy-lap-va-bo-bien-doi-duong-cong.md
 source_lines: 90-105
-source_sha1: e025c800f9
+source_sha1: 5777254af0
 ids: []
 ---
 ## 5. Ngoại suy, lặp và bộ biến đổi đường cong

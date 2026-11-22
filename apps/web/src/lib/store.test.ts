@@ -328,3 +328,21 @@ test('hasCanvasFrame: chỉ hạt "Tại nốt" bị ẩn khung trên khung hìn
   assert.equal(hasCanvasFrame({ type: 'PARTICLES', properties: { originX: 'PITCH' } }), true);
   assert.equal(hasCanvasFrame({ type: 'PIANO_ROLL', properties: { originX: 'NOTE' } }), true);
 });
+
+roundTrip('setWidgetParent', (d) => C.setWidgetParent(d, d.scene.widgets[1].id, d.scene.widgets[0].id));
+test('parenting: chặn vòng lặp và cha không tồn tại; bỏ cha; xoá cha thì con thôi có cha trong cùng một bước', () => {
+  const s = mk(), [a, b, c] = s.get().scene.widgets.map((w) => w.id);
+  run(s, (d) => C.setWidgetParent(d, b, a));
+  run(s, (d) => C.setWidgetParent(d, c, b));
+  assert.equal(C.setWidgetParent(s.get(), a, c), null); // a → c → b → a: vòng lặp
+  assert.equal(C.setWidgetParent(s.get(), a, a), null);
+  assert.equal(C.setWidgetParent(s.get(), a, 'không-có'), null);
+  assert.deepEqual(C.parentCandidates(s.get().scene, a).includes(b), false);
+  assert.ok(C.parentCandidates(s.get().scene, c).includes(a));
+  run(s, (d) => C.removeWidgets(d, [b]));
+  assert.equal(s.get().scene.widgets.find((w) => w.id === c)!.parent, undefined);
+  s.undo();
+  assert.equal(s.get().scene.widgets.find((w) => w.id === c)!.parent, b);
+  run(s, (d) => C.setWidgetParent(d, c, null));
+  assert.equal(s.get().scene.widgets.find((w) => w.id === c)!.parent, undefined);
+});

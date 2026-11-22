@@ -16,6 +16,7 @@ import { DEFAULT_TEXT_STYLES, TEXT_METRICS, type PlacedRun, type RichText, type 
 import { normalizeAngle } from './snap.ts';
 import { visibilityAlpha } from './visibility.ts';
 import { resolveAnimated } from './animation.ts';
+import { deltaMatrix, mul, resolveParents, widgetMatrix, type Mat } from './parenting.ts';
 import { activeRange, hasMotion, NEUTRAL_WFX, widgetFxAt, type WidgetFx } from './widgetMotion.ts';
 import { spectrumRenderer } from './spectrum.ts';
 import { particleRenderer, particlesInCanvasSpace } from './particles.ts';
@@ -156,7 +157,7 @@ export function layoutFrame(scene: SceneDocument, derived0: Derived, ast: Unifie
   const order = scene.widgets.map((w, i) => ({ w, i })).filter(({ w }) => w.visible && renderers[w.type])
     .sort((a, b) => a.w.zIndex - b.w.zIndex || a.i - b.i); // cùng zIndex: giữ thứ tự trong tài liệu
   const measure = derived.measure ?? measureText, textStyles = scene.textStyles ?? DEFAULT_TEXT_STYLES;
-  const out: { widget: WidgetSpec; prims: Primitive[]; fx?: WidgetFx }[] = [];
+  const out: { widget: WidgetSpec; prims: Primitive[]; fx?: WidgetFx; /** Phần thay đổi của chuỗi cha (parenting), áp trước biến đổi của chính widget. */ pm?: Mat }[] = [];
   // Điểm chạm vạch phát của nốt (hạt `NOTE`): cùng hình học với Piano Roll nên khớp ở Preview và Export.
   const roll = order.map(({ w }) => w).find((w): w is WidgetSpec<PianoRollProps> => w.type === 'PIANO_ROLL');
   const emitter: LayoutCtx['emitter'] | undefined = roll && ((pitch, ts) => {
@@ -166,23 +167,46 @@ export function layoutFrame(scene: SceneDocument, derived0: Derived, ast: Unifie
     const rowH = height / (hi - lo + 1);
     return { x: x + pianoRollGeometry(p, width, ts, page).playX, y: y + (hi - pitch) * rowH + rowH / 2 };
   });
+  // Biến đổi riêng của từng widget trong khung này (hoạt hình + motion), tính một lần: dùng cho chính nó và cho các widget con (parenting).
+  type Own = { we: WidgetSpec; opacity: number; sc: number; fx?: WidgetFx };
+  const owns = new Map<string, Own>(), byId = new Map(scene.widgets.map((w) => [w.id, w]));
+  const ownOf = (w: WidgetSpec): Own => {
+    let o = owns.get(w.id); if (o) return o;
+    let we = w, opacity = 1, sc = 1; // `scale` animate được (%, quanh điểm neo): gộp vào phép co giãn của chuyển động cấp widget
+    if (w.animate) { const r = resolveAnimated(w, { ast, derived, tracks: tracksFor(w, derived.index), t }, scene.canvas); we = r.widget; opacity = r.opacity; sc = r.scale; } // hoạt hình thuộc tính (T-22)
+    let fx = hasMotion(w.motion) ? widgetFxAt(w.motion, activeRange(w.visibility, t, dur), t, ast.tempoMap) : undefined;
+    if (sc !== 1) fx = { ...(fx ?? NEUTRAL_WFX), sx: (fx?.sx ?? 1) * sc, sy: (fx?.sy ?? 1) * sc };
+    if (fx && fx.dx === 0 && fx.dy === 0 && fx.sx === 1 && fx.sy === 1 && fx.rot === 0 && fx.alpha === 1) fx = undefined; // trung tính: chuỗi lệnh vẽ giữ như không có motion
+    o = { we, opacity, sc, fx };
+    owns.set(w.id, o); return o;
+  };
+  // Phần thay đổi cộng dồn của chuỗi cha và độ đục của chuỗi cha (parenting, 0.7.0). Cha bị ẩn vẫn dẫn con.
+  const { parents } = scene.widgets.some((w) => w.parent) ? resolveParents(scene.widgets) : { parents: new Map<string, string>() };
+  const chain = new Map<string, { m: Mat; a: number }>();
+  const parentOf = (id: string): { m: Mat; a: number } | null => {
+    const pid = parents.get(id); if (pid === undefined) return null;
+    let c = chain.get(pid); if (c) return c;
+    const pw = byId.get(pid)!, po = ownOf(pw), up = parentOf(pid);
+    const L = po.we.layout, fx = po.fx;
+    const d = deltaMatrix(widgetMatrix(L, normalizeAngle(L.rotation) + (fx ? fx.rot : 0), fx), widgetMatrix(pw.layout, normalizeAngle(pw.layout.rotation))), a = po.opacity * (fx?.alpha ?? 1);
+    c = up ? { m: mul(up.m, d), a: up.a * a } : { m: d, a };
+    chain.set(pid, c); return c;
+  };
   for (const { w } of order) {
     let k = visibilityAlpha(w.visibility, t, dur);
     if (k <= 0) continue; // ngoài khoảng hiển thị: không dựng gì
     const wTracks = tracksFor(w, derived.index);
-    let we = w;
-    let sc = 1; // `scale` animate được (%, quanh điểm neo): gộp vào phép co giãn của chuyển động cấp widget
-    if (w.animate) { const r = resolveAnimated(w, { ast, derived, tracks: wTracks, t }, scene.canvas); we = r.widget; k *= r.opacity; sc = r.scale; if (k <= 0 || sc <= 0) continue; } // hoạt hình thuộc tính (T-22)
+    const own = ownOf(w), we = own.we, fx = own.fx, par = parentOf(w.id);
+    k *= own.opacity * (par ? par.a : 1);
+    if (k <= 0 || own.sc <= 0) continue;
     const prims = renderers[w.type]!.layout({ ast, derived, tracks: wTracks, measure, textStyles, fonts: derived.fonts, emitter }, we, t);
-    let fx = hasMotion(w.motion) ? widgetFxAt(w.motion, activeRange(w.visibility, t, dur), t, ast.tempoMap) : undefined;
-    if (sc !== 1) fx = { ...(fx ?? NEUTRAL_WFX), sx: (fx?.sx ?? 1) * sc, sy: (fx?.sy ?? 1) * sc };
-    if (fx && fx.dx === 0 && fx.dy === 0 && fx.sx === 1 && fx.sy === 1 && fx.rot === 0 && fx.alpha === 1) fx = undefined; // trung tính: chuỗi lệnh vẽ giữ như không có motion
     const ka = fx ? k * fx.alpha : k;
     if (fx && ka <= 0) continue; // vào/ra: đang ẩn hẳn
-    out.push({ widget: we, prims: ka >= 1 ? prims : prims.map((p) => fadePrim(p, ka)), ...(fx ? { fx } : {}) });
+    out.push({ widget: we, prims: ka >= 1 ? prims : prims.map((p) => fadePrim(p, ka)), ...(fx ? { fx } : {}), ...(par && !isIdentity(par.m) ? { pm: par.m } : {}) });
   }
   return out;
 }
+const isIdentity = (m: Mat) => Math.abs(m[0] - 1) < 1e-12 && Math.abs(m[1]) < 1e-12 && Math.abs(m[2]) < 1e-12 && Math.abs(m[3] - 1) < 1e-12 && Math.abs(m[4]) < 1e-9 && Math.abs(m[5]) < 1e-9;
 /** Nhân độ đục của primitive với hệ số làm mờ `k` (0..1); phát sáng co theo để không còn quầng khi gần ẩn. */
 const fadePrim = (p: Primitive, k: number): Primitive => (p.kind === 'rect' ? { ...p, alpha: p.alpha * k, glowBlur: p.glowBlur * k } : p.kind === 'path' && p.glow ? { ...p, alpha: p.alpha * k, glow: { ...p.glow, alpha: p.glow.alpha * k } } : { ...p, alpha: p.alpha * k });
 
@@ -198,9 +222,10 @@ export function renderFrame(scene: SceneDocument, derived: Derived, ast: Unified
   g.setTransform(scale, 0, 0, scale, 0, 0);
   g.fillStyle = scene.canvas.backgroundColor; g.fillRect(0, 0, W, H);
   if (derived.background) drawBackground(g, scene, derived.background, W, H);
-  for (const { widget, prims, fx } of layoutFrame(scene, derived, ast, t, renderers)) {
+  for (const { widget, prims, fx, pm } of layoutFrame(scene, derived, ast, t, renderers)) {
     const L = widget.layout;
     g.save();
+    if (pm && !particlesInCanvasSpace(widget)) g.transform(pm[0], pm[1], pm[2], pm[3], pm[4], pm[5]); // parenting: theo thay đổi của cha
     if (particlesInCanvasSpace(widget)) { drawPrimitives(g, prims, { scale, rotation: 0 }); g.restore(); continue; }
     const rot = normalizeAngle(L.rotation) + (fx ? fx.rot : 0);
     if (fx) { // chuyển động cấp widget: dời, xoay thêm và co giãn quanh điểm neo

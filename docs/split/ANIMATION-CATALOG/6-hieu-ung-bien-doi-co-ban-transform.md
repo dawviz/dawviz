@@ -5,8 +5,8 @@ section: "6. Hiệu ứng biến đổi cơ bản (transform)"
 path: "6. Hiệu ứng biến đổi cơ bản (transform)"
 chunk: 6-hieu-ung-bien-doi-co-ban-transform.md
 source_lines: 106-120
-source_sha1: e025c800f9
-ids: [D-47, REQ-GRAPHICS-15]
+source_sha1: 5777254af0
+ids: [D-47, D-67, REQ-GRAPHICS-15]
 ---
 ## 6. Hiệu ứng biến đổi cơ bản (transform)
 
@@ -19,6 +19,6 @@ ids: [D-47, REQ-GRAPHICS-15]
 | Skew / Shear | Xô nghiêng | v1.0 | C2D |
 | Flip | Lật ngang/dọc | v1.0 | C2D |
 | Tilt 3D / xoay X/Y/Z | Lớp hoặc cả cảnh xoay theo X/Y/Z trong phối cảnh (SRS REQ-GRAPHICS-15, D-47) | v1.1 | GL |
-| Parenting | Phần tử con đi theo phần tử cha | v1.0 | C2D |
+| Parenting | Phần tử con đi theo phần tử cha (**đã làm 2026-11-22**: `WidgetSpec.parent`, con theo phần thay đổi của cha, D-67) | v1.0 | C2D |
 | Orbit / Spiral | Quay quanh một điểm, xoắn ốc | v1.0 | C2D |
 | Follow / Lag | Đi theo đối tượng khác có trễ (bám đuôi) | v1.1 | C2D |

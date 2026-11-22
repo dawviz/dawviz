@@ -24,8 +24,9 @@ import { DEFAULT_LOOP, DEFAULT_PHASE, LOOP_EFFECT_NAMES, WIDGET_EFFECT_NAMES, ha
 import { parseEase } from './motion.ts';
 import { MAX_FADE, MAX_PHASES, MAX_PHASE_NAME, MAX_RANGES, type Phase, type TimeRange, type WidgetVisibility } from './visibility.ts';
 import { DEFAULT_KEYBOARD_STYLE, DEFAULT_NOTE_STYLE, sanitizeStyle, type KeyboardStyle, type NoteStyle, type StyleConfig } from './style.ts';
+import { MAX_PARENT_DEPTH, resolveParents } from './parenting.ts';
 
-export const SCENE_SCHEMA_VERSION = '0.6.0';
+export const SCENE_SCHEMA_VERSION = '0.7.0';
 
 export const WIDGET_TYPES = ['TRACK_INFO', 'PIANO_ROLL', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'AUDIO_SPECTRUM', 'PROGRESS_BAR', 'TEXT', 'PARTICLES', 'NOTATION', ...INSIGHT_TYPES] as const;
 export type WidgetType = typeof WIDGET_TYPES[number];
@@ -47,6 +48,9 @@ export interface WidgetSpec<P = unknown> {
   visibility?: WidgetVisibility;
   /** Chuyển động cấp widget (vào, ra, lặp theo nhịp), dùng được cho mọi loại widget. Vắng = không chuyển động. */
   motion?: WidgetMotion;
+  /** Widget cha (0.7.0, parenting): mỗi khung, widget này nhận thêm phần dời/xoay/tỉ lệ (quanh điểm neo của cha) và độ đục của cha so với tư thế tĩnh
+   *  của cha. Vắng = không có cha. Cha không tồn tại hoặc vòng lặp: bị bỏ khi đọc preset (cảnh báo) và bị bỏ qua khi vẽ. */
+  parent?: string;
   /** Hoạt hình thuộc tính (T-22): đường dẫn thuộc tính (`properties.*` không tiền tố, hoặc `layout.x`…, `opacity`) → keyframe hoặc binding vào dữ liệu nhạc. Vắng = mọi thuộc tính tĩnh. */
   animate?: Record<string, Animation>;
   trackMappingMode: TrackMappingMode;
@@ -247,7 +251,9 @@ const parseVersion = (v: unknown): [number, number, number] | null => {
  *  0.3.x → 0.4.0: mỗi `widget.layout` thêm `anchor` = tâm (REQ-GRAPHICS-03).
  *  0.4.x → 0.5.0: không đổi cấu trúc. Chữ cũ `{font,size,weight,color}` đọc thành ghi đè trên kiểu mặc định của chỗ đó nên vẽ như cũ;
  *  `textStyles` vắng = bộ dựng sẵn (REQ-GRAPHICS-18).
- *  0.5.x → 0.6.0: không đổi cấu trúc; thêm loại widget `TEXT` (ô chữ) và cú pháp chỗ giữ `{tên:định_dạng}`, `{{` (T-73). Preset cũ vẽ như cũ. */
+ *  0.5.x → 0.6.0: không đổi cấu trúc; thêm loại widget `TEXT` (ô chữ) và cú pháp chỗ giữ `{tên:định_dạng}`, `{{` (T-73). Preset cũ vẽ như cũ.
+ *  0.6.x → 0.7.0: không đổi cấu trúc; thêm `widget.parent` (parenting), keyframe theo bậc (`kind: 'discrete'`: bật/tắt, lựa chọn, chữ) và đường dẫn
+ *  animate của Piano Roll (T-22, T-32). Preset cũ vẽ như cũ. */
 export function migrateScene(raw: unknown): { raw: Obj; from: string } {
   if (!isObj(raw)) throw new SceneError('preset không phải đối tượng JSON', '$');
   if (typeof raw.schemaVersion !== 'string') throw new SceneError('thiếu schemaVersion', '$.schemaVersion');
@@ -256,7 +262,7 @@ export function migrateScene(raw: unknown): { raw: Obj; from: string } {
   const cur = parseVersion(SCENE_SCHEMA_VERSION)!;
   if (v[0] > cur[0] || (v[0] === cur[0] && v[1] > cur[1]))
     throw new SceneError(`preset phiên bản ${raw.schemaVersion} mới hơn ứng dụng (đọc được tới ${cur[0]}.${cur[1]}.x)`, '$.schemaVersion', 'ERR_SCHEMA_NEWER', { found: raw.schemaVersion, supported: SCENE_SCHEMA_VERSION });
-  if (v[0] !== 0 || v[1] < 3) throw new SceneError(`schemaVersion ${raw.schemaVersion} không đọc được (cần 0.3.x đến 0.6.x)`, '$.schemaVersion');
+  if (v[0] !== 0 || v[1] < 3) throw new SceneError(`schemaVersion ${raw.schemaVersion} không đọc được (cần 0.3.x đến 0.7.x)`, '$.schemaVersion');
   let out: Obj = structuredClone(raw);
   if (v[1] === 3) {
     if (Array.isArray(out.widgets)) for (const w of out.widgets) if (isObj(w) && isObj(w.layout) && w.layout.anchor === undefined) w.layout.anchor = { x: DEFAULT_ANCHOR.x, y: DEFAULT_ANCHOR.y };
@@ -264,6 +270,7 @@ export function migrateScene(raw: unknown): { raw: Obj; from: string } {
   }
   if (v[1] <= 4) out = { ...out, schemaVersion: '0.5.0' };
   if (v[1] <= 5) out = { ...out, schemaVersion: '0.6.0' };
+  if (v[1] <= 6) out = { ...out, schemaVersion: '0.7.0' };
   return { raw: out, from: raw.schemaVersion };
 }
 
@@ -354,6 +361,7 @@ export function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] 
     };
     if (rw.motion !== undefined) { const mo = sanitizeMotion(S, rw.motion, `${p}.motion`); if (mo) base.motion = mo; }
     if (rw.animate !== undefined) { const an = sanitizeAnimate(S, rw.animate, `${p}.animate`, rw.type as WidgetType); if (an) base.animate = an; }
+    if (rw.parent !== undefined) { if (typeof rw.parent === 'string' && rw.parent && rw.parent.length <= 64 && rw.parent !== id) base.parent = rw.parent; else w('WARN_PRESET_VALUE', `${p}.parent`, rw.parent, 'widget cha không hợp lệ; bỏ'); }
     if (rw.visibility !== undefined) { const vis = sanitizeVisibility(S, rw.visibility, `${p}.visibility`); if (vis) base.visibility = vis; }
     if (rw.name !== undefined) { // tên lớp: chuỗi 1–60 ký tự, không trùng (trùng thì bỏ tên, dùng tên theo loại)
       const nm = typeof rw.name === 'string' ? normalizeWidgetName(rw.name) : '';
@@ -407,6 +415,14 @@ export function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] 
       widgets.push({ ...base, properties: P });
     }
   });
+
+  // Parenting (0.7.0): cha không tồn tại, vòng lặp hoặc chuỗi quá sâu → bỏ `parent` kèm cảnh báo (preset vẫn đọc được, con đứng yên như không có cha).
+  const REASON = { missing: 'widget cha không tồn tại; bỏ', cycle: 'widget cha tạo vòng lặp; bỏ', depth: `chuỗi widget cha sâu hơn ${MAX_PARENT_DEPTH}; bỏ` } as const;
+  for (const pr of resolveParents(widgets).problems) {
+    const i = widgets.findIndex((x) => x.id === pr.id);
+    delete widgets[i].parent;
+    w('WARN_PRESET_VALUE', `$.widgets[${i}].parent`, pr.parent, REASON[pr.reason]);
+  }
 
   // Phông không có sẵn: một cảnh báo cho mỗi họ (đường dẫn chỗ đầu tiên dùng nó).
   const fonts = opts.fonts ?? BUNDLED_TEXT_FAMILIES, seen = new Set<string>();

@@ -5,7 +5,7 @@ section: "21. Phạm vi đã chốt"
 path: "21. Phạm vi đã chốt"
 chunk: 21-pham-vi-da-chot.md
 source_lines: 325-329
-source_sha1: e025c800f9
+source_sha1: 5777254af0
 ids: []
 ---
 ## 21. Phạm vi đã chốt

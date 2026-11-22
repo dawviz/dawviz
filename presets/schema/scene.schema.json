@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "DAW Visualizer scene preset (schemaVersion 0.6.x)",
+  "title": "DAW Visualizer scene preset (schemaVersion 0.7.x)",
   "description": "Mô tả lược đồ cho tài liệu và test. Việc kiểm lúc chạy là sanitizeScene (packages/render-core/src/scene.ts): trường lạ bị bỏ, giá trị sai về mặc định kèm WARN_PRESET_*.",
   "type": "object",
   "required": ["schemaVersion", "canvas", "widgets"],
   "additionalProperties": true,
   "properties": {
-    "schemaVersion": { "type": "string", "pattern": "^0\\.[3456]\\.\\d+$" },
+    "schemaVersion": { "type": "string", "pattern": "^0\\.[34567]\\.\\d+$" },
     "presetName": { "type": "string", "maxLength": 200 },
     "author": { "type": "string", "maxLength": 200 },
     "canvas": {
@@ -59,9 +59,11 @@
           "name": { "type": "string", "minLength": 1, "maxLength": 60, "description": "Tên lớp do người dùng đặt; không trùng nhau. Vắng thì dùng tên theo loại." },
           "zIndex": { "type": "integer", "minimum": -10000, "maximum": 10000 },
           "visible": { "type": "boolean" },
+          "parent": { "type": "string", "minLength": 1, "maxLength": 64, "description": "Id widget cha (0.7.0): con theo phần dời, xoay, tỉ lệ và độ đục của cha so với tư thế tĩnh của cha. Cha không tồn tại hoặc tạo vòng lặp thì bị bỏ kèm cảnh báo." },
           "animate": { "type": "object", "description": "Hoạt hình thuộc tính (T-22): khoá là đường dẫn thuộc tính (layout.x…, opacity, hoặc thuộc tính số/màu của widget); giá trị là { keys: [...] } hoặc { bind, from, to }.",
             "maxProperties": 24, "additionalProperties": { "type": "object", "properties": {
-              "keys": { "type": "array", "maxItems": 256, "items": { "type": "object", "required": ["at", "value"], "properties": { "at": { "type": "object" }, "value": { "type": ["number", "string"] }, "ease": {}, "interp": { "enum": ["linear", "hold", "smooth"] } } } },
+              "keys": { "type": "array", "maxItems": 256, "items": { "type": "object", "required": ["at", "value"], "properties": { "at": { "type": "object" }, "value": { "type": ["number", "string", "boolean"] }, "ease": {}, "interp": { "enum": ["linear", "hold", "smooth"] } } } },
+              "kind": { "enum": ["number", "angle", "color", "discrete"], "description": "discrete = bật/tắt, lựa chọn, chữ: đổi theo bậc tại keyframe (0.7.0)." },
               "loop": { "enum": ["NONE", "CYCLE", "PINGPONG", "OFFSET"] },
               "bind": { "enum": ["beat.phase", "bar.phase", "progress", "notes.count", "notes.velocity", "note.hit", "track.volume", "track.pan", "audio.level"] },
               "from": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 }, "to": { "type": "array", "minItems": 2, "maxItems": 2 }, "ease": {} } } },

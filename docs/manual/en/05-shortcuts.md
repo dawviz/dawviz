@@ -61,6 +61,7 @@ While you're typing in a field, these keys go to the field.
 | Shift-click a keyframe | Add it to the selection |
 | Drag on an empty area | Select with a box (hold Shift to add) |
 | Ctrl+A | Select every keyframe of the widget |
+| Ctrl+C / Ctrl+V | Copy the selected keyframes; paste at the playhead (spacing kept, works on another widget too) |
 | Delete | Delete the selected keyframes |
 | Esc | Deselect keyframes |
 | Alt+Left / Alt+Right | Move the selected keyframes one frame (add Shift: one second) |

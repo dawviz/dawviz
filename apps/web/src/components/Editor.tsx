@@ -21,7 +21,8 @@ import { InspectorSection, ResetButton, TickField } from './Inspector.tsx';
 import { NumberField } from './NumberField.tsx';
 import { AlignBottom, AlignHCenter, AlignLeft, AlignRight, AlignTop, AlignVCenter, DistributeH, DistributeV, Duplicate, Eye, EyeOff, Grip, LayerDown, LayerUp, Lock, PanelLeft, PanelRight, Plus, ToBack, ToFront, Trash, Unlock } from './Icons.tsx';
 import { isTextEntry } from '../lib/a11y.ts';
-import { layerOrder, type AnimEdit } from '../lib/commands.ts';
+import { layerOrder, parentCandidates, type AnimEdit } from '../lib/commands.ts';
+import { Select } from './Select.tsx';
 import { checkLayerName } from '../lib/layerName.ts';
 import { MAX_WIDGET_NAME } from '@dawviz/render-core';
 import { StatusIcon } from './StatusIcon.tsx';
@@ -61,6 +62,8 @@ export interface EditorActions {
   /** Đổi tên lớp; null = bỏ tên riêng (dùng tên theo loại). Tên đã được kiểm không trùng. */
   rename(id: string, name: string | null): void;
   visible(id: string, v: boolean): void;
+  /** Đặt/bỏ widget cha (parenting). */
+  parent(id: string, parent: string | null): void;
   /** Kéo qua các mắt của Lớp: đặt giá trị cho từng lớp đi qua (gộp trong cử chỉ kéo). */
   paintVisible(id: string, v: boolean): void;
   /** Ô mắt ở hàng đầu Lớp: còn lớp ẩn thì hiện hết, không thì ẩn hết. */
@@ -674,6 +677,14 @@ function Properties({ background, duration, scene, selected, locked, name, advan
           <button type="button" className={`${btn} w-9 justify-center px-0`} aria-label={i18n.t('web.editor.duplicate')} title={`${i18n.t('web.editor.duplicate')} (Ctrl+D)`} onClick={onDuplicate} data-testid="duplicate"><Duplicate className="h-3.5 w-3.5" /></button>
           <button type="button" className={`${btn} w-9 justify-center px-0`} disabled={lk} aria-label={i18n.t('web.editor.remove')} title={`${i18n.t('web.editor.remove')} (Delete)`} onClick={onRemove} data-testid="remove"><Trash className="h-3.5 w-3.5" /></button>
         </div>
+        <label className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] items-center gap-2 text-xs text-muted">
+          <span className="min-w-0 break-words leading-tight">{i18n.t('web.editor.parent')}</span>
+          <Select wrapClassName="w-full" aria-label={i18n.t('web.editor.parent')} title={i18n.t('web.editor.parentHint')} value={w.parent ?? ''} disabled={lk}
+            onChange={(e) => actions.parent(w.id, e.target.value || null)} data-testid="widget-parent">
+            <option value="">{i18n.t('web.editor.parentNone')}</option>
+            {parentCandidates(scene, w.id).map((id) => <option key={id} value={id}>{name(id)}</option>)}
+          </Select>
+        </label>
         <TickField strong label={i18n.t('web.editor.visible')} checked={w.visible} onChange={(v) => actions.visible(w.id, v)} reference />
         <TickField strong label={i18n.t('web.editor.locked')} checked={lk} onChange={() => onLock(w.id)} reference={false} />
       </InspectorSection>
