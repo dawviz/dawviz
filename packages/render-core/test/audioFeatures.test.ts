@@ -59,3 +59,31 @@ test('bảng rỗng (không mẫu) và frameAt', () => {
   const f = analyzeMono(sine(440, 1), SR);
   assert.equal(frameAt(f, -0.1), -1); assert.equal(frameAt(f, 0), 0); assert.equal(frameAt(f, 0.5), 50); assert.equal(frameAt(f, 99), f.frames - 1);
 });
+
+test('FFT thực (N/2 phức) + dồn bộ đệm thưa: bảng giống hệt cách tính tham chiếu (FFT phức cỡ N, hypot), mọi cách chia khối', () => {
+  const sr = 8000, n = sr * 3, x = new Float32Array(n);
+  let s = 7; const rnd = () => ((s = (s * 1103515245 + 12345) >>> 0) / 4294967296 - 0.5);
+  for (let i = 0; i < n; i++) x[i] = Math.sin(i * 0.21) * 0.4 + Math.sin(i * 0.013) * 0.2 + rnd() * 0.3;
+  const f = analyzeMono(x, sr);
+  // tham chiếu: khung i dùng mẫu [i·hop − N/2, i·hop + N/2), cửa sổ Hann, FFT phức cỡ N, |X| = hypot
+  const N = 2048, H = N / 2, binHz = sr / N, edges = Array.from({ length: f.bands + 1 }, (_, b) => f.minHz * Math.pow(f.maxHz / f.minHz, b / f.bands));
+  for (const i of [0, 1, 7, Math.floor(f.frames / 2), f.frames - 1]) {
+    const re = new Float64Array(N), im = new Float64Array(N);
+    for (let j = 0; j < N; j++) { const a = i * f.hopSamples - H + j; re[j] = (a >= 0 && a < n ? x[a] : 0) * (0.5 - 0.5 * Math.cos(2 * Math.PI * j / N)); }
+    fft(re, im);
+    const mag = Array.from({ length: H + 1 }, (_, k) => 4 * Math.hypot(re[k], im[k]) / N);
+    for (let b = 0; b < f.bands; b++) {
+      const lo = edges[b] / binHz, hi = edges[b + 1] / binHz;
+      let m = 0;
+      if (hi - lo < 1) { const c = (lo + hi) / 2, i0 = Math.min(H - 1, Math.floor(c)), fr = c - i0; m = mag[i0] * (1 - fr) + mag[i0 + 1] * fr; }
+      else for (let k = Math.max(0, Math.ceil(lo)); k <= Math.min(H, Math.floor(hi)); k++) if (mag[k] > m) m = mag[k];
+      assert.ok(Math.abs(f.spectrum[i * f.bands + b] - dbToU8(m > 1e-9 ? 20 * Math.log10(m) : -200)) <= 1, `khung ${i} dải ${b}`);
+    }
+  }
+  for (const chunk of [1, 333, 4096, 50_000]) {
+    const acc = createSpectralAccumulator(sr);
+    for (let i = 0; i < n; i += chunk) acc.push(x.subarray(i, Math.min(n, i + chunk)));
+    const g = acc.finish();
+    assert.deepEqual([g.frames, Buffer.compare(g.spectrum, f.spectrum), Buffer.compare(g.peak, f.peak), Buffer.compare(g.rms, f.rms)], [f.frames, 0, 0, 0], `khối ${chunk}`);
+  }
+});

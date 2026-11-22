@@ -236,6 +236,10 @@
         {
           "src": "docs/spikes/SPIKE-4-NOTATION.md",
           "title": "Spike 4: bản nhạc bằng VexFlow"
+        },
+        {
+          "src": "docs/spikes/SPIKE-5-PERF-WASM.md",
+          "title": "Spike 5: hiệu năng và Rust/WASM"
         }
       ]
     },

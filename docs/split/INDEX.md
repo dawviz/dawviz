@@ -16,7 +16,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1202 ký tự
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4347 ký tự
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](BRD/6-gia-dinh-assumptions.md) · 554 ký tự
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 30502 ký tự
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 31430 ký tự
 - [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](BRD/8-cac-van-de-con-mo-open-issues.md) · 7755 ký tự
 
 ## SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
@@ -189,7 +189,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [4. Đường cong chuyển động (easing) (AD-09)](CUSTOMIZATION/4-duong-cong-chuyen-dong-easing-ad-09.md) · 1239 ký tự
 - [5. Hạt (particles) không trạng thái (AD-10)](CUSTOMIZATION/5-hat-particles-khong-trang-thai-ad-10.md) · 1397 ký tự
 - [6. Tài nguyên (assets) của phiên và của cộng đồng (AD-12)](CUSTOMIZATION/6-tai-nguyen-assets-cua-phien-va-cua-cong-dong-a.md) · 2250 ký tự
-- [7. Hiệu năng và giới hạn](CUSTOMIZATION/7-hieu-nang-va-gioi-han.md) · 579 ký tự
+- [7. Hiệu năng và giới hạn](CUSTOMIZATION/7-hieu-nang-va-gioi-han.md) · 1031 ký tự
 - [8. Quyết định đề xuất](CUSTOMIZATION/8-quyet-dinh-de-xuat.md) · 1060 ký tự
 - [9. Yêu cầu tương ứng (đã đưa vào SRS §3.8)](CUSTOMIZATION/9-yeu-cau-tuong-ung-da-dua-vao-srs-3-8.md) · 894 ký tự
 - [10. Khả thi](CUSTOMIZATION/10-kha-thi.md) · 1646 ký tự
@@ -394,4 +394,15 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [6. Kết quả](SPIKE-4-NOTATION/6-ket-qua.md) · 4969 ký tự
 - [7. Quyết định](SPIKE-4-NOTATION/7-quyet-dinh.md) · 224 ký tự
 - [8. Còn lại](SPIKE-4-NOTATION/8-con-lai.md) · 1226 ký tự
+
+## SPIKE-5-PERF-WASM.md — Spike 5: đo hiệu năng và xét đề xuất chuyển phần tính toán sang Rust/WASM
+
+- [Spike 5: đo hiệu năng và xét đề xuất chuyển phần tính toán sang Rust/WASM (mở đầu)](SPIKE-5-PERF-WASM/spike-5-do-hieu-nang-va-xet-de-xuat-chuyen-phan.md) · 385 ký tự
+- [1. Kết luận](SPIKE-5-PERF-WASM/1-ket-luan.md) · 1139 ký tự
+- [2. Môi trường đo (thật, không giả lập)](SPIKE-5-PERF-WASM/2-moi-truong-do-that-khong-gia-lap.md) · 934 ký tự
+- [3. Số đo khung hình (Chrome, GPU thật)](SPIKE-5-PERF-WASM/3-so-do-khung-hinh-chrome-gpu-that.md) · 1812 ký tự
+- [4. GC (CDP tracing, Chrome)](SPIKE-5-PERF-WASM/4-gc-cdp-tracing-chrome.md) · 561 ký tự
+- [5. Phân tích âm thanh và sóng âm](SPIKE-5-PERF-WASM/5-phan-tich-am-thanh-va-song-am.md) · 1011 ký tự
+- [6. Từng mục của đề xuất](SPIKE-5-PERF-WASM/6-tung-muc-cua-de-xuat.md) · 1164 ký tự
+- [7. Bước tiếp theo đề xuất (chưa làm)](SPIKE-5-PERF-WASM/7-buoc-tiep-theo-de-xuat-chua-lam.md) · 547 ký tự
 

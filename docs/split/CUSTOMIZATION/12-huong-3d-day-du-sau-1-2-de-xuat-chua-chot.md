@@ -4,8 +4,8 @@ doc_title: "Tùy biến tối đa: storyboard, chuyển cảnh nốt, đường 
 section: "12. Hướng 3D đầy đủ (sau 1.2) **[ĐỀ XUẤT, chưa chốt]**"
 path: "12. Hướng 3D đầy đủ (sau 1.2) **[ĐỀ XUẤT, chưa chốt]**"
 chunk: 12-huong-3d-day-du-sau-1-2-de-xuat-chua-chot.md
-source_lines: 240-268
-source_sha1: 7e5b12f60b
+source_lines: 242-270
+source_sha1: 2e38933ae5
 ids: [AD-07, AD-12, D-43, D-47, REQ-GRAPHICS-05, REQ-GRAPHICS-15, REQ-PARSER-00]
 ---
 ## 12. Hướng 3D đầy đủ (sau 1.2) **[ĐỀ XUẤT, chưa chốt]**

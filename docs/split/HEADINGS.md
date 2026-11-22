@@ -781,3 +781,21 @@
 - [8. Còn lại](SPIKE-4-NOTATION/8-con-lai.md)
   - [8. Còn lại](SPIKE-4-NOTATION/8-con-lai.md#8-còn-lại)
 
+## SPIKE-5-PERF-WASM.md
+
+- [Spike 5: đo hiệu năng và xét đề xuất chuyển phần tính toán sang Rust/WASM (mở đầu)](SPIKE-5-PERF-WASM/spike-5-do-hieu-nang-va-xet-de-xuat-chuyen-phan.md)
+- [1. Kết luận](SPIKE-5-PERF-WASM/1-ket-luan.md)
+  - [1. Kết luận](SPIKE-5-PERF-WASM/1-ket-luan.md#1-kết-luận)
+- [2. Môi trường đo (thật, không giả lập)](SPIKE-5-PERF-WASM/2-moi-truong-do-that-khong-gia-lap.md)
+  - [2. Môi trường đo (thật, không giả lập)](SPIKE-5-PERF-WASM/2-moi-truong-do-that-khong-gia-lap.md#2-môi-trường-đo-thật-không-giả-lập)
+- [3. Số đo khung hình (Chrome, GPU thật)](SPIKE-5-PERF-WASM/3-so-do-khung-hinh-chrome-gpu-that.md)
+  - [3. Số đo khung hình (Chrome, GPU thật)](SPIKE-5-PERF-WASM/3-so-do-khung-hinh-chrome-gpu-that.md#3-số-đo-khung-hình-chrome-gpu-thật)
+- [4. GC (CDP tracing, Chrome)](SPIKE-5-PERF-WASM/4-gc-cdp-tracing-chrome.md)
+  - [4. GC (CDP tracing, Chrome)](SPIKE-5-PERF-WASM/4-gc-cdp-tracing-chrome.md#4-gc-cdp-tracing-chrome)
+- [5. Phân tích âm thanh và sóng âm](SPIKE-5-PERF-WASM/5-phan-tich-am-thanh-va-song-am.md)
+  - [5. Phân tích âm thanh và sóng âm](SPIKE-5-PERF-WASM/5-phan-tich-am-thanh-va-song-am.md#5-phân-tích-âm-thanh-và-sóng-âm)
+- [6. Từng mục của đề xuất](SPIKE-5-PERF-WASM/6-tung-muc-cua-de-xuat.md)
+  - [6. Từng mục của đề xuất](SPIKE-5-PERF-WASM/6-tung-muc-cua-de-xuat.md#6-từng-mục-của-đề-xuất)
+- [7. Bước tiếp theo đề xuất (chưa làm)](SPIKE-5-PERF-WASM/7-buoc-tiep-theo-de-xuat-chua-lam.md)
+  - [7. Bước tiếp theo đề xuất (chưa làm)](SPIKE-5-PERF-WASM/7-buoc-tiep-theo-de-xuat-chua-lam.md#7-bước-tiếp-theo-đề-xuất-chưa-làm)
+
