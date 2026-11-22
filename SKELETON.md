@@ -2218,7 +2218,7 @@ const CSP
 
 #### `apps/web/src/lib/dexieBackend.ts`
 
-Lớp mỏng bọc Dexie cho Backend lưu phiên (T-10). Chỉ nạp động qua lazyDexieBackend (workspaceStore.ts) để tách khỏi gói đầu (T-100).
+Lớp mỏng bọc Dexie cho Backend lưu phiên (T-10). Chỉ nạp động qua lazyDexieBackend (workspaceStore.ts) để tách khỏi gói đầu (T-102).
 
 ```text
 function dexieBackend(dbName?: string): Backend
