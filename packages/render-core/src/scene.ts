@@ -25,6 +25,8 @@ import { parseEase } from './motion.ts';
 import { MAX_FADE, MAX_PHASES, MAX_PHASE_NAME, MAX_RANGES, type Phase, type TimeRange, type WidgetVisibility } from './visibility.ts';
 import { DEFAULT_KEYBOARD_STYLE, DEFAULT_NOTE_STYLE, sanitizeStyle, type KeyboardStyle, type NoteStyle, type StyleConfig } from './style.ts';
 import { MAX_PARENT_DEPTH, resolveParents } from './parenting.ts';
+import { ANIM_EFFECTS, ANIM_ORDERS, ANIM_UNITS, DEFAULT_TEXT_ANIMATOR, type TextAnimator } from './textAnimator.ts';
+import { EASING_NAMES } from './motion.ts';
 
 export const SCENE_SCHEMA_VERSION = '0.7.0';
 
@@ -193,6 +195,21 @@ export function duplicateWidget(scene: SceneDocument, w: WidgetSpec, offset = 16
 /** Bản sao sâu của bộ kiểu chữ (sửa kiểu trong một scene không đụng bộ mặc định đã đóng băng). */
 export const cloneTextStyles = (set: TextStyleSet): Record<string, NamedTextStyle> => Object.fromEntries(Object.entries(set).map(([k, v]) => [k, cloneStyle(v)]));
 const clonePiano = (p: PianoRollProps): PianoRollProps => ({ ...p, noteStyle: { base: { ...p.noteStyle.base }, tracks: { ...p.noteStyle.tracks } }, keyboard: { ...p.keyboard } });
+
+/** Text animator của Ô chữ (T-35): mọi trường về mặc định/kẹp khi sai. */
+function sanitizeTextAnimator(S: Sanitizer, v: unknown, p: string): TextAnimator {
+  const A = isObj(v) ? v : (S.warn(p, v, 'không phải đối tượng; dùng mặc định'), {}), d = DEFAULT_TEXT_ANIMATOR;
+  return {
+    enabled: S.bool(A.enabled, d.enabled, `${p}.enabled`), effect: S.oneOf(A.effect, ANIM_EFFECTS, d.effect, `${p}.effect`),
+    unit: S.oneOf(A.unit, ANIM_UNITS, d.unit, `${p}.unit`), order: S.oneOf(A.order, ANIM_ORDERS, d.order, `${p}.order`),
+    direction: S.oneOf(A.direction, ['in', 'out'] as const, d.direction, `${p}.direction`),
+    start: S.num(A.start, d.start, 0, 86400, `${p}.start`), duration: S.num(A.duration, d.duration, 0, 30, `${p}.duration`), stagger: S.num(A.stagger, d.stagger, 0, 10, `${p}.stagger`),
+    ease: S.oneOf(A.ease, EASING_NAMES as readonly string[], d.ease, `${p}.ease`),
+    fromOpacity: S.num(A.fromOpacity, d.fromOpacity, 0, 1, `${p}.fromOpacity`), fromX: S.num(A.fromX, d.fromX, -2000, 2000, `${p}.fromX`), fromY: S.num(A.fromY, d.fromY, -2000, 2000, `${p}.fromY`),
+    fromScale: S.num(A.fromScale, d.fromScale, 0, 10, `${p}.fromScale`), fromColor: S.str(A.fromColor, d.fromColor, `${p}.fromColor`, (s) => s === '' || HEX.test(s)),
+    countUp: S.bool(A.countUp, d.countUp, `${p}.countUp`), seed: Math.round(S.num(A.seed, d.seed, 0, 1e9, `${p}.seed`)),
+  };
+}
 
 // ───────────────────────────── kiểm và sửa lược đồ (REQ-STORAGE-02) ─────────────────────────────
 // Trường lạ bị bỏ; giá trị sai về mặc định kèm cảnh báo; không đọc được thì ném ERR_PRESET_INVALID.
@@ -669,7 +686,8 @@ const HUD_SANITIZERS = {
   TEXT(P: Obj, p: string, S: Sanitizer): TextBoxProps {
     const d = DEFAULT_TEXT_BOX;
     return { align: S.oneOf(P.align, ALIGNS, d.align, `${p}.align`), text: tpl(S, P.text, d.text, `${p}.text`, TEMPLATE_KEYS.TEXT, 2000),
-      style: textRef(S, P.style, d.style, `${p}.style`), valueStyle: textRef(S, P.valueStyle, d.valueStyle, `${p}.valueStyle`) };
+      style: textRef(S, P.style, d.style, `${p}.style`), valueStyle: textRef(S, P.valueStyle, d.valueStyle, `${p}.valueStyle`),
+      animator: P.animator === undefined ? { ...DEFAULT_TEXT_ANIMATOR } : sanitizeTextAnimator(S, P.animator, `${p}.animator`) };
   },
   AUDIO_SPECTRUM(P: Obj, p: string, S: Sanitizer): SpectrumProps {
     const d = DEFAULT_SPECTRUM, col = (v: unknown, dv: string, path: string) => S.str(v, dv, path, (s) => HEX.test(s));

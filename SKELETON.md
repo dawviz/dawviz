@@ -330,6 +330,7 @@ dawviz/
 │  │  │  ├─ spectrum.ts
 │  │  │  ├─ style.ts
 │  │  │  ├─ text.ts
+│  │  │  ├─ textAnimator.ts
 │  │  │  ├─ thumbnail.ts
 │  │  │  ├─ types.ts
 │  │  │  ├─ typography.ts
@@ -365,6 +366,7 @@ dawviz/
 │  │  │  ├─ scene.test.ts
 │  │  │  ├─ snap.test.ts
 │  │  │  ├─ spectrum.test.ts
+│  │  │  ├─ textAnimator.test.ts
 │  │  │  ├─ typography.test.ts
 │  │  │  ├─ visibility.test.ts
 │  │  │  └─ widgetmotion.test.ts
@@ -986,6 +988,7 @@ re-export * from './noteTransition.ts'
 re-export * from './widgetMotion.ts'
 re-export * from './animation.ts'
 re-export * from './parenting.ts'
+re-export * from './textAnimator.ts'
 re-export * from './naming.ts'
 re-export * from './insight.ts'
 re-export * from './notation/types.ts'
@@ -1472,6 +1475,29 @@ const pad = (n: number, width: number) =>   // Số nguyên không âm, đệm 0
 function groupDigits(parts: readonly number[], widths: readonly number[]): string   // Chia nhóm có số 0 đứng đầu: groupDigits([1, 35, 83], [3, 2, 3]) = "001 35 083".
 const fixed = (v: number, d: number) =>   // Số thập phân với `d` chữ số, dấu chấm (chữ trong video không theo ngôn ngữ ứng dụng).
 function clockMs(sec: number): string   // m:ss (phút không đệm 0).
+```
+
+#### `packages/render-core/src/textAnimator.ts`
+
+Text animator cơ bản (T-35, ANIMATION-CATALOG §13, v1.0): áp hiệu ứng cho từng ký tự / từ / dòng của Ô chữ, lệch thời gian theo thứ tự
+
+```text
+type AnimUnit
+type AnimOrder
+type AnimEffect
+interface TextAnimator
+const DEFAULT_TEXT_ANIMATOR
+const ANIM_UNITS
+const ANIM_ORDERS
+const ANIM_EFFECTS
+const MAX_ANIM_ELEMENTS
+function effectFrom(a: TextAnimator):    // Trạng thái "từ" của hiệu ứng (bộ dựng sẵn) và thời lượng thật (gõ chữ: bật ngay).
+interface Element   // Phần tử của một dòng: đoạn chữ (giữ kiểu của từng đoạn) và đoạn đứng trước nó (để đo vị trí). `visible` = khô…
+function splitLine(spans: readonly TextSpan[], unit: AnimUnit): Element[]   // Cắt một dòng (đã thay chỗ giữ) thành phần tử theo đơn vị. Ký tự theo cụm NFC (dấu tiếng Việt không rời chữ); …
+function ranks(n: number, order: AnimOrder, seed: number): number[]   // Thứ tự xuất hiện của n phần tử (rank[i] = lượt của phần tử i). Ngẫu nhiên: hoán vị tất định theo `seed`.
+function elementProgress(tt: number, rank: number, duration: number, stagger: number, ease: string): number   // Tiến độ (0..1, đã easing) của phần tử có lượt `rank` tại thời điểm tương đối `tt` (giây từ lúc bắt đầu hiệu ứ…
+function countUpText(s: string, k: number): string   // Đếm số: mọi số trong chuỗi (có thể có phần thập phân) nhân với k, giữ số chữ số thập phân.
+function transformText(prims: Primitive[], cx: number, cy: number, dx: number, dy: number, s: number, alpha: number, color: string, mix: number): void   // Biến đổi các primitive chữ của một phần tử: tỉ lệ quanh (cx, cy), dời (dx, dy), nhân độ đục, pha màu về `colo…
 ```
 
 #### `packages/render-core/src/thumbnail.ts`
@@ -3332,6 +3358,7 @@ Bảng khai báo mục Thiết lập của từng loại widget (T-73 bổ sung,
 ```text
 type FieldKind
 interface FieldDef
+function withNestedDefaults(type: WidgetType, P: Obj): Obj
 const WIDGET_FIELDS   // Thiết lập của từng loại, theo thứ tự hiển thị. Loại không có thiết lập: không có mặt.
 const SETTINGS_EXEMPT   // Thuộc tính KHÔNG nằm ở mục Thiết lập (kiểu chữ, căn lề ở mục Chữ; vài thuộc tính chưa có giao diện). Test dùn…
 const hasWidgetFields = (type: string) =>
@@ -3535,6 +3562,7 @@ type SpectrumOut
 - `packages/render-core/test/scene.test.ts`
 - `packages/render-core/test/snap.test.ts`
 - `packages/render-core/test/spectrum.test.ts`
+- `packages/render-core/test/textAnimator.test.ts`
 - `packages/render-core/test/typography.test.ts`
 - `packages/render-core/test/visibility.test.ts`
 - `packages/render-core/test/widgetmotion.test.ts`
@@ -3548,4 +3576,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 11 thư mục src, 1570 ký hiệu công khai -->
+<!-- 11 thư mục src, 1588 ký hiệu công khai -->

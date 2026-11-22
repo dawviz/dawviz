@@ -5,7 +5,7 @@ section: "16. Nhân bản và vệt"
 path: "16. Nhân bản và vệt"
 chunk: 16-nhan-ban-va-vet.md
 source_lines: 250-258
-source_sha1: 5777254af0
+source_sha1: cb8de95b61
 ids: []
 ---
 ## 16. Nhân bản và vệt

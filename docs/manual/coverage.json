@@ -123,11 +123,12 @@
         "locales/en.json#web.section.",
         "apps/web/src/components/PanelChrome.tsx",
         "apps/web/src/components/LiveLayout.tsx",
-        "packages/render-core/src/spectrum.ts"
+        "packages/render-core/src/spectrum.ts",
+        "packages/render-core/src/textAnimator.ts"
       ],
-      "uiHash": "857a05e6e89e",
-      "viHash": "64ced832eb57",
-      "enHash": "46c51a87f613",
+      "uiHash": "179c2199795b",
+      "viHash": "9d0a7087b76d",
+      "enHash": "02fdf6d7cc74",
       "coverHashes": {
         "apps/web/src/components/Editor.tsx": "36c6212a5bd1",
         "apps/web/src/components/EditorOverlay.tsx": "c813801e06af",
@@ -139,8 +140,8 @@
         "locales/en.json#web.playhead.": "a9aab88bc783",
         "apps/web/src/components/TextPanel.tsx": "1d72815804e3",
         "locales/en.json#web.text.": "1dcb3963c82b",
-        "apps/web/src/components/WidgetSettings.tsx": "e64c1404be9b",
-        "locales/en.json#web.ws.": "fd105ad44796",
+        "apps/web/src/components/WidgetSettings.tsx": "d5c7a5326f98",
+        "locales/en.json#web.ws.": "5110f4f57c0b",
         "apps/web/src/components/TimeSections.tsx": "513bfa5bff02",
         "apps/web/src/components/TimeField.tsx": "6495c126538a",
         "locales/en.json#web.vis.": "8bbfd1495bf1",
@@ -156,7 +157,8 @@
         "locales/en.json#web.section.": "8001c069c069",
         "apps/web/src/components/PanelChrome.tsx": "c223c6acc992",
         "apps/web/src/components/LiveLayout.tsx": "4790f6653db9",
-        "packages/render-core/src/spectrum.ts": "9618474b5e4e"
+        "packages/render-core/src/spectrum.ts": "9618474b5e4e",
+        "packages/render-core/src/textAnimator.ts": "40cb96cebb1f"
       }
     },
     "04-cai-dat": {
@@ -258,12 +260,12 @@
         "locales/en.json#web.widget.",
         "locales/en.json#web.tonic."
       ],
-      "uiHash": "8741f09fb734",
+      "uiHash": "73b54e3c0f28",
       "viHash": "b2804221e8d3",
       "enHash": "47521b48927d",
       "coverHashes": {
-        "apps/web/src/components/WidgetSettings.tsx": "e64c1404be9b",
-        "locales/en.json#web.ws.": "fd105ad44796",
+        "apps/web/src/components/WidgetSettings.tsx": "d5c7a5326f98",
+        "locales/en.json#web.ws.": "5110f4f57c0b",
         "locales/en.json#web.widget.": "d9a64261e49b",
         "locales/en.json#web.tonic.": "2b1a6b41c82b"
       }

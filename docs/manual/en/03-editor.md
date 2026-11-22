@@ -191,6 +191,7 @@ Text widgets have a **Settings** section for what is special about them:
 - **Chord:** read chords from held notes or when struck, always show the note list, and what to show for an unknown chord ("no chord" text or the notes).
 - **Progress bar:** horizontal or vertical, thickness, colour, show the time. Advanced: bar background, corner radius, time text.
 - **Text box:** type text over several lines and mix in values such as `{bpm}` or `{title}`; choose which tracks the values read. See [Putting live numbers into text](08-placeholders.md).
+  - **Animate the text:** tick it to make the text appear (or disappear) piece by piece by **Letter**, **Word** or **Line**. **Effect**: **Typewriter** (one letter at a time), **Fade in**, **Rise**, **Pop**, or **Custom** (set the starting opacity, x/y offset, scale and colour yourself). **Order**: first to last, last to first, from the middle, or random (the same on every play). **Start** is in seconds from when the widget starts showing (start of its visibility range, or the song start); **Duration** is how long each piece takes; **Delay between** is the gap between two pieces. **Count numbers up** runs every number in the text from 0 to its real value (e.g. `{bpm}`).
 
 Every setting in this section has a ↺ button when it differs from its original value (tick boxes, button groups, colours, text boxes and **Tracks** included), and Alt+click (Option+click on Mac) on the label resets it quickly.
 

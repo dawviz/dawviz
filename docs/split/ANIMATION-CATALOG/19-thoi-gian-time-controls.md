@@ -5,7 +5,7 @@ section: "19. Thời gian (time controls)"
 path: "19. Thời gian (time controls)"
 chunk: 19-thoi-gian-time-controls.md
 source_lines: 301-314
-source_sha1: 5777254af0
+source_sha1: cb8de95b61
 ids: []
 ---
 ## 19. Thời gian (time controls)

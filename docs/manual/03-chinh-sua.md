@@ -191,6 +191,7 @@ Widget chữ có mục **Thiết lập** cho những gì riêng của nó:
 - **Hợp âm:** đọc hợp âm theo nốt đang giữ hay khi dập, luôn hiện danh sách nốt, khi không nhận ra hợp âm thì hiện chữ "không hợp âm" hay hiện các nốt.
 - **Thanh tiến độ:** ngang hoặc dọc, độ dày, màu, hiện thời gian. Nâng cao: nền thanh, bo góc, chữ thời gian.
 - **Ô chữ:** gõ nội dung nhiều dòng, xen số liệu như `{bpm}` hay `{title}`; chọn track mà số liệu đọc. Xem [Chèn số liệu vào chữ](08-cho-giu.md).
+  - **Hiệu ứng chữ:** bật ô này để chữ xuất hiện (hoặc biến mất) dần theo **Ký tự**, **Từ** hay **Dòng**. **Hiệu ứng**: **Gõ chữ** (từng ký tự bật ra), **Hiện dần**, **Trồi lên**, **Bật ra**, hoặc **Tuỳ chỉnh** (tự đặt độ đục, lệch x/y, tỉ lệ và màu ban đầu). **Thứ tự**: đầu tới cuối, cuối về đầu, từ giữa ra hoặc ngẫu nhiên (lần nào phát cũng giống nhau). **Bắt đầu** tính bằng giây từ lúc widget bắt đầu hiện (đầu khoảng hiển thị, hoặc đầu bài); **Thời lượng** là thời gian mỗi phần đi hết hiệu ứng; **Lệch giữa các phần** là khoảng cách giữa hai phần liên tiếp. **Số đếm lên** cho mọi số trong chữ chạy từ 0 tới giá trị thật (vd. `{bpm}`).
 
 Mọi thiết lập trong mục này đều có nút ↺ khi khác giá trị gốc (kể cả ô tick, nhóm nút, màu, ô chữ và mục **Track**), và Alt+nhấp (Option+nhấp trên Mac) vào nhãn để khôi phục nhanh.
 
