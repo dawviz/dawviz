@@ -129,6 +129,7 @@
   "web.play": "Phát",
   "web.pause": "Tạm dừng",
   "web.seek": "Tua",
+  "web.seekTo": "Thời gian hiện tại: gõ một thời điểm (vd. 1:30 hoặc 90.5) rồi Enter để tua tới đó",
   "web.track.notes": "{n, plural, other {# nốt}}",
   "web.brightness.source": "Độ sáng nền",
   "web.brightness.volume": "Âm lượng",

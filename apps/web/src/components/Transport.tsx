@@ -1,7 +1,8 @@
 // Thanh phát (UI-DIRECTION 5.3): lùi / phát / tới bằng biểu tượng, thanh tua, thời gian m:ss.mmm tô màu nhấn khi đang phát.
 // Theo dõi kho đồng hồ trực tiếp nên chỉ thanh này vẽ lại mỗi khung hình. Sóng âm (T-08) là SVG nằm trên thanh tua: vạch muted cho cả bài,
 // vạch nhấn cho phần đã phát (clip-path theo t); màu theo theme nhờ currentColor, tính lại chỉ khi đổi đỉnh/offset/độ dài.
-import { useMemo } from 'react';
+import { useMemo, useRef, useState } from 'react';
+import { parseTime } from '../lib/timeText.ts';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { usePlayback, usePlaybackLoop, type Playback } from '../lib/playback.ts';
 import { peaksPath, placePeaks } from '../lib/audioPeaks.ts';
@@ -38,7 +39,7 @@ export function Transport({ playback, duration, wave, offsetMs = 0 }: { playback
         </div>
         {/* Thời gian hiện tại, thanh tua, độ dài bài luôn đi cùng nhau; khung hẹp thì cả cụm xuống hàng hai (index.css, .tp). */}
         <div className="tp-seek">
-          <span className={`w-[4.75rem] shrink-0 text-[13px] font-medium tabular-nums ${playing ? 'text-accent' : 'text-fg'}`} data-testid="transport-time">{formatClock(t)}</span>
+          <ClockField t={t} duration={duration} playing={playing} label={i18n.t('web.seekTo')} onSeek={(v) => playback.seek(v)} />
           <div className="relative min-w-[6rem] flex-1">
             <input aria-label={i18n.t('web.seek')} aria-valuetext={formatClock(t)} type="range" min={0} max={duration} step={0.01} value={t}
               style={{ '--p': `${pct}%` } as React.CSSProperties}
@@ -61,5 +62,39 @@ export function Transport({ playback, duration, wave, offsetMs = 0 }: { playback
           onClick={() => playback.setLoop(looping ? null : 'all')} data-testid="loop"><Repeat /></button>
       </div>
     </div>
+  );
+}
+
+/**
+ * Thời gian hiện tại, gõ được như ô thời gian của Editor: nhấp vào, gõ `1:30`, `90.5`, `1:02:03`… rồi Enter (hoặc rời ô) để tua tới đó;
+ * Esc huỷ. Không sửa thì ô chạy theo đồng hồ như chữ thường. Gõ sai hoặc vượt độ dài bài: viền báo lỗi, giữ chỗ cũ.
+ */
+function ClockField({ t, duration, playing, label, onSeek }: { t: number; duration: number; playing: boolean; label: string; onSeek(v: number): void }) {
+  const [text, setTextState] = useState<string | null>(null); // null = không sửa: hiện đồng hồ
+  const [bad, setBad] = useState(false);
+  const cur = useRef<string | null>(null), fresh = useRef(false); // bản mới nhất cho onBlur (blur có thể chạy ngay trong cùng sự kiện, trước khi vẽ lại)
+  const setText = (v: string | null) => { cur.current = v; setTextState(v); };
+  /** Áp chuỗi đang sửa: hợp lệ thì tua và thôi sửa (true); sai thì báo lỗi, vẫn đang sửa (false). */
+  const commit = (): boolean => {
+    const s = cur.current;
+    if (s === null) return true;
+    const v = parseTime(s);
+    if (v === null || v > duration + 1e-9) { setBad(true); return false; }
+    setText(null); setBad(false); onSeek(v); return true;
+  };
+  const cancel = () => { setText(null); setBad(false); };
+  return (
+    <input type="text" inputMode="decimal" autoComplete="off" spellCheck={false} aria-label={label} title={label} aria-invalid={bad || undefined} data-testid="transport-time"
+      value={text ?? formatClock(t)}
+      // Chọn sẵn cả chuỗi để gõ đè ngay; lần nhả chuột đầu sau khi nhấp vào không được bỏ vùng chọn đó.
+      onFocus={(e) => { setText(formatClock(t)); setBad(false); e.target.select(); fresh.current = true; }}
+      onMouseUp={(e) => { if (fresh.current) { e.preventDefault(); fresh.current = false; } }}
+      onChange={(e) => { setText(e.target.value); setBad(false); }}
+      onBlur={() => { if (cur.current !== null && !commit()) cancel(); }} // rời ô với chuỗi sai: bỏ, không tua
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') { e.preventDefault(); if (commit()) e.currentTarget.blur(); }
+        else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); cancel(); e.currentTarget.blur(); }
+      }}
+      className={`w-[5.25rem] shrink-0 rounded border bg-transparent px-1 py-0.5 text-[13px] font-medium tabular-nums outline-none transition hover:border-control focus:border-focus focus:bg-raised ${bad ? 'border-danger' : 'border-transparent'} ${playing && text === null ? 'text-accent' : 'text-fg'}`} />
   );
 }

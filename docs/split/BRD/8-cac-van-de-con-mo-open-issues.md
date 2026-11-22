@@ -5,7 +5,7 @@ section: "8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)"
 path: "8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)"
 chunk: 8-cac-van-de-con-mo-open-issues.md
 source_lines: 280-303
-source_sha1: cf4cb6f608
+source_sha1: 9dcfa6038b
 ids: [D-01, D-05, D-39, D-40, D-41, D-42, D-43, D-44, D-45, D-60, D-62, D-63, KPI-01, KPI-06, OI-01, OI-02, OI-03, OI-04, OI-05, OI-06, OI-07, OI-08, OI-09, OI-10, OI-11, OI-12, OI-13, OI-14, OI-15, OI-16, OI-17, OI-18, OI-19, OI-20, P-01, P-13, WARN_NOTATION_OFFGRID]
 ---
 ## 8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)

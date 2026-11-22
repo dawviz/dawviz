@@ -33,9 +33,24 @@ describe('Transport', () => {
     expect(pb.get().playing).toBe(true);
     fireEvent.change(screen.getByRole('slider'), { target: { value: '4.5' } });
     expect(pb.get().t).toBe(4.5);
-    expect(screen.getByTestId('transport-time').textContent).toBe('0:04.500');
+    expect((screen.getByTestId('transport-time') as HTMLInputElement).value).toBe('0:04.500');
     fireEvent.click(screen.getByRole('button', { name: /Forward 5|Tới 5/ })); expect(pb.get().t).toBe(9.5);
     fireEvent.click(screen.getByRole('button', { name: /Back 5|Lùi 5/ })); expect(pb.get().t).toBe(4.5);
+  });
+  it('gõ thời gian vào ô thời gian rồi Enter thì tua tới đó; sai hoặc quá độ dài bài thì báo và giữ chỗ cũ; Esc huỷ', () => {
+    const pb = createPlayback({ request: () => 1, cancel: () => {}, now: () => 0 }); pb.reset(100);
+    wrap(<Transport playback={pb} duration={100} />);
+    const box = screen.getByTestId('transport-time') as HTMLInputElement;
+    fireEvent.focus(box); fireEvent.change(box, { target: { value: '1:05.25' } }); fireEvent.keyDown(box, { key: 'Enter' });
+    expect(pb.get().t).toBe(65.25);
+    fireEvent.focus(box); fireEvent.change(box, { target: { value: '9:99:99' } }); fireEvent.keyDown(box, { key: 'Enter' });
+    expect(pb.get().t).toBe(65.25); expect(box).toHaveAttribute('aria-invalid', 'true');
+    fireEvent.change(box, { target: { value: '500' } }); fireEvent.keyDown(box, { key: 'Enter' });
+    expect(pb.get().t).toBe(65.25);
+    fireEvent.change(box, { target: { value: '12' } }); fireEvent.keyDown(box, { key: 'Escape' });
+    expect(pb.get().t).toBe(65.25); expect(box.value).toBe('1:05.250');
+    fireEvent.focus(box); fireEvent.change(box, { target: { value: '7' } }); fireEvent.blur(box);
+    expect(pb.get().t).toBe(7);
   });
 });
 describe('Notices', () => {
