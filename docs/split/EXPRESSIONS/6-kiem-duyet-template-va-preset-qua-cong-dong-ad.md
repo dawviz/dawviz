@@ -4,8 +4,8 @@ doc_title: "Biểu thức người dùng, mô hình bảo mật và kiểm duy�
 section: "6. Kiểm duyệt template và preset qua cộng đồng (AD-15)"
 path: "6. Kiểm duyệt template và preset qua cộng đồng (AD-15)"
 chunk: 6-kiem-duyet-template-va-preset-qua-cong-dong-ad.md
-source_lines: 135-186
-source_sha1: 19ec9a9aa3
+source_lines: 142-193
+source_sha1: 0045fe9aeb
 ids: [AD-15, D-42, D-43, NFR-SEC-01]
 ---
 ## 6. Kiểm duyệt template và preset qua cộng đồng (AD-15)

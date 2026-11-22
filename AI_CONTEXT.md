@@ -46,7 +46,7 @@ DAW Visualizer: trình duyệt đọc tệp dự án DAW (Ableton `.als/.alp`, R
 | Dựng/sửa giao diện web (panel, component, màu, khoảng cách) | `apps/web/DESIGN.md` (đọc trước) · [UI-DIRECTION §5.3–5.4, §7](docs/design/UI-DIRECTION.md) · `PRODUCT.md` | `apps/web/src/index.css` (token), `apps/web/src/components/` |
 | Giao diện, phát lại, chế độ chỉnh sửa | [Technical Design §6](docs/split/TECHNICAL-DESIGN/6-1-trang-thai.md#61-trạng-thái) · [SDD §4](docs/split/SDD/4-ung-dung-web-apps-web-d-34.md#4-ứng-dụng-web-appsweb-d-34) · [SRS §5.1](docs/split/SRS/5-1-bo-cuc-khong-gian-lam-viec.md#51-bố-cục-không-gian-làm-việc) | `apps/web/src/` |
 | Tùy biến: storyboard, chuyển cảnh nốt, easing, hạt, tài nguyên phiên, preset cộng đồng | [CUSTOMIZATION](docs/design/CUSTOMIZATION.md) (đề xuất, AD-08…AD-12) · [ANIMATION](docs/design/ANIMATION.md) · [COMMUNITY-CONTENT](docs/COMMUNITY-CONTENT.md) | `packages/render-core/src/style.ts`, `presets/` (motion/particles: chưa có — T-17…T-20) |
-| Biểu thức người dùng, bảo mật, kiểm duyệt preset cộng đồng | [EXPRESSIONS](docs/design/EXPRESSIONS.md) (đề xuất, AD-13…AD-15) · [ANIMATION-CATALOG](docs/design/ANIMATION-CATALOG.md) · SRS NFR-SEC | (chưa có — T-29…T-31; package `@dawviz/expr` dự kiến) |
+| Biểu thức người dùng, bảo mật, kiểm duyệt preset cộng đồng | [EXPRESSIONS](docs/design/EXPRESSIONS.md) (đề xuất, AD-13…AD-15) · [ANIMATION-CATALOG](docs/design/ANIMATION-CATALOG.md) · SRS NFR-SEC | `packages/expr/src/` (T-29), `packages/render-core/src/animation.ts` (`{expr}`, `EXPR_VARS`, ngân sách khung T-30), `scripts/preset-check/` (T-31) |
 | Bản nhạc (notation), lượng tử hoá, nét tay (D-63) | [Technical Design §5.11](docs/design/TECHNICAL-DESIGN.md) · SRS REQ-WIDGET-09 / REQ-NOTATION-01 / REQ-GRAPHICS-20 · [SPIKE-4](docs/spikes/SPIKE-4-NOTATION.md) (số đo, giới hạn) | `packages/render-core/src/notation/`, `apps/web/src/lib/notation/`, `apps/web/src/workers/notation.worker.ts`, `scripts/gen-notation-fonts.mjs` (sinh bảng glyph), `scripts/notation/` (công cụ đo, e2e xuất video) |
 | Widget phân tích P-02…P-13, cách ghi tên nốt (P-12), marker/lời/automation | [SRS 3.4b](docs/split/SRS/3-4-dac-ta-8-widget-hud-br-02-br-03-br-04.md) · [hướng dẫn](docs/manual/10-phan-tich.md) · PROGRESS T-37/38/41/42/97 | `packages/render-core/src/insight.ts`, `naming.ts`; parser: `meta.markers/lyrics` ở `packages/core/src/ast.js`, `rpp.js`, `als.js`, `dawproject.js`, `midi.js`; `test/cues-automation.test.js`, `packages/render-core/test/insight.test.ts` |
 | Xuất video | [Technical Design §7](docs/split/TECHNICAL-DESIGN/7-1-trinh-tu.md) · [REQ-EXPORT-00](docs/split/SRS/req-export-00-pre-flight-r-01-d-17.md#req-export-00-pre-flight-r-01-d-17)…[07](docs/split/SRS/req-export-07-thuc-thi-trong-worker-arc-02-d-21.md#req-export-07-thực-thi-trong-worker-arc-02-d-21) | `apps/web/src/lib/exportPlan.ts` (phần lõi thuần, T-09); Export Worker: chưa có — M3 |
@@ -77,7 +77,7 @@ node scripts/sync-docs.mjs --find "độ sáng"   # lấy liên kết mảnh#hea
 <!-- sync:begin docs-index -->
 <!-- Khối này do scripts/sync-docs.mjs sinh ra; đừng sửa tay. -->
 
-Có 22 tài liệu, 338 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
+Có 22 tài liệu, 339 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
 
 ### BRD.md — TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)
 
@@ -320,6 +320,7 @@ Nguồn: `docs/design/ANIMATION-CATALOG.md` · [thứ tự đọc](docs/split/AN
 Nguồn: `docs/design/EXPRESSIONS.md` · [thứ tự đọc](docs/split/EXPRESSIONS/_index.md)
 
 - [Biểu thức người dùng, mô hình bảo mật và kiểm duyệt cộng đồng (mở đầu)](docs/split/EXPRESSIONS/bieu-thuc-nguoi-dung-mo-hinh-bao-mat-va-kiem-duy.md) · 0.8k
+- [0. Trạng thái cài đặt (2026-11-22)](docs/split/EXPRESSIONS/0-trang-thai-cai-dat-2026-11-22.md) · 1.2k
 - [1. Nguyên tắc nền](docs/split/EXPRESSIONS/1-nguyen-tac-nen.md) · 0.7k
 - [2. "Mã độc" ở đây là gì](docs/split/EXPRESSIONS/2-ma-doc-o-day-la-gi.md) · 3.0k
 - [3. Ngôn ngữ biểu thức (AD-13)](docs/split/EXPRESSIONS/3-ngon-ngu-bieu-thuc-ad-13.md) · 3.5k

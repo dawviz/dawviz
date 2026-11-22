@@ -1,6 +1,6 @@
 // Logic thuần của panel Timeline và keyframe (UI-DIRECTION 5.3, DESIGN.md "Timeline"): đổi toạ độ ↔ thời gian, thước, thu phóng quanh con trỏ,
 // bắt dính, di chuyển/xoá nhiều keyframe, chọn bằng hộp, đi tới keyframe trước/sau. Không DOM; test ở timeline.test.ts.
-import { MAX_ANIMATIONS, MAX_ANIM_KEYS, animatablePaths, compileTrack, isBinding, keyTimeSec, sampleTrack, type Key, type KeyAnimation, type KeyValue, type TempoPoint, type TimeCtx, type WidgetSpec } from '@dawviz/render-core';
+import { MAX_ANIMATIONS, MAX_ANIM_KEYS, animatablePaths, compileTrack, isBinding, isKeyAnim, keyTimeSec, sampleTrack, type Key, type KeyAnimation, type KeyValue, type TempoPoint, type TimeCtx, type WidgetSpec } from '@dawviz/render-core';
 import { sortKeys } from './animateFields.ts';
 
 /** Chiều cao một hàng thuộc tính và hàng thước (px). Hàng = vùng bấm tối thiểu 24 px (DESIGN.md, 24-Pixel Hit Rule). */
@@ -184,9 +184,9 @@ export function pasteIntoWidget(w: Pick<WidgetSpec, 'type' | 'animate'>, clip: K
   let budget = MAX_ANIMATIONS - Object.keys(cur).length;
   const fresh = new Set<string>();
   const keyed: Record<string, KeyAnimation> = {};
-  for (const [p, a] of Object.entries(cur)) if (!isBinding(a)) keyed[p] = a;
+  for (const [p, a] of Object.entries(cur)) if (isKeyAnim(a)) keyed[p] = a;
   return pasteKeys(keyed, clip, t, duration, (p) => {
-    if (!paths.has(p) || (cur[p] && isBinding(cur[p]))) return false;
+    if (!paths.has(p) || (cur[p] && !isKeyAnim(cur[p]))) return false;
     if (cur[p] || fresh.has(p)) return true;
     if (budget <= 0) return false;
     budget--; fresh.add(p); return true;

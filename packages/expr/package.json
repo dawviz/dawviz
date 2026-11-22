@@ -1,0 +1,11 @@
+{
+  "name": "@dawviz/expr",
+  "version": "0.1.0",
+  "description": "Ngôn ngữ biểu thức an toàn cho thuộc tính (AD-13, T-29): tokenizer + parser Pratt viết tay, danh sách trắng, cây closure, giới hạn bước. Không eval, không phụ thuộc.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": { ".": "./src/index.ts" },
+  "sideEffects": false,
+  "scripts": { "typecheck": "tsc -p .", "test": "node --test test/*.test.ts" },
+  "license": "Apache-2.0"
+}

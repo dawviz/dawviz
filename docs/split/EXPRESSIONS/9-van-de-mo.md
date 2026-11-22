@@ -4,8 +4,8 @@ doc_title: "Biểu thức người dùng, mô hình bảo mật và kiểm duy�
 section: "9. Vấn đề mở"
 path: "9. Vấn đề mở"
 chunk: 9-van-de-mo.md
-source_lines: 207-210
-source_sha1: 19ec9a9aa3
+source_lines: 214-217
+source_sha1: 0045fe9aeb
 ids: [D-41, D-44, OI-16, OI-17]
 ---
 ## 9. Vấn đề mở

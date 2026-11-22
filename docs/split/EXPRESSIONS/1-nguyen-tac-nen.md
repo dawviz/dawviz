@@ -4,8 +4,8 @@ doc_title: "Biểu thức người dùng, mô hình bảo mật và kiểm duy�
 section: "1. Nguyên tắc nền"
 path: "1. Nguyên tắc nền"
 chunk: 1-nguyen-tac-nen.md
-source_lines: 5-10
-source_sha1: 19ec9a9aa3
+source_lines: 12-17
+source_sha1: 0045fe9aeb
 ids: [AD-08]
 ---
 ## 1. Nguyên tắc nền

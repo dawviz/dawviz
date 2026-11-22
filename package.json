@@ -7,9 +7,10 @@
     "apps/*"
   ],
   "scripts": {
-    "test": "npm run test:parser && npm run test:render && npm run test:web && npm run test:docs-site",
+    "test": "npm run test:parser && npm run test:render && npm run test:expr && npm run test:web && npm run test:docs-site && npm run test:tools",
     "test:parser": "node --test test/*.test.js",
     "test:render": "node --test packages/render-core/test/*.test.ts",
+    "test:expr": "node --test packages/expr/test/*.test.ts",
     "test:web": "node --test apps/web/src/lib/*.test.ts",
     "test:components": "npm run test:components -w @dawviz/web",
     "dev": "npm run dev -w @dawviz/web",
@@ -23,6 +24,8 @@
     "docs:check": "node scripts/sync-docs.mjs --check",
     "docs:sync": "node scripts/sync-docs.mjs",
     "test:docs-site": "node --test scripts/docs-site/markdown.test.mjs",
+    "test:tools": "node --test scripts/preset-check/*.test.mjs",
+    "preset:check": "node scripts/preset-check/cli.mjs",
     "docs:site": "node scripts/docs-site/build.mjs",
     "docs:serve": "node scripts/docs-site/build.mjs --serve",
     "notation:e2e": "node scripts/notation/e2e.mjs"

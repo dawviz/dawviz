@@ -9,7 +9,7 @@
 // ←/→ trên hình thoi đi qua keyframe cùng hàng, ↑/↓ sang hàng khác, Enter đưa vạch phát tới keyframe.
 // Logic thuần ở lib/timeline.ts và lib/timelineRows.ts; hình dạng hình thoi cho biết cách đi tiếp: thoi = đều, vuông = giữ rồi nhảy, tròn = cong mượt.
 import { memo, useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent as RPointerEvent } from 'react';
-import { MAX_ANIMATIONS, MAX_ANIM_KEYS, compileTrack, isBinding, sampleTrack, type Animation, type KeyAnimation, type KeyValue, type TempoPoint, type WidgetSpec } from '@dawviz/render-core';
+import { MAX_ANIMATIONS, MAX_ANIM_KEYS, compileTrack, isBinding, isExpr, isKeyAnim, sampleTrack, type Animation, type Binding, type ExprAnimation, type KeyAnimation, type KeyValue, type TempoPoint, type WidgetSpec } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { usePlayback, type Playback } from '../lib/playback.ts';
 import type { Gesture } from '../lib/storeReact.ts';
@@ -55,7 +55,7 @@ const GROUPS: readonly { id: GroupId; key: string }[] = [{ id: 'transform', key:
 type Mode = 'none' | 'keys' | 'bind';
 type RowItem = { kind: 'row'; row: RowDef; anims: (Animation | undefined)[]; mode: Mode; vkeys: VKey[] };
 type Item = { kind: 'group'; id: GroupId; open: boolean; count: number } | RowItem;
-const modeOf = (anims: (Animation | undefined)[]): Mode => (anims.some((a) => a && !isBinding(a)) ? 'keys' : anims.some((a) => a) ? 'bind' : 'none');
+const modeOf = (anims: (Animation | undefined)[]): Mode => (anims.some((a) => a && isKeyAnim(a)) ? 'keys' : anims.some((a) => a) ? 'bind' : 'none');
 
 export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked, sel, onSel, onAnimate, onAnimateMany, gesture, tree, onTree, onTreeReset }: KeyframeTimelineProps) {
   const { i18n } = useI18n();
@@ -70,7 +70,7 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
   // ── hàng hiển thị ──
   const times = useMemo(() => {
     const m = new Map<string, number[]>();
-    for (const [p, a] of Object.entries(animate)) if (!isBinding(a)) m.set(p, keySecs(a, tempoMap));
+    for (const [p, a] of Object.entries(animate)) if (isKeyAnim(a)) m.set(p, keySecs(a, tempoMap));
     return m;
   }, [animate, tempoMap]);
   const items: Item[] = [];
@@ -136,7 +136,7 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
   }, []);
 
   // ── sửa dữ liệu ──
-  const keyAnim = (p: string): KeyAnimation | null => { const a = live.current.widget.animate?.[p]; return a && !isBinding(a) ? a : null; };
+  const keyAnim = (p: string): KeyAnimation | null => { const a = live.current.widget.animate?.[p]; return a && isKeyAnim(a) ? a : null; };
   /** Gom mọi thay đổi của một thao tác thành MỘT lệnh (một bước hoàn tác, lib/commands.ts editWidgetAnimation). */
   const many = (fn: (put: (p: string, v: Animation | null) => void) => void, key?: string) => { const ch: Record<string, Animation | null> = {}; fn((p, v) => { ch[p] = v; }); if (Object.keys(ch).length) onAnimateMany(ch, key); };
   const refsAt = (paths: readonly string[], t: number): string[] => paths.flatMap((p) => { const a = keyAnim(p); if (!a) return []; const i = keyAt(keySecs(a, tempoMap), t); return i >= 0 ? [keyRef(p, i)] : []; });
@@ -178,7 +178,7 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
     const refs: string[] = [], fresh = it.row.paths.filter((p) => !animate[p]).length;
     for (const p of it.row.paths) {
       const cur = animate[p];
-      if (cur && isBinding(cur)) continue;
+      if (cur && !isKeyAnim(cur)) continue;
       const a = cur ? (cur as KeyAnimation) : null;
       if (a && a.keys.length >= MAX_ANIM_KEYS) continue;
       if (!a && used + fresh > MAX_ANIMATIONS) continue;
@@ -453,7 +453,7 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
                   <div className="absolute inset-y-0 right-0" style={{ left: PAD }}>
                   {it.mode === 'bind' && (
                     <div className="absolute inset-y-1.5 left-0 flex items-center overflow-hidden rounded-sm border border-control bg-raised px-2 text-[11px] text-muted" style={{ width: duration * pps }}>
-                      <span className="sticky left-2 truncate">{i18n.t('web.timeline.bound', { source: i18n.t(`web.anim.src.${(it.anims.find((a) => a && isBinding(a)) as { bind: string }).bind}`) })}</span>
+                      <span className="sticky left-2 truncate">{(() => { const b = it.anims.find((a): a is Binding => !!a && isBinding(a)); const ex = it.anims.find((a): a is ExprAnimation => !!a && isExpr(a)); return b ? i18n.t('web.timeline.bound', { source: i18n.t(`web.anim.src.${b.bind}`) }) : i18n.t('web.timeline.expr', { expr: ex?.expr.replace(/\s+/g, ' ').slice(0, 80) ?? '' }); })()}</span>
                     </div>
                   )}
                   {it.vkeys.length > 0 && (
@@ -492,7 +492,7 @@ const Keys = memo(function Keys({ it, pps, sel, name, locked, widget, onDown, on
   onDown(e: RPointerEvent<HTMLButtonElement>, vk: VKey): void; onKey(e: KeyboardEvent<HTMLButtonElement>, k: number): void;
 }) {
   const { i18n } = useI18n();
-  const keyOf = (ref: string) => { const q = parseKeyRef(ref)!; const a = widget.animate?.[q.path]; return a && !isBinding(a) ? a.keys[q.i] : undefined; };
+  const keyOf = (ref: string) => { const q = parseKeyRef(ref)!; const a = widget.animate?.[q.path]; return a && isKeyAnim(a) ? a.keys[q.i] : undefined; };
   // Một điểm dừng Tab cho mỗi hàng: hình thoi đầu tiên đang chọn, không thì hình thoi đầu.
   const stop = Math.max(0, it.vkeys.findIndex((v) => v.refs.some((r) => sel.has(r))));
   return (
@@ -529,7 +529,7 @@ function TreeRow({ it, name, widget, tempoMap, playback, locked, selected, full,
   const { row, anims, mode, vkeys } = it;
   // Chỉ dòng có keyframe mới cần t (giá trị, keyframe tại vạch phát, trước/sau): dòng đứng yên không vẽ lại mỗi khung khi phát.
   const t = usePlayback(playback, (s) => (mode === 'keys' ? s.t : 0));
-  const compiled = useMemo(() => anims.map((a) => (a && !isBinding(a) ? compileTrack(a, { tempoMap }) : null)), [anims, tempoMap]);
+  const compiled = useMemo(() => anims.map((a) => (a && isKeyAnim(a) ? compileTrack(a, { tempoMap }) : null)), [anims, tempoMap]);
   const here = mode === 'keys' && vkeys.some((v) => Math.abs(v.t - t) <= SAME_TIME);
   const prev = mode === 'keys' ? vkeys.filter((v) => v.t < t - SAME_TIME).at(-1)?.t ?? null : null;
   const next = mode === 'keys' ? vkeys.find((v) => v.t > t + SAME_TIME)?.t ?? null : null;
@@ -539,7 +539,7 @@ function TreeRow({ it, name, widget, tempoMap, playback, locked, selected, full,
   const cell = (f: AnimField, j: number) => {
     const a = anims[j], c = compiled[j], value = c ? sampleTrack(c, t) : staticValue(widget, f.path);
     const lbl = i18n.t('web.timeline.valueAt', { name: row.paths.length > 1 ? `${name} ${f.path.split('.').pop()!.toUpperCase()}` : name });
-    if (a && isBinding(a)) return <span key={f.path} className="block min-w-0 flex-1 truncate text-right text-[11px] text-muted" title={i18n.t('web.anim.mode.bind')}>{i18n.t('web.anim.mode.bind')}</span>;
+    if (a && !isKeyAnim(a)) { const lbl2 = i18n.t(isBinding(a) ? 'web.anim.mode.bind' : 'web.anim.mode.expr'); return <span key={f.path} className="block min-w-0 flex-1 truncate text-right text-[11px] text-muted" title={lbl2}>{lbl2}</span>; }
     if (f.kind === 'bool' || f.kind === 'choice') return c
       ? <DiscreteValue key={f.path} f={f} value={value} label={lbl} disabled={locked} compact onChange={(v) => onValue(f.path, v)} />
       : <span key={f.path} className="block min-w-0 flex-1 truncate text-right text-[11px] text-muted" title={i18n.t('web.timeline.staticHint')}>{String(value)}</span>;

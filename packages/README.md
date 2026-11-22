@@ -11,6 +11,7 @@ Monorepo các package ES module độc lập, không phụ thuộc bên ngoài (
 | `@dawviz/parser-dawproject` | `.dawproject` (Bitwig, Studio One, Cubase…) |
 | `@dawviz/parser-binary` | parser nhị phân theo **JSON schema** (xem `schemas/README.md`) |
 | `@dawviz/parser` | bao ngoài: `detectFormat`, `probeProject`, `parseProject(name, buffer, options)` |
+| `@dawviz/expr` | ngôn ngữ biểu thức an toàn cho thuộc tính (AD-13, T-29): tokenizer + parser Pratt viết tay, danh sách trắng, cây closure, giới hạn bước; không `eval` |
 | `@dawviz/i18n` | đa ngôn ngữ: danh mục JSON (`locales/`), `{tham_số}`, số nhiều, dự phòng, chọn locale; hướng dẫn đóng góp: `docs/I18N.md` |
 
 `npm run bundle` (hoặc `node scripts/bundle.mjs`, từ gốc monorepo) → `dist/dawviz-parser.bundle.js` (một file ES module cho Worker). `npm run test:parser` → 66 test. `npm run i18n:check` kiểm danh mục ngôn ngữ. `node bin/dawparse.mjs <file> [--json] [--inventory] [--tempo BPM] [--files thư_mục] [--schema s.json] [--ref ref.mid]`. Demo trình duyệt: `apps/parser-lab/`. Tài liệu: `docs/parser/` (xem `docs/README.md`).

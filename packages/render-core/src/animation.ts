@@ -14,7 +14,10 @@ import { laneUnit } from './glow.ts';
 import { frameAt, u8ToDb } from './audioFeatures.ts';
 import { compileTrack, sampleTrack, mixColor, type CompiledTrack, type Key, type KeyTime, type KeyValue, type LoopMode, type TrackSpec } from './keyframes.ts';
 import { DEFAULT_NOTE_STYLE, sanitizeStyle, type NoteStyle } from './style.ts';
-import { interpolate, parseEase, type EaseSpec } from './motion.ts';
+import { EASINGS, interpolate, parseEase, type EaseSpec } from './motion.ts';
+import { ExprError, colorToHex, compile, isFiniteValue, type Budget, type Compiled, type ExprErrorCode } from '@dawviz/expr';
+import { keyTimeSec } from './keyframes.ts';
+import { strHash } from './particles.ts';
 import { normalizeAngle } from './snap.ts';
 import { widgetDefaults, silentSanitizer, sanitizeWidgetProps, type Sanitizer, type SceneDocument, type WidgetSpec, type WidgetType } from './scene.ts';
 import type { Derived } from './prims.ts';
@@ -25,8 +28,33 @@ export type BindSource = typeof BIND_SOURCES[number];
 /** Giá trị = `to[0]` khi nguồn ở `from[0]`, `to[1]` khi ở `from[1]`, nội suy (kẹp ngoài biên) qua `ease`. `to` là hai số hoặc hai màu `#rrggbb`. */
 export interface Binding { bind: BindSource; from: [number, number]; to: [number, number] | [string, string]; ease?: EaseSpec }
 export type KeyAnimation = TrackSpec;
-export type Animation = KeyAnimation | Binding;
+/** Biểu thức (T-29, AD-13): `{ expr: "0.5 + note.velocity / 127" }`, ngôn ngữ của @dawviz/expr. */
+export interface ExprAnimation { expr: string }
+export type Animation = KeyAnimation | Binding | ExprAnimation;
 export const isBinding = (a: Animation): a is Binding => 'bind' in a;
+export const isExpr = (a: Animation): a is ExprAnimation => typeof (a as ExprAnimation).expr === 'string';
+/** Hoạt hình bằng keyframe (không phải binding hay biểu thức). */
+export const isKeyAnim = (a: Animation | null | undefined): a is KeyAnimation => !!a && Array.isArray((a as KeyAnimation).keys);
+
+// ───────────── biểu thức (T-29, T-30) ─────────────
+/** Biến đọc được trong biểu thức (danh sách trắng, EXPRESSIONS §3.2): bản chụp số của dữ liệu nhạc tại t, không có đối tượng nào của ứng dụng. */
+export const EXPR_VARS: ReadonlyMap<string, 'num' | 'bool'> = new Map<string, 'num' | 'bool'>([
+  ['t', 'num'], ['time.sec', 'num'], ['time.progress', 'num'], ['time.duration', 'num'],
+  ['beat.phase', 'num'], ['beat.index', 'num'], ['bar.phase', 'num'], ['bar.index', 'num'], ['bar.bpm', 'num'],
+  ['notes.count', 'num'], ['note.velocity', 'num'], ['note.pitch', 'num'], ['note.hit', 'num'], ['note.active', 'bool'],
+  ['track.volume', 'num'], ['track.pan', 'num'], ['audio.level', 'num'],
+  ['value', 'num'], ['width', 'num'], ['height', 'num'], ['index', 'num'], ['count', 'num'], ['seed', 'num'],
+]);
+const EASE_MAP: ReadonlyMap<string, (x: number) => number> = new Map(Object.entries(EASINGS));
+const RESULT: Partial<Record<AnimKind, 'num' | 'color' | 'bool'>> = { number: 'num', color: 'color', bool: 'bool' };
+/** Biên dịch biểu thức cho một đường dẫn kiểu `kind` (lựa chọn/chữ không nhận biểu thức). Ném ExprError khi sai. */
+export function compileExpr(src: string, kind: AnimKind): Compiled {
+  const result = RESULT[kind];
+  if (!result) throw new ExprError('ERR_EXPR_TYPE', 'thuộc tính lựa chọn/chữ không nhận biểu thức');
+  return compile(src, { vars: EXPR_VARS, result, easings: EASE_MAP });
+}
+/** Nơi báo biểu thức lỗi lúc chạy (vượt ngân sách, NaN/∞): Render Core không ném, chỉ báo và dùng giá trị dự phòng. */
+export interface ExprIssue { widgetId: string; path: string; code: ExprErrorCode | 'ERR_EXPR_COMPILE' }
 export const MAX_ANIMATIONS = 24, MAX_ANIM_KEYS = 256;
 /** Giới hạn của `scale` (%): 0 (biến mất) tới 2000. */
 export const MAX_SCALE = 2000;
@@ -120,6 +148,9 @@ export function sanitizeAnimate(S: Sanitizer, v: unknown, path: string, type: Wi
       const a: KeyAnimation = { keys, ...(kind === 'color' ? { kind: 'color' as const } : isDiscreteKind(kind) ? { kind: 'discrete' as const } : {}) };
       if (raw.loop === 'CYCLE' || raw.loop === 'PINGPONG' || raw.loop === 'OFFSET') a.loop = raw.loop as LoopMode;
       out[key] = a;
+    } else if (typeof raw.expr === 'string') {
+      try { compileExpr(raw.expr, kind); out[key] = { expr: raw.expr }; }
+      catch (e) { S.warn(`${p}.expr`, raw.expr.slice(0, 80), e instanceof ExprError ? `biểu thức lỗi (${e.code}, ký tự ${e.pos}): ${e.message}; bỏ` : 'biểu thức lỗi; bỏ'); }
     } else if (typeof raw.bind === 'string') {
       if (isDiscreteKind(kind)) { S.warn(p, raw, 'thuộc tính theo bậc chỉ nhận keyframe, không gắn theo nhạc; bỏ'); continue; }
       const from = raw.from, to = raw.to;
@@ -129,13 +160,19 @@ export function sanitizeAnimate(S: Sanitizer, v: unknown, path: string, type: Wi
       const b: Binding = { bind: raw.bind as BindSource, from: [from[0], from[1]], to: [to[0], to[1]] as Binding['to'] };
       if (raw.ease !== undefined) { if (parseEase(raw.ease).ok) b.ease = raw.ease as EaseSpec; else S.warn(`${p}.ease`, raw.ease, 'easing lạ; dùng linear'); }
       out[key] = b;
-    } else S.warn(p, raw, 'cần `keys` hoặc `bind`; bỏ');
+    } else S.warn(p, raw, 'cần `keys`, `bind` hoặc `expr`; bỏ');
   }
   return Object.keys(out).length ? out : undefined;
 }
 
 // ───────────── tính giá trị mỗi khung ─────────────
-export interface BindCtx { ast: UnifiedProjectAST; derived: Derived; tracks: TrackIndex[]; t: number }
+export interface BindCtx {
+  ast: UnifiedProjectAST; derived: Derived; tracks: TrackIndex[]; t: number;
+  /** Ngân sách bước biểu thức dùng chung cả khung (T-30, FRAME_BUDGET); vắng = mỗi biểu thức tự giới hạn LIMITS.maxSteps. */
+  budget?: Budget;
+  /** Báo biểu thức lỗi lúc chạy (giá trị dự phòng đã được dùng). */
+  onExprIssue?(i: ExprIssue): void;
+}
 const clamp01 = (x: number) => (x < 0 ? 0 : x > 1 ? 1 : x);
 const HIT_DECAY = 0.6;
 /** Giá trị thô của một nguồn dữ liệu nhạc tại t (thang riêng của từng nguồn; ánh xạ sang thuộc tính bằng `from`/`to`). */
@@ -165,7 +202,67 @@ export function bindSourceValue(src: BindSource, c: BindCtx): number {
   }
 }
 const trackCache = new WeakMap<object, { tm: unknown; ct: CompiledTrack }>();
-function animValue(a: Animation, kind: AnimKind, c: BindCtx): KeyValue {
+const exprCache = new WeakMap<object, { kind: AnimKind; c: Compiled | null }>();
+/** Bản chụp biến của biểu thức tại t (tính lười, mỗi tên một lần cho mỗi lần đánh giá). */
+function exprVars(c: BindCtx, w: WidgetSpec, base: KeyValue): (name: string) => number | boolean | undefined {
+  const memo = new Map<string, number | boolean>();
+  const pos = () => barPosAt(hudOf(c.derived, c.ast).bars, c.t);
+  const notes = () => { let v = 0, p = 0, n = 0; for (const ti of shown(c.tracks)) for (const x of activeNotes(ti, c.t)) { n++; if (x.velocity > v) v = x.velocity; if (x.pitch > p) p = x.pitch; } return { v, p, n }; };
+  const calc = (name: string): number | boolean | undefined => {
+    switch (name) {
+      case 't': case 'time.sec': return c.t;
+      case 'time.duration': return c.derived.index.duration;
+      case 'time.progress': return bindSourceValue('progress', c);
+      case 'beat.phase': return bindSourceValue('beat.phase', c);
+      case 'bar.phase': return bindSourceValue('bar.phase', c);
+      case 'beat.index': return pos().beat;
+      case 'bar.index': return pos().bar;
+      case 'bar.bpm': return pos().bpm;
+      case 'notes.count': return notes().n;
+      case 'note.velocity': return notes().v;
+      case 'note.pitch': return notes().p;
+      case 'note.active': return notes().n > 0;
+      case 'note.hit': return bindSourceValue('note.hit', c);
+      case 'track.volume': return bindSourceValue('track.volume', c);
+      case 'track.pan': return bindSourceValue('track.pan', c);
+      case 'audio.level': return bindSourceValue('audio.level', c);
+      case 'value': return typeof base === 'number' ? base : 0;
+      case 'width': return w.layout.width;
+      case 'height': return w.layout.height;
+      case 'index': return 0;
+      case 'count': return 1;
+      case 'seed': return strHash(w.id);
+    }
+    return undefined;
+  };
+  return (name) => { if (memo.has(name)) return memo.get(name); const v = calc(name); if (v !== undefined) memo.set(name, v); return v; };
+}
+function exprValue(a: ExprAnimation, kind: AnimKind, c: BindCtx, w: WidgetSpec, path: string, base: KeyValue): KeyValue {
+  let hit = exprCache.get(a);
+  if (!hit || hit.kind !== kind) { let comp: Compiled | null = null; try { comp = compileExpr(a.expr, kind); } catch { /* preset đã kiểm; dữ liệu sửa tay lỗi: dùng giá trị tĩnh */ } hit = { kind, c: comp }; exprCache.set(a, hit); }
+  if (!hit.c) { c.onExprIssue?.({ widgetId: w.id, path, code: 'ERR_EXPR_COMPILE' }); return base; }
+  const tm = c.ast.tempoMap;
+  try {
+    const v = hit.c.evaluate({
+      get: exprVars(c, w, base), seed: strHash(`${w.id}/${path}`),
+      valueAt: () => (typeof base === 'number' ? base : 0), loop: () => (typeof base === 'number' ? base : 0),
+      beatsToSec: (b) => keyTimeSec({ beat: b }, { tempoMap: tm }), secToBeats: (s) => secToBeatsOf(tm, s),
+    }, c.budget);
+    if (!isFiniteValue(v)) { c.onExprIssue?.({ widgetId: w.id, path, code: 'ERR_EXPR_VALUE' }); return base; }
+    if (typeof v === 'object') return v.kind === 'color' ? colorToHex(v) : base;
+    return v;
+  } catch (e) { c.onExprIssue?.({ widgetId: w.id, path, code: e instanceof ExprError ? e.code : 'ERR_EXPR_VALUE' }); return base; }
+}
+/** Giây → số phách (nghịch của keyTimeSec({beat})) theo tempo map: tìm đoạn tempo chứa s. */
+function secToBeatsOf(tm: UnifiedProjectAST['tempoMap'], s: number): number {
+  if (!tm.length) return s * 2;
+  let i = 0; while (i + 1 < tm.length && tm[i + 1].timeSeconds <= s) i++;
+  const p = tm[i];
+  return beatsAt(tm, i) + ((s - p.timeSeconds) * p.bpm) / 60;
+}
+const beatsAt = (tm: UnifiedProjectAST['tempoMap'], i: number) => { let b = 0; for (let k = 0; k < i; k++) b += ((tm[k + 1].timeSeconds - tm[k].timeSeconds) * tm[k].bpm) / 60; return b; };
+function animValue(a: Animation, kind: AnimKind, c: BindCtx, w: WidgetSpec, path: string, base: KeyValue): KeyValue {
+  if (isExpr(a)) return exprValue(a, kind, c, w, path, base);
   if (isBinding(a)) {
     const k = interpolate(bindSourceValue(a.bind, c), a.from, [0, 1], { ease: a.ease });
     if (kind === 'color') return mixColor(a.to[0] as string, a.to[1] as string, k);
@@ -176,6 +273,14 @@ function animValue(a: Animation, kind: AnimKind, c: BindCtx): KeyValue {
   return sampleTrack(hit.ct, c.t);
 }
 
+/** Giá trị tĩnh của một đường dẫn (biến `value` của biểu thức; giá trị dự phòng khi biểu thức lỗi). */
+function baseValue(w: WidgetSpec, path: string): KeyValue {
+  if (path === 'opacity') return 1;
+  if (path === 'scale') return 100;
+  let v: unknown = path.startsWith('layout.') ? (w.layout as unknown as Obj)[path.slice(7)] : w.properties;
+  if (!path.startsWith('layout.')) for (const k of path.split('.')) v = isObj(v) ? v[k] : undefined;
+  return typeof v === 'number' || typeof v === 'string' || typeof v === 'boolean' ? v : 0;
+}
 /**
  * Widget của khung hình này: bản sao với thuộc tính/bố cục đã animate (qua bộ kiểm của loại widget) và hệ số độ đục `opacity`.
  * Widget không có `animate` được trả nguyên (cùng tham chiếu).
@@ -187,7 +292,7 @@ export function resolveAnimated(w: WidgetSpec, c: BindCtx, canvas: SceneDocument
   const { designWidth: dw, designHeight: dh } = canvas;
   for (const [path, a] of Object.entries(w.animate)) {
     const kind = kinds.get(path); if (!kind) continue;
-    const v = animValue(a, kind, c);
+    const v = animValue(a, kind, c, w, path, isExpr(a) ? baseValue(w, path) : 0);
     if (path === 'opacity') opacity = clamp01(Number(v));
     else if (path === 'scale') { const n = Number(v); if (Number.isFinite(n)) scale = Math.min(MAX_SCALE, Math.max(0, n)) / 100; }
     else if (path.startsWith('layout.')) {
