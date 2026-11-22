@@ -5,6 +5,7 @@ import { detect } from '@tonaljs/chord-detect';
 import { notesInRange, type TimelineIndex, type TrackIndex } from './notes.ts';
 import type { ASTNote, TempoPoint, UnifiedProjectAST } from './types.ts';
 import type { Derived, Primitive, RectPrim, WidgetRenderer } from './prims.ts';
+import type { WidgetSpec } from './scene.ts';
 import { fixed, groupDigits, pad, type Measure } from './text.ts';
 import { pitchName } from './music.ts';
 import { chordNameFor, noteNameFor, pitchClassNameFor } from './naming.ts';
@@ -12,6 +13,9 @@ import { phaseInfoAt, type PhaseInfo } from './visibility.ts';
 import { RECENT_ONSETS, degreeName, formatUnits, ioiSixteenths, pitchClassName, quarterFraction, recentOnsets } from './musicAnalysis.ts';
 import { listV, numV, timeV, type PV } from './placeholders.ts';
 import { DEFAULT_TEXT_STYLES, resolveTextStyle, templateSpans, textPrims, textWidth, type Align, type TextRef, type TextSpan, type TextStyle, type TextStyleSet } from './typography.ts';
+import { EASINGS } from './motion.ts';
+import { activeRange } from './widgetMotion.ts';
+import { DEFAULT_TEXT_ANIMATOR, MAX_ANIM_ELEMENTS, countUpText, effectFrom, elementProgress, ranks, splitLine, transformText, type TextAnimator } from './textAnimator.ts';
 
 // ───────────────────────────── thuộc tính ─────────────────────────────
 export type { Align };
@@ -30,7 +34,7 @@ export interface TimeBarProps {
   showBars: boolean; barLength: number; barThickness: number; barColor: string; barTrackColor: string;
 }
 /** Ô chữ người dùng thêm (T-73, REQ-GRAPHICS-19): chữ nhiều dòng, có chỗ giữ dùng chung. `style`: kiểu của dòng; `valueStyle`: ghi đè cho phần giá trị của chỗ giữ. */
-export interface TextBoxProps { align: Align; text: string; style: TextRef; valueStyle: TextRef }
+export interface TextBoxProps { align: Align; text: string; style: TextRef; valueStyle: TextRef; /** Text animator (T-35); vắng hoặc tắt = chữ đứng yên như trước. */ animator?: TextAnimator }
 export type ChordMode = 'sustained' | 'strike';
 export interface ChordProps { mode: ChordMode; align: Align; nameStyle: TextRef; bassStyle: TextRef; notesStyle: TextRef; notesValueStyle: TextRef; alwaysShowNotes: boolean; notesTemplate: string; unrecognized: 'nc' | 'notes'; noChordText: string }
 export interface ProgressBarProps { orientation: 'HORIZONTAL' | 'VERTICAL'; thickness: number; progressColor: string; trackColor: string; radius: number; showTime: boolean; timeStyle: TextRef; timeValueStyle: TextRef; timeTemplate: string; timeAlign: Align }
@@ -80,7 +84,7 @@ export const DEFAULT_PROGRESS_BAR: Readonly<ProgressBarProps> = Object.freeze({
   timeStyle: ts('tiny'), timeValueStyle: {}, timeTemplate: '{elapsed} / {total}', timeAlign: 'right',
 });
 
-export const DEFAULT_TEXT_BOX: Readonly<TextBoxProps> = Object.freeze({ align: 'left', text: 'Text', style: ts('body'), valueStyle: {} });
+export const DEFAULT_TEXT_BOX: Readonly<TextBoxProps> = Object.freeze({ align: 'left', text: 'Text', style: ts('body'), valueStyle: {}, animator: { ...DEFAULT_TEXT_ANIMATOR } });
 
 /** Chỗ giữ RIÊNG của từng widget (che chỗ giữ chung cùng tên). Chỗ giữ chung (GLOBAL_KEYS) dùng được ở mọi chữ; preset dùng chỗ giữ lạ → cảnh báo, chữ giữ nguyên. */
 export const TEMPLATE_KEYS = {
@@ -479,6 +483,8 @@ export const textBoxRenderer: WidgetRenderer<TextBoxProps> = {
     const p = spec.properties, W = spec.layout.width, x = xFor(p.align, W), out: Primitive[] = [], T = typo(textStyles, measure, fonts);
     const st = T.style(p.style, 'body'), G = globalValues({ ast, derived, tracks }, t);
     let y = base(st.size);
+    const an = p.animator?.enabled ? { ...DEFAULT_TEXT_ANIMATOR, ...p.animator } : null; // trường thiếu (bản lưu cũ, sửa dở) lấy mặc định
+    if (an) return animateTextBox(out, p, an, G, T, st, x, W, t, spec, derived.index.duration);
     for (const line of p.text.split('\n')) {
       const spans = templateSpans(line, G, p.valueStyle);
       y += spans.length ? T.text(out, spans, x, y, st, p.align, W) : st.size * st.leading;
@@ -486,6 +492,42 @@ export const textBoxRenderer: WidgetRenderer<TextBoxProps> = {
     return out;
   },
 };
+
+/**
+ * Ô chữ có text animator (T-35): dàn từng phần tử (ký tự/từ/dòng) bằng textPrims ở đúng chỗ của nó trong dòng, rồi biến đổi theo tiến độ riêng.
+ * Phần tử khoảng trắng không tính lượt. Quá MAX_ANIM_ELEMENTS phần tử thì phần còn lại hiện như chữ thường.
+ */
+function animateTextBox(out: Primitive[], p: TextBoxProps, an: TextAnimator, G: Readonly<Record<string, PV>>, T: ReturnType<typeof typo>, st: TextStyle,
+  x: number, W: number, t: number, spec: WidgetSpec<TextBoxProps>, duration: number): Primitive[] {
+  const { from, duration: dur } = effectFrom(an);
+  const t0 = (activeRange(spec.visibility, t, duration)?.from ?? 0) + an.start, tt = t - t0;
+  const lines = p.text.split('\n').map((l) => templateSpans(l, G, p.valueStyle));
+  const units = lines.map((sp) => splitLine(sp, an.unit));
+  const n = Math.min(MAX_ANIM_ELEMENTS, units.reduce((s, u) => s + u.filter((e) => e.visible).length, 0));
+  const rk = ranks(n, an.order, an.seed), total = dur + Math.max(0, n - 1) * an.stagger;
+  const countK = an.countUp ? (total <= 0 ? (tt >= 0 ? 1 : 0) : (EASINGS[an.ease] ?? EASINGS.linear)(Math.min(1, Math.max(0, tt / total)))) : 1;
+  const fix = (sp: TextSpan[]) => (an.countUp ? sp.map((s) => ({ ...s, text: countUpText(s.text, countK) })) : sp);
+  let y = base(st.size), k = 0;
+  for (let li = 0; li < lines.length; li++) {
+    const spans = fix(lines[li]);
+    if (!spans.length) { y += st.size * st.leading; continue; }
+    const lineW = T.width(spans, st), x0 = p.align === 'center' ? x - lineW / 2 : p.align === 'right' ? x - lineW : x;
+    let lineH = st.size * st.leading;
+    for (const e of units[li]) {
+      const sp = fix(e.spans), ex = x0 + (e.before.length ? T.width(fix(e.before), st) : 0), tmp: Primitive[] = [];
+      lineH = Math.max(lineH, T.text(tmp, sp, ex, y, st, 'left', W * 4));
+      if (!e.visible) { out.push(...tmp); continue; }
+      const idx = k++;
+      if (idx >= n) { out.push(...tmp); continue; }
+      const pr = elementProgress(tt, rk[idx], dur, an.stagger, an.ease), m = an.direction === 'in' ? 1 - pr : pr; // m = lượng "từ" còn lại
+      const ew = T.width(sp, st), cx = ex + ew / 2, cy = y - st.size * 0.35;
+      transformText(tmp, cx, cy, from.x * m, from.y * m, 1 + (from.scale - 1) * m, 1 + (from.opacity - 1) * m, from.color, m);
+      if (m < 1 || from.opacity > 0) out.push(...tmp); // đang ẩn hẳn: không đẩy primitive
+    }
+    y += lineH;
+  }
+  return out;
+}
 
 /** Tên hợp âm → đoạn: phần bass sau "/" theo `bassStyle` (ví dụ nhạt hơn), phần gốc theo kiểu dòng. */
 export function chordSpans(name: string, bassStyle?: TextRef): TextSpan[] {

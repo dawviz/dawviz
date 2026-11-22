@@ -212,7 +212,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [10. Hiệu ứng thủ tục (procedural)](ANIMATION-CATALOG/10-hieu-ung-thu-tuc-procedural.md) · 643 ký tự
 - [11. Màu và ánh sáng](ANIMATION-CATALOG/11-mau-va-anh-sang.md) · 883 ký tự
 - [12. Làm mờ, biến dạng điểm ảnh và phong cách hoá](ANIMATION-CATALOG/12-lam-mo-bien-dang-diem-anh-va-phong-cach-hoa.md) · 968 ký tự
-- [13. Chữ (text)](ANIMATION-CATALOG/13-chu-text.md) · 720 ký tự
+- [13. Chữ (text)](ANIMATION-CATALOG/13-chu-text.md) · 802 ký tự
 - [14. Chuyển cảnh (giữa hai cảnh hoặc hai đoạn)](ANIMATION-CATALOG/14-chuyen-canh-giua-hai-canh-hoac-hai-doan.md) · 701 ký tự
 - [15. Camera](ANIMATION-CATALOG/15-camera.md) · 597 ký tự
 - [16. Nhân bản và vệt](ANIMATION-CATALOG/16-nhan-ban-va-vet.md) · 403 ký tự

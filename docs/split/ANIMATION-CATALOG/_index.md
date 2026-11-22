@@ -1,6 +1,6 @@
 # Chỉ mục ANIMATION-CATALOG.md — Danh mục hiệu ứng chuyển động và đường cong nội suy
 
-nguồn: `ANIMATION-CATALOG.md` (sha1 5777254af0)
+nguồn: `ANIMATION-CATALOG.md` (sha1 cb8de95b61)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -18,7 +18,7 @@ nguồn: `ANIMATION-CATALOG.md` (sha1 5777254af0)
 | 11 | 10. Hiệu ứng thủ tục (procedural) | [10-hieu-ung-thu-tuc-procedural.md](10-hieu-ung-thu-tuc-procedural.md) | 643 |  |
 | 12 | 11. Màu và ánh sáng | [11-mau-va-anh-sang.md](11-mau-va-anh-sang.md) | 883 |  |
 | 13 | 12. Làm mờ, biến dạng điểm ảnh và phong cách hoá | [12-lam-mo-bien-dang-diem-anh-va-phong-cach-hoa.md](12-lam-mo-bien-dang-diem-anh-va-phong-cach-hoa.md) | 968 |  |
-| 14 | 13. Chữ (text) | [13-chu-text.md](13-chu-text.md) | 720 |  |
+| 14 | 13. Chữ (text) | [13-chu-text.md](13-chu-text.md) | 802 |  |
 | 15 | 14. Chuyển cảnh (giữa hai cảnh hoặc hai đoạn) | [14-chuyen-canh-giua-hai-canh-hoac-hai-doan.md](14-chuyen-canh-giua-hai-canh-hoac-hai-doan.md) | 701 |  |
 | 16 | 15. Camera | [15-camera.md](15-camera.md) | 597 | REQ-GRAPHICS-15 |
 | 17 | 16. Nhân bản và vệt | [16-nhan-ban-va-vet.md](16-nhan-ban-va-vet.md) | 403 |  |
