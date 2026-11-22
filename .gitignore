@@ -36,3 +36,7 @@ scripts/notation/out/
 scripts/notation/data/
 # Công cụ đo khung hình (scripts/perf): AST tạm và bản dựng trang đo
 scripts/perf/out/
+
+# Video/khung hình tham chiếu (references/): không có bản quyền các video này nên KHÔNG commit. Tạo lại bằng scripts/references/fetch.sh
+references/*
+!references/README.md

@@ -134,6 +134,37 @@ describe('VideoStyles', () => {
   });
 });
 
+describe('VideoStyles: bộ preset (T-111, D-66)', () => {
+  const base = { items: [{ id: 'u1', name: 'Mở đầu' }, { id: 'u2', name: 'Điệp khúc' }], dirty: [], onPick: () => {}, onAddFile: () => {}, onDownload: () => {}, onDuplicate: () => {}, onRevert: () => {}, onDelete: () => {}, problems: [] };
+  it('xuất bộ: chọn preset, bắt buộc tên và tác giả; trả đúng các id đã chọn', async () => {
+    const calls: { ids: string[]; name: string }[] = [];
+    wrap(<VideoStyles value="paper" edited={false} onPick={() => {}} presets={{ ...base, onExportCollection: async (info, ids) => { calls.push({ ids, name: info.name }); } }} />);
+    fireEvent.click(screen.getByTestId('collection-open'));
+    fireEvent.click(screen.getByTestId('collection-pick-u2')); // bỏ chọn Điệp khúc
+    fireEvent.change(screen.getByTestId('collection-name'), { target: { value: 'Bộ của tôi' } });
+    fireEvent.change(screen.getByTestId('collection-author'), { target: { value: 'An' } });
+    fireEvent.submit(screen.getByTestId('collection-form'));
+    await waitFor(() => expect(calls).toEqual([{ ids: ['u1'], name: 'Bộ của tôi' }]));
+  });
+  it('xuất bộ: không chọn preset nào thì báo, không gọi onExport', () => {
+    let n = 0;
+    wrap(<VideoStyles value="paper" edited={false} onPick={() => {}} presets={{ ...base, onExportCollection: async () => { n++; } }} />);
+    fireEvent.click(screen.getByTestId('collection-open'));
+    fireEvent.click(screen.getByTestId('collection-pick-u1')); fireEvent.click(screen.getByTestId('collection-pick-u2'));
+    fireEvent.submit(screen.getByTestId('collection-form'));
+    expect(screen.getByTestId('collection-error')).toBeTruthy(); expect(n).toBe(0);
+  });
+  it('tên trùng: mặc định là đổi tên (không ghi đè thầm lặng); chọn ghi đè rồi nhập thì trả đúng lựa chọn; huỷ gọi onCancel', () => {
+    const got: Record<string, string>[] = []; let cancelled = 0;
+    wrap(<VideoStyles value="paper" edited={false} onPick={() => {}} presets={{ ...base, pendingCollection: { conflicts: ['Mở đầu', 'Điệp khúc'] }, onResolveCollection: (c) => got.push(c), onCancelCollection: () => cancelled++ }} />);
+    fireEvent.click(screen.getByTestId('collection-apply'));
+    expect(got[0]).toEqual({ 'Mở đầu': 'rename', 'Điệp khúc': 'rename' });
+    fireEvent.click(screen.getByTestId('conflict-overwrite-1')); fireEvent.click(screen.getByTestId('collection-apply'));
+    expect(got[1]).toEqual({ 'Mở đầu': 'rename', 'Điệp khúc': 'overwrite' });
+    fireEvent.click(screen.getByTestId('collection-cancel')); expect(cancelled).toBe(1);
+  });
+});
+
 describe('StylePanel: kiểu nốt dựng sẵn thuộc mục Hình thức', () => {
   it('chọn Neon đổi NoteStyle; kiểu đã chỉnh tay hiện "Tuỳ chỉnh"', () => {
     let picked = '';

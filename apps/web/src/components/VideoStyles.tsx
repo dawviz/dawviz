@@ -43,6 +43,12 @@ export interface UserPresets {
   onRevert(id: string): void;
   /** Xoá hẳn ô preset của người dùng (phong cách dựng sẵn không có nút này). */
   onDelete(id: string): void;
+  /** "Xuất bộ preset" (T-111, D-66 kiểu A): đóng gói các preset đã chọn (không mốc thời gian, không tệp DAW). Vắng = ẩn nút. */
+  onExportCollection?(info: { name: string; author: string; license: string; description: string }, ids: string[]): Promise<void>;
+  /** Bộ preset đang chờ người dùng quyết định các tên trùng (ghi đè hoặc đổi tên). */
+  pendingCollection?: { conflicts: string[] } | null;
+  onResolveCollection?(choices: Record<string, 'overwrite' | 'rename'>): void;
+  onCancelCollection?(): void;
   problems: Problem[];
   status?: string;
 }
@@ -97,6 +103,8 @@ export function VideoStyles({ value, edited, onPick, thumb, presets, headerActio
             <span className="text-xs leading-tight">{i18n.t('web.preset.add')}</span>
           </button>
           {presets.onShare && <SharePreset onShare={presets.onShare} defaultName={presets.shareName ?? ''} />}
+          {presets.onExportCollection && <ExportCollection items={presets.items} onExport={presets.onExportCollection} />}
+          {presets.pendingCollection && presets.onResolveCollection && presets.onCancelCollection && <CollectionConflicts conflicts={presets.pendingCollection.conflicts} onResolve={presets.onResolveCollection} onCancel={presets.onCancelCollection} />}
           <input ref={input} type="file" accept=".json,application/json,.zip,application/zip" className="hidden" tabIndex={-1} data-testid="preset-input"
             onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) presets.onAddFile(f); }} />
           <div role="status" className="text-xs text-muted" data-testid="preset-status">{presets.status ?? ''}</div>
@@ -143,3 +151,80 @@ function SharePreset({ onShare, defaultName }: { onShare(info: { name: string; a
   );
 }
 const AUTHOR_KEY = 'dawviz.share.author';
+
+/**
+ * "Xuất bộ preset" (T-111, D-66 kiểu A): chọn các preset đã lưu rồi tải một gói. Không kèm mốc thời gian của dự án và không kèm tệp DAW.
+ * Chọn đúng một preset thì ra gói một preset như "Chia sẻ thành preset".
+ */
+function ExportCollection({ items, onExport }: { items: { id: string; name: string }[]; onExport(info: { name: string; author: string; license: string; description: string }, ids: string[]): Promise<void> }) {
+  const { i18n } = useI18n();
+  const [open, setOpen] = useState(false), [busy, setBusy] = useState(false), [err, setErr] = useState<string | null>(null);
+  const [picked, setPicked] = useState<Set<string>>(() => new Set(items.map((x) => x.id)));
+  const [name, setName] = useState(''), [author, setAuthor] = useState(() => { try { return localStorage.getItem(AUTHOR_KEY) ?? ''; } catch { return ''; } });
+  const [license, setLicense] = useState('CC-BY-4.0'), [description, setDescription] = useState('');
+  const field = 'field w-full text-xs';
+  if (!open) return <button type="button" className="btn-ghost w-full border border-control" onClick={() => { setPicked(new Set(items.map((x) => x.id))); setErr(null); setOpen(true); }} data-testid="collection-open">{i18n.t('web.collection.open')}</button>;
+  const ids = items.filter((x) => picked.has(x.id)).map((x) => x.id);
+  const submit = async () => {
+    if (!ids.length) { setErr('none'); return; }
+    if (!name.trim() || !author.trim()) { setErr('missing'); return; }
+    setBusy(true); setErr(null);
+    try { try { localStorage.setItem(AUTHOR_KEY, author.trim()); } catch { /* không lưu được: bỏ qua */ } await onExport({ name, author, license, description }, ids); setOpen(false); }
+    catch (e) { setErr((e as { code?: string }).code ?? 'ERR_PRESET_INVALID'); }
+    finally { setBusy(false); }
+  };
+  return (
+    <form className="space-y-2 rounded border border-line p-2" onSubmit={(e) => { e.preventDefault(); void submit(); }} aria-label={i18n.t('web.collection.title')} data-testid="collection-form">
+      <p className="text-xs font-medium text-fg">{i18n.t('web.collection.title')}</p>
+      {items.length === 0 ? <p className="text-xs text-muted" data-testid="collection-empty">{i18n.t('web.collection.empty')}</p> : (
+        <fieldset className="space-y-1">
+          <legend className="text-xs text-muted">{i18n.t('web.collection.pick')}</legend>
+          {items.map((x) => (
+            <label key={x.id} className="flex items-center gap-2 text-xs text-fg">
+              <input type="checkbox" checked={picked.has(x.id)} onChange={(e) => setPicked((p) => { const n = new Set(p); if (e.target.checked) n.add(x.id); else n.delete(x.id); return n; })} data-testid={`collection-pick-${x.id}`} />
+              <span className="truncate">{x.name}</span>
+            </label>
+          ))}
+          <p className="text-xs text-muted">{i18n.t('web.collection.hint')}</p>
+        </fieldset>
+      )}
+      <label className="block space-y-0.5 text-xs text-muted">{i18n.t('web.share.name')}<input className={field} value={name} maxLength={60} required onChange={(e) => setName(e.target.value)} data-testid="collection-name" /></label>
+      <label className="block space-y-0.5 text-xs text-muted">{i18n.t('web.share.author')}<input className={field} value={author} maxLength={60} required onChange={(e) => setAuthor(e.target.value)} data-testid="collection-author" /></label>
+      <label className="block space-y-0.5 text-xs text-muted">{i18n.t('web.share.license')}
+        <Select value={license} onChange={(e) => setLicense(e.target.value)} wrapClassName="w-full" data-testid="collection-license">{PRESET_LICENSES.map((l) => <option key={l} value={l}>{l}</option>)}</Select>
+      </label>
+      <label className="block space-y-0.5 text-xs text-muted">{i18n.t('web.share.description')}<textarea className={field} rows={2} maxLength={500} value={description} onChange={(e) => setDescription(e.target.value)} data-testid="collection-description" /></label>
+      {err && <p role="alert" className="text-xs text-danger" data-testid="collection-error">{err === 'missing' ? i18n.t('web.share.missing') : err === 'none' ? i18n.t('web.collection.none') : i18n.t(`errors.${err}`)}</p>}
+      <div className="flex flex-wrap gap-2">
+        <button type="submit" className="btn-ghost flex-1 border border-control" disabled={busy || items.length === 0} title=".dawviz-preset.zip" data-testid="collection-download">{i18n.t('web.collection.download')}</button>
+        <button type="button" className="btn-ghost" onClick={() => setOpen(false)}>{i18n.t('web.collection.cancel')}</button>
+      </div>
+    </form>
+  );
+}
+
+/** Tên trùng khi nhập bộ preset (D-66): người dùng chọn ghi đè hoặc đổi tên cho từng preset; mặc định chưa chọn gì thì không có lựa chọn nào bị áp thầm lặng (đổi tên). */
+function CollectionConflicts({ conflicts, onResolve, onCancel }: { conflicts: string[]; onResolve(c: Record<string, 'overwrite' | 'rename'>): void; onCancel(): void }) {
+  const { i18n } = useI18n();
+  const [choice, setChoice] = useState<Record<string, 'overwrite' | 'rename'>>(() => Object.fromEntries(conflicts.map((c) => [c, 'rename' as const])));
+  return (
+    <form className="space-y-2 rounded border border-line p-2" onSubmit={(e) => { e.preventDefault(); onResolve(choice); }} aria-label={i18n.t('web.collection.conflictTitle')} data-testid="collection-conflicts">
+      <p className="text-xs font-medium text-fg">{i18n.t('web.collection.conflictTitle')}</p>
+      <p className="text-xs text-muted">{i18n.t('web.collection.conflictHint')}</p>
+      {conflicts.map((c, i) => (
+        <fieldset key={c} className="space-y-1">
+          <legend className="truncate text-xs text-fg">{c}</legend>
+          {(['rename', 'overwrite'] as const).map((v) => (
+            <label key={v} className="mr-3 inline-flex items-center gap-1 text-xs text-muted">
+              <input type="radio" name={`conflict-${i}`} checked={choice[c] === v} onChange={() => setChoice((x) => ({ ...x, [c]: v }))} data-testid={`conflict-${v}-${i}`} />{i18n.t(`web.collection.${v}`)}
+            </label>
+          ))}
+        </fieldset>
+      ))}
+      <div className="flex flex-wrap gap-2">
+        <button type="submit" className="btn-ghost flex-1 border border-control" data-testid="collection-apply">{i18n.t('web.collection.apply')}</button>
+        <button type="button" className="btn-ghost" onClick={onCancel} data-testid="collection-cancel">{i18n.t('web.collection.cancel')}</button>
+      </div>
+    </form>
+  );
+}

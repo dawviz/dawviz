@@ -192,6 +192,10 @@
           "title": "Định hướng hình ảnh và giao diện"
         },
         {
+          "src": "docs/design/REFERENCE-VIDEOS.md",
+          "title": "Video tham chiếu, chuỗi cảnh và chia sẻ preset"
+        },
+        {
           "src": "docs/design/FIREFOX-FONT-SLOWDOWN.md",
           "title": "Firefox xuất chậm dần: điều tra và giảm nhẹ"
         }

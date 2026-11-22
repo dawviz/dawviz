@@ -5,7 +5,7 @@ section: "4.1. Trong phạm vi phiên bản 1.0 (In-Scope)"
 path: "4. PHẠM VI DỰ ÁN (PROJECT SCOPE) > 4.1. Trong phạm vi phiên bản 1.0 (In-Scope)"
 chunk: 4-1-trong-pham-vi-phien-ban-1-0-in-scope.md
 source_lines: 110-136
-source_sha1: 34a0d66028
+source_sha1: 58fc2db966
 ids: [BR-09, D-01, D-03, D-04, D-05, D-24, D-26, D-27, D-28, D-29, D-30, D-31, D-33, SOI-12]
 ---
 ### 4.1. Trong phạm vi phiên bản 1.0 (In-Scope)

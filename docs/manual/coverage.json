@@ -71,12 +71,12 @@
         "apps/web/src/components/PanelChrome.tsx",
         "apps/web/src/lib/usePanelLayout.ts"
       ],
-      "uiHash": "3e7d1836e6fc",
+      "uiHash": "351c013bfc6f",
       "viHash": "5fb64a0d3fc6",
       "enHash": "53989960c918",
       "coverHashes": {
         "apps/web/src/components/Transport.tsx": "0d46653b61a3",
-        "apps/web/src/components/VideoStyles.tsx": "367471ffeea5",
+        "apps/web/src/components/VideoStyles.tsx": "d096dad9483c",
         "apps/web/src/components/AudioPanel.tsx": "11547f9d52e7",
         "apps/web/src/components/TrackPanel.tsx": "dd45b2157ab8",
         "apps/web/src/components/Stage.tsx": "af98beb6a53e",
@@ -185,12 +185,12 @@
         "apps/web/src/lib/presetPack.ts",
         "locales/en.json#web.share."
       ],
-      "uiHash": "d9341da9a838",
-      "viHash": "f021b04a6229",
-      "enHash": "7fc576a2d394",
+      "uiHash": "fe666c5fae33",
+      "viHash": "7ead1444a5bd",
+      "enHash": "47aca63bf704",
       "coverHashes": {
         "apps/web/src/components/ThemeSelect.tsx": "f9b2c3746fbe",
-        "apps/web/src/components/VideoStyles.tsx": "367471ffeea5",
+        "apps/web/src/components/VideoStyles.tsx": "d096dad9483c",
         "locales/en.json#web.settings.": "6f3092d6a435",
         "locales/en.json#web.theme.": "05a823a18b7d",
         "locales/en.json#web.preset.": "bfbd13045aab",
@@ -200,7 +200,7 @@
         "locales/en.json#web.latency.": "fcb231e3ca77",
         "apps/web/src/lib/session.ts": "fd06980e3772",
         "apps/web/src/lib/assetsRuntime.ts": "1175970574d8",
-        "apps/web/src/lib/presetPack.ts": "72d42da283e0",
+        "apps/web/src/lib/presetPack.ts": "1b5c1c101deb",
         "locales/en.json#web.share.": "f17d0658590c"
       }
     },
@@ -273,8 +273,8 @@
         "locales/en.json#web.tonic."
       ],
       "uiHash": "9593bdc49de5",
-      "viHash": "8665a58fa965",
-      "enHash": "f2c962692880",
+      "viHash": "6625923c8292",
+      "enHash": "ebdc032197b9",
       "coverHashes": {
         "apps/web/src/components/WidgetSettings.tsx": "953893f6e1df",
         "locales/en.json#web.ws.": "3d1c968fd76d",

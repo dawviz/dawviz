@@ -201,6 +201,7 @@ dawviz/
 │     │  │  ├─ undoKeys.ts
 │     │  │  ├─ usePanelLayout.ts
 │     │  │  ├─ usePref.ts
+│     │  │  ├─ userPresets.test.ts
 │     │  │  ├─ userPresets.ts
 │     │  │  ├─ useStageWidth.test.ts
 │     │  │  ├─ useStageWidth.ts
@@ -332,6 +333,7 @@ dawviz/
 │  │  │  ├─ prims.ts
 │  │  │  ├─ render.ts
 │  │  │  ├─ scene.ts
+│  │  │  ├─ sequence.ts
 │  │  │  ├─ snap.ts
 │  │  │  ├─ spectrum.ts
 │  │  │  ├─ style.ts
@@ -370,6 +372,7 @@ dawviz/
 │  │  │  ├─ render-core.test.ts
 │  │  │  ├─ rotate.test.ts
 │  │  │  ├─ scene.test.ts
+│  │  │  ├─ sequence.test.ts
 │  │  │  ├─ snap.test.ts
 │  │  │  ├─ spectrum.test.ts
 │  │  │  ├─ textAnimator.test.ts
@@ -394,12 +397,16 @@ dawviz/
 │  │  ├─ rainbow-pitch.json
 │  │  └─ soft-bars.json
 │  ├─ scene/
+│  │  ├─ dark-score-16x9.json
 │  │  ├─ paper-16x9.json
-│  │  └─ paper-1x1.json
+│  │  ├─ paper-1x1.json
+│  │  └─ paper-light-1x1.json
 │  ├─ schema/
 │  │  ├─ note-style.schema.json
 │  │  ├─ preset-pack.schema.json
 │  │  └─ scene.schema.json
+│  └─ README.md
+├─ references/
 │  └─ README.md
 ├─ schemas/
 ├─ scripts/
@@ -430,6 +437,9 @@ dawviz/
 │  │  ├─ check.mjs
 │  │  ├─ check.test.mjs
 │  │  └─ cli.mjs
+│  ├─ references/
+│  │  ├─ fetch.sh
+│  │  └─ shot.mjs
 │  ├─ bundle.mjs
 │  ├─ check-i18n.mjs
 │  ├─ gen-builtin-schemas.mjs
@@ -1024,6 +1034,7 @@ re-export * from './notation/spelling.ts'
 re-export * from './notation/widget.ts'
 re-export { roughPathData, roughGlyph, hashSigned } from './notation/draw.ts'
 re-export { ExprError, FRAME_BUDGET, LIMITS as EXPR_LIMITS, BUILTIN_NAMES as EXPR_FUNCTIONS, type ExprErrorCode, type Budget } from '@dawviz/expr'
+re-export * from './sequence.ts'
 ```
 
 #### `packages/render-core/src/insight.ts`
@@ -1415,6 +1426,26 @@ function silentSanitizer(styleIds?: ReadonlySet<string>): Sanitizer   // Bộ ki
 function sanitizeWidgetProps(type: WidgetType, props: unknown, S: Sanitizer): Record<string, unknown> | null   // Thuộc tính của widget (trừ Piano Roll) qua đúng bộ kiểm của loại đó. Loại không có bộ kiểm (Piano Roll) → nul…
 function sanitizeVisibility(S: Sanitizer, v: unknown, path: string): WidgetVisibility | undefined   // Khoảng hiển thị: danh sách khoảng (≤ MAX_RANGES), mỗi khoảng from ≥ 0, to > from hoặc null (tới hết bài); kho…
 function sanitizePhases(S: Sanitizer, v: unknown, path: string): Phase[]   // Phase: mảng {name, start}; tên 1–60 ký tự, start ≥ 0; sắp theo start; hai phase cùng start thì giữ phase đầu.
+```
+
+#### `packages/render-core/src/sequence.ts`
+
+Chuỗi cảnh (T-110, D-66): một dự án dùng nhiều preset scene ở các mốc thời gian khác nhau. Mốc nằm ở MANIFEST của dự án, không nằm trong preset.
+
+```text
+const SEQUENCE_VERSION
+const MAX_CUES
+interface SceneCue   // Một đoạn của chuỗi: preset `scene` (khoá trong thư viện preset của dự án) hiện từ `from` tới `to` (giây; null…
+interface SequenceManifest   // Manifest đi cùng dự án. `global` = scene luôn bật suốt bài, vẽ trên cùng (vd. chữ hợp âm, thanh tiến độ).
+interface SequenceWarning
+function sanitizeManifest(raw: unknown):    // Đọc manifest từ JSON không tin cậy: mục sai bị bỏ kèm cảnh báo, số kẹp vào miền, cue sắp theo `from`, id trùn…
+function cueAlpha(c: SceneCue, t: number, duration: number): number   // Độ đục của cue tại `t` (0 = không hiện): trong [from, to) có hiện dần/ẩn dần ở hai biên (cùng đường cong `vis…
+function activeCues(m: SequenceManifest, t: number, duration: number):    // Các cue đang hiện tại `t`, theo thứ tự vẽ (cue sau vẽ đè cue trước).
+const cueWidgetId = (cueId: string, widgetId: string) =>   // Tiền tố id widget của một cue: các cue dùng cùng một scene không đụng id (Bản nhạc dựng theo id widget).
+function cueScene(scene: SceneDocument, cue: SceneCue): SceneDocument   // Bản sao của `scene` đặt ở cue `cue`: id widget (và `parent`) có tiền tố cue; keyframe mốc `sec` và khoảng hiể…
+interface SequenceSource
+function sequenceLayers(m: SequenceManifest, src: SequenceSource, t: number, duration: number):    // Các scene cần vẽ ở `t`, theo thứ tự: cue theo `from`, rồi scene chung (trên cùng). Cue có scene khác khung th…
+function renderSequenceFrame(m: SequenceManifest, src: SequenceSource, fallback: SceneDocument, ast: UnifiedProjectAST, t: number, target: RenderTarget, scale: number, renderers: Partial<Record<WidgetSpec['type'], WidgetRenderer<any>>> = WIDGET_RENDERERS): void   // Vẽ một khung của chuỗi cảnh. Không có cue nào hiện và không có scene chung: tô `fallback` (nền của scene đó) …
 ```
 
 #### `packages/render-core/src/snap.ts`
@@ -3075,7 +3106,12 @@ class PresetPackError extends Error
 function presetFileName(name: string): string   // Tên tệp gói: slug chữ thường a-z0-9- (bỏ dấu), thêm đuôi `.dawviz-preset.zip`.
 async function buildPresetPack(info: PresetInfo, payload: PresetPayload, assets: readonly PresetAsset[] = [], now = new Date()): Promise<Uint8Array>   // Đóng gói. Ném PresetPackError khi thiếu tên/tác giả hoặc giấy phép không nằm trong danh sách.
 interface ReadPreset
-async function readPresetPack(bytes: Uint8Array, limits = PRESET_PACK_LIMITS): Promise<ReadPreset>   // Đọc gói: kiểm cỡ, số tệp, tỉ lệ nén, băm; nội dung qua bộ kiểm của loại. Lỗi → PresetPackError có mã.
+async function readPresetPack(bytes: Uint8Array, limits = PRESET_PACK_LIMITS): Promise<ReadPreset>   // Đọc gói một preset: nội dung qua đúng bộ kiểm của loại. Lỗi → PresetPackError có mã. Gói `collection` bị từ c…
+const COLLECTION_MAX_PRESETS   // Số scene tối đa trong một bộ (cùng trần số tệp của gói: tài nguyên dùng chung nên số scene có thể nhiều hơn s…
+interface CollectionItem
+interface ReadCollection
+async function buildCollectionPack(info: PresetInfo, items: readonly CollectionItem[], assets: readonly PresetAsset[] = [], now = new Date()): Promise<Uint8Array>   // Đóng gói nhiều scene thành một tệp `.dawviz-preset.zip` loại `collection`. Tài nguyên dùng chung được khử trù…
+async function readCollectionPack(bytes: Uint8Array, limits = PRESET_PACK_LIMITS): Promise<ReadCollection>   // Đọc bộ preset: kiểm như gói lẻ (cỡ, băm, giấy phép), mỗi scene qua `sanitizeScene`. Gói loại khác → ERR_PRESE…
 ```
 
 #### `apps/web/src/lib/problems.ts`
@@ -3410,6 +3446,11 @@ const saveUserPresets = (items: UserPreset[]) =>
 function addUserPreset(list: UserPreset[], name: string, scene: SceneDocument):    // Thêm một preset; cùng tên và cùng nội dung với mục có sẵn thì dùng lại mục đó. Đầy thì bỏ mục cũ nhất.
 const removeUserPreset = (list: UserPreset[], id: string) =>
 const matchUserPreset = (list: UserPreset[], scene: SceneDocument) =>   // Preset có scene đúng bằng scene hiện tại (để đánh dấu ô đang chọn), nếu có.
+type ConflictChoice   // ───── Nhập bộ preset (T-111, D-66): trùng tên khác nội dung thì HỎI người dùng ghi đè hoặc đổi tên, không tự …
+interface CollectionImportPlan
+function planCollectionImport(list: UserPreset[], items: readonly { name: string; scene: SceneDocument }[]): CollectionImportPlan
+function uniquePresetName(taken: ReadonlySet<string>, name: string): string   // Tên chưa dùng: `Tên (2)`, `Tên (3)`… (cắt gốc để vẫn trong 60 ký tự).
+function applyCollectionImport(list: UserPreset[], plan: CollectionImportPlan, choices: Readonly<Record<string, ConflictChoice>>):    // Áp kế hoạch: `fresh` thêm vào; mỗi mục xung đột theo `choices[tên]` (thiếu lựa chọn = rename, không bao giờ g…
 ```
 
 #### `apps/web/src/lib/useStageWidth.ts`
@@ -3571,6 +3612,7 @@ type SpectrumOut
 - `scripts/preset-check/check.mjs` — Kiểm preset cộng đồng (T-31, EXPRESSIONS §6.2, COMMUNITY-CONTENT §3): hàm thuần `checkPreset` + CLI. Không cần mạng, không có secret: chạy được trong CI
 - `scripts/preset-check/check.test.mjs` — Test của checkPreset (T-31): preset dựng sẵn và preset cộng đồng hợp lệ đạt; giấy phép, URL ngoài, biểu thức lỗi, khoá nguy hiểm, tên tệp bị chặn.
 - `scripts/preset-check/cli.mjs` — npm run preset:check -- [--community] <tệp.json | tệp.dawviz-preset.zip…> (thoát mã 1 nếu có lỗi; in cảnh báo để người duyệt xem)
+- `scripts/references/shot.mjs` — Chụp khung xem trước của một preset scene ở các mốc thời gian, để đặt cạnh khung tham chiếu (references/frames). Không vào bản build.
 - `scripts/rewrite-imports.mjs` — Công cụ một lần: viết lại import tương đối giữa các package khi tách monorepo.
 - `scripts/split_doc.py` — Tách tài liệu Markdown (SRS/SDD/TDD...) thành các mảnh nhỏ để đưa cho AI tham chiếu.
 - `scripts/sync-docs.mjs` — Đồng bộ "hệ thống ngữ cảnh AI" của repo và kiểm tra liên kết. Không phụ thuộc thư viện ngoài (Node >= 18; split dùng python3).
@@ -3627,6 +3669,7 @@ type SpectrumOut
 - `apps/web/src/lib/timelineRows.test.ts`
 - `apps/web/src/lib/undoKeys.test.ts`
 - `apps/web/src/lib/useStageWidth.test.ts`
+- `apps/web/src/lib/userPresets.test.ts`
 - `apps/web/src/lib/widgetFields.test.ts`
 - `apps/web/src/lib/workspaceStore.test.ts`
 - `apps/web/test/app.test.tsx`
@@ -3655,6 +3698,7 @@ type SpectrumOut
 - `packages/render-core/test/render-core.test.ts`
 - `packages/render-core/test/rotate.test.ts`
 - `packages/render-core/test/scene.test.ts`
+- `packages/render-core/test/sequence.test.ts`
 - `packages/render-core/test/snap.test.ts`
 - `packages/render-core/test/spectrum.test.ts`
 - `packages/render-core/test/textAnimator.test.ts`
@@ -3671,4 +3715,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 11 thư mục src, 1643 ký hiệu công khai -->
+<!-- 11 thư mục src, 1667 ký hiệu công khai -->

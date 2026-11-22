@@ -88,7 +88,7 @@ export const PLACEHOLDER_KINDS: Readonly<Record<string, readonly PlaceholderKind
   key: ['text'], scale: ['text'], confidence: ['num'], poly: ['num'], section: ['text'], next: ['text'], next_in: ['time'], section_no: ['num'], section_elapsed: ['time'],
 });
 /** Tên chỗ giữ dùng chung, dùng được ở mọi chữ (D-60). Widget có thể che bằng giá trị riêng cùng tên. */
-export const GLOBAL_KEYS = ['time', 'elapsed', 'remaining', 'total_time', 'bpm', 'bar', 'beat', 'sig', 'title', 'artist', 'chord', 'notes', 'played', 'total', 'pct', 'events', 'events_total', 'phase', 'next_phase', 'phase_elapsed', 'phase_remaining', 'phase_no', 'rhythm', 'bass', 'lengths', 'pitch_classes'] as const;
+export const GLOBAL_KEYS = ['time', 'elapsed', 'remaining', 'total_time', 'bpm', 'bar', 'beat', 'sig', 'title', 'artist', 'chord', 'notes', 'played', 'total', 'pct', 'events', 'events_total', 'events_pct', 'phase', 'next_phase', 'phase_elapsed', 'phase_remaining', 'phase_no', 'rhythm', 'bass', 'lengths', 'pitch_classes'] as const;
 
 /** Tên cũ còn đọc được nhưng không gợi ý: `{tempo}` = `{bpm}` (cùng giá trị, cùng cách hiện) để preset cũ không hỏng. */
 export const ALIAS_KEYS = ['tempo'] as const;
