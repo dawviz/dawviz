@@ -5,7 +5,7 @@ section: "7. Hiện/ẩn, che và lộ (reveal)"
 path: "7. Hiện/ẩn, che và lộ (reveal)"
 chunk: 7-hien-an-che-va-lo-reveal.md
 source_lines: 121-135
-source_sha1: e025c800f9
+source_sha1: 5777254af0
 ids: []
 ---
 ## 7. Hiện/ẩn, che và lộ (reveal)

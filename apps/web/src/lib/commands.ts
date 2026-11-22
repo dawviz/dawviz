@@ -260,13 +260,30 @@ export const addWidgets = (d: Doc, ws: WidgetSpec[], refs: Doc['propsRef'] = {})
   const after = { widgets: [...d.scene.widgets, ...ws], propsRef: { ...d.propsRef, ...Object.fromEntries(ws.map((w) => [w.id, refs[w.id] ?? widgetDefaults(w.type)])) } };
   return slice(d, 'duplicateWidgets', 'web.cmd.duplicate', get, set, after, undefined, { n: ws.length, ...(ws.length === 1 ? { widget: ws[0].id } : {}) });
 };
-/** Xoá widget (T-68). Hoàn tác trả widget về đúng chỗ trong tài liệu (giữ thứ tự và zIndex). */
+/** Xoá widget (T-68). Hoàn tác trả widget về đúng chỗ trong tài liệu (giữ thứ tự và zIndex). Con của widget bị xoá thôi có cha (cùng một bước). */
 export const removeWidgets = (d: Doc, ids: readonly string[]): Cmd | null => {
   const del = new Set(ids.filter((id) => d.scene.widgets.some((w) => w.id === id)));
   if (!del.size) return null;
   const get = (x: Doc) => x.scene.widgets;
   const set = (x: Doc, v: WidgetSpec[]) => ({ ...x, scene: { ...x.scene, widgets: v } });
-  return slice(d, 'removeWidgets', 'web.cmd.removeWidget', get, set, d.scene.widgets.filter((w) => !del.has(w.id)), undefined, { n: del.size, names: [...del] });
+  const kept = d.scene.widgets.filter((w) => !del.has(w.id)).map((w) => { if (!w.parent || !del.has(w.parent)) return w; const { parent: _p, ...rest } = w; return rest; });
+  return slice(d, 'removeWidgets', 'web.cmd.removeWidget', get, set, kept, undefined, { n: del.size, names: [...del] });
+};
+/** Widget có thể làm cha của `id`: mọi widget khác trừ chính nó và con cháu của nó (tránh vòng lặp). */
+export function parentCandidates(scene: SceneDocument, id: string): string[] {
+  const kids = new Map<string, string[]>();
+  for (const w of scene.widgets) if (w.parent) kids.set(w.parent, [...(kids.get(w.parent) ?? []), w.id]);
+  const below = new Set<string>([id]);
+  for (const q = [id]; q.length;) for (const c of kids.get(q.pop()!) ?? []) if (!below.has(c)) { below.add(c); q.push(c); }
+  return scene.widgets.filter((w) => !below.has(w.id)).map((w) => w.id);
+}
+/** Đặt (hoặc bỏ, `null`) widget cha (parenting, 0.7.0). Cha tạo vòng lặp hoặc không tồn tại → không làm gì. Hoàn tác được. */
+export const setWidgetParent = (d: Doc, widgetId: string, parent: string | null): Cmd | null => {
+  const w = d.scene.widgets.find((x) => x.id === widgetId);
+  if (!w || (parent !== null && !parentCandidates(d.scene, widgetId).includes(parent))) return null;
+  const get = (x: Doc): string | null => x.scene.widgets.find((q) => q.id === widgetId)!.parent ?? null;
+  const set = (x: Doc, v: string | null) => withWidget(x, widgetId, (q) => { const { parent: _p, ...rest } = q; return v === null ? rest : { ...rest, parent: v }; });
+  return slice(d, 'setWidgetParent', 'web.cmd.widgetParent', get, set, parent, undefined, { widget: widgetId, parent });
 };
 export const setWidgetVisible = (d: Doc, widgetId: string, visible: boolean): Cmd | null => {
   const w = d.scene.widgets.find((x) => x.id === widgetId);

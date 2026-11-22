@@ -499,6 +499,7 @@ export function App() {
     aspect: (a) => run((d) => Cmds.setAspect(d, a)),
     canvasSize: (w, h) => run((d) => Cmds.setCanvasSize(d, w, h)),
     visible: (id, v) => run((d) => Cmds.setWidgetVisible(d, id, v)),
+    parent: (id, p) => run((d) => Cmds.setWidgetParent(d, id, p)),
     paintVisible: (id, v) => run((d) => Cmds.paintWidgetVisible(d, id, v)),
     rename: (id, name) => run((d) => Cmds.renameWidget(d, id, name)),
     allVisible: () => run((d) => Cmds.toggleAllWidgetsVisible(d)),

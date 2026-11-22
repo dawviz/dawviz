@@ -4,7 +4,7 @@
 //    đường cong có tên, cách đi tiếp, sau keyframe cuối. Áp cho mọi keyframe đang chọn trong một bước hoàn tác.
 //  • Chọn hàng (không keyframe): cách thay đổi Keyframe | Theo nhạc; form "Theo nhạc" (nguồn, khoảng nguồn, khoảng giá trị, đường cong).
 import type { ReactNode } from 'react';
-import { EASING_NAMES, isBinding, type Animation, type Binding, type BindSource, type EaseSpec, type Key, type KeyAnimation, type LoopMode, type TempoPoint, type WidgetSpec } from '@dawviz/render-core';
+import { EASING_NAMES, isBinding, type Animation, type Binding, type BindSource, type EaseSpec, type Key, type KeyAnimation, type KeyValue, type LoopMode, type TempoPoint, type WidgetSpec } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import type { Gesture } from '../lib/storeReact.ts';
 import { radioKeys, radioTab } from '../lib/a11y.ts';
@@ -18,6 +18,7 @@ import { TimeField } from './TimeField.tsx';
 import { Select } from './Select.tsx';
 import { EaseGraph } from './EaseGraph.tsx';
 import { Trash } from './Icons.tsx';
+import { DiscreteValue } from './DiscreteValue.tsx';
 import { NO_SEL, type KeySel } from './KeyframeTimeline.tsx';
 import { rowOfPath, timelineRows, visibleKeyCount } from '../lib/timelineRows.ts';
 
@@ -69,6 +70,7 @@ export function AnimationInspector({ n, widget, sel, tempoMap, locked, getTime, 
   // Số hình thoi người dùng thấy: Vị trí gộp x+y nên cùng dòng, cùng thời điểm chỉ tính một.
   const shownCount = visibleKeyCount(rows, entries);
 
+  const allStep = entries.length > 0 && entries.every((e) => e.f.kind === 'bool' || e.f.kind === 'choice');
   if (entries.length) {
     const groups = groupRefs(entries.map((e) => keyRef(e.path, e.i)));
     const paths = [...groups.keys()];
@@ -103,10 +105,12 @@ export function AnimationInspector({ n, widget, sel, tempoMap, locked, getTime, 
               : <span className="text-right tabular-nums text-fg" title={i18n.t('web.anim.atMusic')}>{keyTimeText(one[0].k.at)}</span>}
             {one.map((e) => {
               const name = one.length > 1 ? `${i18n.t('web.keyinsp.value')} ${e.path.split('.').pop()!.toUpperCase()}` : i18n.t('web.keyinsp.value');
-              const set = (v: number | string) => { const a = anim(e.path); if (a) onAnimate(e.path, setKey(a, e.i, { value: v }), `kv${e.path}`); };
+              const set = (v: KeyValue) => { const a = anim(e.path); if (a) onAnimate(e.path, setKey(a, e.i, { value: v }), `kv${e.path}`); };
               return [
                 <span key={`l${e.path}`}>{name}</span>,
-                e.f.kind === 'color'
+                e.f.kind === 'bool' || e.f.kind === 'choice'
+                  ? <DiscreteValue key={e.path} f={e.f} value={e.k.value} label={name} disabled={locked} onChange={set} />
+                  : e.f.kind === 'color'
                   ? <input key={e.path} type="color" aria-label={name} value={String(e.k.value)} disabled={locked} onChange={(x) => set(x.target.value)} className="h-6 w-full" />
                   : <NumberField key={e.path} label={name} value={Number(e.k.value)} spec={{ min: e.f.min, max: e.f.max, step: e.f.step }} range={e.f.range} disabled={locked} onChange={set} />,
               ];
@@ -114,7 +118,8 @@ export function AnimationInspector({ n, widget, sel, tempoMap, locked, getTime, 
           </div>
         )}
 
-        <div className="space-y-2 border-t border-line pt-2.5">
+        {allStep && <p className="border-t border-line pt-2.5 text-xs leading-snug text-muted" data-testid="keyinsp-step">{i18n.t('web.keyinsp.stepNote')}</p>}
+        {!allStep && <div className="space-y-2 border-t border-line pt-2.5">
           <p className="text-xs font-semibold text-fg">{i18n.t('web.keyinsp.curveIn')}</p>
           {noIncoming && <p className="text-xs leading-snug text-muted" data-testid="keyinsp-first">{i18n.t('web.keyinsp.firstKey')}</p>}
           <EaseGraph ease={curEase} mixed={mixedEase} disabled={locked || noIncoming}
@@ -137,7 +142,7 @@ export function AnimationInspector({ n, widget, sel, tempoMap, locked, getTime, 
               </label>
             ))}
           </div>
-        </div>
+        </div>}
 
         <div className="space-y-2 border-t border-line pt-2.5">
           <Row label={i18n.t('web.anim.interp')} reset={<ResetButton label={i18n.t('web.anim.interp')} text={i18n.t('web.keyinsp.resetInterp')} changed={interp !== 'linear'} disabled={locked} onReset={() => patchAll(() => ({ interp: undefined }))} />}>
@@ -173,6 +178,7 @@ export function AnimationInspector({ n, widget, sel, tempoMap, locked, getTime, 
   const anims = row.paths.map((p) => widget.animate?.[p]);
   const mode = anims.some((a) => a && !isBinding(a)) ? 'keys' : anims.some((a) => a) ? 'bind' : null;
   const used = Object.keys(widget.animate ?? {}).length;
+  const stepRow = row.fields.some((f) => f.kind === 'bool' || f.kind === 'choice'); // theo bậc: không gắn theo nhạc
   const rname = i18n.has(row.labelKey) ? i18n.t(row.labelKey) : row.id;
   const setMode = (m: 'keys' | 'bind') => {
     if (locked || m === mode) return;
@@ -187,7 +193,8 @@ export function AnimationInspector({ n, widget, sel, tempoMap, locked, getTime, 
       </div>
       <div className="seg w-full" role="radiogroup" aria-label={i18n.t('web.anim.mode')} onKeyDown={radioKeys} data-testid="keyinsp-mode">
         {(['keys', 'bind'] as const).map((m) => (
-          <button key={m} type="button" role="radio" aria-checked={mode === m} tabIndex={radioTab(mode === m || (mode === null && m === 'keys'))} className="seg-btn flex-1" disabled={locked}
+          <button key={m} type="button" role="radio" aria-checked={mode === m} tabIndex={radioTab(mode === m || (mode === null && m === 'keys'))} className="seg-btn flex-1" disabled={locked || (m === 'bind' && stepRow)}
+            title={m === 'bind' && stepRow ? i18n.t('web.keyinsp.stepNoBind') : undefined}
             onClick={() => setMode(m)} data-testid={`keyinsp-mode-${m}`}>{i18n.t(`web.anim.mode.${m}`)}</button>
         ))}
       </div>

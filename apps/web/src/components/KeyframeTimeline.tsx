@@ -9,7 +9,7 @@
 // ←/→ trên hình thoi đi qua keyframe cùng hàng, ↑/↓ sang hàng khác, Enter đưa vạch phát tới keyframe.
 // Logic thuần ở lib/timeline.ts và lib/timelineRows.ts; hình dạng hình thoi cho biết cách đi tiếp: thoi = đều, vuông = giữ rồi nhảy, tròn = cong mượt.
 import { memo, useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent as RPointerEvent } from 'react';
-import { MAX_ANIMATIONS, MAX_ANIM_KEYS, compileTrack, isBinding, sampleTrack, type Animation, type KeyAnimation, type TempoPoint, type WidgetSpec } from '@dawviz/render-core';
+import { MAX_ANIMATIONS, MAX_ANIM_KEYS, compileTrack, isBinding, sampleTrack, type Animation, type KeyAnimation, type KeyValue, type TempoPoint, type WidgetSpec } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { usePlayback, type Playback } from '../lib/playback.ts';
 import type { Gesture } from '../lib/storeReact.ts';
@@ -17,12 +17,13 @@ import { isTextEntry } from '../lib/a11y.ts';
 import { formatClock } from '../lib/timeFormat.ts';
 import { addKey, newKeyAnimation, setKey, staticValue, type AnimField } from '../lib/animateFields.ts';
 import {
-  DRAG_SLOP, ROW_H, RULER_H, SAME_TIME, beatTimes, clampPps, clampShift, fitPps, groupRefs, keyAt, keyRef, keySecs, moveKeys,
+  DRAG_SLOP, ROW_H, RULER_H, SAME_TIME, beatTimes, copyKeys, keyClipboard, pasteIntoWidget, clampPps, clampShift, fitPps, groupRefs, keyAt, keyRef, keySecs, moveKeys,
   parseKeyRef, removeKeys, rulerLabel, rulerStep, rulerTicks, snapTime, xToTime, zoomAround,
 } from '../lib/timeline.ts';
 import { rowKeys, timelineRows, type GroupId, type RowDef, type VKey } from '../lib/timelineRows.ts';
 import { PANEL_LIMITS } from '../lib/panelLayout.ts';
 import { NumberField } from './NumberField.tsx';
+import { DiscreteValue } from './DiscreteValue.tsx';
 import { Splitter } from './Splitter.tsx';
 import { ChevronRight, Diamond, FitWidth, Filter, KeyNext, KeyPrev, Stopwatch, ZoomIn, ZoomOut } from './Icons.tsx';
 
@@ -330,6 +331,19 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
       e.preventDefault(); e.stopPropagation();
       onSel({ keys: keyRows.flatMap((x) => x.vkeys.flatMap((v) => v.refs)), row: sel.row }); return;
     }
+    // Ctrl+C / Ctrl+V: sao chép keyframe đang chọn; dán tại vạch phát (giữ khoảng cách), một bước hoàn tác.
+    if (mod && !e.shiftKey && !e.altKey && e.code === 'KeyC' && selKeys.length) {
+      e.preventDefault(); e.stopPropagation();
+      const keyed: Record<string, KeyAnimation> = {}; for (const p of groupRefs(selKeys).keys()) { const a = keyAnim(p); if (a) keyed[p] = a; }
+      keyClipboard.set(copyKeys(keyed, selKeys, tempoMap)); return;
+    }
+    if (mod && !e.shiftKey && !e.altKey && e.code === 'KeyV' && keyClipboard.get()) {
+      e.preventDefault(); e.stopPropagation();
+      if (locked) return;
+      const r = pasteIntoWidget(widget, keyClipboard.get()!, playback.get().t, duration);
+      if (Object.keys(r.changes).length) { onAnimateMany(r.changes, undefined); onSel({ keys: r.refs, row: sel.row }); }
+      return;
+    }
     if (!mod && !e.altKey && (e.key === 'u' || e.key === 'U')) { e.preventDefault(); e.stopPropagation(); setOnlyAnimated((v) => !v); return; }
     if (e.altKey && !mod && (e.key === 'ArrowLeft' || e.key === 'ArrowRight') && selKeys.length) {
       e.preventDefault(); e.stopPropagation(); shiftSelected((e.key === 'ArrowLeft' ? -1 : 1) * (e.shiftKey ? 1 : FRAME));
@@ -509,7 +523,7 @@ const Keys = memo(function Keys({ it, pps, sel, name, locked, widget, onDown, on
 /** Một hàng của cây thuộc tính: đồng hồ | tên ngắn | giá trị tại vạch phát (một ô mỗi đường dẫn) | ◀ ◆ ▶. Chỉ hàng có keyframe theo dõi đồng hồ phát. */
 function TreeRow({ it, name, widget, tempoMap, playback, locked, selected, full, painted, onPick, onToggle, onAddHere, onRemoveHere, onPaintStart, onValue }: {
   it: RowItem; name: string; widget: WidgetSpec; tempoMap: readonly TempoPoint[]; playback: Playback; locked: boolean;
-  selected: boolean; full: boolean; painted: boolean; onPaintStart(e: RPointerEvent<HTMLButtonElement>, removing: boolean): void; onPick(): void; onToggle(): void; onAddHere(): void; onRemoveHere(t: number): void; onValue(path: string, v: number | string): void;
+  selected: boolean; full: boolean; painted: boolean; onPaintStart(e: RPointerEvent<HTMLButtonElement>, removing: boolean): void; onPick(): void; onToggle(): void; onAddHere(): void; onRemoveHere(t: number): void; onValue(path: string, v: KeyValue): void;
 }) {
   const { i18n } = useI18n();
   const { row, anims, mode, vkeys } = it;
@@ -526,6 +540,9 @@ function TreeRow({ it, name, widget, tempoMap, playback, locked, selected, full,
     const a = anims[j], c = compiled[j], value = c ? sampleTrack(c, t) : staticValue(widget, f.path);
     const lbl = i18n.t('web.timeline.valueAt', { name: row.paths.length > 1 ? `${name} ${f.path.split('.').pop()!.toUpperCase()}` : name });
     if (a && isBinding(a)) return <span key={f.path} className="block min-w-0 flex-1 truncate text-right text-[11px] text-muted" title={i18n.t('web.anim.mode.bind')}>{i18n.t('web.anim.mode.bind')}</span>;
+    if (f.kind === 'bool' || f.kind === 'choice') return c
+      ? <DiscreteValue key={f.path} f={f} value={value} label={lbl} disabled={locked} compact onChange={(v) => onValue(f.path, v)} />
+      : <span key={f.path} className="block min-w-0 flex-1 truncate text-right text-[11px] text-muted" title={i18n.t('web.timeline.staticHint')}>{String(value)}</span>;
     if (f.kind === 'color') return <input key={f.path} type="color" aria-label={lbl} value={String(value).slice(0, 7)} disabled={!c || locked} onChange={(e) => onValue(f.path, e.target.value)}
       className="h-5 min-w-0 flex-1 cursor-pointer rounded-sm border border-control bg-raised disabled:cursor-default" title={c ? undefined : i18n.t('web.timeline.staticHint')} />;
     if (c) return <div key={f.path} className="min-w-0 flex-1"><NumberField label={lbl} value={Number(value)} spec={{ min: f.min, max: f.max, step: f.step }} range={f.range} disabled={locked} onChange={(v) => onValue(f.path, v)} className="!min-h-5 !py-0 text-[11px]" /></div>;

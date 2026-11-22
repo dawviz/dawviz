@@ -66,7 +66,13 @@ Muốn một thuộc tính **đổi theo thời gian hoặc theo nhạc** thay v
 3. Bấm **đồng hồ** ở đầu dòng thuộc tính. Một keyframe được đặt tại vạch phát với giá trị hiện tại.
 4. Đưa vạch phát tới thời điểm khác rồi gõ giá trị mới vào ô giá trị của dòng đó (hoặc kéo trên ô). Keyframe mới được thêm tại vạch phát. Nút hình thoi giữa hai nút tam giác cũng thêm keyframe tại vạch phát (bấm lại để xoá). Muốn đặt keyframe cho nhiều dòng cùng lúc, nhấn vào nút hình thoi của một dòng rồi kéo xuống (hoặc lên) qua các dòng khác; dòng đi qua được tô sáng, thả chuột là xong (một bước hoàn tác). Bắt đầu ở dòng đã có keyframe tại vạch phát thì kéo sẽ xoá; hai nút tam giác đưa vạch phát tới keyframe trước hoặc sau.
 
-**Kéo trên khung:** khi Vị trí, Xoay (hoặc Rộng/Cao) đã bật đồng hồ, kéo, xoay hay đổi cỡ widget trên khung (hoặc gõ vào ô X, Y, W, H, Góc ở cột bên phải) sẽ đặt keyframe tại vạch phát thay vì dời widget cố định. Cách nhanh để làm chuyển động: đưa vạch phát tới một chỗ, kéo widget; đưa tới chỗ khác, kéo tiếp. Khung chọn trên khung luôn đi theo chỗ widget đang ở tại vạch phát.
+**Kéo trên khung:** khi Vị trí, Xoay (hoặc Rộng/Cao) đã bật đồng hồ, kéo, xoay hay đổi cỡ widget trên khung (hoặc gõ vào ô X, Y, W, H, Góc ở cột bên phải) sẽ đặt keyframe tại vạch phát thay vì dời widget cố định. Cách nhanh để làm chuyển động: đưa vạch phát tới một chỗ, kéo widget; đưa tới chỗ khác, kéo tiếp. Khung chọn trên khung luôn đi theo chỗ widget đang ở tại vạch phát, kể cả khi **Tỉ lệ** đang đổi (kéo khung lúc đó vẫn đổi đúng cỡ gốc).
+
+**Bật/tắt và lựa chọn:** ô đánh dấu (vd. Hiện thời gian), ô chọn và chữ cũng có đồng hồ. Giá trị của chúng không chạy dần mà **đổi đúng tại keyframe** (giữ tới keyframe kế). Chúng không chạy theo nhạc và không có đường cong.
+
+**Piano roll:** ngoài vị trí, xoay, tỉ lệ, độ đục, Piano roll animate được số giây trên khung, vị trí, độ dày, màu và việc hiện vạch phát, bàn phím, và kiểu nốt chung (độ đục, bo góc, độ cao, phát sáng, màu).
+
+**Sao chép và dán:** chọn keyframe rồi Ctrl+C; đưa vạch phát tới chỗ khác (hoặc chọn widget khác) rồi Ctrl+V. Keyframe sớm nhất rơi vào vạch phát, các keyframe khác giữ khoảng cách. Thuộc tính mà widget đích không có thì bị bỏ qua.
 
 Bấm đồng hồ lần nữa để bỏ hoạt hình của thuộc tính đó (xoá mọi keyframe của nó). Nút phễu ở góc trên chỉ hiện những thuộc tính đang animate (phím U).
 

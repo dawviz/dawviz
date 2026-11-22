@@ -5,7 +5,7 @@ section: "18. Riêng cho âm nhạc (điểm mạnh của DAW Visualizer)"
 path: "18. Riêng cho âm nhạc (điểm mạnh của DAW Visualizer)"
 chunk: 18-rieng-cho-am-nhac-diem-manh-cua-daw-visualize.md
 source_lines: 285-300
-source_sha1: e025c800f9
+source_sha1: 5777254af0
 ids: [OI-11]
 ---
 ## 18. Riêng cho âm nhạc (điểm mạnh của DAW Visualizer)

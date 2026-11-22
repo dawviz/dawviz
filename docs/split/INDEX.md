@@ -16,7 +16,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1202 ký tự
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4347 ký tự
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](BRD/6-gia-dinh-assumptions.md) · 554 ký tự
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 31430 ký tự
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 33603 ký tự
 - [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](BRD/8-cac-van-de-con-mo-open-issues.md) · 7755 ký tự
 
 ## SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
@@ -205,7 +205,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [3. Đồ thị (Graph Editor)](ANIMATION-CATALOG/3-do-thi-graph-editor.md) · 1487 ký tự
 - [4. Nội suy không gian và kiểu giá trị](ANIMATION-CATALOG/4-noi-suy-khong-gian-va-kieu-gia-tri.md) · 695 ký tự
 - [5. Ngoại suy, lặp và bộ biến đổi đường cong](ANIMATION-CATALOG/5-ngoai-suy-lap-va-bo-bien-doi-duong-cong.md) · 830 ký tự
-- [6. Hiệu ứng biến đổi cơ bản (transform)](ANIMATION-CATALOG/6-hieu-ung-bien-doi-co-ban-transform.md) · 768 ký tự
+- [6. Hiệu ứng biến đổi cơ bản (transform)](ANIMATION-CATALOG/6-hieu-ung-bien-doi-co-ban-transform.md) · 851 ký tự
 - [7. Hiện/ẩn, che và lộ (reveal)](ANIMATION-CATALOG/7-hien-an-che-va-lo-reveal.md) · 759 ký tự
 - [8. Hình dạng (shape) và biến dạng hình học](ANIMATION-CATALOG/8-hinh-dang-shape-va-bien-dang-hinh-hoc.md) · 691 ký tự
 - [9. Chuyển động "có vật lý" (cảm giác tự nhiên)](ANIMATION-CATALOG/9-chuyen-dong-co-vat-ly-cam-giac-tu-nhien.md) · 562 ký tự

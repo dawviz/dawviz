@@ -61,6 +61,7 @@ Khi đang gõ trong một ô nhập, các phím này dùng cho ô đó.
 | Shift + bấm keyframe | Chọn thêm keyframe |
 | Kéo trên chỗ trống | Chọn bằng khung (giữ Shift để cộng thêm) |
 | Ctrl+A | Chọn mọi keyframe của widget |
+| Ctrl+C / Ctrl+V | Sao chép keyframe đang chọn; dán tại vạch phát (giữ khoảng cách giữa các keyframe, dán được sang widget khác) |
 | Delete | Xoá keyframe đang chọn |
 | Esc | Bỏ chọn keyframe |
 | Alt+Trái / Alt+Phải | Dời keyframe đang chọn một khung (thêm Shift: một giây) |

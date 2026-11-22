@@ -13,7 +13,8 @@ test('timelineRows: nhóm Biến đổi = Vị trí (x+y), Tỉ lệ, Xoay, Đ�
   assert.ok(legacy.some((x) => x.id === 'layout.width') && !legacy.some((x) => x.id === 'layout.height'));
   const props = timelineRows('TIME_BAR').filter((x) => x.group === 'props');
   assert.ok(props.length > 0 && props.every((x) => x.paths.length === 1 && x.id === x.paths[0]));
-  assert.equal(timelineRows('PIANO_ROLL').filter((x) => x.group === 'props').length, 0);
+  const pr = timelineRows('PIANO_ROLL').filter((x) => x.group === 'props').map((x) => x.id);
+  assert.ok(pr.includes('visibleSeconds') && pr.includes('noteStyle.base.glow') && !pr.includes('pitchMin')); // Piano Roll: danh sách đường dẫn riêng
   assert.equal(rowOfPath(timelineRows('TIME_BAR'), 'layout.y')!.id, 'position');
 });
 

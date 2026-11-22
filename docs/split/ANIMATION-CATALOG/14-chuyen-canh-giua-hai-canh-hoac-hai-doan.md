@@ -5,7 +5,7 @@ section: "14. Chuyển cảnh (giữa hai cảnh hoặc hai đoạn)"
 path: "14. Chuyển cảnh (giữa hai cảnh hoặc hai đoạn)"
 chunk: 14-chuyen-canh-giua-hai-canh-hoac-hai-doan.md
 source_lines: 222-237
-source_sha1: e025c800f9
+source_sha1: 5777254af0
 ids: []
 ---
 ## 14. Chuyển cảnh (giữa hai cảnh hoặc hai đoạn)

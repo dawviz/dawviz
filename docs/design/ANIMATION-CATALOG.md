@@ -114,7 +114,7 @@ Quyết định giá trị thay đổi **thế nào** giữa hai keyframe.
 | Skew / Shear | Xô nghiêng | v1.0 | C2D |
 | Flip | Lật ngang/dọc | v1.0 | C2D |
 | Tilt 3D / xoay X/Y/Z | Lớp hoặc cả cảnh xoay theo X/Y/Z trong phối cảnh (SRS REQ-GRAPHICS-15, D-47) | v1.1 | GL |
-| Parenting | Phần tử con đi theo phần tử cha | v1.0 | C2D |
+| Parenting | Phần tử con đi theo phần tử cha (**đã làm 2026-11-22**: `WidgetSpec.parent`, con theo phần thay đổi của cha, D-67) | v1.0 | C2D |
 | Orbit / Spiral | Quay quanh một điểm, xoắn ốc | v1.0 | C2D |
 | Follow / Lag | Đi theo đối tượng khác có trễ (bám đuôi) | v1.1 | C2D |
 

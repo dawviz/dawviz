@@ -4,12 +4,16 @@
 //
 // Đường dẫn: `layout.x|y|width|height|rotation`, `opacity` (0..1, nhân thêm độ đục cả widget), `scale` (%, 100 = nguyên cỡ; co giãn cả widget quanh điểm neo,
 // như Scale của After Effects; không đổi khung bố cục), và mọi thuộc tính số hoặc màu `#rrggbb` có trong mặc định của loại
-// widget (lồng được: `lines.played.x`…). Piano Roll chỉ nhận `layout.*` và `opacity`; Bản nhạc chỉ nhận `layout.*` và `opacity` (đổi thuộc tính bản nhạc phải dựng lại).
+// widget (lồng được: `lines.played.x`…). Thuộc tính bật/tắt và lựa chọn (chuỗi không phải màu: kiểu chữ, căn lề, chế độ…) animate theo bậc
+// (`kind: 'discrete'`: giữ rồi đổi đúng tại keyframe). Piano Roll nhận một danh sách đường dẫn riêng (`PIANO_PATHS`: tỉ lệ thời gian, vạch phát,
+// bàn phím, kiểu nốt chung) — phần cấu trúc (dải cao độ, chế độ trang, kiểu nốt theo track) không animate. Bản nhạc chỉ nhận `layout.*`, `opacity`,
+// `scale` (đổi thuộc tính bản nhạc phải dựng lại trong Worker).
 import { activeNotes, notesInRange, type TrackIndex } from './notes.ts';
 import { barPosAt, hudOf, shown } from './hud.ts';
 import { laneUnit } from './glow.ts';
 import { frameAt, u8ToDb } from './audioFeatures.ts';
-import { compileTrack, sampleTrack, mixColor, type CompiledTrack, type Key, type KeyTime, type LoopMode, type TrackSpec } from './keyframes.ts';
+import { compileTrack, sampleTrack, mixColor, type CompiledTrack, type Key, type KeyTime, type KeyValue, type LoopMode, type TrackSpec } from './keyframes.ts';
+import { DEFAULT_NOTE_STYLE, sanitizeStyle, type NoteStyle } from './style.ts';
 import { interpolate, parseEase, type EaseSpec } from './motion.ts';
 import { normalizeAngle } from './snap.ts';
 import { widgetDefaults, silentSanitizer, sanitizeWidgetProps, type Sanitizer, type SceneDocument, type WidgetSpec, type WidgetType } from './scene.ts';
@@ -28,7 +32,25 @@ export const MAX_ANIMATIONS = 24, MAX_ANIM_KEYS = 256;
 export const MAX_SCALE = 2000;
 const HEX = /^#[0-9a-f]{6}$/i;
 const LAYOUT_PATHS = ['layout.x', 'layout.y', 'layout.width', 'layout.height', 'layout.rotation'] as const;
-const FRAME_ONLY: ReadonlySet<string> = new Set(['PIANO_ROLL', 'NOTATION']);
+/** Kiểu giá trị của một đường dẫn animate được. `bool`/`choice` animate theo bậc (track `kind: 'discrete'`). */
+export type AnimKind = 'number' | 'color' | 'bool' | 'choice';
+/** Độ dài tối đa của một giá trị lựa chọn/chữ trong keyframe. */
+export const MAX_CHOICE_LEN = 200;
+/**
+ * Đường dẫn animate được của Piano Roll và miền kẹp của số (cùng miền với bộ kiểm preset). Kiểu nốt chung (`noteStyle.base.*`) đi qua
+ * `sanitizeStyle` nên chỉ cần liệt kê; số khác kẹp theo bảng.
+ */
+const PIANO_NUM: Readonly<Record<string, [number, number]>> = {
+  visibleSeconds: [0.5, 60], playheadPositionRatio: [0.05, 0.95], playheadWidth: [0, 40], 'keyboard.width': [8, 400],
+};
+const PIANO_STYLE_NUM = ['opacity', 'inactiveOpacity', 'cornerRadius', 'heightScale', 'glow', 'glowRadius', 'borderWidth', 'glowMin', 'glowMax', 'glowRelease'] as const;
+export const PIANO_PATHS: ReadonlyMap<string, AnimKind> = new Map<string, AnimKind>([
+  ...Object.keys(PIANO_NUM).map((p) => [p, 'number'] as [string, AnimKind]),
+  ...PIANO_STYLE_NUM.map((k) => [`noteStyle.base.${k}`, 'number'] as [string, AnimKind]),
+  ['noteStyle.base.customColor', 'color'], ['playheadColor', 'color'], ['keyboard.whiteColor', 'color'], ['keyboard.blackColor', 'color'],
+  ['noteStyle.base.glowActiveOnly', 'bool'], ['noteStyle.base.colorMode', 'choice'], ['playheadVisible', 'bool'], ['keyboard.enabled', 'bool'], ['keyboard.useTrackColor', 'bool'],
+]);
+const CHOICE_OK: Readonly<Record<string, readonly string[]>> = { 'noteStyle.base.colorMode': ['track', 'custom', 'pitch', 'velocity'] };
 
 type Obj = Record<string, unknown>;
 const isObj = (v: unknown): v is Obj => typeof v === 'object' && v !== null && !Array.isArray(v);
@@ -36,22 +58,31 @@ function setIn(o: Obj, path: readonly string[], v: unknown): Obj {
   const [k, ...rest] = path;
   return { ...o, [k]: rest.length ? setIn(isObj(o[k]) ? (o[k] as Obj) : {}, rest, v) : v };
 }
-const leaves = (o: unknown, prefix: string[], out: Map<string, 'number' | 'color'>): void => {
+const leaves = (o: unknown, prefix: string[], out: Map<string, AnimKind>): void => {
   if (!isObj(o)) return;
   for (const [k, v] of Object.entries(o)) {
     const p = [...prefix, k];
-    if (typeof v === 'number') out.set(p.join('.'), 'number'); else if (typeof v === 'string' && HEX.test(v)) out.set(p.join('.'), 'color'); else leaves(v, p, out);
+    if (typeof v === 'number') out.set(p.join('.'), 'number');
+    else if (typeof v === 'string') out.set(p.join('.'), HEX.test(v) ? 'color' : 'choice');
+    else if (typeof v === 'boolean') out.set(p.join('.'), 'bool');
+    else leaves(v, p, out);
   }
 };
-/** Các đường dẫn animate được của một loại widget và kiểu giá trị của chúng. */
-export function animatablePaths(type: WidgetType): Map<string, 'number' | 'color'> {
-  const out = new Map<string, 'number' | 'color'>();
+const pathCache = new Map<WidgetType, Map<string, AnimKind>>();
+/** Các đường dẫn animate được của một loại widget và kiểu giá trị của chúng (bản đệm: đừng sửa Map trả về). */
+export function animatablePaths(type: WidgetType): Map<string, AnimKind> {
+  const hit = pathCache.get(type); if (hit) return hit;
+  const out = new Map<string, AnimKind>();
   for (const p of LAYOUT_PATHS) out.set(p, 'number');
   out.set('opacity', 'number');
   out.set('scale', 'number');
-  if (!FRAME_ONLY.has(type)) leaves(widgetDefaults(type), [], out);
+  if (type === 'PIANO_ROLL') for (const [p, k] of PIANO_PATHS) out.set(p, k);
+  else if (type !== 'NOTATION') leaves(widgetDefaults(type), [], out);
+  pathCache.set(type, out);
   return out;
 }
+/** Track của kiểu này nội suy được không (số, màu) hay theo bậc (bật/tắt, lựa chọn). */
+export const isDiscreteKind = (k: AnimKind): boolean => k === 'bool' || k === 'choice';
 
 const finite = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
 function cleanKeyTime(a: unknown): KeyTime | null {
@@ -72,23 +103,25 @@ export function sanitizeAnimate(S: Sanitizer, v: unknown, path: string, type: Wi
     if (!kind) { S.warn(p, key, 'thuộc tính này không animate được; bỏ'); continue; }
     if (++n > MAX_ANIMATIONS) { S.warn(p, key, `quá ${MAX_ANIMATIONS} hoạt hình; bỏ`); continue; }
     if (!isObj(raw)) { S.warn(p, raw, 'không phải đối tượng; bỏ'); continue; }
-    const okVal = (x: unknown): boolean => (kind === 'number' ? finite(x) : typeof x === 'string' && HEX.test(x));
+    const okVal = (x: unknown): boolean => (kind === 'number' ? finite(x) : kind === 'color' ? typeof x === 'string' && HEX.test(x)
+      : kind === 'bool' ? typeof x === 'boolean' : typeof x === 'string' && x.length <= MAX_CHOICE_LEN);
     if (Array.isArray(raw.keys)) {
       const keys: Key[] = [];
       raw.keys.slice(0, MAX_ANIM_KEYS).forEach((k, i) => {
         const at = isObj(k) ? cleanKeyTime(k.at) : null;
         if (!isObj(k) || !at || !okVal(k.value)) { S.warn(`${p}.keys[${i}]`, k, 'keyframe không hợp lệ; bỏ'); return; }
-        const key: Key = { at, value: k.value as number | string };
+        const key: Key = { at, value: k.value as KeyValue };
         if (k.ease !== undefined) { if (parseEase(k.ease).ok) key.ease = k.ease as EaseSpec; else S.warn(`${p}.keys[${i}].ease`, k.ease, 'easing lạ; dùng linear'); }
         if (k.interp === 'hold' || k.interp === 'smooth' || k.interp === 'linear') key.interp = k.interp;
         keys.push(key);
       });
       if (raw.keys.length > MAX_ANIM_KEYS) S.warn(`${p}.keys`, raw.keys.length, `quá ${MAX_ANIM_KEYS} keyframe; cắt bớt`);
       if (!keys.length) { S.warn(p, raw, 'không có keyframe hợp lệ; bỏ'); continue; }
-      const a: KeyAnimation = { keys, ...(kind === 'color' ? { kind: 'color' as const } : {}) };
+      const a: KeyAnimation = { keys, ...(kind === 'color' ? { kind: 'color' as const } : isDiscreteKind(kind) ? { kind: 'discrete' as const } : {}) };
       if (raw.loop === 'CYCLE' || raw.loop === 'PINGPONG' || raw.loop === 'OFFSET') a.loop = raw.loop as LoopMode;
       out[key] = a;
     } else if (typeof raw.bind === 'string') {
+      if (isDiscreteKind(kind)) { S.warn(p, raw, 'thuộc tính theo bậc chỉ nhận keyframe, không gắn theo nhạc; bỏ'); continue; }
       const from = raw.from, to = raw.to;
       if (!(BIND_SOURCES as readonly string[]).includes(raw.bind)) { S.warn(`${p}.bind`, raw.bind, `không thuộc ${BIND_SOURCES.join('/')}; bỏ`); continue; }
       if (!Array.isArray(from) || from.length !== 2 || !from.every(finite) || from[0] === from[1]) { S.warn(`${p}.from`, from, 'cần hai số khác nhau; bỏ'); continue; }
@@ -132,14 +165,14 @@ export function bindSourceValue(src: BindSource, c: BindCtx): number {
   }
 }
 const trackCache = new WeakMap<object, { tm: unknown; ct: CompiledTrack }>();
-function animValue(a: Animation, kind: 'number' | 'color', c: BindCtx): number | string {
+function animValue(a: Animation, kind: AnimKind, c: BindCtx): KeyValue {
   if (isBinding(a)) {
     const k = interpolate(bindSourceValue(a.bind, c), a.from, [0, 1], { ease: a.ease });
     if (kind === 'color') return mixColor(a.to[0] as string, a.to[1] as string, k);
     return (a.to[0] as number) + ((a.to[1] as number) - (a.to[0] as number)) * k;
   }
   let hit = trackCache.get(a);
-  if (!hit || hit.tm !== c.ast.tempoMap) { hit = { tm: c.ast.tempoMap, ct: compileTrack(a, { tempoMap: c.ast.tempoMap }) }; trackCache.set(a, hit); }
+  if (!hit || hit.tm !== c.ast.tempoMap) { hit = { tm: c.ast.tempoMap, ct: compileTrack(isDiscreteKind(kind) && a.kind !== 'discrete' ? { ...a, kind: 'discrete' } : a, { tempoMap: c.ast.tempoMap }) }; trackCache.set(a, hit); }
   return sampleTrack(hit.ct, c.t);
 }
 
@@ -165,9 +198,33 @@ export function resolveAnimated(w: WidgetSpec, c: BindCtx, canvas: SceneDocument
     } else if (props) { props = setIn(props, path.split('.'), v); propsTouched = true; }
   }
   let properties = w.properties;
-  if (propsTouched) {
+  if (propsTouched && w.type === 'PIANO_ROLL') properties = cleanPiano(props as Obj, kinds) as never;
+  else if (propsTouched) {
     const clean = sanitizeWidgetProps(w.type, props, silentSanitizer());
     if (clean) properties = clean as never;
   }
   return { widget: layout === w.layout && properties === w.properties ? w : { ...w, layout, properties }, opacity, scale };
+}
+
+/** Kẹp thuộc tính Piano Roll sau khi ghép giá trị animate (chỉ các đường dẫn PIANO_PATHS bị đổi; phần còn lại giữ nguyên). */
+function cleanPiano(p: Obj, kinds: ReadonlyMap<string, AnimKind>): Obj {
+  let out = p;
+  for (const [path, [lo, hi]] of Object.entries(PIANO_NUM)) {
+    const ks = path.split('.'); let v: unknown = out; for (const k of ks) v = isObj(v) ? v[k] : undefined;
+    if (v !== undefined) out = setIn(out, ks, finite(v) ? Math.min(hi, Math.max(lo, v)) : lo);
+  }
+  for (const [path, kind] of kinds) {
+    if (!path.startsWith('keyboard.') && path !== 'playheadColor' && path !== 'playheadVisible') continue;
+    const ks = path.split('.'); let v: unknown = out; for (const k of ks) v = isObj(v) ? v[k] : undefined;
+    if (kind === 'color' && !(typeof v === 'string' && HEX.test(v))) out = setIn(out, ks, '#ffffff');
+    if (kind === 'bool' && typeof v !== 'boolean') out = setIn(out, ks, !!v);
+  }
+  const ns = isObj(out.noteStyle) ? out.noteStyle : {};
+  if (isObj(ns.base)) {
+    const base = { ...DEFAULT_NOTE_STYLE, ...ns.base } as Obj;
+    for (const [path, ok] of Object.entries(CHOICE_OK)) { const k = path.split('.').pop()!; if (!ok.includes(base[k] as string)) base[k] = (DEFAULT_NOTE_STYLE as unknown as Obj)[k]; }
+    if (typeof base.glowActiveOnly !== 'boolean') base.glowActiveOnly = !!base.glowActiveOnly;
+    out = { ...out, noteStyle: { ...ns, base: sanitizeStyle(base as unknown as NoteStyle) } };
+  }
+  return out;
 }

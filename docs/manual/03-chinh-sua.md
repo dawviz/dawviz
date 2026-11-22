@@ -171,6 +171,7 @@ Muốn tạm tắt bắt dính: giữ Alt khi kéo để di chuyển, giữ Ctrl
 Danh sách **Lớp** cho biết widget nào nằm trên widget nào: dòng trên cùng được vẽ trên cùng.
 
 - **Đổi thứ tự:** kéo tay nắm sáu chấm (chỉ kéo tay nắm mới đổi thứ tự, kéo chỗ khác trên dòng thì không), hoặc chọn dòng rồi bấm Alt+Lên / Alt+Xuống. Ở mục **Sắp xếp** bên phải còn có bốn nút: đưa lên trên cùng, lên một bậc, xuống một bậc, xuống dưới cùng (phím tắt Ctrl+] và Ctrl+[, thêm Shift để đưa hẳn lên trên cùng hoặc xuống dưới cùng).
+- **Widget cha:** ô **Widget cha** ở mục **Sắp xếp** gắn widget này vào một widget khác. Khi cha dời, xoay, đổi tỉ lệ hay mờ đi (bằng keyframe hoặc chuyển động), widget con làm theo đúng phần thay đổi đó; con vẫn đứng nguyên chỗ của nó khi cha đứng yên. Không chọn được widget đang là con của chính nó. Xoá cha thì con thôi có cha. Lưu ý: khi cha đang lệch khỏi chỗ ban đầu, khung chọn của con trên khung chưa đi theo cha.
 - **Đổi tên:** bấm đúp vào tên lớp (hoặc chọn lớp rồi nhấn F2), gõ tên mới, nhấn Enter. Esc để bỏ. Để trống rồi Enter thì lớp quay về tên theo loại (ví dụ Hợp âm 2). Tên tối đa 60 ký tự và không được trùng với lớp khác (hoa/thường coi như nhau). Nếu trùng, tên cũ được giữ nguyên và ứng dụng báo lý do. Tên lớp chỉ để bạn dễ tìm, không hiện trong video; được lưu trong preset. Bản nhân bản không mang tên của bản gốc.
 - **Mắt:** ẩn hoặc hiện widget trong video (giống ô **Hiện trong video**).
 - **Ổ khoá:** khoá widget để không lỡ tay kéo nó. Widget đã khoá vẫn chọn được trong danh sách Lớp để xem số liệu hoặc mở khoá.

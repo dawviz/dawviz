@@ -66,7 +66,13 @@ To make a property **change over time or with the music** instead of staying sti
 3. Press the **stopwatch** at the start of the property's row. A keyframe is set at the playhead with the current value.
 4. Move the playhead somewhere else and type a new value in that row's value field (or drag on the field). A new keyframe is added at the playhead. The diamond button between the two triangle buttons also adds a keyframe at the playhead (press it again to remove it). To set keyframes on several rows at once, press the diamond of one row and drag down (or up) across the other rows; the rows you pass are highlighted, and releasing the mouse applies it (one undo step). Starting on a row that already has a keyframe at the playhead makes the drag remove instead; the triangles move the playhead to the previous or next keyframe.
 
-**Drag on the frame:** once Position, Rotation (or Width/Height) has its stopwatch on, moving, rotating or resizing the widget on the frame (or typing into X, Y, W, H, Angle on the right) sets a keyframe at the playhead instead of moving the widget for good. A quick way to make motion: move the playhead somewhere, drag the widget; move it again, drag again. The selection box on the frame always follows where the widget is at the playhead.
+**Drag on the frame:** once Position, Rotation (or Width/Height) has its stopwatch on, moving, rotating or resizing the widget on the frame (or typing into X, Y, W, H, Angle on the right) sets a keyframe at the playhead instead of moving the widget for good. A quick way to make motion: move the playhead somewhere, drag the widget; move it again, drag again. The selection box on the frame always follows where the widget is at the playhead, even while **Scale** is changing (dragging the box then still changes the original size correctly).
+
+**On/off and choices:** checkboxes (e.g. Show the time), choice boxes and text have a stopwatch too. Their value doesn't glide; it **switches exactly at each keyframe** (holding until the next one). They can't follow the music and have no curve.
+
+**Piano roll:** besides position, rotation, scale and opacity, the piano roll can animate the seconds across the roll, the playhead's position, width, colour and visibility, the keyboard, and the shared note style (opacity, corners, height, glow, colour).
+
+**Copy and paste:** select keyframes and press Ctrl+C; move the playhead (or select another widget) and press Ctrl+V. The earliest keyframe lands on the playhead and the others keep their spacing. Properties the target widget doesn't have are skipped.
 
 Press the stopwatch again to stop animating that property (its keyframes are removed). The funnel button at the top corner shows only the properties that are animated (key U).
 

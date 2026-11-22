@@ -1,10 +1,12 @@
 // Logic thuần của mục "Hoạt hình" (T-22): danh sách thuộc tính animate được của một widget (nhãn, giới hạn, giá trị tĩnh hiện tại),
 // tạo hoạt hình mới và sửa từng keyframe. Không DOM; test ở animateFields.test.ts.
-import { BIND_SOURCES, animatablePaths, isBinding, type Animation, type Binding, type BindSource, type Key, type KeyAnimation, type WidgetSpec, type WidgetType } from '@dawviz/render-core';
+import { BIND_SOURCES, animatablePaths, isBinding, type AnimKind, type Animation, type Binding, type BindSource, type Key, type KeyAnimation, type KeyValue, type WidgetSpec, type WidgetType } from '@dawviz/render-core';
 import { WIDGET_FIELDS } from './widgetFields.ts';
 
-export type PathKind = 'number' | 'color';
-export interface AnimField { path: string; kind: PathKind; /** Khoá con của `web.ws.*` (thuộc tính widget) hoặc `web.anim.prop.*` (bố cục, độ đục). */ labelKey: string; min: number; max: number; step: number; range?: [number, number] }
+/** `bool`/`choice` animate theo bậc (giữ rồi đổi tại keyframe). */
+export type PathKind = AnimKind;
+export interface AnimField { path: string; kind: PathKind; /** Khoá con của `web.ws.*` (thuộc tính widget) hoặc `web.anim.prop.*` (bố cục, độ đục). */ labelKey: string; min: number; max: number; step: number; range?: [number, number];
+  /** Lựa chọn (kiểu `choice`) và tiền tố khoá nhãn của từng giá trị, lấy từ bảng Thiết lập nếu có. */ options?: readonly (string | number)[]; optionPrefix?: string }
 const LAYOUT: Record<string, Omit<AnimField, 'path' | 'kind'>> = {
   'layout.x': { labelKey: 'web.anim.prop.x', min: -4096, max: 8192, step: 1, range: [-1000, 3000] },
   'layout.y': { labelKey: 'web.anim.prop.y', min: -4096, max: 8192, step: 1, range: [-1000, 3000] },
@@ -14,26 +16,52 @@ const LAYOUT: Record<string, Omit<AnimField, 'path' | 'kind'>> = {
   opacity: { labelKey: 'web.anim.prop.opacity', min: 0, max: 1, step: 0.05 },
   scale: { labelKey: 'web.anim.prop.scale', min: 0, max: 2000, step: 1, range: [0, 400] },
 };
+/** Piano Roll không có bảng Thiết lập chung (WIDGET_FIELDS): nhãn `web.anim.pr.<đường dẫn>` và giới hạn của các đường dẫn số (PIANO_PATHS). */
+const PIANO_NUM: Record<string, { min: number; max: number; step: number }> = {
+  'visibleSeconds': { min: 0.5, max: 60, step: 0.1 },
+  'playheadPositionRatio': { min: 0.05, max: 0.95, step: 0.01 },
+  'playheadWidth': { min: 0, max: 40, step: 0.5 },
+  'keyboard.width': { min: 8, max: 400, step: 1 },
+  'noteStyle.base.opacity': { min: 0, max: 1, step: 0.05 },
+  'noteStyle.base.inactiveOpacity': { min: 0, max: 1, step: 0.05 },
+  'noteStyle.base.cornerRadius': { min: 0, max: 999, step: 1 },
+  'noteStyle.base.heightScale': { min: 0.1, max: 1.5, step: 0.05 },
+  'noteStyle.base.glow': { min: 0, max: 1, step: 0.05 },
+  'noteStyle.base.glowRadius': { min: 0, max: 64, step: 1 },
+  'noteStyle.base.borderWidth': { min: 0, max: 8, step: 0.5 },
+  'noteStyle.base.glowMin': { min: 0, max: 1, step: 0.05 },
+  'noteStyle.base.glowMax': { min: 0, max: 1, step: 0.05 },
+  'noteStyle.base.glowRelease': { min: 0, max: 4, step: 0.05 },
+};
+const PIANO_CHOICES: Record<string, readonly string[]> = { 'noteStyle.base.colorMode': ['track', 'custom', 'pitch', 'velocity'] };
 /** Thuộc tính animate được của loại widget, theo thứ tự: bố cục, độ đục, rồi thuộc tính của widget (nhãn lấy từ bảng Thiết lập nếu có). */
 export function animFields(type: WidgetType): AnimField[] {
   const fields = WIDGET_FIELDS[type] ?? [];
-  return [...animatablePaths(type)].map(([path, kind]) => {
+  // Bật/tắt và lựa chọn chỉ hiện khi bảng Thiết lập có ô tương ứng (có nhãn): mã kiểu chữ nội bộ, căn lề phụ… không làm rối Timeline. Preset vẫn đọc được mọi đường dẫn.
+  const shown = (path: string, kind: PathKind) => type === 'PIANO_ROLL' || (kind !== 'bool' && kind !== 'choice') || fields.some((x) => x.path.join('.') === path);
+  return [...animatablePaths(type)].filter(([path, kind]) => shown(path, kind)).map(([path, kind]) => {
     if (LAYOUT[path]) return { path, kind, ...LAYOUT[path] };
+    if (type === 'PIANO_ROLL') return { path, kind, labelKey: `web.anim.pr.${path}`, ...(PIANO_NUM[path] ?? { min: 0, max: 1, step: 1 }), ...(PIANO_CHOICES[path] ? { options: PIANO_CHOICES[path], optionPrefix: 'web.style.mode.' } : {}) };
     const f = fields.find((x) => x.path.join('.') === path);
-    return { path, kind, labelKey: f ? `web.ws.${f.label}` : '', min: f?.num?.min ?? -100000, max: f?.num?.max ?? 100000, step: f?.num?.step ?? 1, range: f?.num?.range };
+    return { path, kind, labelKey: f ? `web.ws.${f.label}` : '', min: f?.num?.min ?? -100000, max: f?.num?.max ?? 100000, step: f?.num?.step ?? 1, range: f?.num?.range,
+      ...(kind === 'choice' && f?.options ? { options: f.options, optionPrefix: f.prefix } : {}) };
   });
 }
 const getIn = (o: unknown, path: readonly string[]): unknown => { let v = o; for (const k of path) { if (typeof v !== 'object' || v === null) return undefined; v = (v as Record<string, unknown>)[k]; } return v; };
 /** Giá trị tĩnh hiện tại của thuộc tính (điểm xuất phát của hoạt hình mới). */
-export function staticValue(w: Pick<WidgetSpec, 'layout' | 'properties'>, path: string): number | string {
+export function staticValue(w: Pick<WidgetSpec, 'layout' | 'properties'>, path: string): KeyValue {
   if (path === 'opacity') return 1;
   if (path === 'scale') return 100; // % (100 = nguyên cỡ)
   const v = path.startsWith('layout.') ? getIn(w.layout, [path.slice(7)]) : getIn(w.properties, path.split('.'));
-  return typeof v === 'number' || typeof v === 'string' ? v : 0;
+  return typeof v === 'number' || typeof v === 'string' || typeof v === 'boolean' ? v : 0;
 }
 const r3 = (x: number) => Math.round(x * 1000) / 1000;
 /** Hoạt hình mới: một keyframe tại `t` giữ đúng giá trị hiện tại (chưa đổi hình gì); người dùng thêm keyframe sau. */
-export const newKeyAnimation = (w: Pick<WidgetSpec, 'layout' | 'properties'>, path: string, t: number): KeyAnimation => ({ keys: [{ at: { sec: r3(Math.max(0, t)) }, value: staticValue(w, path) }] });
+export const newKeyAnimation = (w: Pick<WidgetSpec, 'layout' | 'properties'>, path: string, t: number): KeyAnimation => {
+  const value = staticValue(w, path);
+  const discrete = typeof value === 'boolean' || (typeof value === 'string' && !/^#[0-9a-f]{6}$/i.test(value));
+  return { keys: [{ at: { sec: r3(Math.max(0, t)) }, value }], ...(discrete ? { kind: 'discrete' as const } : {}) };
+};
 
 export const SOURCE_RANGE: Record<BindSource, [number, number]> = {
   'beat.phase': [0, 1], 'bar.phase': [0, 1], progress: [0, 1], 'notes.count': [0, 8], 'notes.velocity': [0, 127], 'note.hit': [0, 1], 'track.volume': [0, 1], 'track.pan': [0, 1], 'audio.level': [0, 1],
@@ -51,7 +79,7 @@ export const withSource = (b: Binding, source: BindSource): Binding => ({ ...b, 
 // ── keyframe ──
 export const sortKeys = (keys: Key[]): Key[] => keys.map((k, i) => ({ k, i })).sort((a, b) => ((a.k.at as { sec?: number }).sec ?? 1e9) - ((b.k.at as { sec?: number }).sec ?? 1e9) || a.i - b.i).map((x) => x.k);
 /** Thêm keyframe tại `t` (giây). Giá trị: nếu đã có keyframe trước đó lấy giá trị của nó, không thì giá trị tĩnh. Trùng mốc → thay giá trị keyframe đó. */
-export function addKey(a: KeyAnimation, t: number, value: number | string): KeyAnimation {
+export function addKey(a: KeyAnimation, t: number, value: KeyValue): KeyAnimation {
   const sec = r3(Math.max(0, t)), i = a.keys.findIndex((k) => 'sec' in k.at && Math.abs(k.at.sec - sec) < 0.001);
   if (i >= 0) return { ...a, keys: a.keys.map((k, j) => (j === i ? { ...k, value } : k)) };
   return { ...a, keys: sortKeys([...a.keys, { at: { sec }, value }]) };

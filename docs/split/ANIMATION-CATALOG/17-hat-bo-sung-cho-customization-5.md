@@ -5,7 +5,7 @@ section: "17. Hạt (bổ sung cho CUSTOMIZATION §5)"
 path: "17. Hạt (bổ sung cho CUSTOMIZATION §5)"
 chunk: 17-hat-bo-sung-cho-customization-5.md
 source_lines: 259-284
-source_sha1: e025c800f9
+source_sha1: 5777254af0
 ids: [REQ-STORAGE-05]
 ---
 ## 17. Hạt (bổ sung cho CUSTOMIZATION §5)

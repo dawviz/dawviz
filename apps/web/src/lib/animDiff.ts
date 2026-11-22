@@ -1,12 +1,12 @@
 // So sánh hai hoạt hình để nhãn lịch sử nói đúng điều đã đổi (D-64): thêm/xoá/dời keyframe, đổi giá trị, đường cong, cách đi tiếp, lặp,
 // bật/tắt hoặc đổi cách thay đổi (keyframe ↔ theo nhạc). Thuần, không i18n; nhãn dựng ở historyLabels.ts. Test: animDiff.test.ts.
-import { isBinding, type Animation, type Key, type KeyAnimation } from '@dawviz/render-core';
+import { isBinding, type Animation, type Key, type KeyAnimation, type KeyValue } from '@dawviz/render-core';
 
 export type AnimChange =
   | { kind: 'start' | 'stop' | 'toKeys' | 'toBind' | 'bind' | 'loop'; path: string }
-  | { kind: 'add' | 'remove'; path: string; at: Key['at']; value: number | string }
+  | { kind: 'add' | 'remove'; path: string; at: Key['at']; value: KeyValue }
   | { kind: 'move'; path: string; at: Key['at']; to: Key['at'] }
-  | { kind: 'value'; path: string; at: Key['at']; from: number | string; to: number | string }
+  | { kind: 'value'; path: string; at: Key['at']; from: KeyValue; to: KeyValue }
   | { kind: 'curve' | 'interp'; path: string; at: Key['at'] };
 
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);

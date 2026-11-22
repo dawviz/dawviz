@@ -214,3 +214,31 @@ export function marqueeHits(widgets: readonly { id: string; visible: boolean; la
 
 /** Widget có khung chọn trên khung hình không? Hạt "Tại nốt, chỗ chạm vạch phát" sinh ra từ Piano Roll chứ không từ khung của nó, nên khung bị ẩn (không vẽ, không bấm/quét chọn được, không có tay nắm); chọn qua danh sách Lớp. */
 export const hasCanvasFrame = (w: { type: string; properties: unknown }): boolean => !(w.type === 'PARTICLES' && (w.properties as { originX?: string }).originX === 'NOTE');
+
+/**
+ * Khung đang thấy của widget có `scale` (hệ số, 1 = nguyên cỡ): co giãn quanh điểm neo, như Render Core vẽ (render.ts: dời tới neo, scale, dời ngược).
+ * Hệ số gần 0 thì giữ khung gốc (không chia cho 0 khi đổi ngược).
+ */
+export function scaledLayout(l: WidgetLayout, s: number): WidgetLayout {
+  if (!(s > 1e-3) || s === 1) return l;
+  return { ...l, x: l.x + l.anchor.x * l.width * (1 - s), y: l.y + l.anchor.y * l.height * (1 - s), width: l.width * s, height: l.height * s };
+}
+/**
+ * Đổi một thay đổi làm trên khung đang thấy (`shown` = scaledLayout(gốc, s)) về bố cục gốc. Chỉ trả các trường cần ghi: dời → x/y; đổi cỡ, đổi neo → x/y/width/height/anchor.
+ * Nhờ vậy kéo khung của widget đang phóng to không "nướng" tỉ lệ vào kích thước.
+ */
+export function unscalePatch(shown: WidgetLayout, patch: Partial<WidgetLayout>, s: number): Partial<WidgetLayout> {
+  if (!(s > 1e-3) || s === 1) return patch;
+  const L = { ...shown, ...patch, anchor: { ...shown.anchor, ...(patch.anchor ?? {}) } };
+  const w = L.width / s, h = L.height / s;
+  const base: WidgetLayout = { ...L, x: L.x - L.anchor.x * w * (1 - s), y: L.y - L.anchor.y * h * (1 - s), width: w, height: h };
+  const out: Partial<WidgetLayout> = {};
+  const geo = 'width' in patch || 'height' in patch || 'anchor' in patch;
+  if (geo || 'x' in patch) out.x = Math.round(base.x);
+  if (geo || 'y' in patch) out.y = Math.round(base.y);
+  if ('width' in patch) out.width = Math.round(base.width);
+  if ('height' in patch) out.height = Math.round(base.height);
+  if ('anchor' in patch) out.anchor = base.anchor;
+  if ('rotation' in patch) out.rotation = base.rotation;
+  return out;
+}
