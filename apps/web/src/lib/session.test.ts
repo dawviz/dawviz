@@ -35,3 +35,16 @@ test('session: ảnh nền đi theo Blob của phiên và Pack (tên chuẩn ho�
   assert.equal(data.background?.name, 'background.jpg'); assert.deepEqual([...(await bytesOf(data.background!))], [9, 8, 7, 6]);
   assert.equal((await sessionFromPack(await packOf(parts(), new Date()))).data.background, undefined);
 });
+
+test('session: tài nguyên của phiên (T-21) đi vào blob tự lưu và Project Pack, đọc lại đủ byte và tên', async () => {
+  const { acceptAsset } = await import('./sessionAssets.ts');
+  const png = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 4, 5]), font = new TextEncoder().encode('wOF2abc');
+  const a = (await acceptAsset([], 'logo.png', png)).meta, f = (await acceptAsset([a], 'Brand.woff2', font)).meta;
+  const p = { ...parts(), assets: [{ meta: a, file: new File([png], 'logo.png') }, { meta: f, file: new File([font], 'Brand.woff2') }] };
+  const snap = await snapshotOf(p);
+  assert.deepEqual(snap.blobs.filter((b) => b.id.startsWith('asset:')).map((b) => [b.id, b.name]), [[`asset:${a.id.slice(7)}`, 'logo.png'], [`asset:${f.id.slice(7)}`, 'Brand.woff2']]);
+  const { data, warnings } = await sessionFromPack(await packOf(p, new Date('2026-11-22T00:00:00Z')));
+  assert.deepEqual(warnings, []);
+  assert.deepEqual(data.assets!.map((x) => x.name).sort(), ['Brand.woff2', 'logo.png']);
+  assert.deepEqual([...await bytesOf(data.assets!.find((x) => x.name === 'logo.png')!)], [...png]);
+});

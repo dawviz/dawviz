@@ -14,6 +14,8 @@ import { NumberField } from './NumberField.tsx';
 import { ResetButton } from './Inspector.tsx';
 import { Select } from './Select.tsx';
 import { NotationStatusContext } from '../lib/notation/useNotation.ts';
+import { useAssets } from '../lib/assetsRuntime.ts';
+import { IMAGE_ACCEPT } from '../lib/sessionAssets.ts';
 
 type Obj = Record<string, unknown>;
 const numRow = 'grid grid-cols-[minmax(0,1fr)_4.5rem_1.5rem] items-center gap-2 text-xs text-muted';
@@ -93,6 +95,7 @@ export function WidgetSettings({ widget, advanced, disabled, reference, onProps,
             {resetBtn(f)}
           </div>);
       }
+      case 'asset': return <AssetField key={f.path.join('.')} label={label} value={String(v ?? '')} disabled={disabled} onChange={set(f)} testId={f.testId} reset={resetBtn(f)} />;
       case 'text': return (
         <TextInput key={f.path.join('.')} label={T(f.label)} aria={label} value={String(v ?? '')} onCommit={set(f)} disabled={disabled}
           placeholder={f.text?.placeholder ? T(f.text.placeholder) : undefined} title={hint} max={f.text?.max ?? 200} names={names} multiline={f.text?.multiline}
@@ -231,6 +234,39 @@ function TextInput({ label, aria, value, onCommit, disabled, placeholder, title,
       {hits.length > 0 && <span className="flex flex-wrap gap-1" data-testid="placeholder-hints">
         {hits.map((n) => <button key={n} type="button" className="min-h-[var(--hit)] border border-control px-1.5 text-xs text-fg hover:bg-raised" onMouseDown={(e) => e.preventDefault()} onClick={() => pick(n)}>{`{${n}}`}</button>)}
       </span>}
+    </div>
+  );
+}
+
+/** Ô chọn ảnh của phiên (T-21): danh sách ảnh/SVG đã nạp + nút chọn tệp mới. Tệp bị từ chối thì báo theo mã lỗi ngay dưới ô. */
+function AssetField({ label, value, disabled, onChange, testId, reset }: { label: string; value: string; disabled?: boolean; onChange(v: string): void; testId?: string; reset: React.ReactNode }) {
+  const { i18n } = useI18n();
+  const assets = useAssets(), images = assets.list.filter((a) => a.kind === 'image' || a.kind === 'svg');
+  const input = useRef<HTMLInputElement>(null);
+  const [err, setErr] = useState<string | null>(null), [busy, setBusy] = useState(false);
+  const known = !value || images.some((a) => a.id === value);
+  const pick = async (file: File | undefined) => {
+    if (!file) return;
+    setErr(null); setBusy(true);
+    try { const m = await assets.add(file); if (m.kind === 'font') setErr('ERR_ASSET_UNSUPPORTED'); else onChange(m.id); }
+    catch (e) { setErr((e as { code?: string }).code ?? 'ERR_ASSET_DECODE'); }
+    finally { setBusy(false); if (input.current) input.current.value = ''; }
+  };
+  return (
+    <div className="space-y-1.5" data-testid={testId}>
+      <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)_auto] items-center gap-2 text-xs text-muted">
+        <span className="min-w-0 break-words leading-tight">{label}</span>
+        <Select value={value} disabled={disabled} aria-label={label} onChange={(e) => onChange(e.target.value)} className="py-1 pl-2" wrapClassName="min-w-0" data-testid="ws-asset-select">
+          <option value="">{i18n.t('web.asset.none')}</option>
+          {!known && <option value={value}>{i18n.t('web.asset.missing')}</option>}
+          {images.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
+        </Select>
+        {reset}
+      </div>
+      <input ref={input} type="file" accept={IMAGE_ACCEPT} className="sr-only" tabIndex={-1} onChange={(e) => void pick(e.target.files?.[0])} data-testid="ws-asset-file" />
+      <button type="button" className="btn-ghost border border-control" disabled={disabled || busy} onClick={() => input.current?.click()} data-testid="ws-asset-pick">{busy ? i18n.t('web.asset.loading') : i18n.t('web.asset.pick')}</button>
+      {err && <p role="alert" className="text-xs leading-snug text-danger" data-testid="ws-asset-error">{i18n.t(`errors.${err}`)}</p>}
+      {!known && <p className="text-xs leading-snug text-warning">{i18n.t('web.asset.missingHint')}</p>}
     </div>
   );
 }

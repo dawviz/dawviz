@@ -22,7 +22,7 @@ import { BackgroundError, loadBackground, type BitmapLike } from './lib/backgrou
 import { DEFAULT_DEVICE_PREFS, activeOffsetMs, sanitizeDevicePrefs, type DevicePrefs } from './lib/latencyCalibration.ts';
 import { AUTOSAVE_DELAY_MS, createDebounced, createSaver, lazyDexieBackend, restoreWorkspace, type Backend } from './lib/workspaceStore.ts';
 import { applyWorkspace, toWorkspaceJson } from './lib/docSnapshot.ts';
-import { downloadBytes, packOf, sessionFromPack, snapshotOf, type SessionData, type SessionParts } from './lib/session.ts';
+import { bytesOf, downloadBytes, packOf, sessionFromPack, snapshotOf, type SessionData, type SessionParts } from './lib/session.ts';
 import { PACK_LIMITS, PackError } from './lib/projectPack.ts';
 import { Crop, Stage } from './components/Stage.tsx';
 import { Transport } from './components/Transport.tsx';
@@ -72,6 +72,9 @@ import { formatClock } from './lib/timeFormat.ts';
 import { describeProblem, type Problem } from './lib/problems.ts';
 import { createLatestGate, ParseFailure } from './lib/parserClient.ts';
 import { parseInWorker } from './lib/parseInWorker.ts';
+import { AssetsContext, decodeImage, loadFontBytes, type SessionAsset } from './lib/assetsRuntime.ts';
+import { acceptAsset, type AssetMeta } from './lib/sessionAssets.ts';
+import { BUNDLED_FONTS } from '@dawviz/render-core';
 
 interface Loaded { name: string; ast: UnifiedProjectAST; warnings: ParseWarning[]; format: string; ms: number }
 type Tab = 'preview' | 'editor' | 'settings';
@@ -152,6 +155,29 @@ export function App() {
     } finally { if (bgGate.isLatest(ticket)) setBgBusy(false); }
   }, [bgGate]);
   const dropBackground = useCallback(() => { bgGate.begin(); setBgBitmap((old) => { old?.close?.(); return null; }); setBgFile(null); setBgBusy(false); setBgError(null); }, [bgGate]);
+  // Tài nguyên của phiên (T-21): ảnh/SVG cho widget Ảnh, phông người dùng cho kiểu chữ. Lưu cùng phiên và Project Pack, không nằm trong preset.
+  const [assets, setAssets] = useState<SessionAsset[]>([]);
+  const assetsRef = useRef(assets); assetsRef.current = assets;
+  const addAsset = useCallback(async (file: File): Promise<AssetMeta> => {
+    const bytes = await bytesOf(file);
+    const { meta, added } = await acceptAsset(assetsRef.current.map((a) => a.meta), file.name, bytes);
+    if (!added) return meta;
+    let bitmap: ImageBitmap | undefined;
+    if (meta.kind === 'font') await loadFontBytes(meta.family!, bytes, document.fonts, meta.name);
+    else bitmap = await decodeImage(meta, bytes);
+    setAssets((l) => (l.some((a) => a.meta.id === meta.id) ? (bitmap?.close(), l) : [...l, { meta, file, ...(bitmap ? { bitmap } : {}) }]));
+    return meta;
+  }, []);
+  const removeAsset = useCallback((id: string) => setAssets((l) => { l.find((a) => a.meta.id === id)?.bitmap?.close(); return l.filter((a) => a.meta.id !== id); }), []);
+  const exportPayload = useCallback(async () => {
+    const l = assetsRef.current;
+    const imgs = await Promise.all(l.filter((a) => a.bitmap).map(async (a) => [a.meta.id, await createImageBitmap(a.bitmap!)] as [string, ImageBitmap]));
+    const fonts = await Promise.all(l.filter((a) => a.meta.family).map(async (a) => ({ family: a.meta.family!, bytes: await bytesOf(a.file) })));
+    return { images: imgs, fonts };
+  }, []);
+  const assetsApi = useMemo(() => ({ list: assets.map((a) => a.meta), add: addAsset, remove: removeAsset, exportPayload }), [assets, addAsset, removeAsset, exportPayload]);
+  const images = useMemo(() => new Map(assets.filter((a) => a.bitmap).map((a) => [a.meta.id, { image: a.bitmap!, width: a.bitmap!.width, height: a.bitmap!.height }])), [assets]);
+  const fontSet = useMemo(() => { const fam = assets.filter((a) => a.meta.family).map((a) => a.meta.family!); return fam.length ? new Set([...BUNDLED_FONTS.map((f) => f.family), ...fam]) : undefined; }, [assets]);
   const [features, setFeatures] = useState<AudioFeatures | null>(null); // bảng phổ cho widget Audio Spectrum (T-53); null khi chưa có âm thanh hoặc đang tính
   const [audioBusy, setAudioBusy] = useState(false);
   const [audioError, setAudioError] = useState<{ code: string; message: string; details?: Record<string, unknown> } | null>(null);
@@ -206,7 +232,7 @@ export function App() {
   const hud = useMemo(() => (renderAst && index ? buildSceneHud(scene, renderAst, index) : undefined), [renderAst, index, chordSig]);
   // Bản nhạc (D-63): dựng trong Worker, theo widget; đổi màu/phóng to không dựng lại.
   const notation = useNotation(scene, renderAst, index, loaded ? projectKey(loaded.name, loaded.ast) : '');
-  const derived: Derived | null = useMemo(() => (index ? { index, brightness, hud, fontsReady: fonts === 'ready', ...(notation.layouts.size ? { notation: notation.layouts } : {}), ...(features ? { audio: { features, offsetSec: offsetMs / 1000 } } : {}), ...(bgBitmap ? { background: { image: bgBitmap, width: bgBitmap.width, height: bgBitmap.height } } : {}) } : null), [index, brightness, hud, fonts, features, offsetMs, bgBitmap, notation.layouts]);
+  const derived: Derived | null = useMemo(() => (index ? { index, brightness, hud, fontsReady: fonts === 'ready', ...(notation.layouts.size ? { notation: notation.layouts } : {}), ...(features ? { audio: { features, offsetSec: offsetMs / 1000 } } : {}), ...(bgBitmap ? { background: { image: bgBitmap, width: bgBitmap.width, height: bgBitmap.height } } : {}), ...(images.size ? { images } : {}), ...(fontSet ? { fonts: fontSet } : {}) } : null), [index, brightness, hud, fonts, features, offsetMs, bgBitmap, notation.layouts, images, fontSet]);
 
   // Preset của người dùng (cột Video styles): lưu theo trình duyệt. `activeUser` = ô đang áp khi scene đã bị chỉnh nên không còn khớp từng chữ.
   const [userPresets, setUserPresets] = useState<UserPreset[]>(loadUserPresets);
@@ -287,8 +313,8 @@ export function App() {
   const saver = useMemo(() => (backend ? createSaver(backend) : null), [backend]);
   const parts: SessionParts | null = useMemo(() => (loaded && source ? {
     title: loaded.ast.meta.title || loaded.name, source: source.main, extras: source.extras, schemas, tempo, scene: doc.scene,
-    workspace: toWorkspaceJson(doc, tempo?.draft), audio: audioFile, audioOffsetMs: doc.audioOffsetMs, background: bgFile,
-  } : null), [loaded, source, schemas, tempo, doc, audioFile, bgFile]);
+    workspace: toWorkspaceJson(doc, tempo?.draft), audio: audioFile, audioOffsetMs: doc.audioOffsetMs, background: bgFile, assets: assets.map((a) => ({ meta: a.meta, file: a.file })),
+  } : null), [loaded, source, schemas, tempo, doc, audioFile, bgFile, assets]);
   const debounced = useRef<ReturnType<typeof createDebounced<SessionParts>> | null>(null);
   useEffect(() => {
     if (!saver) return;
@@ -320,8 +346,9 @@ export function App() {
     } });
     if (ok && s.audio) { await onLoadAudio(s.audio.file); }
     if (ok && s.background) { await onBackground(s.background); }
+    if (ok) for (const f of s.assets ?? []) await addAsset(f).catch(() => { /* tài nguyên hỏng: bỏ, widget dùng nó báo thiếu ở pre-flight */ });
     return ok;
-  }, [load, store, i18n, onLoadAudio, onBackground]);
+  }, [load, store, i18n, onLoadAudio, onBackground, addAsset]);
 
   // openSession đổi theo ngôn ngữ (i18n): giữ bản mới nhất trong ref để hiệu ứng khôi phục chỉ chạy một lần.
   const openRef = useRef(openSession); openRef.current = openSession;
@@ -343,6 +370,7 @@ export function App() {
         source: file(src), extras: r.blobs.filter((b) => b.id.startsWith('extra:')).map(file), schemas: schemasIn,
         tempo: r.state.tempoOverride !== undefined ? { override: r.state.tempoOverride, draft: sanitizeDraft(ws.tempoDraft) } : null,
         scene: r.state.scene, workspace: r.state.workspace, ...(audioBlob ? { audio: { file: file(audioBlob), offsetMs: r.state.audioOffsetMs } } : {}), ...(bgBlob ? { background: file(bgBlob) } : {}),
+        assets: r.blobs.filter((b) => b.id.startsWith('asset:')).map(file),
       });
     })().catch(() => { /* kho hỏng hoặc bị chặn: dùng như phiên mới */ });
     return () => { live = false; };
@@ -711,7 +739,7 @@ export function App() {
   );
 
   return (
-    <GestureContext.Provider value={gesture}><NotationStatusContext.Provider value={notation}><MotionConfig reducedMotion="user"><LayoutGroup>
+    <GestureContext.Provider value={gesture}><NotationStatusContext.Provider value={notation}><AssetsContext.Provider value={assetsApi}><MotionConfig reducedMotion="user"><LayoutGroup>
     <div className="flex h-screen min-h-0 flex-col">
       <TopBar tab={tab} onTab={setTab} fileName={loaded?.name} onExport={derived && renderAst ? () => setExporting(true) : undefined} mode={ui.mode} onMode={(mode) => setUi((u) => ({ ...u, mode }))}
         history={history} shortcuts={shortcuts} onUndo={doUndo} onRedo={doRedo} onJump={doJump} stepLabel={stepLabel} announce={announce}
@@ -748,7 +776,7 @@ export function App() {
       </main>
     </div>
     {exporting && derived && renderAst && <Suspense fallback={null}><ExportDialog scene={scene} ast={renderAst} derived={derived} audio={audio} offsetMs={offsetMs} projectSec={duration} fileName={loaded?.name ?? 'dawviz'} advanced={advanced} styleId={doc.videoStyle} styleName={VIDEO_STYLES.includes(doc.videoStyle) ? i18n.t(`web.style.video.${doc.videoStyle}`) : undefined} onClose={() => setExporting(false)} /></Suspense>}
-    </LayoutGroup></MotionConfig></NotationStatusContext.Provider></GestureContext.Provider>
+    </LayoutGroup></MotionConfig></AssetsContext.Provider></NotationStatusContext.Provider></GestureContext.Provider>
   );
 }
 

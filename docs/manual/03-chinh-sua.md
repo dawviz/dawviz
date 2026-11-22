@@ -96,6 +96,14 @@ Khi không chọn widget nào, mục **Ảnh nền** cho bạn chọn một ản
 - **Độ đục** và **Làm tối** (phủ một lớp đen lên ảnh để chữ và nốt dễ đọc).
 - Ảnh được lưu cùng phiên và gói dự án. **Preset không chứa ảnh**, chỉ nhớ cách đặt, nên gửi preset cho người khác thì họ tự chọn ảnh của họ.
 
+## Ảnh
+
+Widget **Ảnh** (thêm từ **Thêm** ở đầu danh sách Lớp) vẽ một ảnh của bạn lên khung, ví dụ logo hay hình nhân vật. Ở mục **Thiết lập**, bấm **Chọn tệp ảnh…** để thêm PNG, JPEG, WebP, GIF (lấy khung đầu) hoặc SVG; ảnh đã thêm hiện trong ô **Ảnh** để dùng lại cho widget khác. **Cách khớp**: **Vừa khung** (thấy trọn ảnh), **Phủ kín** (cắt phần thừa) hoặc **Kéo giãn**.
+
+Mỗi tệp tối đa 20 MB, ảnh tối đa 8192 px ở cạnh dài, cả phiên tối đa 200 MB. Ứng dụng nhận ra loại tệp từ nội dung chứ không từ đuôi. SVG có script, trình xử lý sự kiện hoặc liên kết ra ngoài bị từ chối. Cùng một tệp thêm hai lần chỉ được giữ một bản.
+
+**Sprite sheet** (Nâng cao): ảnh gồm nhiều khung xếp theo lưới. Đặt **Số cột sprite**, **Số hàng sprite**, **Số khung dùng** và **Khung mỗi giây**; widget chạy lần lượt các khung (đọc theo hàng) từ lúc widget bắt đầu hiện, **Lặp lại** hoặc dừng ở khung cuối. Tắt **Làm mượt khi phóng** cho ảnh pixel art.
+
 ## Phổ tần (Spectrum)
 
 Widget **Phổ tần** vẽ các cột nhảy theo âm thanh. Cần nạp âm thanh ở thẻ Xem trước (sau khi nạp, ứng dụng mất vài giây để phân tích; trong lúc đó và khi chưa có âm thanh, các cột nằm ở độ cao thấp nhất để bạn vẫn thấy chỗ đặt). Phổ đi theo **Offset âm thanh** của dự án.
@@ -204,7 +212,7 @@ Chọn một widget có chữ (tên bài, bộ đếm nốt, nốt đang phát, 
 Mỗi chữ dùng một **kiểu chữ** có sẵn (Tiêu đề, Phụ đề, Số đếm, Đồng hồ…). Bạn đổi gì thì chỉ thứ đó khác kiểu, phần còn lại vẫn theo kiểu. Cạnh mỗi thứ đã đổi có nút ↺ để quay về giá trị của kiểu.
 
 - **Dòng chữ:** widget có nhiều chữ thì chọn chữ cần sửa ở đây, ví dụ Tên bài hay Nghệ sĩ. Một số mục là một phần của dòng, ví dụ **Con số trong dòng** của bộ đếm nốt hay **Nốt bass sau dấu /** của hợp âm: đổi ở đó thì chỉ phần ấy khác, phần còn lại của dòng giữ nguyên. Chữ đang có chỉnh sửa được đánh dấu • trong danh sách.
-- **Kiểu chữ**, **Phông**, **Cỡ**, **Màu**, **Đậm**, **Nghiêng**.
+- **Kiểu chữ**, **Phông**, **Cỡ**, **Màu**, **Đậm**, **Nghiêng**. Cuối danh sách **Phông** có **Nạp tệp phông…** để dùng phông của bạn (WOFF2, WOFF, TTF, OTF, tối đa 20 MB); phông này đi theo phiên, gói dự án và video xuất. Hãy chỉ dùng phông bạn có quyền dùng.
 - **Căn lề:** trái, giữa hoặc phải trong khung widget.
 
 Ở chế độ Nâng cao (hoặc bấm **Thêm tuỳ chọn**):

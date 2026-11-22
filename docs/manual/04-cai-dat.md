@@ -33,9 +33,10 @@ Kết quả là ước lượng: nó gồm cả độ chậm của bàn phím ho
 
 Ứng dụng tự lưu công việc trong trình duyệt này, khoảng nửa giây sau thao tác cuối. Lần sau mở lại trang, bài, âm thanh, ảnh nền, tempo, bố cục và phong cách video trở lại như lúc bạn dừng. Không có gì được gửi đi đâu cả.
 
-- **Lưu gói dự án** tải về một tệp `.zip` chứa mọi thứ của phiên: tệp dự án, tệp `.mid` phụ, âm thanh, ảnh nền, tempo bạn đặt, schema đã nạp và bố cục. Mở gói trên máy khác là có lại đúng phiên đó.
+- **Lưu gói dự án** tải về một tệp `.zip` chứa mọi thứ của phiên: tệp dự án, tệp `.mid` phụ, âm thanh, ảnh nền, ảnh và phông bạn thêm, tempo bạn đặt, schema đã nạp và bố cục. Mở gói trên máy khác là có lại đúng phiên đó.
 - **Mở gói dự án** nạp một gói như vậy. Gói bị hỏng, bị sửa hoặc do bản ứng dụng mới hơn tạo ra thì ứng dụng báo và không mở.
 - **Xoá phiên đã lưu** xoá bản lưu trong trình duyệt (không đụng tới tệp của bạn). Nút hỏi lại một lần trước khi xoá vì không hoàn tác được.
+- **Tệp của phiên** liệt kê ảnh và phông bạn đã thêm (tên, loại, dung lượng); nút × bỏ một tệp khỏi phiên. Widget đang dùng ảnh đã bỏ sẽ trống, và hộp thoại Xuất video báo trước khi xuất.
 - Khi bộ nhớ trình duyệt gần đầy, ứng dụng chỉ lưu bố cục và thiết lập; lần sau bạn phải nạp lại tệp dự án và âm thanh. Ứng dụng báo rõ tệp nào cần nạp lại.
 
 ## Preset (cột Phong cách video)

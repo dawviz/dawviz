@@ -503,7 +503,7 @@
   },
   "SRS.md": {
    "title": "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)",
-   "sha1": "b5e2600ec6",
+   "sha1": "49d4aaf8cd",
    "chunks": [
     {
      "n": 0,
@@ -2216,14 +2216,17 @@
       "3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40)",
       "REQ-STORAGE-05: Tài nguyên của phiên"
      ],
-     "chars": 967,
+     "chars": 1292,
      "lines": [
       946,
-      949
+      950
      ],
      "ids": [
       "ERR_ASSET_DECODE",
+      "ERR_ASSET_SESSION_FULL",
       "ERR_ASSET_TOO_LARGE",
+      "ERR_ASSET_UNSAFE",
+      "ERR_ASSET_UNSUPPORTED",
       "REQ-STORAGE-05",
       "WARN_PRESET_UNSUPPORTED"
      ]
@@ -2239,8 +2242,8 @@
      ],
      "chars": 444,
      "lines": [
-      950,
-      952
+      951,
+      953
      ],
      "ids": [
       "D-14",
@@ -2258,8 +2261,8 @@
      ],
      "chars": 5167,
      "lines": [
-      953,
-      999
+      954,
+      1000
      ],
      "ids": [
       "ARC-07",
@@ -2310,8 +2313,8 @@
      ],
      "chars": 4893,
      "lines": [
-      1002,
-      1039
+      1003,
+      1040
      ],
      "ids": [
       "D-57",
@@ -2328,8 +2331,8 @@
      ],
      "chars": 364,
      "lines": [
-      1040,
-      1044
+      1041,
+      1045
      ],
      "ids": [
       "REQ-GRAPHICS-05"
@@ -2345,8 +2348,8 @@
      ],
      "chars": 18661,
      "lines": [
-      1045,
-      1118
+      1046,
+      1119
      ],
      "ids": [
       "ARC-05",
@@ -2409,8 +2412,8 @@
      ],
      "chars": 1468,
      "lines": [
-      1119,
-      1134
+      1120,
+      1135
      ],
      "ids": [
       "BR-01",
@@ -2473,8 +2476,8 @@
      ],
      "chars": 7104,
      "lines": [
-      1135,
-      1170
+      1136,
+      1171
      ],
      "ids": [
       "ARC-01",
@@ -2542,8 +2545,8 @@
      ],
      "chars": 4044,
      "lines": [
-      1171,
-      1197
+      1172,
+      1198
      ],
      "ids": [
       "D-20",
@@ -2598,8 +2601,8 @@
      ],
      "chars": 2864,
      "lines": [
-      1200,
-      1225
+      1201,
+      1226
      ],
      "ids": [
       "ERR_ARCHIVE_INVALID",
@@ -2637,8 +2640,8 @@
      ],
      "chars": 1673,
      "lines": [
-      1226,
-      1242
+      1227,
+      1243
      ],
      "ids": [
       "NFR-SEC-04",
@@ -2665,8 +2668,8 @@
      ],
      "chars": 1357,
      "lines": [
-      1243,
-      1248
+      1244,
+      1249
      ],
      "ids": [
       "REQ-AUDIO-01",
@@ -2714,8 +2717,8 @@
      ],
      "chars": 2904,
      "lines": [
-      1249,
-      1280
+      1250,
+      1281
      ],
      "ids": [
       "D-20",
@@ -9131,9 +9134,18 @@
    "SRS/req-storage-05-tai-nguyen-cua-phien.md",
    "CUSTOMIZATION/6-tai-nguyen-assets-cua-phien-va-cua-cong-dong-a.md"
   ],
+  "ERR_ASSET_SESSION_FULL": [
+   "SRS/req-storage-05-tai-nguyen-cua-phien.md"
+  ],
   "ERR_ASSET_TOO_LARGE": [
    "SRS/req-storage-05-tai-nguyen-cua-phien.md",
    "CUSTOMIZATION/6-tai-nguyen-assets-cua-phien-va-cua-cong-dong-a.md"
+  ],
+  "ERR_ASSET_UNSAFE": [
+   "SRS/req-storage-05-tai-nguyen-cua-phien.md"
+  ],
+  "ERR_ASSET_UNSUPPORTED": [
+   "SRS/req-storage-05-tai-nguyen-cua-phien.md"
   ],
   "REQ-STORAGE-06": [
    "SRS/req-storage-06-preset-moi-va-chia-se.md",

@@ -1,10 +1,11 @@
 // Export Worker (T-09, REQ-EXPORT-07): dựng derived từ ast + scene, vẽ từng khung bằng renderFrame lên OffscreenCanvas,
 // mã hoá qua Mediabunny. Huỷ: đặt cờ, vòng xuất dừng ở khung kế và đóng đích ghi (không để lại tệp dở).
-import { buildIndex, buildSceneHud, charsOfScene, ensureFonts, needsFonts, renderFrame, requiredFonts, type Derived, type FontFaceSpec, type RenderCtx } from '@dawviz/render-core';
+import { BUNDLED_FONTS, buildIndex, buildSceneHud, charsOfScene, ensureFonts, needsFonts, renderFrame, requiredFonts, type Derived, type FontFaceSpec, type RenderCtx } from '@dawviz/render-core';
 import { ExportCancelled, runExport } from '../lib/exportEngine.ts';
 import { createExportOutput } from '../lib/exportOutput.ts';
 import type { ExportIn, ExportJob, ExportOut } from '../lib/exportProtocol.ts';
 import { createStats, type ExportStats } from '../lib/exportStats.ts';
+import { loadFontBytes } from '../lib/assetsRuntime.ts';
 import { dirSink, pngName, wavBytes, zipSink, type DirTarget } from '../lib/pngSequence.ts';
 import { frameCount } from '../lib/exportPlan.ts';
 
@@ -51,8 +52,12 @@ async function run(job: ExportJob, file: Extract<ExportIn, { type: 'start' }>['f
   // Chỉ nạp dải ký tự thật sự dùng: Firefox chậm dần theo số mặt phông trong Worker (docs/design/FIREFOX-FONT-SLOWDOWN.md).
   const faces = needsFonts(scene) ? requiredFonts(scene, charsOfScene(scene, ast)) : [];
   if (needsFonts(scene)) await ensureFonts(faces, loadFont);
+  // Phông người dùng (T-21): nạp từ byte vào self.fonts trước khung đầu; lỗi thì báo, không xuất bằng phông dự phòng âm thầm.
+  for (const f of job.userFonts ?? []) await loadFontBytes(f.family, f.bytes, (self as unknown as { fonts: FontFaceSet }).fonts);
   const index = buildIndex(ast.tracks, ast.meta.totalDurationSeconds);
-  const derived: Derived = { index, brightness: job.brightness, hud: buildSceneHud(scene, ast, index), fontsReady: true, ...(job.spectrum ? { audio: job.spectrum } : {}), ...(job.background ? { background: job.background } : {}), ...(job.notation?.length ? { notation: new Map(job.notation) } : {}) };
+  const derived: Derived = { index, brightness: job.brightness, hud: buildSceneHud(scene, ast, index), fontsReady: true, ...(job.spectrum ? { audio: job.spectrum } : {}), ...(job.background ? { background: job.background } : {}), ...(job.notation?.length ? { notation: new Map(job.notation) } : {}),
+    ...(job.images?.length ? { images: new Map(job.images.map(([id, b]) => [id, { image: b, width: b.width, height: b.height }])) } : {}),
+    ...(job.userFonts?.length ? { fonts: new Set([...BUNDLED_FONTS.map((f) => f.family), ...job.userFonts.map((f) => f.family)]) } : {}) };
 
   const canvas = new OffscreenCanvas(width, height);
   const ctx = canvas.getContext('2d');

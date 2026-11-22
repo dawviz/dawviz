@@ -27,10 +27,11 @@ import { DEFAULT_KEYBOARD_STYLE, DEFAULT_NOTE_STYLE, sanitizeStyle, type Keyboar
 import { MAX_PARENT_DEPTH, resolveParents } from './parenting.ts';
 import { ANIM_EFFECTS, ANIM_ORDERS, ANIM_UNITS, DEFAULT_TEXT_ANIMATOR, type TextAnimator } from './textAnimator.ts';
 import { EASING_NAMES } from './motion.ts';
+import { ASSET_REF, DEFAULT_IMAGE, IMAGE_FITS, type ImageProps } from './image.ts';
 
 export const SCENE_SCHEMA_VERSION = '0.7.0';
 
-export const WIDGET_TYPES = ['TRACK_INFO', 'PIANO_ROLL', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'AUDIO_SPECTRUM', 'PROGRESS_BAR', 'TEXT', 'PARTICLES', 'NOTATION', ...INSIGHT_TYPES] as const;
+export const WIDGET_TYPES = ['TRACK_INFO', 'PIANO_ROLL', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'AUDIO_SPECTRUM', 'PROGRESS_BAR', 'TEXT', 'PARTICLES', 'NOTATION', ...INSIGHT_TYPES, 'IMAGE'] as const;
 export type WidgetType = typeof WIDGET_TYPES[number];
 
 /** `rotation`: độ, (−180, 180]. `anchor`: điểm neo xoay theo tỉ lệ khung widget (0..1), mặc định tâm (REQ-GRAPHICS-03). */
@@ -142,10 +143,10 @@ export function pianoRollWidget(layout: Omit<WidgetLayout, 'anchor'> & { anchor?
     properties: { ...clonePiano(DEFAULT_PIANO_ROLL), ...props } };
 }
 /** Loại widget người dùng thêm được từ Editor (có renderer). */
-export const ADDABLE_WIDGETS = ['PIANO_ROLL', 'TRACK_INFO', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'AUDIO_SPECTRUM', 'PARTICLES', 'NOTATION', ...INSIGHT_TYPES, 'PROGRESS_BAR', 'TEXT'] as const satisfies readonly WidgetType[];
+export const ADDABLE_WIDGETS = ['PIANO_ROLL', 'TRACK_INFO', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'AUDIO_SPECTRUM', 'PARTICLES', 'NOTATION', ...INSIGHT_TYPES, 'PROGRESS_BAR', 'TEXT', 'IMAGE'] as const satisfies readonly WidgetType[];
 const HUD_DEFAULTS: Record<string, unknown> = {
   TRACK_INFO: DEFAULT_TRACK_INFO, EVENT_COUNTER: DEFAULT_EVENT_COUNTER, LIVE_TRIGGER: DEFAULT_LIVE_TRIGGER,
-  TIME_BAR: DEFAULT_TIME_BAR, CHORD_DETECTION: DEFAULT_CHORD, AUDIO_SPECTRUM: DEFAULT_SPECTRUM, PARTICLES: DEFAULT_PARTICLES, NOTATION: DEFAULT_NOTATION, PROGRESS_BAR: DEFAULT_PROGRESS_BAR, TEXT: DEFAULT_TEXT_BOX,
+  TIME_BAR: DEFAULT_TIME_BAR, CHORD_DETECTION: DEFAULT_CHORD, AUDIO_SPECTRUM: DEFAULT_SPECTRUM, PARTICLES: DEFAULT_PARTICLES, NOTATION: DEFAULT_NOTATION, PROGRESS_BAR: DEFAULT_PROGRESS_BAR, TEXT: DEFAULT_TEXT_BOX, IMAGE: DEFAULT_IMAGE,
   TEMPO_INFO: DEFAULT_TEMPO_INFO, BAR_BEAT: DEFAULT_BAR_BEAT, KEY_SCALE: DEFAULT_KEY_SCALE, VELOCITY: DEFAULT_VELOCITY, DENSITY: DEFAULT_DENSITY, PITCH_WHEEL: DEFAULT_PITCH_WHEEL,
   ARRANGEMENT: DEFAULT_ARRANGEMENT, DRUM_PAD: DEFAULT_DRUM_PAD, SECTION: DEFAULT_SECTION, LYRICS: DEFAULT_LYRICS, AUTOMATION: DEFAULT_AUTOMATION,
 };
@@ -156,7 +157,7 @@ export function widgetDefaults(type: WidgetType): Record<string, unknown> {
 /** Cỡ mặc định khi thêm (tỉ lệ theo khung, hoặc pt cố định), kẹp trong khung. */
 const NEW_SIZE: Record<string, (W: number, H: number) => [number, number]> = {
   PIANO_ROLL: (W, H) => [W * 0.6, H * 0.4], TRACK_INFO: (W) => [W * 0.5, 130], EVENT_COUNTER: () => [480, 120], LIVE_TRIGGER: () => [480, 60],
-  TIME_BAR: () => [320, 100], CHORD_DETECTION: () => [400, 100], AUDIO_SPECTRUM: (W) => [W * 0.5, 240], PARTICLES: (W, H) => [W * 0.5, H * 0.5], NOTATION: (W, H) => [W * 0.8, H * 0.45], PROGRESS_BAR: (W) => [W * 0.8, 24], TEXT: () => [480, 100],
+  TIME_BAR: () => [320, 100], CHORD_DETECTION: () => [400, 100], AUDIO_SPECTRUM: (W) => [W * 0.5, 240], PARTICLES: (W, H) => [W * 0.5, H * 0.5], NOTATION: (W, H) => [W * 0.8, H * 0.45], PROGRESS_BAR: (W) => [W * 0.8, 24], TEXT: () => [480, 100], IMAGE: (W, H) => [Math.min(W, H) * 0.4, Math.min(W, H) * 0.4],
   TEMPO_INFO: () => [360, 110], BAR_BEAT: () => [320, 110], KEY_SCALE: () => [320, 110], VELOCITY: () => [360, 160], DENSITY: (W) => [W * 0.5, 200], PITCH_WHEEL: () => [320, 320],
   ARRANGEMENT: (W) => [W * 0.6, 180], DRUM_PAD: () => [360, 360], SECTION: () => [420, 100], LYRICS: (W) => [W * 0.7, 120], AUTOMATION: (W) => [W * 0.5, 140],
 };
@@ -688,6 +689,12 @@ const HUD_SANITIZERS = {
     return { align: S.oneOf(P.align, ALIGNS, d.align, `${p}.align`), text: tpl(S, P.text, d.text, `${p}.text`, TEMPLATE_KEYS.TEXT, 2000),
       style: textRef(S, P.style, d.style, `${p}.style`), valueStyle: textRef(S, P.valueStyle, d.valueStyle, `${p}.valueStyle`),
       animator: P.animator === undefined ? { ...DEFAULT_TEXT_ANIMATOR } : sanitizeTextAnimator(S, P.animator, `${p}.animator`) };
+  },
+  IMAGE(P: Obj, p: string, S: Sanitizer): ImageProps {
+    const d = DEFAULT_IMAGE, cols = Math.round(S.num(P.cols, d.cols, 1, 64, `${p}.cols`)), rows = Math.round(S.num(P.rows, d.rows, 1, 64, `${p}.rows`));
+    return { asset: S.str(P.asset, d.asset, `${p}.asset`, (x) => x === '' || ASSET_REF.test(x)), fit: S.oneOf(P.fit, IMAGE_FITS, d.fit, `${p}.fit`), cols, rows,
+      frames: Math.min(cols * rows, Math.round(S.num(P.frames, d.frames, 1, 4096, `${p}.frames`))), fps: S.num(P.fps, d.fps, 0, 120, `${p}.fps`),
+      loop: S.bool(P.loop, d.loop, `${p}.loop`), smooth: S.bool(P.smooth, d.smooth, `${p}.smooth`) };
   },
   AUDIO_SPECTRUM(P: Obj, p: string, S: Sanitizer): SpectrumProps {
     const d = DEFAULT_SPECTRUM, col = (v: unknown, dv: string, path: string) => S.str(v, dv, path, (s) => HEX.test(s));

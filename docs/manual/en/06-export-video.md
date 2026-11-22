@@ -41,6 +41,8 @@ To lay DAW Visualizer's graphics over another video (After Effects, Premiere, Da
 
 In After Effects: **File › Import**, pick the first image, tick **PNG Sequence**, then set the frame rate to the one you exported at.
 
+If an **Image** widget uses a picture that is not in this session (for example a preset opened from another computer), the dialog warns you before exporting; that widget stays blank in the video until you pick the file again.
+
 ## Check this computer
 
 The **Check this computer** button at the bottom of the settings really encodes a few frames and one second of audio, then gives you a result you can copy. Use it when export doesn't work or when you want to help with testing: see [Testing video export](07-testing-export.md).

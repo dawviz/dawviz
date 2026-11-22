@@ -1,7 +1,7 @@
 // Mục "Chữ" của bảng Thuộc tính (T-72, SRS REQ-GRAPHICS-18, giao diện): sửa kiểu chữ của từng chỗ chữ trong widget.
 // Mỗi thuộc tính là một ghi đè trên kiểu dựng sẵn; nút ↺ bỏ ghi đè (về kiểu, hoặc về dòng chứa nó nếu là một đoạn).
 // Cơ bản: chỗ chữ, kiểu, phông, cỡ, màu, đậm, nghiêng, căn lề. Nâng cao: mọi thuộc tính còn lại + Lưu thành kiểu mới / Cập nhật kiểu.
-import { useEffect, useId, useState, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { BUNDLED_FONTS, saveAsTextStyle, updateTextStyleFromRef, type TextRef, type TextStyle, type TextStyleSet, type WidgetSpec } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { radioKeys, radioTab } from '../lib/a11y.ts';
@@ -9,11 +9,14 @@ import { clearOverride, isOverridden, newStyleId, overrideCount, setOverride, sl
 import { NumberField } from './NumberField.tsx';
 import { ResetButton } from './Inspector.tsx';
 import { Select } from './Select.tsx';
+import { useAssets } from '../lib/assetsRuntime.ts';
+import { FONT_ACCEPT } from '../lib/sessionAssets.ts';
 
 const row = 'grid grid-cols-[minmax(0,1fr)_minmax(0,9.5rem)_1.5rem] items-center gap-2 text-xs text-muted';
 const numRow = 'grid grid-cols-[minmax(0,1fr)_4.5rem_1.5rem] items-center gap-2 text-xs text-muted';
 const btn = 'btn-ghost border border-line px-2 py-1 text-xs';
 const FAMILIES = [...new Set(BUNDLED_FONTS.map((f) => f.family))];
+const LOAD_FONT = '\u0000load-font';
 
 export interface TextPanelProps {
   widget: WidgetSpec; styles: TextStyleSet; advanced: boolean; disabled?: boolean;
@@ -29,6 +32,9 @@ export interface TextPanelProps {
 
 export function TextPanel({ widget, styles, advanced, disabled, onRef, onStyles, onProps, reference }: TextPanelProps) {
   const { i18n } = useI18n();
+  // Phông người dùng nạp (T-21) đứng sau phông đóng gói; lựa chọn cuối mở hộp chọn tệp phông.
+  const assets = useAssets(), fontInput = useRef<HTMLInputElement>(null), [fontErr, setFontErr] = useState<string | null>(null);
+  const families = [...FAMILIES, ...assets.list.filter((a) => a.family).map((a) => a.family!)];
   const slots = textSlots(widget.type);
   const [pick, setPick] = useState(slots[0]?.field ?? '');
   useEffect(() => { if (!slots.some((s) => s.field === pick)) setPick(slots[0]?.field ?? ''); }, [widget.type]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -101,11 +107,16 @@ export function TextPanel({ widget, styles, advanced, disabled, onRef, onStyles,
       )}
       <label className={row} data-testid="text-font">
         <span>{i18n.t('web.text.font')}</span>
-        <Select value={resolved.font} disabled={disabled} onChange={(e) => set('font', e.target.value)} className="py-1 pl-2" wrapClassName="min-w-0">
-          {[...new Set([...FAMILIES, resolved.font])].map((f) => <option key={f} value={f}>{FAMILIES.includes(f) ? f : `${f} (${i18n.t('web.text.fontMissing')})`}</option>)}
+        <Select value={resolved.font} disabled={disabled} className="py-1 pl-2" wrapClassName="min-w-0"
+          onChange={(e) => { if (e.target.value === LOAD_FONT) fontInput.current?.click(); else set('font', e.target.value); }}>
+          {[...new Set([...families, resolved.font])].map((f) => <option key={f} value={f}>{families.includes(f) ? f : `${f} (${i18n.t('web.text.fontMissing')})`}</option>)}
+          <option value={LOAD_FONT}>{i18n.t('web.asset.pickFont')}</option>
         </Select>
         {R('font', i18n.t('web.text.font'))}
       </label>
+      <input ref={fontInput} type="file" accept={FONT_ACCEPT} className="sr-only" tabIndex={-1} data-testid="text-font-file"
+        onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; if (!f) return; setFontErr(null); assets.add(f).then((m) => { if (m.family) set('font', m.family); else setFontErr('ERR_ASSET_UNSUPPORTED'); }, (err) => setFontErr((err as { code?: string }).code ?? 'ERR_ASSET_DECODE')); }} />
+      {fontErr && <p role="alert" className="text-xs leading-snug text-danger" data-testid="text-font-error">{i18n.t(`errors.${fontErr}`)}</p>}
       {num('size', i18n.t('web.text.size'), { min: 4, max: 400, step: 1 }, [6, 120])}
       {color('color', i18n.t('web.text.color'))}
       {check('weight', i18n.t('web.text.bold'), resolved.weight >= 600, (x) => (x ? 700 : 400))}

@@ -28,6 +28,9 @@ export interface ExportJob {
   notation?: [string, NotationLayout][];
   /** Xuất chuỗi PNG (T-55): `base` tên gốc, `wav` kèm âm thanh, `transparent` bỏ nền, `layers` chỉ các widget này. Vắng = xuất video. */
   png?: { base: string; wav: boolean; transparent: boolean; layers?: string[] };
+  /** Tài nguyên của phiên (T-21): bitmap ảnh theo `sha256:…` (chuyển sang Worker) và phông người dùng (byte). */
+  images?: [string, ImageBitmap][];
+  userFonts?: { family: string; bytes: Uint8Array }[];
 }
 /** Tay cầm tệp từ showSaveFilePicker: clone được sang Worker (FileSystemWritableFileStream thì KHÔNG, Chrome ném DataCloneError). */
 export interface FileTarget { createWritable(): Promise<WritableStream<{ type: 'write'; data: Uint8Array; position: number }>> }

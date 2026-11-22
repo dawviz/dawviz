@@ -35,6 +35,8 @@ export interface Derived {
   background?: BackgroundImage;
   /** Báo biểu thức lỗi lúc chạy (T-30: vượt ngân sách khung, NaN/∞); Render Core đã dùng giá trị tĩnh. Vắng = không báo. */
   onExprIssue?(i: { widgetId: string; path: string; code: string }): void;
+  /** Ảnh của phiên đã giải mã (T-21), khoá `sha256:<hex>`: widget Ảnh đọc từ đây. Vắng ảnh = không vẽ. */
+  images?: ReadonlyMap<string, { image: unknown; width: number; height: number }>;
   /** Bản nhạc đã dựng theo id widget Bản nhạc (D-63); thiếu = đang dựng, widget không vẽ gì. */
   notation?: ReadonlyMap<string, NotationLayout>;
 }
@@ -72,8 +74,15 @@ export interface PathPrim {
   glow?: { mode: 'HALO' | 'SOFT'; color: string; width: number; alpha: number };
   rough?: { amp: number; step: number; seed: number; id: number };
 }
+/** Ảnh của phiên (T-21): vẽ ô nguồn (sx, sy, sw, sh) của bitmap `asset` (Derived.images) vào hộp (x, y, w, h). */
+export interface ImagePrim {
+  kind: 'image'; asset: string;
+  sx: number; sy: number; sw: number; sh: number;
+  x: number; y: number; w: number; h: number;
+  alpha: number; smooth: boolean;
+}
 /** Hình học thuần, đơn vị pt trong toạ độ widget. */
-export type Primitive = RectPrim | TextPrim | PathPrim;
+export type Primitive = RectPrim | TextPrim | PathPrim | ImagePrim;
 
 export interface LayoutCtx {
   ast: UnifiedProjectAST; derived: Derived; tracks: TrackIndex[]; measure: Measure;

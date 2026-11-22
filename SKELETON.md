@@ -87,6 +87,7 @@ dawviz/
 │     │  │  ├─ animateFields.ts
 │     │  │  ├─ animDiff.test.ts
 │     │  │  ├─ animDiff.ts
+│     │  │  ├─ assetsRuntime.ts
 │     │  │  ├─ audioAsset.test.ts
 │     │  │  ├─ audioAsset.ts
 │     │  │  ├─ audioEngine.test.ts
@@ -171,6 +172,8 @@ dawviz/
 │     │  │  ├─ sectionState.ts
 │     │  │  ├─ session.test.ts
 │     │  │  ├─ session.ts
+│     │  │  ├─ sessionAssets.test.ts
+│     │  │  ├─ sessionAssets.ts
 │     │  │  ├─ spectrumClient.test.ts
 │     │  │  ├─ spectrumClient.ts
 │     │  │  ├─ store.test.ts
@@ -309,6 +312,7 @@ dawviz/
 │  │  │  ├─ fonts.ts
 │  │  │  ├─ glow.ts
 │  │  │  ├─ hud.ts
+│  │  │  ├─ image.ts
 │  │  │  ├─ index.ts
 │  │  │  ├─ insight.ts
 │  │  │  ├─ keyframes.ts
@@ -953,6 +957,22 @@ function chordSpans(name: string, bassStyle?: TextRef): TextSpan[]   // Tên h�
 const HUD_RENDERERS
 ```
 
+#### `packages/render-core/src/image.ts`
+
+Widget Ảnh (T-21, REQ-STORAGE-05): vẽ một tài nguyên ảnh của phiên (PNG/JPEG/WebP/GIF khung đầu, SVG đã giải mã thành ảnh) hoặc một
+
+```text
+type ImageFit
+interface ImageProps
+const DEFAULT_IMAGE
+const IMAGE_FITS
+const ASSET_REF
+function spriteFrame(p: Pick<ImageProps, 'frames' | 'fps' | 'loop'>, elapsed: number): number   // Khung sprite tại t: chỉ số (0…frames−1) theo thời gian từ đầu khoảng hiển thị.
+function fitRect(fit: ImageFit, sw: number, sh: number, W: number, H: number):    // Đặt ô nguồn (sw × sh) vào khung W × H theo cách khớp: chứa trọn, phủ kín (cắt phần thừa ở nguồn), hay kéo giã…
+function imagePrims(p: ImageProps, W: number, H: number, size: { width: number; height: number } | undefined, elapsed: number): Primitive[]
+const imageRenderer
+```
+
 #### `packages/render-core/src/index.ts`
 
 Cổng vào của @dawviz/render-core: kiểu AST, độ sáng, chỉ mục nốt, bố cục và vẽ Piano Roll.
@@ -989,6 +1009,7 @@ re-export * from './widgetMotion.ts'
 re-export * from './animation.ts'
 re-export * from './parenting.ts'
 re-export * from './textAnimator.ts'
+re-export * from './image.ts'
 re-export * from './naming.ts'
 re-export * from './insight.ts'
 re-export * from './notation/types.ts'
@@ -1318,6 +1339,7 @@ interface Derived   // Dữ liệu dẫn xuất: tính một lần ngoài vòng 
 interface RectPrim
 interface TextPrim   // Chữ một dòng. `y` là đường baseline; `x` là điểm neo theo `align`.
 interface PathPrim   // Một phần tử bản nhạc (D-63): đường vẽ hoặc dãy glyph của NotationLayout, đặt bằng phép (tx, ty, s) vào toạ độ…
+interface ImagePrim   // Ảnh của phiên (T-21): vẽ ô nguồn (sx, sy, sw, sh) của bitmap `asset` (Derived.images) vào hộp (x, y, w, h).
 type Primitive   // Hình học thuần, đơn vị pt trong toạ độ widget.
 interface LayoutCtx
 interface WidgetRenderer
@@ -2137,6 +2159,20 @@ So sánh hai hoạt hình để nhãn lịch sử nói đúng điều đã đổ
 ```text
 type AnimChange
 function diffAnimate(before: Record<string, Animation> | undefined, after: Record<string, Animation> | undefined): AnimChange[]   // Mọi thay đổi giữa hai bảng `animate` (đường dẫn → hoạt hình), theo thứ tự đường dẫn.
+```
+
+#### `apps/web/src/lib/assetsRuntime.ts`
+
+Phần chạy trong trình duyệt của tài nguyên phiên (T-21): giải mã ảnh (SVG qua <img>, không chèn vào DOM nên không chạy script), nạp phông
+
+```text
+interface SessionAsset
+interface AssetsApi
+interface ExportAssets
+const AssetsContext
+const useAssets = () =>
+async function decodeImage(meta: AssetMeta, bytes: Uint8Array): Promise<ImageBitmap>
+async function loadFontBytes(family: string, bytes: Uint8Array, set: FontFaceSet, name = family): Promise<void>   // Nạp phông vào một FontFaceSet (document.fonts hoặc self.fonts của Worker).
 ```
 
 #### `apps/web/src/lib/audioAsset.ts`
@@ -3070,6 +3106,31 @@ async function sessionFromPack(bytes: Uint8Array): Promise<
 function downloadBytes(bytes: Uint8Array, fileName: string, type = 'application/zip'): void   // Tải xuống một khối byte bằng Blob + liên kết (không cần quyền).
 ```
 
+#### `apps/web/src/lib/sessionAssets.ts`
+
+Tài nguyên của phiên (T-21, AD-12, REQ-STORAGE-05): ảnh (PNG/JPEG/WebP/GIF), SVG (chỉ vẽ dạng ảnh) và phông (WOFF2/WOFF/TTF/OTF).
+
+```text
+type AssetKind
+interface AssetMeta
+const ASSET_LIMITS
+type AssetErrorCode
+class AssetError extends Error
+  constructor(code: AssetErrorCode, message: string, details?: Record<string, unknown>)
+const IMAGE_ACCEPT   // Chọn tệp: phần mở rộng gợi ý cho hộp chọn (nhận dạng thật vẫn bằng nội dung).
+const FONT_ACCEPT
+function sniff(b: Uint8Array):    // Nhận dạng theo magic bytes; SVG theo phần đầu văn bản. Không nhận ra → null.
+function svgProblems(text: string): string[]   // Lý do một SVG bị từ chối (rỗng = an toàn để vẽ dạng ảnh và mang theo trong gói).
+async function sha256Id(bytes: Uint8Array): Promise<string>
+function fontFamilyFor(fileName: string, taken: ReadonlySet<string>): string   // Họ phông từ tên tệp (bỏ đuôi, chỉ giữ chữ/số/khoảng trắng/gạch), không trùng họ đã có; tối đa 40 ký tự.
+async function acceptAsset(list: readonly AssetMeta[], name: string, bytes: Uint8Array): Promise<   // Kiểm và nhận một tệp vào danh sách tài nguyên của phiên. Trả meta (đã có thì trả bản cũ, không thêm). Ném Ass…
+function checkImageSize(name: string, w: number, h: number): void   // Cạnh ảnh sau giải mã: quá 8192 px thì từ chối.
+const packAssetName = (m: Pick<AssetMeta, 'id' | 'name'>) =>   // Tên tệp tài nguyên trong Project Pack: `asset-<16 hex đầu>-<tên gốc an toàn>`; đọc lại bằng parsePackAssetNam…
+const parsePackAssetName = (n: string) =>
+function referencedAssets(scene: { widgets: readonly { type: string; properties: unknown }[] }): string[]   // Tài nguyên mà scene dùng: ảnh (widget Ảnh) và họ phông (kiểu chữ, ghi đè chữ) — để pre-flight báo thiếu trước…
+function missingAssets(scene: { widgets: readonly { type: string; properties: unknown }[] }, have: ReadonlySet<string>): string[]
+```
+
 #### `apps/web/src/lib/spectrumClient.ts`
 
 Client phân tích phổ (T-53): gửi PCM mono sang Worker từng khối (chờ ack, bộ nhớ tạm ~4 MB), có bộ đệm theo định danh tệp (SHA-256).
@@ -3522,6 +3583,7 @@ type SpectrumOut
 - `apps/web/src/lib/problems.test.ts`
 - `apps/web/src/lib/projectPack.test.ts`
 - `apps/web/src/lib/session.test.ts`
+- `apps/web/src/lib/sessionAssets.test.ts`
 - `apps/web/src/lib/spectrumClient.test.ts`
 - `apps/web/src/lib/store.test.ts`
 - `apps/web/src/lib/tempoRows.test.ts`
@@ -3576,4 +3638,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 11 thư mục src, 1588 ký hiệu công khai -->
+<!-- 11 thư mục src, 1624 ký hiệu công khai -->
