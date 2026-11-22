@@ -4,8 +4,8 @@ doc_title: "Biểu thức người dùng, mô hình bảo mật và kiểm duy�
 section: "2. \"Mã độc\" ở đây là gì"
 path: "2. \"Mã độc\" ở đây là gì"
 chunk: 2-ma-doc-o-day-la-gi.md
-source_lines: 11-31
-source_sha1: 19ec9a9aa3
+source_lines: 18-38
+source_sha1: 0045fe9aeb
 ids: [AD-12, NFR-SEC-02, OI-17, REQ-PARSER-00]
 ---
 ## 2. "Mã độc" ở đây là gì

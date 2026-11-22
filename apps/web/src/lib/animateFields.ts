@@ -1,6 +1,6 @@
 // Logic thuần của mục "Hoạt hình" (T-22): danh sách thuộc tính animate được của một widget (nhãn, giới hạn, giá trị tĩnh hiện tại),
 // tạo hoạt hình mới và sửa từng keyframe. Không DOM; test ở animateFields.test.ts.
-import { BIND_SOURCES, animatablePaths, isBinding, type AnimKind, type Animation, type Binding, type BindSource, type Key, type KeyAnimation, type KeyValue, type WidgetSpec, type WidgetType } from '@dawviz/render-core';
+import { BIND_SOURCES, animatablePaths, isBinding, isKeyAnim, type AnimKind, type Animation, type Binding, type BindSource, type Key, type KeyAnimation, type KeyValue, type WidgetSpec, type WidgetType } from '@dawviz/render-core';
 import { WIDGET_FIELDS } from './widgetFields.ts';
 
 /** `bool`/`choice` animate theo bậc (giữ rồi đổi tại keyframe). */
@@ -89,5 +89,5 @@ export const setKey = (a: KeyAnimation, i: number, patch: Partial<Key>): KeyAnim
 export function removeKey(a: KeyAnimation, i: number): KeyAnimation | null { const keys = a.keys.filter((_, j) => j !== i); return keys.length ? { ...a, keys } : null; }
 /** Mô tả mốc của keyframe không phải giây (chỉ đọc trong giao diện). */
 export function keyTimeText(at: Key['at']): string { return 'sec' in at ? '' : 'tick' in at ? `tick ${at.tick}` : 'bar' in at ? `bar ${at.bar}.${at.beat ?? 1}` : `beat ${at.beat}`; }
-export const isKeyAnimation = (a: Animation): a is KeyAnimation => !isBinding(a);
+export const isKeyAnimation = (a: Animation): a is KeyAnimation => isKeyAnim(a);
 export const SOURCES = BIND_SOURCES;

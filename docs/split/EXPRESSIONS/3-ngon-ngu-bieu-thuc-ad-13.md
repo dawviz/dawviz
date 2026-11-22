@@ -4,8 +4,8 @@ doc_title: "Biểu thức người dùng, mô hình bảo mật và kiểm duy�
 section: "3. Ngôn ngữ biểu thức (AD-13)"
 path: "3. Ngôn ngữ biểu thức (AD-13)"
 chunk: 3-ngon-ngu-bieu-thuc-ad-13.md
-source_lines: 32-94
-source_sha1: 19ec9a9aa3
+source_lines: 39-101
+source_sha1: 0045fe9aeb
 ids: [AD-07, AD-13]
 ---
 ## 3. Ngôn ngữ biểu thức (AD-13)

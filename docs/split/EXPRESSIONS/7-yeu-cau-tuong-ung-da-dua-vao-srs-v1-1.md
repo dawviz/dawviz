@@ -4,8 +4,8 @@ doc_title: "Biểu thức người dùng, mô hình bảo mật và kiểm duy�
 section: "7. Yêu cầu tương ứng (đã đưa vào SRS v1.1)"
 path: "7. Yêu cầu tương ứng (đã đưa vào SRS v1.1)"
 chunk: 7-yeu-cau-tuong-ung-da-dua-vao-srs-v1-1.md
-source_lines: 187-195
-source_sha1: 19ec9a9aa3
+source_lines: 194-202
+source_sha1: 0045fe9aeb
 ids: [NFR-SEC-05, NFR-SEC-06, NFR-SEC-07, OI-17, REQ-GRAPHICS-13]
 ---
 ## 7. Yêu cầu tương ứng (đã đưa vào SRS v1.1)

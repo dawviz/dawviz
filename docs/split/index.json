@@ -4514,7 +4514,7 @@
   },
   "EXPRESSIONS.md": {
    "title": "Biểu thức người dùng, mô hình bảo mật và kiểm duyệt cộng đồng",
-   "sha1": "19ec9a9aa3",
+   "sha1": "0045fe9aeb",
    "chunks": [
     {
      "n": 0,
@@ -4541,6 +4541,20 @@
     },
     {
      "n": 1,
+     "file": "EXPRESSIONS/0-trang-thai-cai-dat-2026-11-22.md",
+     "title": "0. Trạng thái cài đặt (2026-11-22)",
+     "path": [
+      "0. Trạng thái cài đặt (2026-11-22)"
+     ],
+     "chars": 1229,
+     "lines": [
+      5,
+      11
+     ],
+     "ids": []
+    },
+    {
+     "n": 2,
      "file": "EXPRESSIONS/1-nguyen-tac-nen.md",
      "title": "1. Nguyên tắc nền",
      "path": [
@@ -4548,15 +4562,15 @@
      ],
      "chars": 690,
      "lines": [
-      5,
-      10
+      12,
+      17
      ],
      "ids": [
       "AD-08"
      ]
     },
     {
-     "n": 2,
+     "n": 3,
      "file": "EXPRESSIONS/2-ma-doc-o-day-la-gi.md",
      "title": "2. \"Mã độc\" ở đây là gì",
      "path": [
@@ -4564,8 +4578,8 @@
      ],
      "chars": 2998,
      "lines": [
-      11,
-      31
+      18,
+      38
      ],
      "ids": [
       "AD-12",
@@ -4575,7 +4589,7 @@
      ]
     },
     {
-     "n": 3,
+     "n": 4,
      "file": "EXPRESSIONS/3-ngon-ngu-bieu-thuc-ad-13.md",
      "title": "3. Ngôn ngữ biểu thức (AD-13)",
      "path": [
@@ -4583,8 +4597,8 @@
      ],
      "chars": 3509,
      "lines": [
-      32,
-      94
+      39,
+      101
      ],
      "ids": [
       "AD-07",
@@ -4592,7 +4606,7 @@
      ]
     },
     {
-     "n": 4,
+     "n": 5,
      "file": "EXPRESSIONS/4-trinh-thong-dich-an-toan.md",
      "title": "4. Trình thông dịch an toàn",
      "path": [
@@ -4600,13 +4614,13 @@
      ],
      "chars": 2040,
      "lines": [
-      95,
-      121
+      102,
+      128
      ],
      "ids": []
     },
     {
-     "n": 5,
+     "n": 6,
      "file": "EXPRESSIONS/5-phong-thu-nhieu-lop-cho-ung-dung-ad-14.md",
      "title": "5. Phòng thủ nhiều lớp cho ứng dụng (AD-14)",
      "path": [
@@ -4614,8 +4628,8 @@
      ],
      "chars": 1642,
      "lines": [
-      122,
-      134
+      129,
+      141
      ],
      "ids": [
       "AD-14",
@@ -4625,7 +4639,7 @@
      ]
     },
     {
-     "n": 6,
+     "n": 7,
      "file": "EXPRESSIONS/6-kiem-duyet-template-va-preset-qua-cong-dong-ad.md",
      "title": "6. Kiểm duyệt template và preset qua cộng đồng (AD-15)",
      "path": [
@@ -4633,8 +4647,8 @@
      ],
      "chars": 3216,
      "lines": [
-      135,
-      186
+      142,
+      193
      ],
      "ids": [
       "AD-15",
@@ -4644,7 +4658,7 @@
      ]
     },
     {
-     "n": 7,
+     "n": 8,
      "file": "EXPRESSIONS/7-yeu-cau-tuong-ung-da-dua-vao-srs-v1-1.md",
      "title": "7. Yêu cầu tương ứng (đã đưa vào SRS v1.1)",
      "path": [
@@ -4652,8 +4666,8 @@
      ],
      "chars": 497,
      "lines": [
-      187,
-      195
+      194,
+      202
      ],
      "ids": [
       "NFR-SEC-05",
@@ -4664,7 +4678,7 @@
      ]
     },
     {
-     "n": 8,
+     "n": 9,
      "file": "EXPRESSIONS/8-uoc-luong.md",
      "title": "8. Ước lượng",
      "path": [
@@ -4672,13 +4686,13 @@
      ],
      "chars": 451,
      "lines": [
-      196,
-      206
+      203,
+      213
      ],
      "ids": []
     },
     {
-     "n": 9,
+     "n": 10,
      "file": "EXPRESSIONS/9-van-de-mo.md",
      "title": "9. Vấn đề mở",
      "path": [
@@ -4686,8 +4700,8 @@
      ],
      "chars": 207,
      "lines": [
-      207,
-      210
+      214,
+      217
      ],
      "ids": [
       "D-41",

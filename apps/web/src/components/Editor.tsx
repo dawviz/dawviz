@@ -6,7 +6,7 @@
 // và bắt dính đều là lệnh hoàn tác được (lib/commands.ts).
 import { motion } from 'framer-motion';
 import { Suspense, lazy, useContext, useEffect, useMemo, useRef, useState, type DragEvent, type KeyboardEvent, type ReactNode } from 'react';
-import { ADDABLE_WIDGETS, isBinding, defaultScene, normalizeAngle, rotateGroup, type Animation, type Derived, type NoteNaming, type WidgetMotion, type Phase, type SceneDocument, type UnifiedProjectAST, type WidgetLayout, type WidgetSpec, type WidgetType, type WidgetVisibility, type BackgroundImageSpec } from '@dawviz/render-core';
+import { ADDABLE_WIDGETS, isBinding, isKeyAnim, defaultScene, normalizeAngle, rotateGroup, type Animation, type Derived, type NoteNaming, type WidgetMotion, type Phase, type SceneDocument, type UnifiedProjectAST, type WidgetLayout, type WidgetSpec, type WidgetType, type WidgetVisibility, type BackgroundImageSpec } from '@dawviz/render-core';
 import { clickIsKeyboard, startPaintDrag } from '../lib/paintDrag.ts';
 import { GestureContext } from '../lib/storeReact.ts';
 import { useI18n } from '../i18n/I18nProvider.tsx';
@@ -264,7 +264,7 @@ export function Editor({ styleName, scene, derived, ast, playback, fonts, advanc
       for (const [f, v] of Object.entries(p)) {
         const a = f === 'anchor' ? undefined : w.animate?.[`layout.${f}`];
         if (!a) { layout[f] = v; continue; }
-        if (isBinding(a)) continue;
+        if (!isKeyAnim(a)) continue; // gắn theo nhạc hoặc biểu thức: kéo trên khung không đặt keyframe
         const tm = ast?.tempoMap ?? [];
         // Trường không đổi so với giá trị đang thấy (vd. x/y đi kèm khi đổi điểm neo) không sinh keyframe thừa.
         if (Math.abs(Number(valueAt(a, t, tm)) - Number(v)) < 1e-6) continue;

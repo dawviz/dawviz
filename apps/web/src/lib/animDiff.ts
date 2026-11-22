@@ -1,9 +1,9 @@
 // So sánh hai hoạt hình để nhãn lịch sử nói đúng điều đã đổi (D-64): thêm/xoá/dời keyframe, đổi giá trị, đường cong, cách đi tiếp, lặp,
 // bật/tắt hoặc đổi cách thay đổi (keyframe ↔ theo nhạc). Thuần, không i18n; nhãn dựng ở historyLabels.ts. Test: animDiff.test.ts.
-import { isBinding, type Animation, type Key, type KeyAnimation, type KeyValue } from '@dawviz/render-core';
+import { isBinding, isExpr, isKeyAnim, type Animation, type Key, type KeyAnimation, type KeyValue } from '@dawviz/render-core';
 
 export type AnimChange =
-  | { kind: 'start' | 'stop' | 'toKeys' | 'toBind' | 'bind' | 'loop'; path: string }
+  | { kind: 'start' | 'stop' | 'toKeys' | 'toBind' | 'toExpr' | 'bind' | 'expr' | 'loop'; path: string }
   | { kind: 'add' | 'remove'; path: string; at: Key['at']; value: KeyValue }
   | { kind: 'move'; path: string; at: Key['at']; to: Key['at'] }
   | { kind: 'value'; path: string; at: Key['at']; from: KeyValue; to: KeyValue }
@@ -39,8 +39,10 @@ export function diffAnimate(before: Record<string, Animation> | undefined, after
     if (!x && y) out.push({ kind: 'start', path });
     else if (x && !y) out.push({ kind: 'stop', path });
     else if (x && y) {
-      if (isBinding(x) !== isBinding(y)) out.push({ kind: isBinding(y) ? 'toBind' : 'toKeys', path });
-      else if (isBinding(x) && isBinding(y)) { if (!same(x, y)) out.push({ kind: 'bind', path }); }
+      const mode = (a: Animation) => (isBinding(a) ? 'bind' : isExpr(a) ? 'expr' : 'keys');
+      if (mode(x) !== mode(y)) out.push({ kind: mode(y) === 'bind' ? 'toBind' : mode(y) === 'expr' ? 'toExpr' : 'toKeys', path });
+      else if (mode(x) === 'bind') { if (!same(x, y)) out.push({ kind: 'bind', path }); }
+      else if (mode(x) === 'expr') { if (!same(x, y)) out.push({ kind: 'expr', path }); }
       else diffKeys(path, x as KeyAnimation, y as KeyAnimation, out);
     }
   }

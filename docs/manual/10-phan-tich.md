@@ -117,4 +117,17 @@ Cuộn chuột để đi ngang theo thời gian, Ctrl+cuộn để phóng to qua
 
 Bấm tên một thuộc tính trên Timeline (không bấm keyframe), rồi ở mục **Keyframe** bên phải chọn **Theo nhạc**. Giá trị chạy theo một nguồn dữ liệu của bài: phách, ô nhịp, tiến độ bài, số nốt đang vang, nốt mạnh nhất đang vang, nốt vừa chạm (vọt lên rồi tắt dần), automation âm lượng hoặc pan của track, độ to của âm thanh. Bạn đặt khoảng nguồn chạy từ đâu tới đâu và giá trị tương ứng, ví dụ độ phát sáng từ 0 tới 1 khi nốt vừa chạm. Trên Timeline, thuộc tính đó hiện một thanh **Theo nhạc** thay cho keyframe. **Bỏ hoạt hình** đưa thuộc tính về giá trị đứng yên.
 
-Giá trị luôn được giữ trong miền hợp lệ của thuộc tính: kéo quá giới hạn thì dừng ở giới hạn chứ không làm hỏng hình. Hai thuộc tính khác nhau chạy độc lập, và Preview giống hệt video xuất ra. Piano Roll và Bản nhạc chỉ nhận vị trí, cỡ, góc và độ đục (đổi thuộc tính bản nhạc phải viết lại bản nhạc).
+Giá trị luôn được giữ trong miền hợp lệ của thuộc tính: kéo quá giới hạn thì dừng ở giới hạn chứ không làm hỏng hình. Hai thuộc tính khác nhau chạy độc lập, và Preview giống hệt video xuất ra. Bản nhạc chỉ nhận vị trí, cỡ, góc, tỉ lệ và độ đục (đổi thuộc tính bản nhạc phải viết lại bản nhạc).
+
+### Biểu thức
+
+Ở mục **Keyframe**, chọn **Biểu thức** rồi gõ một công thức tính giá trị theo thời gian và theo nhạc, giống expression của After Effects. Ví dụ:
+
+- Độ đục thở theo phách: `0.5 + 0.5 * sin(beat.phase * TAU)`
+- Vị trí x trôi dần và rung khi có nốt mạnh: `value + t * 20 + wiggle(6, note.velocity / 20)`
+- Màu theo cao độ: `mix(#4aa8f5, #ff6b9d, smoothstep(48, 72, note.pitch))`
+- Hiện/ẩn mỗi ô nhịp lẻ: `bar.index % 2 == 1`
+
+Dữ liệu đọc được: `t` (giây), `beat.phase`, `bar.phase`, `beat.index`, `bar.index`, `bar.bpm`, `time.progress`, `notes.count`, `note.velocity`, `note.pitch`, `note.hit`, `note.active`, `track.volume`, `track.pan`, `audio.level`, `value` (giá trị đang đặt của thuộc tính), `width`, `height`. Hàm: toán (`sin`, `clamp`, `mix`, `smoothstep`, `map`, `linear`…), `ease(x, "easeOutCubic")`, `random()`, `noise(x)`, `wiggle(tần_số, biên_độ)`, `oscillate(tần_số, biên_độ, "sine")`, màu (`rgb`, `hsl`, `oklch`, `lighten`, `darken`), vec2. Biến riêng: `let a = …;` ở đầu.
+
+Gõ sai thì ô viền đỏ và ghi lỗi gì, ở ký tự nào; biểu thức chỉ được lưu khi đúng (Enter hoặc rời ô). Ngẫu nhiên luôn giống nhau mỗi lần phát, nên Preview giống hệt video xuất ra. Nếu biểu thức cho ra số không dùng được (ví dụ chia cho 0), thuộc tính dùng giá trị đang đặt. Lựa chọn và chữ không dùng được biểu thức.

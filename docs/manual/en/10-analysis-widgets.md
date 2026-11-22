@@ -117,4 +117,17 @@ Scroll to move along time, Ctrl+scroll to zoom around the pointer, and **Fit the
 
 Click a property's name on the Timeline (not a keyframe), then choose **Follow the music** in the **Keyframe** section on the right. The value follows a source of the song's data: beat, bar, song progress, the number of notes sounding, the loudest note sounding, a note that just hit (jumps, then fades), a track's volume or pan automation, the loudness of the audio. You set where the source runs from and to and the matching values, for example glow from 0 to 1 when a note has just hit. On the Timeline that property shows a **Follows the music** bar instead of keyframes. **Stop animating** puts the property back to a fixed value.
 
-The value always stays inside the property's valid range: pushing past a limit stops at the limit instead of breaking the picture. Different properties run independently, and Preview is identical to the exported video. The Piano roll and Sheet music accept only position, size, rotation and opacity (changing sheet-music properties means rewriting the score).
+The value always stays inside the property's valid range: pushing past a limit stops at the limit instead of breaking the picture. Different properties run independently, and Preview is identical to the exported video. Sheet music accepts only position, size, rotation, scale and opacity (changing sheet-music properties means rewriting the score).
+
+### Expressions
+
+In the **Keyframe** section, choose **Expression** and type a formula that computes the value from time and the music, like After Effects expressions. Examples:
+
+- Opacity breathing with the beat: `0.5 + 0.5 * sin(beat.phase * TAU)`
+- x drifting and shaking on strong notes: `value + t * 20 + wiggle(6, note.velocity / 20)`
+- Colour by pitch: `mix(#4aa8f5, #ff6b9d, smoothstep(48, 72, note.pitch))`
+- Show on odd bars only: `bar.index % 2 == 1`
+
+Data you can read: `t` (seconds), `beat.phase`, `bar.phase`, `beat.index`, `bar.index`, `bar.bpm`, `time.progress`, `notes.count`, `note.velocity`, `note.pitch`, `note.hit`, `note.active`, `track.volume`, `track.pan`, `audio.level`, `value` (the property's set value), `width`, `height`. Functions: maths (`sin`, `clamp`, `mix`, `smoothstep`, `map`, `linear`…), `ease(x, "easeOutCubic")`, `random()`, `noise(x)`, `wiggle(frequency, amount)`, `oscillate(frequency, amount, "sine")`, colour (`rgb`, `hsl`, `oklch`, `lighten`, `darken`), vec2. Your own variables: `let a = …;` at the start.
+
+A mistake turns the box red and says what is wrong and at which character; the expression is only saved when it is valid (Enter or leaving the box). Randomness is the same on every play, so Preview matches the exported video exactly. If an expression gives an unusable number (for example dividing by 0), the property uses its set value. Choices and text can't use expressions.
