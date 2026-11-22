@@ -146,7 +146,7 @@ Cũng khi không chọn widget nào, mục **Cách ghi tên nốt** đổi tên 
 
 Mặc định widget hiện suốt bài. Chọn widget rồi bật **Chỉ hiện trong các khoảng** ở mục **Khoảng hiển thị** để giới hạn lúc nó xuất hiện, ví dụ chỉ hiện tên bài ở 10 giây đầu.
 
-- Mỗi dòng là một khoảng: **Hiện từ** và **Hiện tới**. Gõ giây (`90`, `90.5`) hoặc phút:giây (`1:30`, `1:30.5`). Để trống ô **Hiện tới** nghĩa là hiện tới hết bài.
+- Mỗi dòng là một khoảng: **Hiện từ** và **Hiện tới**. Gõ giây (`90`, `90.5`) hoặc phút:giây (`1:30`, `1:30.5`); cũng gõ được phép tính (`1:30+15`) hoặc `+=10`, `-=0:05`, `*=2`, `/=2` tính từ giá trị đang có. Để trống ô **Hiện tới** nghĩa là hiện tới hết bài.
 - **Thêm khoảng** thêm một dòng; nút × xoá dòng. Không còn khoảng nào thì widget không bao giờ hiện.
 - **Hiện dần** và **Ẩn dần** (giây) làm widget mờ vào lúc bắt đầu khoảng và mờ ra lúc kết thúc. Khoảng ngắn hơn tổng hai thời gian này thì cả hai co lại theo tỉ lệ. Nút ↺ cạnh mỗi ô đưa về 0 (không mờ dần).
 - Tắt lại ô tick để về hiện suốt bài.

@@ -32,6 +32,7 @@ Các ô số trong ứng dụng dùng chung một cách nhập:
 
 - Bấm vào ô rồi gõ số, bấm Enter.
 - Gõ phép tính cũng được: `120+40`, `1920/2`.
+- Ô thời gian (`1:30`, `90.5`) cũng nhận phép tính (`1:30+15`, `(2:00-0:10)/2`) và `+=10`, `-=0:05`, `*=2`, `/=2` như ô số.
 - Gõ `+=10` để cộng thêm 10 vào giá trị đang có, `-=10` để bớt đi, `*=2` để nhân đôi, `/=2` để chia đôi.
 - Giữ chuột trên ô rồi kéo lên hoặc xuống để đổi giá trị. Giữ Shift khi kéo để đổi nhanh gấp 10, giữ Alt để đổi chậm lại 10 lần.
 - Gõ sai thì ô giữ nguyên giá trị cũ và báo lý do ngay bên dưới.

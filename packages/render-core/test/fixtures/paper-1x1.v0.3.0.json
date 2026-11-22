@@ -49,7 +49,7 @@
         "style": { "font": "Space Grotesk", "size": 22, "weight": 400, "color": "#777777" },
         "lines": {
           "played": { "enabled": true, "template": "Num played notes: {played}/{total} ({pct})" },
-          "total": { "enabled": true, "template": "Num events: {played}/{total}" },
+          "total": { "enabled": true, "template": "Num events: {events}/{events_total}" },
           "progress": { "enabled": false, "template": "Progress: {pct}" },
           "tempo": { "enabled": false, "template": "Tempo: {tempo} BPM" }
         }

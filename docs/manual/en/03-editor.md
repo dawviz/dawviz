@@ -146,7 +146,7 @@ Also with no widget selected, the **Note names** section changes the names of no
 
 By default a widget is shown for the whole song. Select a widget and turn on **Show only in these ranges** in the **Display range** section to limit when it appears, for example showing the title only for the first 10 seconds.
 
-- Each row is a range: **Show from** and **Show until**. Type seconds (`90`, `90.5`) or minutes:seconds (`1:30`, `1:30.5`). Leave **Show until** empty to show it until the end of the song.
+- Each row is a range: **Show from** and **Show until**. Type seconds (`90`, `90.5`) or minutes:seconds (`1:30`, `1:30.5`); arithmetic (`1:30+15`) and `+=10`, `-=0:05`, `*=2`, `/=2` relative to the current value work too. Leave **Show until** empty to show it until the end of the song.
 - **Add range** adds a row; the × button removes one. With no range left the widget is never shown.
 - **Fade in** and **Fade out** (seconds) make the widget fade in when a range starts and fade out when it ends. If a range is shorter than the two times together, both shrink in proportion. The ↺ button next to each field sets it back to 0 (no fade).
 - Turn the tick off again to show it for the whole song.

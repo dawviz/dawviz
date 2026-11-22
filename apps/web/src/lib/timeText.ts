@@ -25,3 +25,67 @@ export function formatTime(sec: number): string {
   const frac = r ? `.${String(r).padStart(3, '0').replace(/0+$/, '')}` : '';
   return h ? `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}${frac}` : `${m}:${String(s).padStart(2, '0')}${frac}`;
 }
+
+/**
+ * Như ô số thường (`parseNumberInput`): nhận phép tính `+ - * /` và ngoặc giữa các giá trị thời gian
+ * (`1:30+15`, `(2:00-0:10)/2`) và dạng tương đối với giá trị hiện tại (`+=10`, `-=0:05`, `*=2`, `/=2`).
+ * Mỗi toán hạng đọc theo `parseTime` (giây hoặc `m:ss`); `*`/`/` dùng số thuần làm hệ số. Kết quả < 0 hoặc không hữu hạn → null.
+ */
+export function parseTimeInput(text: string, current: number | null): number | null {
+  let s = text.trim();
+  if (!s || s.length > 64) return null;
+  let rel: string | null = null;
+  const m = /^([+\-*/])=/.exec(s);
+  if (m) { rel = m[1]; s = s.slice(2).trim(); if (!s) return null; }
+  const plain = parseTime(s);
+  let v = plain ?? evalTimeExpr(s);
+  if (v === null) return null;
+  if (rel) {
+    if (current === null) return null;
+    v = rel === '+' ? current + v : rel === '-' ? current - v : rel === '*' ? current * v : v === 0 ? NaN : current / v;
+  }
+  return Number.isFinite(v) && v >= 0 ? v : null;
+}
+
+function evalTimeExpr(src: string): number | null {
+  let i = 0, depth = 0;
+  const ws = () => { while (src[i] === ' ') i++; };
+  const lit = (): number | null => {
+    ws();
+    const r = /^\d+(?::\d+){0,2}(?:[.,]\d+)?|^[.,]\d+/.exec(src.slice(i));
+    if (!r) return null;
+    i += r[0].length;
+    return r[0].includes(':') ? parseTime(r[0]) : Number(r[0].replace(',', '.'));
+  };
+  const factor = (): number | null => {
+    ws();
+    if (src[i] === '-') { i++; const r = factor(); return r === null ? null : -r; }
+    if (src[i] === '(') {
+      if (++depth > 16) return null;
+      i++; const r = expr(); ws();
+      if (r === null || src[i] !== ')') return null;
+      i++; depth--; return r;
+    }
+    return lit();
+  };
+  const term = (): number | null => {
+    let l = factor(); if (l === null) return null;
+    for (;;) {
+      ws(); const op = src[i];
+      if (op !== '*' && op !== '/') return l;
+      i++; const r = factor(); if (r === null) return null;
+      l = op === '*' ? l * r : l / r;
+    }
+  };
+  const expr = (): number | null => {
+    let l = term(); if (l === null) return null;
+    for (;;) {
+      ws(); const op = src[i];
+      if (op !== '+' && op !== '-') return l;
+      i++; const r = term(); if (r === null) return null;
+      l = op === '+' ? l + r : l - r;
+    }
+  };
+  const r = expr(); ws();
+  return r !== null && i === src.length && Number.isFinite(r) ? r : null;
+}

@@ -53,6 +53,7 @@ export function staticValue(w: Pick<WidgetSpec, 'layout' | 'properties'>, path: 
   if (path === 'opacity') return 1;
   if (path === 'scale') return 100; // % (100 = nguyên cỡ)
   const v = path.startsWith('layout.') ? getIn(w.layout, [path.slice(7)]) : getIn(w.properties, path.split('.'));
+  if (v === '' && path === 'auraColor') return String(getIn(w.properties, ['activeColor']) ?? '#ffb347'); // '' = theo màu từng nét: keyframe cần một màu cụ thể để đi từ đó
   return typeof v === 'number' || typeof v === 'string' || typeof v === 'boolean' ? v : 0;
 }
 const r3 = (x: number) => Math.round(x * 1000) / 1000;

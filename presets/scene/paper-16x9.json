@@ -125,7 +125,7 @@
           },
           "total": {
             "enabled": true,
-            "template": "Num events: {played}/{total}"
+            "template": "Num events: {events}/{events_total}"
           },
           "progress": {
             "enabled": false,

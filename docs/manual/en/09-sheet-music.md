@@ -20,6 +20,7 @@ Under **Tracks**, keep **All showing** or press **Choose** and keep only the mel
 - **Bars per line**: bars on one line; 0 fits them to the width. **Lines per page**: when a page ends the next one appears.
 - **Ink colour**, **Colour of the playing note**. Choose **Track colour** to colour playing notes by track.
 - **Playing note size**: 1 means no growth; 1.35 is a third bigger.
+- **Keyframes for colour and glow**: in the widget's Animation section, pick a drawing property of the score to keyframe: colours (ink, played, playing, playhead, whole-score glow), **Glow**, glow size, opacities, zoom and glow look. When the playing colour changes over time the note glow follows it, so the glow can be multi-coloured. Engraving properties (font, bars per row, quantisation…) cannot be keyframed because changing them forces a re-engrave.
 - **Glow**: brightness of the halo around playing notes; 0 turns it off.
 - **Playhead**: **None** (only the notes light up) or a moving **Line**.
 - **Whole-score opacity**: fades everything (notes, staff, glow, playhead); 1 is fully opaque. Use it to make the score a background for other widgets.

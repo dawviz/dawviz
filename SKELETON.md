@@ -797,6 +797,7 @@ const MAX_SCALE   // Giới hạn của `scale` (%): 0 (biến mất) tới 2000
 type AnimKind   // Kiểu giá trị của một đường dẫn animate được. `bool`/`choice` animate theo bậc (track `kind: 'discrete'`).
 const MAX_CHOICE_LEN   // Độ dài tối đa của một giá trị lựa chọn/chữ trong keyframe.
 const PIANO_PATHS
+const NOTATION_PATHS   // Đường dẫn animate được của Bản nhạc: chỉ thuộc tính hình vẽ (màu, quầng sáng, độ đục, phóng to, vạch phát). T…
 function animatablePaths(type: WidgetType): Map<string, AnimKind>   // Các đường dẫn animate được của một loại widget và kiểu giá trị của chúng (bản đệm: đừng sửa Map trả về).
 const isDiscreteKind = (k: AnimKind) =>   // Track của kiểu này nội suy được không (số, màu) hay theo bậc (bật/tắt, lựa chọn).
 function sanitizeAnimate(S: Sanitizer, v: unknown, path: string, type: WidgetType): Record<string, Animation> | undefined   // Đọc `animate` của một widget. Mục sai bị bỏ kèm cảnh báo; không còn mục nào → undefined.
@@ -2036,7 +2037,7 @@ function AppearanceSettings({ pref, onChange }: { pref: ThemePref; onChange(p: T
 
 #### `apps/web/src/components/TimeField.tsx`
 
-Ô nhập thời gian `m:ss` / `m:ss.s` / giây (T-81). Enter hoặc rời ô để áp; sai cú pháp thì trả về giá trị cũ; Esc huỷ.
+Ô nhập thời gian `m:ss` / `m:ss.s` / giây (T-81), nhận cả phép tính và dạng tương đối `+=` `-=` `*=` `/=` như ô số. Enter hoặc rời ô để áp; sai cú pháp thì trả về giá trị cũ; Esc …
 
 ```text
 function TimeField({ id, label, value, onChange, emptyText, min = 0, max = 86400, className = '', disabled }: { id?: string; label: string; value: number | null; onChange(v: number | null): void; disabled?: boolean; /** Có thì cho phép ô trống (= null) và hiện chữ này làm gợi ý. */ emptyText?: string; min?: number; max?: number; className?: string; })
@@ -3342,6 +3343,7 @@ function visibleKeyCount(rows: readonly RowDef[], picked: readonly { path: strin
 ```text
 function parseTime(text: string): number | null   // Chuỗi → giây, hoặc null nếu không đọc được.
 function formatTime(sec: number): string   // Giây → `m:ss`, thêm phần lẻ (tối đa 3 chữ số, bỏ số 0 cuối) khi có; từ 1 giờ: `h:mm:ss`.
+function parseTimeInput(text: string, current: number | null): number | null   // Như ô số thường (`parseNumberInput`): nhận phép tính `+ - /` và ngoặc giữa các giá trị thời gian (`1:30+15`, …
 ```
 
 #### `apps/web/src/lib/transportKeys.ts`
@@ -3669,4 +3671,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 11 thư mục src, 1641 ký hiệu công khai -->
+<!-- 11 thư mục src, 1643 ký hiệu công khai -->

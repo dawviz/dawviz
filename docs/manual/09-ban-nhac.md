@@ -20,6 +20,7 @@ Màu mực được chọn theo nền khung: nền sáng thì mực tối, nền
 - **Số ô mỗi hàng**: số ô nhịp trên một hàng; 0 là tự xếp theo bề rộng. **Số hàng mỗi trang**: hết trang thì sang trang mới.
 - **Màu mực**, **Màu nốt đang phát**. Chọn **Màu của track** để nốt đang phát lấy màu của track.
 - **Cỡ nốt đang phát**: 1 là không phóng to; 1,35 là to hơn một phần ba.
+- **Keyframe cho màu và quầng sáng**: ở mục Hoạt hình của widget, chọn một thuộc tính hình vẽ của bản nhạc để đặt keyframe: các màu (mực, đã qua, đang phát, vạch phát, sáng cả bản nhạc), **Phát sáng**, độ rộng quầng, các độ đục, mức phóng to và kiểu sáng. Màu đang phát đổi theo keyframe thì quầng sáng của nốt đổi theo, nên quầng có thể nhiều màu theo thời gian. Thuộc tính dựng bản nhạc (phông, số ô mỗi hàng, lượng tử hoá…) không keyframe được vì đổi là phải dựng lại.
 - **Phát sáng**: độ sáng của quầng quanh nốt đang phát; 0 là tắt.
 - **Vạch phát**: **Không** (chỉ nốt sáng) hoặc **Vạch** chạy theo nhạc.
 - **Độ đục cả bản nhạc**: làm mờ toàn bộ (nốt, khuông, quầng sáng, vạch phát); 1 là đục hoàn toàn. Dùng khi muốn bản nhạc làm nền cho widget khác.
