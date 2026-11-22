@@ -851,7 +851,9 @@ function TopBar({ tab, onTab, fileName, onExport, mode, onMode, file, theme, his
           <LanguageSelect />
         </div>
       </div>
-      <div className="flex gap-5 px-4" role="tablist" aria-label={i18n.t('web.tabs')}>
+      <div className="flex gap-5 px-4">
+        {/* Chỉ các thẻ nằm trong tablist (ARIA: tablist chỉ chứa tab); Hoàn tác/Làm lại là anh em bên cạnh. */}
+        <div className="flex gap-5" role="tablist" aria-label={i18n.t('web.tabs')}>
         {TABS.map((t) => (
           <button key={t} id={`tab-${t}`} type="button" role="tab" aria-selected={tab === t} aria-controls={`panel-${t}`} tabIndex={tab === t ? 0 : -1}
             onClick={() => onTab(t)} onKeyDown={onKey}
@@ -859,6 +861,7 @@ function TopBar({ tab, onTab, fileName, onExport, mode, onMode, file, theme, his
             {i18n.t(`web.tab.${t}`)}
           </button>
         ))}
+        </div>
         {/* Hoàn tác / Làm lại ở hàng 2, căn phải: hàng 1 đã đủ chỗ cho chế độ, mở tệp, xuất, giao diện, ngôn ngữ ở 1024 px. */}
         <div className="ml-auto py-1">
           <HistoryMenu history={history} items={historyItems(history, (i) => stepLabel(history, i + 1), i18n.t('web.hist.origin'))}

@@ -5,7 +5,7 @@ section: "1. Kết luận"
 path: "1. Kết luận"
 chunk: 1-ket-luan.md
 source_lines: 5-12
-source_sha1: aac793689f
+source_sha1: 53acc77056
 ids: []
 ---
 ## 1. Kết luận

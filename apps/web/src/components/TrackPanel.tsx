@@ -189,7 +189,7 @@ function TrackHeader({ tr, i, p, expanded, onExpand, focusRef }: { tr: ProjectTr
     <div className="flex min-w-0 flex-1 items-center gap-1.5">
       {p.onMove && (
         <button type="button" draggable data-track-grip={tr.id} aria-label={i18n.t('web.track.reorder', { name: tr.name })} title={i18n.t('web.track.reorder', { name: tr.name })}
-          className="hit grid h-6 w-4 shrink-0 cursor-grab place-items-center text-faint hover:text-fg active:cursor-grabbing"
+          className="hit -ml-2 grid h-6 w-6 shrink-0 cursor-grab place-items-center text-faint hover:text-fg active:cursor-grabbing"
           onDragStart={(e) => { e.dataTransfer.setData('text/x-dawviz-track', tr.id); e.dataTransfer.effectAllowed = 'move'; }}
           onKeyDown={(e) => {
             if (e.altKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {

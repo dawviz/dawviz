@@ -5,7 +5,7 @@ section: "Spike 5: đo hiệu năng và xét đề xuất chuyển phần tính 
 path: "Spike 5: đo hiệu năng và xét đề xuất chuyển phần tính toán sang Rust/WASM (mở đầu)"
 chunk: spike-5-do-hieu-nang-va-xet-de-xuat-chuyen-phan.md
 source_lines: 1-4
-source_sha1: aac793689f
+source_sha1: 53acc77056
 ids: [D-65]
 ---
 # Spike 5: đo hiệu năng và xét đề xuất chuyển phần tính toán sang Rust/WASM

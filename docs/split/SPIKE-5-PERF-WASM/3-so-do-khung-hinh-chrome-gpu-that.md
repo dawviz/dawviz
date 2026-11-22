@@ -5,7 +5,7 @@ section: "3. Số đo khung hình (Chrome, GPU thật)"
 path: "3. Số đo khung hình (Chrome, GPU thật)"
 chunk: 3-so-do-khung-hinh-chrome-gpu-that.md
 source_lines: 25-53
-source_sha1: aac793689f
+source_sha1: 53acc77056
 ids: []
 ---
 ## 3. Số đo khung hình (Chrome, GPU thật)
