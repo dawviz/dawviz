@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { strFromU8, strToU8, unzipSync, zipSync } from 'fflate';
 import { defaultScene, createWidget } from '@dawviz/render-core';
-import { PRESET_LICENSES, PresetPackError, buildPresetPack, presetFileName, readPresetPack } from './presetPack.ts';
+import { PRESET_LICENSES, PresetPackError, buildCollectionPack, buildPresetPack, presetFileName, readCollectionPack, readPresetPack, COLLECTION_MAX_PRESETS } from './presetPack.ts';
 import { ALLOWED_LICENSES } from '../../../../scripts/preset-check/check.mjs';
 
 const info = { name: 'Neon dọc', author: 'An', license: 'CC-BY-4.0', description: 'Thử' };
@@ -23,7 +23,7 @@ test('scene: đóng gói kèm tài nguyên (băm), đọc lại đúng scene, t�
   const doc = JSON.parse(strFromU8(files['preset.json']));
   const schema = JSON.parse(fs.readFileSync(new URL('../../../../presets/schema/preset-pack.schema.json', import.meta.url), 'utf8'));
   for (const k of schema.required) assert.ok(k in doc, `thiếu ${k} theo preset-pack.schema.json`);
-  assert.deepEqual(schema.properties.kind.enum, ['scene', 'note-style', 'easing', 'particle']);
+  assert.deepEqual(schema.properties.kind.enum, ['scene', 'note-style', 'easing', 'particle', 'collection']);
   assert.deepEqual(schema.properties.license.enum, [...PRESET_LICENSES]);
   const r = await readPresetPack(zip);
   assert.equal(r.info.name, 'Neon dọc'); assert.equal(r.payload.kind, 'scene');
@@ -60,4 +60,30 @@ test('từ chối: giấy phép ngoài danh sách, thiếu tên/tác giả, sai 
 
 test('danh sách giấy phép trùng với script kiểm preset cộng đồng', () => {
   assert.deepEqual([...PRESET_LICENSES], [...ALLOWED_LICENSES]);
+});
+
+test('bộ preset (T-111, D-66 A): nhiều scene, không mốc thời gian; tài nguyên dùng chung khử trùng; đọc lại đúng từng scene', async () => {
+  const a = defaultScene('16:9'), b = defaultScene('16:9'); b.widgets.push({ ...createWidget(b, 'TEXT') });
+  const zip = await buildCollectionPack(info, [{ name: 'Mở đầu', description: 'đoạn mở, nền tối', scene: a }, { name: 'Điệp khúc', description: '', scene: b }], [{ name: 'logo.png', bytes: png }, { name: 'copy.png', bytes: png }]);
+  const files = unzipSync(zip), doc = JSON.parse(strFromU8(files['preset.json']));
+  assert.equal(doc.kind, 'collection'); assert.equal(Object.keys(files).filter((f) => f.startsWith('assets/')).length, 1);
+  assert.ok(!('sequence' in doc.payload) && !('cues' in doc.payload)); // không kèm kịch bản thời gian
+  const schema = JSON.parse(fs.readFileSync(new URL('../../../../presets/schema/preset-pack.schema.json', import.meta.url), 'utf8'));
+  assert.ok(schema.properties.kind.enum.includes('collection') && schema.properties.payload.properties.presets);
+  const r = await readCollectionPack(zip);
+  assert.deepEqual(r.items.map((i) => [i.name, i.description]), [['Mở đầu', 'đoạn mở, nền tối'], ['Điệp khúc', '']]);
+  assert.equal(r.items[1].scene.widgets.length, b.widgets.length); assert.equal(r.assets.length, 1); assert.equal(r.info.name, info.name);
+});
+
+test('bộ preset: gói lẻ và bộ không đọc nhầm nhau; rỗng, trùng tên, quá trần, sai giấy phép đều bị từ chối bằng mã', async () => {
+  const sc = defaultScene('16:9');
+  const one = await buildPresetPack(info, { kind: 'scene', scene: sc }), many = await buildCollectionPack(info, [{ name: 'A', description: '', scene: sc }]);
+  assert.equal(await code(readCollectionPack(one)), 'ERR_PRESET_INVALID');
+  assert.equal(await code(readPresetPack(many)), 'ERR_PRESET_INVALID'); // bản cũ/đọc lẻ: từ chối rõ, không bỏ qua thầm lặng
+  assert.equal(await code(buildCollectionPack(info, [])), 'ERR_PRESET_INVALID');
+  assert.equal(await code(buildCollectionPack(info, [{ name: 'A', description: '', scene: sc }, { name: 'A', description: '', scene: sc }])), 'ERR_PRESET_INVALID');
+  assert.equal(await code(buildCollectionPack(info, Array.from({ length: COLLECTION_MAX_PRESETS + 1 }, (_, i) => ({ name: `P${i}`, description: '', scene: sc })))), 'ERR_PRESET_TOO_LARGE');
+  assert.equal(await code(buildCollectionPack({ ...info, license: 'GPL-3.0' }, [{ name: 'A', description: '', scene: sc }])), 'ERR_PRESET_LICENSE');
+  const bad = unzipSync(many), d = JSON.parse(strFromU8(bad['preset.json'])); d.payload.presets[0].kind = 'easing';
+  assert.equal(await code(readCollectionPack(zipSync({ 'preset.json': strToU8(JSON.stringify(d)) }))), 'ERR_PRESET_INVALID');
 });

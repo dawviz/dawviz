@@ -35,3 +35,48 @@ export function addUserPreset(list: UserPreset[], name: string, scene: SceneDocu
 export const removeUserPreset = (list: UserPreset[], id: string) => list.filter((p) => p.id !== id);
 /** Preset có scene đúng bằng scene hiện tại (để đánh dấu ô đang chọn), nếu có. */
 export const matchUserPreset = (list: UserPreset[], scene: SceneDocument) => list.find((p) => sameScene(p.scene, scene));
+
+// ───── Nhập bộ preset (T-111, D-66): trùng tên khác nội dung thì HỎI người dùng ghi đè hoặc đổi tên, không tự quyết ─────
+export type ConflictChoice = 'overwrite' | 'rename';
+export interface CollectionImportPlan {
+  /** Mục chưa có: thêm thẳng. */
+  fresh: { name: string; scene: SceneDocument }[];
+  /** Mục trùng tên với preset có sẵn nhưng khác nội dung: cần người dùng chọn. */
+  conflicts: { name: string; scene: SceneDocument }[];
+  /** Số mục trùng cả tên lẫn nội dung (không làm gì). */
+  same: number;
+}
+export function planCollectionImport(list: UserPreset[], items: readonly { name: string; scene: SceneDocument }[]): CollectionImportPlan {
+  const plan: CollectionImportPlan = { fresh: [], conflicts: [], same: 0 };
+  for (const it of items) {
+    const name = cleanPresetName(it.name), have = list.find((p) => p.name === name);
+    if (!have) plan.fresh.push({ name, scene: it.scene });
+    else if (sameScene(have.scene, { ...it.scene, presetName: name })) plan.same++;
+    else plan.conflicts.push({ name, scene: it.scene });
+  }
+  return plan;
+}
+/** Tên chưa dùng: `Tên (2)`, `Tên (3)`… (cắt gốc để vẫn trong 60 ký tự). */
+export function uniquePresetName(taken: ReadonlySet<string>, name: string): string {
+  if (!taken.has(name)) return name;
+  for (let i = 2; ; i++) { const suffix = ` (${i})`, c = `${name.slice(0, NAME_MAX - suffix.length)}${suffix}`; if (!taken.has(c)) return c; }
+}
+/**
+ * Áp kế hoạch: `fresh` thêm vào; mỗi mục xung đột theo `choices[tên]` (thiếu lựa chọn = rename, không bao giờ ghi đè khi chưa được chọn rõ).
+ * Ghi đè giữ nguyên id của preset cũ (ô đang chọn vẫn là ô đó). Đầy `MAX_USER_PRESETS` thì bỏ mục cũ nhất, như `addUserPreset`.
+ */
+export function applyCollectionImport(list: UserPreset[], plan: CollectionImportPlan, choices: Readonly<Record<string, ConflictChoice>>): { list: UserPreset[]; added: UserPreset[]; overwritten: UserPreset[] } {
+  let out = list.slice(); const added: UserPreset[] = [], overwritten: UserPreset[] = [];
+  const taken = new Set(out.map((p) => p.name));
+  for (const it of plan.fresh) { const name = uniquePresetName(taken, it.name); taken.add(name); const p = { id: newId(), name, scene: { ...it.scene, presetName: name } }; out.push(p); added.push(p); }
+  for (const it of plan.conflicts) {
+    if (choices[it.name] === 'overwrite') {
+      const i = out.findIndex((p) => p.name === it.name);
+      if (i >= 0) { const p = { ...out[i], scene: { ...it.scene, presetName: it.name } }; out[i] = p; overwritten.push(p); continue; }
+    }
+    const name = uniquePresetName(taken, it.name); taken.add(name);
+    const p = { id: newId(), name, scene: { ...it.scene, presetName: name } }; out.push(p); added.push(p);
+  }
+  if (out.length > MAX_USER_PRESETS) out = out.slice(-MAX_USER_PRESETS);
+  return { list: out, added, overwritten };
+}

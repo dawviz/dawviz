@@ -19,6 +19,17 @@ Người đóng góp mới (mã, bản dịch, preset, tài nguyên) được th
 
 Dự án không liên kết với kênh. Nhạc của Usagin_P không có trong repo này; muốn dùng nhạc đó hãy theo điều kiện tác giả ghi trên kênh.
 
+**Ý tưởng cho preset và lộ trình widget** (chi tiết: [docs/design/REFERENCE-VIDEOS.md](docs/design/REFERENCE-VIDEOS.md)) lấy từ cách trình bày video của các kênh sau. Chỉ lấy ngôn ngữ trình bày (bố cục, cách dùng màu, kiểu chuyển động); video, khung hình, hình nền và âm nhạc của họ **không** nằm trong repo (thư mục `references/` bị `.gitignore`):
+
+| Kênh | Ý tưởng lấy | Liên kết |
+|---|---|---|
+| Usagin_P | Bản nhạc nền trắng, thanh nốt ngang, bộ đếm nốt/sự kiện (preset `paper-*`, `paper-light`) | https://www.youtube.com/channel/UCmuKSlUlL4Bpm130dqtxMYQ |
+| tn-shi | Khuông nhạc phát sáng đổi màu trên nền tối, hạt, visualizer dọc (preset `dark-score`) | https://www.youtube.com/channel/UC-NStn927rkPlj85972VfoA |
+| Emocute | Bảng phân tích nhạc nền hồng nhạt: vòng quãng năm, bậc hợp âm, lưới chấm, đo loudness (lộ trình T-107, T-108) | https://www.youtube.com/channel/UCtM1tg3ZC-GU-ygN46TC9xw |
+| Silentroom | Khung dọc parallax/nghiêng, đường vector, phản chiếu, bokeh (lộ trình T-104…T-106) | https://www.youtube.com/channel/UCPEQ8XPcRQQdPsrNRkuyuAw |
+
+Dự án không liên kết với các kênh này.
+
 ## Tham chiếu định dạng
 
 - Cấu trúc byte của tệp FL Studio (`.flp`: id sự kiện, kích thước nốt và clip Playlist) được đối chiếu với mô tả công khai của [DAWVert](https://github.com/SatyrDiamond/DawVert) của SatyrDiamond (GPL-3.0-or-later) rồi kiểm lại bằng tệp thật. **Không sao chép mã**; schema `schemas/flp.schema.json` và engine do dự án tự viết. Chi tiết: [docs/spikes/SPIKE-3-FLP.md](docs/spikes/SPIKE-3-FLP.md).

@@ -4,8 +4,8 @@ doc_title: "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT
 section: "8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)"
 path: "8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)"
 chunk: 8-cac-van-de-con-mo-open-issues.md
-source_lines: 281-304
-source_sha1: 34a0d66028
+source_lines: 282-305
+source_sha1: 58fc2db966
 ids: [D-01, D-05, D-39, D-40, D-41, D-42, D-43, D-44, D-45, D-60, D-62, D-63, KPI-01, KPI-06, OI-01, OI-02, OI-03, OI-04, OI-05, OI-06, OI-07, OI-08, OI-09, OI-10, OI-11, OI-12, OI-13, OI-14, OI-15, OI-16, OI-17, OI-18, OI-19, OI-20, P-01, P-13, WARN_NOTATION_OFFGRID]
 ---
 ## 8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)

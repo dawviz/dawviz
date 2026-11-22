@@ -49,7 +49,7 @@ import { GestureContext, useStoreState } from './lib/storeReact.ts';
 import { bindUndoKeys, shortcutLabels } from './lib/undoKeys.ts';
 import { downloadPreset, presetFileName, readPresetFile } from './lib/presetFile.ts';
 import { loadWorkspaceStyles, saveWorkspaceStyles } from './lib/workspaceStyles.ts';
-import { addUserPreset, loadUserPresets, matchUserPreset, removeUserPreset, saveUserPresets, type UserPreset } from './lib/userPresets.ts';
+import { addUserPreset, applyCollectionImport, planCollectionImport, loadUserPresets, matchUserPreset, removeUserPreset, saveUserPresets, type UserPreset } from './lib/userPresets.ts';
 import { useFontsStatus } from './lib/fonts.ts';
 import { projectKey, styleThumbnail } from './lib/thumbnails.ts';
 import { NotationStatusContext, useNotation } from './lib/notation/useNotation.ts';
@@ -75,7 +75,7 @@ import { parseInWorker } from './lib/parseInWorker.ts';
 import { AssetsContext, decodeImage, loadFontBytes, type SessionAsset } from './lib/assetsRuntime.ts';
 import { acceptAsset, type AssetMeta } from './lib/sessionAssets.ts';
 import { BUNDLED_FONTS } from '@dawviz/render-core';
-import { buildPresetPack, presetFileName as packFileName, readPresetPack } from './lib/presetPack.ts';
+import { buildCollectionPack, buildPresetPack, presetFileName as packFileName, readCollectionPack, readPresetPack, PresetPackError } from './lib/presetPack.ts';
 import { EASE_LIBRARY_KEY, addSavedEase, parseEaseLibrary } from './lib/graphEditor.ts';
 import { referencedAssets } from './lib/sessionAssets.ts';
 
@@ -494,8 +494,28 @@ export function App() {
     }
   }, [run, i18n, userPresets, tileId, working]);
   // Gói .dawviz-preset.zip (T-24): tài nguyên vào phiên trước, rồi áp theo loại; luôn ghi "chưa kiểm duyệt".
+  const [pendingCollection, setPendingCollection] = useState<{ plan: ReturnType<typeof planCollectionImport>; warn: Problem[]; name: string } | null>(null);
+  const finishCollection = (plan: ReturnType<typeof planCollectionImport>, choices: Record<string, 'overwrite' | 'rename'>, name: string) => {
+    const r = applyCollectionImport(userPresets, plan, choices);
+    setUserPresets(r.list); setPendingCollection(null);
+    setPresetOpened(null); setPresetStatus(i18n.t('web.collection.imported', { added: r.added.length, over: r.overwritten.length, same: plan.same }));
+    void name;
+  };
+  // Bộ preset (T-111, D-66): thêm cả bộ vào cột Phong cách, KHÔNG áp lên bài. Trùng tên khác nội dung thì hỏi ghi đè hoặc đổi tên.
+  const openCollection = async (bytes: Uint8Array) => {
+    const r = await readCollectionPack(bytes);
+    for (const a of r.assets) await addAsset(new File([a.bytes.slice().buffer as ArrayBuffer], a.name)).catch(() => { /* tài nguyên hỏng: pre-flight báo thiếu */ });
+    const warn = r.warnings.map((w) => describeProblem(i18n, 'warning', w.code, w.message, w.details as Record<string, unknown>));
+    const plan = planCollectionImport(userPresets, r.items);
+    setPresetProblems(warn);
+    if (plan.conflicts.length) { setPendingCollection({ plan, warn, name: r.info.name }); return; }
+    finishCollection(plan, {}, r.info.name);
+  };
   const openPresetPack = async (file: File) => {
-    const r = await readPresetPack(await bytesOf(file));
+    const bytes = await bytesOf(file);
+    let r: Awaited<ReturnType<typeof readPresetPack>>;
+    try { r = await readPresetPack(bytes); }
+    catch (e) { if (e instanceof PresetPackError && e.details?.kind === 'collection') { await openCollection(bytes); return; } throw e; }
     for (const a of r.assets) await addAsset(new File([a.bytes.slice().buffer as ArrayBuffer], a.name)).catch(() => { /* tài nguyên hỏng: pre-flight báo thiếu */ });
     const warn = r.warnings.map((w) => describeProblem(i18n, 'warning', w.code, w.message, w.details as Record<string, unknown>));
     const p = r.payload;
@@ -551,6 +571,18 @@ export function App() {
     const pr = userPresets.find((x) => x.id === id);
     const sc = (id === tileId ? store.get().scene : working[id]) ?? originalOf(id); if (!sc) return;
     downloadPreset({ ...sc, presetName: pr ? pr.name : i18n.t(`web.style.video.${id}`) });
+  };
+  // "Xuất bộ preset" (T-111): các preset đã lưu được chọn + ảnh/phông mà chúng dùng; không kèm mốc thời gian, không kèm tệp DAW.
+  const onExportCollection = async (info: { name: string; author: string; license: string; description: string }, ids: string[]) => {
+    const picked = ids.map((id) => userPresets.find((x) => x.id === id)).filter((x): x is UserPreset => !!x);
+    const scenes = picked.map((u) => ({ ...(u.id === activeUser && tileId === CUSTOM_STYLE ? store.get().scene : working[u.id] ?? u.scene), presetName: u.name }));
+    const json = JSON.stringify(scenes), used = new Set(scenes.flatMap((sc) => referencedAssets(sc)));
+    const files = assetsRef.current.filter((a) => used.has(a.meta.id) || (a.meta.family && json.includes(JSON.stringify(a.meta.family))));
+    const assets = await Promise.all(files.map(async (a) => ({ name: a.meta.name, bytes: await bytesOf(a.file) })));
+    const bytes = picked.length === 1
+      ? await buildPresetPack(info, { kind: 'scene', scene: { ...scenes[0], presetName: info.name.trim().slice(0, 60) } }, assets)
+      : await buildCollectionPack(info, picked.map((u, i) => ({ name: u.name, description: '', scene: scenes[i] })), assets);
+    downloadBytes(bytes, packFileName(info.name));
   };
   const onDeleteUserPreset = (id: string) => { setUserPresets((l) => removeUserPreset(l, id)); setActiveUser((a) => (a === id ? null : a)); setWorking((w) => { const n = { ...w }; delete n[id]; return n; }); };
 
@@ -724,7 +756,7 @@ export function App() {
                 headerAction={<PanelCollapse label={pvHint(i18n.t('web.styles.title'), true, 'Ctrl+B')} icon={<PanelLeft className="h-3.5 w-3.5" />} onClick={() => pv.setOpen('layers', false)} testId="collapse-styles" />}
                 presets={{ items: userPresets.map(({ id, name }) => ({ id, name })), active: userActiveId, dirty: Object.keys(working).filter((k) => k !== tileId), onPick: onPickUserPreset, onAddFile: (f) => void onOpenPreset(f),
                   onDownload: onDownloadTile, onDuplicate, onRevert, onDelete: onDeleteUserPreset, problems: [], status: presetOpened ? i18n.t('web.preset.opened', { name: presetOpened }) : presetStatus ?? undefined,
-                  onShare: onSharePreset, shareName: (activeUser ? userPresets.find((u) => u.id === activeUser)?.name : undefined) ?? i18n.t(`web.style.video.${doc.videoStyle}`) }} />
+                  onShare: onSharePreset, onExportCollection, pendingCollection: pendingCollection ? { conflicts: pendingCollection.plan.conflicts.map((c) => c.name) } : null, onResolveCollection: (c: Record<string, 'overwrite' | 'rename'>) => { if (pendingCollection) finishCollection(pendingCollection.plan, c, pendingCollection.name); }, onCancelCollection: () => setPendingCollection(null), shareName: (activeUser ? userPresets.find((u) => u.id === activeUser)?.name : undefined) ?? i18n.t(`web.style.video.${doc.videoStyle}`) }} />
             </aside>
             <Splitter axis="x" grow={1} label={i18n.t('web.panel.resize', { name: i18n.t('web.styles.title') })} title={i18n.t('web.panel.resizeHint')} controls="preview-styles"
               value={pv.r.layers} min={pv.profile.limits.layers[0]} max={pv.profile.limits.layers[1]} onResize={(v) => pv.resize('layers', v)} onReset={() => pv.reset('layers')}

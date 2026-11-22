@@ -484,6 +484,24 @@
 - [9. Vấn đề mở](EXPRESSIONS/9-van-de-mo.md)
   - [9. Vấn đề mở](EXPRESSIONS/9-van-de-mo.md#9-vấn-đề-mở)
 
+## REFERENCE-VIDEOS.md
+
+- [Video tham chiếu: ý tưởng, mức tái hiện và lộ trình (mở đầu)](REFERENCE-VIDEOS/video-tham-chieu-y-tuong-muc-tai-hien-va-lo-trin.md)
+- [Cách đối chiếu bằng trình duyệt](REFERENCE-VIDEOS/cach-doi-chieu-bang-trinh-duyet.md)
+  - [Cách đối chiếu bằng trình duyệt](REFERENCE-VIDEOS/cach-doi-chieu-bang-trinh-duyet.md#cách-đối-chiếu-bằng-trình-duyệt)
+- [Video 1 (Usagin_P): đã làm](REFERENCE-VIDEOS/video-1-usagin-p-da-lam.md)
+  - [Video 1 (Usagin_P): đã làm](REFERENCE-VIDEOS/video-1-usagin-p-da-lam.md#video-1-usagin_p-đã-làm)
+- [Video 2 (tn-shi): đã làm phần lớn](REFERENCE-VIDEOS/video-2-tn-shi-da-lam-phan-lon.md)
+  - [Video 2 (tn-shi): đã làm phần lớn](REFERENCE-VIDEOS/video-2-tn-shi-da-lam-phan-lon.md#video-2-tn-shi-đã-làm-phần-lớn)
+- [Video 3 (Emocute): lộ trình](REFERENCE-VIDEOS/video-3-emocute-lo-trinh.md)
+  - [Video 3 (Emocute): lộ trình](REFERENCE-VIDEOS/video-3-emocute-lo-trinh.md#video-3-emocute-lộ-trình)
+- [Video 4 (Silentroom, từ 1:01 đến hết): lộ trình](REFERENCE-VIDEOS/video-4-silentroom-tu-1-01-den-het-lo-trinh.md)
+  - [Video 4 (Silentroom, từ 1:01 đến hết): lộ trình](REFERENCE-VIDEOS/video-4-silentroom-tu-1-01-den-het-lo-trinh.md#video-4-silentroom-từ-101-đến-hết-lộ-trình)
+- [Quyết định: chuỗi cảnh và chia sẻ preset (D-66)](REFERENCE-VIDEOS/quyet-dinh-chuoi-canh-va-chia-se-preset-d-66.md)
+  - [Quyết định: chuỗi cảnh và chia sẻ preset (D-66)](REFERENCE-VIDEOS/quyet-dinh-chuoi-canh-va-chia-se-preset-d-66.md#quyết-định-chuỗi-cảnh-và-chia-sẻ-preset-d-66)
+- [Task đề xuất (đã vào `PROGRESS`)](REFERENCE-VIDEOS/task-de-xuat-da-vao-progress.md)
+  - [Task đề xuất (đã vào PROGRESS)](REFERENCE-VIDEOS/task-de-xuat-da-vao-progress.md#task-đề-xuất-đã-vào-progress)
+
 ## UI-DIRECTION.md
 
 - [Định hướng hình ảnh: khung preview và giao diện web (mở đầu)](UI-DIRECTION/dinh-huong-hinh-anh-khung-preview-va-giao-dien-w.md)

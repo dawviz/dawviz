@@ -37,6 +37,10 @@ export function presetFileName(name: string): string {
 
 /** Đóng gói. Ném PresetPackError khi thiếu tên/tác giả hoặc giấy phép không nằm trong danh sách. */
 export async function buildPresetPack(info: PresetInfo, payload: PresetPayload, assets: readonly PresetAsset[] = [], now = new Date()): Promise<Uint8Array> {
+  const { kind, ...body } = payload;
+  return packDoc(info, kind, body, assets, now);
+}
+async function packDoc(info: PresetInfo, kind: string, body: object, assets: readonly PresetAsset[], now: Date): Promise<Uint8Array> {
   const name = clean(info.name, 60), author = clean(info.author, 60), description = clean(info.description, 500);
   if (!name || !author) throw new PresetPackError('ERR_PRESET_INVALID', 'name and author are required');
   if (!PRESET_LICENSES.includes(info.license)) throw new PresetPackError('ERR_PRESET_LICENSE', 'license not allowed', { license: info.license });
@@ -48,15 +52,14 @@ export async function buildPresetPack(info: PresetInfo, payload: PresetPayload, 
     seen.add(id);
     files[file] = a.bytes; list.push({ file, sha256: id.slice(7), size: a.bytes.length });
   }
-  const { kind, ...body } = payload;
   const doc = { format: PRESET_FORMAT, formatVersion: PRESET_FORMAT_VERSION, kind, name, author, license: info.license, ...(description ? { description } : {}), createdAt: now.toISOString(), payload: body, assets: list };
   files['preset.json'] = strToU8(JSON.stringify(doc, null, 2));
   return zipSync(files, { level: 6, mtime: now });
 }
 
 export interface ReadPreset { info: PresetInfo; payload: PresetPayload; assets: PresetAsset[]; warnings: SceneWarning[] }
-/** Đọc gói: kiểm cỡ, số tệp, tỉ lệ nén, băm; nội dung qua bộ kiểm của loại. Lỗi → PresetPackError có mã. */
-export async function readPresetPack(bytes: Uint8Array, limits = PRESET_PACK_LIMITS): Promise<ReadPreset> {
+/** Mở gói và kiểm phần chung: cỡ, số tệp, tỉ lệ nén, đường dẫn, băm tài nguyên, giấy phép. `kinds` = các loại được nhận; loại khác → ERR_PRESET_INVALID. */
+async function openPack(bytes: Uint8Array, limits: typeof PRESET_PACK_LIMITS, kinds: readonly string[]): Promise<{ kind: string; info: PresetInfo; assets: PresetAsset[]; body: Record<string, unknown> }> {
   if (bytes.length > limits.maxBytes) throw new PresetPackError('ERR_PRESET_TOO_LARGE', 'pack too large', { size: bytes.length });
   if (!(bytes[0] === 0x50 && bytes[1] === 0x4b)) throw new PresetPackError('ERR_PRESET_INVALID', 'not a zip file');
   let count = 0, total = 0, files: Record<string, Uint8Array>;
@@ -75,8 +78,8 @@ export async function readPresetPack(bytes: Uint8Array, limits = PRESET_PACK_LIM
   try { doc = JSON.parse(strFromU8(pj)); } catch { throw new PresetPackError('ERR_PRESET_INVALID', 'preset.json is not JSON'); }
   if (!doc || typeof doc !== 'object' || doc.format !== PRESET_FORMAT) throw new PresetPackError('ERR_PRESET_INVALID', 'not a dawviz preset');
   if (typeof doc.formatVersion !== 'number' || doc.formatVersion > PRESET_FORMAT_VERSION) throw new PresetPackError('ERR_PRESET_INVALID', 'preset made by a newer app', { formatVersion: doc.formatVersion });
-  const kind = doc.kind as PresetKind;
-  if (!PRESET_KINDS.includes(kind)) throw new PresetPackError('ERR_PRESET_INVALID', 'unknown preset kind', { kind });
+  const kind = String(doc.kind);
+  if (!kinds.includes(kind)) throw new PresetPackError('ERR_PRESET_INVALID', 'unknown preset kind', { kind });
   const info: PresetInfo = { name: clean(doc.name, 60), author: clean(doc.author, 60), license: String(doc.license ?? ''), description: clean(doc.description, 500) };
   if (!info.name) throw new PresetPackError('ERR_PRESET_INVALID', 'missing name');
   if (!PRESET_LICENSES.includes(info.license)) throw new PresetPackError('ERR_PRESET_LICENSE', 'license not allowed', { license: info.license });
@@ -90,6 +93,13 @@ export async function readPresetPack(bytes: Uint8Array, limits = PRESET_PACK_LIM
     assets.push({ name: file.replace(/^assets\/asset-[0-9a-f]{16}-/, ''), bytes: data });
   }
   const body = (doc.payload && typeof doc.payload === 'object' ? doc.payload : {}) as Record<string, unknown>;
+  return { kind, info, assets, body };
+}
+
+/** Đọc gói một preset: nội dung qua đúng bộ kiểm của loại. Lỗi → PresetPackError có mã. Gói `collection` bị từ chối ở đây (dùng readCollectionPack). */
+export async function readPresetPack(bytes: Uint8Array, limits = PRESET_PACK_LIMITS): Promise<ReadPreset> {
+  const { kind: k, info, assets, body } = await openPack(bytes, limits, PRESET_KINDS);
+  const kind = k as PresetKind;
   let payload: PresetPayload, warnings: SceneWarning[] = [];
   if (kind === 'scene') { const r = sanitizeScene(body.scene); payload = { kind, scene: r.scene }; warnings = r.warnings; }
   else if (kind === 'note-style') {
@@ -101,4 +111,48 @@ export async function readPresetPack(bytes: Uint8Array, limits = PRESET_PACK_LIM
     payload = { kind, bezier: clampBezier(b) };
   } else payload = { kind, properties: sanitizeWidgetProps('PARTICLES', body.properties, silentSanitizer()) ?? {} };
   return { info, payload, assets, warnings };
+}
+
+
+// ───── Bộ preset (T-111, D-66 kiểu A): nhiều scene trong một gói, KHÔNG kèm mốc thời gian và KHÔNG kèm tệp DAW ─────
+/** Số scene tối đa trong một bộ (cùng trần số tệp của gói: tài nguyên dùng chung nên số scene có thể nhiều hơn số tệp). */
+export const COLLECTION_MAX_PRESETS = 32;
+export interface CollectionItem { name: string; description: string; scene: SceneDocument }
+export interface ReadCollection { info: PresetInfo; items: CollectionItem[]; assets: PresetAsset[]; warnings: SceneWarning[] }
+
+/**
+ * Đóng gói nhiều scene thành một tệp `.dawviz-preset.zip` loại `collection`. Tài nguyên dùng chung được khử trùng theo SHA-256.
+ * Chọn đúng một scene thì dùng `buildPresetPack` (gói lẻ như trước). Ném PresetPackError khi rỗng, quá trần, thiếu tên hoặc trùng tên trong bộ.
+ */
+export async function buildCollectionPack(info: PresetInfo, items: readonly CollectionItem[], assets: readonly PresetAsset[] = [], now = new Date()): Promise<Uint8Array> {
+  if (!items.length) throw new PresetPackError('ERR_PRESET_INVALID', 'collection is empty');
+  if (items.length > COLLECTION_MAX_PRESETS) throw new PresetPackError('ERR_PRESET_TOO_LARGE', 'too many presets', { count: items.length, max: COLLECTION_MAX_PRESETS });
+  const names = new Set<string>();
+  const presets = items.map((it) => {
+    const name = clean(it.name, 60);
+    if (!name) throw new PresetPackError('ERR_PRESET_INVALID', 'preset name is required');
+    if (names.has(name)) throw new PresetPackError('ERR_PRESET_INVALID', 'duplicate preset name in collection', { name });
+    names.add(name);
+    return { kind: 'scene', name, ...(clean(it.description, 500) ? { description: clean(it.description, 500) } : {}), scene: it.scene };
+  });
+  return packDoc(info, 'collection', { presets }, assets, now);
+}
+
+/** Đọc bộ preset: kiểm như gói lẻ (cỡ, băm, giấy phép), mỗi scene qua `sanitizeScene`. Gói loại khác → ERR_PRESET_INVALID. */
+export async function readCollectionPack(bytes: Uint8Array, limits = PRESET_PACK_LIMITS): Promise<ReadCollection> {
+  const { info, assets, body } = await openPack(bytes, limits, ['collection']);
+  const list = Array.isArray(body.presets) ? body.presets : [];
+  if (!list.length) throw new PresetPackError('ERR_PRESET_INVALID', 'collection is empty');
+  if (list.length > COLLECTION_MAX_PRESETS) throw new PresetPackError('ERR_PRESET_TOO_LARGE', 'too many presets', { count: list.length, max: COLLECTION_MAX_PRESETS });
+  const items: CollectionItem[] = [], warnings: SceneWarning[] = [], names = new Set<string>();
+  for (const raw of list) {
+    const r = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>;
+    if (r.kind !== 'scene') throw new PresetPackError('ERR_PRESET_INVALID', 'collection items must be scenes', { kind: r.kind });
+    const name = clean(r.name, 60);
+    if (!name || names.has(name)) throw new PresetPackError('ERR_PRESET_INVALID', 'missing or duplicate preset name', { name });
+    names.add(name);
+    const s = sanitizeScene(r.scene);
+    items.push({ name, description: clean(r.description, 500), scene: s.scene }); warnings.push(...s.warnings);
+  }
+  return { info, items, assets, warnings };
 }

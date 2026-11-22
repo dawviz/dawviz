@@ -4,7 +4,7 @@
  "docs": {
   "BRD.md": {
    "title": "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)",
-   "sha1": "34a0d66028",
+   "sha1": "58fc2db966",
    "chunks": [
     {
      "n": 0,
@@ -330,10 +330,10 @@
      "path": [
       "7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)"
      ],
-     "chars": 34421,
+     "chars": 35450,
      "lines": [
       204,
-      280
+      281
      ],
      "ids": [
       "AD-08",
@@ -457,8 +457,8 @@
      ],
      "chars": 7755,
      "lines": [
-      281,
-      304
+      282,
+      305
      ],
      "ids": [
       "D-01",
@@ -4716,6 +4716,126 @@
     }
    ]
   },
+  "REFERENCE-VIDEOS.md": {
+   "title": "Video tham chiếu: ý tưởng, mức tái hiện và lộ trình",
+   "sha1": "9a4c7b7f41",
+   "chunks": [
+    {
+     "n": 0,
+     "file": "REFERENCE-VIDEOS/video-tham-chieu-y-tuong-muc-tai-hien-va-lo-trin.md",
+     "title": "Video tham chiếu: ý tưởng, mức tái hiện và lộ trình (mở đầu)",
+     "path": [],
+     "chars": 1305,
+     "lines": [
+      1,
+      11
+     ],
+     "ids": []
+    },
+    {
+     "n": 1,
+     "file": "REFERENCE-VIDEOS/cach-doi-chieu-bang-trinh-duyet.md",
+     "title": "Cách đối chiếu bằng trình duyệt",
+     "path": [
+      "Cách đối chiếu bằng trình duyệt"
+     ],
+     "chars": 559,
+     "lines": [
+      12,
+      20
+     ],
+     "ids": []
+    },
+    {
+     "n": 2,
+     "file": "REFERENCE-VIDEOS/video-1-usagin-p-da-lam.md",
+     "title": "Video 1 (Usagin_P): đã làm",
+     "path": [
+      "Video 1 (Usagin_P): đã làm"
+     ],
+     "chars": 735,
+     "lines": [
+      21,
+      28
+     ],
+     "ids": [
+      "D-51"
+     ]
+    },
+    {
+     "n": 3,
+     "file": "REFERENCE-VIDEOS/video-2-tn-shi-da-lam-phan-lon.md",
+     "title": "Video 2 (tn-shi): đã làm phần lớn",
+     "path": [
+      "Video 2 (tn-shi): đã làm phần lớn"
+     ],
+     "chars": 946,
+     "lines": [
+      29,
+      40
+     ],
+     "ids": []
+    },
+    {
+     "n": 4,
+     "file": "REFERENCE-VIDEOS/video-3-emocute-lo-trinh.md",
+     "title": "Video 3 (Emocute): lộ trình",
+     "path": [
+      "Video 3 (Emocute): lộ trình"
+     ],
+     "chars": 1425,
+     "lines": [
+      41,
+      56
+     ],
+     "ids": []
+    },
+    {
+     "n": 5,
+     "file": "REFERENCE-VIDEOS/video-4-silentroom-tu-1-01-den-het-lo-trinh.md",
+     "title": "Video 4 (Silentroom, từ 1:01 đến hết): lộ trình",
+     "path": [
+      "Video 4 (Silentroom, từ 1:01 đến hết): lộ trình"
+     ],
+     "chars": 1091,
+     "lines": [
+      57,
+      68
+     ],
+     "ids": []
+    },
+    {
+     "n": 6,
+     "file": "REFERENCE-VIDEOS/quyet-dinh-chuoi-canh-va-chia-se-preset-d-66.md",
+     "title": "Quyết định: chuỗi cảnh và chia sẻ preset (D-66)",
+     "path": [
+      "Quyết định: chuỗi cảnh và chia sẻ preset (D-66)"
+     ],
+     "chars": 1266,
+     "lines": [
+      69,
+      79
+     ],
+     "ids": [
+      "D-66"
+     ]
+    },
+    {
+     "n": 7,
+     "file": "REFERENCE-VIDEOS/task-de-xuat-da-vao-progress.md",
+     "title": "Task đề xuất (đã vào `PROGRESS`)",
+     "path": [
+      "Task đề xuất (đã vào `PROGRESS`)"
+     ],
+     "chars": 916,
+     "lines": [
+      80,
+      91
+     ],
+     "ids": []
+    }
+   ]
+  },
   "UI-DIRECTION.md": {
    "title": "Định hướng hình ảnh: khung preview và giao diện web",
    "sha1": "7e6ce0b584",
@@ -7242,6 +7362,7 @@
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/lich-su-phien-ban.md",
    "SRS/req-graphics-04-preset-dung-san-va-doi-ti-le-khu.md",
+   "REFERENCE-VIDEOS/video-1-usagin-p-da-lam.md",
    "UI-DIRECTION/dinh-huong-hinh-anh-khung-preview-va-giao-dien-w.md",
    "UI-DIRECTION/1-khung-preview-huong-ban-in-da-chot-huong-chua.md",
    "UI-DIRECTION/4-nhat-ky-thu-va-huong-duoc-chon.md"
@@ -8055,7 +8176,8 @@
    "SPIKE-5-PERF-WASM/spike-5-do-hieu-nang-va-xet-de-xuat-chuyen-phan.md"
   ],
   "D-66": [
-   "BRD/7-nhat-ky-quyet-dinh-decision-log.md"
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
+   "REFERENCE-VIDEOS/quyet-dinh-chuoi-canh-va-chia-se-preset-d-66.md"
   ],
   "D-67": [
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",

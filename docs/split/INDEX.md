@@ -16,7 +16,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1202 ký tự
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4347 ký tự
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](BRD/6-gia-dinh-assumptions.md) · 554 ký tự
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 34421 ký tự
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 35450 ký tự
 - [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](BRD/8-cac-van-de-con-mo-open-issues.md) · 7755 ký tự
 
 ## SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
@@ -235,6 +235,17 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [7. Yêu cầu tương ứng (đã đưa vào SRS v1.1)](EXPRESSIONS/7-yeu-cau-tuong-ung-da-dua-vao-srs-v1-1.md) · 497 ký tự
 - [8. Ước lượng](EXPRESSIONS/8-uoc-luong.md) · 451 ký tự
 - [9. Vấn đề mở](EXPRESSIONS/9-van-de-mo.md) · 207 ký tự
+
+## REFERENCE-VIDEOS.md — Video tham chiếu: ý tưởng, mức tái hiện và lộ trình
+
+- [Video tham chiếu: ý tưởng, mức tái hiện và lộ trình (mở đầu)](REFERENCE-VIDEOS/video-tham-chieu-y-tuong-muc-tai-hien-va-lo-trin.md) · 1305 ký tự
+- [Cách đối chiếu bằng trình duyệt](REFERENCE-VIDEOS/cach-doi-chieu-bang-trinh-duyet.md) · 559 ký tự
+- [Video 1 (Usagin_P): đã làm](REFERENCE-VIDEOS/video-1-usagin-p-da-lam.md) · 735 ký tự
+- [Video 2 (tn-shi): đã làm phần lớn](REFERENCE-VIDEOS/video-2-tn-shi-da-lam-phan-lon.md) · 946 ký tự
+- [Video 3 (Emocute): lộ trình](REFERENCE-VIDEOS/video-3-emocute-lo-trinh.md) · 1425 ký tự
+- [Video 4 (Silentroom, từ 1:01 đến hết): lộ trình](REFERENCE-VIDEOS/video-4-silentroom-tu-1-01-den-het-lo-trinh.md) · 1091 ký tự
+- [Quyết định: chuỗi cảnh và chia sẻ preset (D-66)](REFERENCE-VIDEOS/quyet-dinh-chuoi-canh-va-chia-se-preset-d-66.md) · 1266 ký tự
+- [Task đề xuất (đã vào `PROGRESS`)](REFERENCE-VIDEOS/task-de-xuat-da-vao-progress.md) · 916 ký tự
 
 ## UI-DIRECTION.md — Định hướng hình ảnh: khung preview và giao diện web
 

@@ -1,0 +1,396 @@
+{
+  "schemaVersion": "0.7.0",
+  "presetName": "Dark Score",
+  "author": "DAW Visualizer",
+  "canvas": {
+    "aspectRatio": "16:9",
+    "designWidth": 1920,
+    "designHeight": 1080,
+    "backgroundColor": "#07070d",
+    "backgroundImageData": null,
+    "snapping": {
+      "gridEnabled": true,
+      "gridSize": 8,
+      "smartGuidesEnabled": true
+    }
+  },
+  "widgets": [
+    {
+      "id": "confetti",
+      "type": "PARTICLES",
+      "zIndex": 1,
+      "visible": true,
+      "layout": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080,
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "trackMappingMode": "ALL",
+      "assignedTrackIndices": [],
+      "properties": {
+        "perNote": 3,
+        "velocityScale": true,
+        "life": 3,
+        "speed": 120,
+        "speedSpread": 0.8,
+        "angle": 0,
+        "spread": 360,
+        "gravity": -20,
+        "sizeStart": 12,
+        "sizeEnd": 2,
+        "shape": "SQUARE",
+        "colorMode": "TRACK",
+        "color": "#ffffff",
+        "opacity": 0.85,
+        "fade": true,
+        "glow": 0.6,
+        "originX": "PITCH",
+        "originY": 0.5,
+        "pitchMin": 21,
+        "pitchMax": 108,
+        "seed": 1,
+        "maxParticles": 1500
+      }
+    },
+    {
+      "id": "score",
+      "type": "NOTATION",
+      "zIndex": 1,
+      "visible": true,
+      "layout": {
+        "x": 220,
+        "y": 290,
+        "width": 1480,
+        "height": 470,
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "trackMappingMode": "ALL",
+      "assignedTrackIndices": [],
+      "properties": {
+        "division": 16,
+        "triplets": true,
+        "simplify": 1,
+        "splitPitch": 60,
+        "voices": 2,
+        "keyMode": "AUTO",
+        "keyFifths": 0,
+        "keyMinor": false,
+        "barsPerSystem": 2,
+        "systemsPerPage": 1,
+        "musicFont": "BRAVURA",
+        "measureNumbers": true,
+        "tempoMark": true,
+        "measureNumberSize": 1,
+        "inkColor": "#ffffff",
+        "playedColor": "#e4e4f0",
+        "activeColor": "#ffffff",
+        "colorMode": "SOLID",
+        "upcomingOpacity": 1,
+        "playedOpacity": 0.7,
+        "staticOpacity": 1,
+        "opacity": 1,
+        "zoom": 1.2,
+        "zoomMode": "PULSE",
+        "zoomMs": 350,
+        "glow": 0.9,
+        "glowSize": 3,
+        "glowMode": "HALO",
+        "playhead": "NONE",
+        "playheadColor": "#ffb347",
+        "playheadWidth": 2,
+        "rough": 0,
+        "boilFps": 0,
+        "seed": 1,
+        "align": "CENTER",
+        "pageFadeMs": 250,
+        "aura": "BEAT",
+        "auraShape": "SMOOTH",
+        "auraEvery": 1,
+        "auraGlow": 0.8,
+        "auraMin": 0.25,
+        "auraColor": "#b266ff"
+      },
+      "animate": {
+        "auraColor": {
+          "keys": [
+            {
+              "at": {
+                "sec": 0
+              },
+              "value": "#b266ff"
+            },
+            {
+              "at": {
+                "sec": 4
+              },
+              "value": "#4d6dff"
+            },
+            {
+              "at": {
+                "sec": 8
+              },
+              "value": "#b266ff"
+            },
+            {
+              "at": {
+                "sec": 12
+              },
+              "value": "#ff5a3c"
+            }
+          ],
+          "loop": "CYCLE"
+        }
+      }
+    },
+    {
+      "id": "bars-left",
+      "type": "AUDIO_SPECTRUM",
+      "zIndex": 1,
+      "visible": true,
+      "layout": {
+        "x": 40,
+        "y": 150,
+        "width": 130,
+        "height": 640,
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "trackMappingMode": "ALL",
+      "assignedTrackIndices": [],
+      "properties": {
+        "style": "BARS",
+        "scale": "LOG",
+        "peakCap": false,
+        "capFall": 0.6,
+        "scopeMs": 30,
+        "playedColor": "#7aa2ff",
+        "shape": "LINE",
+        "bars": 48,
+        "minHz": 40,
+        "maxHz": 14000,
+        "reverse": false,
+        "mirror": true,
+        "angle": 90,
+        "length": 600,
+        "radius": 120,
+        "startAngle": 0,
+        "thickness": 110,
+        "minLen": 2,
+        "barWidth": 0.35,
+        "roundness": 0,
+        "attackMs": 15,
+        "releaseMs": 180,
+        "floorDb": -70,
+        "ceilDb": -25,
+        "colorMode": "SOLID",
+        "color": "#ffd9ec",
+        "colorB": "#7aa2ff",
+        "opacity": 1,
+        "glow": 0.5
+      }
+    },
+    {
+      "id": "wave-right",
+      "type": "AUDIO_SPECTRUM",
+      "zIndex": 1,
+      "visible": true,
+      "layout": {
+        "x": 1750,
+        "y": 150,
+        "width": 130,
+        "height": 640,
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "trackMappingMode": "ALL",
+      "assignedTrackIndices": [],
+      "properties": {
+        "style": "OSCILLOSCOPE",
+        "scale": "LOG",
+        "peakCap": false,
+        "capFall": 0.6,
+        "scopeMs": 30,
+        "playedColor": "#7aa2ff",
+        "shape": "LINE",
+        "bars": 48,
+        "minHz": 40,
+        "maxHz": 14000,
+        "reverse": false,
+        "mirror": false,
+        "angle": 90,
+        "length": 600,
+        "radius": 120,
+        "startAngle": 0,
+        "thickness": 110,
+        "minLen": 2,
+        "barWidth": 0.6,
+        "roundness": 0,
+        "attackMs": 15,
+        "releaseMs": 180,
+        "floorDb": -70,
+        "ceilDb": -25,
+        "colorMode": "SOLID",
+        "color": "#ffffff",
+        "colorB": "#7aa2ff",
+        "opacity": 1,
+        "glow": 0.5
+      }
+    },
+    {
+      "id": "phase",
+      "type": "TEXT",
+      "zIndex": 1,
+      "visible": true,
+      "layout": {
+        "x": 560,
+        "y": 24,
+        "width": 800,
+        "height": 70,
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "trackMappingMode": "ALL",
+      "assignedTrackIndices": [],
+      "properties": {
+        "align": "center",
+        "text": "{title}()",
+        "style": {
+          "styleId": "heading",
+          "color": "#ffffff",
+          "weight": 400
+        },
+        "valueStyle": {},
+        "animator": {
+          "enabled": false,
+          "effect": "fade",
+          "unit": "char",
+          "order": "forward",
+          "direction": "in",
+          "start": 0,
+          "duration": 0.4,
+          "stagger": 0.05,
+          "ease": "easeOutCubic",
+          "fromOpacity": 0,
+          "fromX": 0,
+          "fromY": 24,
+          "fromScale": 1,
+          "fromColor": "",
+          "countUp": false,
+          "seed": 1
+        }
+      }
+    },
+    {
+      "id": "next-phase",
+      "type": "TEXT",
+      "zIndex": 1,
+      "visible": true,
+      "layout": {
+        "x": 560,
+        "y": 80,
+        "width": 800,
+        "height": 40,
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "trackMappingMode": "ALL",
+      "assignedTrackIndices": [],
+      "properties": {
+        "align": "center",
+        "text": "Next phase in: {phase_remaining}",
+        "style": {
+          "styleId": "caption",
+          "color": "#c8c8d8"
+        },
+        "valueStyle": {},
+        "animator": {
+          "enabled": false,
+          "effect": "fade",
+          "unit": "char",
+          "order": "forward",
+          "direction": "in",
+          "start": 0,
+          "duration": 0.4,
+          "stagger": 0.05,
+          "ease": "easeOutCubic",
+          "fromOpacity": 0,
+          "fromX": 0,
+          "fromY": 24,
+          "fromScale": 1,
+          "fromColor": "",
+          "countUp": false,
+          "seed": 1
+        }
+      }
+    },
+    {
+      "id": "pitch-classes",
+      "type": "TEXT",
+      "zIndex": 1,
+      "visible": true,
+      "layout": {
+        "x": 360,
+        "y": 940,
+        "width": 1200,
+        "height": 80,
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "trackMappingMode": "ALL",
+      "assignedTrackIndices": [],
+      "properties": {
+        "align": "center",
+        "text": "[  {pitch_classes}  ]",
+        "style": {
+          "styleId": "heading",
+          "color": "#ffffff",
+          "tracking": 60
+        },
+        "valueStyle": {},
+        "animator": {
+          "enabled": false,
+          "effect": "fade",
+          "unit": "char",
+          "order": "forward",
+          "direction": "in",
+          "start": 0,
+          "duration": 0.4,
+          "stagger": 0.05,
+          "ease": "easeOutCubic",
+          "fromOpacity": 0,
+          "fromX": 0,
+          "fromY": 24,
+          "fromScale": 1,
+          "fromColor": "",
+          "countUp": false,
+          "seed": 1
+        }
+      }
+    }
+  ]
+}

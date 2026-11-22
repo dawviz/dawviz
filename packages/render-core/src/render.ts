@@ -230,20 +230,29 @@ const fadePrim = (p: Primitive, k: number): Primitive => (p.kind === 'rect' ? { 
  * (1) nền; (2) widget theo zIndex, mỗi widget cắt theo khung của nó (đã xoay quanh điểm neo, REQ-GRAPHICS-03); (3) primitive.
  */
 /** Tuỳ chọn khung (T-55): `transparent` = không tô màu nền và không vẽ ảnh nền (xuất PNG có kênh trong suốt); `layers` = chỉ vẽ các widget có id trong tập (xuất nền và tiền cảnh riêng). */
-export interface FrameOptions { transparent?: boolean; layers?: ReadonlySet<string> }
+export interface FrameOptions {
+  transparent?: boolean; layers?: ReadonlySet<string>;
+  /** Chuỗi cảnh (T-110): hệ số độ đục của cả khung (nền và mọi widget), 0..1; vắng = 1. */
+  alpha?: number;
+  /** Chuỗi cảnh: không xoá canvas trước khi vẽ (vẽ chồng lên cảnh trước). */
+  noClear?: boolean;
+}
 export function renderFrame(scene: SceneDocument, derived: Derived, ast: UnifiedProjectAST, t: number, target: RenderTarget, scale: number, renderers = WIDGET_RENDERERS, opts: FrameOptions = {}): void {
   const g = target.ctx, { designWidth: W, designHeight: H } = scene.canvas;
   g.setTransform(1, 0, 0, 1, 0, 0);
   g.globalAlpha = 1; g.shadowBlur = 0;
-  g.clearRect(0, 0, target.width, target.height);
+  const K = opts.alpha === undefined ? 1 : Math.min(1, Math.max(0, opts.alpha));
+  if (!opts.noClear) g.clearRect(0, 0, target.width, target.height);
   g.setTransform(scale, 0, 0, scale, 0, 0);
-  if (!opts.transparent) {
-    g.fillStyle = scene.canvas.backgroundColor; g.fillRect(0, 0, W, H);
-    if (derived.background) drawBackground(g, scene, derived.background, W, H);
+  if (!opts.transparent && K > 0) {
+    g.fillStyle = scene.canvas.backgroundColor; if (K < 1) g.globalAlpha = K; // K = 1: giữ nguyên chuỗi lệnh vẽ như trước chuỗi cảnh
+    g.fillRect(0, 0, W, H); if (K < 1) g.globalAlpha = 1;
+    if (derived.background) drawBackground(g, scene, derived.background, W, H, K);
   }
   const only = opts.layers;
-  for (const { widget, prims, fx, pm } of layoutFrame(only ? { ...scene, widgets: scene.widgets.filter((w) => only.has(w.id) || scene.widgets.some((c) => c.parent === w.id && only.has(c.id))) } : scene, derived, ast, t, renderers)) {
+  for (const { widget, prims: prims0, fx, pm } of layoutFrame(only ? { ...scene, widgets: scene.widgets.filter((w) => only.has(w.id) || scene.widgets.some((c) => c.parent === w.id && only.has(c.id))) } : scene, derived, ast, t, renderers)) {
     if (only && !only.has(widget.id)) continue; // cha chỉ được giữ để dẫn con (parenting), không vẽ
+    const prims = K >= 1 ? prims0 : prims0.map((p) => fadePrim(p, K)); // chuỗi cảnh: làm mờ cả cảnh
     const L = widget.layout;
     g.save();
     if (pm && !particlesInCanvasSpace(widget)) g.transform(pm[0], pm[1], pm[2], pm[3], pm[4], pm[5]); // parenting: theo thay đổi của cha
@@ -264,10 +273,10 @@ export function renderFrame(scene: SceneDocument, derived: Derived, ast: Unified
 }
 
 /** Ảnh nền rồi lớp làm tối, trước mọi widget. */
-function drawBackground(g: RenderCtx, scene: SceneDocument, bg: BackgroundImage, W: number, H: number): void {
+function drawBackground(g: RenderCtx, scene: SceneDocument, bg: BackgroundImage, W: number, H: number, k = 1): void {
   const spec = scene.canvas.backgroundImage ?? DEFAULT_BACKGROUND, pl = placeImage(spec.fit, bg.width, bg.height, W, H);
-  if (pl.dw > 0 && spec.opacity > 0) { g.globalAlpha = spec.opacity; g.drawImage(bg.image, pl.sx, pl.sy, pl.sw, pl.sh, pl.dx, pl.dy, pl.dw, pl.dh); }
-  if (spec.dim > 0) { g.globalAlpha = spec.dim; g.fillStyle = '#000000'; g.fillRect(0, 0, W, H); }
+  if (pl.dw > 0 && spec.opacity > 0) { g.globalAlpha = k < 1 ? spec.opacity * k : spec.opacity; g.drawImage(bg.image, pl.sx, pl.sy, pl.sw, pl.sh, pl.dx, pl.dy, pl.dw, pl.dh); }
+  if (spec.dim > 0) { g.globalAlpha = k < 1 ? spec.dim * k : spec.dim; g.fillStyle = '#000000'; g.fillRect(0, 0, W, H); }
   g.globalAlpha = 1;
 }
 

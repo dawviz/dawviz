@@ -88,7 +88,7 @@ export const DEFAULT_TEXT_BOX: Readonly<TextBoxProps> = Object.freeze({ align: '
 
 /** Chỗ giữ RIÊNG của từng widget (che chỗ giữ chung cùng tên). Chỗ giữ chung (GLOBAL_KEYS) dùng được ở mọi chữ; preset dùng chỗ giữ lạ → cảnh báo, chữ giữ nguyên. */
 export const TEMPLATE_KEYS = {
-  EVENT_COUNTER: ['played', 'total', 'pct', 'events', 'events_total'], LIVE_TRIGGER: ['name', 'velocity', 'track', 'pitch'],
+  EVENT_COUNTER: ['played', 'total', 'pct', 'events', 'events_total', 'events_pct'], LIVE_TRIGGER: ['name', 'velocity', 'track', 'pitch'],
   CHORD_DETECTION: ['notes', 'chord'], PROGRESS_BAR: ['elapsed', 'total', 'remaining', 'pct'], TRACK_INFO: [], TIME_BAR: [], TEXT: [],
 } as const;
 
@@ -272,6 +272,7 @@ export function globalValues(src: PlaceholderSource, t: number): Record<string, 
     title: () => ast.meta.title ?? '', artist: () => (ast.meta as { artist?: string }).artist ?? '',
     chord: () => { const c = chordAt(hud().chords.get(chordKey(shown(tracks))) ?? [], t)?.name ?? ''; return c && nm ? chordNameFor(c, nm) : c; }, notes: () => listV(active()),
     played: () => count().played, total: () => count().total, events: () => count().events, events_total: () => count().eventsTotal,
+    events_pct: () => { const c = count(), v = c.eventsTotal ? c.events / c.eventsTotal * 100 : 0; return numV(v, String(Math.round(v))); },
     pct: () => { const c = count(), v = c.total ? c.played / c.total * 100 : 0; return numV(v, String(Math.round(v))); },
   };
   const out: Record<string, PV> = {};
@@ -335,7 +336,7 @@ export const eventCounterRenderer: WidgetRenderer<EventCounterProps> = {
     for (const ti of shown(tracks)) { const s = hud.starts.get(ti.track.id), e = hud.ends.get(ti.track.id); if (!s || !e) continue; total += s.length; played += upperBound(s, t); events += upperBound(s, t) + upperBound(e, t); }
     const share = total ? played / total * 100 : 0;
     // `{pct}` giữ chữ cũ kèm "%" (số chữ số theo `decimals`); có định dạng thì ra số trần: `{pct:0.0}`.
-    const v = withLocals(globalValues({ ast, derived, tracks }, t), { played, total, events, events_total: total * 2, pct: numV(share, `${fixed(share, p.decimals)}%`) });
+    const v = withLocals(globalValues({ ast, derived, tracks }, t), { played, total, events, events_total: total * 2, events_pct: numV(total ? events / (total * 2) * 100 : 0, `${fixed(total ? events / (total * 2) * 100 : 0, p.decimals)}%`), pct: numV(share, `${fixed(share, p.decimals)}%`) });
     let row = 0;
     for (const k of ['played', 'total', 'progress', 'tempo'] as const) {
       const cfg = p.lines[k]; if (!cfg.enabled) continue;
