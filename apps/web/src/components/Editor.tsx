@@ -5,7 +5,7 @@
 // Khoá là trạng thái của phiên chỉnh sửa (không vào preset video, không vào lịch sử); ẩn/hiện, vị trí, cỡ, góc, neo, thứ tự lớp
 // và bắt dính đều là lệnh hoàn tác được (lib/commands.ts).
 import { motion } from 'framer-motion';
-import { useContext, useEffect, useMemo, useRef, useState, type DragEvent, type KeyboardEvent, type ReactNode } from 'react';
+import { Suspense, lazy, useContext, useEffect, useMemo, useRef, useState, type DragEvent, type KeyboardEvent, type ReactNode } from 'react';
 import { ADDABLE_WIDGETS, isBinding, defaultScene, normalizeAngle, rotateGroup, type Animation, type Derived, type NoteNaming, type WidgetMotion, type Phase, type SceneDocument, type UnifiedProjectAST, type WidgetLayout, type WidgetSpec, type WidgetType, type WidgetVisibility, type BackgroundImageSpec } from '@dawviz/render-core';
 import { clickIsKeyboard, startPaintDrag } from '../lib/paintDrag.ts';
 import { GestureContext } from '../lib/storeReact.ts';
@@ -31,12 +31,16 @@ import { LiveLayout, LiveOverlay, type LiveCtx } from './LiveLayout.tsx';
 import { addKey, setKey } from '../lib/animateFields.ts';
 import { keyAt, keySecs, valueAt } from '../lib/timeline.ts';
 import { Splitter } from './Splitter.tsx';
-import { TimelinePanel } from './TimelinePanel.tsx';
+import { TimelinePanel, type TimelineView } from './TimelinePanel.tsx';
 import { KeyframeTimeline, NO_SEL, type KeySel } from './KeyframeTimeline.tsx';
 import { usePanelLayout, usePanelShortcuts } from '../lib/usePanelLayout.ts';
 import { PanelCollapse, Rail } from './PanelChrome.tsx';
 import { PANEL_LIMITS } from '../lib/panelLayout.ts';
 import { KeySection, MotionSection, NamingSection, PhasesSection, VisibilitySection } from './TimeSections.tsx';
+// Graph Editor (T-33): chỉ nạp khi người dùng chuyển Timeline sang chế độ Đồ thị.
+const GraphEditor = lazy(() => import('./GraphEditor.tsx').then((m) => ({ default: m.GraphEditor })));
+const TL_VIEW_KEY = 'dawviz.timelineView';
+const readTlView = (): TimelineView => { try { return localStorage.getItem(TL_VIEW_KEY) === 'graph' ? 'graph' : 'list'; } catch { return 'list'; } };
 
 /** Mốc ↺ của mục Bắt dính: giá trị mặc định của canvas (scene mới). */
 const SNAP_DEFAULT = defaultScene().canvas.snapping;
@@ -275,6 +279,8 @@ export function Editor({ styleName, scene, derived, ast, playback, fonts, advanc
   const [keySelRaw, setKeySel] = useState<{ id: string; sel: KeySel }>({ id: '', sel: NO_SEL });
   const keySel = single && keySelRaw.id === single.id ? keySelRaw.sel : NO_SEL;
   const onKeySel = (s: KeySel) => { if (single) setKeySel({ id: single.id, sel: s }); };
+  const [tlView, setTlViewRaw] = useState<TimelineView>(readTlView);
+  const setTlView = (v: TimelineView) => { setTlViewRaw(v); try { localStorage.setItem(TL_VIEW_KEY, v); } catch { /* chặn lưu: chỉ nhớ trong phiên */ } };
   const vars = { '--ed-l': `${r.layers}px`, '--ed-r': `${r.props}px`, '--ed-t': `${r.timeline}px` } as React.CSSProperties;
 
   return (
@@ -404,8 +410,14 @@ export function Editor({ styleName, scene, derived, ast, playback, fonts, advanc
             onToggle={() => panels.setOpen('timeline', false)} className="top-0 max-lg:hidden" testId="split-timeline" />
         )}
         <TimelinePanel open={r.open.timeline} onOpen={(o) => panels.setOpen('timeline', o)} toggleHint={(open) => keyHint(i18n.t(open ? 'web.panel.collapse' : 'web.panel.open', { name: i18n.t('web.timeline.title') }), 'Ctrl+J')}
-          widget={single} widgetName={single ? name(single.id) : ''} selectedCount={live.length} hasProject={!!ast}>
-          {single && ast && (
+          widget={single} widgetName={single ? name(single.id) : ''} selectedCount={live.length} hasProject={!!ast} view={tlView} onView={setTlView}>
+          {single && ast && tlView === 'graph' && (
+            <Suspense fallback={<div className="h-full" aria-busy="true" data-testid="graph-loading" />}>
+              <GraphEditor widget={single} tempoMap={ast.tempoMap} duration={derived?.index.duration ?? 0} playback={playback} locked={locked.has(single.id)}
+                sel={keySel} onSel={onKeySel} onAnimateMany={(ch, k) => actions.animEdit({ [single.id]: { animate: ch } }, k)} gesture={gestureCtx} />
+            </Suspense>
+          )}
+          {single && ast && tlView === 'list' && (
             <KeyframeTimeline widget={single} tempoMap={ast.tempoMap} duration={derived?.index.duration ?? 0} playback={playback} locked={locked.has(single.id)}
               sel={keySel} onSel={onKeySel} onAnimate={(p, v, k) => actions.animate(single.id, p, v, k)} onAnimateMany={(ch, k) => actions.animEdit({ [single.id]: { animate: ch } }, k)} gesture={gestureCtx}
               tree={r.tree} onTree={(v) => panels.resize('tree', v)} onTreeReset={() => panels.reset('tree')} />

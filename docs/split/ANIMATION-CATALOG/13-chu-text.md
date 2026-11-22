@@ -4,8 +4,8 @@ doc_title: "Danh mục hiệu ứng chuyển động và đường cong nội su
 section: "13. Chữ (text)"
 path: "13. Chữ (text)"
 chunk: 13-chu-text.md
-source_lines: 207-219
-source_sha1: 0c1c7a0731
+source_lines: 209-221
+source_sha1: e025c800f9
 ids: []
 ---
 ## 13. Chữ (text)

@@ -4,8 +4,8 @@ doc_title: "Danh mục hiệu ứng chuyển động và đường cong nội su
 section: "16. Nhân bản và vệt"
 path: "16. Nhân bản và vệt"
 chunk: 16-nhan-ban-va-vet.md
-source_lines: 248-256
-source_sha1: 0c1c7a0731
+source_lines: 250-258
+source_sha1: e025c800f9
 ids: []
 ---
 ## 16. Nhân bản và vệt

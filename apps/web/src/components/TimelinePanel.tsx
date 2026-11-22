@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import type { WidgetSpec } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { PanelBottom } from './Icons.tsx';
+import { radioKeys } from '../lib/a11y.ts';
 
 export interface TimelinePanelProps {
   open: boolean;
@@ -15,10 +16,14 @@ export interface TimelinePanelProps {
   selectedCount: number;
   /** Đã nạp dự án chưa (chưa thì nhắc mở dự án). */
   hasProject: boolean;
+  /** Chế độ thân panel: Danh sách (làn keyframe) hoặc Đồ thị (Graph Editor, T-33). */
+  view: TimelineView;
+  onView(v: TimelineView): void;
   children?: ReactNode;
 }
+export type TimelineView = 'list' | 'graph';
 
-export function TimelinePanel({ open, onOpen, toggleHint, widget, widgetName, selectedCount, hasProject, children }: TimelinePanelProps) {
+export function TimelinePanel({ open, onOpen, toggleHint, widget, widgetName, selectedCount, hasProject, view, onView, children }: TimelinePanelProps) {
   const { i18n } = useI18n();
   const hint = toggleHint(open);
   return (
@@ -29,6 +34,13 @@ export function TimelinePanel({ open, onOpen, toggleHint, widget, widgetName, se
         </button>
         <h2 id="timeline-h" className="shrink-0 text-[13px] font-semibold text-fg">{i18n.t('web.timeline.title')}</h2>
         {widget && <span className="min-w-0 truncate text-xs text-muted" title={widgetName} data-testid="timeline-widget"><span aria-hidden>· </span>{widgetName}</span>}
+        {open && widget && hasProject && (
+          <div className="seg ml-auto shrink-0" role="radiogroup" aria-label={i18n.t('web.graph.view')} onKeyDown={radioKeys} data-testid="timeline-view">
+            {(['list', 'graph'] as const).map((v) => (
+              <button key={v} type="button" role="radio" aria-checked={view === v} tabIndex={view === v ? 0 : -1} className="seg-btn px-2" onClick={() => onView(v)} data-testid={`timeline-view-${v}`}>{i18n.t(`web.graph.view.${v}`)}</button>
+            ))}
+          </div>
+        )}
       </header>
       {open && (
         <div id="timeline-body" className="min-h-0 flex-1 border-t border-line">

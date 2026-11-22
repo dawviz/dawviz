@@ -95,6 +95,18 @@ Nút ↺ cạnh **Đường cong**, **Giữa các keyframe**, **Sau keyframe cu�
 
 Chọn nhiều keyframe rồi đổi một ô thì mọi keyframe đang chọn đổi theo; ô nào các keyframe đang khác nhau sẽ ghi **Nhiều giá trị**. Màu chuyển mượt, không bị xỉn ở giữa.
 
+### Đồ thị (Graph Editor)
+
+Nút **Danh sách / Đồ thị** ở góc phải thanh tiêu đề Timeline đổi cách xem. **Đồ thị** vẽ đường cong của dòng đang chọn (Vị trí có hai đường: x nét liền, y nét đứt):
+
+- **Giá trị**: trục dọc là giá trị theo thời gian. Kéo ô vuông để dời keyframe theo thời gian và đổi giá trị cùng lúc; giữ Shift khi kéo để chỉ đi một chiều. Keyframe tự bắt vào vạch phát, phách, keyframe khác, từng khung hình và số tròn; giữ Alt để đặt tự do. Chọn keyframe thì hiện tay cầm tròn của hai đoạn hai bên; kéo tay cầm để chỉnh đường cong của đoạn đó.
+- **Tốc độ**: trục dọc là giá trị đổi nhanh tới đâu (mỗi giây). Kéo tay cầm sang ngang để đổi độ ảnh hưởng, lên xuống để đổi vận tốc.
+- **Vào / Ra**: khi chọn một keyframe, hai cặp ô bên phải cho gõ **vận tốc** (đơn vị mỗi giây) và **độ ảnh hưởng** (%) của đoạn đi vào và đoạn đi ra. Đoạn đều có ảnh hưởng 0%: đặt ảnh hưởng trước thì tay cầm mới tách khỏi keyframe để kéo được.
+- **Sao chép easing / Dán easing**: chép đường cong đi tới keyframe đang chọn, rồi dán vào các keyframe khác.
+- **Thư viện easing**: chọn một đường cong có hình thu nhỏ để áp cho keyframe đang chọn. **Lưu đường cong này** thêm đường cong của keyframe đang chọn vào mục **Đã lưu** (nhớ trên máy này).
+
+Cuộn chuột để đi ngang theo thời gian, Ctrl+cuộn để phóng to quanh con trỏ, nút **Vừa các đường cong** để xem lại toàn bộ. Delete, Ctrl+A, Esc dùng như ở Danh sách; mũi tên trái/phải trên keyframe dời một khung (thêm Shift: một giây), lên/xuống đổi giá trị. Thuộc tính màu không có đồ thị; dùng Danh sách. Đồ thị nhiều thuộc tính cùng lúc sẽ có ở bản 1.1.
+
 ### Chạy theo nhạc
 
 Bấm tên một thuộc tính trên Timeline (không bấm keyframe), rồi ở mục **Keyframe** bên phải chọn **Theo nhạc**. Giá trị chạy theo một nguồn dữ liệu của bài: phách, ô nhịp, tiến độ bài, số nốt đang vang, nốt mạnh nhất đang vang, nốt vừa chạm (vọt lên rồi tắt dần), automation âm lượng hoặc pan của track, độ to của âm thanh. Bạn đặt khoảng nguồn chạy từ đâu tới đâu và giá trị tương ứng, ví dụ độ phát sáng từ 0 tới 1 khi nốt vừa chạm. Trên Timeline, thuộc tính đó hiện một thanh **Theo nhạc** thay cho keyframe. **Bỏ hoạt hình** đưa thuộc tính về giá trị đứng yên.

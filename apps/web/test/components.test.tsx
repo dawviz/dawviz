@@ -748,3 +748,48 @@ describe('Panel đổi cỡ và mục thu gọn (Editor)', () => {
     expect(screen.getByText('nội dung')).toBeInTheDocument();
   });
 });
+
+describe('Graph Editor cơ bản (T-33)', () => {
+  const widgetWith = (animate: Record<string, unknown>) => ({ id: 'w1', type: 'TIME_BAR', zIndex: 1, visible: true, layout: { x: 0, y: 0, width: 300, height: 100, rotation: 0, anchor: { x: 0.5, y: 0.5 } }, trackMappingMode: 'ALL', assignedTrackIndices: [], properties: {}, animate }) as never;
+  const scale = { keys: [{ at: { sec: 0 }, value: 100 }, { at: { sec: 2 }, value: 200 }, { at: { sec: 4 }, value: 150 }] };
+  const tm = [{ tick: 0, bpm: 120, num: 4, den: 4 }] as never;
+  it('vẽ đường cong của dòng chọn; chọn keyframe hiện ô vận tốc/ảnh hưởng; đổi ảnh hưởng ghi cubicBezier vào easing của đoạn', async () => {
+    const { GraphEditor } = await import('../src/components/GraphEditor.tsx');
+    const edits: Record<string, unknown>[] = [];
+    let sel = { keys: [] as string[], row: 'scale' as string | null };
+    const ui = () => <I18nProvider><GraphEditor widget={widgetWith({ scale })} tempoMap={tm} duration={10} playback={createPlayback()} locked={false}
+      sel={sel} onSel={(s) => { sel = s; }} onAnimateMany={(ch) => edits.push(ch)} gesture={{ begin() {}, end() {} }} /></I18nProvider>;
+    const { rerender } = render(ui());
+    expect(screen.getByTestId('graph-curve-scale')).toBeInTheDocument();
+    expect(screen.getAllByTestId('graph-key')).toHaveLength(3);
+    fireEvent.pointerDown(screen.getAllByTestId('graph-key')[1], { button: 0, clientX: 0, clientY: 0 });
+    expect(sel.keys).toEqual(['scale#1']);
+    rerender(ui());
+    const box = screen.getByTestId('graph-velocity');
+    const fields = box.querySelectorAll('input');
+    expect(fields).toHaveLength(4); // vào: vận tốc, ảnh hưởng; ra: vận tốc, ảnh hưởng
+    expect((fields[0] as HTMLInputElement).value).toBe('50'); // đoạn đều: (200 − 100) / 2 s
+    fireEvent.change(fields[1], { target: { value: '60' } }); fireEvent.keyDown(fields[1], { key: 'Enter' });
+    const last = edits.at(-1) as { scale: { keys: { ease?: { cubicBezier: number[] } }[] } };
+    expect(last.scale.keys[1].ease?.cubicBezier[2]).toBeCloseTo(0.4);
+  });
+  it('dán easing áp cho đoạn kết thúc ở keyframe chọn; thuộc tính màu không có đồ thị', async () => {
+    const { GraphEditor } = await import('../src/components/GraphEditor.tsx');
+    const { easeClipboard } = await import('../src/lib/graphEditor.ts');
+    const edits: Record<string, unknown>[] = [];
+    const anim = { keys: [{ at: { sec: 0 }, value: 100 }, { at: { sec: 2 }, value: 200, ease: 'easeInQuad' }, { at: { sec: 4 }, value: 150 }] };
+    easeClipboard.clear();
+    const ui = (keys: string[]) => <I18nProvider><GraphEditor widget={widgetWith({ scale: anim })} tempoMap={tm} duration={10} playback={createPlayback()} locked={false}
+      sel={{ keys, row: 'scale' }} onSel={() => {}} onAnimateMany={(ch) => edits.push(ch)} gesture={{ begin() {}, end() {} }} /></I18nProvider>;
+    const { rerender, unmount } = render(ui(['scale#1']));
+    expect(screen.getByTestId('graph-paste-ease')).toBeDisabled();
+    fireEvent.click(screen.getByTestId('graph-copy-ease'));
+    rerender(ui(['scale#2']));
+    fireEvent.click(screen.getByTestId('graph-paste-ease'));
+    expect((edits.at(-1) as { scale: { keys: { ease?: unknown }[] } }).scale.keys[2].ease).toBe('easeInQuad');
+    unmount();
+    render(<I18nProvider><GraphEditor widget={widgetWith({ color: { kind: 'color', keys: [{ at: { sec: 0 }, value: '#ffffff' }] } })} tempoMap={tm} duration={10} playback={createPlayback()} locked={false}
+      sel={{ keys: [], row: null }} onSel={() => {}} onAnimateMany={() => {}} gesture={{ begin() {}, end() {} }} /></I18nProvider>);
+    expect(screen.getByTestId('graph-empty')).toBeInTheDocument();
+  });
+});

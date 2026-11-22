@@ -202,7 +202,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [0. Cách đọc bảng](ANIMATION-CATALOG/0-cach-doc-bang.md) · 575 ký tự
 - [1. Kiểu nội suy keyframe (theo thời gian)](ANIMATION-CATALOG/1-kieu-noi-suy-keyframe-theo-thoi-gian.md) · 1129 ký tự
 - [2. Thư viện easing đặt sẵn](ANIMATION-CATALOG/2-thu-vien-easing-dat-san.md) · 1334 ký tự
-- [3. Đồ thị (Graph Editor)](ANIMATION-CATALOG/3-do-thi-graph-editor.md) · 1198 ký tự
+- [3. Đồ thị (Graph Editor)](ANIMATION-CATALOG/3-do-thi-graph-editor.md) · 1487 ký tự
 - [4. Nội suy không gian và kiểu giá trị](ANIMATION-CATALOG/4-noi-suy-khong-gian-va-kieu-gia-tri.md) · 695 ký tự
 - [5. Ngoại suy, lặp và bộ biến đổi đường cong](ANIMATION-CATALOG/5-ngoai-suy-lap-va-bo-bien-doi-duong-cong.md) · 830 ký tự
 - [6. Hiệu ứng biến đổi cơ bản (transform)](ANIMATION-CATALOG/6-hieu-ung-bien-doi-co-ban-transform.md) · 768 ký tự

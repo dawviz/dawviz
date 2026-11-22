@@ -126,7 +126,7 @@ Select a widget and open **Motion** to give it an entrance, an exit and a repeat
 
 ## Timeline & keyframes
 
-The **Timeline & keyframes** panel at the bottom shows the selected widget's properties over time: the property list on the left, the time ruler and diamond-shaped keyframes on the right. The **Transform** group has Position, Scale, Rotation and Opacity. Press the stopwatch on a property to start animating it; once it is on, dragging the widget on the frame sets a keyframe at the playhead. Drag keyframes to change their time, and select a keyframe to shape its curve in the **Keyframe** section on the right. Details in [Analysis widgets](10-analysis-widgets.md#animate-properties).
+The **Timeline & keyframes** panel at the bottom shows the selected widget's properties over time: the property list on the left, the time ruler and diamond-shaped keyframes on the right. The **Transform** group has Position, Scale, Rotation and Opacity. Press the stopwatch on a property to start animating it; once it is on, dragging the widget on the frame sets a keyframe at the playhead. Drag keyframes to change their time, and select a keyframe to shape its curve in the **Keyframe** section on the right. The **List / Graph** switch at the right of the panel's title bar switches to **Graph**, where you see and shape the value and speed curves of the selected row. Details in [Analysis widgets](10-analysis-widgets.md#animate-properties).
 
 ## Note names
 

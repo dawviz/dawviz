@@ -1,6 +1,6 @@
 # Chỉ mục ANIMATION-CATALOG.md — Danh mục hiệu ứng chuyển động và đường cong nội suy
 
-nguồn: `ANIMATION-CATALOG.md` (sha1 0c1c7a0731)
+nguồn: `ANIMATION-CATALOG.md` (sha1 e025c800f9)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -8,7 +8,7 @@ nguồn: `ANIMATION-CATALOG.md` (sha1 0c1c7a0731)
 | 1 | 0. Cách đọc bảng | [0-cach-doc-bang.md](0-cach-doc-bang.md) | 575 | AD-07 |
 | 2 | 1. Kiểu nội suy keyframe (theo thời gian) | [1-kieu-noi-suy-keyframe-theo-thoi-gian.md](1-kieu-noi-suy-keyframe-theo-thoi-gian.md) | 1129 |  |
 | 3 | 2. Thư viện easing đặt sẵn | [2-thu-vien-easing-dat-san.md](2-thu-vien-easing-dat-san.md) | 1334 | AD-13 |
-| 4 | 3. Đồ thị (Graph Editor) | [3-do-thi-graph-editor.md](3-do-thi-graph-editor.md) | 1198 |  |
+| 4 | 3. Đồ thị (Graph Editor) | [3-do-thi-graph-editor.md](3-do-thi-graph-editor.md) | 1487 |  |
 | 5 | 4. Nội suy không gian và kiểu giá trị | [4-noi-suy-khong-gian-va-kieu-gia-tri.md](4-noi-suy-khong-gian-va-kieu-gia-tri.md) | 695 | AD-11 |
 | 6 | 5. Ngoại suy, lặp và bộ biến đổi đường cong | [5-ngoai-suy-lap-va-bo-bien-doi-duong-cong.md](5-ngoai-suy-lap-va-bo-bien-doi-duong-cong.md) | 830 |  |
 | 7 | 6. Hiệu ứng biến đổi cơ bản (transform) | [6-hieu-ung-bien-doi-co-ban-transform.md](6-hieu-ung-bien-doi-co-ban-transform.md) | 768 | D-47, REQ-GRAPHICS-15 |

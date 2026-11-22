@@ -4,8 +4,8 @@ doc_title: "Danh mục hiệu ứng chuyển động và đường cong nội su
 section: "15. Camera"
 path: "15. Camera"
 chunk: 15-camera.md
-source_lines: 236-247
-source_sha1: 0c1c7a0731
+source_lines: 238-249
+source_sha1: e025c800f9
 ids: [REQ-GRAPHICS-15]
 ---
 ## 15. Camera

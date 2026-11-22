@@ -4,8 +4,8 @@ doc_title: "Danh mục hiệu ứng chuyển động và đường cong nội su
 section: "8. Hình dạng (shape) và biến dạng hình học"
 path: "8. Hình dạng (shape) và biến dạng hình học"
 chunk: 8-hinh-dang-shape-va-bien-dang-hinh-hoc.md
-source_lines: 134-148
-source_sha1: 0c1c7a0731
+source_lines: 136-150
+source_sha1: e025c800f9
 ids: [AD-11, D-44]
 ---
 ## 8. Hình dạng (shape) và biến dạng hình học

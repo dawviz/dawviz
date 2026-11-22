@@ -4,8 +4,8 @@ doc_title: "Danh mục hiệu ứng chuyển động và đường cong nội su
 section: "3. Đồ thị (Graph Editor)"
 path: "3. Đồ thị (Graph Editor)"
 chunk: 3-do-thi-graph-editor.md
-source_lines: 57-74
-source_sha1: 0c1c7a0731
+source_lines: 57-76
+source_sha1: e025c800f9
 ids: []
 ---
 ## 3. Đồ thị (Graph Editor)
@@ -25,3 +25,5 @@ ids: []
 | Thư viện easing | Lưu đường cong thành preset, kéo thả áp dụng | v1.0 |
 | Đường cong "ma" | Hiện đường cong trước khi sửa để so sánh | v1.1 |
 | Bake | Chuyển biểu thức, binding hoặc template thành keyframe thật để chỉnh tay | v1.1 |
+
+**Đã làm (T-33, 2026-11-22):** mọi mục `v1.0` của bảng này: chế độ **Đồ thị** của panel Timeline (đồ thị giá trị và tốc độ, vận tốc/ảnh hưởng bằng số, bắt dính, sao chép/dán easing, thư viện easing). Dòng Vị trí đã hiện hai đường x/y, nhưng chồng nhiều thuộc tính tuỳ chọn vẫn là `v1.1`.

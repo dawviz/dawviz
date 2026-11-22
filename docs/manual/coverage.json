@@ -124,11 +124,11 @@
         "apps/web/src/components/PanelChrome.tsx",
         "apps/web/src/components/LiveLayout.tsx"
       ],
-      "uiHash": "313c880f4b6c",
-      "viHash": "e842972cf79a",
-      "enHash": "8127cd65c4da",
+      "uiHash": "3b376cd0db04",
+      "viHash": "521a432a7e34",
+      "enHash": "4010ff881d89",
       "coverHashes": {
-        "apps/web/src/components/Editor.tsx": "cc87db5a6b0e",
+        "apps/web/src/components/Editor.tsx": "8d36e4794a23",
         "apps/web/src/components/EditorOverlay.tsx": "c813801e06af",
         "apps/web/src/components/StylePanel.tsx": "26c35e084860",
         "locales/en.json#web.editor.": "7be8167cea49",
@@ -149,7 +149,7 @@
         "locales/en.json#web.bg.": "ddb0f8fad7f2",
         "locales/en.json#web.page.": "0a9b9e917e7c",
         "apps/web/src/components/Splitter.tsx": "7ae82f8548cb",
-        "apps/web/src/components/TimelinePanel.tsx": "0b618f92ef83",
+        "apps/web/src/components/TimelinePanel.tsx": "3942d7f4405a",
         "apps/web/src/lib/panelLayout.ts": "6d5434746c8f",
         "locales/en.json#web.panel.": "b0c8bed5d17f",
         "locales/en.json#web.section.": "8001c069c069",
@@ -200,7 +200,7 @@
         "apps/web/src/components/KeyframeTimeline.tsx",
         "apps/web/src/components/Splitter.tsx"
       ],
-      "uiHash": "4b69128cedf3",
+      "uiHash": "d33130dbf5da",
       "viHash": "e3f0fca20d5e",
       "enHash": "fc1eed116477",
       "coverHashes": {
@@ -208,7 +208,7 @@
         "apps/web/src/lib/undoKeys.ts": "07c2c99f5cf4",
         "apps/web/src/components/EditorOverlay.tsx": "c813801e06af",
         "apps/web/src/lib/numberInput.ts": "8e27c53523c3",
-        "apps/web/src/components/Editor.tsx": "cc87db5a6b0e",
+        "apps/web/src/components/Editor.tsx": "8d36e4794a23",
         "apps/web/src/components/KeyframeTimeline.tsx": "aef5f4030316",
         "apps/web/src/components/Splitter.tsx": "7ae82f8548cb"
       }
@@ -306,11 +306,15 @@
         "locales/en.json#web.timeline.",
         "locales/en.json#web.keyinsp.",
         "apps/web/src/lib/timelineRows.ts",
-        "apps/web/src/components/LiveLayout.tsx"
+        "apps/web/src/components/LiveLayout.tsx",
+        "apps/web/src/components/GraphEditor.tsx",
+        "apps/web/src/lib/graphEditor.ts",
+        "apps/web/src/components/TimelinePanel.tsx",
+        "locales/en.json#web.graph."
       ],
-      "uiHash": "8ed2ba282bc9",
-      "viHash": "70d665b329e8",
-      "enHash": "63623f70ce83",
+      "uiHash": "7fc426e5e169",
+      "viHash": "5363e91d65e6",
+      "enHash": "cdb264461edf",
       "coverHashes": {
         "packages/render-core/src/insight.ts": "37e1f3014ac3",
         "packages/render-core/src/naming.ts": "9a90045d7e7c",
@@ -329,7 +333,11 @@
         "locales/en.json#web.timeline.": "e44f1962f6fe",
         "locales/en.json#web.keyinsp.": "560133fc64e2",
         "apps/web/src/lib/timelineRows.ts": "468eecc1a800",
-        "apps/web/src/components/LiveLayout.tsx": "4ce15f68118f"
+        "apps/web/src/components/LiveLayout.tsx": "4ce15f68118f",
+        "apps/web/src/components/GraphEditor.tsx": "53a96cf9396c",
+        "apps/web/src/lib/graphEditor.ts": "2013ea7d804d",
+        "apps/web/src/components/TimelinePanel.tsx": "3942d7f4405a",
+        "locales/en.json#web.graph.": "d68685280d49"
       }
     }
   }
