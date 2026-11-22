@@ -71,11 +71,11 @@
         "apps/web/src/components/PanelChrome.tsx",
         "apps/web/src/lib/usePanelLayout.ts"
       ],
-      "uiHash": "b57f91baef18",
-      "viHash": "343cae3293d5",
-      "enHash": "988e5505d6b1",
+      "uiHash": "7ffb88176b90",
+      "viHash": "875c65035f47",
+      "enHash": "4705b65e12ea",
       "coverHashes": {
-        "apps/web/src/components/Transport.tsx": "913cee9ba6eb",
+        "apps/web/src/components/Transport.tsx": "9d2e4bdb8453",
         "apps/web/src/components/VideoStyles.tsx": "abe40301e0a7",
         "apps/web/src/components/AudioPanel.tsx": "11547f9d52e7",
         "apps/web/src/components/TrackPanel.tsx": "bbbc451578ce",
