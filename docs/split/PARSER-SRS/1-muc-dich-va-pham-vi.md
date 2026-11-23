@@ -5,7 +5,7 @@ section: "1. Mục đích và phạm vi"
 path: "1. Mục đích và phạm vi"
 chunk: 1-muc-dich-va-pham-vi.md
 source_lines: 6-11
-source_sha1: 59d9967678
+source_sha1: a0c8f4a7bd
 ids: []
 ---
 ## 1. Mục đích và phạm vi

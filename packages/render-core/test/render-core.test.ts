@@ -5,7 +5,7 @@ import { parseProject } from '@dawviz/parser';
 import { buildIndex, activeNotes, notesInRange, trackBrightness, layoutPianoRoll, drawPianoRoll, DEFAULT_BRIGHTNESS,
   DEFAULT_NOTE_STYLE, resolveNoteStyle, sanitizeStyle, noteColor, layoutKeyboard, drawKeyboard } from '../src/index.ts';
 
-const fixtures = new URL('../../../test/fixtures/', import.meta.url);
+const fixtures = new URL('../../../test/fixtures/Reaper/', import.meta.url);
 const load = (n: string) => fs.readFileSync(new URL(n, fixtures));
 
 const mk = (notes: [number, number, number][], extra = {}) => ({

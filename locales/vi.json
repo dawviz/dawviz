@@ -83,7 +83,6 @@
   "warn.WARN_RPP_LOOP_UNKNOWN_LEN": "Item lặp không rõ độ dài nguồn nên không được nhân bản.",
   "warn.WARN_RPP_MUTED_ITEMS": "Các item bị tắt (MUTE) đã bị bỏ qua.",
   "warn.WARN_RPP_PROJOFFS": "Offset bắt đầu dự án (PROJOFFS) chưa được áp dụng.",
-  "warn.WARN_RPP_SOFFS": "SOFFS (offset đầu nguồn) được coi là quarter-note [cần kiểm chứng].",
   "warn.WARN_RPP_SRC_UNIT": "Nguồn MIDI dùng timebase không phải quarter-note (hoặc PPQ không hợp lệ) chưa được hỗ trợ; item đã bị bỏ qua. Hãy lưu lại dự án bằng Reaper bản mới.",
   "warn.WARN_SESSION_CLIPS_IGNORED": "Clip Session View không được đọc (chỉ đọc Arrangement).",
   "warn.WARN_TEMPO_AUTOMATION": "Đã đọc tempo automation từ file.",

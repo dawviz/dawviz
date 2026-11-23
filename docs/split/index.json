@@ -504,7 +504,7 @@
   },
   "SRS.md": {
    "title": "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)",
-   "sha1": "410aa8419f",
+   "sha1": "ba41c8b27f",
    "chunks": [
     {
      "n": 0,
@@ -935,7 +935,7 @@
       "3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08)",
       "REQ-PARSER-02: Cockos Reaper (`.rpp`)"
      ],
-     "chars": 3655,
+     "chars": 3759,
      "lines": [
       294,
       307
@@ -2667,7 +2667,7 @@
       "9. PHỤ LỤC",
       "Phụ lục A2: Mã cảnh báo của Parser Library"
      ],
-     "chars": 1357,
+     "chars": 1339,
      "lines": [
       1245,
       1250
@@ -2691,7 +2691,6 @@
       "WARN_RPP_LOOP_UNKNOWN_LEN",
       "WARN_RPP_MUTED_ITEMS",
       "WARN_RPP_PROJOFFS",
-      "WARN_RPP_SOFFS",
       "WARN_RPP_SRC_UNIT",
       "WARN_SESSION_CLIPS_IGNORED",
       "WARN_STEM_LENGTH",
@@ -5283,7 +5282,7 @@
   },
   "PARSER-SRS.md": {
    "title": "SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer",
-   "sha1": "59d9967678",
+   "sha1": "a0c8f4a7bd",
    "chunks": [
     {
      "n": 0,
@@ -5321,7 +5320,7 @@
      "path": [
       "2. Định dạng hỗ trợ"
      ],
-     "chars": 1551,
+     "chars": 1643,
      "lines": [
       12,
       24
@@ -5472,7 +5471,7 @@
       "3. Yêu cầu chức năng",
       "3.6 Reaper (.rpp) — VERIFY"
      ],
-     "chars": 4450,
+     "chars": 4525,
      "lines": [
       78,
       89
@@ -9444,9 +9443,6 @@
    "SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md"
   ],
   "WARN_RPP_PROJOFFS": [
-   "SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md"
-  ],
-  "WARN_RPP_SOFFS": [
    "SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md"
   ],
   "WARN_TEMPO_AUTOMATION": [

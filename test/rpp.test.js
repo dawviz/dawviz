@@ -169,7 +169,7 @@ test('BigProject4b thật: nhịp 12/8, IGNTEMPO 1 180, envelope âm lượng (c
   assert.equal(lane.points[1].tension, 0.6);
   assert.deepEqual(r.ast.tracks[0].mix, { volumeDb: 0, pan: 0 });
   assert.ok(!r.warnings.some((x) => x.code === 'WARN_RPP_ENVELOPES_IGNORED'));
-  assert.ok(r.warnings.some((x) => x.code === 'WARN_RPP_ENVELOPE_SHAPE_APPROX'));
+  assert.ok(!r.warnings.some((x) => x.code === 'WARN_RPP_ENVELOPE_SHAPE_APPROX'));
   // đối chiếu với số đọc từ giao diện Reaper: con trỏ 0:02.920 → -25.3 dB; con trỏ ≈1.98 s → -15.3 dB (vị trí ước lượng từ ảnh)
   const dbAt = (sec) => gainToDb(sampleLane(lane, Math.round(sec * 2 * 960)));
   assert.ok(Math.abs(dbAt(2.92) - -25.3) < 0.3, dbAt(2.92));
@@ -196,4 +196,56 @@ test('Envelope: ACT 0 không đọc; envelope item/WIDTHENV/bản trùng loại 
   assert.equal(r.ast.tracks[0].mix.pan, 0.25); assert.ok(Math.abs(r.ast.tracks[0].mix.volumeDb - -6.02) < 0.01);
   const w = r.warnings.find((x) => x.code === 'WARN_RPP_ENVELOPES_IGNORED');
   assert.deepEqual([w.details.ignored, w.details.read], [3, 2]); // VOLENV trùng loại, WIDTHENV2, VOLENV của item
+});
+
+test('SOFFS tính bằng giây: cùng một lần cắt 1 beat ở 120 và 90 BPM cho cùng vị trí nốt (test120bpm/test90bpm)', async () => {
+  const out = [];
+  for (const f of ['test120bpm.rpp', 'test90bpm.rpp']) {
+    const r = await parseRpp(fx(f));
+    assert.ok(!r.warnings.some((x) => x.code === 'WARN_RPP_SOFFS'), 'không còn cảnh báo SOFFS');
+    out.push(r.ast.tracks[0].notes.map((n) => [n.pitch, n.startTick, n.endTick]));
+  }
+  assert.deepEqual(out[0], out[1]);
+  assert.deepEqual(out[0], [[53, 4800, 5280], [55, 5760, 6240]]); // nốt 0x35 nằm đúng đầu item (beat 5 → tick 4800)
+});
+
+test('automation.rpp: shape 2/3/4/0 và bezier tension 0,395 khớp số đo trên Reaper (≤ 0,7 dB), không còn cảnh báo', async () => {
+  const { sampleLane, gainToDb } = await import('@dawviz/parser-core');
+  const r = await parseRpp(fx('automation.rpp'));
+  const lane = r.ast.tracks[0].automation.volume;
+  const ppq = r.ast.ppq ?? 960;
+  // [bar.beat.% → beat], dB đo được (90 BPM, 4/4)
+  const at = (b, k, h) => Math.round(((b - 1) * 4 + (k - 1) + h / 100) * ppq);
+  const ref = [[1, 1, 96, -2.76], [1, 3, 4, -10.5], [2, 2, 6, -7.97], [2, 3, 0, -2.37], [3, 3, 1, -2.39], [3, 4, 0, -8.42], [5, 2, 3, -4.97], [5, 3, 2, -10.3], [4, 2, 2, -21.7], [4, 3, 6, -17.1], [4, 4, 0, -10.6]];
+  for (const [b, k, h, db] of ref) { const v = gainToDb(sampleLane(lane, at(b, k, h))); assert.ok(Math.abs(v - db) < 0.7, `${b}.${k}.${h}: ${v} vs ${db}`); }
+  assert.ok(!r.warnings.some((x) => x.code === 'WARN_RPP_ENVELOPE_SHAPE_APPROX'));
+});
+
+test('bezier1.RPP: tension −0,647 (đoạn đi xuống 0 → −27,4 dB) khớp số đo trên Reaper (≤ 0,7 dB), không cảnh báo', async () => {
+  const { sampleLane, gainToDb } = await import('@dawviz/parser-core');
+  const r = await parseRpp(fx('bezier1.RPP'));
+  const lane = r.ast.tracks[0].automation.volume;
+  const at = (b, k, h) => Math.round(((b - 1) * 4 + (k - 1) + h / 100) * 960);
+  for (const [b, h, db] of [[2, 4, -17.9], [3, 4, -23.6], [4, 8, -26.3], [5, 0, -27.4]]) {
+    const v = gainToDb(sampleLane(lane, at(b, 1, h))); assert.ok(Math.abs(v - db) < 0.7, `${b}.1.${h}: ${v} vs ${db}`);
+  }
+  assert.ok(!r.warnings.some((x) => x.code === 'WARN_RPP_ENVELOPE_SHAPE_APPROX'));
+});
+
+test('bezier2/3.RPP: tension +0,9 và +0,30 (đoạn đi lên −23,4 → +6 dB) khớp số đo (≤ 1,1 dB), không cảnh báo', async () => {
+  const { sampleLane, gainToDb } = await import('@dawviz/parser-core');
+  const at = (b, k, h) => Math.round(((b - 1) * 4 + (k - 1) + h / 100) * 960);
+  const r3 = await parseRpp(fx('bezier3.RPP'));
+  const lane = r3.ast.tracks[0].automation.volume;
+  assert.equal(lane.points[0].tension, 0.30016626); // bezier3.txt ghi "-0.3" nhưng tệp .rpp ghi +0,3: tệp mới là nguồn đúng
+  for (const [b, k, h, db] of [[2, 1, 4, -19.6], [3, 1, 6, -13.0], [3, 4, 96, -4.74]]) {
+    const v = gainToDb(sampleLane(lane, at(b, k, h))); assert.ok(Math.abs(v - db) < 1.1, `${b}.${k}.${h}: ${v} vs ${db}`);
+  }
+  assert.ok(!r3.warnings.some((x) => x.code === 'WARN_RPP_ENVELOPE_SHAPE_APPROX'));
+  const r2 = await parseRpp(fx('bezier2.RPP'));
+  const l2 = r2.ast.tracks[0].automation.volume;
+  for (const [b, k, h, db] of [[2, 1, 2, -23.1], [3, 1, 0, -22.2], [4, 1, 1, -19.3]]) {
+    const v = gainToDb(sampleLane(l2, at(b, k, h))); assert.ok(Math.abs(v - db) < 1.1, `bezier2 ${b}.${k}.${h}: ${v} vs ${db}`);
+  }
+  assert.ok(!r2.warnings.some((x) => x.code === 'WARN_RPP_ENVELOPE_SHAPE_APPROX'));
 });

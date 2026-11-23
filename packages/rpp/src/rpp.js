@@ -145,7 +145,6 @@ function readTrackLanes(tn, map, warnings, stats) {
       if (!Number.isFinite(time) || !Number.isFinite(value) || time < 0) continue;
       const p = { tick: Math.round(secToTick(map, time)), timeSeconds: time, value, shape };
       if (shape === 5) { const ten = parseFloat(t[7] ?? t[4]); if (Number.isFinite(ten)) p.tension = ten; }
-      if (shape >= 2) stats.shapeApprox = true;
       if (pts.length && p.tick <= pts[pts.length - 1].tick) { pts[pts.length - 1] = p; continue; } // trùng vị trí: điểm sau thắng
       pts.push(p);
     }
@@ -207,8 +206,8 @@ export async function parseRppText(text, options = {}) {
 
   const pool = new Map();
   const tracks = [];
-  let items = 0, mutedItems = 0, loopedItems = 0, srcLenWarn = false, soffsWarn = false;
-  const unsupportedSrc = [], unitWarned = new Set(), laneStats = { read: 0, shapeApprox: false };
+  let items = 0, mutedItems = 0, loopedItems = 0, srcLenWarn = false;
+  const unsupportedSrc = [], unitWarned = new Set(), laneStats = { read: 0 };
   for (const tn of proj.kids.filter((k) => k.name === 'TRACK')) {
     const nameP = prop(tn, 'NAME'), ms = prop(tn, 'MUTESOLO');
     const name = nameP ? nameP[1] || '' : 'Track';
@@ -242,8 +241,9 @@ export async function parseRppText(text, options = {}) {
       const itemStart = Math.round(secToTick(map, pos)), itemEnd = Math.round(secToTick(map, pos + len));
       const itemLen = itemEnd - itemStart;
       const srcLen = s.length * k;
-      if (soffs && !soffsWarn) { soffsWarn = true; warn(warnings, 'WARN_RPP_SOFFS', `item MIDI có SOFFS=${soffs}: coi là quarter-note [VERIFY]`); }
-      const off = Math.round(soffs * PPQ);
+      // SOFFS tính bằng giây (đã kiểm: test120bpm/test90bpm, cùng một lần cắt 1 beat → 0,5 s và 0,667 s).
+      // Nguồn bắt đầu ở thời điểm (pos − soffs) nên độ lệch tick = tick(pos) − tick(pos − soffs).
+      const off = soffs ? Math.round(secToTick(map, pos) - secToTick(map, Math.max(0, pos - soffs))) : 0;
       const passes = loop && srcLen > 0 && itemLen > srcLen + 1 ? Math.min(100000, Math.ceil((itemLen + off) / srcLen)) : 1;
       if (passes > 1) loopedItems++;
       if (loop && srcLen === 0 && !srcLenWarn && s.external) { srcLenWarn = true; warn(warnings, 'WARN_RPP_LOOP_UNKNOWN_LEN', 'item loop dùng file MIDI ngoài: chưa biết độ dài nguồn nên không nhân bản loop'); }
@@ -251,7 +251,7 @@ export async function parseRppText(text, options = {}) {
         for (const n of s.notes) {
           let st, en;
           if (s.ignTempoBpm) { // nguồn bỏ qua tempo dự án: thời gian tuyệt đối theo giây
-            const qn = (x) => (x / s.ppq) * 60 / s.ignTempoBpm;
+            const qn = (x) => (x / s.ppq) * 60 / s.ignTempoBpm - soffs;
             st = Math.round(secToTick(map, pos + qn(n.start))) - itemStart; en = Math.round(secToTick(map, pos + qn(n.end))) - itemStart;
           } else { st = Math.round(n.start * k) + pass * srcLen - off; en = Math.round(n.end * k) + pass * srcLen - off; }
           if (st < 0 || st >= itemLen) continue;
@@ -278,7 +278,6 @@ export async function parseRppText(text, options = {}) {
   };
   walkEnv(proj);
   if (ignoredEnv) warn(warnings, 'WARN_RPP_ENVELOPES_IGNORED', `${ignoredEnv} envelope tự động hoá (item/take, trước FX, độ rộng...) chưa được đọc`, { ignored: ignoredEnv, read: laneStats.read });
-  if (laneStats.shapeApprox) warn(warnings, 'WARN_RPP_ENVELOPE_SHAPE_APPROX', 'envelope có đoạn cong (slow/fast/bezier) được xấp xỉ bằng đường cong mượt [VERIFY]');
   if (mutedItems) warn(warnings, 'WARN_RPP_MUTED_ITEMS', `${mutedItems} item bị tắt (MUTE) nên bị bỏ qua`);
   if (loopedItems) warn(warnings, 'WARN_RPP_LOOPED_ITEMS', `${loopedItems} item MIDI lặp được nhân bản theo độ dài nguồn [VERIFY]`);
 

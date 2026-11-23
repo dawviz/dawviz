@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import { parseProject } from '@dawviz/parser';
 import { buildIndex, defaultScene, renderFrame, sanitizeStyle, resolveNoteStyle, STYLE_PRESETS, DEFAULT_BRIGHTNESS, DEFAULT_CHORD, sanitizeScene, layoutFrame } from '../src/index.ts';
 
-const fixtures = new URL('../../../test/fixtures/', import.meta.url);
+const fixtures = new URL('../../../test/fixtures/Reaper/', import.meta.url);
 function rec() { // cùng định dạng với lúc lấy mã băm cũ
   const log: string[] = [];
   const f = (v: unknown) => (typeof v === 'number' ? String(Math.round(v * 1e4) / 1e4) : JSON.stringify(v));

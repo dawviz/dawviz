@@ -34,7 +34,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [2.6. Ngăn xếp giao diện, Render Core và cấu trúc kho mã (D-34, D-35, D-36)](SRS/2-6-ngan-xep-giao-dien-render-core-va-cau-truc-k.md) · 1199 ký tự
 - [REQ-PARSER-00: Thực thi an toàn và giới hạn đầu vào (R-05, R-09)](SRS/req-parser-00-thuc-thi-an-toan-va-gioi-han-dau-v.md) · 1425 ký tự
 - [REQ-PARSER-01: Ableton Live (`.als`)](SRS/req-parser-01-ableton-live-als.md) · 2658 ký tự
-- [REQ-PARSER-02: Cockos Reaper (`.rpp`)](SRS/req-parser-02-cockos-reaper-rpp.md) · 3655 ký tự
+- [REQ-PARSER-02: Cockos Reaper (`.rpp`)](SRS/req-parser-02-cockos-reaper-rpp.md) · 3759 ký tự
 - [REQ-PARSER-03: DAWproject (`.dawproject`, D-03)](SRS/req-parser-03-dawproject-dawproject-d-03.md) · 1203 ký tự
 - [REQ-PARSER-04: Standard MIDI File (`.mid`, format 0/1)](SRS/req-parser-04-standard-midi-file-mid-format-0-1.md) · 924 ký tự
 - [REQ-PARSER-05: Parser JSON khai báo (D-18, D-28, R-05)](SRS/req-parser-05-parser-json-khai-bao-d-18-d-28-r-0.md) · 1825 ký tự
@@ -102,7 +102,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS](SRS/8-cac-van-de-con-mo-cua-srs.md) · 4044 ký tự
 - [Phụ lục A: Mã lỗi](SRS/phu-luc-a-ma-loi.md) · 2864 ký tự
 - [Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)](SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md) · 1673 ký tự
-- [Phụ lục A2: Mã cảnh báo của Parser Library](SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md) · 1357 ký tự
+- [Phụ lục A2: Mã cảnh báo của Parser Library](SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md) · 1339 ký tự
 - [Phụ lục B: Ghi chú rà soát](SRS/phu-luc-b-ghi-chu-ra-soat.md) · 2904 ký tự
 
 ## SDD.md — TÀI LIỆU THIẾT KẾ PHẦN MỀM (SDD) — ỨNG DỤNG DAW VISUALIZER
@@ -283,13 +283,13 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 
 - [SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer (mở đầu)](PARSER-SRS/srs-dac-ta-yeu-cau-thu-vien-parser-daw-visualize.md) · 436 ký tự
 - [1. Mục đích và phạm vi](PARSER-SRS/1-muc-dich-va-pham-vi.md) · 496 ký tự
-- [2. Định dạng hỗ trợ](PARSER-SRS/2-dinh-dang-ho-tro.md) · 1551 ký tự
+- [2. Định dạng hỗ trợ](PARSER-SRS/2-dinh-dang-ho-tro.md) · 1643 ký tự
 - [3.1 Chung (core)](PARSER-SRS/3-1-chung-core.md) · 651 ký tự
 - [3.2 Giới hạn và an toàn (REQ-PARSER-00)](PARSER-SRS/3-2-gioi-han-va-an-toan-req-parser-00.md) · 778 ký tự
 - [3.3 Tempo và thời gian](PARSER-SRS/3-3-tempo-va-thoi-gian.md) · 723 ký tự
 - [3.4 AST (REQ-AST-01)](PARSER-SRS/3-4-ast-req-ast-01.md) · 746 ký tự
 - [3.5 Ableton (.als / .alp)](PARSER-SRS/3-5-ableton-als-alp.md) · 6061 ký tự
-- [3.6 Reaper (.rpp) — VERIFY](PARSER-SRS/3-6-reaper-rpp-verify.md) · 4450 ký tự
+- [3.6 Reaper (.rpp) — VERIFY](PARSER-SRS/3-6-reaper-rpp-verify.md) · 4525 ký tự
 - [3.7 DAWproject](PARSER-SRS/3-7-dawproject.md) · 741 ký tự
 - [3.8 MIDI](PARSER-SRS/3-8-midi.md) · 419 ký tự
 - [3.9 Binary theo schema](PARSER-SRS/3-9-binary-theo-schema.md) · 1642 ký tự

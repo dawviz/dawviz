@@ -9,7 +9,7 @@ import path from 'node:path';
 const require = createRequire(import.meta.url);
 const axeSource = require('fs').readFileSync(require.resolve('axe-core/axe.min.js'), 'utf8');
 const root = path.resolve(import.meta.dirname, '../..');
-const file = process.argv.slice(2).find((a) => !a.startsWith('--')) ?? path.join(root, 'test/fixtures/BigProject4.rpp');
+const file = process.argv.slice(2).find((a) => !a.startsWith('--')) ?? path.join(root, 'test/fixtures/Reaper/BigProject4.rpp');
 const asJson = process.argv.includes('--json');
 const PORT = 5299;
 const vite = spawn(path.join(root, 'node_modules/.bin/vite'), ['--port', String(PORT), '--strictPort'], { cwd: path.join(root, 'apps/web'), stdio: ['ignore', 'pipe', 'pipe'] });
