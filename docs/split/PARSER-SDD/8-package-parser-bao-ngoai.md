@@ -5,7 +5,7 @@ section: "8. Package `parser` (bao ngoài)"
 path: "8. Package `parser` (bao ngoài)"
 chunk: 8-package-parser-bao-ngoai.md
 source_lines: 96-98
-source_sha1: ba174dece0
+source_sha1: ad2d64ec8b
 ids: []
 ---
 ## 8. Package `parser` (bao ngoài)

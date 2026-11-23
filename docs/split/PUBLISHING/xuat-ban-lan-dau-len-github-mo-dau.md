@@ -5,7 +5,7 @@ section: "Xuất bản lần đầu lên GitHub (mở đầu)"
 path: "Xuất bản lần đầu lên GitHub (mở đầu)"
 chunk: xuat-ban-lan-dau-len-github-mo-dau.md
 source_lines: 1-4
-source_sha1: 02fa1bd49a
+source_sha1: c60dcbfe44
 ids: []
 ---
 # Xuất bản lần đầu lên GitHub

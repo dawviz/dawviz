@@ -5,7 +5,7 @@ section: "6. Chưa làm"
 path: "6. Chưa làm"
 chunk: 6-chua-lam.md
 source_lines: 64-70
-source_sha1: a549031f0a
+source_sha1: dc64498938
 ids: []
 ---
 ## 6. Chưa làm

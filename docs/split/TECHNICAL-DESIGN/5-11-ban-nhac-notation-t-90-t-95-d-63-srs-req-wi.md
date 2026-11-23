@@ -5,7 +5,7 @@ section: "5.11 Bản nhạc (Notation) 🟢 (T-90…T-95, D-63; SRS REQ-WIDGET-0
 path: "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.11 Bản nhạc (Notation) 🟢 (T-90…T-95, D-63; SRS REQ-WIDGET-09, REQ-NOTATION-01, REQ-GRAPHICS-20; báo cáo Spike 4)"
 chunk: 5-11-ban-nhac-notation-t-90-t-95-d-63-srs-req-wi.md
 source_lines: 227-241
-source_sha1: ff3dfa792b
+source_sha1: 8cbe7fce2c
 ids: [D-63, REQ-GRAPHICS-20, REQ-NOTATION-01, REQ-WIDGET-09, WARN_NOTATION_GLYPH]
 ---
 ### 5.11 Bản nhạc (Notation) 🟢 (T-90…T-95, D-63; SRS REQ-WIDGET-09, REQ-NOTATION-01, REQ-GRAPHICS-20; báo cáo Spike 4)

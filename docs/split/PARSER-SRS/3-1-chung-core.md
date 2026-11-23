@@ -5,7 +5,7 @@ section: "3.1 Chung (core)"
 path: "3. Yêu cầu chức năng > 3.1 Chung (core)"
 chunk: 3-1-chung-core.md
 source_lines: 27-33
-source_sha1: a0c8f4a7bd
+source_sha1: 8be9e3d77f
 ids: [REQ-CORE-01, REQ-CORE-02, REQ-CORE-03, REQ-CORE-04, REQ-CORE-05]
 ---
 ### 3.1 Chung (core)

@@ -5,7 +5,7 @@ section: "6. Câu hỏi mở / cần dữ liệu"
 path: "6. Câu hỏi mở / cần dữ liệu"
 chunk: 6-cau-hoi-mo-can-du-lieu.md
 source_lines: 134-136
-source_sha1: a0c8f4a7bd
+source_sha1: 8be9e3d77f
 ids: [KPI-01, OI-01, OI-02, OI-03, OI-04, OI-05, OI-06]
 ---
 ## 6. Câu hỏi mở / cần dữ liệu

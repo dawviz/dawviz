@@ -5,7 +5,7 @@ section: "6. Kiểm thử thủ công trình duyệt"
 path: "6. Kiểm thử thủ công trình duyệt"
 chunk: 6-kiem-thu-thu-cong-trinh-duyet.md
 source_lines: 85-92
-source_sha1: b369a49402
+source_sha1: 714e1ad5ed
 ids: [ERR_NO_NOTES]
 ---
 ## 6. Kiểm thử thủ công trình duyệt

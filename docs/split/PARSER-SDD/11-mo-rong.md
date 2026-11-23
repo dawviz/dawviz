@@ -5,7 +5,7 @@ section: "11. Mở rộng"
 path: "11. Mở rộng"
 chunk: 11-mo-rong.md
 source_lines: 124-127
-source_sha1: ba174dece0
+source_sha1: ad2d64ec8b
 ids: []
 ---
 ## 11. Mở rộng

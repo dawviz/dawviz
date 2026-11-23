@@ -5,7 +5,7 @@ section: "8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)"
 path: "8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)"
 chunk: 8-cac-van-de-con-mo-open-issues.md
 source_lines: 282-305
-source_sha1: 58fc2db966
+source_sha1: 927410be47
 ids: [D-01, D-05, D-39, D-40, D-41, D-42, D-43, D-44, D-45, D-60, D-62, D-63, KPI-01, KPI-06, OI-01, OI-02, OI-03, OI-04, OI-05, OI-06, OI-07, OI-08, OI-09, OI-10, OI-11, OI-12, OI-13, OI-14, OI-15, OI-16, OI-17, OI-18, OI-19, OI-20, P-01, P-13, WARN_NOTATION_OFFGRID]
 ---
 ## 8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)
@@ -24,7 +24,7 @@ ids: [D-01, D-05, D-39, D-40, D-41, D-42, D-43, D-44, D-45, D-60, D-62, D-63, KP
 | **OI-10** | Quyết định chính thức: chỉ đọc Arrangement hay đọc cả Session View của Ableton (clip Session hiện bị bỏ qua). **Đã chốt v1.1 (D-44):** 1.0/1.1 chỉ Arrangement; Session View ở 1.2. | Product |
 | **OI-11** | Chốt danh sách widget/dữ liệu hiển thị bổ sung đề xuất ở SRS mục 3.4b: cái nào vào v1.0, cái nào để sau; cần đọc thêm dữ liệu nào từ file (marker/vùng, lời bài hát). **Đã chốt v1.1 (D-40):** toàn bộ P-01…P-13 vào bản 1.0. | Product |
 | **OI-12** | Cách đếm beat/bar trong nhịp ghép: **Reaper đã xác nhận** đếm theo mẫu số (12/8 @120 BPM: `1.12.68` = 2,920 s). Còn đối chiếu Ableton, Bitwig và nhịp 5/4... bằng file thật. **v1.1:** Chương trình tệp mẫu (D-45). | Dev/QA |
-| **OI-14** | Chiều pan, nghĩa giá trị mute và hệ số nội suy volume (`gain^0,25`, suy từ 2 điểm đo) của automation chưa kiểm đủ; Ableton/Bitwig automation chưa đọc. **v1.1:** Chương trình tệp mẫu (D-45); Ableton/Bitwig automation cần cho P-13 ở 1.0. | Dev/QA |
+| **OI-14** | Chiều pan, nghĩa giá trị mute và của automation chưa kiểm đủ (hệ số nội suy volume `gain^0,22` và shape 0/2/3/4/5 của Reaper đã kiểm); Ableton/Bitwig automation chưa đọc. **v1.1:** Chương trình tệp mẫu (D-45); Ableton/Bitwig automation cần cho P-13 ở 1.0. | Dev/QA |
 | **OI-13** | Quy trình cộng đồng dịch: ai duyệt, giấy phép/CLA cho người đóng góp, ngôn ngữ ưu tiên, font cho CJK/Ả Rập/Thái/Devanagari trong video xuất ra, và khi nào dùng công cụ dịch có quản trị. **Đã chốt phần quy trình v1.1:** DCO (D-42); bản dịch duyệt bởi kiểm duyệt viên cộng đồng (D-43); ưu tiên en, vi. **Còn mở:** phông cho CJK/Ả Rập/Thái/Devanagari trong video xuất: 1.0 cho người dùng nạp phông riêng (tài nguyên phiên), 1.1 có gói phông cộng đồng. | Product/Dev |
 | **OI-15** | **Đã đóng 2026-11-12:** không nhập storyboard osu! (`.osb`), không làm giống mô hình osu!; tập trung tùy biến nhiều hơn và dễ dùng hơn (`docs/design/CUSTOMIZATION.md` mục 2). | Product |
 | **OI-16** | **Đã chốt một phần 2026-11-12:** có ngôn ngữ biểu thức (D-39, `docs/design/EXPRESSIONS.md`). Còn mở: có làm morph giữa đường SVG tự do không. **Đã đóng v1.1:** morph SVG tự do ở 1.2 (D-44). | Product/Dev |

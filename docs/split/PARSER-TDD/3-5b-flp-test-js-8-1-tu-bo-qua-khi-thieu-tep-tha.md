@@ -5,7 +5,7 @@ section: "3.5b `flp.test.js` (8, 1 tự bỏ qua khi thiếu tệp thật) — R
 path: "3. Danh mục test (77 test, 8 file) > 3.5b `flp.test.js` (8, 1 tự bỏ qua khi thiếu tệp thật) — REQ-FMT-08, REQ-BIN-05/06"
 chunk: 3-5b-flp-test-js-8-1-tu-bo-qua-khi-thieu-tep-tha.md
 source_lines: 57-59
-source_sha1: b369a49402
+source_sha1: 714e1ad5ed
 ids: [REQ-BIN-05, REQ-FMT-08, WARN_FLP_CLIPS_SKIPPED]
 ---
 ### 3.5b `flp.test.js` (8, 1 tự bỏ qua khi thiếu tệp thật) — REQ-FMT-08, REQ-BIN-05/06

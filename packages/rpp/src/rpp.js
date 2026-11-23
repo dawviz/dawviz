@@ -1,5 +1,5 @@
 // Cockos Reaper (.rpp). REQ-PARSER-02. Đã kiểm bằng 3 dự án thật (MIDI nhúng, nhiều take/loop/pooled, và một dự án tham chiếu .mid ngoài) + 5 template.
-// Mọi chỗ còn [VERIFY] (SOFFS độc lập, IGNTEMPO=1 trong dự án thật, envelope cong). HASDATA: chỉ nhận QN (PPQ đọc động); đơn vị khác bị bỏ qua có cảnh báo, không đoán. cần mẫu thật có giá trị đó.
+// Đã kiểm: SOFFS (giây), envelope shape 0/2/3/4/5 (bezier theo công thức schwa, forum Cockos t=177451). Còn [VERIFY]: IGNTEMPO=1 kèm SOFFS, chiều pan, nghĩa mute, tempo envelope cong. HASDATA: chỉ nhận QN (PPQ đọc động); đơn vị khác bị bỏ qua có cảnh báo, không đoán. cần mẫu thật có giá trị đó.
 import { fail, warn, gainToDb, resolveLimits, toU8, decodeUtf8, PPQ, makeTempoMap, secToTick, buildAST, createPairer, normalizeTempoOverride } from '@dawviz/parser-core';
 import { readSmf } from '@dawviz/parser-midi';
 

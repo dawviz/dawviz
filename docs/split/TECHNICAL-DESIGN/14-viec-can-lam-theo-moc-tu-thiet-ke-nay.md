@@ -5,7 +5,7 @@ section: "14. Việc cần làm theo mốc (từ thiết kế này)"
 path: "14. Việc cần làm theo mốc (từ thiết kế này)"
 chunk: 14-viec-can-lam-theo-moc-tu-thiet-ke-nay.md
 source_lines: 505-512
-source_sha1: ff3dfa792b
+source_sha1: 8cbe7fce2c
 ids: []
 ---
 ## 14. Việc cần làm theo mốc (từ thiết kế này)

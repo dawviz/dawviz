@@ -1,6 +1,6 @@
 # Chỉ mục FIREFOX-FONT-SLOWDOWN.md — Firefox xuất chậm dần: điều tra và cách giảm nhẹ
 
-nguồn: `FIREFOX-FONT-SLOWDOWN.md` (sha1 a549031f0a)
+nguồn: `FIREFOX-FONT-SLOWDOWN.md` (sha1 dc64498938)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -11,4 +11,4 @@ nguồn: `FIREFOX-FONT-SLOWDOWN.md` (sha1 a549031f0a)
 | 4 | 4. Điều thật sự quyết định | [4-dieu-that-su-quyet-dinh.md](4-dieu-that-su-quyet-dinh.md) | 793 |  |
 | 5 | 5. Đã làm (2026-11-18) | [5-da-lam-2026-11-18.md](5-da-lam-2026-11-18.md) | 1295 |  |
 | 6 | 6. Chưa làm | [6-chua-lam.md](6-chua-lam.md) | 834 |  |
-| 7 | 7. Cách đo lại (để khỏi mất thời gian dựng lại) | [7-cach-do-lai-de-khoi-mat-thoi-gian-dung-lai.md](7-cach-do-lai-de-khoi-mat-thoi-gian-dung-lai.md) | 1286 |  |
+| 7 | 7. Cách đo lại (để khỏi mất thời gian dựng lại) | [7-cach-do-lai-de-khoi-mat-thoi-gian-dung-lai.md](7-cach-do-lai-de-khoi-mat-thoi-gian-dung-lai.md) | 1293 |  |

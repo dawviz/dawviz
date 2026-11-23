@@ -17,7 +17,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4347 ký tự
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](BRD/6-gia-dinh-assumptions.md) · 554 ký tự
 - [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 35450 ký tự
-- [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](BRD/8-cac-van-de-con-mo-open-issues.md) · 7755 ký tự
+- [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](BRD/8-cac-van-de-con-mo-open-issues.md) · 7775 ký tự
 
 ## SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
@@ -34,7 +34,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [2.6. Ngăn xếp giao diện, Render Core và cấu trúc kho mã (D-34, D-35, D-36)](SRS/2-6-ngan-xep-giao-dien-render-core-va-cau-truc-k.md) · 1199 ký tự
 - [REQ-PARSER-00: Thực thi an toàn và giới hạn đầu vào (R-05, R-09)](SRS/req-parser-00-thuc-thi-an-toan-va-gioi-han-dau-v.md) · 1425 ký tự
 - [REQ-PARSER-01: Ableton Live (`.als`)](SRS/req-parser-01-ableton-live-als.md) · 2658 ký tự
-- [REQ-PARSER-02: Cockos Reaper (`.rpp`)](SRS/req-parser-02-cockos-reaper-rpp.md) · 3759 ký tự
+- [REQ-PARSER-02: Cockos Reaper (`.rpp`)](SRS/req-parser-02-cockos-reaper-rpp.md) · 3803 ký tự
 - [REQ-PARSER-03: DAWproject (`.dawproject`, D-03)](SRS/req-parser-03-dawproject-dawproject-d-03.md) · 1203 ký tự
 - [REQ-PARSER-04: Standard MIDI File (`.mid`, format 0/1)](SRS/req-parser-04-standard-midi-file-mid-format-0-1.md) · 924 ký tự
 - [REQ-PARSER-05: Parser JSON khai báo (D-18, D-28, R-05)](SRS/req-parser-05-parser-json-khai-bao-d-18-d-28-r-0.md) · 1825 ký tự
@@ -99,7 +99,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [5.3. Yêu cầu giao diện](SRS/5-3-yeu-cau-giao-dien.md) · 18661 ký tự
 - [6. MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU](SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md) · 1468 ký tự
 - [7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO](SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md) · 7104 ký tự
-- [8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS](SRS/8-cac-van-de-con-mo-cua-srs.md) · 4044 ký tự
+- [8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS](SRS/8-cac-van-de-con-mo-cua-srs.md) · 4118 ký tự
 - [Phụ lục A: Mã lỗi](SRS/phu-luc-a-ma-loi.md) · 2864 ký tự
 - [Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)](SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md) · 1673 ký tự
 - [Phụ lục A2: Mã cảnh báo của Parser Library](SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md) · 1339 ký tự
@@ -121,7 +121,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 
 - [THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER (mở đầu)](TECHNICAL-DESIGN/thiet-ke-ky-thuat-chi-tiet-technical-design-daw.md) · 720 ký tự
 - [1. Bức tranh tổng thể](TECHNICAL-DESIGN/1-buc-tranh-tong-the.md) · 2420 ký tự
-- [2. Mô hình dữ liệu và thời gian 🟢](TECHNICAL-DESIGN/2-mo-hinh-du-lieu-va-thoi-gian.md) · 2921 ký tự
+- [2. Mô hình dữ liệu và thời gian 🟢](TECHNICAL-DESIGN/2-mo-hinh-du-lieu-va-thoi-gian.md) · 2922 ký tự
 - [3. Đường ống phân tích (parser) 🟢](TECHNICAL-DESIGN/3-duong-ong-phan-tich-parser.md) · 1897 ký tự
 - [4. Dữ liệu dẫn xuất (derived) 🟢/⚪](TECHNICAL-DESIGN/4-du-lieu-dan-xuat-derived.md) · 1495 ký tự
 - [5.0 Kiểu dáng nốt và bàn phím 🟢 (REQ-GRAPHICS-07)](TECHNICAL-DESIGN/5-0-kieu-dang-not-va-ban-phim-req-graphics-07.md) · 624 ký tự
@@ -239,7 +239,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 ## REFERENCE-VIDEOS.md — Video tham chiếu: ý tưởng, mức tái hiện và lộ trình
 
 - [Video tham chiếu: ý tưởng, mức tái hiện và lộ trình (mở đầu)](REFERENCE-VIDEOS/video-tham-chieu-y-tuong-muc-tai-hien-va-lo-trin.md) · 1305 ký tự
-- [Cách đối chiếu bằng trình duyệt](REFERENCE-VIDEOS/cach-doi-chieu-bang-trinh-duyet.md) · 559 ký tự
+- [Cách đối chiếu bằng trình duyệt](REFERENCE-VIDEOS/cach-doi-chieu-bang-trinh-duyet.md) · 566 ký tự
 - [Video 1 (Usagin_P): đã làm](REFERENCE-VIDEOS/video-1-usagin-p-da-lam.md) · 735 ký tự
 - [Video 2 (tn-shi): đã làm phần lớn](REFERENCE-VIDEOS/video-2-tn-shi-da-lam-phan-lon.md) · 946 ký tự
 - [Video 3 (Emocute): lộ trình](REFERENCE-VIDEOS/video-3-emocute-lo-trinh.md) · 1425 ký tự
@@ -277,7 +277,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [4. Điều thật sự quyết định](FIREFOX-FONT-SLOWDOWN/4-dieu-that-su-quyet-dinh.md) · 793 ký tự
 - [5. Đã làm (2026-11-18)](FIREFOX-FONT-SLOWDOWN/5-da-lam-2026-11-18.md) · 1295 ký tự
 - [6. Chưa làm](FIREFOX-FONT-SLOWDOWN/6-chua-lam.md) · 834 ký tự
-- [7. Cách đo lại (để khỏi mất thời gian dựng lại)](FIREFOX-FONT-SLOWDOWN/7-cach-do-lai-de-khoi-mat-thoi-gian-dung-lai.md) · 1286 ký tự
+- [7. Cách đo lại (để khỏi mất thời gian dựng lại)](FIREFOX-FONT-SLOWDOWN/7-cach-do-lai-de-khoi-mat-thoi-gian-dung-lai.md) · 1293 ký tự
 
 ## PARSER-SRS.md — SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer
 
@@ -289,7 +289,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [3.3 Tempo và thời gian](PARSER-SRS/3-3-tempo-va-thoi-gian.md) · 723 ký tự
 - [3.4 AST (REQ-AST-01)](PARSER-SRS/3-4-ast-req-ast-01.md) · 746 ký tự
 - [3.5 Ableton (.als / .alp)](PARSER-SRS/3-5-ableton-als-alp.md) · 6061 ký tự
-- [3.6 Reaper (.rpp) — VERIFY](PARSER-SRS/3-6-reaper-rpp-verify.md) · 4525 ký tự
+- [3.6 Reaper (.rpp) — VERIFY](PARSER-SRS/3-6-reaper-rpp-verify.md) · 4641 ký tự
 - [3.7 DAWproject](PARSER-SRS/3-7-dawproject.md) · 741 ký tự
 - [3.8 MIDI](PARSER-SRS/3-8-midi.md) · 419 ký tự
 - [3.9 Binary theo schema](PARSER-SRS/3-9-binary-theo-schema.md) · 1642 ký tự
@@ -303,10 +303,10 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 
 - [SDD — Thiết kế phần mềm: Thư viện parser DAW Visualizer (mở đầu)](PARSER-SDD/sdd-thiet-ke-phan-mem-thu-vien-parser-daw-visual.md) · 169 ký tự
 - [1. Kiến trúc tổng thể](PARSER-SDD/1-kien-truc-tong-the.md) · 1116 ký tự
-- [2. Package `core`](PARSER-SDD/2-package-core.md) · 4287 ký tự
+- [2. Package `core`](PARSER-SDD/2-package-core.md) · 4288 ký tự
 - [3. Package `midi` (REQ-MIDI-*)](PARSER-SDD/3-package-midi-req-midi.md) · 399 ký tự
 - [4. Package `als` (REQ-ALS-*, REQ-ALP-*)](PARSER-SDD/4-package-als-req-als-req-alp.md) · 1990 ký tự
-- [5. Package `rpp` (REQ-RPP-*)](PARSER-SDD/5-package-rpp-req-rpp.md) · 1240 ký tự
+- [5. Package `rpp` (REQ-RPP-*)](PARSER-SDD/5-package-rpp-req-rpp.md) · 1302 ký tự
 - [6. Package `dawproject` (REQ-DAWP-*)](PARSER-SDD/6-package-dawproject-req-dawp.md) · 408 ký tự
 - [7. Package `binary` (REQ-BIN-*)](PARSER-SDD/7-package-binary-req-bin.md) · 1028 ký tự
 - [8. Package `parser` (bao ngoài)](PARSER-SDD/8-package-parser-bao-ngoai.md) · 910 ký tự
@@ -329,7 +329,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [3.6 `detect-bundle.test.js` (4) — REQ-CORE-02, REQ-CORE-05](PARSER-TDD/3-6-detect-bundle-test-js-4-req-core-02-req-core.md) · 299 ký tự
 - [3.7 `i18n.test.js` (5) — REQ-I18N-*](PARSER-TDD/3-7-i18n-test-js-5-req-i18n.md) · 622 ký tự
 - [4. Ma trận truy vết (rút gọn)](PARSER-TDD/4-ma-tran-truy-vet-rut-gon.md) · 521 ký tự
-- [5. Khoảng trống kiểm thử (cần dữ liệu thật, xem SRS §6)](PARSER-TDD/5-khoang-trong-kiem-thu-can-du-lieu-that-xem-srs.md) · 964 ký tự
+- [5. Khoảng trống kiểm thử (cần dữ liệu thật, xem SRS §6)](PARSER-TDD/5-khoang-trong-kiem-thu-can-du-lieu-that-xem-srs.md) · 1135 ký tự
 - [6. Kiểm thử thủ công trình duyệt](PARSER-TDD/6-kiem-thu-thu-cong-trinh-duyet.md) · 436 ký tự
 - [7. Quy ước viết test mới](PARSER-TDD/7-quy-uoc-viet-test-moi.md) · 383 ký tự
 - [8. Tiêu chí chấp nhận](PARSER-TDD/8-tieu-chi-chap-nhan.md) · 189 ký tự
@@ -347,7 +347,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 
 - [Xuất bản lần đầu lên GitHub (mở đầu)](PUBLISHING/xuat-ban-lan-dau-len-github-mo-dau.md) · 236 ký tự
 - [1. Giấy phép đã chọn và lý do](PUBLISHING/1-giay-phep-da-chon-va-ly-do.md) · 1783 ký tự
-- [2. Build và kiểm tra trên máy bạn](PUBLISHING/2-build-va-kiem-tra-tren-may-ban.md) · 962 ký tự
+- [2. Build và kiểm tra trên máy bạn](PUBLISHING/2-build-va-kiem-tra-tren-may-ban.md) · 969 ký tự
 - [3. Tạo repo trên GitHub](PUBLISHING/3-tao-repo-tren-github.md) · 413 ký tự
 - [4. Commit đầu tiên](PUBLISHING/4-commit-dau-tien.md) · 922 ký tự
 - [5. Sau khi push](PUBLISHING/5-sau-khi-push.md) · 925 ký tự

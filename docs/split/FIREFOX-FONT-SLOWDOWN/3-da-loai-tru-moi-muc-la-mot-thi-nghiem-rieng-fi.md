@@ -5,7 +5,7 @@ section: "3. Đã loại trừ (mỗi mục là một thí nghiệm riêng, Fire
 path: "3. Đã loại trừ (mỗi mục là một thí nghiệm riêng, Firefox)"
 chunk: 3-da-loai-tru-moi-muc-la-mot-thi-nghiem-rieng-fi.md
 source_lines: 28-40
-source_sha1: a549031f0a
+source_sha1: dc64498938
 ids: []
 ---
 ## 3. Đã loại trừ (mỗi mục là một thí nghiệm riêng, Firefox)

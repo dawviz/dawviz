@@ -5,7 +5,7 @@ section: "3.4 AST (REQ-AST-01)"
 path: "3. Yêu cầu chức năng > 3.4 AST (REQ-AST-01)"
 chunk: 3-4-ast-req-ast-01.md
 source_lines: 48-52
-source_sha1: a0c8f4a7bd
+source_sha1: 8be9e3d77f
 ids: [ERR_NO_NOTES, REQ-AST-01, REQ-AST-02, REQ-AST-03, WARN_ZERO_LENGTH_NOTES]
 ---
 ### 3.4 AST (REQ-AST-01)

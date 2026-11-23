@@ -5,7 +5,7 @@ section: "REQ-GRAPHICS-09: Bộ máy keyframe, easing và Graph Editor"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) > REQ-GRAPHICS-09: Bộ máy keyframe, easing và Graph Editor"
 chunk: req-graphics-09-bo-may-keyframe-easing-va-graph.md
 source_lines: 914-917
-source_sha1: ba41c8b27f
+source_sha1: 78bd49a501
 ids: [REQ-GRAPHICS-09]
 ---
 #### REQ-GRAPHICS-09: Bộ máy keyframe, easing và Graph Editor

@@ -53,7 +53,7 @@ Không dùng DOM/DOMParser (chạy được trong Worker/Node, nhanh, kiểm so�
 `parseTimeSignature` đọc `4/4`, `12/8`...; `resolveTempoRows(rows, {unit, base})` đổi các dòng nhập `{pos, bpm, sig?}` thành điểm tempoOverride. Với `reaper`/`sixteenth`, vị trí bar.beat cộng dồn theo từng **đoạn nhịp** (`segs`: bar bắt đầu, beat quy đổi nốt đen tại đó, num/den); một beat DAW = nốt theo mẫu số nên đổi ra nốt đen bằng ×4/den. Vị trí của dòng đổi nhịp được đọc theo nhịp *trước* nó, nhịp mới áp dụng từ dòng đó.
 
 ### 2.4c Automation (`automation.js`)
-Lane `{kind, points}` đã sắp theo tick. `sampleLane` tìm đoạn bằng tìm nhị phân, áp `shapeCurve(a, shape, tension)` rồi nội suy: volume trong không gian fader (`gain^0,25`, hệ số khớp 2 số đo Reaper), pan/mute tuyến tính; `shape 1` giữ giá trị. `volumeToUnit` đổi gain → 0..1 theo dB. `buildAST` chuyển nguyên `mix`/`automation` của từng track; parser nào đọc được thì điền (hiện chỉ Reaper). Sắp xếp theo tick và quy đổi giây → tick nằm ở parser (cùng bản đồ tempo với nốt, nên `tempoOverride` kéo theo automation).
+Lane `{kind, points}` đã sắp theo tick. `sampleLane` tìm đoạn bằng tìm nhị phân, áp `shapeCurve(a, shape, tension)` rồi nội suy: volume trong không gian fader (`gain^0,22`, khớp số đo Reaper ≤ 1,1 dB), pan/mute tuyến tính; `shape 1` giữ giá trị. `volumeToUnit` đổi gain → 0..1 theo dB. `buildAST` chuyển nguyên `mix`/`automation` của từng track; parser nào đọc được thì điền (hiện chỉ Reaper). Sắp xếp theo tick và quy đổi giây → tick nằm ở parser (cùng bản đồ tempo với nốt, nên `tempoOverride` kéo theo automation).
 
 ### 2.5 So sánh (`compare.js`)
 Ghép nốt theo (pitch) + gần nhất về thời điểm trong cửa sổ 2 beat; dung sai = 1 tick của PPQ thô hơn trong hai nguồn quy sang 960. Trả thống kê và tối đa 10 mẫu lệch.
@@ -79,7 +79,7 @@ Luồng `parseAls`: kiểm kích thước → `sniff` (gzip → `inflateLimited`
 `parseRppTree` tokenizes theo dòng (`tokenize` xử lý nháy kép/đơn/backtick), nút `<NAME args … >` gồm `lines` (thuộc tính), `kids` (nút con) và `after` (số dòng đứng trước con — giữ thứ tự để chia take). `parseRppText`:
 1. Tempo gốc từ `TEMPO`, envelope `TEMPOENV*` (bỏ nếu `ACT 1` sai/`ACT 0`); `buildTempo` chuyển điểm `PT` (giây) sang tick: shape 1 = giữ, khác = dốc tuyến tính chia bước; nhịp đóng gói trong `PT[4]` (`num = v & 0xffff`, `den = v >>> 16`).
 2. Với mỗi `TRACK`/`ITEM`: `splitTakes` → chọn take; nguồn `MIDI` → `readEmbeddedSource` (cộng dồn delta) / pool GUID / `loadExternal`.
-3. Quy đổi vị trí item từ giây qua `secToTick`; nhân bản loop theo độ dài nguồn; `SOFFS` coi là quarter-note (VERIFY); cắt nốt ngoài item.
+3. Quy đổi vị trí item từ giây qua `secToTick`; nhân bản loop theo độ dài nguồn; `SOFFS` tính bằng giây (đã kiểm), đổi sang tick bằng `tick(pos) − tick(pos − SOFFS)` qua tempo map; cắt nốt ngoài item.
 4. Bọc `buildAST` để lỗi `ERR_NO_NOTES` có `details.missingFiles` khi do thiếu `.mid` ngoài.
 `inspectRpp` chỉ đọc cấu trúc, không dựng AST. `listExternalMidi` duyệt cây tìm nút `SOURCE MIDI` có dòng `FILE` và trả tên file (bỏ thư mục, không trùng). `loadExternal` đối chiếu tên trong `options.files` theo thứ tự: khớp đúng → khớp không phân biệt hoa/thường và coi khoảng trắng ≡ gạch dưới (tải lên thường đổi tên kiểu này). Đã kiểm với BigProject3.rpp + Oboe_MIDI_001.mid.
 

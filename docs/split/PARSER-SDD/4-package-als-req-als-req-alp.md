@@ -5,7 +5,7 @@ section: "4. Package `als` (REQ-ALS-*, REQ-ALP-*)"
 path: "4. Package `als` (REQ-ALS-*, REQ-ALP-*)"
 chunk: 4-package-als-req-als-req-alp.md
 source_lines: 65-77
-source_sha1: ba174dece0
+source_sha1: ad2d64ec8b
 ids: [ERR_UNSUPPORTED_FORMAT]
 ---
 ## 4. Package `als` (REQ-ALS-*, REQ-ALP-*)

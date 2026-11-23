@@ -5,7 +5,7 @@ section: "3.3 `rpp.test.js` (17) — REQ-RPP-*"
 path: "3. Danh mục test (77 test, 8 file) > 3.3 `rpp.test.js` (17) — REQ-RPP-*"
 chunk: 3-3-rpp-test-js-17-req-rpp.md
 source_lines: 47-50
-source_sha1: b369a49402
+source_sha1: 714e1ad5ed
 ids: [ERR_NO_NOTES, WARN_RPP_ENVELOPES_IGNORED, WARN_RPP_ENVELOPE_SHAPE_APPROX, WARN_RPP_SRC_UNIT]
 ---
 ### 3.3 `rpp.test.js` (17) — REQ-RPP-*

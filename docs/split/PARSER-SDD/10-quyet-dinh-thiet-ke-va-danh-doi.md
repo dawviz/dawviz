@@ -5,7 +5,7 @@ section: "10. Quyết định thiết kế và đánh đổi"
 path: "10. Quyết định thiết kế và đánh đổi"
 chunk: 10-quyet-dinh-thiet-ke-va-danh-doi.md
 source_lines: 108-123
-source_sha1: ba174dece0
+source_sha1: ad2d64ec8b
 ids: [ERR_NO_SUPPORTED_ENV, PD-01, PD-02, PD-03, PD-04, PD-05, PD-06, PD-07, PD-08, PD-09, PD-10, PD-11, PD-12, PD-18]
 ---
 ## 10. Quyết định thiết kế và đánh đổi

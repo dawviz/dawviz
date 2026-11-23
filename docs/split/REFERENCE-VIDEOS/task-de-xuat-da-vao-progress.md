@@ -5,7 +5,7 @@ section: "Task đề xuất (đã vào `PROGRESS`)"
 path: "Task đề xuất (đã vào `PROGRESS`)"
 chunk: task-de-xuat-da-vao-progress.md
 source_lines: 80-91
-source_sha1: 9a4c7b7f41
+source_sha1: 70b5971deb
 ids: []
 ---
 ## Task đề xuất (đã vào `PROGRESS`)

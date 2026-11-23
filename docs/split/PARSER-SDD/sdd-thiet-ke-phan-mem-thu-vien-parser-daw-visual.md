@@ -5,7 +5,7 @@ section: "SDD — Thiết kế phần mềm: Thư viện parser DAW Visualizer (
 path: "SDD — Thiết kế phần mềm: Thư viện parser DAW Visualizer (mở đầu)"
 chunk: sdd-thiet-ke-phan-mem-thu-vien-parser-daw-visual.md
 source_lines: 1-4
-source_sha1: ba174dece0
+source_sha1: ad2d64ec8b
 ids: []
 ---
 # SDD — Thiết kế phần mềm: Thư viện parser DAW Visualizer

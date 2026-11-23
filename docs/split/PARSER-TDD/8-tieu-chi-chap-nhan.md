@@ -5,7 +5,7 @@ section: "8. Tiêu chí chấp nhận"
 path: "8. Tiêu chí chấp nhận"
 chunk: 8-tieu-chi-chap-nhan.md
 source_lines: 100-101
-source_sha1: b369a49402
+source_sha1: 714e1ad5ed
 ids: []
 ---
 ## 8. Tiêu chí chấp nhận

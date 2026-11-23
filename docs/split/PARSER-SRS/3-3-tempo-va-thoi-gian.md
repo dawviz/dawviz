@@ -5,7 +5,7 @@ section: "3.3 Tempo và thời gian"
 path: "3. Yêu cầu chức năng > 3.3 Tempo và thời gian"
 chunk: 3-3-tempo-va-thoi-gian.md
 source_lines: 41-47
-source_sha1: a0c8f4a7bd
+source_sha1: 8be9e3d77f
 ids: [REQ-TEMPO-01, REQ-TEMPO-02, REQ-TEMPO-03, REQ-TEMPO-04, REQ-TEMPO-05, WARN_TEMPO_FALLBACK, WARN_TEMPO_MIDI_DEFAULT, WARN_TEMPO_RAMP]
 ---
 ### 3.3 Tempo và thời gian

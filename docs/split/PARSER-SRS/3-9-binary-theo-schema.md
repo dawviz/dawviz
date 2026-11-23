@@ -5,7 +5,7 @@ section: "3.9 Binary theo schema"
 path: "3. Yêu cầu chức năng > 3.9 Binary theo schema"
 chunk: 3-9-binary-theo-schema.md
 source_lines: 102-109
-source_sha1: a0c8f4a7bd
+source_sha1: 8be9e3d77f
 ids: [D-62, ERR_SCHEMA_INVALID, ERR_UNSUPPORTED_FORMAT, REQ-BIN-01, REQ-BIN-02, REQ-BIN-03, REQ-BIN-04, REQ-BIN-05, REQ-BIN-06, REQ-FMT-08]
 ---
 ### 3.9 Binary theo schema

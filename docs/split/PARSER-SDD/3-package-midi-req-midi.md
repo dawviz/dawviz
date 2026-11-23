@@ -5,7 +5,7 @@ section: "3. Package `midi` (REQ-MIDI-*)"
 path: "3. Package `midi` (REQ-MIDI-*)"
 chunk: 3-package-midi-req-midi.md
 source_lines: 61-64
-source_sha1: ba174dece0
+source_sha1: ad2d64ec8b
 ids: []
 ---
 ## 3. Package `midi` (REQ-MIDI-*)

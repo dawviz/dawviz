@@ -5,7 +5,7 @@ section: "4. Commit đầu tiên"
 path: "4. Commit đầu tiên"
 chunk: 4-commit-dau-tien.md
 source_lines: 48-67
-source_sha1: 02fa1bd49a
+source_sha1: c60dcbfe44
 ids: []
 ---
 ## 4. Commit đầu tiên

@@ -5,7 +5,7 @@ section: "4. Điều thật sự quyết định"
 path: "4. Điều thật sự quyết định"
 chunk: 4-dieu-that-su-quyet-dinh.md
 source_lines: 41-55
-source_sha1: a549031f0a
+source_sha1: dc64498938
 ids: []
 ---
 ## 4. Điều thật sự quyết định

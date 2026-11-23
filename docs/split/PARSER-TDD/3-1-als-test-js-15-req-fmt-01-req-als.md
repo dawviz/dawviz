@@ -5,7 +5,7 @@ section: "3.1 `als.test.js` (15) — REQ-FMT-01, REQ-ALS-*"
 path: "3. Danh mục test (77 test, 8 file) > 3.1 `als.test.js` (15) — REQ-FMT-01, REQ-ALS-*"
 chunk: 3-1-als-test-js-15-req-fmt-01-req-als.md
 source_lines: 26-43
-source_sha1: b369a49402
+source_sha1: 714e1ad5ed
 ids: [ERR_ARCHIVE_TOO_LARGE, ERR_AST_INVALID, ERR_NO_NOTES, ERR_UNSUPPORTED_FORMAT, REQ-FMT-01, WARN_TEMPO_RAMP]
 ---
 ### 3.1 `als.test.js` (15) — REQ-FMT-01, REQ-ALS-*
