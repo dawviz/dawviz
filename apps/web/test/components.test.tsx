@@ -535,7 +535,7 @@ describe('Space làm phím phát/dừng (critique P1)', () => {
 
   it('ô gõ chữ giữ nguyên Space; thân trang (không focus gì) thì phát/dừng; giữ phím không bật/tắt liên tục', () => {
     wrap(<><Harness keyboardFocus={false} /><NumberField label="Độ đục" value={0.5} spec={{ min: 0, max: 1, step: 0.05 }} onChange={() => {}} /></>);
-    const box = screen.getByRole('spinbutton', { name: 'Độ đục' }); box.focus();
+    const box = screen.getByRole('spinbutton', { name: 'Độ đục' }); act(() => box.focus());
     expect(fireEvent.keyDown(box, { code: 'Space', key: ' ' })).toBe(true);
     expect(pb.get().playing).toBe(false);
     expect(fireEvent.keyDown(document.body, { code: 'Space', key: ' ' })).toBe(false);
@@ -596,10 +596,11 @@ describe('TextPanel (T-72)', () => {
 describe('ExportDialog (T-09)', () => {
   const ast = synthAst();
   const derived = { index: {}, brightness: {} } as never;
-  const open = () => wrap(<ExportDialog scene={PAPER_SCENE} ast={ast} derived={derived} audio={null} offsetMs={0} projectSec={30} fileName="Song.rpp" onClose={() => {}} />);
+  /** Mở hộp thoại rồi chờ các dò khả năng bất đồng bộ (VP9 alpha, bộ mã hoá, khoá xuất) cập nhật xong, để không có cập nhật nào nằm ngoài act. */
+  const open = async () => { const r = wrap(<ExportDialog scene={PAPER_SCENE} ast={ast} derived={derived} audio={null} offsetMs={0} projectSec={30} fileName="Song.rpp" onClose={() => {}} />); await act(async () => { await new Promise((res) => setTimeout(res, 0)); }); return r; };
 
   it('hiện kích thước thực, số khung và dung lượng; đổi cỡ/FPS cập nhật ngay', async () => {
-    open();
+    await open();
     const sum = () => screen.getByTestId('export-summary').textContent ?? '';
     expect(sum()).toMatch(/1080.1080.*30 fps.*0:32.*960/); // (30 + 2) s × 30 fps
     fireEvent.change(screen.getByLabelText(/Size|Kích thước/), { target: { value: '720' } });
@@ -608,7 +609,7 @@ describe('ExportDialog (T-09)', () => {
   });
 
   it('T-55: chuỗi PNG trong suốt — ẩn chất lượng/codec, hiện số ảnh và dung lượng ước tính; không cần bộ mã hoá video', async () => {
-    open();
+    await open();
     fireEvent.click(screen.getByTestId('export-kind-png'));
     expect(screen.queryByLabelText(/Quality|Chất lượng/)).toBeNull();
     expect(screen.getByTestId('export-png-summary').textContent).toMatch(/960/); // (30 + 2) s × 30 fps ảnh
@@ -618,7 +619,7 @@ describe('ExportDialog (T-09)', () => {
   });
 
   it('trình duyệt không có WebCodecs: báo ERR_NO_SUPPORTED_ENCODER và khoá nút Bắt đầu', async () => {
-    open();
+    await open();
     expect(await screen.findByRole('alert')).toHaveTextContent(/can't encode video|không mã hoá được video/);
     expect(screen.getByTestId('export-start')).toBeDisabled();
   });
@@ -646,9 +647,10 @@ describe('ExportDialog (T-09)', () => {
     } finally { g.VideoEncoder = old[0]; g.AudioEncoder = old[1]; }
   });
 
-  it('Esc đóng hộp thoại khi chưa xuất', () => {
+  it('Esc đóng hộp thoại khi chưa xuất', async () => {
     let closed = 0;
     wrap(<ExportDialog scene={PAPER_SCENE} ast={ast} derived={derived} audio={null} offsetMs={0} projectSec={30} fileName="a.rpp" onClose={() => { closed++; }} />);
+    await act(async () => { await new Promise((res) => setTimeout(res, 0)); });
     fireEvent.keyDown(window, { key: 'Escape' });
     expect(closed).toBe(1);
   });

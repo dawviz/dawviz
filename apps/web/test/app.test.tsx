@@ -123,16 +123,16 @@ describe('hoàn tác trong ứng dụng (T-07)', () => {
     await openProject();
     setVal(OPACITY, '0.4');
     const box = field(OPACITY);
-    box.focus();
+    act(() => box.focus());
     fireEvent.change(box, { target: { value: '0.2' } });
     const ev = new KeyboardEvent('keydown', { key: 'z', ctrlKey: true, bubbles: true, cancelable: true });
-    box.dispatchEvent(ev);
+    act(() => { box.dispatchEvent(ev); });
     expect(ev.defaultPrevented).toBe(false);
     expect(val(OPACITY)).toBe('0.4');
     // Enter chốt một giá trị: một bước; rời ô rồi Ctrl+Z hoàn tác bước đó
     fireEvent.keyDown(box, { key: 'Enter' });
     expect(val(OPACITY)).toBe('0.2');
-    box.blur(); ctrlZ();
+    act(() => box.blur()); ctrlZ();
     expect(val(OPACITY)).toBe('0.4');
   });
 
