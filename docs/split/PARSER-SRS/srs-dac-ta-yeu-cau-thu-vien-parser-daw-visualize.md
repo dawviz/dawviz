@@ -5,7 +5,7 @@ section: "SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer (m�
 path: "SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer (mở đầu)"
 chunk: srs-dac-ta-yeu-cau-thu-vien-parser-daw-visualize.md
 source_lines: 1-5
-source_sha1: 59d9967678
+source_sha1: a0c8f4a7bd
 ids: [REQ-AST-01, REQ-PARSER-00]
 ---
 # SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer

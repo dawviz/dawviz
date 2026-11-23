@@ -118,7 +118,7 @@ Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 - [2. KIẾN TRÚC KỸ THUẬT, LUỒNG DỮ LIỆU & ĐÁNH GIÁ KIẾN TRÚC › 2.6. Ngăn xếp giao diện, Render Core và cấu trúc kho mã (D-34, D-35, D-36)](docs/split/SRS/2-6-ngan-xep-giao-dien-render-core-va-cau-truc-k.md) · 1.2k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) › REQ-PARSER-00: Thực thi an toàn và giới hạn đầu vào (R-05, R-09)](docs/split/SRS/req-parser-00-thuc-thi-an-toan-va-gioi-han-dau-v.md) · 1.4k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) › REQ-PARSER-01: Ableton Live (`.als`)](docs/split/SRS/req-parser-01-ableton-live-als.md) · 2.7k
-- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) › REQ-PARSER-02: Cockos Reaper (`.rpp`)](docs/split/SRS/req-parser-02-cockos-reaper-rpp.md) · 3.7k
+- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) › REQ-PARSER-02: Cockos Reaper (`.rpp`)](docs/split/SRS/req-parser-02-cockos-reaper-rpp.md) · 3.8k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) › REQ-PARSER-03: DAWproject (`.dawproject`, D-03)](docs/split/SRS/req-parser-03-dawproject-dawproject-d-03.md) · 1.2k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) › REQ-PARSER-04: Standard MIDI File (`.mid`, format 0/1)](docs/split/SRS/req-parser-04-standard-midi-file-mid-format-0-1.md) · 0.9k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) › REQ-PARSER-05: Parser JSON khai báo (D-18, D-28, R-05)](docs/split/SRS/req-parser-05-parser-json-khai-bao-d-18-d-28-r-0.md) · 1.8k
@@ -186,7 +186,7 @@ Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 - [8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS](docs/split/SRS/8-cac-van-de-con-mo-cua-srs.md) · 4.0k
 - [9. PHỤ LỤC › Phụ lục A: Mã lỗi](docs/split/SRS/phu-luc-a-ma-loi.md) · 2.9k
 - [9. PHỤ LỤC › Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)](docs/split/SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md) · 1.7k
-- [9. PHỤ LỤC › Phụ lục A2: Mã cảnh báo của Parser Library](docs/split/SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md) · 1.4k
+- [9. PHỤ LỤC › Phụ lục A2: Mã cảnh báo của Parser Library](docs/split/SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md) · 1.3k
 - [9. PHỤ LỤC › Phụ lục B: Ghi chú rà soát](docs/split/SRS/phu-luc-b-ghi-chu-ra-soat.md) · 2.9k
 
 ### SDD.md — TÀI LIỆU THIẾT KẾ PHẦN MỀM (SDD) — ỨNG DỤNG DAW VISUALIZER

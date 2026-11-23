@@ -8,7 +8,7 @@ import fs from 'node:fs';
 const root = path.resolve(import.meta.dirname, '../..');
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(`--${k}`); return i >= 0 ? args[i + 1] : d; };
 const preset = path.resolve(args.find((a) => !a.startsWith('--') && a.endsWith('.json')) ?? '');
-const project = path.resolve(opt('project', path.join(root, 'test/fixtures/BigProject4.rpp')));
+const project = path.resolve(opt('project', path.join(root, 'test/fixtures/Reaper/BigProject4.rpp')));
 const times = opt('times', '0:10').split(',');
 const out = path.resolve(opt('out', path.join(root, 'references/shots')));
 const port = Number(opt('port', '5311'));

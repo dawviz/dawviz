@@ -7,7 +7,7 @@ import { parseProject } from '@dawviz/parser';
 import { DEFAULT_CHORD, DEFAULT_SPECTRUM, WIDGET_RENDERERS, buildIndex, defaultScene, sanitizeScene, renderFrame, layoutFrame, pianoRollWidget, tracksFor, pianoRollPitchRange,
   DEFAULT_BRIGHTNESS, SCENE_SCHEMA_VERSION, pianoRollGeometry, layoutPianoRoll, layoutKeyboard, type Derived, type Primitive, type RectPrim } from '../src/index.ts';
 
-const fixtures = new URL('../../../test/fixtures/', import.meta.url);
+const fixtures = new URL('../../../test/fixtures/Reaper/', import.meta.url);
 const load = async () => {
   const { ast } = await parseProject('BigProject4b.rpp', fs.readFileSync(new URL('BigProject4b.rpp', fixtures)), {});
   const derived: Derived = { index: buildIndex(ast.tracks, ast.meta.totalDurationSeconds), brightness: Object.fromEntries(ast.tracks.map((t: any) => [t.id, { ...DEFAULT_BRIGHTNESS }])) };

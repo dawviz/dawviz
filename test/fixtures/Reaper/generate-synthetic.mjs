@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Sinh tệp mẫu TỰ TẠO (không có bên thứ ba, không vướng bản quyền) để thử giao diện với dữ liệu khó. Chạy:
-//   node test/fixtures/generate-synthetic.mjs          (ghi vào test/fixtures/generated/, bị .gitignore: sinh lại bất cứ lúc nào)
+//   node test/fixtures/Reaper/generate-synthetic.mjs          (ghi vào test/fixtures/generated/, bị .gitignore: sinh lại bất cứ lúc nào)
 //
 // Ba thứ được tạo:
 //   generated/synthetic-16-long-names.rpp     16 track tên rất dài (có tiếng Việt có dấu), mỗi track một item MIDI nhúng.
@@ -14,7 +14,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const OUT = join(dirname(fileURLToPath(import.meta.url)), 'generated');
+const OUT = join(dirname(fileURLToPath(import.meta.url)), '..', 'generated');
 const PPQ = 480, BPM = 120, SECONDS = 24;
 const TICKS = Math.round(SECONDS * (BPM / 60) * PPQ); // độ dài mỗi item, tính bằng tick
 

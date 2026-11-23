@@ -83,7 +83,6 @@
   "warn.WARN_RPP_LOOP_UNKNOWN_LEN": "A looped item has an unknown source length and was not repeated.",
   "warn.WARN_RPP_MUTED_ITEMS": "Muted items were skipped.",
   "warn.WARN_RPP_PROJOFFS": "The project start offset (PROJOFFS) is not applied.",
-  "warn.WARN_RPP_SOFFS": "A source start offset (SOFFS) was applied as quarter notes [to be verified].",
   "warn.WARN_RPP_SRC_UNIT": "A MIDI source uses a timebase other than quarter notes (or an invalid PPQ), which is not supported yet; the item was skipped. Re-save the project in a recent Reaper.",
   "warn.WARN_SESSION_CLIPS_IGNORED": "Session View clips are not read (only the Arrangement).",
   "warn.WARN_TEMPO_AUTOMATION": "Tempo automation was read from the file.",

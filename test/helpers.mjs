@@ -8,11 +8,19 @@ import { test as nodeTest } from 'node:test';
 // test/fixtures/third-party/ (bị .gitignore). Thiếu tệp -> fx() trả Buffer rỗng và test dùng tệp đó bị bỏ qua.
 export const THIRD_PARTY = ['Demo.als', 'Oboe_MIDI_001.mid', 'ode_to_zb.RPP', 'prutypils.rpp', 'siderite_oneD-8.RPP',
   'tmf-small.RPP', 'youdreamarked-midi.RPP', 'big roar.flp', '11-7-26 ambient vocal.flp', 'yawwapsy.zip', '3x OSC Abuse.flp', 'Ction_35.flp', 'HOUSE, TRANCE (SB, KS10, SIR)_21_NEW.flp', 'fun song.flp', 'TS404 Template_v20.8.flp', 'Promise.flp', 'TRANCECRAFTER_37.flp', 'mixer_vol_auto.flp', 'looped_pattern.flp', '1barpattern.flp', '4barpattern.flp', 'mixer_vol_auto2.flp', 'tempo_auto_2.flp', 'bitwig-5.0-example.project.xml', 'reaper-doc-sample.txt'];
-const tpDir = path.join(FIX, 'third-party');
-const missing = new Set(THIRD_PARTY.filter((n) => !fs.existsSync(path.join(tpDir, n))));
+// Tệp mẫu nằm trong thư mục con theo DAW (Reaper/, third-party/<DAW>/…): lập chỉ mục theo tên tệp.
+const index = new Map();
+(function walk(d) {
+  for (const e of fs.readdirSync(d, { withFileTypes: true })) {
+    if (e.isDirectory()) { if (e.name !== 'generated') walk(path.join(d, e.name)); } else if (!index.has(e.name)) index.set(e.name, path.join(d, e.name));
+  }
+})(FIX);
+const missing = new Set(THIRD_PARTY.filter((n) => !index.has(n)));
 export const fx = (n) => {
-  if (THIRD_PARTY.includes(n)) return missing.has(n) ? Buffer.alloc(0) : fs.readFileSync(path.join(tpDir, n));
-  return fs.readFileSync(path.join(FIX, n));
+  if (THIRD_PARTY.includes(n) && missing.has(n)) return Buffer.alloc(0);
+  const f = index.get(n);
+  if (!f) throw new Error(`Không thấy tệp mẫu "${n}" trong test/fixtures/`);
+  return fs.readFileSync(f);
 };
 // test(): như node:test nhưng tự bỏ qua test có nhắc đến tệp bên thứ ba đang thiếu (quét mã nguồn hàm test).
 const needs = (src) => [...missing].some((n) => src.includes(n.replace(/\.[^.]+$/, '').replace(/[-.]/g, (c) => c)) && src.includes(n.split('.')[0]))

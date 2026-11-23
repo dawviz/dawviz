@@ -194,7 +194,7 @@ test('Automation: sampleLane theo hình dạng, volumeToUnit', async () => {
   const sq = { kind: 'mute', points: [P(0, 0, 1), P(1000, 1)] };
   assert.equal(sampleLane(sq, 999), 0); assert.equal(sampleLane(sq, 1000), 1); // bậc thang giữ giá trị tới điểm kế
   const vol = { kind: 'volume', points: [P(0, 1), P(1000, dbToGain(-24))] };
-  assert.ok(Math.abs(gainToDb(sampleLane(vol, 500)) - -9.97) < 0.05); // nội suy trong không gian fader, không phải dB tuyến tính (-12) cũng không phải biên độ tuyến tính (-6,0)
+  assert.ok(Math.abs(gainToDb(sampleLane(vol, 500)) - -10.20) < 0.05); // nội suy trong không gian fader (gain^0,22), không phải dB tuyến tính (-12) cũng không phải biên độ tuyến tính (-6,0)
   assert.equal(sampleLane({ kind: 'volume', points: [] }, 5), undefined);
   assert.ok(shapeCurve(0.5, 4) < 0.5 && shapeCurve(0.5, 3) > 0.5 && shapeCurve(0.5, 2) === 0.5);
   assert.equal(volumeToUnit(1), 1); assert.equal(volumeToUnit(dbToGain(-36)), 0); assert.equal(volumeToUnit(0), 0);
