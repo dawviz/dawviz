@@ -5,7 +5,7 @@ section: "10. Lỗi, ghi nhật ký, quan sát"
 path: "10. Lỗi, ghi nhật ký, quan sát"
 chunk: 10-loi-ghi-nhat-ky-quan-sat.md
 source_lines: 479-483
-source_sha1: ff3dfa792b
+source_sha1: 8cbe7fce2c
 ids: [D-13]
 ---
 ## 10. Lỗi, ghi nhật ký, quan sát

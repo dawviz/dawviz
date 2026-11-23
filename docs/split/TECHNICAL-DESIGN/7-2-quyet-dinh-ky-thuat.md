@@ -5,7 +5,7 @@ section: "7.2 Quyết định kỹ thuật"
 path: "7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) > 7.2 Quyết định kỹ thuật"
 chunk: 7-2-quyet-dinh-ky-thuat.md
 source_lines: 435-443
-source_sha1: ff3dfa792b
+source_sha1: 8cbe7fce2c
 ids: [AT-03, D-01, D-63, ERR_EXPORT_FAILED, ERR_NO_SUPPORTED_ENCODER, SOI-10]
 ---
 ### 7.2 Quyết định kỹ thuật

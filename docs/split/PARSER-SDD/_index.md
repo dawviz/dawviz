@@ -1,15 +1,15 @@
 # Chỉ mục PARSER-SDD.md — SDD — Thiết kế phần mềm: Thư viện parser DAW Visualizer
 
-nguồn: `PARSER-SDD.md` (sha1 ba174dece0)
+nguồn: `PARSER-SDD.md` (sha1 ad2d64ec8b)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
 | 0 | SDD — Thiết kế phần mềm: Thư viện parser DAW Visualizer (mở đầu) | [sdd-thiet-ke-phan-mem-thu-vien-parser-daw-visual.md](sdd-thiet-ke-phan-mem-thu-vien-parser-daw-visual.md) | 169 |  |
 | 1 | 1. Kiến trúc tổng thể | [1-kien-truc-tong-the.md](1-kien-truc-tong-the.md) | 1116 | REQ-AST-01, REQ-TEMPO-01, REQ-TEMPO-02 |
-| 2 | 2. Package `core` | [2-package-core.md](2-package-core.md) | 4287 | ERR_NO_NOTES, KPI-01, REQ-LIM-03, REQ-LIM-04 |
+| 2 | 2. Package `core` | [2-package-core.md](2-package-core.md) | 4288 | ERR_NO_NOTES, KPI-01, REQ-LIM-03, REQ-LIM-04 |
 | 3 | 3. Package `midi` (REQ-MIDI-*) | [3-package-midi-req-midi.md](3-package-midi-req-midi.md) | 399 |  |
 | 4 | 4. Package `als` (REQ-ALS-*, REQ-ALP-*) | [4-package-als-req-als-req-alp.md](4-package-als-req-als-req-alp.md) | 1990 | ERR_UNSUPPORTED_FORMAT |
-| 5 | 5. Package `rpp` (REQ-RPP-*) | [5-package-rpp-req-rpp.md](5-package-rpp-req-rpp.md) | 1240 | ERR_NO_NOTES |
+| 5 | 5. Package `rpp` (REQ-RPP-*) | [5-package-rpp-req-rpp.md](5-package-rpp-req-rpp.md) | 1302 | ERR_NO_NOTES |
 | 6 | 6. Package `dawproject` (REQ-DAWP-*) | [6-package-dawproject-req-dawp.md](6-package-dawproject-req-dawp.md) | 408 |  |
 | 7 | 7. Package `binary` (REQ-BIN-*) | [7-package-binary-req-bin.md](7-package-binary-req-bin.md) | 1028 | D-62 |
 | 8 | 8. Package `parser` (bao ngoài) | [8-package-parser-bao-ngoai.md](8-package-parser-bao-ngoai.md) | 910 |  |

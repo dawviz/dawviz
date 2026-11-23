@@ -40,7 +40,7 @@ Ví dụ với Reaper vì có nhiều trường hợp biên nhất. Các định
 - **Tick là sự thật.** `internalPPQ = 960`; nguồn PPQ khác được quy đổi, giữ `meta.sourcePPQ`. Mỗi nốt lưu cả tick và giây (tính một lần ở `buildAST`) nên Render Core không tính lại tempo cho nốt.
 - **Tempo không đoán ngầm.** Nguồn tempo ghi trong `meta.tempoSource` (`file` | `midi-default` | `fallback` | `user`); thiếu tempo thì cảnh báo `WARN_TEMPO_FALLBACK` và người dùng có thể ghi đè (`tempoOverride`: BPM hoặc điểm có dấu nhịp, vị trí gõ theo giây / `Bar.Beat.%` của Reaper / `Bar.Beat.Sixteenth`). Xem [SRS REQ-PARSER-07](docs/split/SRS/req-parser-07-tempo-khong-doan-ngam-va-ghi-de-d.md#req-parser-07-tempo-không-đoán-ngầm-và-ghi-đè-d-24-d-29).
 - **Beat theo mẫu số.** Reaper đếm beat theo nốt của mẫu số (12/8 @120: `1.12.68` = 2,920 s); đã kiểm với Reaper, còn Ableton/Bitwig là mục mở (OI-12).
-- **Automation.** `sampleLane(lane, tick)` + `volumeToUnit(gain)` (độ sáng 0..1); volume nội suy trong không gian fader `gain^0,25` (xấp xỉ, SOI-19). Độ sáng của track là hàm thuần của `(track, t, cấu hình)`; track không có dữ liệu → 1. Xem [Technical Design §2.3](docs/split/TECHNICAL-DESIGN/2-mo-hinh-du-lieu-va-thoi-gian.md#2-mô-hình-dữ-liệu-và-thời-gian-).
+- **Automation.** `sampleLane(lane, tick)` + `volumeToUnit(gain)` (độ sáng 0..1); volume nội suy trong không gian fader `gain^0,22` (khớp số đo Reaper ≤ 1,1 dB). Độ sáng của track là hàm thuần của `(track, t, cấu hình)`; track không có dữ liệu → 1. Xem [Technical Design §2.3](docs/split/TECHNICAL-DESIGN/2-mo-hinh-du-lieu-va-thoi-gian.md#2-mô-hình-dữ-liệu-và-thời-gian-).
 
 ## 4. Ranh giới và quy tắc phụ thuộc
 

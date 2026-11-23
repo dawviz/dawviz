@@ -1,12 +1,12 @@
 # Chỉ mục TECHNICAL-DESIGN.md — THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER
 
-nguồn: `TECHNICAL-DESIGN.md` (sha1 ff3dfa792b)
+nguồn: `TECHNICAL-DESIGN.md` (sha1 8cbe7fce2c)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
 | 0 | THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER (mở đầu) | [thiet-ke-ky-thuat-chi-tiet-technical-design-daw.md](thiet-ke-ky-thuat-chi-tiet-technical-design-daw.md) | 720 |  |
 | 1 | 1. Bức tranh tổng thể | [1-buc-tranh-tong-the.md](1-buc-tranh-tong-the.md) | 2420 | ARC-01 |
-| 2 | 2. Mô hình dữ liệu và thời gian 🟢 | [2-mo-hinh-du-lieu-va-thoi-gian.md](2-mo-hinh-du-lieu-va-thoi-gian.md) | 2921 | D-50, REQ-AST-02, SOI-19, WARN_TEMPO_RAMP |
+| 2 | 2. Mô hình dữ liệu và thời gian 🟢 | [2-mo-hinh-du-lieu-va-thoi-gian.md](2-mo-hinh-du-lieu-va-thoi-gian.md) | 2922 | D-50, REQ-AST-02, WARN_TEMPO_RAMP |
 | 3 | 3. Đường ống phân tích (parser) 🟢 | [3-duong-ong-phan-tich-parser.md](3-duong-ong-phan-tich-parser.md) | 1897 | ERR_FILE_TOO_LARGE, ERR_UNSUPPORTED_FORMAT, WARN_RPP_ENVELOPES_IGNORED, WARN_RPP_EXTERNAL_MIDI, WARN_RPP_SRC_UNIT |
 | 4 | 4. Dữ liệu dẫn xuất (derived) 🟢/⚪ | [4-du-lieu-dan-xuat-derived.md](4-du-lieu-dan-xuat-derived.md) | 1495 | OI-05 |
 | 5 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.0 Kiểu dáng nốt và bàn phím 🟢 (REQ-GRAPHICS-07) | [5-0-kieu-dang-not-va-ban-phim-req-graphics-07.md](5-0-kieu-dang-not-va-ban-phim-req-graphics-07.md) | 624 | REQ-GRAPHICS-07 |

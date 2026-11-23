@@ -5,7 +5,7 @@ section: "6. Lỗi thường gặp khi build lần đầu"
 path: "6. Lỗi thường gặp khi build lần đầu"
 chunk: 6-loi-thuong-gap-khi-build-lan-dau.md
 source_lines: 77-92
-source_sha1: 02fa1bd49a
+source_sha1: c60dcbfe44
 ids: []
 ---
 ## 6. Lỗi thường gặp khi build lần đầu

@@ -5,7 +5,7 @@ section: "3.4 `dawproject.test.js` (7) — REQ-DAWP-*"
 path: "3. Danh mục test (77 test, 8 file) > 3.4 `dawproject.test.js` (7) — REQ-DAWP-*"
 chunk: 3-4-dawproject-test-js-7-req-dawp.md
 source_lines: 51-53
-source_sha1: b369a49402
+source_sha1: 714e1ad5ed
 ids: []
 ---
 ### 3.4 `dawproject.test.js` (7) — REQ-DAWP-*

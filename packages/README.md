@@ -35,7 +35,7 @@ Lỗi là `DawParseError` với `code` theo SRS §8 (+ `ERR_SCHEMA_INVALID`, `ER
 ## Đã kiểm chứng với file thật
 - `Demo.als` (Live 12.4.16, Gzip): 11 track MIDI, 9605 nốt, 167 BPM, khớp **từng nốt** với một bộ đối chứng độc lập; XML thuần ≡ Gzip. Cũng đọc được file Gravitas (Live 9, XML thuần).
 - Bitwig 5.0 `project.xml` mẫu chính thức: tempo 149, 9 nốt, vel 100.
-- Reaper: 5 template (cấu trúc/tempo/envelope), 1 dự án tham chiếu **`.mid` ngoài** (`BigProject3` + `Oboe_MIDI_001.mid` → 3147 nốt) và 2 dự án thật có **MIDI nhúng** (`BigProjectDemo2`: 3147 nốt; `BigProjectDemo`: 107 item, nhiều take/loop/pooled/SOFFS → 7497 nốt, khớp oracle độc lập).
+- Reaper: 5 template (cấu trúc/tempo/envelope), 1 dự án tham chiếu **`.mid` ngoài** (`BigProject3` + `Oboe_MIDI_001.mid` → 3147 nốt) và 2 dự án thật có **MIDI nhúng** (`BigProjectDemo2`: 3147 nốt; `BigProjectDemo`: 107 item, nhiều take/loop/pooled/SOFFS → 7497 nốt, khớp oracle độc lập). `SOFFS` tính bằng giây (kiểm bằng `test120bpm`/`test90bpm`); envelope shape 0–5 khớp số đo trong Reaper (`automation.rpp`, `bezier1–3.RPP`).
 - `.alp` thật (Live 9.1, 65 MB): không phải ZIP mà là gói `pl-a` chứa 3 file `.als`; đọc trong ≈ 0,15 s.
 
 ## Trạng thái spike

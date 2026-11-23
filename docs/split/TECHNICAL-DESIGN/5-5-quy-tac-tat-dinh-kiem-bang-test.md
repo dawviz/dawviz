@@ -5,7 +5,7 @@ section: "5.5 Quy tắc tất định (kiểm bằng test)"
 path: "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.5 Quy tắc tất định (kiểm bằng test)"
 chunk: 5-5-quy-tac-tat-dinh-kiem-bang-test.md
 source_lines: 153-155
-source_sha1: ff3dfa792b
+source_sha1: 8cbe7fce2c
 ids: [REQ-GRAPHICS-05]
 ---
 ### 5.5 Quy tắc tất định (kiểm bằng test)

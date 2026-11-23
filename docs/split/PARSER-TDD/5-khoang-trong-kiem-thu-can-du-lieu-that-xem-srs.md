@@ -5,11 +5,11 @@ section: "5. Khoảng trống kiểm thử (cần dữ liệu thật, xem SRS §
 path: "5. Khoảng trống kiểm thử (cần dữ liệu thật, xem SRS §6)"
 chunk: 5-khoang-trong-kiem-thu-can-du-lieu-that-xem-srs.md
 source_lines: 77-84
-source_sha1: b369a49402
+source_sha1: 714e1ad5ed
 ids: [KPI-01]
 ---
 ## 5. Khoảng trống kiểm thử (cần dữ liệu thật, xem SRS §6)
-1. `.rpp`: MIDI nhúng, take, loop, pooled, SOFFS đã được kiểm bằng 2 dự án thật (đã đối chiếu oracle Python độc lập: `BigProjectDemo.rpp` 13 MB, 107 item, 96 nguồn MIDI → 7497 nốt khớp tuyệt đối; file này quá lớn nên không đưa vào repo). `.mid` ngoài thật đã kiểm (BigProject3.rpp + Oboe_MIDI_001.mid → 3147 nốt, khớp đọc trực tiếp `.mid`). Còn thiếu đối chứng độc lập cho `IGNTEMPO 1` (đã có dự án thật) và mẫu envelope tempo cong (`HASDATA` ≠ QN xử lý bằng guard clause).
+1. `.rpp`: MIDI nhúng, take, loop, pooled, SOFFS đã được kiểm bằng 2 dự án thật (đã đối chiếu oracle Python độc lập: `BigProjectDemo.rpp` 13 MB, 107 item, 96 nguồn MIDI → 7497 nốt khớp tuyệt đối; file này quá lớn nên không đưa vào repo). `.mid` ngoài thật đã kiểm (BigProject3.rpp + Oboe_MIDI_001.mid → 3147 nốt, khớp đọc trực tiếp `.mid`). `SOFFS` tính bằng giây đã kiểm bằng `test120bpm`/`test90bpm`; envelope volume shape 0/2/3/4/5 đã kiểm bằng `automation.rpp` và `bezier1–3.RPP`. Còn thiếu đối chứng độc lập cho `IGNTEMPO 1` (đã có dự án thật; chưa kiểm khi kèm `SOFFS`) và mẫu envelope tempo cong (`HASDATA` ≠ QN xử lý bằng guard clause).
 2. `.dawproject` thật: tempo/nhịp automation, đơn vị giây, clip lồng nhiều tầng.
 3. Clip `StartRelative ≠ 0`; nhịp ≠ 4/4; tempo automation thật (công thức enum nhịp suy từ 1 mẫu).
 4. KPI-01 end-to-end (dự án + MIDI xuất từ chính DAW) — hạ tầng sẵn sàng (`--ref`, trang demo).

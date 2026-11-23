@@ -5,7 +5,7 @@ section: "Video 1 (Usagin_P): đã làm"
 path: "Video 1 (Usagin_P): đã làm"
 chunk: video-1-usagin-p-da-lam.md
 source_lines: 21-28
-source_sha1: 9a4c7b7f41
+source_sha1: 70b5971deb
 ids: [D-51]
 ---
 ## Video 1 (Usagin_P): đã làm

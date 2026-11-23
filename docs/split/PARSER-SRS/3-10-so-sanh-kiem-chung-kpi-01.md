@@ -5,7 +5,7 @@ section: "3.10 So sánh kiểm chứng (KPI-01)"
 path: "3. Yêu cầu chức năng > 3.10 So sánh kiểm chứng (KPI-01)"
 chunk: 3-10-so-sanh-kiem-chung-kpi-01.md
 source_lines: 110-112
-source_sha1: a0c8f4a7bd
+source_sha1: 8be9e3d77f
 ids: [KPI-01, REQ-CMP-01]
 ---
 ### 3.10 So sánh kiểm chứng (KPI-01)

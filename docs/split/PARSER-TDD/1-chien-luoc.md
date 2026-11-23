@@ -5,7 +5,7 @@ section: "1. Chiến lược"
 path: "1. Chiến lược"
 chunk: 1-chien-luoc.md
 source_lines: 5-17
-source_sha1: b369a49402
+source_sha1: 714e1ad5ed
 ids: []
 ---
 ## 1. Chiến lược

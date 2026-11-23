@@ -1,6 +1,6 @@
 # Chỉ mục SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
-nguồn: `SRS.md` (sha1 ba41c8b27f)
+nguồn: `SRS.md` (sha1 78bd49a501)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -17,7 +17,7 @@ nguồn: `SRS.md` (sha1 ba41c8b27f)
 | 10 | 2. KIẾN TRÚC KỸ THUẬT, LUỒNG DỮ LIỆU & ĐÁNH GIÁ KIẾN TRÚC > 2.6. Ngăn xếp giao diện, Render Core và cấu trúc kho mã (D-34, D-35, D-36) | [2-6-ngan-xep-giao-dien-render-core-va-cau-truc-k.md](2-6-ngan-xep-giao-dien-render-core-va-cau-truc-k.md) | 1199 | AT-05, D-34, D-35, D-36 |
 | 11 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) > REQ-PARSER-00: Thực thi an toàn và giới hạn đầu vào (R-05, R-09) | [req-parser-00-thuc-thi-an-toan-va-gioi-han-dau-v.md](req-parser-00-thuc-thi-an-toan-va-gioi-han-dau-v.md) | 1425 | ERR_ARCHIVE_INVALID, ERR_ARCHIVE_TOO_LARGE, ERR_FILE_TOO_LARGE, ERR_NO_SUPPORTED_ENV, ERR_PARSER_TIMEOUT, REQ-PARSER-00 |
 | 12 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) > REQ-PARSER-01: Ableton Live (`.als`) | [req-parser-01-ableton-live-als.md](req-parser-01-ableton-live-als.md) | 2658 | ERR_NO_NOTES, REQ-PARSER-00, REQ-PARSER-01, REQ-PARSER-07, SOI-06, WARN_SESSION_CLIPS_IGNORED… |
-| 13 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) > REQ-PARSER-02: Cockos Reaper (`.rpp`) | [req-parser-02-cockos-reaper-rpp.md](req-parser-02-cockos-reaper-rpp.md) | 3759 | ERR_NO_NOTES, REQ-PARSER-02, REQ-PARSER-04, REQ-UI-08, WARN_RPP_ENVELOPES_IGNORED, WARN_RPP_ENVELOPE_SHAPE_APPROX… |
+| 13 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) > REQ-PARSER-02: Cockos Reaper (`.rpp`) | [req-parser-02-cockos-reaper-rpp.md](req-parser-02-cockos-reaper-rpp.md) | 3803 | ERR_NO_NOTES, REQ-PARSER-02, REQ-PARSER-04, REQ-UI-08, WARN_RPP_ENVELOPES_IGNORED, WARN_RPP_ENVELOPE_SHAPE_APPROX… |
 | 14 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) > REQ-PARSER-03: DAWproject (`.dawproject`, D-03) | [req-parser-03-dawproject-dawproject-d-03.md](req-parser-03-dawproject-dawproject-d-03.md) | 1203 | D-03, ERR_ARCHIVE_INVALID, OI-01, REQ-PARSER-03, SOI-04, SOI-06… |
 | 15 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) > REQ-PARSER-04: Standard MIDI File (`.mid`, format 0/1) | [req-parser-04-standard-midi-file-mid-format-0-1.md](req-parser-04-standard-midi-file-mid-format-0-1.md) | 924 | ERR_UNSUPPORTED_FORMAT, REQ-PARSER-04, REQ-PARSER-07, WARN_MIDI_TRUNCATED, WARN_TEMPO_MIDI_DEFAULT |
 | 16 | 3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08) > REQ-PARSER-05: Parser JSON khai báo (D-18, D-28, R-05) | [req-parser-05-parser-json-khai-bao-d-18-d-28-r-0.md](req-parser-05-parser-json-khai-bao-d-18-d-28-r-0.md) | 1825 | D-18, D-28, D-62, ERR_SCHEMA_INVALID, ERR_UNSUPPORTED_FORMAT, OI-08… |
@@ -82,7 +82,7 @@ nguồn: `SRS.md` (sha1 ba41c8b27f)
 | 75 | 5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.3. Yêu cầu giao diện | [5-3-yeu-cau-giao-dien.md](5-3-yeu-cau-giao-dien.md) | 18661 | ARC-05, BR-07, BR-09, D-19, D-25, D-29… |
 | 76 | 6. MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU | [6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md](6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md) | 1468 | BR-01, BR-02, BR-03, BR-04, BR-05, BR-06… |
 | 77 | 7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO | [7-dieu-kien-nghiem-thu-va-ban-giao.md](7-dieu-kien-nghiem-thu-va-ban-giao.md) | 7104 | ARC-01, AT-01, AT-02, AT-03, AT-04, AT-05… |
-| 78 | 8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS | [8-cac-van-de-con-mo-cua-srs.md](8-cac-van-de-con-mo-cua-srs.md) | 4044 | D-20, D-21, D-22, D-31, D-44, D-45… |
+| 78 | 8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS | [8-cac-van-de-con-mo-cua-srs.md](8-cac-van-de-con-mo-cua-srs.md) | 4118 | D-20, D-21, D-22, D-31, D-44, D-45… |
 | 79 | 9. PHỤ LỤC > Phụ lục A: Mã lỗi | [phu-luc-a-ma-loi.md](phu-luc-a-ma-loi.md) | 2864 | ERR_ARCHIVE_INVALID, ERR_ARCHIVE_TOO_LARGE, ERR_AST_INVALID, ERR_AST_TOO_LARGE, ERR_AUDIO_DECODE, ERR_AUDIO_TOO_LONG… |
 | 80 | 9. PHỤ LỤC > Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02) | [phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md](phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md) | 1673 | NFR-SEC-04, REQ-STORAGE-02, WARN_PACK_AUDIO_MISSING, WARN_PACK_NEWER_MINOR, WARN_PACK_UNLISTED_FILE, WARN_PRESET_MIGRATED… |
 | 81 | 9. PHỤ LỤC > Phụ lục A2: Mã cảnh báo của Parser Library | [phu-luc-a2-ma-canh-bao-cua-parser-library.md](phu-luc-a2-ma-canh-bao-cua-parser-library.md) | 1339 | REQ-AUDIO-01, REQ-WIDGET-07, WARN_ALP_MULTIPLE_ALS, WARN_AUDIO_LENGTH, WARN_CLIP_SKIPPED, WARN_DAWPROJECT_NO_ARRANGEMENT… |

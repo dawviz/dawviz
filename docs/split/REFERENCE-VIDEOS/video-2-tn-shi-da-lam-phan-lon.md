@@ -5,7 +5,7 @@ section: "Video 2 (tn-shi): đã làm phần lớn"
 path: "Video 2 (tn-shi): đã làm phần lớn"
 chunk: video-2-tn-shi-da-lam-phan-lon.md
 source_lines: 29-40
-source_sha1: 9a4c7b7f41
+source_sha1: 70b5971deb
 ids: []
 ---
 ## Video 2 (tn-shi): đã làm phần lớn

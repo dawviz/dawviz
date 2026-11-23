@@ -5,7 +5,7 @@ section: "Quy ước trong tài liệu"
 path: "DỰ ÁN: TRÌNH TRỰC QUAN HÓA DỮ LIỆU DỰ ÁN ÂM NHẠC & XUẤT VIDEO TRÊN TRÌNH DUYỆT (BROWSER-BASED DAW VISUALIZER STUDIO) > Quy ước trong tài liệu"
 chunk: quy-uoc-trong-tai-lieu.md
 source_lines: 27-35
-source_sha1: ba41c8b27f
+source_sha1: 78bd49a501
 ids: [REQ-GRAPHICS-00]
 ---
 ### Quy ước trong tài liệu

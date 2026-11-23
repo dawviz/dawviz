@@ -237,7 +237,7 @@ test('bezier2/3.RPP: tension +0,9 và +0,30 (đoạn đi lên −23,4 → +6 dB)
   const at = (b, k, h) => Math.round(((b - 1) * 4 + (k - 1) + h / 100) * 960);
   const r3 = await parseRpp(fx('bezier3.RPP'));
   const lane = r3.ast.tracks[0].automation.volume;
-  assert.equal(lane.points[0].tension, 0.30016626); // bezier3.txt ghi "-0.3" nhưng tệp .rpp ghi +0,3: tệp mới là nguồn đúng
+  assert.equal(lane.points[0].tension, 0.30016626);
   for (const [b, k, h, db] of [[2, 1, 4, -19.6], [3, 1, 6, -13.0], [3, 4, 96, -4.74]]) {
     const v = gainToDb(sampleLane(lane, at(b, k, h))); assert.ok(Math.abs(v - db) < 1.1, `${b}.${k}.${h}: ${v} vs ${db}`);
   }

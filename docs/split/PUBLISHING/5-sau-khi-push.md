@@ -5,7 +5,7 @@ section: "5. Sau khi push"
 path: "5. Sau khi push"
 chunk: 5-sau-khi-push.md
 source_lines: 68-76
-source_sha1: 02fa1bd49a
+source_sha1: c60dcbfe44
 ids: []
 ---
 ## 5. Sau khi push

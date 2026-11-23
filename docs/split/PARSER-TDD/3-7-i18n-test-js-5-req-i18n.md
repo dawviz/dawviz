@@ -5,7 +5,7 @@ section: "3.7 `i18n.test.js` (5) — REQ-I18N-*"
 path: "3. Danh mục test (77 test, 8 file) > 3.7 `i18n.test.js` (5) — REQ-I18N-*"
 chunk: 3-7-i18n-test-js-5-req-i18n.md
 source_lines: 63-65
-source_sha1: b369a49402
+source_sha1: 714e1ad5ed
 ids: []
 ---
 ### 3.7 `i18n.test.js` (5) — REQ-I18N-*

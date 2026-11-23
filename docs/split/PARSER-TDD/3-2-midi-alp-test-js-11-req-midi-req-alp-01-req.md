@@ -5,7 +5,7 @@ section: "3.2 `midi-alp.test.js` (11) — REQ-MIDI-*, REQ-ALP-01, REQ-CMP-01"
 path: "3. Danh mục test (77 test, 8 file) > 3.2 `midi-alp.test.js` (11) — REQ-MIDI-*, REQ-ALP-01, REQ-CMP-01"
 chunk: 3-2-midi-alp-test-js-11-req-midi-req-alp-01-req.md
 source_lines: 44-46
-source_sha1: b369a49402
+source_sha1: 714e1ad5ed
 ids: [REQ-ALP-01, REQ-CMP-01]
 ---
 ### 3.2 `midi-alp.test.js` (11) — REQ-MIDI-*, REQ-ALP-01, REQ-CMP-01

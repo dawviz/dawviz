@@ -5,7 +5,7 @@ section: "6. Package `dawproject` (REQ-DAWP-*)"
 path: "6. Package `dawproject` (REQ-DAWP-*)"
 chunk: 6-package-dawproject-req-dawp.md
 source_lines: 86-88
-source_sha1: ba174dece0
+source_sha1: ad2d64ec8b
 ids: []
 ---
 ## 6. Package `dawproject` (REQ-DAWP-*)

@@ -5,7 +5,7 @@ section: "2. Kết luận ngắn"
 path: "2. Kết luận ngắn"
 chunk: 2-ket-luan-ngan.md
 source_lines: 15-27
-source_sha1: a549031f0a
+source_sha1: dc64498938
 ids: []
 ---
 ## 2. Kết luận ngắn

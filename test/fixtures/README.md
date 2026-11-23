@@ -9,7 +9,7 @@ Có hai nhóm, theo quyền phân phối:
 | `BigProject3.rpp`, `BigProject4.rpp`, `BigProject4b.rpp`, `BigProjectDemo2.rpp` | Reaper: MIDI nhúng, take/loop, `.mid` ngoài, `HASDATA`, nhịp 12/8, `IGNTEMPO`, envelope | **Do người duy trì tự tạo** (xác nhận của chủ repo). Theo Apache-2.0 như phần còn lại của repo. |
 | `test120bpm.rpp`, `test90bpm.rpp` | Reaper: `SOFFS` tính bằng giây (cùng một lần cắt 1 beat ở 120 và 90 BPM) | **Do người duy trì tự tạo** (xác nhận của chủ repo). Apache-2.0. |
 | `automation.rpp` + `automationread.txt` | Reaper: envelope shape 0/2/3/4 và bezier tension 0,395; `.txt` là số đo đọc từ giao diện Reaper (bar.beat.%, dB) | Tự tạo, Apache-2.0. |
-| `bezier1.RPP`, `bezier2.RPP`, `bezier3.RPP` + `.txt` cùng tên | Reaper: bezier tension −0,647 / +0,9 / +0,30 và số đo tương ứng (lưu ý `bezier3.txt` ghi −0,3 nhưng tệp `.RPP` là +0,30016626: tệp `.RPP` là nguồn đúng) | Tự tạo, Apache-2.0. |
+| `bezier1.RPP`, `bezier2.RPP`, `bezier3.RPP` + `.txt` cùng tên | Reaper: bezier tension −0,647 / +0,9 / +0,30 và số đo tương ứng | Tự tạo, Apache-2.0. |
 
 Lưu ý: `BigProject3.rpp` tham chiếu `Oboe_MIDI_001.mid` (thuộc nhóm 2), nên test dùng cặp này bị bỏ qua khi thiếu tệp `.mid`.
 

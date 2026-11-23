@@ -5,7 +5,7 @@ section: "2. Package `core`"
 path: "2. Package `core`"
 chunk: 2-package-core.md
 source_lines: 25-60
-source_sha1: ba174dece0
+source_sha1: ad2d64ec8b
 ids: [ERR_NO_NOTES, KPI-01, REQ-LIM-03, REQ-LIM-04]
 ---
 ## 2. Package `core`
@@ -39,7 +39,7 @@ Không dùng DOM/DOMParser (chạy được trong Worker/Node, nhanh, kiểm so�
 `parseTimeSignature` đọc `4/4`, `12/8`...; `resolveTempoRows(rows, {unit, base})` đổi các dòng nhập `{pos, bpm, sig?}` thành điểm tempoOverride. Với `reaper`/`sixteenth`, vị trí bar.beat cộng dồn theo từng **đoạn nhịp** (`segs`: bar bắt đầu, beat quy đổi nốt đen tại đó, num/den); một beat DAW = nốt theo mẫu số nên đổi ra nốt đen bằng ×4/den. Vị trí của dòng đổi nhịp được đọc theo nhịp *trước* nó, nhịp mới áp dụng từ dòng đó.
 
 ### 2.4c Automation (`automation.js`)
-Lane `{kind, points}` đã sắp theo tick. `sampleLane` tìm đoạn bằng tìm nhị phân, áp `shapeCurve(a, shape, tension)` rồi nội suy: volume trong không gian fader (`gain^0,25`, hệ số khớp 2 số đo Reaper), pan/mute tuyến tính; `shape 1` giữ giá trị. `volumeToUnit` đổi gain → 0..1 theo dB. `buildAST` chuyển nguyên `mix`/`automation` của từng track; parser nào đọc được thì điền (hiện chỉ Reaper). Sắp xếp theo tick và quy đổi giây → tick nằm ở parser (cùng bản đồ tempo với nốt, nên `tempoOverride` kéo theo automation).
+Lane `{kind, points}` đã sắp theo tick. `sampleLane` tìm đoạn bằng tìm nhị phân, áp `shapeCurve(a, shape, tension)` rồi nội suy: volume trong không gian fader (`gain^0,22`, khớp số đo Reaper ≤ 1,1 dB), pan/mute tuyến tính; `shape 1` giữ giá trị. `volumeToUnit` đổi gain → 0..1 theo dB. `buildAST` chuyển nguyên `mix`/`automation` của từng track; parser nào đọc được thì điền (hiện chỉ Reaper). Sắp xếp theo tick và quy đổi giây → tick nằm ở parser (cùng bản đồ tempo với nốt, nên `tempoOverride` kéo theo automation).
 
 ### 2.5 So sánh (`compare.js`)
 Ghép nốt theo (pitch) + gần nhất về thời điểm trong cửa sổ 2 beat; dung sai = 1 tick của PPQ thô hơn trong hai nguồn quy sang 960. Trả thống kê và tối đa 10 mẫu lệch.

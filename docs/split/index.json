@@ -4,7 +4,7 @@
  "docs": {
   "BRD.md": {
    "title": "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)",
-   "sha1": "58fc2db966",
+   "sha1": "927410be47",
    "chunks": [
     {
      "n": 0,
@@ -455,7 +455,7 @@
      "path": [
       "8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)"
      ],
-     "chars": 7755,
+     "chars": 7775,
      "lines": [
       282,
       305
@@ -504,7 +504,7 @@
   },
   "SRS.md": {
    "title": "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)",
-   "sha1": "ba41c8b27f",
+   "sha1": "78bd49a501",
    "chunks": [
     {
      "n": 0,
@@ -935,7 +935,7 @@
       "3.1. Phân hệ phân tích tệp dự án (BR-01, BR-08)",
       "REQ-PARSER-02: Cockos Reaper (`.rpp`)"
      ],
-     "chars": 3759,
+     "chars": 3803,
      "lines": [
       294,
       307
@@ -2544,7 +2544,7 @@
      "path": [
       "8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS"
      ],
-     "chars": 4044,
+     "chars": 4118,
      "lines": [
       1173,
       1199
@@ -2904,7 +2904,7 @@
   },
   "TECHNICAL-DESIGN.md": {
    "title": "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER",
-   "sha1": "ff3dfa792b",
+   "sha1": "8cbe7fce2c",
    "chunks": [
     {
      "n": 0,
@@ -2941,7 +2941,7 @@
      "path": [
       "2. Mô hình dữ liệu và thời gian 🟢"
      ],
-     "chars": 2921,
+     "chars": 2922,
      "lines": [
       38,
       64
@@ -2949,7 +2949,6 @@
      "ids": [
       "D-50",
       "REQ-AST-02",
-      "SOI-19",
       "WARN_TEMPO_RAMP"
      ]
     },
@@ -4717,7 +4716,7 @@
   },
   "REFERENCE-VIDEOS.md": {
    "title": "Video tham chiếu: ý tưởng, mức tái hiện và lộ trình",
-   "sha1": "9a4c7b7f41",
+   "sha1": "70b5971deb",
    "chunks": [
     {
      "n": 0,
@@ -4738,7 +4737,7 @@
      "path": [
       "Cách đối chiếu bằng trình duyệt"
      ],
-     "chars": 559,
+     "chars": 566,
      "lines": [
       12,
       20
@@ -5166,7 +5165,7 @@
   },
   "FIREFOX-FONT-SLOWDOWN.md": {
    "title": "Firefox xuất chậm dần: điều tra và cách giảm nhẹ",
-   "sha1": "a549031f0a",
+   "sha1": "dc64498938",
    "chunks": [
     {
      "n": 0,
@@ -5271,7 +5270,7 @@
      "path": [
       "7. Cách đo lại (để khỏi mất thời gian dựng lại)"
      ],
-     "chars": 1286,
+     "chars": 1293,
      "lines": [
       71,
       78
@@ -5282,7 +5281,7 @@
   },
   "PARSER-SRS.md": {
    "title": "SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer",
-   "sha1": "a0c8f4a7bd",
+   "sha1": "8be9e3d77f",
    "chunks": [
     {
      "n": 0,
@@ -5471,7 +5470,7 @@
       "3. Yêu cầu chức năng",
       "3.6 Reaper (.rpp) — VERIFY"
      ],
-     "chars": 4525,
+     "chars": 4641,
      "lines": [
       78,
       89
@@ -5688,7 +5687,7 @@
   },
   "PARSER-SDD.md": {
    "title": "SDD — Thiết kế phần mềm: Thư viện parser DAW Visualizer",
-   "sha1": "ba174dece0",
+   "sha1": "ad2d64ec8b",
    "chunks": [
     {
      "n": 0,
@@ -5727,7 +5726,7 @@
      "path": [
       "2. Package `core`"
      ],
-     "chars": 4287,
+     "chars": 4288,
      "lines": [
       25,
       60
@@ -5776,7 +5775,7 @@
      "path": [
       "5. Package `rpp` (REQ-RPP-*)"
      ],
-     "chars": 1240,
+     "chars": 1302,
      "lines": [
       78,
       85
@@ -5904,7 +5903,7 @@
   },
   "PARSER-TDD.md": {
    "title": "TDD — Tài liệu kiểm thử: Thư viện parser DAW Visualizer",
-   "sha1": "b369a49402",
+   "sha1": "714e1ad5ed",
    "chunks": [
     {
      "n": 0,
@@ -6117,7 +6116,7 @@
      "path": [
       "5. Khoảng trống kiểm thử (cần dữ liệu thật, xem SRS §6)"
      ],
-     "chars": 964,
+     "chars": 1135,
      "lines": [
       77,
       84
@@ -6262,7 +6261,7 @@
   },
   "PUBLISHING.md": {
    "title": "Xuất bản lần đầu lên GitHub",
-   "sha1": "02fa1bd49a",
+   "sha1": "c60dcbfe44",
    "chunks": [
     {
      "n": 0,
@@ -6299,7 +6298,7 @@
      "path": [
       "2. Build và kiểm tra trên máy bạn"
      ],
-     "chars": 962,
+     "chars": 969,
      "lines": [
       23,
       39
@@ -8324,8 +8323,7 @@
    "SRS/req-graphics-06-do-sang-track-theo-automation-d.md",
    "SRS/req-graphics-17-phat-sang-dong-khi-cham-d-50-1-0.md",
    "SRS/8-cac-van-de-con-mo-cua-srs.md",
-   "SDD/5-quyet-dinh-thiet-ke-cua-ung-dung.md",
-   "TECHNICAL-DESIGN/2-mo-hinh-du-lieu-va-thoi-gian.md"
+   "SDD/5-quyet-dinh-thiet-ke-cua-ung-dung.md"
   ],
   "WARN_FLP_CLIPS_SKIPPED": [
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",

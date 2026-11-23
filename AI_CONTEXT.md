@@ -183,7 +183,7 @@ Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 - [5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG › 5.3. Yêu cầu giao diện](docs/split/SRS/5-3-yeu-cau-giao-dien.md) · 18.7k
 - [6. MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU](docs/split/SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md) · 1.5k
 - [7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO](docs/split/SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md) · 7.1k
-- [8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS](docs/split/SRS/8-cac-van-de-con-mo-cua-srs.md) · 4.0k
+- [8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS](docs/split/SRS/8-cac-van-de-con-mo-cua-srs.md) · 4.1k
 - [9. PHỤ LỤC › Phụ lục A: Mã lỗi](docs/split/SRS/phu-luc-a-ma-loi.md) · 2.9k
 - [9. PHỤ LỤC › Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)](docs/split/SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md) · 1.7k
 - [9. PHỤ LỤC › Phụ lục A2: Mã cảnh báo của Parser Library](docs/split/SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md) · 1.3k
@@ -395,7 +395,7 @@ Nguồn: `docs/parser/PARSER-SRS.md` · [thứ tự đọc](docs/split/PARSER-SR
 - [3. Yêu cầu chức năng › 3.3 Tempo và thời gian](docs/split/PARSER-SRS/3-3-tempo-va-thoi-gian.md) · 0.7k
 - [3. Yêu cầu chức năng › 3.4 AST (REQ-AST-01)](docs/split/PARSER-SRS/3-4-ast-req-ast-01.md) · 0.7k
 - [3. Yêu cầu chức năng › 3.5 Ableton (.als / .alp)](docs/split/PARSER-SRS/3-5-ableton-als-alp.md) · 6.1k
-- [3. Yêu cầu chức năng › 3.6 Reaper (.rpp) — VERIFY](docs/split/PARSER-SRS/3-6-reaper-rpp-verify.md) · 4.5k
+- [3. Yêu cầu chức năng › 3.6 Reaper (.rpp) — VERIFY](docs/split/PARSER-SRS/3-6-reaper-rpp-verify.md) · 4.6k
 - [3. Yêu cầu chức năng › 3.7 DAWproject](docs/split/PARSER-SRS/3-7-dawproject.md) · 0.7k
 - [3. Yêu cầu chức năng › 3.8 MIDI](docs/split/PARSER-SRS/3-8-midi.md) · 0.4k
 - [3. Yêu cầu chức năng › 3.9 Binary theo schema](docs/split/PARSER-SRS/3-9-binary-theo-schema.md) · 1.6k
@@ -414,7 +414,7 @@ Nguồn: `docs/parser/PARSER-SDD.md` · [thứ tự đọc](docs/split/PARSER-SD
 - [2. Package `core`](docs/split/PARSER-SDD/2-package-core.md) · 4.3k
 - [3. Package `midi` (REQ-MIDI-*)](docs/split/PARSER-SDD/3-package-midi-req-midi.md) · 0.4k
 - [4. Package `als` (REQ-ALS-*, REQ-ALP-*)](docs/split/PARSER-SDD/4-package-als-req-als-req-alp.md) · 2.0k
-- [5. Package `rpp` (REQ-RPP-*)](docs/split/PARSER-SDD/5-package-rpp-req-rpp.md) · 1.2k
+- [5. Package `rpp` (REQ-RPP-*)](docs/split/PARSER-SDD/5-package-rpp-req-rpp.md) · 1.3k
 - [6. Package `dawproject` (REQ-DAWP-*)](docs/split/PARSER-SDD/6-package-dawproject-req-dawp.md) · 0.4k
 - [7. Package `binary` (REQ-BIN-*)](docs/split/PARSER-SDD/7-package-binary-req-bin.md) · 1.0k
 - [8. Package `parser` (bao ngoài)](docs/split/PARSER-SDD/8-package-parser-bao-ngoai.md) · 0.9k
@@ -439,7 +439,7 @@ Nguồn: `docs/parser/PARSER-TDD.md` · [thứ tự đọc](docs/split/PARSER-TD
 - [3. Danh mục test (77 test, 8 file) › 3.6 `detect-bundle.test.js` (4) — REQ-CORE-02, REQ-CORE-05](docs/split/PARSER-TDD/3-6-detect-bundle-test-js-4-req-core-02-req-core.md) · 0.3k
 - [3. Danh mục test (77 test, 8 file) › 3.7 `i18n.test.js` (5) — REQ-I18N-*](docs/split/PARSER-TDD/3-7-i18n-test-js-5-req-i18n.md) · 0.6k
 - [4. Ma trận truy vết (rút gọn)](docs/split/PARSER-TDD/4-ma-tran-truy-vet-rut-gon.md) · 0.5k
-- [5. Khoảng trống kiểm thử (cần dữ liệu thật, xem SRS §6)](docs/split/PARSER-TDD/5-khoang-trong-kiem-thu-can-du-lieu-that-xem-srs.md) · 1.0k
+- [5. Khoảng trống kiểm thử (cần dữ liệu thật, xem SRS §6)](docs/split/PARSER-TDD/5-khoang-trong-kiem-thu-can-du-lieu-that-xem-srs.md) · 1.1k
 - [6. Kiểm thử thủ công trình duyệt](docs/split/PARSER-TDD/6-kiem-thu-thu-cong-trinh-duyet.md) · 0.4k
 - [7. Quy ước viết test mới](docs/split/PARSER-TDD/7-quy-uoc-viet-test-moi.md) · 0.4k
 - [8. Tiêu chí chấp nhận](docs/split/PARSER-TDD/8-tieu-chi-chap-nhan.md) · 0.2k

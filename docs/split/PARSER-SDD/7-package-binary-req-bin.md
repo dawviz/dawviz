@@ -5,7 +5,7 @@ section: "7. Package `binary` (REQ-BIN-*)"
 path: "7. Package `binary` (REQ-BIN-*)"
 chunk: 7-package-binary-req-bin.md
 source_lines: 89-95
-source_sha1: ba174dece0
+source_sha1: ad2d64ec8b
 ids: [D-62]
 ---
 ## 7. Package `binary` (REQ-BIN-*)

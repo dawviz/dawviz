@@ -5,7 +5,7 @@ section: "2. Công cụ dùng chung (`test/helpers.mjs`)"
 path: "2. Công cụ dùng chung (`test/helpers.mjs`)"
 chunk: 2-cong-cu-dung-chung-test-helpers-mjs.md
 source_lines: 18-23
-source_sha1: b369a49402
+source_sha1: 714e1ad5ed
 ids: []
 ---
 ## 2. Công cụ dùng chung (`test/helpers.mjs`)

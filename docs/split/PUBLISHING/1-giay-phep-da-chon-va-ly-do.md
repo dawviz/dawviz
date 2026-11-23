@@ -5,7 +5,7 @@ section: "1. Giấy phép đã chọn và lý do"
 path: "1. Giấy phép đã chọn và lý do"
 chunk: 1-giay-phep-da-chon-va-ly-do.md
 source_lines: 5-22
-source_sha1: 02fa1bd49a
+source_sha1: c60dcbfe44
 ids: [OI-07]
 ---
 ## 1. Giấy phép đã chọn và lý do

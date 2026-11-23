@@ -1,6 +1,6 @@
 # Chỉ mục PARSER-TDD.md — TDD — Tài liệu kiểm thử: Thư viện parser DAW Visualizer
 
-nguồn: `PARSER-TDD.md` (sha1 b369a49402)
+nguồn: `PARSER-TDD.md` (sha1 714e1ad5ed)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -16,7 +16,7 @@ nguồn: `PARSER-TDD.md` (sha1 b369a49402)
 | 9 | 3. Danh mục test (77 test, 8 file) > 3.6 `detect-bundle.test.js` (4) — REQ-CORE-02, REQ-CORE-05 | [3-6-detect-bundle-test-js-4-req-core-02-req-core.md](3-6-detect-bundle-test-js-4-req-core-02-req-core.md) | 299 | REQ-CORE-02, REQ-CORE-05 |
 | 10 | 3. Danh mục test (77 test, 8 file) > 3.7 `i18n.test.js` (5) — REQ-I18N-* | [3-7-i18n-test-js-5-req-i18n.md](3-7-i18n-test-js-5-req-i18n.md) | 622 |  |
 | 11 | 4. Ma trận truy vết (rút gọn) | [4-ma-tran-truy-vet-rut-gon.md](4-ma-tran-truy-vet-rut-gon.md) | 521 | REQ-ALS-02, REQ-AST-02, REQ-BIN-03, REQ-CMP-01, REQ-LIM-02, REQ-RPP-04… |
-| 12 | 5. Khoảng trống kiểm thử (cần dữ liệu thật, xem SRS §6) | [5-khoang-trong-kiem-thu-can-du-lieu-that-xem-srs.md](5-khoang-trong-kiem-thu-can-du-lieu-that-xem-srs.md) | 964 | KPI-01 |
+| 12 | 5. Khoảng trống kiểm thử (cần dữ liệu thật, xem SRS §6) | [5-khoang-trong-kiem-thu-can-du-lieu-that-xem-srs.md](5-khoang-trong-kiem-thu-can-du-lieu-that-xem-srs.md) | 1135 | KPI-01 |
 | 13 | 6. Kiểm thử thủ công trình duyệt | [6-kiem-thu-thu-cong-trinh-duyet.md](6-kiem-thu-thu-cong-trinh-duyet.md) | 436 | ERR_NO_NOTES |
 | 14 | 7. Quy ước viết test mới | [7-quy-uoc-viet-test-moi.md](7-quy-uoc-viet-test-moi.md) | 383 |  |
 | 15 | 8. Tiêu chí chấp nhận | [8-tieu-chi-chap-nhan.md](8-tieu-chi-chap-nhan.md) | 189 |  |

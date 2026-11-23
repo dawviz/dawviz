@@ -5,7 +5,7 @@ section: "7. Quy ước viết test mới"
 path: "7. Quy ước viết test mới"
 chunk: 7-quy-uoc-viet-test-moi.md
 source_lines: 93-99
-source_sha1: b369a49402
+source_sha1: 714e1ad5ed
 ids: []
 ---
 ## 7. Quy ước viết test mới

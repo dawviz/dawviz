@@ -5,7 +5,7 @@ section: "3. Tạo repo trên GitHub"
 path: "3. Tạo repo trên GitHub"
 chunk: 3-tao-repo-tren-github.md
 source_lines: 40-47
-source_sha1: 02fa1bd49a
+source_sha1: c60dcbfe44
 ids: []
 ---
 ## 3. Tạo repo trên GitHub

@@ -5,7 +5,7 @@ section: "2. Định dạng hỗ trợ"
 path: "2. Định dạng hỗ trợ"
 chunk: 2-dinh-dang-ho-tro.md
 source_lines: 12-24
-source_sha1: a0c8f4a7bd
+source_sha1: 8be9e3d77f
 ids: [REQ-FMT-01, REQ-FMT-02, REQ-FMT-03, REQ-FMT-04, REQ-FMT-05, REQ-FMT-06, REQ-FMT-07, REQ-FMT-08]
 ---
 ## 2. Định dạng hỗ trợ

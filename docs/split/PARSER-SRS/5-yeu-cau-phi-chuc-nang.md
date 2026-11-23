@@ -5,7 +5,7 @@ section: "5. Yêu cầu phi chức năng"
 path: "5. Yêu cầu phi chức năng"
 chunk: 5-yeu-cau-phi-chuc-nang.md
 source_lines: 129-133
-source_sha1: a0c8f4a7bd
+source_sha1: 8be9e3d77f
 ids: [REQ-NFR-01, REQ-NFR-02, REQ-NFR-03]
 ---
 ## 5. Yêu cầu phi chức năng

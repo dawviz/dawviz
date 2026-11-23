@@ -5,7 +5,7 @@ section: "Quyết định: chuỗi cảnh và chia sẻ preset (D-66)"
 path: "Quyết định: chuỗi cảnh và chia sẻ preset (D-66)"
 chunk: quyet-dinh-chuoi-canh-va-chia-se-preset-d-66.md
 source_lines: 69-79
-source_sha1: 9a4c7b7f41
+source_sha1: 70b5971deb
 ids: [D-66]
 ---
 ## Quyết định: chuỗi cảnh và chia sẻ preset (D-66)

@@ -5,7 +5,7 @@ section: "7. Dọn lịch sử: xoá tệp mẫu bên thứ ba khỏi mọi comm
 path: "7. Dọn lịch sử: xoá tệp mẫu bên thứ ba khỏi mọi commit"
 chunk: 7-don-lich-su-xoa-tep-mau-ben-thu-ba-khoi-moi-co.md
 source_lines: 93-190
-source_sha1: 02fa1bd49a
+source_sha1: c60dcbfe44
 ids: [D-41]
 ---
 ## 7. Dọn lịch sử: xoá tệp mẫu bên thứ ba khỏi mọi commit

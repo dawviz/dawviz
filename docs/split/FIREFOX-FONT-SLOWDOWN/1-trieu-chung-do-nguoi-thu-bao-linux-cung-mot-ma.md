@@ -5,7 +5,7 @@ section: "1. Triệu chứng (do người thử báo, Linux, cùng một máy 22
 path: "1. Triệu chứng (do người thử báo, Linux, cùng một máy 22 lõi)"
 chunk: 1-trieu-chung-do-nguoi-thu-bao-linux-cung-mot-ma.md
 source_lines: 5-14
-source_sha1: a549031f0a
+source_sha1: dc64498938
 ids: []
 ---
 ## 1. Triệu chứng (do người thử báo, Linux, cùng một máy 22 lõi)

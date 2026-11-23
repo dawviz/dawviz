@@ -5,7 +5,7 @@ section: "8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS"
 path: "8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS"
 chunk: 8-cac-van-de-con-mo-cua-srs.md
 source_lines: 1173-1199
-source_sha1: ba41c8b27f
+source_sha1: 78bd49a501
 ids: [D-20, D-21, D-22, D-31, D-44, D-45, D-62, KPI-03, OI-01, OI-02, OI-05, OI-08, OI-09, OI-10, OI-12, OI-13, P-13, REQ-GRAPHICS-06, REQ-PARSER-05, REQ-STORAGE-05, SOI-01, SOI-02, SOI-03, SOI-04, SOI-05, SOI-06, SOI-07, SOI-08, SOI-09, SOI-10, SOI-11, SOI-12, SOI-13, SOI-14, SOI-15, SOI-16, SOI-17, SOI-18, SOI-19, SOI-20]
 ---
 ## 8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS
@@ -29,8 +29,8 @@ ids: [D-20, D-21, D-22, D-31, D-44, D-45, D-62, KPI-03, OI-01, OI-02, OI-05, OI-
 | **SOI-15** | Cách chọn `.als` mặc định trong `.alp` (hiện: lớn nhất) và ý nghĩa thứ tự trong manifest. | Dev |
 | **SOI-17** | Cách đếm beat/bar trong nhịp ghép: **Reaper đã xác nhận** (đếm theo mẫu số, 12/8 @120: `1.12.68` = 2,920 s). Còn Ableton, Bitwig và các nhịp ghép khác để chốt D-31 (OI-12). **v1.1:** Chương trình tệp mẫu (D-45). | Dev/QA |
 | **SOI-18** | Đọc automation của Ableton/DAWproject/Bitwig và envelope trong item/take của Reaper (REQ-GRAPHICS-06, P-13). **v1.1:** cần cho widget P-13 ở bản 1.0 (Ableton/DAWproject automation). | Dev |
-| **SOI-19** | Kiểm với Reaper thật: chiều của pan (âm = trái?), nghĩa giá trị `MUTEENV` (0/1), và hệ số nội suy fader `gain^0,25` với thêm vài điểm đo. **v1.1:** Chương trình tệp mẫu (D-45). | Dev/QA |
+| **SOI-19** | Kiểm với Reaper thật: chiều của pan (âm = trái?), nghĩa giá trị `MUTEENV` (0/1), và (hệ số nội suy fader đã kiểm: `gain^0,22`, ≤ 1,1 dB trên shape 0/2/3/4/5). **v1.1:** Chương trình tệp mẫu (D-45). | Dev/QA |
 | **SOI-20** | Font và hiển thị chữ cho video xuất ra với các hệ chữ ngoài Latin; chữ từ phải sang trái trên canvas (REQ-I18N-07, OI-13). **v1.1:** đổi ID từ SOI-18 trùng; 1.0 dùng phông người dùng nạp (REQ-STORAGE-05), 1.1 gói phông cộng đồng (OI-13). | Dev |
-| **SOI-16** | Ý nghĩa `SOFFS`, `IGNTEMPO 1`, shape cong và `PROJOFFS` của Reaper bằng mẫu thật có các giá trị này (`.mid` ngoài đã kiểm). **v1.1:** Chương trình tệp mẫu (D-45). | Dev (OI-01) |
+| **SOI-16** | Còn lại của Reaper: `IGNTEMPO 1` kèm `SOFFS`, `PROJOFFS`, tempo envelope cong (đã kiểm: `SOFFS` giây; envelope shape 0/2/3/4/5; `.mid` ngoài), bằng mẫu thật có các giá trị này. **v1.1:** Chương trình tệp mẫu (D-45). | Dev (OI-01) |
 
 ---
