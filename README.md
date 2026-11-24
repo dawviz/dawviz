@@ -29,7 +29,7 @@ npm run docs:sync      # tách tài liệu, sinh SKELETON/mục lục AI_CONTEXT
 npm run docs:check     # chỉ kiểm (exit 1 nếu cũ/hỏng)
 ```
 
-**Dùng với AI agent:** skill `dawviz` ở [plugins/dawviz](plugins/dawviz/README.md) cho AI viết preset hoặc điều khiển app (`?agent=1`) để làm video; trong Claude Code: `/plugin marketplace add dawviz/dawviz`. Hướng dẫn: [Dùng với AI agent](docs/manual/11-ai-agent.md).
+**Dùng với AI agent:** skill `dawviz` ở `plugins/dawviz/` cho AI viết preset hoặc điều khiển app (`?agent=1`) để làm video; trong Claude Code: `/plugin marketplace add dawviz/dawviz`. Hướng dẫn: [Dùng với AI agent](docs/manual/11-ai-agent.md).
 
 ## Tình trạng
 - Đã chạy và xanh (2026-11-12): 66 test parser (21 trong số đó cần tệp mẫu ở `test/fixtures/third-party/`, thiếu thì tự bỏ qua), 12 test Render Core, 9 test logic ứng dụng, 4 test thành phần (Vitest), kiểm i18n, `typecheck` và `build` của `apps/web`.
