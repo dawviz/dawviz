@@ -5,7 +5,7 @@ section: "Video 4 (Silentroom, từ 1:01 đến hết): lộ trình"
 path: "Video 4 (Silentroom, từ 1:01 đến hết): lộ trình"
 chunk: video-4-silentroom-tu-1-01-den-het-lo-trinh.md
 source_lines: 57-68
-source_sha1: 70b5971deb
+source_sha1: 7580d5f888
 ids: []
 ---
 ## Video 4 (Silentroom, từ 1:01 đến hết): lộ trình

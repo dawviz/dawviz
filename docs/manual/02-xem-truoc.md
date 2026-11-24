@@ -28,6 +28,8 @@ Cột bên trái liệt kê các phong cách video có sẵn, mỗi phong cách 
 
 Khi bạn đã chỉnh gì đó, tên phong cách có thêm chữ "đã chỉnh". Mỗi phong cách giữ bản chỉnh dở của riêng nó: đổi sang phong cách khác rồi quay lại vẫn còn nguyên. Muốn về bản gốc thì rê chuột vào ô và bấm **×**; vẫn hoàn tác được bằng Ctrl+Z. Bản chỉnh dở của mọi ô được nhớ theo trình duyệt (tải lại trang vẫn còn). Nút nhân bản trên ô tạo preset mới từ bản đang thấy. Dấu cộng dưới danh sách thêm preset từ tệp `.json` (xem [Cài đặt](04-cai-dat.md)).
 
+**Khi video có precomp** (tạo ở thẻ Chỉnh sửa, xem [Precomp](03-chinh-sua.md#precomp)): nếu vạch phát đang nằm trong một precomp, bấm một ô phong cách hoặc preset sẽ áp nó vào riêng precomp đó (precomp trên cùng nếu có nhiều cái chồng nhau). Phần còn lại của video giữ nguyên, nên mỗi đoạn bài có thể mang một phong cách khác. Vạch phát không nằm trong precomp nào thì ô áp cho cả video như thường. Cả hai cách đều hoàn tác được.
+
 Phía trên khung có dòng ghi kích thước và tỉ lệ khung (ví dụ `1,080 × 1,080 · 1:1`) và tên phong cách đang dùng.
 
 ## Tỉ lệ khung

@@ -26,7 +26,7 @@ Khi đang gõ trong một ô nhập, các phím này dùng cho ô đó.
 |---|---|
 | Mũi tên | Dịch widget đang chọn 1 điểm |
 | Shift + mũi tên | Dịch 10 điểm |
-| Esc | Bỏ chọn |
+| Esc | Bỏ chọn; không chọn gì thì ra khỏi precomp đang mở |
 | Delete | Xoá widget đang chọn |
 | Ctrl+D | Nhân bản widget đang chọn |
 | Ctrl+A (⌘A) | Chọn tất cả các lớp |
@@ -36,7 +36,9 @@ Khi đang gõ trong một ô nhập, các phím này dùng cho ô đó.
 | Shift + bấm | Chọn thêm widget |
 | Ctrl+] / Ctrl+[ | Lên một bậc / xuống một bậc |
 | Ctrl+Shift+] / Ctrl+Shift+[ | Lên trên cùng / xuống dưới cùng |
-| Alt+Lên / Alt+Xuống (trong danh sách Lớp) | Đổi thứ tự lớp |
+| Alt+Lên / Alt+Xuống (trên tên lớp ở Timeline) | Đổi thứ tự lớp |
+| Ctrl+K | Tách lớp đang chọn tại vạch phát |
+| Ctrl+G | Gom các lớp đang chọn thành precomp |
 | Giữ Alt khi kéo | Di chuyển không bắt dính |
 | Giữ Ctrl khi đổi cỡ | Đổi cỡ không bắt dính |
 | Giữ Alt khi đổi cỡ | Đổi cỡ quanh tâm |
@@ -47,12 +49,34 @@ Khi đang gõ trong một ô nhập, các phím này dùng cho ô đó.
 
 | Phím | Việc |
 |---|---|
-| Ctrl+B | Thu gọn hoặc mở cột trái (Lớp / Phong cách video) |
+| Ctrl+B | Thu gọn hoặc mở cột Phong cách video (thẻ Xem trước) |
 | Ctrl+Alt+B | Thu gọn hoặc mở cột phải (Thuộc tính widget / Bảng chỉnh) |
 | Ctrl+J | Thu gọn hoặc mở Timeline (thẻ Chỉnh sửa) |
 | Mũi tên (trên đường ranh panel) | Đổi cỡ panel (Shift: bước lớn hơn) |
 | Enter (trên đường ranh panel) | Thu gọn panel |
 | Nhấp đúp đường ranh panel | Về cỡ mặc định |
+
+## Timeline lớp
+
+Khi Timeline đang có focus (bấm vào nó trước):
+
+| Phím | Việc |
+|---|---|
+| Kéo giữa thanh | Dời lớp theo thời gian (mọi lớp đang chọn; keyframe đi theo) |
+| Kéo mép thanh | Cắt đầu hoặc cuối lớp (keyframe đứng yên) |
+| Giữ Alt khi kéo thanh hoặc thước | Không bắt dính |
+| Nhấp đúp thanh | Mở keyframe của lớp; với precomp: mở precomp |
+| Enter | Như nhấp đúp, cho lớp đang chọn |
+| Ctrl+K | Tách lớp tại vạch phát |
+| Ctrl+G | Gom thành precomp |
+| `[` / `]` | Đưa đầu / cuối thanh tới vạch phát |
+| Alt+`[` / Alt+`]` | Cắt đầu / cuối thanh tại vạch phát |
+| Alt+Trái / Alt+Phải | Dời lớp đang chọn một khung (thêm Shift: một giây); trên mốc phase: dời phase |
+| Lên / Xuống | Chọn lớp trên / dưới |
+| Delete (trên mốc phase) | Xoá phase |
+| Nhấp đúp trên làn Phase | Thêm phase tại chỗ nhấp |
+| Ctrl + cuộn chuột | Phóng to / thu nhỏ theo chiều ngang |
+| Alt + cuộn chuột | Hàng cao hơn / thấp hơn |
 
 ## Timeline và keyframe
 

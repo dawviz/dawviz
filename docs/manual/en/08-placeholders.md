@@ -4,7 +4,7 @@ Text in the video can change with the music. Type the name of a value in curly b
 
 ## Add a text box
 
-1. Open the **Editor** tab, press **Add** at the top of the Layers list and choose **Text box**.
+1. Open the **Editor** tab, press **Add** at the top left of the Timeline and choose **Text box**.
 2. The new box appears in the middle of the frame. Type in the **Text** field under **Settings**. Press Enter for a new line; click outside the field to apply.
 3. Font, colour, outline, shadow and so on are in the **Text** section like any other text. **Values in the text** lets the numbers have a different look from the rest.
 

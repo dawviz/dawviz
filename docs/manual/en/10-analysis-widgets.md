@@ -1,6 +1,6 @@
 # Analysis widgets
 
-Besides the Piano roll and the text widgets, the Editor has eleven widgets that show what is going on in the song. Add them with **Add** at the top of the Layers list; adjust them in the widget's **Settings**.
+Besides the Piano roll and the text widgets, the Editor has eleven widgets that show what is going on in the song. Add them with **Add** at the top left of the Timeline; adjust them in the widget's **Settings**.
 
 | Widget | Shows |
 |---|---|
@@ -57,11 +57,11 @@ The Piano roll also has **Note animation** under **Settings**: each note goes th
 
 ## Animate properties
 
-To make a property **change over time or with the music** instead of staying still, use the **Timeline & keyframes** panel at the bottom of the Editor tab (open it with the button at the start of its bar, or Ctrl+J). Any number or colour can be animated. The **Transform** group has **Position** (X and Y on one row, one keyframe for both), **Scale** (percent, 100 is full size; grows or shrinks the whole widget around its anchor), **Rotation** and **Opacity**. The **Widget properties** group has every number or colour field in the widget's **Settings** (for example bar colour, line thickness, glow). Older presets that animate Width/Height show those two rows as well.
+To make a property **change over time or with the music** instead of staying still, use the keyframe level of the **Timeline & keyframes** panel at the bottom of the Editor tab: double-click the widget's bar in the Timeline, or press **Keyframes** at the top of the right-hand panel. Any number or colour can be animated. The **Transform** group has **Position** (X and Y on one row, one keyframe for both), **Scale** (percent, 100 is full size; grows or shrinks the whole widget around its anchor), **Rotation** and **Opacity**. The **Widget properties** group has every number or colour field in the widget's **Settings** (for example bar colour, line thickness, glow). Older presets that animate Width/Height show those two rows as well.
 
 ### Setting keyframes
 
-1. Select the widget on the frame or in Layers. The Timeline shows its properties.
+1. Select the widget on the frame or in the Timeline, then open its keyframes (double-click its bar, or press **Keyframes** on the right). The Timeline shows its properties.
 2. Move the playhead to the moment you want: play the song, or click/drag on the Timeline's time ruler.
 3. Press the **stopwatch** at the start of the property's row. A keyframe is set at the playhead with the current value.
 4. Move the playhead somewhere else and type a new value in that row's value field (or drag on the field). A new keyframe is added at the playhead. The diamond button between the two triangle buttons also adds a keyframe at the playhead (press it again to remove it). To set keyframes on several rows at once, press the diamond of one row and drag down (or up) across the other rows; the rows you pass are highlighted, and releasing the mouse applies it (one undo step). Starting on a row that already has a keyframe at the playhead makes the drag remove instead; the triangles move the playhead to the previous or next keyframe.

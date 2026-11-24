@@ -16,7 +16,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1202 ký tự
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4347 ký tự
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](BRD/6-gia-dinh-assumptions.md) · 554 ký tự
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 35450 ký tự
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 37723 ký tự
 - [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](BRD/8-cac-van-de-con-mo-open-issues.md) · 7775 ký tự
 
 ## SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
@@ -244,7 +244,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [Video 2 (tn-shi): đã làm phần lớn](REFERENCE-VIDEOS/video-2-tn-shi-da-lam-phan-lon.md) · 946 ký tự
 - [Video 3 (Emocute): lộ trình](REFERENCE-VIDEOS/video-3-emocute-lo-trinh.md) · 1425 ký tự
 - [Video 4 (Silentroom, từ 1:01 đến hết): lộ trình](REFERENCE-VIDEOS/video-4-silentroom-tu-1-01-den-het-lo-trinh.md) · 1091 ký tự
-- [Quyết định: chuỗi cảnh và chia sẻ preset (D-66)](REFERENCE-VIDEOS/quyet-dinh-chuoi-canh-va-chia-se-preset-d-66.md) · 1266 ký tự
+- [Quyết định: chuỗi cảnh và chia sẻ preset (D-66)](REFERENCE-VIDEOS/quyet-dinh-chuoi-canh-va-chia-se-preset-d-66.md) · 1549 ký tự
 - [Task đề xuất (đã vào `PROGRESS`)](REFERENCE-VIDEOS/task-de-xuat-da-vao-progress.md) · 916 ký tự
 
 ## UI-DIRECTION.md — Định hướng hình ảnh: khung preview và giao diện web
@@ -258,12 +258,12 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [3.4 Khối tránh (luôn dán cuối)](UI-DIRECTION/3-4-khoi-tranh-luon-dan-cuoi.md) · 441 ký tự
 - [3.5 Prompt phụ](UI-DIRECTION/3-5-prompt-phu.md) · 1290 ký tự
 - [3.6 Tiêu chí chọn](UI-DIRECTION/3-6-tieu-chi-chon.md) · 559 ký tự
-- [3.7 Khung bố cục chung (từ vòng 1, dùng cho vòng 2)](UI-DIRECTION/3-7-khung-bo-cuc-chung-tu-vong-1-dung-cho-vong-2.md) · 1529 ký tự
+- [3.7 Khung bố cục chung (từ vòng 1, dùng cho vòng 2)](UI-DIRECTION/3-7-khung-bo-cuc-chung-tu-vong-1-dung-cho-vong-2.md) · 1585 ký tự
 - [3.8 Prompt vòng 2 (dùng kèm tệp đính kèm)](UI-DIRECTION/3-8-prompt-vong-2-dung-kem-tep-dinh-kem.md) · 9757 ký tự
 - [4. Nhật ký thử và hướng được chọn](UI-DIRECTION/4-nhat-ky-thu-va-huong-duoc-chon.md) · 3486 ký tự
 - [5.1 Quyết định](UI-DIRECTION/5-1-quyet-dinh.md) · 779 ký tự
 - [5.2 Bộ token (đề xuất, chốt khi làm)](UI-DIRECTION/5-2-bo-token-de-xuat-chot-khi-lam.md) · 1000 ký tự
-- [5.3 Cấu trúc giao diện: D + A + E (D-53, đã chốt 2026-11-13)](UI-DIRECTION/5-3-cau-truc-giao-dien-d-a-e-d-53-da-chot-2026-1.md) · 4174 ký tự
+- [5.3 Cấu trúc giao diện: D + A + E (D-53, đã chốt 2026-11-13)](UI-DIRECTION/5-3-cau-truc-giao-dien-d-a-e-d-53-da-chot-2026-1.md) · 4556 ký tự
 - [5.4 Bảng màu dựng sẵn (đã kiểm AA, v0.5)](UI-DIRECTION/5-4-bang-mau-dung-san-da-kiem-aa-v0-5.md) · 4454 ký tự
 - [6. Việc tiếp theo đề xuất](UI-DIRECTION/6-viec-tiep-theo-de-xuat.md) · 988 ký tự
 - [7. Nguyên tắc sản phẩm: trình dựng thật, mặc định đơn giản (D-54)](UI-DIRECTION/7-nguyen-tac-san-pham-trinh-dung-that-mac-dinh-d.md) · 1117 ký tự

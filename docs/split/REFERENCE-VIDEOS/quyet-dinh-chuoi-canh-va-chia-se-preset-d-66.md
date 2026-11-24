@@ -4,11 +4,13 @@ doc_title: "Video tham chiếu: ý tưởng, mức tái hiện và lộ trình"
 section: "Quyết định: chuỗi cảnh và chia sẻ preset (D-66)"
 path: "Quyết định: chuỗi cảnh và chia sẻ preset (D-66)"
 chunk: quyet-dinh-chuoi-canh-va-chia-se-preset-d-66.md
-source_lines: 69-79
-source_sha1: 70b5971deb
-ids: [D-66]
+source_lines: 69-81
+source_sha1: 7580d5f888
+ids: [D-66, D-69]
 ---
 ## Quyết định: chuỗi cảnh và chia sẻ preset (D-66)
+
+> **Cập nhật 2026-11-24 (D-69):** chuỗi cảnh nay làm bằng precomp trong scene (lớp `COMP` + sổ `scene.comps`, lồng tối đa 4 cấp) trên timeline lớp của Editor, không còn manifest riêng; ý "thời gian cục bộ trong cảnh, dữ liệu nhạc theo toàn bài" và phần chia sẻ bên dưới giữ nguyên.
 
 Video 2 và 4 đổi giao diện theo đoạn nhạc. Thay vì một preset khổng lồ tự chia thời gian, ta dùng **nhiều preset trọn vẹn + manifest thời gian của dự án**:
 

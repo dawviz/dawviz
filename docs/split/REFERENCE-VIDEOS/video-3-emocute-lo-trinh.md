@@ -5,7 +5,7 @@ section: "Video 3 (Emocute): lộ trình"
 path: "Video 3 (Emocute): lộ trình"
 chunk: video-3-emocute-lo-trinh.md
 source_lines: 41-56
-source_sha1: 70b5971deb
+source_sha1: 7580d5f888
 ids: []
 ---
 ## Video 3 (Emocute): lộ trình

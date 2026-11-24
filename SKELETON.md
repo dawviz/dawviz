@@ -61,6 +61,7 @@ dawviz/
 │     │  │  ├─ Inspector.tsx
 │     │  │  ├─ KeyframeTimeline.tsx
 │     │  │  ├─ LanguageSelect.tsx
+│     │  │  ├─ LayerTimeline.tsx
 │     │  │  ├─ LiveLayout.tsx
 │     │  │  ├─ MissingMidiPanel.tsx
 │     │  │  ├─ Notices.tsx
@@ -125,6 +126,7 @@ dawviz/
 │     │  │  ├─ clock.test.ts
 │     │  │  ├─ clock.ts
 │     │  │  ├─ commands.ts
+│     │  │  ├─ compLens.ts
 │     │  │  ├─ csp.test.ts
 │     │  │  ├─ csp.ts
 │     │  │  ├─ dexieBackend.ts
@@ -160,6 +162,8 @@ dawviz/
 │     │  │  ├─ latencyCalibration.ts
 │     │  │  ├─ layerName.test.ts
 │     │  │  ├─ layerName.ts
+│     │  │  ├─ layerTimeline.test.ts
+│     │  │  ├─ layerTimeline.ts
 │     │  │  ├─ masterClock.test.ts
 │     │  │  ├─ masterClock.ts
 │     │  │  ├─ notation.test.ts
@@ -327,6 +331,7 @@ dawviz/
 │  │  │  ├─ audioFeatures.ts
 │  │  │  ├─ background.ts
 │  │  │  ├─ brightness.ts
+│  │  │  ├─ comp.ts
 │  │  │  ├─ draw.ts
 │  │  │  ├─ fontMetrics.generated.ts
 │  │  │  ├─ fonts.ts
@@ -350,7 +355,6 @@ dawviz/
 │  │  │  ├─ prims.ts
 │  │  │  ├─ render.ts
 │  │  │  ├─ scene.ts
-│  │  │  ├─ sequence.ts
 │  │  │  ├─ snap.ts
 │  │  │  ├─ spectrum.ts
 │  │  │  ├─ style.ts
@@ -370,6 +374,7 @@ dawviz/
 │  │  │  ├─ audioFeatures.test.ts
 │  │  │  ├─ background.test.ts
 │  │  │  ├─ barpages.test.ts
+│  │  │  ├─ comp.test.ts
 │  │  │  ├─ expr.test.ts
 │  │  │  ├─ fonts.test.ts
 │  │  │  ├─ glow.test.ts
@@ -389,7 +394,6 @@ dawviz/
 │  │  │  ├─ render-core.test.ts
 │  │  │  ├─ rotate.test.ts
 │  │  │  ├─ scene.test.ts
-│  │  │  ├─ sequence.test.ts
 │  │  │  ├─ snap.test.ts
 │  │  │  ├─ spectrum.test.ts
 │  │  │  ├─ textAnimator.test.ts
@@ -880,6 +884,39 @@ function sourceUnit(track: ProjectTrack, tempoMap: TempoPoint[], t: number, cfg:
 function trackBrightness(track: ProjectTrack, tempoMap: TempoPoint[], t: number, cfg: BrightnessConfig = DEFAULT_BRIGHTNESS): number   // Độ sáng B(t) trong [minBrightness, maxBrightness]; track không có dữ liệu nguồn → 1 (hình ảnh không đổi).
 ```
 
+#### `packages/render-core/src/comp.ts`
+
+Precomp (D-69, T-112): một scene có thể chứa các "comp" (bố cục con, như precomposition của After Effects). Comp nằm trong sổ `scene.comps`
+
+```text
+const MAX_COMP_DEPTH
+const MAX_COMPS
+const MAX_FLAT_WIDGETS   // Tổng số widget sau khi trải phẳng (mỗi lần đặt một comp tính lại các widget của nó).
+const MAX_COMP_ID
+const MAX_COMP_NAME
+const COMP_SEP   // Dấu nối id lớp COMP với id con khi trải phẳng. Id widget không được chứa ký tự này.
+interface CompProps   // Thuộc tính của lớp COMP: `comp` = khoá trong `scene.comps`; `start` = giây (theo comp cha) mà giây 0 của comp…
+interface CompSpec   // Một comp: tên hiển thị và danh sách widget (cùng dạng `scene.widgets`).
+const isCompLayer = (w: Pick<WidgetSpec, 'type'>) =>
+const compOf = (w: WidgetSpec) =>
+const rootIdOf = (flatId: string) =>   // Id lớp gốc (cấp scene) của một id đã trải phẳng.
+function shiftAnimation(a: Animation, dt: number): Animation   // Dời mốc giây của một hoạt hình thêm `dt` (keyframe mốc `sec`; mốc nhạc, binding, biểu thức giữ nguyên).
+function shiftWidgetTime(w: WidgetSpec, dt: number): WidgetSpec   // Dời mọi mốc thời gian dàn dựng của widget thêm `dt` giây: keyframe mốc giây, khoảng hiển thị, và (lớp COMP) đ…
+function unshiftWidgetTime(orig: WidgetSpec | undefined, edited: WidgetSpec, dt: number): WidgetSpec   // Ngược của `shiftWidgetTime` khi sửa trong khung nhìn của một comp (Editor hiện mốc theo thời gian toàn bài): …
+type CompPath   // Đường dẫn tới một comp đang mở: danh sách id lớp COMP từ gốc vào trong. `[]` = timeline gốc.
+interface CompFrame
+function resolveCompPath(scene: SceneDocument, path: CompPath): CompFrame[]   // Đi theo đường dẫn: các cấp hợp lệ (dừng ở cấp đầu tiên sai: lớp không còn, không phải COMP, comp không có).
+const validCompPath = (scene: SceneDocument, path: CompPath) =>   // Đường dẫn còn hợp lệ (cắt phần sai, vd. sau khi hoàn tác xoá lớp COMP).
+const compPathOffset = (scene: SceneDocument, path: CompPath) =>   // Giây toàn bài của giây 0 trong comp ở cuối đường dẫn (0 ở gốc).
+function compView(scene: SceneDocument, path: CompPath): SceneDocument   // Khung nhìn của comp ở cuối `path` dưới dạng một scene: `widgets` = widget của comp đó với mốc thời gian đã dờ…
+function setCompView(base: SceneDocument, path: CompPath, edited: SceneDocument): SceneDocument   // Ghi khung nhìn đã sửa (`edited`, cùng dạng `compView`) vào lại scene gốc `base`: widget của comp ở cuối `path…
+function newCompId(scene: SceneDocument): string   // Id comp mới không trùng: `comp-<n>`.
+function compDepth(comps: Readonly<Record<string, CompSpec>>, id: string, seen: ReadonlySet<string> = new Set()): number   // Độ sâu lồng của comp `id` (1 = comp chỉ chứa widget thường); `Infinity` nếu có vòng lặp.
+function canPlaceComp(comps: Readonly<Record<string, CompSpec>>, id: string, inside: readonly string[]): boolean   // Đặt comp `id` vào comp/scene đang ở độ sâu `atDepth` (0 = gốc) có hợp lệ không: không vòng lặp, không vượt MA…
+function flatCount(scene: SceneDocument): number   // Số widget sau khi trải phẳng (để chặn vượt MAX_FLAT_WIDGETS khi thêm hoặc nhân bản lớp COMP).
+function flattenScene(scene: SceneDocument): SceneDocument   // Scene phẳng để dựng khung: lớp COMP được thay bằng chính nó (làm cha, không vẽ) và ngay sau nó, theo thứ tự l…
+```
+
 #### `packages/render-core/src/draw.ts`
 
 Lớp vẽ duy nhất lên Canvas 2D / OffscreenCanvas. Preview và Export đều gọi hàm này (WYSIWYG, D-06).
@@ -1051,7 +1088,7 @@ re-export * from './notation/spelling.ts'
 re-export * from './notation/widget.ts'
 re-export { roughPathData, roughGlyph, hashSigned } from './notation/draw.ts'
 re-export { ExprError, FRAME_BUDGET, LIMITS as EXPR_LIMITS, BUILTIN_NAMES as EXPR_FUNCTIONS, type ExprErrorCode, type Budget } from '@dawviz/expr'
-re-export * from './sequence.ts'
+re-export * from './comp.ts'
 ```
 
 #### `packages/render-core/src/insight.ts`
@@ -1395,9 +1432,9 @@ function pianoRollGeometry(p: Pick<PianoRollProps, 'keyboard' | 'playheadPositio
 const pianoRollRenderer
 const WIDGET_RENDERERS   // Bảng renderer theo loại. Widget chưa có renderer được bỏ qua khi vẽ (vẫn giữ trong Scene).
 const buildSceneHud = (scene: SceneDocument, ast: UnifiedProjectAST, index: TimelineIndex) =>   // HudData cho một scene: số đếm, lưới ô nhịp và hợp âm của mọi widget Chord Detection. Gọi ở bước derived (một …
-function layoutFrame(scene: SceneDocument, derived0: Derived, ast: UnifiedProjectAST, t: number, renderers = WIDGET_RENDERERS)
+function layoutFrame(scene0: SceneDocument, derived0: Derived, ast: UnifiedProjectAST, t: number, renderers = WIDGET_RENDERERS)
 interface FrameOptions   // Tuỳ chọn khung (T-55): `transparent` = không tô màu nền và không vẽ ảnh nền (xuất PNG có kênh trong suốt); `l…
-function renderFrame(scene: SceneDocument, derived: Derived, ast: UnifiedProjectAST, t: number, target: RenderTarget, scale: number, renderers = WIDGET_RENDERERS, opts: FrameOptions = {}): void
+function renderFrame(scene0: SceneDocument, derived: Derived, ast: UnifiedProjectAST, t: number, target: RenderTarget, scale: number, renderers = WIDGET_RENDERERS, opts: FrameOptions = {}): void
 function drawPrimitives(g: RenderCtx, prims: Primitive[], env0: DrawEnv = { scale: 1, rotation: 0 }): void   // Chỉ vẽ, không tính nghiệp vụ. Mọi trạng thái ctx bị đổi (alpha, shadow) được trả về mặc định sau mỗi hình.
 ```
 
@@ -1443,26 +1480,6 @@ function silentSanitizer(styleIds?: ReadonlySet<string>): Sanitizer   // Bộ ki
 function sanitizeWidgetProps(type: WidgetType, props: unknown, S: Sanitizer): Record<string, unknown> | null   // Thuộc tính của widget (trừ Piano Roll) qua đúng bộ kiểm của loại đó. Loại không có bộ kiểm (Piano Roll) → nul…
 function sanitizeVisibility(S: Sanitizer, v: unknown, path: string): WidgetVisibility | undefined   // Khoảng hiển thị: danh sách khoảng (≤ MAX_RANGES), mỗi khoảng from ≥ 0, to > from hoặc null (tới hết bài); kho…
 function sanitizePhases(S: Sanitizer, v: unknown, path: string): Phase[]   // Phase: mảng {name, start}; tên 1–60 ký tự, start ≥ 0; sắp theo start; hai phase cùng start thì giữ phase đầu.
-```
-
-#### `packages/render-core/src/sequence.ts`
-
-Chuỗi cảnh (T-110, D-66): một dự án dùng nhiều preset scene ở các mốc thời gian khác nhau. Mốc nằm ở MANIFEST của dự án, không nằm trong preset.
-
-```text
-const SEQUENCE_VERSION
-const MAX_CUES
-interface SceneCue   // Một đoạn của chuỗi: preset `scene` (khoá trong thư viện preset của dự án) hiện từ `from` tới `to` (giây; null…
-interface SequenceManifest   // Manifest đi cùng dự án. `global` = scene luôn bật suốt bài, vẽ trên cùng (vd. chữ hợp âm, thanh tiến độ).
-interface SequenceWarning
-function sanitizeManifest(raw: unknown):    // Đọc manifest từ JSON không tin cậy: mục sai bị bỏ kèm cảnh báo, số kẹp vào miền, cue sắp theo `from`, id trùn…
-function cueAlpha(c: SceneCue, t: number, duration: number): number   // Độ đục của cue tại `t` (0 = không hiện): trong [from, to) có hiện dần/ẩn dần ở hai biên (cùng đường cong `vis…
-function activeCues(m: SequenceManifest, t: number, duration: number):    // Các cue đang hiện tại `t`, theo thứ tự vẽ (cue sau vẽ đè cue trước).
-const cueWidgetId = (cueId: string, widgetId: string) =>   // Tiền tố id widget của một cue: các cue dùng cùng một scene không đụng id (Bản nhạc dựng theo id widget).
-function cueScene(scene: SceneDocument, cue: SceneCue): SceneDocument   // Bản sao của `scene` đặt ở cue `cue`: id widget (và `parent`) có tiền tố cue; keyframe mốc `sec` và khoảng hiể…
-interface SequenceSource
-function sequenceLayers(m: SequenceManifest, src: SequenceSource, t: number, duration: number):    // Các scene cần vẽ ở `t`, theo thứ tự: cue theo `from`, rồi scene chung (trên cùng). Cue có scene khác khung th…
-function renderSequenceFrame(m: SequenceManifest, src: SequenceSource, fallback: SceneDocument, ast: UnifiedProjectAST, t: number, target: RenderTarget, scale: number, renderers: Partial<Record<WidgetSpec['type'], WidgetRenderer<any>>> = WIDGET_RENDERERS): void   // Vẽ một khung của chuỗi cảnh. Không có cue nào hiện và không có scene chung: tô `fallback` (nền của scene đó) …
 ```
 
 #### `packages/render-core/src/snap.ts`
@@ -1790,7 +1807,7 @@ Thẻ Editor (T-68, UI-DIRECTION 5.3 mục 3, SRS 5.3 Edit Mode): bố cục wid
 ```text
 interface EditorActions
 function useWidgetNames(widgets: readonly WidgetSpec[]): (id: string) => string   // Tên hiển thị của widget: tên loại theo ngôn ngữ, đánh số khi có nhiều widget cùng loại.
-function Editor({ styleName, scene, derived, ast, playback, fonts, advanced, actions, transport, active, widgetSections, layoutRef, background }: Props)
+function Editor({ styleName, scene, root, compPath, onCompPath, flatFull, derived: derived0, ast, playback, fonts, advanced, actions, transport, active, widgetSections, layoutRef, background }: Props)
 ```
 
 #### `apps/web/src/components/EditorOverlay.tsx`
@@ -1892,6 +1909,11 @@ const ZoomIn = (p: P) =>
 const ZoomOut = (p: P) =>
 const FitWidth = (p: P) =>   // Vừa khung: hai mũi tên chỉ vào nhau theo chiều ngang.
 const Filter = (p: P) =>   // Lọc: chỉ hiện thuộc tính đang animate.
+const RowsTaller = (p: P) =>   // Kéo cho hàng cao hơn / thấp hơn (timeline lớp): hai vạch ngang với mũi tên ra / vào.
+const RowsShorter = (p: P) =>
+const Scissors = (p: P) =>   // Kéo cắt: tách lớp tại vạch phát.
+const Precomp = (p: P) =>   // Hai khung chồng nhau: precomp.
+const Flag = (p: P) =>   // Cờ đánh dấu: phase.
 ```
 
 #### `apps/web/src/components/Inspector.tsx`
@@ -1913,7 +1935,10 @@ Thân panel Timeline (UI-DIRECTION 5.3, DESIGN.md "Timeline"): bên trái là c�
 interface KeySel   // Vùng chọn của Timeline: keyframe (`đường dẫn#chỉ số`) và dòng đang chọn (id của dòng, lib/timelineRows.ts; đí…
 const NO_SEL
 interface KeyframeTimelineProps
+const PAD   // Lề trái của làn (px): keyframe ở 0:00 không bị cắt nửa ở mép.
 function KeyframeTimeline({ widget, tempoMap, duration, playback, locked, sel, onSel, onAnimate, onAnimateMany, gesture, tree, onTree, onTreeReset }: KeyframeTimelineProps)
+function PlayheadHead({ playback, pps }: { playback: Playback; pps: number })   // Đầu vạch phát trên thước.
+function PlayheadLine({ playback, pps, tree, scroller, laneW }: { playback: Playback; pps: number; tree: number; scroller: React.RefObject<HTMLDivElement>; laneW: number })   // Vạch phát dọc qua các làn (dưới cột cây). Đang phát mà vạch chạy ra khỏi phần đang thấy thì cuộn theo từng tr…
 ```
 
 #### `apps/web/src/components/LanguageSelect.tsx`
@@ -1922,6 +1947,15 @@ function KeyframeTimeline({ widget, tempoMap, duration, playback, locked, sel, o
 
 ```text
 function LanguageSelect()
+```
+
+#### `apps/web/src/components/LayerTimeline.tsx`
+
+Timeline lớp (tầng 1, D-69, T-112; UI-DIRECTION 5.3, DESIGN.md "Timeline lớp"): thay danh sách Lớp cũ. Bên trái là cột lớp (tay nắm đổi thứ tự,
+
+```text
+interface LayerTimelineProps
+function LayerTimeline(props: LayerTimelineProps)
 ```
 
 #### `apps/web/src/components/LiveLayout.tsx`
@@ -2093,22 +2127,22 @@ function TimeField({ id, label, value, onChange, emptyText, min = 0, max = 86400
 
 #### `apps/web/src/components/TimelinePanel.tsx`
 
-Panel "Timeline và keyframe" ở đáy thẻ Editor (UI-DIRECTION 5.3, DESIGN.md "Timeline"): thanh tiêu đề luôn hiện (thu gọn/mở bằng nút
+Panel "Timeline" ở đáy thẻ Editor (UI-DIRECTION 5.3, DESIGN.md "Timeline", D-69): thanh tiêu đề luôn hiện (thu gọn/mở bằng nút hoặc Ctrl+J),
 
 ```text
+interface Crumb
 interface TimelinePanelProps
 type TimelineView
-function TimelinePanel({ open, onOpen, toggleHint, widget, widgetName, selectedCount, hasProject, view, onView, children }: TimelinePanelProps)
+function TimelinePanel({ open, onOpen, toggleHint, crumbs, keys, hasWidget, selectedCount, hasProject, view, onView, note, onNote, children }: TimelinePanelProps)
 ```
 
 #### `apps/web/src/components/TimeSections.tsx`
 
-Hai mục của bảng Thuộc tính (T-81): "Khoảng hiển thị" của widget đang chọn (REQ-GRAPHICS-14) và "Phase" của cả bài.
+Các mục thời gian của bảng Thuộc tính (T-81): "Khoảng hiển thị" của widget đang chọn (REQ-GRAPHICS-14), chuyển động, nốt chủ, cách ghi tên nốt.
 
 ```text
 function VisibilitySection({ n, widgetId, value, disabled, onChange }: { n: number; widgetId: string; value: WidgetVisibility | undefined; disabled?: boolean; onChange(v: WidgetVisibility | null, key?: string): void })   // Mục "Khoảng hiển thị": tắt = hiện suốt bài; bật = danh sách khoảng (mốc kết thúc trống = hết bài) + thời gian…
 function MotionSection({ n, widgetId, value, disabled, onChange }: { n: number; widgetId: string; value: WidgetMotion | undefined; disabled?: boolean; onChange(v: WidgetMotion | null, key?: string): void })   // Mục "Chuyển động" (mọi loại widget): hiệu ứng vào ở đầu khoảng hiển thị, hiệu ứng ra ở cuối, và một chuyển độ…
-function PhasesSection({ n, phases, duration, onChange }: { n: number; phases: readonly Phase[]; duration: number; onChange(p: Phase[], key?: string): void })   // Mục "Phase": mỗi dòng là tên + thời điểm bắt đầu; phase kéo dài tới phase kế. Dùng cho chỗ giữ `{phase}`, `{n…
 function NamingSection({ n, naming, onChange }: { n: number; naming: NoteNaming | undefined; onChange(v: NoteNaming | null): void })   // Mục "Cách ghi tên nốt" (P-12): một thiết lập chung cho mọi widget có tên nốt hoặc hợp âm. Trống = cách ghi cũ.
 function KeySection({ n, tonic, onChange }: { n: number; tonic: number | undefined; onChange(t: number | null): void })
 ```
@@ -2449,8 +2483,24 @@ const setBackgroundSpec = (d: Doc, patch: Partial<BackgroundImageSpec>) =>   // 
 const setCanvasSize = (d: Doc, width: number, height: number) =>   // Đổi cỡ khung thiết kế (256–4096 pt mỗi cạnh; tỉ lệ dựng sẵn 9:16 / 1:1 / 16:9 qua `setAspect`): mọi widget co…
 const setAspect = (d: Doc, aspect: string) =>   // Đổi sang một tỉ lệ dựng sẵn (9:16 / 1:1 / 16:9); tỉ lệ không biết hoặc đang đúng tỉ lệ đó thì không làm gì.
 const patchSnapping = (d: Doc, patch: Partial<SceneDocument['canvas']['snapping']>) =>
+type LayerEdit   // Loại thao tác trên timeline lớp (tên lệnh và nhãn lịch sử).
+const setLayers = (d: Doc, kind: LayerEdit, next: { widgets: WidgetSpec[]; comps?: Record<string, CompSpec>; layoutRef?: Doc['layoutRef']; propsRef?: Doc['propsRef'] }, mergeKey?: string, params?: Cmd['params']) =>   // Thay danh sách lớp (và sổ comp, mốc ↺ nếu có) trong MỘT lệnh: dời/cắt mép/tách thanh, gom precomp (lib/layerT…
+const renameComp = (d: Doc, comp: string, name: string) =>   // Đổi tên một precomp (tên comp và tên các lớp COMP đang trỏ tới nó ở cùng khung nhìn không đổi theo: lớp có tê…
+const applySceneToComp = (d: Doc, comp: string, src: SceneDocument) =>   // Áp một scene dựng sẵn (phong cách video, preset) vào nội dung của precomp `comp` (thẻ Xem trước, D-69: precom…
 function handEdited(d: Doc): boolean   // Chỉnh tay (kiểu nốt hoặc bố cục) có bị mất nếu đổi sang phong cách khác không? Dùng để hiện thông báo nhỏ sau…
 function initialDoc(videoStyle: string, saved: { style?: Partial<{ base: Partial<NoteStyle>; tracks: Record<string, Partial<NoteStyle>> }>; keyboard?: Partial<KeyboardStyle> } = {}): Doc   // Tài liệu ban đầu từ thiết lập đã lưu (localStorage): phong cách video, kiểu nốt, ghi đè theo track, bàn phím …
+```
+
+#### `apps/web/src/lib/compLens.ts`
+
+Khung nhìn của một precomp cho Editor (D-69, T-112). Editor luôn làm việc trên một Doc "như scene gốc": ở timeline gốc là chính Doc; khi mở một
+
+```text
+const refKey = (comp: string | null, id: string) =>   // Khoá mốc ↺ đầy đủ của widget `id` trong comp `comp` (null = gốc).
+const compAt = (d: Doc, path: CompPath) =>   // Comp đang mở ở cuối đường dẫn (null = gốc hoặc đường dẫn không còn hợp lệ).
+function viewDoc(d: Doc, path: CompPath): Doc   // Doc như Editor thấy khi mở `path`. `path = []` → chính `d`.
+function putView(d: Doc, path: CompPath, v: Doc): Doc   // Ghi khung nhìn đã sửa về Doc thật.
+function liftCmd(cmd: Cmd | null, path: CompPath): Cmd | null   // Lệnh dựng trên khung nhìn của `path` → lệnh trên Doc thật. Khoá gộp mang theo đường dẫn (kéo cùng ô ở hai com…
 ```
 
 #### `apps/web/src/lib/csp.ts`
@@ -2806,6 +2856,24 @@ type LayerNameCheck
 function checkLayerName(raw: string, id: string, ids: readonly string[], display: (id: string) => string): LayerNameCheck   // Kiểm tên mới cho lớp `id`. `display(id)` là tên đang hiển thị của một lớp (tên riêng hoặc tên theo loại). Trố…
 ```
 
+#### `apps/web/src/lib/layerTimeline.ts`
+
+Timeline lớp (tầng 1, D-69, T-112): mỗi lớp (widget) là một hàng, mỗi khoảng hiển thị là một thanh. Phép thuần trên danh sách widget của khung
+
+```text
+const MIN_CLIP   // Thanh ngắn nhất (giây): một khung hình ở 30 fps.
+interface Clip   // Một thanh trên hàng của lớp: khoảng thứ `i` của khoảng hiển thị; `to` đã thay `null` (tới hết bài) bằng `dura…
+function clipsOf(w: Pick<WidgetSpec, 'visibility'>, duration: number): Clip[]
+const clipAt = (w: Pick<WidgetSpec, 'visibility'>, t: number, duration: number) =>   // Thanh chứa `t` (đầu thanh tính, cuối thanh không), hoặc -1.
+function moveLayers(widgets: readonly WidgetSpec[], ids: readonly string[], dt: number, tempoMap: readonly TempoPoint[]):    // Dời thanh của các lớp `ids` thêm `dt` giây (keyframe mốc giây và comp con dời theo). Kẹp để không mốc nào san…
+function trimLayer(w: WidgetSpec, i: number, edge: 'in' | 'out', t: number, duration: number): WidgetSpec   // Cắt mép thanh `i` của lớp: `in` = đầu thanh, `out` = cuối thanh, tới thời điểm `t` (keyframe đứng yên). Kẹp t…
+function splitLayer(scene: SceneDocument, id: string, t: number, duration: number):    // Tách lớp `id` tại `t` (Ctrl+K, kiểu After Effects): lớp gốc giữ phần trước `t`, bản sao (id mới, ngay trên lớ…
+function precompose(scene: SceneDocument, ids: readonly string[], offset: number, compId: string, name: string):    // Gom các lớp `ids` thành một precomp (Ctrl+Shift+C). `offset` = giây toàn bài của giây 0 trong comp đang mở (k…
+function newCompName(scene: SceneDocument, base: string, layerNames: readonly string[]): string   // Tên precomp mới không trùng tên lớp nào trong khung nhìn và tên comp nào: "<gốc> <n>".
+function clipEdges(widgets: readonly WidgetSpec[], skip: ReadonlySet<string>, duration: number): number[]   // Ranh giới để bắt dính khi kéo thanh: đầu/cuối mọi thanh khác (không thuộc các lớp đang kéo).
+const canAddRange = (w: WidgetSpec) =>   // Còn thêm được khoảng hiển thị không (MAX_RANGES).
+```
+
 #### `apps/web/src/lib/masterClock.ts`
 
 Toán đồng hồ chủ (T-08, Technical Design §6.2.2). Hàm thuần, không biết Web Audio, không đọc đồng hồ thật.
@@ -2992,7 +3060,7 @@ function startPaintDrag(e: { button: number; isPrimary: boolean; target: EventTa
 
 #### `apps/web/src/lib/panelLayout.ts`
 
-Bố cục panel đổi cỡ (UI-DIRECTION 5.3, DESIGN.md "Panel đổi cỡ"). Thẻ Editor: cột Lớp, cột Thiết lập, panel Timeline ở đáy và cột cây thuộc tính
+Bố cục panel đổi cỡ (UI-DIRECTION 5.3, DESIGN.md "Panel đổi cỡ"). Thẻ Editor: cột Thiết lập, panel Timeline ở đáy và cột cây (cột lớp / cây thuộc tính)
 
 ```text
 type PanelId
@@ -3003,13 +3071,13 @@ const DEFAULT_LAYOUT
 interface Profile   // Cỡ mặc định và giới hạn theo thẻ. Xem trước: cột trái là Phong cách video (ảnh thu nhỏ co theo bề rộng), cột …
 const PROFILES
 const RAIL   // Cỡ khi thu gọn: dải dọc chứa nút mở (cột) và thanh tiêu đề (timeline).
-const STAGE_MIN   // Sân khấu luôn còn tối thiểu chừng này (px) để khung preview không bị bóp mất.
+const STAGE_MIN   // Sân khấu luôn còn tối thiểu chừng này (px) để khung preview không bị bóp mất. Chiều cao: Timeline kéo lên đượ…
 function parseLayout(raw: unknown, pf: Profile = PROFILES.editor): PanelLayout   // Đọc bố cục đã lưu; trường thiếu hoặc sai lấy mặc định, số ngoài giới hạn bị kẹp.
 const setSize = (l: PanelLayout, id: PanelId, v: number, pf: Profile = PROFILES.editor) =>   // Đặt cỡ một panel (kẹp trong giới hạn của nó).
 const toggle = (l: PanelLayout, id: CollapsibleId, open: boolean) =>
 const resetSize = (l: PanelLayout, id: PanelId, pf: Profile = PROFILES.editor) =>
 interface Resolved
-function resolveLayout(l: PanelLayout, view: { width: number; height: number }, advanced: boolean, pf: Profile = PROFILES.editor): Resolved   // Cỡ thật để vẽ trong khung `view` (px): panel thu gọn còn dải RAIL/TIMELINE_BAR; nếu cửa sổ hẹp tới mức sân kh…
+function resolveLayout(l: PanelLayout, view: { width: number; height: number }, _advanced: boolean, pf: Profile = PROFILES.editor): Resolved   // Cỡ thật để vẽ trong khung `view` (px): panel thu gọn còn dải RAIL/TIMELINE_BAR; nếu cửa sổ hẹp tới mức sân kh…
 ```
 
 #### `apps/web/src/lib/parseInWorker.ts`
@@ -3435,7 +3503,7 @@ Trạng thái bố cục panel (thẻ Editor và thẻ Xem trước): đọc/ghi
 ```text
 interface PanelLayoutApi
 function usePanelLayout(advanced: boolean, which: 'editor' | 'preview' = 'editor'): PanelLayoutApi
-function usePanelShortcuts(panels: PanelLayoutApi, active: boolean, timeline: boolean): void   // Phím tắt thu gọn/mở panel khi thẻ đang mở và không gõ chữ. `timeline` = có panel Timeline (thẻ Editor).
+function usePanelShortcuts(panels: PanelLayoutApi, active: boolean, timeline: boolean, left = true): void   // Phím tắt thu gọn/mở panel khi thẻ đang mở và không gõ chữ. `timeline` = có panel Timeline (thẻ Editor); `left…
 ```
 
 #### `apps/web/src/lib/usePref.ts`
@@ -3661,6 +3729,7 @@ type SpectrumOut
 - `apps/web/src/lib/historyLabels.test.ts`
 - `apps/web/src/lib/latencyCalibration.test.ts`
 - `apps/web/src/lib/layerName.test.ts`
+- `apps/web/src/lib/layerTimeline.test.ts`
 - `apps/web/src/lib/masterClock.test.ts`
 - `apps/web/src/lib/notation.test.ts`
 - `apps/web/src/lib/numberInput.test.ts`
@@ -3697,6 +3766,7 @@ type SpectrumOut
 - `packages/render-core/test/audioFeatures.test.ts`
 - `packages/render-core/test/background.test.ts`
 - `packages/render-core/test/barpages.test.ts`
+- `packages/render-core/test/comp.test.ts`
 - `packages/render-core/test/expr.test.ts`
 - `packages/render-core/test/fonts.test.ts`
 - `packages/render-core/test/glow.test.ts`
@@ -3715,7 +3785,6 @@ type SpectrumOut
 - `packages/render-core/test/render-core.test.ts`
 - `packages/render-core/test/rotate.test.ts`
 - `packages/render-core/test/scene.test.ts`
-- `packages/render-core/test/sequence.test.ts`
 - `packages/render-core/test/snap.test.ts`
 - `packages/render-core/test/spectrum.test.ts`
 - `packages/render-core/test/textAnimator.test.ts`
@@ -3732,4 +3801,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 11 thư mục src, 1667 ký hiệu công khai -->
+<!-- 11 thư mục src, 1710 ký hiệu công khai -->

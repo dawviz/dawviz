@@ -4,27 +4,28 @@
 
 Thẻ Chỉnh sửa dùng để sắp xếp các khối trên khung video, đổi hình thức nốt và chữ. Mỗi khối (gọi là widget) làm một việc: piano roll, tên bài và nghệ sĩ, bộ đếm nốt, nốt đang phát, thời gian và ô nhịp, hợp âm, thanh tiến độ.
 
-Màn hình có bốn phần: danh sách **Lớp** bên trái, khung video ở giữa, **Thuộc tính widget** bên phải, và panel **Timeline và keyframe** ở dưới cùng.
+Màn hình có ba phần: khung video ở giữa, **Thuộc tính widget** bên phải (cao hết màn hình), và panel **Timeline và keyframe** ở dưới khung. Timeline chứa luôn danh sách lớp: mỗi lớp là một hàng, mỗi lúc lớp xuất hiện là một thanh, như timeline của Premiere Pro hay After Effects.
 
 ## Đổi cỡ và thu gọn panel
 
 - **Đổi cỡ:** kéo đường ranh giữa hai panel (con trỏ đổi thành mũi tên hai đầu). Nhấp đúp vào đường ranh để về cỡ mặc định. Cũng có thể bấm Tab tới đường ranh rồi dùng phím mũi tên (Shift: bước lớn hơn).
-- **Thu gọn:** bấm nút panel ở góc trên của Lớp hoặc Thuộc tính widget, hoặc nút ở đầu thanh **Timeline và keyframe**. Panel thu gọn còn một dải mỏng; bấm dải đó để mở lại. Phím tắt: Ctrl+B (Lớp), Ctrl+Alt+B (Thuộc tính widget), Ctrl+J (Timeline).
+- **Thu gọn:** bấm nút panel ở góc trên của Thuộc tính widget, hoặc nút ở đầu thanh **Timeline và keyframe**. Panel thu gọn còn một dải mỏng; bấm dải đó để mở lại. Phím tắt: Ctrl+Alt+B (Thuộc tính widget), Ctrl+J (Timeline).
+- **Timeline cao hay thấp tuỳ ý:** kéo đường ranh phía trên Timeline lên hoặc xuống; kéo được tới khi khung video còn một dải nhỏ.
 - **Gấp mục:** bấm tiêu đề một mục (ví dụ **Vị trí và kích thước**) để gấp lại khi không dùng tới, bấm lần nữa để mở. Cột bên phải ngắn đi rất nhiều. Ứng dụng nhớ mục nào đang gấp, cả ở thẻ Xem trước.
 - Cỡ và trạng thái các panel được nhớ trong trình duyệt này. Màn hình hẹp hơn 1024 điểm thì các panel xếp dọc như cũ.
 
 ## Chọn widget
 
-- Bấm vào widget trên khung, hoặc bấm tên nó trong danh sách Lớp.
+- Bấm vào widget trên khung, bấm tên nó ở cột lớp của Timeline, hoặc bấm thanh của nó trên Timeline.
 - Giữ Shift (hoặc Ctrl/⌘) khi bấm để chọn thêm widget khác.
 - Bấm giữ trên tên một lớp rồi kéo lên hoặc xuống để chọn cả dãy lớp đi qua. Giữ Shift khi bắt đầu kéo để cộng thêm vào những lớp đang chọn.
-- **Chọn tất cả** ở đầu danh sách Lớp, hoặc Ctrl+A (⌘A trên Mac), chọn mọi lớp.
+- Ctrl+A (⌘A trên Mac) chọn mọi lớp.
 - Kéo chuột trên chỗ trống của khung để vẽ một khung chọn: mọi widget chạm khung đó đều được chọn. Giữ Shift để cộng thêm vào những widget đang chọn.
-- **Bỏ chọn:** bấm **Bỏ chọn** ở đầu bảng bên phải (khi đang chọn), hoặc bấm Esc, hoặc bấm vào vùng nền xung quanh khung. Khi đã chọn hết, nút **Chọn tất cả** ở danh sách Lớp đổi thành **Bỏ chọn**. Cách này dùng được cả khi một widget phủ kín khung, lúc bấm lên khung không bỏ chọn được.
+- **Bỏ chọn:** bấm **Bỏ chọn** ở đầu bảng bên phải (khi đang chọn), bấm Esc, bấm vào vùng nền xung quanh khung, hoặc bấm chỗ trống trên Timeline. Cách này dùng được cả khi một widget phủ kín khung, lúc bấm lên khung không bỏ chọn được.
 
 ## Thêm, nhân bản, xoá
 
-- **Thêm:** bấm **Thêm** ở đầu danh sách Lớp rồi chọn loại widget. Widget mới nằm giữa khung, trên cùng các lớp, và được chọn sẵn.
+- **Thêm:** bấm **Thêm** ở góc trên bên trái Timeline rồi chọn loại widget. Widget mới nằm giữa khung, trên cùng các lớp, và được chọn sẵn.
 - **Nhân bản:** nút nhân bản ở mục **Sắp xếp**, hoặc Ctrl+D (⌘D trên Mac). Bản sao dời xuống một chút để bạn thấy nó.
 - **Xoá:** nút thùng rác, hoặc phím Delete. Widget đang khoá không xoá được.
 
@@ -63,7 +64,7 @@ Widget **Hạt** phát ra các hạt nhỏ mỗi khi có nốt. Hạt chỉ ph�
 
 - **Số hạt mỗi nốt**, **Tuổi thọ**, **Tốc độ**, **Hướng bay** (0° là lên trên, tăng theo chiều kim đồng hồ), **Độ toả** (độ rộng quạt bay), **Trọng lực** (dương là rơi xuống, âm là bay lên), **Cỡ lúc đầu** và **Cỡ lúc cuối**.
 - **Màu:** theo màu của track phát nốt, hoặc **Một màu**.
-- Ở Nâng cao: nốt mạnh sinh nhiều hạt hơn, độ biến thiên tốc độ, hình tròn hay vuông, độ đục, mờ dần, phát sáng, **Vị trí xuất phát** (**Tại nốt, chỗ chạm vạch phát**: hạt bay ra từ đúng chỗ nốt chạm vạch phát của Piano Roll, như tia lửa; theo cao độ trải trên bề rộng widget; giữa; hoặc rải đều. Với "Tại nốt", khung widget Hạt được ẩn trên khung hình (chọn lớp từ danh sách Lớp), và hạt không bị cắt theo khung widget: chúng bay trong toàn khung video; không có Piano Roll thì không có hạt) và độ cao xuất phát, **Hạt giống ngẫu nhiên** (đổi để có kiểu rải khác), **Số hạt tối đa cùng lúc** (quá số này thì bỏ hạt cũ nhất).
+- Ở Nâng cao: nốt mạnh sinh nhiều hạt hơn, độ biến thiên tốc độ, hình tròn hay vuông, độ đục, mờ dần, phát sáng, **Vị trí xuất phát** (**Tại nốt, chỗ chạm vạch phát**: hạt bay ra từ đúng chỗ nốt chạm vạch phát của Piano Roll, như tia lửa; theo cao độ trải trên bề rộng widget; giữa; hoặc rải đều. Với "Tại nốt", khung widget Hạt được ẩn trên khung hình (chọn lớp từ cột lớp của Timeline), và hạt không bị cắt theo khung widget: chúng bay trong toàn khung video; không có Piano Roll thì không có hạt) và độ cao xuất phát, **Hạt giống ngẫu nhiên** (đổi để có kiểu rải khác), **Số hạt tối đa cùng lúc** (quá số này thì bỏ hạt cũ nhất).
 - Chọn track cho widget ở mục **Track** của **Thiết lập** như các widget khác.
 
 **Ví dụ: tia lửa bay lên từ nốt chạm vạch phát.** Thêm widget Hạt, rồi đặt:
@@ -90,11 +91,11 @@ Widget **Bản nhạc** viết nốt của dự án thành bản nhạc khuông 
 
 ## Ảnh nền
 
-Mục **Ảnh nền** đã bỏ khỏi bảng Thuộc tính: muốn có ảnh phía sau, thêm widget **Ảnh** (nút **Thêm**) rồi kéo xuống dưới cùng trong danh sách lớp. Phiên cũ đã có ảnh nền vẫn hiển thị như trước.
+Mục **Ảnh nền** đã bỏ khỏi bảng Thuộc tính: muốn có ảnh phía sau, thêm widget **Ảnh** (nút **Thêm**) rồi kéo xuống dưới cùng trong cột lớp của Timeline. Phiên cũ đã có ảnh nền vẫn hiển thị như trước.
 
 ## Ảnh
 
-Widget **Ảnh** (thêm từ **Thêm** ở đầu danh sách Lớp) vẽ một ảnh của bạn lên khung, ví dụ logo hay hình nhân vật. Ở mục **Thiết lập**, bấm **Chọn tệp ảnh…** để thêm PNG, JPEG, WebP, GIF (lấy khung đầu) hoặc SVG; ảnh đã thêm hiện trong ô **Ảnh** để dùng lại cho widget khác. **Cách khớp**: **Vừa khung** (thấy trọn ảnh), **Phủ kín** (cắt phần thừa) hoặc **Kéo giãn**.
+Widget **Ảnh** (thêm từ **Thêm** ở góc trên bên trái Timeline) vẽ một ảnh của bạn lên khung, ví dụ logo hay hình nhân vật. Ở mục **Thiết lập**, bấm **Chọn tệp ảnh…** để thêm PNG, JPEG, WebP, GIF (lấy khung đầu) hoặc SVG; ảnh đã thêm hiện trong ô **Ảnh** để dùng lại cho widget khác. **Cách khớp**: **Vừa khung** (thấy trọn ảnh), **Phủ kín** (cắt phần thừa) hoặc **Kéo giãn**.
 
 Mỗi tệp tối đa 20 MB, ảnh tối đa 8192 px ở cạnh dài, cả phiên tối đa 200 MB. Ứng dụng nhận ra loại tệp từ nội dung chứ không từ đuôi. SVG có script, trình xử lý sự kiện hoặc liên kết ra ngoài bị từ chối. Cùng một tệp thêm hai lần chỉ được giữ một bản.
 
@@ -132,7 +133,43 @@ Chọn widget rồi mở mục **Chuyển động** để cho nó hiệu ứng v
 
 ## Timeline và keyframe
 
-Panel **Timeline và keyframe** ở dưới cùng cho thấy các thuộc tính của widget đang chọn theo thời gian: bên trái là danh sách thuộc tính, bên phải là thước thời gian và các keyframe hình thoi. Nhóm **Biến đổi** có Vị trí, Tỉ lệ, Xoay, Độ đục. Bấm đồng hồ ở một thuộc tính để bắt đầu animate; khi đã bật, kéo widget trên khung sẽ đặt keyframe tại vạch phát. Kéo keyframe để đổi thời điểm, chọn keyframe để chỉnh đường cong ở mục **Keyframe** bên phải. Nút **Danh sách / Đồ thị** ở góc phải thanh tiêu đề panel đổi sang **Đồ thị** để xem và chỉnh đường cong giá trị, tốc độ của dòng đang chọn. Chi tiết ở [Widget phân tích](10-phan-tich.md#hoạt-hình-thuộc-tính).
+Panel **Timeline và keyframe** dưới khung có hai tầng. Thanh tiêu đề cho biết bạn đang ở đâu, ví dụ **Timeline chính › Mở đầu › Keyframe · Hợp âm**; bấm một mục trong đó để quay lên.
+
+### Tầng 1: timeline lớp
+
+Bên trái là cột lớp, bên phải là thước thời gian và các thanh. Mỗi thanh là một khoảng thời gian lớp đó hiện trong video. Lớp hiện suốt bài có một thanh dài hết bài.
+
+- **Dời thanh:** kéo giữa thanh. Mọi lớp đang chọn cùng dời. Keyframe của lớp đi theo thanh, nên chuyển động vẫn bắt đầu đúng lúc lớp xuất hiện.
+- **Cắt mép:** kéo mép đầu hoặc mép cuối thanh. Keyframe đứng yên. Kéo mép cuối tới hết bài thì lớp hiện tới hết bài.
+- **Bắt dính:** khi kéo, thanh bám vào vạch phát, mép các thanh khác, phase và phách của bài. Giữ Alt để tắt.
+- **Tách lớp tại vạch phát:** đặt vạch phát lên thanh, chọn lớp rồi bấm Ctrl+K (hoặc nút kéo cắt ở góc trên bên trái). Lớp thành hai lớp nối nhau: lớp gốc giữ phần trước, bản sao (nằm ngay trên) giữ phần sau. Mỗi lớp có keyframe riêng và chỉnh độc lập.
+- **Đưa thanh tới vạch phát:** `[` đưa đầu thanh tới vạch phát, `]` đưa cuối thanh tới vạch phát (cả thanh dời theo). Alt+`[` và Alt+`]` cắt đầu hoặc cuối thanh tại vạch phát.
+- **Dời từng chút:** Alt+← / Alt+→ dời 1/30 giây, thêm Shift để dời 1 giây.
+- **Thu phóng:** Ctrl+cuộn (hoặc các nút kính lúp) thu phóng theo chiều ngang; Alt+cuộn (hoặc hai nút có vạch ngang) cho hàng cao hơn hoặc thấp hơn. Cuộn thường để đi lên xuống hoặc sang ngang.
+- **Kéo thước** để tua. Vạch phát bám vào mép thanh và phase; giữ Alt để tắt.
+- **Xem keyframe của một lớp:** nhấp đúp vào thanh, bấm nút ◆ ở dòng của lớp, chọn lớp rồi nhấn Enter, hoặc bấm **Keyframe** ở đầu bảng bên phải. Bấm Esc để quay về timeline lớp.
+
+Hàng **Tất cả lớp** ở cuối cột lớp ẩn/hiện hoặc khoá/mở khoá mọi lớp cùng lúc.
+
+### Tầng 2: keyframe
+
+Tầng này cho thấy các thuộc tính của lớp đang chọn theo thời gian: bên trái là danh sách thuộc tính, bên phải là thước thời gian và các keyframe hình thoi. Nhóm **Biến đổi** có Vị trí, Tỉ lệ, Xoay, Độ đục. Bấm đồng hồ ở một thuộc tính để bắt đầu animate; khi đã bật, kéo widget trên khung sẽ đặt keyframe tại vạch phát. Kéo keyframe để đổi thời điểm, chọn keyframe để chỉnh đường cong ở mục **Keyframe** bên phải. Nút **Danh sách / Đồ thị** ở góc phải thanh tiêu đề panel đổi sang **Đồ thị** để xem và chỉnh đường cong giá trị, tốc độ của dòng đang chọn. Chi tiết ở [Widget phân tích](10-phan-tich.md#hoạt-hình-thuộc-tính).
+
+Keyframe đặt theo giây đi theo thanh khi bạn dời thanh. Keyframe đặt theo nhịp (ô nhịp, phách) gắn với nhạc nên đứng yên.
+
+### Precomp
+
+Precomp gom nhiều lớp thành một lớp, như precomp của After Effects. Dùng khi muốn cả một nhóm lớp xuất hiện, dời, mờ hay chuyển động cùng nhau, ví dụ cả phần mở đầu.
+
+- **Tạo:** chọn các lớp rồi bấm Ctrl+G (hoặc nút hai khung chồng ở góc trên bên trái Timeline). Các lớp vào một precomp mới, ở đúng chỗ cũ trên khung và trên timeline. Thanh của precomp trùm từ thanh sớm nhất tới thanh muộn nhất của nhóm.
+- **Mở:** nhấp đúp vào thanh precomp, bấm nút › ở dòng của nó, hoặc bấm **Mở precomp** ở bảng bên phải. Khung video chỉ hiện nội dung của precomp; phần thời gian precomp không hiện bị làm mờ trên Timeline. Bấm Esc (khi không chọn gì) hoặc bấm **Timeline chính** ở thanh tiêu đề để quay ra.
+- **Bên trong precomp** bạn làm mọi việc như ở timeline chính: thêm, kéo, keyframe, tách lớp, thậm chí gom tiếp thành precomp con. Precomp lồng nhau được tối đa 4 cấp.
+- **Lớp precomp** có vị trí, xoay, tỉ lệ, độ đục, chuyển động, khoảng hiển thị và keyframe như mọi lớp; mọi thứ bên trong làm theo. Lớp precomp luôn đúng cỡ khung: muốn phóng to hay thu nhỏ thì dùng **Tỉ lệ** ở tầng keyframe.
+- **Dời thanh precomp** dời cả nội dung bên trong. Cắt mép thanh precomp chỉ cắt lúc nó hiện.
+- **Đổi tên:** nhấp đúp tên lớp precomp như mọi lớp.
+- **Nhân bản** một lớp precomp (Ctrl+D) tạo thêm một chỗ dùng cùng precomp: sửa bên trong thì mọi bản đều đổi theo.
+- Tổng số lớp khi mở hết các precomp tối đa là 512. Vượt quá thì ứng dụng báo và không làm.
+- Ở thẻ Xem trước, khi vạch phát nằm trong một precomp, bấm một ô **Phong cách video** sẽ áp phong cách đó vào precomp ấy, không thay cả video. Xem [Xem trước](02-xem-truoc.md).
 
 ## Cách ghi tên nốt
 
@@ -140,7 +177,7 @@ Cũng khi không chọn widget nào, mục **Cách ghi tên nốt** đổi tên 
 
 ## Khoảng hiển thị
 
-Mặc định widget hiện suốt bài. Chọn widget rồi bật **Chỉ hiện trong các khoảng** ở mục **Khoảng hiển thị** để giới hạn lúc nó xuất hiện, ví dụ chỉ hiện tên bài ở 10 giây đầu.
+Mặc định widget hiện suốt bài. Cách nhanh nhất để đổi lúc nó xuất hiện là kéo thanh của nó trên Timeline (xem trên). Muốn gõ số chính xác, chọn widget rồi bật **Chỉ hiện trong các khoảng** ở mục **Khoảng hiển thị**, ví dụ chỉ hiện tên bài ở 10 giây đầu.
 
 - Mỗi dòng là một khoảng: **Hiện từ** và **Hiện tới**. Gõ giây (`90`, `90.5`) hoặc phút:giây (`1:30`, `1:30.5`); cũng gõ được phép tính (`1:30+15`) hoặc `+=10`, `-=0:05`, `*=2`, `/=2` tính từ giá trị đang có. Để trống ô **Hiện tới** nghĩa là hiện tới hết bài.
 - **Thêm khoảng** thêm một dòng; nút × xoá dòng. Không còn khoảng nào thì widget không bao giờ hiện.
@@ -151,7 +188,15 @@ Khoảng hiển thị chỉ ảnh hưởng video và Xem trước; trong Editor 
 
 ## Phase
 
-Phase là các đoạn của bài (verse, chorus…). Khi không chọn widget nào, mục **Phase** ở cột phải cho thêm phase: mỗi dòng có tên và thời điểm bắt đầu. Phase kéo dài tới phase kế; phase cuối kéo dài tới hết bài. Các số liệu `{phase}`, `{next_phase}`, `{phase_remaining}`… dùng được trong mọi ô chữ (xem [Chỗ giữ](08-cho-giu.md)).
+Phase là các đoạn của bài (verse, chorus…). Phase nằm ở làn **Phase** trên cùng của Timeline lớp. Phase kéo dài tới phase kế; phase cuối kéo dài tới hết bài.
+
+- **Thêm:** bấm + ở đầu làn **Phase** để thêm phase tại vạch phát, hoặc nhấp đúp chỗ trống trên làn. Gõ tên rồi nhấn Enter.
+- **Dời:** kéo mốc phase (bám vào vạch phát, phách và mép thanh; giữ Alt để tắt), hoặc bấm vào mốc rồi Alt+← / Alt+→ (thêm Shift để dời 1 giây).
+- **Đổi tên:** nhấp đúp vào mốc.
+- **Xoá:** bấm vào mốc rồi nhấn Delete.
+- Khi kéo thanh lớp, thanh bám vào phase, nên dễ cho một lớp hiện đúng đoạn chorus.
+
+Các số liệu `{phase}`, `{next_phase}`, `{phase_remaining}`… dùng được trong mọi ô chữ (xem [Chỗ giữ](08-cho-giu.md)).
 
 ## Điểm neo (Nâng cao)
 
@@ -174,14 +219,14 @@ Muốn tạm tắt bắt dính: giữ Alt khi kéo để di chuyển, giữ Ctrl
 
 ## Lớp
 
-Danh sách **Lớp** cho biết widget nào nằm trên widget nào: dòng trên cùng được vẽ trên cùng.
+Cột lớp ở bên trái Timeline cho biết widget nào nằm trên widget nào: dòng trên cùng được vẽ trên cùng.
 
 - **Đổi thứ tự:** kéo tay nắm sáu chấm (chỉ kéo tay nắm mới đổi thứ tự, kéo chỗ khác trên dòng thì không), hoặc chọn dòng rồi bấm Alt+Lên / Alt+Xuống. Ở mục **Sắp xếp** bên phải còn có bốn nút: đưa lên trên cùng, lên một bậc, xuống một bậc, xuống dưới cùng (phím tắt Ctrl+] và Ctrl+[, thêm Shift để đưa hẳn lên trên cùng hoặc xuống dưới cùng).
 - **Widget cha:** ô **Widget cha** ở mục **Sắp xếp** gắn widget này vào một widget khác. Khi cha dời, xoay, đổi tỉ lệ hay mờ đi (bằng keyframe hoặc chuyển động), widget con làm theo đúng phần thay đổi đó; con vẫn đứng nguyên chỗ của nó khi cha đứng yên. Không chọn được widget đang là con của chính nó. Xoá cha thì con thôi có cha. Lưu ý: khi cha đang lệch khỏi chỗ ban đầu, khung chọn của con trên khung chưa đi theo cha.
 - **Đổi tên:** bấm đúp vào tên lớp (hoặc chọn lớp rồi nhấn F2), gõ tên mới, nhấn Enter. Esc để bỏ. Để trống rồi Enter thì lớp quay về tên theo loại (ví dụ Hợp âm 2). Tên tối đa 60 ký tự và không được trùng với lớp khác (hoa/thường coi như nhau). Nếu trùng, tên cũ được giữ nguyên và ứng dụng báo lý do. Tên lớp chỉ để bạn dễ tìm, không hiện trong video; được lưu trong preset. Bản nhân bản không mang tên của bản gốc.
+- **◆:** mở keyframe của lớp. Hình thoi tô kín khi lớp đã có keyframe. Lớp precomp có nút › để mở precomp.
 - **Mắt:** ẩn hoặc hiện widget trong video (giống ô **Hiện trong video**).
-- **Ổ khoá:** khoá widget để không lỡ tay kéo nó. Widget đã khoá vẫn chọn được trong danh sách Lớp để xem số liệu hoặc mở khoá.
-- Hàng trên cùng ẩn/hiện hoặc khoá/mở khoá mọi lớp cùng lúc.
+- **Ổ khoá:** khoá widget để không lỡ tay kéo nó, trên khung lẫn trên Timeline. Widget đã khoá vẫn chọn được để xem số liệu hoặc mở khoá.
 - **Ẩn hoặc khoá nhanh:** bấm giữ một mắt (hoặc ổ khoá) rồi kéo lên/xuống qua các lớp khác; mọi lớp đi qua được đặt cùng trạng thái với lần bấm đầu. Cả lần kéo ẩn/hiện là một bước hoàn tác.
 
 ## Thiết lập

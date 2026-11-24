@@ -4,7 +4,7 @@ Chữ trong video có thể tự đổi theo bài nhạc. Bạn gõ tên của s
 
 ## Thêm một ô chữ
 
-1. Mở thẻ **Chỉnh sửa**, bấm **Thêm** ở đầu danh sách Lớp, chọn **Ô chữ**.
+1. Mở thẻ **Chỉnh sửa**, bấm **Thêm** ở góc trên bên trái Timeline, chọn **Ô chữ**.
 2. Ô chữ mới nằm giữa khung. Gõ nội dung vào ô **Nội dung** ở mục **Thiết lập**. Nhấn Enter để xuống dòng; bấm ra ngoài ô để áp.
 3. Kiểu chữ, màu, viền, bóng… chỉnh ở mục **Chữ** như mọi chữ khác. Mục **Giá trị trong chữ** cho phép chỉ phần số liệu có kiểu khác phần còn lại.
 

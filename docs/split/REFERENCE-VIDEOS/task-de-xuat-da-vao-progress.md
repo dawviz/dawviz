@@ -4,8 +4,8 @@ doc_title: "Video tham chiếu: ý tưởng, mức tái hiện và lộ trình"
 section: "Task đề xuất (đã vào `PROGRESS`)"
 path: "Task đề xuất (đã vào `PROGRESS`)"
 chunk: task-de-xuat-da-vao-progress.md
-source_lines: 80-91
-source_sha1: 70b5971deb
+source_lines: 82-93
+source_sha1: 7580d5f888
 ids: []
 ---
 ## Task đề xuất (đã vào `PROGRESS`)

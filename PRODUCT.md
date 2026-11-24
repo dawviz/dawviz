@@ -47,7 +47,7 @@ Mục tiêu đo được (BRD §2): từ file DAW đến MP4 cho đoạn ≤ 60 
 - **An toàn:** không `eval`/`new Function`, CSP không `unsafe-eval`, Trusted Types; parse trong Web Worker (R-05, R-09). CSP chỉ cho `font-src 'self'` (cùng `data:`/`blob:`), nên **mọi phông phải tự host** trong repo, không dùng CDN phông; phông phải có giấy phép mở (OFL) để phân phối.
 - **Ngăn xếp:** React 18 + TypeScript + Vite + Tailwind CSS + Framer Motion; Canvas 2D cho khung hình video; Render Core thuần, không phụ thuộc React/DOM (D-34, D-36, D-37).
 - **Tình trạng hiện tại (2026-11-13):** M1 đóng 2026-11-12 (nạp file → Piano Roll → phát/tua, en/vi); M2 đang làm (Scene + `renderFrame` xong; tiếp theo store/hoàn tác/Preset rồi widget). Chưa có xuất video (M3), lưu phiên (M4). `apps/web` hiện là **giao diện khung** để kiểm parser/Render Core, chưa phải giao diện sản phẩm; bố cục sản phẩm (ba thẻ Preview / Editor / Settings, Cơ bản/Nâng cao, theme) sẽ dựng lại theo D-53 (T-48, T-60, T-70).
-- Ngoài phạm vi 1.0: Session View, giao diện di động, thư viện preset trong ứng dụng, WebGL, storyboard và Graph Editor đầy đủ (BRD §4.2, §4.4). "Biên tập video đa tầng" ngoài phạm vi nghĩa là cắt ghép clip/cảnh quay; lớp đồ hoạ, keyframe và timeline hiệu ứng **thuộc** phạm vi (D-54).
+- Ngoài phạm vi 1.0: Session View, giao diện di động, thư viện preset trong ứng dụng, WebGL, storyboard và Graph Editor đầy đủ (BRD §4.2, §4.4). "Biên tập video đa tầng" ngoài phạm vi nghĩa là cắt ghép clip/cảnh quay; lớp đồ hoạ, keyframe và timeline hiệu ứng **thuộc** phạm vi (D-54), kể cả timeline lớp kiểu Premiere/After Effects và precomp lồng tối đa 4 cấp (D-69).
 
 ## Brand Commitments
 

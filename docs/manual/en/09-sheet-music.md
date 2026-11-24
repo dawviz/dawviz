@@ -4,7 +4,7 @@ The **Sheet music** widget writes the notes of your project as a two-staff score
 
 ## Add sheet music
 
-1. Open the **Editor** tab, press **Add** at the top of the Layers list and choose **Sheet music**.
+1. Open the **Editor** tab, press **Add** at the top left of the Timeline and choose **Sheet music**.
 2. The app writes the score from the notes of your tracks. This takes from under a second to a few seconds depending on the song; meanwhile **Settings** shows "Writing the sheet music…".
 3. When it is done, **Settings** shows the number of pages, bars and the key (for example "64 pages, 128 bars, key A minor"). If something needs your attention, a yellow line below explains it.
 

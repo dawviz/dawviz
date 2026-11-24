@@ -4,7 +4,7 @@ Widget **Bản nhạc** viết các nốt của dự án thành bản nhạc khu
 
 ## Thêm bản nhạc
 
-1. Mở thẻ **Chỉnh sửa**, bấm **Thêm** ở đầu danh sách Lớp, chọn **Bản nhạc**.
+1. Mở thẻ **Chỉnh sửa**, bấm **Thêm** ở góc trên bên trái Timeline, chọn **Bản nhạc**.
 2. Ứng dụng viết bản nhạc từ nốt của các track. Việc này mất từ dưới một giây đến vài giây tuỳ độ dài bài; trong lúc đó mục **Thiết lập** hiện "Đang viết bản nhạc…".
 3. Viết xong, mục **Thiết lập** cho biết số trang, số ô nhịp và giọng của bài (ví dụ "64 trang, 128 ô nhịp, giọng La thứ"). Nếu có điều cần chú ý, dòng chữ vàng bên dưới sẽ nói rõ.
 

@@ -1,6 +1,6 @@
 # Widget phân tích
 
-Ngoài Piano Roll và các widget chữ, Editor có mười một widget cho biết điều gì đang xảy ra trong bài. Thêm bằng nút **Thêm** ở đầu danh sách Lớp; chỉnh ở mục **Thiết lập** của widget.
+Ngoài Piano Roll và các widget chữ, Editor có mười một widget cho biết điều gì đang xảy ra trong bài. Thêm bằng nút **Thêm** ở góc trên bên trái Timeline; chỉnh ở mục **Thiết lập** của widget.
 
 | Widget | Cho thấy |
 |---|---|
@@ -57,11 +57,11 @@ Piano Roll còn có mục **Hoạt hình của nốt** trong **Thiết lập**: 
 
 ## Hoạt hình thuộc tính
 
-Muốn một thuộc tính **đổi theo thời gian hoặc theo nhạc** thay vì đứng yên, dùng panel **Timeline và keyframe** ở đáy thẻ Chỉnh sửa (mở bằng nút ở đầu thanh, hoặc Ctrl+J). Thuộc tính nào là số hoặc màu cũng animate được. Nhóm **Biến đổi** có **Vị trí** (X và Y chung một dòng, một keyframe cho cả hai), **Tỉ lệ** (phần trăm, 100 là nguyên cỡ; phóng to/thu nhỏ cả widget quanh điểm neo), **Xoay** và **Độ đục**. Nhóm **Thuộc tính widget** có mọi ô số hay ô màu trong **Thiết lập** của widget (ví dụ màu cột, độ dày vạch, độ phát sáng). Preset cũ có animate Rộng/Cao thì hai dòng đó cũng hiện.
+Muốn một thuộc tính **đổi theo thời gian hoặc theo nhạc** thay vì đứng yên, dùng tầng keyframe của panel **Timeline và keyframe** ở đáy thẻ Chỉnh sửa: nhấp đúp thanh của widget trên Timeline, hoặc bấm **Keyframe** ở đầu bảng bên phải. Thuộc tính nào là số hoặc màu cũng animate được. Nhóm **Biến đổi** có **Vị trí** (X và Y chung một dòng, một keyframe cho cả hai), **Tỉ lệ** (phần trăm, 100 là nguyên cỡ; phóng to/thu nhỏ cả widget quanh điểm neo), **Xoay** và **Độ đục**. Nhóm **Thuộc tính widget** có mọi ô số hay ô màu trong **Thiết lập** của widget (ví dụ màu cột, độ dày vạch, độ phát sáng). Preset cũ có animate Rộng/Cao thì hai dòng đó cũng hiện.
 
 ### Đặt keyframe
 
-1. Chọn widget trên khung hoặc ở Lớp. Timeline hiện các thuộc tính của nó.
+1. Chọn widget trên khung hoặc trên Timeline, rồi mở keyframe của nó (nhấp đúp thanh, hoặc bấm **Keyframe** bên phải). Timeline hiện các thuộc tính của nó.
 2. Đưa vạch phát tới thời điểm muốn đặt: phát nhạc, hoặc nhấp/kéo trên thước thời gian của Timeline.
 3. Bấm **đồng hồ** ở đầu dòng thuộc tính. Một keyframe được đặt tại vạch phát với giá trị hiện tại.
 4. Đưa vạch phát tới thời điểm khác rồi gõ giá trị mới vào ô giá trị của dòng đó (hoặc kéo trên ô). Keyframe mới được thêm tại vạch phát. Nút hình thoi giữa hai nút tam giác cũng thêm keyframe tại vạch phát (bấm lại để xoá). Muốn đặt keyframe cho nhiều dòng cùng lúc, nhấn vào nút hình thoi của một dòng rồi kéo xuống (hoặc lên) qua các dòng khác; dòng đi qua được tô sáng, thả chuột là xong (một bước hoàn tác). Bắt đầu ở dòng đã có keyframe tại vạch phát thì kéo sẽ xoá; hai nút tam giác đưa vạch phát tới keyframe trước hoặc sau.
