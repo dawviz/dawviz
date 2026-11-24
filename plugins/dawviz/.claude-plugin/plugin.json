@@ -3,5 +3,17 @@
   "description": "Make music-visualizer videos with DAW Visualizer: write presets, drive the app (Claude in Chrome or Playwright) and export MP4/WebM.",
   "version": "0.1.0",
   "license": "Apache-2.0",
-  "keywords": ["music", "video", "daw", "midi", "visualizer", "piano-roll"]
+  "keywords": [
+    "music",
+    "video",
+    "daw",
+    "midi",
+    "visualizer",
+    "piano-roll"
+  ],
+  "author": {
+    "name": "DAW Visualizer"
+  },
+  "homepage": "https://github.com/dawviz/dawviz",
+  "repository": "https://github.com/dawviz/dawviz"
 }
