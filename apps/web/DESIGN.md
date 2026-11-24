@@ -256,8 +256,17 @@ Dải 36 px nền `surface`, cả dải là một nút mở: biểu tượng pan
 - **Làn Phase** (24 px, nền `page` 40%): cột trái có cờ + "Phase" + số phase + nút +; mốc phase là vạch trái 2 px màu `text` kèm tên 11 px, kéo được, nhấp đúp đổi tên tại chỗ.
 - **Dòng lớp** (24–64 px): tay nắm 6 chấm · biểu tượng precomp (lớp COMP) · tên 13 px (`text` khi chọn, `text-muted` khi không; gạch ngang khi ẩn) · ◆ mở keyframe (tô kín khi lớp có keyframe; lớp COMP: › mở precomp) · mắt · khoá. Dòng đang chọn: nền `surface-raised` + vạch `accent` 2 px bên trái. Cuối cột: hàng **Tất cả lớp** (mắt, khoá tổng).
 - **Thanh** (clip): cao bằng hàng trừ 8 px, bo góc nhỏ, viền `line-control`, nền `surface-raised`, tên 11 px dính mép trái thanh; đang chọn: viền `accent` + nền `accent` 15%. Hai mép 6 px là chỗ nắm cắt (hover hiện nền `line-control`). Keyframe của lớp hiện thành thoi 6 px `text-muted` ở đáy thanh. Lớp ẩn: thanh mờ 50%.
+- **Hiện dần / ẩn dần** (T-113): tay nắm vuông 8 px viền `text`, nền `surface`, ở góc trên đầu/cuối thanh (hiện khi rê hoặc khi lớp đang chọn, hoặc luôn hiện khi đã có fade); dốc = vùng `page` 80% nhạt dần về giữa thanh + đường chéo 1,5 px `text-muted` (như Premiere). Chip khi kéo: "Hiện dần 0,5 s".
+- **Bắt dính độ dài**: khi cắt mép, ngoài mép thanh khác còn dính vào độ dài của thanh khác; chip hiện "= <lớp> (<độ dài>)" thay cho thời điểm.
+- **Làn Nhạc** (đóng sẵn): hàng tiêu đề 24 px có mũi tên gấp/mở như nhóm của tầng keyframe; mở ra là làn hợp âm rồi một làn mỗi track, cao 20 px, vẽ bằng một canvas đúng phần đang thấy: hợp âm là đoạn xen kẽ nền `surface-raised`, vạch trái `line`, tên 11 px `text-muted`; nốt là gạch cao 2 px màu track. Chỉ để xem, không nhận chuột.
 - **Trong precomp**: phần thời gian lớp precomp không hiện được phủ nền `page` 70% (không nhận chuột). Dòng thông số trên sân khấu đổi thành "Trong precomp <tên>".
 - Vạch phát, thước, vạch dẫn bắt dính và chip thời gian dùng chung kiểu với tầng keyframe (dưới).
+
+### Dán preset (`PastePreset`, cột Phong cách video)
+Nút ghost viền `line-control` cả bề rộng dưới ô dấu cộng; mở ra là nhãn 12 px `text-muted`, ô nhiều dòng (`.field`, chữ đơn cách 11 px, 5 dòng, kéo cao được), hàng nút **Thêm preset** (chiếm phần lớn) + **Huỷ**. Ctrl+Enter thêm, Esc đóng.
+
+### Dải agent (`?agent=1`)
+Một dòng 12 px trên cùng, viền dưới `guide` 60%, nền `guide` 10% (màu của lớp chỉnh sửa, không phải màu nhấn): báo AI agent có thể điều khiển cửa sổ. Chỉ có khi URL có `?agent=1`.
 
 ### Timeline và keyframe (`TimelinePanel`, `KeyframeTimeline`)
 - **Thanh tiêu đề** cao 36 px: nút panel, tiêu đề 13 px đậm 600, rồi breadcrumb 12 px (Timeline chính › precomp › Keyframe · lớp): mục bấm được `text-muted` gạch chân khi hover, mục cuối `text`. Thông báo theo tình huống (vd. không có gì để tách) là một dải viền `warning` dưới thanh tiêu đề, có nút ×.

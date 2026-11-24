@@ -140,8 +140,10 @@ Panel **Timeline và keyframe** dưới khung có hai tầng. Thanh tiêu đề 
 Bên trái là cột lớp, bên phải là thước thời gian và các thanh. Mỗi thanh là một khoảng thời gian lớp đó hiện trong video. Lớp hiện suốt bài có một thanh dài hết bài.
 
 - **Dời thanh:** kéo giữa thanh. Mọi lớp đang chọn cùng dời. Keyframe của lớp đi theo thanh, nên chuyển động vẫn bắt đầu đúng lúc lớp xuất hiện.
-- **Cắt mép:** kéo mép đầu hoặc mép cuối thanh. Keyframe đứng yên. Kéo mép cuối tới hết bài thì lớp hiện tới hết bài.
-- **Bắt dính:** khi kéo, thanh bám vào vạch phát, mép các thanh khác, phase và phách của bài. Giữ Alt để tắt.
+- **Cắt mép:** kéo mép đầu hoặc mép cuối thanh. Keyframe đứng yên. Kéo mép cuối tới hết bài thì lớp hiện tới hết bài. Đang chọn nhiều lớp thì mép cùng phía của mọi lớp đang chọn dời theo cùng một khoảng.
+- **Hiện dần / ẩn dần:** kéo ô vuông nhỏ ở góc trên đầu hoặc cuối thanh (hiện khi rê chuột hoặc khi lớp đang chọn).
+- **Bắt dính:** khi kéo, thanh bám vào vạch phát, mép các thanh khác, phase, chỗ đổi hợp âm (khi làn Nhạc đang mở) và phách của bài. Khi cắt mép, thanh còn bám vào **độ dài** của thanh khác: nhãn "= Tiến độ (0:12)" nghĩa là lúc đó hai lớp dài bằng nhau. Giữ Alt để tắt.
+- **Làn Nhạc:** bấm **Nhạc** dưới làn Phase để hiện làn hợp âm và một làn nốt cho mỗi track, giúp căn thanh theo nhạc. Làn này chỉ để xem.
 - **Tách lớp tại vạch phát:** đặt vạch phát lên thanh, chọn lớp rồi bấm Ctrl+K (hoặc nút kéo cắt ở góc trên bên trái). Lớp thành hai lớp nối nhau: lớp gốc giữ phần trước, bản sao (nằm ngay trên) giữ phần sau. Mỗi lớp có keyframe riêng và chỉnh độc lập.
 - **Đưa thanh tới vạch phát:** `[` đưa đầu thanh tới vạch phát, `]` đưa cuối thanh tới vạch phát (cả thanh dời theo). Alt+`[` và Alt+`]` cắt đầu hoặc cuối thanh tại vạch phát.
 - **Dời từng chút:** Alt+← / Alt+→ dời 1/30 giây, thêm Shift để dời 1 giây.
@@ -168,8 +170,10 @@ Precomp gom nhiều lớp thành một lớp, như precomp của After Effects. 
 - **Dời thanh precomp** dời cả nội dung bên trong. Cắt mép thanh precomp chỉ cắt lúc nó hiện.
 - **Đổi tên:** nhấp đúp tên lớp precomp như mọi lớp.
 - **Nhân bản** một lớp precomp (Ctrl+D) tạo thêm một chỗ dùng cùng precomp: sửa bên trong thì mọi bản đều đổi theo.
+- **Tốc độ:** ô **Tốc độ** (%) ở bảng bên phải khi chọn lớp precomp. 200% chạy nội dung nhanh gấp đôi, 50% chậm một nửa. Chỉ keyframe và lúc hiện của các lớp bên trong bị co giãn; nốt, nhịp và hợp âm vẫn theo bài.
+- **Gỡ precomp:** chọn lớp precomp rồi bấm **Gỡ precomp** ở bảng bên phải (hoặc Ctrl+Shift+G). Các lớp bên trong về lại timeline đang mở, đúng chỗ trên khung và đúng lúc hiện. Keyframe, chuyển động, tỉ lệ và hiện dần/ẩn dần của chính lớp precomp không chuyển sang được; ứng dụng báo khi có.
 - Tổng số lớp khi mở hết các precomp tối đa là 512. Vượt quá thì ứng dụng báo và không làm.
-- Ở thẻ Xem trước, khi vạch phát nằm trong một precomp, bấm một ô **Phong cách video** sẽ áp phong cách đó vào precomp ấy, không thay cả video. Xem [Xem trước](02-xem-truoc.md).
+- Ở thẻ Xem trước, khi vạch phát nằm trong một precomp, bấm một ô **Phong cách video** sẽ áp phong cách đó vào precomp ấy, không thay cả video. Nếu Piano Roll nằm trong precomp, phần chỉnh màu theo track ở thẻ Xem trước chỉnh Piano Roll của precomp đang hiện ở vạch phát. Xem [Xem trước](02-xem-truoc.md).
 
 ## Cách ghi tên nốt
 
@@ -177,12 +181,11 @@ Cũng khi không chọn widget nào, mục **Cách ghi tên nốt** đổi tên 
 
 ## Khoảng hiển thị
 
-Mặc định widget hiện suốt bài. Cách nhanh nhất để đổi lúc nó xuất hiện là kéo thanh của nó trên Timeline (xem trên). Muốn gõ số chính xác, chọn widget rồi bật **Chỉ hiện trong các khoảng** ở mục **Khoảng hiển thị**, ví dụ chỉ hiện tên bài ở 10 giây đầu.
+Mặc định widget hiện suốt bài. Lúc widget xuất hiện là các thanh của nó trên Timeline, nên chỉnh ngay ở đó (bảng bên phải không còn mục riêng cho việc này):
 
-- Mỗi dòng là một khoảng: **Hiện từ** và **Hiện tới**. Gõ giây (`90`, `90.5`) hoặc phút:giây (`1:30`, `1:30.5`); cũng gõ được phép tính (`1:30+15`) hoặc `+=10`, `-=0:05`, `*=2`, `/=2` tính từ giá trị đang có. Để trống ô **Hiện tới** nghĩa là hiện tới hết bài.
-- **Thêm khoảng** thêm một dòng; nút × xoá dòng. Không còn khoảng nào thì widget không bao giờ hiện.
-- **Hiện dần** và **Ẩn dần** (giây) làm widget mờ vào lúc bắt đầu khoảng và mờ ra lúc kết thúc. Khoảng ngắn hơn tổng hai thời gian này thì cả hai co lại theo tỉ lệ. Nút ↺ cạnh mỗi ô đưa về 0 (không mờ dần).
-- Tắt lại ô tick để về hiện suốt bài.
+- **Đổi lúc hiện:** kéo giữa thanh để dời, kéo mép đầu hoặc mép cuối để cắt. Kéo mép cuối tới hết bài thì widget hiện tới hết bài.
+- **Hiện ở nhiều đoạn:** tách thanh bằng Ctrl+K tại vạch phát rồi cắt bớt từng phần, hoặc nhân bản lớp (Ctrl+D) rồi dời bản sao.
+- **Hiện dần / ẩn dần:** kéo ô vuông nhỏ ở góc trên đầu thanh sang phải (hiện dần) hoặc ở góc trên cuối thanh sang trái (ẩn dần). Thanh có đường chéo cho biết độ dài lúc mờ. Thời gian mờ áp cho mọi thanh của lớp, tối đa 30 giây và không dài hơn thanh ngắn nhất.
 
 Khoảng hiển thị chỉ ảnh hưởng video và Xem trước; trong Editor bạn vẫn chọn và kéo widget như bình thường.
 

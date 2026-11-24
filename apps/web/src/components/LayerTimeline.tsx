@@ -7,7 +7,7 @@
 // Bàn phím (khi timeline có focus): Ctrl+K tách lớp tại vạch phát, Ctrl+G gom thành precomp, [ / ] đưa đầu/cuối thanh tới vạch phát,
 // Alt+[ / Alt+] cắt đầu/cuối tại vạch phát, Alt+←/→ dời 1/30 s (thêm Shift: 1 s), ↑/↓ chọn lớp trên/dưới, Enter mở. Phép thuần ở lib/layerTimeline.ts.
 import { memo, useEffect, useMemo, useRef, useState, type DragEvent, type KeyboardEvent, type PointerEvent as RPointerEvent, type ReactNode } from 'react';
-import { MAX_PHASES, MAX_PHASE_NAME, compOf, isKeyAnim, type Phase, type SceneDocument, type TempoPoint, type WidgetSpec } from '@dawviz/render-core';
+import { MAX_PHASES, MAX_PHASE_NAME, compOf, isKeyAnim, type ChordSeg, type Phase, type SceneDocument, type TempoPoint, type TrackIndex, type WidgetSpec } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import type { Playback } from '../lib/playback.ts';
 import type { Gesture } from '../lib/storeReact.ts';
@@ -15,7 +15,7 @@ import { isTextEntry } from '../lib/a11y.ts';
 import { clickIsKeyboard } from '../lib/paintDrag.ts';
 import { formatClock } from '../lib/timeFormat.ts';
 import { DRAG_SLOP, ROW_H, RULER_H, beatTimes, clampPps, fitPps, keySecs, rulerLabel, rulerStep, rulerTicks, snapTime, xToTime, zoomAround } from '../lib/timeline.ts';
-import { clipEdges, clipsOf, moveLayers, trimLayer, type Clip } from '../lib/layerTimeline.ts';
+import { clipEdges, clipsOf, lengthTargets, moveLayers, setFade, trimLayer, trimMany, type Clip } from '../lib/layerTimeline.ts';
 import type { LayerEdit } from '../lib/commands.ts';
 import { PANEL_LIMITS } from '../lib/panelLayout.ts';
 import { Splitter } from './Splitter.tsx';
@@ -27,6 +27,8 @@ const ROW_MIN = 24, ROW_MAX = 64, ROW_STEP = 8;
 /** Bề rộng vùng nắm ở hai mép thanh (px). */
 const EDGE = 6;
 const LAYER_MIME = 'text/x-dawviz-layer';
+/** Độ cao một làn tham chiếu nhạc (px). */
+const MUSIC_H = 20;
 
 export interface LayerTimelineProps {
   /** Khung nhìn đang mở (gốc hoặc một precomp, lib/compLens.ts): mốc thời gian theo toàn bài. */
@@ -56,6 +58,8 @@ export interface LayerTimelineProps {
   onPrecompose(): void;
   /** Đang ở trong precomp: các khoảng (thời gian toàn bài) mà lớp precomp đang hiện; ngoài đó làm mờ. */
   bounds: { from: number; to: number }[] | null;
+  /** Làn tham chiếu nhạc (chỉ xem và bắt dính): nốt của từng track và hợp âm theo thời gian. Vắng = chưa có dự án. */
+  music?: { tracks: readonly TrackIndex[]; chords: readonly ChordSeg[] };
   tree: number;
   onTree(px: number): void;
   onTreeReset(): void;
@@ -69,7 +73,8 @@ export interface LayerTimelineProps {
 }
 
 type DragState =
-  | { kind: 'clip'; mode: 'move' | 'in' | 'out'; id: string; clip: Clip; ids: string[]; snap0: WidgetSpec[]; x0: number; moved: boolean; targets: number[] }
+  | { kind: 'clip'; mode: 'move' | 'in' | 'out'; id: string; clip: Clip; ids: string[]; snap0: WidgetSpec[]; x0: number; moved: boolean; targets: number[]; lens: { t: number; id: string; len: number }[] }
+  | { kind: 'fade'; which: 'in' | 'out'; id: string; fade0: number; snap0: WidgetSpec[]; x0: number; moved: boolean }
   | { kind: 'phase'; i: number; snap0: Phase[]; x0: number; moved: boolean; targets: number[] };
 
 export function LayerTimeline(props: LayerTimelineProps) {
@@ -79,6 +84,10 @@ export function LayerTimeline(props: LayerTimelineProps) {
   const layers = order.map((id) => byId.get(id)).filter((w): w is WidgetSpec => !!w);
   const sel = new Set(selected);
   const [rowH, setRowH] = useState(ROW_MIN + ROW_STEP);
+  // Nhóm "Nhạc" (làn hợp âm + một làn mỗi track) dưới làn Phase, đóng sẵn; mở thì các lớp lùi xuống.
+  const [musicOpen, setMusicOpen] = useState(false);
+  const music = props.music, musicRows = music ? 1 + music.tracks.length : 0;
+  const head = ROW_H + (music ? ROW_H + (musicOpen ? musicRows * MUSIC_H : 0) : 0);
 
   // ── kích thước và thu phóng (như KeyframeTimeline) ──
   const scroller = useRef<HTMLDivElement>(null);
@@ -98,7 +107,7 @@ export function LayerTimeline(props: LayerTimelineProps) {
   const [zoom, setZoom] = useState<number | null>(null);
   const pps = zoom === null ? fit : clampPps(zoom, fit);
   const contentW = PAD + Math.max(laneW - PAD, duration * pps) + 16;
-  const live = useRef({ pps, fit, tree, rowH }); live.current = { pps, fit, tree, rowH };
+  const live = useRef({ pps, fit, tree, rowH, head }); live.current = { pps, fit, tree, rowH, head };
   const zoomBy = (factor: number) => {
     const el = scroller.current, L = live.current; if (!el) return;
     const ax = Math.min(laneW, Math.max(0, playback.get().t * L.pps - el.scrollLeft));
@@ -126,12 +135,13 @@ export function LayerTimeline(props: LayerTimelineProps) {
 
   // ── đích bắt dính ──
   const beats = useMemo(() => beatTimes(tempoMap, duration), [tempoMap, duration]);
-  const targetsFor = (skip: ReadonlySet<string>, skipPhase = -1) => [playback.get().t, 0, duration, ...phases.filter((_, k) => k !== skipPhase).map((p) => p.start), ...clipEdges(scene.widgets, skip, duration), ...beats];
+  const chordStarts = useMemo(() => (musicOpen && music ? music.chords.filter((c) => c.name).map((c) => c.start) : []), [musicOpen, music]);
+  const targetsFor = (skip: ReadonlySet<string>, skipPhase = -1) => [playback.get().t, 0, duration, ...phases.filter((_, k) => k !== skipPhase).map((p) => p.start), ...clipEdges(scene.widgets, skip, duration), ...chordStarts, ...beats];
 
   // ── kéo thanh / mép thanh / mốc phase ──
   const drag = useRef<DragState | null>(null);
   const [snapLine, setSnapLine] = useState<number | null>(null);
-  const [chip, setChip] = useState<{ t: number; y: number } | null>(null);
+  const [chip, setChip] = useState<{ t: number; y: number; text?: string } | null>(null);
   const endDrag = () => {
     const d = drag.current; drag.current = null; setSnapLine(null); setChip(null);
     if (d?.moved) gesture?.end();
@@ -149,7 +159,15 @@ export function LayerTimeline(props: LayerTimelineProps) {
       setSnapLine(s.snapped ? t : null); setChip({ t, y: 0 });
       return;
     }
-    const y = layers.findIndex((w) => w.id === d.id) * L.rowH + ROW_H; // dưới làn phase
+    const y = layers.findIndex((w) => w.id === d.id) * L.rowH + L.head; // dưới làn phase và làn nhạc
+    if (d.kind === 'fade') {
+      // tay nắm hiện dần kéo sang phải thì dài hơn; tay nắm ẩn dần kéo sang trái thì dài hơn
+      const w0 = d.snap0.find((w) => w.id === d.id)!, w1 = setFade(w0, d.which, d.fade0 + (d.which === 'in' ? raw : -raw), duration);
+      onLayers('fadeClip', { widgets: d.snap0.map((w) => (w.id === d.id ? w1 : w)) }, 'clipfade');
+      const f = d.which === 'in' ? w1.visibility!.fadeIn : w1.visibility!.fadeOut, c = clipsOf(w1, duration)[0];
+      setChip({ t: d.which === 'in' ? c.from + f : c.to - f, y, text: i18n.t(d.which === 'in' ? 'web.layers.fadeInChip' : 'web.layers.fadeOutChip', { s: i18n.number(f, { maximumFractionDigits: 2 }) }) });
+      return;
+    }
     if (d.mode === 'move') {
       // bắt dính đầu hoặc cuối thanh đang nắm, đầu nào gần đích hơn
       const a = snapTime(d.clip.from + raw, d.targets, L.pps), b = snapTime(d.clip.to + raw, d.targets, L.pps);
@@ -159,11 +177,18 @@ export function LayerTimeline(props: LayerTimelineProps) {
       setSnapLine(pick.line !== null && r.dt === pick.dt ? pick.line : null); setChip({ t: d.clip.from + r.dt, y });
       return;
     }
-    const edge0 = d.mode === 'in' ? d.clip.from : d.clip.to, s = e.altKey ? { t: edge0 + raw, snapped: false } : snapTime(edge0 + raw, d.targets, L.pps);
-    const w0 = d.snap0.find((w) => w.id === d.id)!, w1 = trimLayer(w0, d.clip.i, d.mode, s.t, duration);
-    onLayers('trimClip', { widgets: d.snap0.map((w) => (w.id === d.id ? w1 : w)) }, 'cliptrim');
-    const c1 = clipsOf(w1, duration)[d.clip.i];
-    setSnapLine(s.snapped ? s.t : null); setChip({ t: d.mode === 'in' ? c1.from : c1.to, y });
+    // cắt mép: bắt dính mép thanh khác, vạch phát, phase, phách; hoặc độ dài bằng một thanh khác (nhãn "= <lớp>")
+    const edge0 = d.mode === 'in' ? d.clip.from : d.clip.to, want = edge0 + raw;
+    const se = e.altKey ? { t: want, snapped: false } : snapTime(want, d.targets, L.pps);
+    const sl = e.altKey ? { t: want, snapped: false } : snapTime(want, d.lens.map((x) => x.t), L.pps);
+    const byLen = sl.snapped && (!se.snapped || Math.abs(sl.t - want) < Math.abs(se.t - want));
+    const t = byLen ? sl.t : se.t, eq = byLen ? d.lens.find((x) => x.t === sl.t) : undefined;
+    const ws = trimMany(d.snap0, d.ids, { id: d.id, clip: d.clip.i }, d.mode, t, duration);
+    onLayers('trimClip', { widgets: ws }, 'cliptrim');
+    const c1 = clipsOf(ws.find((w) => w.id === d.id)!, duration)[d.clip.i];
+    const at = d.mode === 'in' ? c1.from : c1.to;
+    setSnapLine(byLen || se.snapped ? at : null);
+    setChip({ t: at, y, ...(eq && Math.abs(at - t) < 1e-6 ? { text: i18n.t('web.layers.sameLength', { name: name(eq.id), len: formatClock(eq.len) }) } : {}) });
   };
   const listen = () => {
     const up = () => { window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', up); endDrag(); };
@@ -176,10 +201,19 @@ export function LayerTimeline(props: LayerTimelineProps) {
     const nextSel = add ? (sel.has(w.id) ? selected.filter((x) => x !== w.id) : [...selected, w.id]) : sel.has(w.id) ? selected : [w.id];
     if (nextSel.join() !== selected.join()) onSelect(nextSel);
     if (locked.has(w.id) || add) return;
+    const fade = (e.target as HTMLElement).closest<HTMLElement>('[data-fade]')?.dataset.fade as 'in' | 'out' | undefined;
+    if (fade) {
+      const v = w.visibility;
+      drag.current = { kind: 'fade', which: fade, id: w.id, fade0: v ? (fade === 'in' ? v.fadeIn : v.fadeOut) : 0, snap0: scene.widgets, x0: e.clientX, moved: false };
+      listen(); return;
+    }
     const r = (e.currentTarget as HTMLElement).getBoundingClientRect(), x = e.clientX - r.left;
     const mode = x <= EDGE ? 'in' : x >= r.width - EDGE ? 'out' : 'move';
-    const ids = mode === 'move' ? nextSel.filter((id) => !locked.has(id) && byId.has(id)) : [w.id];
-    drag.current = { kind: 'clip', mode, id: w.id, clip, ids, snap0: scene.widgets, x0: e.clientX, moved: false, targets: targetsFor(new Set(ids)) };
+    // dời: mọi lớp đang chọn; cắt mép: lớp này và các lớp đang chọn khác (cùng phía, cùng khoảng dời)
+    const ids = nextSel.filter((id) => !locked.has(id) && byId.has(id));
+    const skip = new Set(ids);
+    const lens = mode === 'move' ? [] : lengthTargets(scene.widgets, skip, duration, mode === 'out' ? clip.from : clip.to, mode);
+    drag.current = { kind: 'clip', mode, id: w.id, clip, ids, snap0: scene.widgets, x0: e.clientX, moved: false, targets: targetsFor(skip), lens };
     listen();
   };
   const startPhase = (e: RPointerEvent<HTMLElement>, i: number) => {
@@ -329,7 +363,7 @@ export function LayerTimeline(props: LayerTimelineProps) {
   const step = rulerStep(pps), from = view.left / pps - step, to = (view.left + laneW + tree) / pps + step;
   const ticks = rulerTicks(Math.max(0, from), Math.min(duration, to), step);
   const minor = pps * step / 4 >= 10 ? rulerTicks(Math.max(0, from), Math.min(duration, to), step / 4).filter((t) => !ticks.includes(t)) : [];
-  const height = RULER_H + ROW_H + layers.length * rowH;
+  const height = RULER_H + head + layers.length * rowH;
   const hiddenN = layers.filter((w) => !w.visible).length, lockedN = layers.filter((w) => locked.has(w.id)).length;
   const allLocked = lockedN === layers.length && layers.length > 0;
   const eyeLabel = i18n.t(hiddenN ? 'web.editor.allShow' : 'web.editor.allHide');
@@ -378,6 +412,24 @@ export function LayerTimeline(props: LayerTimelineProps) {
                 {phases.length > 0 && <span className="text-[11px] tabular-nums text-muted">{i18n.number(phases.length)}</span>}
                 <button type="button" className="tog" disabled={phases.length >= MAX_PHASES} onClick={() => addPhase(playback.get().t)} aria-label={i18n.t('web.phase.addHere')} title={i18n.t('web.phase.addHere')} data-testid="phase-add"><Plus className="h-3.5 w-3.5" /></button>
               </div>
+              {music && (
+                <>
+                  <div className="flex items-center border-b border-r border-line bg-page/40" style={{ height: ROW_H }}>
+                    <button type="button" aria-expanded={musicOpen} className="flex h-full min-w-0 flex-1 items-center gap-1.5 px-2 text-left text-xs font-semibold text-fg hover:bg-raised" onClick={() => setMusicOpen((o) => !o)} data-testid="music-toggle"
+                      title={i18n.t('web.layers.musicHint')}>
+                      <ChevronRight className={`h-3 w-3 shrink-0 text-faint transition-transform duration-150 ${musicOpen ? 'rotate-90' : ''}`} />
+                      <span className="min-w-0 truncate">{i18n.t('web.layers.music')}</span>
+                      <span className="ml-auto pr-1 font-normal tabular-nums text-muted">{i18n.number(music.tracks.length)}</span>
+                    </button>
+                  </div>
+                  {musicOpen && [{ key: 'chords', label: i18n.t('web.layers.chords'), color: '' }, ...music.tracks.map((t) => ({ key: t.track.id, label: t.track.name, color: t.track.color }))].map((r) => (
+                    <div key={r.key} className="flex items-center gap-1.5 border-b border-r border-line/70 pl-6 pr-2 text-[11px] text-muted" style={{ height: MUSIC_H }} data-testid={`music-row-${r.key}`}>
+                      {r.color && <span aria-hidden className="h-2 w-2 shrink-0 rounded-sm" style={{ background: r.color }} />}
+                      <span className="min-w-0 truncate" title={r.label}>{r.label}</span>
+                    </div>
+                  ))}
+                </>
+              )}
               <ul aria-label={i18n.t('web.editor.layers')} data-testid="layers">
                 {layers.map((w, i) => {
                   const on = sel.has(w.id), lk = locked.has(w.id), comp = compOf(w), keyed = Object.values(w.animate ?? {}).some(isKeyAnim);
@@ -434,7 +486,7 @@ export function LayerTimeline(props: LayerTimelineProps) {
             </div>
 
             {/* Làn: phase rồi một làn mỗi lớp. Nhấp chỗ trống bỏ chọn; nhấp đúp làn phase thêm phase. */}
-            <div className="relative shrink-0 touch-none" style={{ width: contentW, height: ROW_H + layers.length * rowH }} data-testid="layer-lanes"
+            <div className="relative shrink-0 touch-none" style={{ width: contentW, height: head + layers.length * rowH }} data-testid="layer-lanes"
               onPointerDown={(e) => { if (e.button === 0 && e.target === e.currentTarget && !(e.shiftKey || e.ctrlKey || e.metaKey)) onSelect([]); }}>
               <div className="absolute inset-x-0 top-0 border-b border-line bg-page/40" style={{ height: ROW_H }} data-testid="phase-lane"
                 onDoubleClick={(e) => { if (e.target !== e.currentTarget) return; const r = e.currentTarget.getBoundingClientRect(); addPhase(xToTime(e.clientX - r.left - PAD, pps, duration)); }}>
@@ -457,17 +509,19 @@ export function LayerTimeline(props: LayerTimelineProps) {
                   );
                 })}
               </div>
+              {music && <div aria-hidden className="absolute inset-x-0 border-b border-line bg-page/40" style={{ top: ROW_H, height: ROW_H }} />}
+              {music && musicOpen && <MusicLanes music={music} pps={pps} left={view.left} width={Math.max(0, view.w - tree)} top={2 * ROW_H} duration={duration} />}
               {layers.map((w, i) => (
-                <div key={w.id} className={`absolute inset-x-0 border-b border-line/70 ${sel.has(w.id) ? 'bg-raised/60' : ''}`} style={{ top: ROW_H + i * rowH, height: rowH }} data-lane={w.id}>
+                <div key={w.id} className={`absolute inset-x-0 border-b border-line/70 ${sel.has(w.id) ? 'bg-raised/60' : ''}`} style={{ top: head + i * rowH, height: rowH }} data-lane={w.id}>
                   <Bars w={w} name={name(w.id)} pps={pps} duration={duration} tempoMap={tempoMap} on={sel.has(w.id)} locked={locked.has(w.id)} rowH={rowH}
                     onDown={(e, c) => startClip(e, w, c)} onOpen={() => open(w.id)} />
                 </div>
               ))}
-              {outside.map((g) => <span key={`o${g.from}`} aria-hidden className="pointer-events-none absolute bottom-0 z-[5] bg-page/70" style={{ top: ROW_H, left: PAD + g.from * pps, width: (g.to - g.from) * pps }} data-testid="comp-outside" />)}
+              {outside.map((g) => <span key={`o${g.from}`} aria-hidden className="pointer-events-none absolute bottom-0 z-[5] bg-page/70" style={{ top: head, left: PAD + g.from * pps, width: (g.to - g.from) * pps }} data-testid="comp-outside" />)}
               {snapLine !== null && <span aria-hidden className="pointer-events-none absolute inset-y-0 z-20 w-px bg-guide" style={{ left: PAD + snapLine * pps }} data-testid="layers-snap" />}
               {chip && (
                 <div aria-hidden className="pointer-events-none absolute z-30 -translate-x-1/2 whitespace-nowrap rounded-sm border border-control bg-raised px-1.5 py-0.5 text-[11px] tabular-nums text-fg"
-                  style={{ left: PAD + chip.t * pps, top: Math.max(0, chip.y - 22) }} data-testid="layers-drag-chip">{formatClock(chip.t)}</div>
+                  style={{ left: PAD + chip.t * pps, top: Math.max(0, chip.y - 22) }} data-testid="layers-drag-chip">{chip.text ?? formatClock(chip.t)}</div>
               )}
             </div>
           </div>
@@ -495,7 +549,7 @@ const Bars = memo(function Bars({ w, name, pps, duration, tempoMap, on, locked, 
   onDown(e: RPointerEvent<HTMLElement>, c: Clip): void; onOpen(): void;
 }) {
   const { i18n } = useI18n();
-  const clips = clipsOf(w, duration), comp = compOf(w);
+  const clips = clipsOf(w, duration), comp = compOf(w), fadeIn = w.visibility?.fadeIn ?? 0, fadeOut = w.visibility?.fadeOut ?? 0;
   const keys = useMemo(() => [...new Set(Object.values(w.animate ?? {}).flatMap((a) => (isKeyAnim(a) ? keySecs(a, tempoMap) : [])))], [w.animate, tempoMap]);
   return (
     <>
@@ -509,6 +563,17 @@ const Bars = memo(function Bars({ w, name, pps, duration, tempoMap, on, locked, 
             style={{ left: PAD + c.from * pps, width: Math.max(4, (c.to - c.from) * pps), bottom: 4 }}>
             {!locked && <span aria-hidden className="absolute inset-y-0 left-0 w-1.5 cursor-ew-resize group-hover:bg-control/60" />}
             {!locked && <span aria-hidden className="absolute inset-y-0 right-0 w-1.5 cursor-ew-resize group-hover:bg-control/60" />}
+            {/* Hiện dần / ẩn dần (như Premiere): dốc mờ ở hai đầu thanh, tay nắm vuông nhỏ ở góc trên kéo để đổi. */}
+            {fadeIn > 0 && <FadeRamp side="in" width={Math.min(fadeIn * pps, (c.to - c.from) * pps)} />}
+            {fadeOut > 0 && <FadeRamp side="out" width={Math.min(fadeOut * pps, (c.to - c.from) * pps)} />}
+            {!locked && (['in', 'out'] as const).map((f) => {
+              const off = Math.min((c.to - c.from) * pps / 2 - 4, (f === 'in' ? fadeIn : fadeOut) * pps + 2);
+              return (
+                <span key={f} data-fade={f} aria-hidden title={i18n.t(f === 'in' ? 'web.layers.fadeInHint' : 'web.layers.fadeOutHint')} data-testid={`fade-${f}-${w.id}`}
+                  className={`absolute top-0 z-10 h-2 w-2 cursor-ew-resize border border-fg bg-surface ${on || (f === 'in' ? fadeIn : fadeOut) > 0 ? 'block' : 'hidden group-hover:block'}`}
+                  style={f === 'in' ? { left: Math.max(2, off) } : { right: Math.max(2, off) }} />
+              );
+            })}
             <span className="pointer-events-none sticky left-2 flex min-w-0 items-center gap-1 truncate px-2">
               {comp && <Precomp className="h-3 w-3 shrink-0" />}
               {rowH >= 32 || (c.to - c.from) * pps > 48 ? <span className="truncate">{name}</span> : null}
@@ -522,3 +587,68 @@ const Bars = memo(function Bars({ w, name, pps, duration, tempoMap, on, locked, 
     </>
   );
 });
+
+/** Màu từ token CSS (`--x: r g b`) theo theme đang dùng. */
+const cssColor = (name: string, alpha = 1) => {
+  const v = typeof document !== 'undefined' ? getComputedStyle(document.documentElement).getPropertyValue(name).trim() : '';
+  return v ? `rgb(${v} / ${alpha})` : `rgba(128,128,128,${alpha})`;
+};
+
+/**
+ * Làn tham chiếu nhạc: làn hợp âm (tên hợp âm theo đoạn) rồi một làn mỗi track (nốt như piano roll thu nhỏ, cao độ theo dải của track). Chỉ để nhìn
+ * và căn thanh theo nhạc. Vẽ bằng một canvas đúng phần đang thấy (bài dài, phóng to vẫn nhẹ); vẽ lại khi cuộn, thu phóng hoặc đổi theme.
+ */
+const MusicLanes = memo(function MusicLanes({ music, pps, left, width, top, duration }: { music: { tracks: readonly TrackIndex[]; chords: readonly ChordSeg[] }; pps: number; left: number; width: number; top: number; duration: number }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  const rows = 1 + music.tracks.length, h = rows * MUSIC_H;
+  const [theme, setTheme] = useState(0);
+  useEffect(() => {
+    if (typeof MutationObserver === 'undefined') return;
+    const mo = new MutationObserver(() => setTheme((n) => n + 1));
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'data-theme', 'style'] });
+    return () => mo.disconnect();
+  }, []);
+  useEffect(() => {
+    const c = ref.current, g = c?.getContext?.('2d'); if (!c || !g || width <= 0) return;
+    const dpr = window.devicePixelRatio || 1;
+    c.width = Math.round(width * dpr); c.height = Math.round(h * dpr);
+    g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, width, h);
+    const t0 = Math.max(0, (left - PAD) / pps), t1 = Math.min(duration, (left + width) / pps);
+    const x = (t: number) => PAD + t * pps - left;
+    const line = cssColor('--line', 0.7), muted = cssColor('--text-muted'), raised = cssColor('--surface-raised');
+    g.font = '11px "Space Grotesk", sans-serif'; g.textBaseline = 'middle';
+    // hợp âm
+    let k = 0;
+    for (const ch of music.chords) {
+      if (ch.end < t0 || ch.start > t1 || !ch.name) continue;
+      const a = x(ch.start), b = x(ch.end);
+      g.fillStyle = k++ % 2 ? raised : 'transparent'; g.fillRect(a, 1, b - a, MUSIC_H - 2);
+      g.fillStyle = line; g.fillRect(a, 2, 1, MUSIC_H - 4);
+      if (b - a > 18) { g.save(); g.beginPath(); g.rect(a, 0, b - a - 2, MUSIC_H); g.clip(); g.fillStyle = muted; g.fillText(ch.name, a + 4, MUSIC_H / 2); g.restore(); }
+    }
+    // nốt của từng track
+    music.tracks.forEach((ti, r) => {
+      const y0 = (r + 1) * MUSIC_H, lo = ti.track.pitchRange.min, span = Math.max(1, ti.track.pitchRange.max - lo);
+      g.fillStyle = line; g.fillRect(0, y0, width, 1);
+      g.fillStyle = ti.track.color || muted;
+      for (const n of ti.notes) {
+        if (n.endTimeSeconds < t0) continue;
+        if (n.startTimeSeconds > t1) break; // nốt đã sắp theo thời điểm bắt đầu
+        const y = y0 + 3 + (1 - (n.pitch - lo) / span) * (MUSIC_H - 8);
+        g.fillRect(x(n.startTimeSeconds), y, Math.max(1, (n.endTimeSeconds - n.startTimeSeconds) * pps), 2);
+      }
+    });
+  }, [music, pps, left, width, h, duration, theme]);
+  return <canvas ref={ref} aria-hidden className="pointer-events-none absolute" style={{ left, top, width, height: h }} data-testid="music-lanes" />;
+});
+
+/** Dốc hiện dần/ẩn dần trên thanh: vùng tối dần về mép kèm đường chéo (như Premiere), không nhận chuột. */
+function FadeRamp({ side, width }: { side: 'in' | 'out'; width: number }) {
+  return (
+    <span aria-hidden className={`pointer-events-none absolute inset-y-0 ${side === 'in' ? 'left-0 bg-gradient-to-r' : 'right-0 bg-gradient-to-l'} from-page/80 to-transparent`} style={{ width }} data-testid={`fade-ramp-${side}`}>
+      <svg className="absolute inset-0 h-full w-full text-muted" preserveAspectRatio="none" viewBox="0 0 100 100">
+        <line x1={side === 'in' ? 0 : 100} y1={100} x2={side === 'in' ? 100 : 0} y2={0} stroke="currentColor" strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
+      </svg>
+    </span>
+  );
+}

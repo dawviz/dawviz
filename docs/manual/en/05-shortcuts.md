@@ -39,6 +39,7 @@ While you're typing in a field, these keys go to the field.
 | Alt+Up / Alt+Down (on a layer name in the Timeline) | Reorder layers |
 | Ctrl+K | Split the selected layers at the playhead |
 | Ctrl+G | Precompose the selected layers |
+| Ctrl+Shift+G | Release the selected precomp (its layers come back to the timeline) |
 | Hold Alt while dragging | Move without snapping |
 | Hold Ctrl while resizing | Resize without snapping |
 | Hold Alt while resizing | Resize around the centre |
@@ -63,7 +64,8 @@ When the Timeline has focus (click it first):
 | Key | Action |
 |---|---|
 | Drag the middle of a bar | Move the layer in time (every selected layer; keyframes move with it) |
-| Drag a bar edge | Trim the start or end (keyframes stay put) |
+| Drag a bar edge | Trim the start or end (keyframes stay put; other selected layers trim too) |
+| Drag the square at a bar's top corner | Fade in (start) / fade out (end) |
 | Hold Alt while dragging a bar or the ruler | No snapping |
 | Double-click a bar | Open the layer's keyframes; for a precomp, open the precomp |
 | Enter | Same as double-click, for the selected layer |

@@ -1,7 +1,7 @@
 // Hộp thoại Xuất video (T-09, REQ-EXPORT-00/05/06). Chọn cỡ/FPS/chất lượng → tóm tắt pre-flight (kích thước thực, dung lượng,
 // định dạng sẽ dùng, cảnh báo) → xuất trong Export Worker với tiến độ và nút Hủy. Phần tính toán ở lib/exportPlan.ts.
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { Derived, SceneDocument, UnifiedProjectAST } from '@dawviz/render-core';
+import { flattenScene, type Derived, type SceneDocument, type UnifiedProjectAST } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import type { AudioAsset } from '../lib/audioAsset.ts';
 import { startExport, type ExportHandle } from '../lib/exportClient.ts';
@@ -35,14 +35,16 @@ type SavePicker = (o: { suggestedName: string; types: { description: string; acc
 const mmss = (sec: number) => `${Math.floor(sec / 60)}:${String(Math.round(sec % 60)).padStart(2, '0')}`;
 const baseOf = (n: string) => (n.replace(/\.[^.]+$/, '') || 'dawviz').replace(/[\\/:*?"<>|]+/g, '_');
 
-export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec, fileName, advanced = false, styleId, styleName, onClose }: {
-  styleId?: string; styleName?: string; scene: SceneDocument; ast: UnifiedProjectAST; derived: Derived; audio: AudioAsset | null; offsetMs: number; projectSec: number; fileName: string; advanced?: boolean; onClose(): void;
+/** Xuất do agent điều khiển (`?agent=1`, lib/agentApi.ts): cấu hình đặt sẵn, tự bắt đầu khi đã dò xong bộ mã hoá, không hỏi nơi lưu, báo kết quả qua `onFinish`. */
+export interface AutoExport { resolution?: ResolutionClass; fps?: Fps; quality?: Quality; kind?: 'video' | 'png'; onFinish(r: { blob: Blob | null; name: string; bytes: number; ms: number } | { error: string }): void }
+export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec, fileName, advanced = false, styleId, styleName, onClose, auto }: {
+  styleId?: string; styleName?: string; scene: SceneDocument; ast: UnifiedProjectAST; derived: Derived; audio: AudioAsset | null; offsetMs: number; projectSec: number; fileName: string; advanced?: boolean; onClose(): void; auto?: AutoExport;
 }) {
   const { i18n } = useI18n();
   const assetsApi = useAssets();
-  const [cls, setCls] = useState<ResolutionClass>(1080);
-  const [fps, setFps] = useState<Fps>(30);
-  const [quality, setQuality] = useState<Quality>('medium');
+  const [cls, setCls] = useState<ResolutionClass>(auto?.resolution ?? 1080);
+  const [fps, setFps] = useState<Fps>(auto?.fps ?? 30);
+  const [quality, setQuality] = useState<Quality>(auto?.quality ?? 'medium');
   const [phase, setPhase] = useState<Phase>('setup');
   const [progress, setProgress] = useState<ProgressInfo | null>(null);
   const [support, setSupport] = useState<Support | 'checking'>('checking');
@@ -64,18 +66,19 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
   const [report, setReport] = useState<string | 'running' | null>(null);
   const [copied, setCopied] = useState(false);
   // T-55: video hoặc chuỗi PNG trong suốt (+ .wav). VP9 có alpha chỉ phát hiện để báo.
-  const [kind, setKind] = useState<'video' | 'png'>('video');
+  const [kind, setKind] = useState<'video' | 'png'>(auto?.kind ?? 'video');
   const [wav, setWav] = useState(true);
   const [vp9Alpha, setVp9Alpha] = useState<boolean | null>(null);
 
   const size = useMemo(() => sizeForClass(scene.canvas.designWidth, scene.canvas.designHeight, cls), [scene, cls]);
   const range = useMemo(() => exportDuration({ projectSec, audioSec: audio ? Math.max(0, offsetMs / 1000 + audio.durationSec) : 0 }), [projectSec, audio, offsetMs]);
   // Bản nhạc còn đang viết (D-63): chưa cho xuất, nếu không widget sẽ trống trong video.
-  const notationPending = scene.widgets.some((w) => w.type === 'NOTATION' && w.visible && !derived.notation?.has(w.id));
-  const hasFsa = typeof window !== 'undefined' && 'showSaveFilePicker' in window;
+  const notationPending = flattenScene(scene).widgets.some((w) => w.type === 'NOTATION' && w.visible && !derived.notation?.has(w.id));
+  // Agent: không hỏi nơi lưu (không có người bấm hộp thoại của hệ điều hành); kết quả về dạng Blob.
+  const hasFsa = !auto && typeof window !== 'undefined' && 'showSaveFilePicker' in window;
   const pre = useMemo(() => preflight({ width: size.width, height: size.height, fps, quality, duration: range.duration, hasAudio: !!audio, hasFileSystemAccess: hasFsa }), [size, fps, quality, range, audio, hasFsa]);
 
-  const hasDirPicker = typeof window !== 'undefined' && 'showDirectoryPicker' in window;
+  const hasDirPicker = !auto && typeof window !== 'undefined' && 'showDirectoryPicker' in window;
   const pngBytes = useMemo(() => estimatePngBytes({ width: size.width, height: size.height, frames: pre.frames, ...(audio && wav ? { wavSeconds: range.duration, sampleRate: audio.buffer.sampleRate, channels: audio.buffer.numberOfChannels } : {}) }), [size, pre.frames, audio, wav, range]);
   useEffect(() => { let live = true; void vp9AlphaSupported(size.width, size.height).then((v) => live && setVp9Alpha(v)); return () => { live = false; }; }, [size]);
   useEffect(() => {
@@ -102,6 +105,16 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
   }, [phase]);
 
   useEffect(() => { startBtn.current?.focus(); }, []);
+  // Agent: bắt đầu ngay khi đã biết bộ mã hoá (và Bản nhạc đã viết xong); không có bộ mã hoá nào thì báo lỗi.
+  const autoStarted = useRef(false);
+  useEffect(() => {
+    if (!auto || autoStarted.current || phase !== 'setup') return;
+    if (kind === 'video' && choice === 'checking') return;
+    if (notationPending) return;
+    autoStarted.current = true;
+    if (kind === 'video' && !choice) { auto.onFinish({ error: 'unsupported: no video encoder for this size/fps in this browser' }); return; }
+    void start();
+  }); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape' && phase !== 'running') onClose(); };
     window.addEventListener('keydown', onKey);
@@ -183,12 +196,14 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
     handle.current = h;
     try {
       const r = await h.result;
-      if (r.status === 'cancelled') { setPhase('setup'); return; }
+      if (r.status === 'cancelled') { setPhase('setup'); auto?.onFinish({ error: 'cancelled' }); return; }
       setResult({ url: r.blob ? URL.createObjectURL(r.blob) : null, name: isPng && !r.blob ? i18n.t('web.export.png.folder') : suggestedName, bytes: r.bytes, ms: r.ms });
+      auto?.onFinish({ blob: r.blob ?? null, name: suggestedName, bytes: r.bytes, ms: r.ms });
       setFinalReport(r.report ?? null);
       setPhase('done');
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e)); setPhase('error');
+      auto?.onFinish({ error: e instanceof Error ? e.message : String(e) });
     } finally { handle.current = null; void lock.current?.release(); lock.current = null; freeLock(); }
   };
 

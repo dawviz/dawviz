@@ -46,6 +46,7 @@ Preset là một tệp `.json` lưu cách bày video: phong cách, vị trí cá
 Preset nằm ở cột **Phong cách video** của thẻ Xem trước, ngay dưới Bản in và Tối, không còn ở Cài đặt.
 
 - **Ô dấu cộng** (khung nét đứt): chọn một tệp preset `.json` (hoặc gói `.dawviz-preset.zip`, xem bên dưới). Preset được thêm thành ô mới, áp lên bài đang mở và nhớ trong trình duyệt này. Hoàn tác được nếu không ưng.
+- **Dán preset** (dưới ô dấu cộng): dán thẳng nội dung JSON của một preset (ví dụ chatbot AI viết, xem [Dùng với AI agent](11-ai-agent.md)) rồi bấm **Thêm preset**. Kết quả như khi chọn tệp; Ctrl+Enter để thêm nhanh, Esc để đóng.
 - **Mỗi ô giữ bản chỉnh dở của riêng nó.** Chỉnh Bản in rồi chuyển sang Tối, khi quay lại Bản in thì các chỉnh sửa vẫn còn, ô hiện nhãn "đã chỉnh". Ghi đè màu theo track thì đi theo dự án, không tính là chỉnh của ô.
 - Rê chuột vào một ô để thấy nút: **↓ tải xuống** tệp `.json` đúng như đang thấy (kể cả phần đã chỉnh), **×** (chỉ hiện khi ô đã chỉnh) đưa ô về **bản gốc**, và với preset của bạn có thêm **thùng rác** để xoá khỏi danh sách. Về gốc vẫn hoàn tác được bằng Ctrl+Z.
 - Nút **nhân bản** (hai ô chồng nhau) tạo preset mới từ bản bạn đang thấy, kể cả phần đã chỉnh. Ô nguồn về nguyên gốc, phần chỉnh chuyển sang ô mới.

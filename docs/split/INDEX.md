@@ -16,7 +16,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1202 ký tự
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4347 ký tự
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](BRD/6-gia-dinh-assumptions.md) · 554 ký tự
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 37723 ký tự
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 39503 ký tự
 - [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](BRD/8-cac-van-de-con-mo-open-issues.md) · 7775 ký tự
 
 ## SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
@@ -98,7 +98,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [5.2. Chế độ tương tác](SRS/5-2-che-do-tuong-tac.md) · 364 ký tự
 - [5.3. Yêu cầu giao diện](SRS/5-3-yeu-cau-giao-dien.md) · 18661 ký tự
 - [6. MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU](SRS/6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md) · 1468 ký tự
-- [7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO](SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md) · 7104 ký tự
+- [7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO](SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md) · 8165 ký tự
 - [8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS](SRS/8-cac-van-de-con-mo-cua-srs.md) · 4118 ký tự
 - [Phụ lục A: Mã lỗi](SRS/phu-luc-a-ma-loi.md) · 2864 ký tự
 - [Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02)](SRS/phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md) · 1673 ký tự
@@ -167,8 +167,8 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [1. Chiến lược](TDD/1-chien-luoc.md) · 1005 ký tự
 - [2. Danh mục test mới](TDD/2-danh-muc-test-moi.md) · 3229 ký tự
 - [3. Ma trận truy vết](TDD/3-ma-tran-truy-vet.md) · 542 ký tự
-- [4. Khoảng trống đã biết](TDD/4-khoang-trong-da-biet.md) · 442 ký tự
-- [5. Danh sách kiểm thủ công cho AT-18 (Chrome)](TDD/5-danh-sach-kiem-thu-cong-cho-at-18-chrome.md) · 4169 ký tự
+- [4. Khoảng trống đã biết](TDD/4-khoang-trong-da-biet.md) · 488 ký tự
+- [5. Danh sách kiểm thủ công cho AT-18 (Chrome)](TDD/5-danh-sach-kiem-thu-cong-cho-at-18-chrome.md) · 6773 ký tự
 
 ## ANIMATION.md — Hiệu ứng chuyển động và xuất video: so sánh công cụ và quyết định
 

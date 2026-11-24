@@ -6,7 +6,7 @@
 // Khoá là trạng thái của phiên chỉnh sửa (không vào preset video, không vào lịch sử); ẩn/hiện, vị trí, cỡ, góc, neo, thứ tự lớp
 // và bắt dính đều là lệnh hoàn tác được (lib/commands.ts).
 import { Suspense, lazy, useContext, useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
-import { ADDABLE_WIDGETS, COMP_SEP, MAX_COMP_DEPTH, MAX_FLAT_WIDGETS, canPlaceComp, compOf, newCompId, resolveCompPath, isKeyAnim, defaultScene, normalizeAngle, rotateGroup, type Animation, type Derived, type NoteNaming, type WidgetMotion, type Phase, type SceneDocument, type UnifiedProjectAST, type WidgetLayout, type WidgetSpec, type WidgetType, type WidgetVisibility, type BackgroundImageSpec } from '@dawviz/render-core';
+import { ADDABLE_WIDGETS, COMP_SEP, IDENTITY_TIME, buildHud, chordTimeline, MAX_COMP_DEPTH, MAX_FLAT_WIDGETS, canPlaceComp, compOf, newCompId, resolveCompPath, isKeyAnim, defaultScene, normalizeAngle, rotateGroup, type Animation, type Derived, type NoteNaming, type WidgetMotion, type Phase, type SceneDocument, type UnifiedProjectAST, type WidgetLayout, type WidgetSpec, type WidgetType, type WidgetVisibility, type BackgroundImageSpec } from '@dawviz/render-core';
 import { startPaintDrag } from '../lib/paintDrag.ts';
 import { GestureContext } from '../lib/storeReact.ts';
 import { useI18n } from '../i18n/I18nProvider.tsx';
@@ -23,7 +23,7 @@ import { AlignBottom, AlignHCenter, AlignLeft, AlignRight, AlignTop, AlignVCente
 import { isTextEntry } from '../lib/a11y.ts';
 import { layerOrder, parentCandidates, type AnimEdit, type Doc, type LayerEdit } from '../lib/commands.ts';
 import { refKey } from '../lib/compLens.ts';
-import { clipsOf, newCompName, precompose, splitLayer } from '../lib/layerTimeline.ts';
+import { clipsOf, newCompName, precompose, splitLayer, uncompose } from '../lib/layerTimeline.ts';
 import { formatClock } from '../lib/timeFormat.ts';
 import { LayerTimeline } from './LayerTimeline.tsx';
 import { Select } from './Select.tsx';
@@ -41,7 +41,7 @@ import { KeyframeTimeline, NO_SEL, type KeySel } from './KeyframeTimeline.tsx';
 import { usePanelLayout, usePanelShortcuts } from '../lib/usePanelLayout.ts';
 import { PanelCollapse, Rail } from './PanelChrome.tsx';
 import { PANEL_LIMITS } from '../lib/panelLayout.ts';
-import { KeySection, MotionSection, NamingSection, VisibilitySection } from './TimeSections.tsx';
+import { KeySection, MotionSection, NamingSection } from './TimeSections.tsx';
 // Graph Editor (T-33): chỉ nạp khi người dùng chuyển Timeline sang chế độ Đồ thị.
 const GraphEditor = lazy(() => import('./GraphEditor.tsx').then((m) => ({ default: m.GraphEditor })));
 const TL_VIEW_KEY = 'dawviz.timelineView';
@@ -176,10 +176,13 @@ export function Editor({ styleName, scene, root, compPath, onCompPath, flatFull,
   const duration = derived?.index.duration ?? 0;
   const bounds = useMemo(() => {
     const f = frames.at(-1); if (!f) return null;
-    const parentOffset = frames.at(-2)?.offset ?? 0;
-    return clipsOf(f.layer, duration).map((c) => ({ from: c.from + parentOffset, to: c.open ? duration : c.to + parentOffset }));
+    const pm = frames.at(-2)?.map ?? IDENTITY_TIME; // khoảng của lớp precomp tính theo comp cha → đổi sang thời gian toàn bài
+    return clipsOf(f.layer, duration).map((c) => ({ from: pm.a * c.from + pm.b, to: c.open ? duration : pm.a * c.to + pm.b }));
   }, [frames, duration]);
   const compName = (f: { layer: WidgetSpec; spec: { name: string } }) => f.layer.name ?? f.spec.name;
+  // Làn tham chiếu nhạc của timeline lớp: nốt từng track (dữ liệu đã có trong chỉ mục) và hợp âm của mọi track, dò một lần mỗi dự án.
+  const index = derived0?.index;
+  const music = useMemo(() => (ast && index ? { tracks: index.tracks, chords: chordTimeline(buildHud(ast, index, [{ tracks: index.tracks, mode: 'sustained' }]), index.tracks) } : undefined), [ast, index]);
   const openComp = (layerId: string) => { onCompPath([...compPath, layerId]); setSelected([]); setKeysOpen(false); setSay(i18n.t('web.comp.opened', { name: name(layerId) })); };
   const goUp = (depth: number) => { const back = compPath[depth]; onCompPath(compPath.slice(0, depth)); setSelected(back ? [back] : []); setKeysOpen(false); };
 
@@ -247,8 +250,7 @@ export function Editor({ styleName, scene, root, compPath, onCompPath, flatFull,
     if (!ids.length) return;
     const v = actions.view(), compId = newCompId(root);
     const cname = newCompName(v.scene, i18n.t('web.comp.defaultName'), order.map(name));
-    const offset = frames.at(-1)?.offset ?? 0;
-    const r = precompose(v.scene, ids, offset, compId, cname); if (!r) return;
+    const r = precompose(v.scene, ids, frames.at(-1)?.map ?? IDENTITY_TIME, compId, cname); if (!r) return;
     if (!canPlaceComp(r.comps, compId, frames.map((f) => f.comp))) { note(i18n.t('web.comp.tooDeep', { max: MAX_COMP_DEPTH })); return; }
     const moveRefs = <V,>(refs: Record<string, V>) => { const out = { ...refs }; for (const id of ids) if (id in out) { out[refKey(compId, id)] = out[id]; delete out[id]; } return out; };
     actions.layers('precompose', { widgets: r.widgets, comps: r.comps, layoutRef: moveRefs(v.layoutRef), propsRef: moveRefs(v.propsRef) });
@@ -256,7 +258,26 @@ export function Editor({ styleName, scene, root, compPath, onCompPath, flatFull,
     setSay(i18n.t('web.comp.created', { name: cname, n: ids.length }));
   };
 
+  // Gỡ precomp (Ctrl+Shift+G): các lớp bên trong ra lại timeline đang mở, đúng chỗ và đúng thời gian.
+  const uncomposeSel = () => {
+    const id = live.length === 1 ? live[0] : null, w = id && scene.widgets.find((x) => x.id === id);
+    if (!w || !compOf(w) || locked.has(w.id)) return;
+    const v = actions.view(), r = uncompose(v.scene, w.id, duration); if (!r) return;
+    const move = <V,>(refs: Record<string, V>) => { const out = { ...refs }; for (const [from, to] of r.refs) if (from in refs) out[to] = refs[from]; return out; };
+    actions.layers('uncompose', { widgets: r.widgets, layoutRef: move(v.layoutRef), propsRef: move(v.propsRef) });
+    setSelected(r.added);
+    if (r.lost) note(i18n.t('web.comp.uncomposeLost', { name: name(w.id) })); else setTlNote('');
+    setSay(i18n.t('web.comp.uncomposed', { name: name(w.id), n: r.added.length }));
+  };
+  // Tốc độ phát của precomp (%, 10–1000). Ô số ghi tốc độ so với comp cha; khung nhìn lưu theo thời gian toàn bài nên đổi qua phép đổi thời gian của comp đang mở.
+  const frameA = frames.at(-1)?.map.a ?? 1;
+  const setCompSpeed = (id: string, pct: number) => {
+    const v = actions.view(), w = v.scene.widgets.find((x) => x.id === id), c = w && compOf(w); if (!w || !c) return;
+    const speed = Math.min(10, Math.max(0.1, Math.round(pct) / 100)) / frameA;
+    actions.layers('compSpeed', { widgets: v.scene.widgets.map((x) => (x.id === id ? { ...x, properties: { ...c, speed: Math.round(speed * 1e6) / 1e6 } } : x)) }, `speed:${id}`);
+  };
   const onKeys = (e: KeyboardEvent<HTMLDivElement>) => {
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.code === 'KeyG' && !isTextEntry(e.target)) { e.preventDefault(); uncomposeSel(); return; }
     if (isTextEntry(e.target) || e.altKey) return;
     if ((e.key === 'Delete' || e.key === 'Backspace') && !e.ctrlKey && !e.metaKey && live.length) { e.preventDefault(); removeSel(); return; }
     if ((e.ctrlKey || e.metaKey) && e.code === 'KeyD' && live.length) { e.preventDefault(); duplicateSel(); return; }
@@ -370,7 +391,7 @@ export function Editor({ styleName, scene, root, compPath, onCompPath, flatFull,
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto max-lg:flex-none max-lg:overflow-visible">
         <Properties background={background} scene={scene} selected={live} locked={locked} name={name} advanced={advanced} actions={actions} onLock={toggleLock} order={order} move={move} widgetSections={widgetSections} onPick={(id) => setSelected([id])} layoutRef={layoutRef}
-          onDuplicate={duplicateSel} onRemove={removeSel} onDeselect={deselect} live={liveCtx} editLayouts={editLayouts} onOpenComp={openComp} onOpenKeys={openKeys} inComp={frames.length > 0}
+          onDuplicate={duplicateSel} onRemove={removeSel} onDeselect={deselect} live={liveCtx} editLayouts={editLayouts} onOpenComp={openComp} onOpenKeys={openKeys} inComp={frames.length > 0} onUncompose={uncomposeSel} compSpeed={(w) => Math.round((compOf(w)?.speed ?? 1) * frameA * 100)} onCompSpeed={setCompSpeed}
           keyInspector={single && ast && keysOpen && hasInspectorTarget(single, keySel) ? (n) => (
             <AnimationInspector n={n} widget={single} sel={keySel} tempoMap={ast.tempoMap} locked={locked.has(single.id)} getTime={() => playback.get().t}
               onAnimate={(p, v, k) => actions.animate(single.id, p, v, k)} onAnimateMany={(ch, k) => actions.animEdit({ [single.id]: { animate: ch } }, k)} onSel={onKeySel} gesture={gestureCtx} />
@@ -395,7 +416,7 @@ export function Editor({ styleName, scene, root, compPath, onCompPath, flatFull,
             <LayerTimeline scene={scene} order={order} duration={duration} tempoMap={ast.tempoMap} playback={playback} phases={root.phases ?? []} onPhases={actions.phases}
               selected={live} onSelect={setSelected} locked={locked} onLock={toggleLock} onLockAll={lockAll} name={name} onVisible={actions.visible} onAllVisible={actions.allVisible} onPaint={paintLayers}
               onMoveLayer={move} onLayers={(kind, next, key) => actions.layers(kind, next, key)} onOpenKeys={openKeys} onOpenComp={openComp} onSplit={splitSel} onPrecompose={precomposeSel}
-              bounds={bounds} tree={r.tree} onTree={(v) => panels.resize('tree', v)} onTreeReset={() => panels.reset('tree')} gesture={gestureCtx} addMenu={<AddMenu onAdd={addWidget} />}
+              bounds={bounds} music={music} tree={r.tree} onTree={(v) => panels.resize('tree', v)} onTreeReset={() => panels.reset('tree')} gesture={gestureCtx} addMenu={<AddMenu onAdd={addWidget} />}
               editing={editing} onEdit={setEditing}
               renameInput={(id) => <LayerNameInput initial={scene.widgets.find((w) => w.id === id)?.name ?? name(id)} label={i18n.t('web.editor.nameLabel')} onCommit={(v) => commitName(id, v)} onCancel={() => setEditing(null)} />} />
           )}
@@ -482,7 +503,7 @@ function AlignSection({ n, items, frame, onLayouts, locked }: { n: number; items
 
 const btn = 'flex min-h-[var(--hit)] items-center gap-1.5 rounded border border-control bg-raised px-2.5 text-xs font-medium text-fg transition hover:border-line-strong disabled:cursor-not-allowed disabled:opacity-50';
 
-function Properties({ background, scene, selected, locked, name, advanced, actions, onLock, order, move, widgetSections, onPick, layoutRef, onDuplicate, onRemove, onDeselect, keyInspector, live, editLayouts, onOpenComp, onOpenKeys, inComp }: { keyInspector?(n: number): ReactNode; live: LiveCtx | null; editLayouts(p: Patches): void; onDeselect(): void; background?: BackgroundState; onOpenComp(id: string): void; onOpenKeys(id: string): void; inComp: boolean; onDuplicate(): void; onRemove(): void; layoutRef?: Record<string, WidgetLayout>; onPick(id: string): void; scene: SceneDocument; selected: string[]; locked: ReadonlySet<string>; name(id: string): string; advanced: boolean; actions: EditorActions; onLock(id: string): void; order: string[]; move(id: string, to: number): void; widgetSections?: Props['widgetSections'] }) {
+function Properties({ background, scene, selected, locked, name, advanced, actions, onLock, order, move, widgetSections, onPick, layoutRef, onDuplicate, onRemove, onDeselect, keyInspector, live, editLayouts, onOpenComp, onOpenKeys, inComp, onUncompose, compSpeed, onCompSpeed }: { onUncompose(): void; compSpeed(w: WidgetSpec): number; onCompSpeed(id: string, pct: number): void; keyInspector?(n: number): ReactNode; live: LiveCtx | null; editLayouts(p: Patches): void; onDeselect(): void; background?: BackgroundState; onOpenComp(id: string): void; onOpenKeys(id: string): void; inComp: boolean; onDuplicate(): void; onRemove(): void; layoutRef?: Record<string, WidgetLayout>; onPick(id: string): void; scene: SceneDocument; selected: string[]; locked: ReadonlySet<string>; name(id: string): string; advanced: boolean; actions: EditorActions; onLock(id: string): void; order: string[]; move(id: string, to: number): void; widgetSections?: Props['widgetSections'] }) {
   const { i18n } = useI18n();
   const ws = selected.map((id) => scene.widgets.find((w) => w.id === id)!).filter(Boolean);
   const { designWidth: W, designHeight: H } = scene.canvas;
@@ -584,7 +605,15 @@ function Properties({ background, scene, selected, locked, name, advanced, actio
           ? <button type="button" className={btn} onClick={() => onOpenComp(w.id)} data-testid="props-open-comp"><Precomp className="h-3.5 w-3.5" />{i18n.t('web.comp.open')}</button>
           : <button type="button" className={btn} onClick={() => onOpenKeys(w.id)} data-testid="props-open-keys"><Diamond className="h-3 w-3" />{i18n.t('web.layers.openKeysBtn')}</button>}
         {comp && <button type="button" className={btn} onClick={() => onOpenKeys(w.id)} data-testid="props-open-keys"><Diamond className="h-3 w-3" />{i18n.t('web.layers.openKeysBtn')}</button>}
+        {comp && <button type="button" className={btn} disabled={lk} onClick={onUncompose} title={`${i18n.t('web.comp.uncompose')} (Ctrl+Shift+G)`} data-testid="props-uncompose">{i18n.t('web.comp.uncompose')}</button>}
       </div>
+      {comp && (
+        <div className="border-b border-line px-4 py-2">
+          <NumRow label={i18n.t('web.comp.speed')} reset={<ResetButton label={i18n.t('web.comp.speed')} changed={compSpeed(w) !== 100} disabled={lk} onReset={() => onCompSpeed(w.id, 100)} />}>
+            <NumberField label={i18n.t('web.comp.speed')} value={compSpeed(w)} spec={{ min: 10, max: 1000, step: 5, units: { '%': 1 } }} disabled={lk} onChange={(v) => onCompSpeed(w.id, v)} />
+          </NumRow>
+        </div>
+      )}
       {ki}
       <InspectorSection n={1 + o} id="transform" title={i18n.t('web.editor.positionSize')}>
         {lk && (
@@ -666,10 +695,10 @@ function Properties({ background, scene, selected, locked, name, advanced, actio
         <TickField strong label={i18n.t('web.editor.visible')} checked={w.visible} onChange={(v) => actions.visible(w.id, v)} reference />
         <TickField strong label={i18n.t('web.editor.locked')} checked={lk} onChange={() => onLock(w.id)} reference={false} />
       </InspectorSection>
-      <VisibilitySection n={4 + k} widgetId={w.id} value={w.visibility} disabled={lk} onChange={(v, key) => actions.visibility(w.id, v, key)} />
-      <MotionSection n={5 + k} widgetId={w.id} value={w.motion} disabled={lk} onChange={(v, key) => actions.motion(w.id, v, key)} />
-      <AlignSection n={6 + k} items={[w]} frame={{ width: W, height: H }} onLayouts={actions.layouts} locked={locked} />
-      {snapping(7 + k)}
+      {/* Khoảng hiển thị và hiện dần/ẩn dần chỉnh trên thanh của lớp ở Timeline (D-69): không còn mục riêng ở đây. */}
+      <MotionSection n={4 + k} widgetId={w.id} value={w.motion} disabled={lk} onChange={(v, key) => actions.motion(w.id, v, key)} />
+      <AlignSection n={5 + k} items={[w]} frame={{ width: W, height: H }} onLayouts={actions.layouts} locked={locked} />
+      {snapping(6 + k)}
     </>
   );
 }

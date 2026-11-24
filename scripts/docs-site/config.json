@@ -50,6 +50,10 @@
         {
           "src": "docs/manual/10-phan-tich.md",
           "title": "Widget phân tích"
+        },
+        {
+          "src": "docs/manual/11-ai-agent.md",
+          "title": "Dùng với AI agent"
         }
       ]
     },
@@ -99,6 +103,10 @@
         {
           "src": "docs/manual/en/10-analysis-widgets.md",
           "title": "Analysis widgets"
+        },
+        {
+          "src": "docs/manual/en/11-ai-agent.md",
+          "title": "Using an AI agent"
         }
       ]
     },

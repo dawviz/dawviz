@@ -442,30 +442,26 @@ describe('preset .json trong cột Video styles (T-07)', () => {
 
 describe('khoảng hiển thị và phase (T-81)', () => {
   const layerBtn = (re: RegExp) => [...screen.getByTestId('layers').querySelectorAll<HTMLButtonElement>('button[aria-pressed]')].find((b) => re.test(b.textContent ?? '') && !b.getAttribute('aria-label'))!;
-  /** Ô thời gian của mục Khoảng hiển thị (id widget không cố định theo preset). */
-  const visMaybe = (k: string) => document.querySelector<HTMLInputElement>(`[data-testid^="vis-"][data-testid$="-${k}"]`);
-  const vis = (k: string): HTMLInputElement => { const el = visMaybe(k); if (!el) throw new Error(`không có ô ${k}`); return el; };
   const typeIn = (el: HTMLElement, v: string) => { fireEvent.change(el, { target: { value: v } }); fireEvent.keyDown(el, { key: 'Enter' }); };
-  it('bật khoảng hiển thị, sửa mốc, thêm/xoá khoảng; mỗi thao tác một bước hoàn tác; hoàn tác trả về hiện suốt bài', async () => {
+  const rect = (el: HTMLElement) => { el.getBoundingClientRect = () => ({ left: 0, right: 200, width: 200, top: 0, bottom: 20, height: 20, x: 0, y: 0, toJSON() {} }); };
+  it('D-69: không còn mục Khoảng hiển thị ở Thuộc tính, số mục liền nhau; hiện dần kéo bằng tay nắm trên thanh, một bước hoàn tác', async () => {
     await openProject();
     fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
     fireEvent.click(layerBtn(/Piano roll/));
     expect(screen.queryByTestId('vis-ranges')).toBeNull();
-    fireEvent.click(screen.getByTestId('vis-limit'));
-    await waitFor(() => expect(screen.getByTestId('vis-ranges')).toBeInTheDocument());
-    typeIn(vis('from-0'), '0:05');
-    typeIn(vis('to-0'), '0:20');
-    expect(vis('from-0').value).toBe('0:05');
-    expect((vis('to-0') as HTMLInputElement).value).toBe('0:20');
-    fireEvent.click(screen.getByTestId('vis-add'));
-    await waitFor(() => expect(vis('from-1')).toBeInTheDocument());
-    typeIn(vis('to-0'), 'abc'); // sai cú pháp: giữ giá trị cũ
-    expect((vis('to-0') as HTMLInputElement).value).toBe('0:20');
-    fireEvent.click(screen.getByTestId('vis-remove-1'));
-    await waitFor(() => expect(visMaybe('from-1')).toBeNull());
-    ctrlZ(); await waitFor(() => expect(vis('from-1')).toBeInTheDocument());
-    for (let i = 0; i < 6 && screen.queryByTestId('vis-ranges'); i++) ctrlZ();
-    await waitFor(() => expect(screen.queryByTestId('vis-ranges')).toBeNull());
+    expect(screen.queryByTestId('vis-limit')).toBeNull();
+    const nums = [...screen.getByTestId('editor-props').querySelectorAll('section span[aria-hidden]')].map((x) => x.textContent ?? '').filter((t) => /^\d\d$/.test(t));
+    expect(nums.length).toBeGreaterThan(4);
+    expect(nums).toEqual(nums.map((_, i) => String(i + 1).padStart(2, '0')));
+    const bar = document.querySelector<HTMLElement>('[data-clip][aria-pressed="true"]')!;
+    const handle = bar.querySelector<HTMLElement>('[data-fade="in"]')!;
+    rect(bar);
+    fireEvent.pointerDown(handle, { button: 0, clientX: 2, clientY: 2 });
+    fireEvent.pointerMove(window, { clientX: 40, clientY: 2 });
+    fireEvent.pointerUp(window, {});
+    await waitFor(() => expect(bar.querySelector('[data-testid="fade-ramp-in"]')).toBeInTheDocument());
+    expect(undoBtn().title).toMatch(/Fade|Hiện dần/);
+    ctrlZ(); await waitFor(() => expect(bar.querySelector('[data-testid="fade-ramp-in"]')).toBeNull());
   });
   it('nốt chủ: chọn một nốt, hoàn tác về chưa đặt', async () => {
     await openProject();
@@ -1049,6 +1045,40 @@ describe('thẻ Editor (T-68)', () => {
     await waitFor(() => expect(undoBtn().title).toMatch(/(Apply style to precomp|Áp phong cách vào precomp) Precomp 1/));
     fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
     expect(screen.getByTestId('layers').textContent).toMatch(/Precomp 1/); // lớp precomp vẫn còn
+  });
+  it('precomp (D-69): tốc độ %, gỡ precomp (Ctrl+Shift+G) đưa lớp về lại; làn Nhạc mở/đóng; mỗi bước hoàn tác được', async () => {
+    await openProject();
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    const rows = () => [...screen.getByTestId('layers').querySelectorAll('li')];
+    const n0 = rows().length;
+    fireEvent.click(screen.getByTestId('music-toggle'));
+    await waitFor(() => expect(screen.getByTestId('music-row-chords')).toBeInTheDocument());
+    fireEvent.click(screen.getByTestId('music-toggle'));
+    await waitFor(() => expect(screen.queryByTestId('music-row-chords')).toBeNull());
+    fireEvent.click(layerBtn(/Piano roll/));
+    fireEvent.keyDown(screen.getByTestId('layer-timeline'), { key: 'g', code: 'KeyG', ctrlKey: true });
+    await waitFor(() => expect(screen.getByTestId('layers').textContent).toMatch(/Precomp 1/));
+    const speed = screen.getByRole('spinbutton', { name: /^(Speed|Tốc độ)$/ }) as HTMLInputElement;
+    expect(speed.value).toMatch(/100/);
+    fireEvent.focus(speed); fireEvent.change(speed, { target: { value: '200' } }); fireEvent.keyDown(speed, { key: 'Enter' }); fireEvent.blur(speed);
+    await waitFor(() => expect(undoBtn().title).toMatch(/Speed|Tốc độ/));
+    fireEvent.keyDown(screen.getByTestId('editor'), { key: 'g', code: 'KeyG', ctrlKey: true, shiftKey: true });
+    await waitFor(() => expect(screen.getByTestId('layers').textContent).not.toMatch(/Precomp 1/));
+    expect(rows()).toHaveLength(n0);
+    expect(undoBtn().title).toMatch(/Release precomp|Gỡ precomp/);
+    ctrlZ(); await waitFor(() => expect(screen.getByTestId('layers').textContent).toMatch(/Precomp 1/));
+  });
+  it('Dán preset (D-69): dán JSON vào ô ở cột Phong cách video → preset được thêm và áp; JSON hỏng báo lỗi, không đổi gì', async () => {
+    await openProject();
+    fireEvent.click(screen.getByTestId('preset-paste-open'));
+    fireEvent.change(screen.getByTestId('preset-paste-text'), { target: { value: '{ not json' } });
+    fireEvent.click(screen.getByTestId('preset-paste-add'));
+    await waitFor(() => expect(document.body.textContent).toMatch(/JSON/));
+    fireEvent.click(screen.getByTestId('preset-paste-open'));
+    const sc = { schemaVersion: '0.8.0', presetName: 'Dán thử', canvas: { designWidth: 1080, designHeight: 1080 }, widgets: [{ id: 't', type: 'TEXT', layout: { x: 0, y: 0, width: 500, height: 100 }, properties: { text: 'Hi' } }] };
+    fireEvent.change(screen.getByTestId('preset-paste-text'), { target: { value: JSON.stringify(sc) } });
+    fireEvent.click(screen.getByTestId('preset-paste-add'));
+    await waitFor(() => expect(screen.getByTestId('video-styles').textContent).toMatch(/Dán thử/));
   });
   it('chọn nhiều lớp: Ctrl+A; kéo trên tên lớp chọn một dãy', async () => {
     await openProject();

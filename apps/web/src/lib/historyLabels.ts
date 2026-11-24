@@ -180,6 +180,9 @@ export function describeCommand(cmd: Cmd, c: LabelCtx): string {
     case 'setPhases': return i18n.t('web.hist.phases', { n: Number(p.n) });
     case 'moveClips': return i18n.t('web.hist.moveClips', { n: Number(p.n ?? 1) });
     case 'trimClip': return i18n.t('web.hist.trimClip', { widget });
+    case 'fadeClip': return i18n.t('web.hist.fadeClip', { widget });
+    case 'uncompose': return i18n.t('web.hist.uncompose', { widget });
+    case 'compSpeed': return i18n.t('web.hist.compSpeed', { widget });
     case 'splitLayer': return i18n.t('web.hist.splitLayer', { widget });
     case 'precompose': return i18n.t('web.hist.precompose', { name: String(p.name ?? ''), n: Number(p.n ?? 1) });
     case 'renameComp': return i18n.t('web.hist.renameComp', { name: String(p.name ?? '') });

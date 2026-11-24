@@ -45,7 +45,7 @@ Khi không chọn widget nào, mục **Cách ghi tên nốt** đổi tên nốt 
 
 Không riêng widget phân tích: **mọi widget** (Piano Roll, chữ, phổ, hạt, bản nhạc…) có mục **Chuyển động** khi bạn chọn nó ở Editor.
 
-- **Hiệu ứng vào**: chạy ở đầu mỗi khoảng hiển thị của widget (xem **Khoảng hiển thị**); widget không giới hạn khoảng thì chạy ở đầu bài. Chọn một kiểu (mờ dần, trượt từ trái/phải/trên/dưới, bật to dần, phóng từ lớn, rơi xuống, xoay vào) và độ dài tính bằng giây.
+- **Hiệu ứng vào**: chạy ở đầu mỗi khoảng hiển thị của widget (là các thanh của widget trên Timeline, xem [Khoảng hiển thị](03-chinh-sua.md#khoảng-hiển-thị)); widget không giới hạn khoảng thì chạy ở đầu bài. Chọn một kiểu (mờ dần, trượt từ trái/phải/trên/dưới, bật to dần, phóng từ lớn, rơi xuống, xoay vào) và độ dài tính bằng giây.
 - **Hiệu ứng ra**: chạy ngay trước cuối khoảng hiển thị, cùng các kiểu như trên.
 - **Lặp theo nhịp**: thở, bồng bềnh, đung đưa, nảy theo nhịp, nhấp nháy, lắc. Chỉnh **Mạnh nhẹ** và **Lặp mỗi** (tính bằng phách hoặc giây). Tính bằng phách thì đổi tempo vẫn khớp nhịp.
 

@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   COMP_SEP, MAX_COMP_DEPTH, SCENE_SCHEMA_VERSION, canPlaceComp, compDepth, compPathOffset, compView, flatCount, flattenScene, layoutFrame, resolveCompPath, sanitizeScene,
-  setCompView, shiftWidgetTime, unshiftWidgetTime, validCompPath, type SceneDocument, type WidgetSpec,
+  setCompView, shiftWidgetTime, unshiftWidgetTime, validCompPath, mapWidgetTime, unmapWidgetTime, type SceneDocument, type WidgetSpec,
 } from '../src/index.ts';
 import { synthAst, derivedOf } from './helpers.ts';
 
@@ -127,4 +127,24 @@ test('sanitizeScene: đọc sổ comp và lớp COMP; bỏ lớp trỏ comp thi�
   // preset 0.7.0 cũ: đọc được, không có comps
   const old = sanitizeScene({ schemaVersion: '0.7.0', canvas: {}, widgets: [text('a')] });
   assert.equal(old.scene.comps, undefined); assert.equal(old.scene.schemaVersion, SCENE_SCHEMA_VERSION);
+});
+
+test('tốc độ precomp: nội dung co giãn quanh điểm bắt đầu (keyframe giây, khoảng hiển thị, hiện dần); lồng nhau nhân dồn; Editor ghi lại đúng', () => {
+  const inner = text('a', { visibility: { ranges: [{ from: 2, to: 4 }], fadeIn: 1, fadeOut: 0 }, animate: { opacity: op({ sec: 2 }) } });
+  const sc = base([compLayer('L', 'k', 10, { properties: { comp: 'k', start: 10, speed: 2 } })], { k: { name: 'K', widgets: [inner, compLayer('N', 'j', 4, { properties: { comp: 'j', start: 4, speed: 0.5 } })] }, j: { name: 'J', widgets: [text('z', { visibility: { ranges: [{ from: 1, to: 2 }], fadeIn: 0, fadeOut: 0 } })] } });
+  const f = flattenScene(sc), by = new Map(f.widgets.map((w) => [w.id, w]));
+  assert.deepEqual(by.get('L/a')!.visibility, { ranges: [{ from: 11, to: 12 }], fadeIn: 0.5, fadeOut: 0 });
+  assert.deepEqual((by.get('L/a')!.animate!.opacity as { keys: { at: object }[] }).keys.map((k) => k.at), [{ sec: 11 }, { sec: 11.5 }, { bar: 2 }]);
+  // N bắt đầu ở 4 s của K (= 12 s toàn bài), K nhanh ×2 và N chậm ×0,5 → tốc độ chung ×1: giây 1 của J = 13 s
+  assert.deepEqual(by.get('L/N/z')!.visibility!.ranges, [{ from: 13, to: 14 }]);
+  const v = compView(sc, ['L']);
+  assert.deepEqual(v.widgets[0].visibility!.ranges, [{ from: 11, to: 12 }]);
+  assert.deepEqual(v.widgets[1].properties, { comp: 'j', start: 12 }, 'lớp con trong khung nhìn: điểm bắt đầu và tốc độ theo toàn bài');
+  const back = setCompView(sc, ['L'], { ...v, widgets: [shiftWidgetTime(v.widgets[0], 1), v.widgets[1]] });
+  assert.deepEqual(back.comps!.k.widgets[0].visibility!.ranges, [{ from: 4, to: 6 }], '+1 s toàn bài = +2 s trong comp nhanh ×2');
+  assert.equal(back.comps!.k.widgets[1], sc.comps!.k.widgets[1]);
+  const m = { a: 0.5, b: 10 };
+  assert.deepEqual(unmapWidgetTime(undefined, mapWidgetTime(inner, m), m), inner);
+  const r = sanitizeScene({ schemaVersion: SCENE_SCHEMA_VERSION, canvas: {}, widgets: [compLayer('L', 'k', 0, { properties: { comp: 'k', start: 0, speed: 99 } })], comps: { k: { name: 'K', widgets: [] } } });
+  assert.deepEqual(r.scene.widgets[0].properties, { comp: 'k', start: 0, speed: 10 });
 });

@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { SCENE_SCHEMA_VERSION, compView, flattenScene, sanitizeScene, shiftWidgetTime, type SceneDocument, type WidgetSpec } from '@dawviz/render-core';
-import { clipAt, clipsOf, moveLayers, newCompName, precompose, splitLayer, trimLayer } from './layerTimeline.ts';
+import { clipAt, clipsOf, lengthTargets, moveLayers, newCompName, precompose, setFade, splitLayer, trimLayer, trimMany, uncompose } from './layerTimeline.ts';
 import { compAt, liftCmd, putView, refKey, viewDoc } from './compLens.ts';
 import { createStore } from './store.ts';
 import * as C from './commands.ts';
@@ -65,11 +65,11 @@ test('splitLayer: lớp gốc giữ phần trước, bản sao ngay trên giữ 
 
 test('precompose: gom lớp vào comp mới (giữ thứ tự, thời gian lưu theo comp), lớp COMP phủ khung ở chỗ lớp trên cùng; cha ngoài nhóm bị bỏ', () => {
   const s = sc([text('a', { zIndex: 1 }), text('b', { zIndex: 3, parent: 'z', visibility: vis(12, 14) }), text('z', { zIndex: 2 }), text('c', { zIndex: 4, parent: 'b' })]);
-  const r = precompose(s, ['b', 'c'], 10, 'comp-1', 'Precomp 1')!;
+  const r = precompose(s, ['b', 'c'], { a: 1, b: 10 }, 'comp-1', 'Precomp 1')!;
   assert.deepEqual(r.widgets.map((w) => w.id), ['a', r.layer.id, 'z']);
   assert.equal(r.layer.zIndex, 4); assert.deepEqual(r.layer.properties, { comp: 'comp-1', start: 10 });
   assert.equal(r.layer.visibility, undefined, 'có lớp suốt bài trong nhóm → precomp suốt bài');
-  assert.deepEqual(precompose(s, ['b'], 0, 'comp-2', 'Q')!.layer.visibility!.ranges, [{ from: 12, to: 14 }], 'thanh precomp khớp nội dung');
+  assert.deepEqual(precompose(s, ['b'], { a: 1, b: 0 }, 'comp-2', 'Q')!.layer.visibility!.ranges, [{ from: 12, to: 14 }], 'thanh precomp khớp nội dung');
   assert.deepEqual([r.layer.layout.width, r.layer.layout.height], [s.canvas.designWidth, s.canvas.designHeight]);
   const k = r.comps['comp-1'];
   assert.deepEqual(k.widgets.map((w) => [w.id, w.parent]), [['b', undefined], ['c', 'b']]);
@@ -77,7 +77,7 @@ test('precompose: gom lớp vào comp mới (giữ thứ tự, thời gian lưu 
   // trải phẳng: đúng chỗ cũ trên timeline toàn bài
   const flat = flattenScene({ ...s, widgets: r.widgets, comps: r.comps });
   assert.deepEqual(flat.widgets.find((w) => w.id.endsWith('/b'))!.visibility!.ranges, [{ from: 12, to: 14 }]);
-  assert.equal(precompose(s, ['nope'], 0, 'comp-1', 'x'), null);
+  assert.equal(precompose(s, ['nope'], { a: 1, b: 0 }, 'comp-1', 'x'), null);
   assert.equal(newCompName({ ...s, comps: r.comps }, 'Precomp', ['Precomp 2']), 'Precomp 3');
 });
 
@@ -107,7 +107,7 @@ test('compLens: khung nhìn của comp đổi tiền tố mốc ↺, thời gian
 
 test('precompose qua lệnh: mốc ↺ chuyển sang khoá của comp mới; hoàn tác trả đúng scene và mốc', () => {
   const d0: C.Doc = { ...C.initialDoc('default'), scene: sc([text('a'), text('b')]), layoutRef: { a: text('a').layout }, propsRef: { a: { x: 1 } } };
-  const r = precompose(d0.scene, ['a'], 0, 'comp-1', 'P')!;
+  const r = precompose(d0.scene, ['a'], { a: 1, b: 0 }, 'comp-1', 'P')!;
   const s = createStore(d0);
   s.dispatch(C.setLayers(s.get(), 'precompose', { widgets: r.widgets, comps: r.comps, layoutRef: { [refKey('comp-1', 'a')]: d0.layoutRef.a }, propsRef: { [refKey('comp-1', 'a')]: { x: 1 } } }));
   assert.ok(s.get().scene.comps!['comp-1']);
@@ -132,4 +132,52 @@ test('setCanvasSize co giãn cả widget trong precomp; applySceneToComp thay n�
   assert.equal(compView(d2.scene, ['L']).widgets.length, src.widgets.length);
   assert.equal(C.applySceneToComp(d0, 'nope', src), null);
   assert.deepEqual(shiftWidgetTime(d2.scene.comps!.k.widgets[0], 0), d2.scene.comps!.k.widgets[0]);
+});
+
+test('lengthTargets/trimMany: cắt mép dính độ dài bằng thanh khác; cắt mép nhiều lớp cùng lúc dời cùng một khoảng', () => {
+  const a = text('a', { visibility: vis(2, 5) }), b = text('b', { visibility: vis(10, 14) }), c = text('c', { visibility: vis(1, 4) });
+  const t = lengthTargets([a, b, c], new Set(['a']), 30, 2, 'out');
+  assert.deepEqual(t.map((x) => [x.id, x.t, x.len]), [['b', 6, 4], ['c', 5, 3]]);
+  assert.deepEqual(lengthTargets([a, b], new Set(['b']), 30, 14, 'in').map((x) => x.t), [11]);
+  const ws = trimMany([a, b, c], ['a', 'c'], { id: 'a', clip: 0 }, 'out', 6, 30);
+  assert.deepEqual(ws.map((w) => w.visibility!.ranges[0]), [{ from: 2, to: 6 }, { from: 10, to: 14 }, { from: 1, to: 5 }]);
+});
+
+test('setFade: hiện dần/ẩn dần kẹp 0..30 s và không dài hơn thanh ngắn nhất; lớp suốt bài được cho khoảng', () => {
+  const w = text('a', { visibility: { ranges: [{ from: 0, to: 2 }, { from: 5, to: 20 }], fadeIn: 0, fadeOut: 0 } });
+  assert.equal(setFade(w, 'in', 0.5, 30).visibility!.fadeIn, 0.5);
+  assert.equal(setFade(w, 'out', 9, 30).visibility!.fadeOut, 2);
+  assert.equal(setFade(w, 'in', -1, 30).visibility!.fadeIn, 0);
+  assert.equal(setFade(w, 'in', 0, 30), w);
+  assert.deepEqual(setFade(text('b'), 'in', 1, 60).visibility, { ranges: [{ from: 0, to: null }], fadeIn: 1, fadeOut: 0 });
+});
+
+test('uncompose: lớp trong precomp ra lại đúng chỗ (vị trí, góc của lớp COMP cộng vào), đúng thời gian (điểm bắt đầu, tốc độ), trong khoảng lớp COMP hiện', () => {
+  const inner = text('a', { layout: { x: 100, y: 100, width: 200, height: 100, rotation: 0, anchor: { x: 0.5, y: 0.5 } }, visibility: vis(0, 10), animate: { opacity: op(2) } });
+  const L: WidgetSpec = { ...text('L', { zIndex: 5 }), type: 'COMP', name: 'P', properties: { comp: 'k', start: 4, speed: 2 }, visibility: vis(4, 7),
+    layout: { x: 50, y: -20, width: 1920, height: 1080, rotation: 0, anchor: { x: 0.5, y: 0.5 } } };
+  const s0 = sc([text('a', { zIndex: 1 }), L, text('top', { zIndex: 9 })], { k: { name: 'K', widgets: [inner, text('b', { parent: 'a' })] } });
+  const r = uncompose(s0, 'L', 60)!;
+  assert.equal(r.lost, false);
+  const out = r.widgets.find((w) => w.id === r.added[0])!;
+  assert.notEqual(out.id, 'a', 'id trùng với lớp ở ngoài được đổi');
+  assert.deepEqual([out.layout.x, out.layout.y], [150, 80]);
+  assert.deepEqual(out.visibility!.ranges, [{ from: 4, to: 7 }], 'giao của [4, 9] (sau tốc độ ×2) với lúc lớp COMP hiện');
+  assert.deepEqual((out.animate!.opacity as { keys: { at: object }[] }).keys.map((k) => k.at), [{ sec: 5 }, { sec: 5.5 }]);
+  assert.equal(r.widgets.find((w) => w.id === r.added[1])!.parent, out.id, 'cha bên trong comp được nối lại theo id mới');
+  assert.deepEqual(C.layerOrder({ ...base, widgets: r.widgets })[0], 'top');
+  assert.deepEqual(r.refs.map(([k]) => k), ['k/a', 'k/b']);
+  assert.equal(uncompose(s0, 'a', 60), null);
+  assert.equal(uncompose({ ...s0, widgets: s0.widgets.map((w) => (w.id === 'L' ? { ...w, animate: { opacity: op(1) } } : w)) }, 'L', 60)!.lost, true);
+});
+
+test('pianoPathAt: Piano Roll ở gốc → []; không có thì precomp trên cùng đang hiện ở vạch phát có Piano Roll (đi sâu theo thời gian của comp)', async () => {
+  const { pianoPathAt } = await import('./compLens.ts');
+  const roll: WidgetSpec = { ...text('p'), type: 'PIANO_ROLL', properties: {} };
+  const L = (id: string, comp: string, from: number, to: number, start = 0, z = 1): WidgetSpec => ({ ...text(id, { zIndex: z }), type: 'COMP', properties: { comp, start }, visibility: vis(from, to) });
+  assert.deepEqual(pianoPathAt(sc([roll]), 5), []);
+  const s1 = sc([L('A', 'a', 0, 10), L('B', 'b', 5, 20, 5, 2)], { a: { name: 'A', widgets: [roll] }, b: { name: 'B', widgets: [L('N', 'n', 0, 3)] }, n: { name: 'N', widgets: [roll] } });
+  assert.deepEqual(pianoPathAt(s1, 2), ['A']);
+  assert.deepEqual(pianoPathAt(s1, 6), ['B', 'N'], 'B ở trên; giây 1 của B nằm trong N');
+  assert.deepEqual(pianoPathAt(s1, 12), [], 'B không còn Piano Roll ở giây 7 của nó, A đã hết');
 });

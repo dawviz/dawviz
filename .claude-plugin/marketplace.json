@@ -1,0 +1,13 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "dawviz",
+  "description": "DAW Visualizer: skills for AI agents that make music-visualizer videos from DAW projects.",
+  "owner": { "name": "DAW Visualizer" },
+  "plugins": [
+    {
+      "name": "dawviz",
+      "description": "Design DawViz presets (layers, timing, precomps, keyframes) and drive the DawViz app to export videos from Ableton, Reaper, FL Studio, DAWproject or MIDI files.",
+      "source": "./plugins/dawviz"
+    }
+  ]
+}
