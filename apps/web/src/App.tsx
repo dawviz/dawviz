@@ -5,7 +5,7 @@
 // nên thành phần này không vẽ lại mỗi khung hình. Không có logic vẽ ở đây: khung hình = renderFrame của Render Core.
 import { Fragment, Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react';
 import { LayoutGroup, MotionConfig } from 'framer-motion';
-import { MAX_FLAT_WIDGETS, renderFrame, type RenderCtx, flatCount, flattenScene, compOf, validCompPath, visibilityAlpha, usesChordPlaceholder, widgetDefaults, DEFAULT_BRIGHTNESS, DEFAULT_KEYBOARD_STYLE, defaultStyleConfig, sanitizeBrightness, buildIndex, buildSceneHud, type AudioFeatures, type Derived, type SceneDocument, type BrightnessConfig, type NoteStyle, type StyleConfig, type KeyboardStyle, type UnifiedProjectAST, type WidgetSpec, DEFAULT_TEXT_STYLES, createWidget, duplicateWidget } from '@dawviz/render-core';
+import { MAX_FLAT_WIDGETS, cloneCompTree, type CompProps, type CompSpec, renderFrame, type RenderCtx, flatCount, flattenScene, compOf, validCompPath, visibilityAlpha, usesChordPlaceholder, widgetDefaults, DEFAULT_BRIGHTNESS, DEFAULT_KEYBOARD_STYLE, defaultStyleConfig, sanitizeBrightness, buildIndex, buildSceneHud, type AudioFeatures, type Derived, type SceneDocument, type BrightnessConfig, type NoteStyle, type StyleConfig, type KeyboardStyle, type UnifiedProjectAST, type WidgetSpec, DEFAULT_TEXT_STYLES, createWidget, duplicateWidget } from '@dawviz/render-core';
 import type { ParseWarning } from '@dawviz/parser';
 import { useI18n } from './i18n/I18nProvider.tsx';
 import { LanguageSelect } from './components/LanguageSelect.tsx';
@@ -70,7 +70,7 @@ import { usePref, DEFAULT_UI, sanitizeUi, type UiMode, type UiPrefs } from './li
 import { createPlayback, usePlayback } from './lib/playback.ts';
 import { radioKeys, radioTab } from './lib/a11y.ts';
 import { bindTransportKeys } from './lib/transportKeys.ts';
-import { STAGE_CHROME, STAGE_WEDGE, useStageWidth } from './lib/useStageWidth.ts';
+import { STAGE_CHROME, useStageWidth } from './lib/useStageWidth.ts';
 import { formatClock } from './lib/timeFormat.ts';
 import { describeProblem, type Problem } from './lib/problems.ts';
 import { createLatestGate, ParseFailure } from './lib/parserClient.ts';
@@ -654,11 +654,23 @@ export function App() {
     background: { pick: (f) => void onBackground(f), remove: dropBackground, spec: (p) => run((d) => Cmds.setBackgroundSpec(d, p)) },
     add: (type) => { const w = createWidget(eget().scene, type); erun((d) => Cmds.addWidget(d, w)); return w.id; },
     duplicate: (ids) => {
-      let sc = eget().scene; const out: WidgetSpec[] = [];
-      for (const id of ids) { const w = sc.widgets.find((x) => x.id === id); if (!w) continue; const c = duplicateWidget(sc, w); out.push(c); sc = { ...sc, widgets: [...sc.widgets, c] }; }
+      let sc = eget().scene; const out: WidgetSpec[] = [], from: string[] = [];
+      let comps: Record<string, CompSpec> = {};
+      for (const id of ids) {
+        const w = sc.widgets.find((x) => x.id === id); if (!w) continue;
+        let c = duplicateWidget(sc, w);
+        // Ctrl+D trên lớp precomp: bản ĐỘC LẬP (T-122), sao chép cả precomp và các precomp bên trong; vượt số precomp tối đa thì bỏ qua lớp đó.
+        const src = compOf(w);
+        if (src) {
+          const k = cloneCompTree(sc, src.comp); if (!k) continue;
+          comps = { ...comps, ...k.comps }; c = { ...c, properties: { ...(c.properties as CompProps), comp: k.root } };
+          sc = { ...sc, comps: { ...(sc.comps ?? {}), ...k.comps } };
+        }
+        out.push(c); from.push(id); sc = { ...sc, widgets: [...sc.widgets, c] };
+      }
       const d0 = eget(), refs: Record<string, Record<string, unknown>> = {};
-      ids.forEach((id, i) => { const src = d0.scene.widgets.find((x) => x.id === id); if (src && out[i]) refs[out[i].id] = d0.propsRef[id] ?? widgetDefaults(src.type); });
-      erun((d) => Cmds.addWidgets(d, out, refs)); return out.map((w) => w.id);
+      from.forEach((id, i) => { const src = d0.scene.widgets.find((x) => x.id === id); if (src && out[i]) refs[out[i].id] = d0.propsRef[id] ?? widgetDefaults(src.type); });
+      erun((d) => Cmds.addWidgets(d, out, refs, comps)); return out.map((w) => w.id);
     },
     remove: (ids) => erun((d) => Cmds.removeWidgets(d, ids)),
     // Timeline lớp và precomp (D-69): khung nhìn đang mở; cỡ khung, phase, bắt dính... luôn là của scene gốc (run).
@@ -702,7 +714,7 @@ export function App() {
   usePanelShortcuts(pv, tab === 'preview' && !!loaded, false);
   const stageWidth = useStageWidth(scrollerRef, stageRef, {
     aspect: scene.canvas.designWidth / scene.canvas.designHeight,
-    chrome: ui.proofFrame ? STAGE_CHROME.proof : STAGE_CHROME.plain, extra: ui.proofFrame ? STAGE_WEDGE : 0, active: !!loaded,
+    chrome: ui.proofFrame ? STAGE_CHROME.proof : STAGE_CHROME.plain, extra: 0, active: !!loaded,
   });
   const aboveStage = !!(midi && midiLevel) || problems.length > 0;
   const styleLabel = doc.videoStyle === CUSTOM_STYLE ? scene.presetName : `${i18n.t(`web.style.video.${doc.videoStyle}`)}${styleEdited ? ` (${i18n.t('web.styles.edited')})` : ''}`;
@@ -820,7 +832,7 @@ export function App() {
         <div className={`space-y-4 ${loaded ? '' : 'mx-auto max-w-2xl pt-10'}`}>
           {midi && midiLevel && <MissingMidiPanel info={midi} level={midiLevel} busy={busy} onAdd={addMidi} />}
           {needsSchema && source && <SchemaPanel schemas={schemas} busy={busy} onAdd={(schema) => reparse({ schemas: [...schemas, { name: String((schema as { name?: unknown; id?: unknown }).name ?? (schema as { id?: unknown }).id ?? 'schema').slice(0, 60), schema }] })} onRemove={(i) => reparse({ schemas: schemas.filter((_, k) => k !== i) })} />}
-          {!loaded && <FileDrop onPick={onPick} busy={busy} slim={!!(midi && midiLevel)} onSample={onSample} />}
+          {!loaded && <FileDrop proof={ui.proofFrame} onPick={onPick} busy={busy} slim={!!(midi && midiLevel)} onSample={onSample} />}
           <Notices problems={problems} basic={!advanced} />
         </div>
         {loaded && derived && renderAst && (
@@ -911,7 +923,7 @@ export function App() {
       <main className="min-h-0 flex-1">
         <div role="tabpanel" id="panel-preview" aria-labelledby="tab-preview" hidden={tab !== 'preview'} className="h-full">{preview}</div>
         <div role="tabpanel" id="panel-editor" aria-labelledby="tab-editor" hidden={tab !== 'editor'} className="h-full">
-          <Editor styleName={styleLabel} scene={edoc.scene} root={scene} compPath={livePath} onCompPath={setCompPath} flatFull={flatFull} derived={derived} ast={renderAst} playback={playback} fonts={fonts} advanced={advanced} actions={editorActions} active={tab === 'editor'}
+          <Editor proof={ui.proofFrame} styleName={styleLabel} scene={edoc.scene} root={scene} compPath={livePath} onCompPath={setCompPath} flatFull={flatFull} derived={derived} ast={renderAst} playback={playback} fonts={fonts} advanced={advanced} actions={editorActions} active={tab === 'editor'}
             layoutRef={edoc.layoutRef}
             widgetSections={(w, n, lk) => (w.type === 'PIANO_ROLL' ? [w.id === epiano?.id ? lookSection(n) : null, settingsSection(w, n + (w.id === epiano?.id ? 1 : 0), lk)] : hasWidgetSettings(w.type) ? [settingsSection(w, n, lk), textSection(w, n + 1, lk)] : [textSection(w, n, lk)])}
             transport={loaded ? <Transport playback={playback} duration={playDuration} offsetMs={offsetMs} wave={audio && peaks ? { peaks, durationSec: audio.durationSec } : null} /> : undefined} />
@@ -919,7 +931,7 @@ export function App() {
         <div role="tabpanel" id="panel-settings" aria-labelledby="tab-settings" hidden={tab !== 'settings'} className="h-full overflow-y-auto bg-page">
           <div className="relative mx-auto max-w-3xl border-x border-line bg-surface lg:my-8 lg:border-y" data-testid="settings-sheet">
             {/* Cùng ngôn ngữ "bản in thử" với khung video: dấu cắt ở bốn góc tờ cài đặt, ngoài nội dung. */}
-            <span aria-hidden className="max-lg:hidden"><Crop className="-left-5 -top-5" /><Crop className="-right-5 -top-5 -scale-x-100" /><Crop className="-bottom-5 -left-5 -scale-y-100" /><Crop className="-bottom-5 -right-5 -scale-100" /></span>
+            {ui.proofFrame && <span aria-hidden className="max-lg:hidden"><Crop className="-left-5 -top-5" /><Crop className="-right-5 -top-5 -scale-x-100" /><Crop className="-bottom-5 -left-5 -scale-y-100" /><Crop className="-bottom-5 -right-5 -scale-100" /></span>}
             <InspectorSection n={1} id="appearance" title={i18n.t('web.settings.appearance')}>
               <AppearanceSettings pref={theme} onChange={setTheme} />
             </InspectorSection>

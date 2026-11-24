@@ -5,6 +5,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { HistoryIcon, Undo as UndoIcon, Redo as RedoIcon } from './Icons.tsx';
 import type { History } from '../lib/store.ts';
+import { useMenuPlacement } from '../lib/useMenuPlacement.ts';
 import type { HistoryItem } from '../lib/historyLabels.ts';
 
 export function HistoryMenu({ history, items, undoName, undoTitle, redoName, redoTitle, onUndo, onRedo, onJump }: {
@@ -15,6 +16,7 @@ export function HistoryMenu({ history, items, undoName, undoTitle, redoName, red
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null), trigger = useRef<HTMLButtonElement>(null), menu = useRef<HTMLDivElement>(null);
   const menuId = useId();
+  const place = useMenuPlacement(open, menu); // T-114: lật lên khi thiếu chỗ phía dưới
   const btn = 'btn-ghost inline-flex items-center gap-1.5 text-[13px] disabled:cursor-not-allowed disabled:opacity-40';
 
   const close = (refocus = true) => { setOpen(false); if (refocus) trigger.current?.focus(); };
@@ -59,7 +61,7 @@ export function HistoryMenu({ history, items, undoName, undoTitle, redoName, red
       </button>
       {open && (
         <div ref={menu} id={menuId} role="menu" aria-label={i18n.t('web.history.list')} data-testid="history-menu" onKeyDown={onMenuKey}
-          className="absolute right-0 top-full z-40 mt-1 max-h-80 w-72 overflow-y-auto border border-line-strong bg-surface py-1 shadow-lg">
+          style={place.maxHeight !== undefined ? { maxHeight: place.maxHeight } : undefined} className={`absolute right-0 z-40 ${place.up ? 'bottom-full mb-1' : 'top-full mt-1'} max-h-80 w-72 overflow-y-auto border border-line-strong bg-surface py-1 shadow-lg`}>
           {items.map((it) => {
             const current = it.position === history.position;
             return (

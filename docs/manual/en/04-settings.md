@@ -11,7 +11,7 @@ These change the app only. The colours in the video come from the video style.
 
 ## Stage
 
-**Print-proof frame around the preview:** adds crop marks at the four corners and a size label around the preview, like a print proof. They are never part of the exported video.
+**Print-proof frame (crop marks around the frames):** adds crop marks at the four corners of the preview, the Editor frame, the Settings sheet and the file drop zone, plus a size label on the preview, like a print proof. Off removes them everywhere. They are never part of the exported video.
 
 ## Device latency
 

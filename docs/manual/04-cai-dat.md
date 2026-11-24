@@ -11,7 +11,7 @@ Hai mục này chỉ đổi giao diện của ứng dụng. Màu trong video do 
 
 ## Sân khấu
 
-**Khung bản in thử quanh khung xem trước:** bật để có dấu cắt ở bốn góc và dòng ghi kích thước quanh khung xem trước, giống bản in thử. Những thứ này không bao giờ có trong video xuất ra.
+**Khung bản in thử (dấu cắt quanh các khung):** bật để có dấu cắt ở bốn góc quanh khung xem trước, khung ở thẻ Chỉnh sửa, tờ Cài đặt và ô thả tệp, kèm dòng ghi kích thước trên khung xem trước, giống bản in thử. Tắt thì mất ở mọi nơi. Những thứ này không bao giờ có trong video xuất ra.
 
 ## Độ trễ thiết bị
 

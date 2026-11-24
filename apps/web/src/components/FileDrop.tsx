@@ -15,7 +15,7 @@ const UploadIcon = ({ className = '' }: { className?: string }) => (
 );
 
 /** `compact`: nút nhỏ ở thanh trên. `slim`: ô thả thu gọn một dòng, dùng khi bảng thiếu .mid đang hiện (hành động chính là nạp .mid, không phải chọn lại dự án). */
-export function FileDrop({ onPick, busy, compact = false, slim = false, onSample }: { onPick(p: Picked): void; busy: boolean; compact?: boolean; slim?: boolean; onSample?(): void }) {
+export function FileDrop({ onPick, busy, compact = false, slim = false, onSample, proof = true }: { onPick(p: Picked): void; busy: boolean; compact?: boolean; slim?: boolean; onSample?(): void; proof?: boolean }) {
   const { i18n } = useI18n();
   const [over, setOver] = useState(false);
   const input = useRef<HTMLInputElement>(null);
@@ -72,8 +72,10 @@ export function FileDrop({ onPick, busy, compact = false, slim = false, onSample
         <span>{i18n.t('web.drop.empty')}</span><span aria-hidden>{FORMATS.join(' · ')}</span>
       </div>
       <div className="relative">
-        <Crop className="-left-5 -top-5" /><Crop className="-right-5 -top-5 -scale-x-100" />
-        <Crop className="-bottom-5 -left-5 -scale-y-100" /><Crop className="-bottom-5 -right-5 -scale-100" />
+        {proof && <>
+          <Crop className="-left-5 -top-5" /><Crop className="-right-5 -top-5 -scale-x-100" />
+          <Crop className="-bottom-5 -left-5 -scale-y-100" /><Crop className="-bottom-5 -right-5 -scale-100" />
+        </>}
         <div {...handlers}
           className={`group flex cursor-pointer flex-col items-center justify-center gap-3 border px-6 py-16 text-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-focus ${over ? 'border-accent bg-accent/10' : 'border-control bg-surface hover:border-line-strong'}`}>
           <UploadIcon className={`h-7 w-7 transition ${over ? 'text-accent' : 'text-muted group-hover:text-fg'} ${busy ? 'motion-safe:animate-pulse' : ''}`} />

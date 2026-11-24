@@ -20,7 +20,7 @@ Without `?agent=1` the app opens no way for an AI to control it.
 
 ## Way 3: the AI has a terminal (for example Claude Code)
 
-The AI runs a script that opens the app in a hidden Chrome, loads the project and audio, applies the preset, grabs a few frames to check its work and exports the video to a file. It needs Node 22 or newer; MP4 export needs Google Chrome installed (otherwise WebM).
+The AI runs a script that opens the app in a hidden Chrome, loads the project and audio, applies the preset, grabs a few frames to check its work and exports the video to a file. It needs Node 22 or newer; MP4 export needs a browser that can encode H.264: Google Chrome installed on the machine is the safest (the script tries Chrome first, then Playwright's Chromium; both gave MP4 H.264 on Linux when tested). A browser without H.264 gives WebM. Audio in the MP4 is AAC when the machine can encode it, otherwise Opus (Chrome and Firefox on Ubuntu currently only have Opus).
 
 ## Notes
 

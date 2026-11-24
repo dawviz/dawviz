@@ -48,6 +48,7 @@ dawviz/
 │     │  │  ├─ AspectSwitch.tsx
 │     │  │  ├─ AudioPanel.tsx
 │     │  │  ├─ BackgroundSection.tsx
+│     │  │  ├─ ConfirmDialog.tsx
 │     │  │  ├─ DeviceLatency.tsx
 │     │  │  ├─ DiscreteValue.tsx
 │     │  │  ├─ EaseGraph.tsx
@@ -168,6 +169,7 @@ dawviz/
 │     │  │  ├─ layerTimeline.ts
 │     │  │  ├─ masterClock.test.ts
 │     │  │  ├─ masterClock.ts
+│     │  │  ├─ menuPlacement.test.ts
 │     │  │  ├─ notation.test.ts
 │     │  │  ├─ numberInput.test.ts
 │     │  │  ├─ numberInput.ts
@@ -222,6 +224,7 @@ dawviz/
 │     │  │  ├─ trustedTypes.ts
 │     │  │  ├─ undoKeys.test.ts
 │     │  │  ├─ undoKeys.ts
+│     │  │  ├─ useMenuPlacement.ts
 │     │  │  ├─ usePanelLayout.ts
 │     │  │  ├─ usePref.ts
 │     │  │  ├─ userPresets.test.ts
@@ -248,6 +251,7 @@ dawviz/
 │     ├─ test/
 │     │  ├─ app.test.tsx
 │     │  ├─ components.test.tsx
+│     │  ├─ confirmDialog.test.tsx
 │     │  └─ setup.ts
 │     ├─ DESIGN.md
 │     ├─ index.html
@@ -506,6 +510,7 @@ dawviz/
 ├─ CONTRIBUTING.md
 ├─ CREDITS.md
 ├─ LICENSE
+├─ MANUAL-CHECK.md
 ├─ package.json
 ├─ PRODUCT.md
 ├─ PROGRESS.md
@@ -938,6 +943,7 @@ const compPathOffset = (scene: SceneDocument, path: CompPath) =>   // Giây toà
 function compView(scene: SceneDocument, path: CompPath): SceneDocument   // Khung nhìn của comp ở cuối `path` dưới dạng một scene: `widgets` = widget của comp đó với mốc thời gian đã dờ…
 function setCompView(base: SceneDocument, path: CompPath, edited: SceneDocument): SceneDocument   // Ghi khung nhìn đã sửa (`edited`, cùng dạng `compView`) vào lại scene gốc `base`: widget của comp ở cuối `path…
 function newCompId(scene: SceneDocument): string   // Id comp mới không trùng: `comp-<n>`.
+function cloneCompTree(scene: SceneDocument, rootId: string):    // Nhân bản ĐỘC LẬP một comp (T-122, Ctrl+D trên lớp COMP): sao chép sâu comp `rootId` và mọi comp nó chứa (lớp …
 function compDepth(comps: Readonly<Record<string, CompSpec>>, id: string, seen: ReadonlySet<string> = new Set()): number   // Độ sâu lồng của comp `id` (1 = comp chỉ chứa widget thường); `Infinity` nếu có vòng lặp.
 function canPlaceComp(comps: Readonly<Record<string, CompSpec>>, id: string, inside: readonly string[]): boolean   // Đặt comp `id` vào comp/scene đang ở độ sâu `atDepth` (0 = gốc) có hợp lệ không: không vòng lặp, không vượt MA…
 function flatCount(scene: SceneDocument): number   // Số widget sau khi trải phẳng (để chặn vượt MAX_FLAT_WIDGETS khi thêm hoặc nhân bản lớp COMP).
@@ -1803,6 +1809,14 @@ interface BackgroundState
 function BackgroundSection({ n, state, spec, onPick, onRemove, onSpec }: { n: number; state: BackgroundState; spec: BackgroundImageSpec | undefined; onPick(f: File): void; onRemove(): void; onSpec(p: Partial<BackgroundImageSpec>): void })
 ```
 
+#### `apps/web/src/components/ConfirmDialog.tsx`
+
+Hộp thoại xác nhận dùng chung (T-120): thay cho window.confirm của trình duyệt (xấu, không theo theme, không dịch được). Chỉ dùng khi thao tác
+
+```text
+function ConfirmDialog({ title, message, confirmLabel, cancelLabel, onConfirm, onCancel, testId = 'confirm-dialog' }: Props)
+```
+
 #### `apps/web/src/components/DeviceLatency.tsx`
 
 Thẻ Cài đặt, mục "Độ trễ thiết bị" (T-82): hồ sơ thiết bị có tên, bài đo gõ theo nhịp, nhập/xuất tệp.
@@ -1834,7 +1848,7 @@ Thẻ Editor (T-68, UI-DIRECTION 5.3 mục 3, SRS 5.3 Edit Mode): bố cục wid
 ```text
 interface EditorActions
 function useWidgetNames(widgets: readonly WidgetSpec[]): (id: string) => string   // Tên hiển thị của widget: tên loại theo ngôn ngữ, đánh số khi có nhiều widget cùng loại.
-function Editor({ styleName, scene, root, compPath, onCompPath, flatFull, derived: derived0, ast, playback, fonts, advanced, actions, transport, active, widgetSections, layoutRef, background }: Props)
+function Editor({ proof = true, styleName, scene, root, compPath, onCompPath, flatFull, derived: derived0, ast, playback, fonts, advanced, actions, transport, active, widgetSections, layoutRef, background }: Props)
 ```
 
 #### `apps/web/src/components/EditorOverlay.tsx`
@@ -1861,7 +1875,7 @@ Khung thả/chọn tệp dự án (kèm .mid ngoài); hiệu ứng Framer Motion
 
 ```text
 interface Picked
-function FileDrop({ onPick, busy, compact = false, slim = false, onSample }: { onPick(p: Picked): void; busy: boolean; compact?: boolean; slim?: boolean; onSample?(): void })   // `compact`: nút nhỏ ở thanh trên. `slim`: ô thả thu gọn một dòng, dùng khi bảng thiếu .mid đang hiện (hành độn…
+function FileDrop({ onPick, busy, compact = false, slim = false, onSample, proof = true }: { onPick(p: Picked): void; busy: boolean; compact?: boolean; slim?: boolean; onSample?(): void; proof?: boolean })   // `compact`: nút nhỏ ở thanh trên. `slim`: ô thả thu gọn một dòng, dùng khi bảng thiếu .mid đang hiện (hành độn…
 ```
 
 #### `apps/web/src/components/GraphEditor.tsx`
@@ -2506,7 +2520,7 @@ const patchWidgetProps = (d: Doc, widgetId: string, patch: Record<string, unknow
 const patchTextRef = (d: Doc, widgetId: string, field: string, next: TextRef, path: string) =>   // Đổi ghi đè kiểu chữ của một chỗ chữ (T-72). `path` là thuộc tính vừa đổi: kéo/gõ liên tiếp cùng thuộc tính gộ…
 const setTextStyles = (d: Doc, styles: TextStyleSet, widgetId: string, field: string, ref: TextRef, kind: 'save' | 'update') =>   // Đổi bộ kiểu chữ của scene ("Lưu thành kiểu mới", "Cập nhật kiểu"), kèm ghi đè mới của chỗ chữ vừa dùng. Một b…
 const addWidget = (d: Doc, w: WidgetSpec) =>   // Thêm widget (T-68). Một bước hoàn tác.
-const addWidgets = (d: Doc, ws: WidgetSpec[], refs: Doc['propsRef'] = {}) =>   // Thêm nhiều widget một lúc (nhân bản vùng chọn).
+const addWidgets = (d: Doc, ws: WidgetSpec[], refs: Doc['propsRef'] = {}, comps: Record<string, CompSpec> = {}) =>   // Thêm nhiều widget một lúc (nhân bản vùng chọn).
 const removeWidgets = (d: Doc, ids: readonly string[]) =>   // Xoá widget (T-68). Hoàn tác trả widget về đúng chỗ trong tài liệu (giữ thứ tự và zIndex). Con của widget bị x…
 function parentCandidates(scene: SceneDocument, id: string): string[]   // Widget có thể làm cha của `id`: mọi widget khác trừ chính nó và con cháu của nó (tránh vòng lặp).
 const setWidgetParent = (d: Doc, widgetId: string, parent: string | null) =>   // Đặt (hoặc bỏ, `null`) widget cha (parenting, 0.7.0). Cha tạo vòng lặp hoặc không tồn tại → không làm gì. Hoàn…
@@ -3546,6 +3560,16 @@ const isMac = () =>   // macOS dùng Cmd, nơi khác dùng Ctrl (chỉ để hi�
 function shortcutLabels(mac = isMac()): 
 ```
 
+#### `apps/web/src/lib/useMenuPlacement.ts`
+
+Vị trí menu thả xuống (T-114): mặc định mở xuống dưới nút; thiếu chỗ phía dưới mà phía trên rộng hơn thì lật lên, và luôn giới hạn chiều cao
+
+```text
+interface MenuPlacement
+function placeMenu(natural: number, below: number, above: number): MenuPlacement   // Phép tính thuần để kiểm thử: `below`/`above` = chỗ trống (px) dưới/trên nút; `natural` = chiều cao cần của me…
+function useMenuPlacement(open: boolean, menu: RefObject<HTMLElement | null>, opts: { anchor?: RefObject<HTMLElement | null>; fixed?: boolean } = {}): MenuPlacement   // `menu`: phần tử menu (đã vẽ). `anchor`: nút/khung neo (mặc định cha của menu). `fixed`: đặt theo cửa sổ (nên …
+```
+
 #### `apps/web/src/lib/usePanelLayout.ts`
 
 Trạng thái bố cục panel (thẻ Editor và thẻ Xem trước): đọc/ghi localStorage (lib/prefs.ts), đo vùng của thẻ để kẹp cỡ theo cửa sổ (lib/panelLayout.ts).
@@ -3594,7 +3618,6 @@ Chiều rộng khung xem trước (px), tính theo chỗ còn lại thực sự 
 
 ```text
 const STAGE_CHROME   // `proof`: Xem trước có khung bản in thử; `plain`: không có (dòng bộ chọn tỉ lệ riêng); `editor`: thẻ Chỉnh sửa…
-const STAGE_WEDGE   // Bề rộng thêm bên phải khi có dải xám: khe 16 px + dải 10 px.
 const TRANSPORT_WRAP   // Thanh phát xuống hai hàng khi khung hẹp hơn `below` px (container query 34 rem trong index.css); hàng thêm ca…
 function fitStageWidth(o: { availW: number; availH: number; aspect: number; chrome: number; extra: number }): number   // Hàm thuần: rộng nhất sao cho khối sân khấu vừa cả chiều ngang lẫn chiều dọc.
 function useStageWidth(scroller: RefObject<HTMLElement>, stage: RefObject<HTMLElement>, o: { aspect: number; chrome: number; extra: number; active: boolean; fallback?: number }): number   // `stage` là phần tử bọc khối sân khấu; chỗ còn lại theo chiều dọc = phần vùng cuộn dưới mép trên của nó (tự tí…
@@ -3783,6 +3806,7 @@ type SpectrumOut
 - `apps/web/src/lib/layerName.test.ts`
 - `apps/web/src/lib/layerTimeline.test.ts`
 - `apps/web/src/lib/masterClock.test.ts`
+- `apps/web/src/lib/menuPlacement.test.ts`
 - `apps/web/src/lib/notation.test.ts`
 - `apps/web/src/lib/numberInput.test.ts`
 - `apps/web/src/lib/panelLayout.test.ts`
@@ -3812,6 +3836,7 @@ type SpectrumOut
 - `apps/web/src/lib/workspaceStore.test.ts`
 - `apps/web/test/app.test.tsx`
 - `apps/web/test/components.test.tsx`
+- `apps/web/test/confirmDialog.test.tsx`
 - `packages/expr/test/expr.test.ts`
 - `packages/render-core/test/animate-scale.test.ts`
 - `packages/render-core/test/animation.test.ts`
@@ -3853,4 +3878,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 11 thư mục src, 1734 ký hiệu công khai -->
+<!-- 11 thư mục src, 1738 ký hiệu công khai -->

@@ -252,12 +252,13 @@ export const addWidget = (d: Doc, w: WidgetSpec): Cmd | null => {
   return slice(d, 'addWidget', 'web.cmd.addWidget', get, set, { widgets: [...d.scene.widgets, w], propsRef: { ...d.propsRef, [w.id]: widgetDefaults(w.type) } }, undefined, { widget: w.id, type: w.type });
 };
 /** Thêm nhiều widget một lúc (nhân bản vùng chọn). */
-export const addWidgets = (d: Doc, ws: WidgetSpec[], refs: Doc['propsRef'] = {}): Cmd | null => {
+export const addWidgets = (d: Doc, ws: WidgetSpec[], refs: Doc['propsRef'] = {}, comps: Record<string, CompSpec> = {}): Cmd | null => {
   if (!ws.length) return null;
   // `refs`: mốc ↺ của từng bản sao (lấy từ bản gốc); thiếu thì dùng mặc định của loại.
-  const get = (x: Doc) => ({ widgets: x.scene.widgets, propsRef: x.propsRef });
-  const set = (x: Doc, v: { widgets: WidgetSpec[]; propsRef: Doc['propsRef'] }): Doc => ({ ...x, scene: { ...x.scene, widgets: v.widgets }, propsRef: v.propsRef });
-  const after = { widgets: [...d.scene.widgets, ...ws], propsRef: { ...d.propsRef, ...Object.fromEntries(ws.map((w) => [w.id, refs[w.id] ?? widgetDefaults(w.type)])) } };
+  // `comps`: bản sao độc lập của precomp (T-122) vào sổ comp cùng lúc, để hoàn tác một bước gỡ cả hai.
+  const get = (x: Doc) => ({ widgets: x.scene.widgets, propsRef: x.propsRef, comps: x.scene.comps });
+  const set = (x: Doc, v: { widgets: WidgetSpec[]; propsRef: Doc['propsRef']; comps: Doc['scene']['comps'] }): Doc => ({ ...x, scene: { ...x.scene, widgets: v.widgets, comps: v.comps }, propsRef: v.propsRef });
+  const after = { comps: Object.keys(comps).length ? { ...(d.scene.comps ?? {}), ...comps } : d.scene.comps, widgets: [...d.scene.widgets, ...ws], propsRef: { ...d.propsRef, ...Object.fromEntries(ws.map((w) => [w.id, refs[w.id] ?? widgetDefaults(w.type)])) } };
   return slice(d, 'duplicateWidgets', 'web.cmd.duplicate', get, set, after, undefined, { n: ws.length, ...(ws.length === 1 ? { widget: ws[0].id } : {}) });
 };
 /** Xoá widget (T-68). Hoàn tác trả widget về đúng chỗ trong tài liệu (giữ thứ tự và zIndex). Con của widget bị xoá thôi có cha (cùng một bước). */

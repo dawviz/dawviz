@@ -28,7 +28,7 @@ While you're typing in a field, these keys go to the field.
 | Shift + arrow | Move 10 points |
 | Esc | Clear the selection; with nothing selected, leave the open precomp |
 | Delete | Delete the selected widgets |
-| Ctrl+D | Duplicate the selected widgets |
+| Ctrl+D | Duplicate the selected widgets (a precomp layer becomes an independent copy; locked layers are not copied) |
 | Ctrl+A (⌘A) | Select all layers |
 | F2 | Rename the selected layer |
 | Alt+click (Option+click on Mac) on a setting's label | Reset that setting to its original value (when it has been changed) |
@@ -39,7 +39,7 @@ While you're typing in a field, these keys go to the field.
 | Alt+Up / Alt+Down (on a layer name in the Timeline) | Reorder layers |
 | Ctrl+K | Split the selected layers at the playhead |
 | Ctrl+G | Precompose the selected layers |
-| Ctrl+Shift+G | Release the selected precomp (its layers come back to the timeline) |
+| Ctrl+Shift+G | Release the selected precomp (its layers come back to the timeline; asks first if the precomp layer's own animation would be lost) |
 | Hold Alt while dragging | Move without snapping |
 | Hold Ctrl while resizing | Resize without snapping |
 | Hold Alt while resizing | Resize around the centre |

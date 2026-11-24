@@ -473,7 +473,7 @@ export function LayerTimeline(props: LayerTimelineProps) {
                 })}
               </ul>
               {layers.length > 0 && (
-                <div className="flex items-center justify-end gap-0.5 border-r border-line py-1 pl-2 pr-1">
+                <div className="flex items-center justify-end gap-1 border-r border-line py-1 pl-2 pr-1">
                   <span className="min-w-0 flex-1 truncate text-[11px] text-muted">{i18n.t('web.layers.all')}</span>
                   <button type="button" className="tog" aria-pressed={hiddenN === layers.length && hiddenN > 0 ? true : hiddenN ? 'mixed' : false} aria-label={eyeLabel} title={eyeLabel} onClick={props.onAllVisible} data-testid="layers-all-visible">
                     {hiddenN === layers.length && hiddenN > 0 ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className={`h-3.5 w-3.5 ${hiddenN ? 'opacity-50' : ''}`} />}
@@ -486,7 +486,7 @@ export function LayerTimeline(props: LayerTimelineProps) {
             </div>
 
             {/* Làn: phase rồi một làn mỗi lớp. Nhấp chỗ trống bỏ chọn; nhấp đúp làn phase thêm phase. */}
-            <div className="relative shrink-0 touch-none" style={{ width: contentW, height: head + layers.length * rowH }} data-testid="layer-lanes"
+            <div className="relative shrink-0 touch-none" style={{ width: contentW, height: head + layers.length * rowH, ['--tl-tree' as string]: `${tree}px` }} data-testid="layer-lanes"
               onPointerDown={(e) => { if (e.button === 0 && e.target === e.currentTarget && !(e.shiftKey || e.ctrlKey || e.metaKey)) onSelect([]); }}>
               <div className="absolute inset-x-0 top-0 border-b border-line bg-page/40" style={{ height: ROW_H }} data-testid="phase-lane"
                 onDoubleClick={(e) => { if (e.target !== e.currentTarget) return; const r = e.currentTarget.getBoundingClientRect(); addPhase(xToTime(e.clientX - r.left - PAD, pps, duration)); }}>
@@ -559,7 +559,7 @@ const Bars = memo(function Bars({ w, name, pps, duration, tempoMap, on, locked, 
           <button key={c.i} type="button" data-clip-of={w.id} data-clip={c.i} tabIndex={k === 0 ? 0 : -1} aria-pressed={on} aria-label={label}
             title={`${label}${locked ? '' : ` — ${i18n.t(comp ? 'web.layers.clipHintComp' : 'web.layers.clipHint')}`}`}
             onPointerDown={(e) => onDown(e, c)} onDoubleClick={(e) => { e.stopPropagation(); onOpen(); }}
-            className={`group absolute top-1 flex items-center overflow-hidden rounded-sm border text-left text-[11px] outline-none focus-visible:ring-2 focus-visible:ring-focus ${w.visible ? '' : 'opacity-50'} ${on ? 'border-accent bg-accent/15 text-fg' : 'border-control bg-raised text-muted hover:border-line-strong'} ${locked ? 'cursor-not-allowed' : 'cursor-grab active:cursor-grabbing'}`}
+            className={`group absolute top-1 flex items-center overflow-clip rounded-sm border text-left text-[11px] outline-none focus-visible:ring-2 focus-visible:ring-focus ${w.visible ? '' : 'opacity-50'} ${on ? 'border-accent bg-accent/15 text-fg' : 'border-control bg-raised text-muted hover:border-line-strong'} ${locked ? 'cursor-not-allowed' : 'cursor-grab active:cursor-grabbing'}`}
             style={{ left: PAD + c.from * pps, width: Math.max(4, (c.to - c.from) * pps), bottom: 4 }}>
             {!locked && <span aria-hidden className="absolute inset-y-0 left-0 w-1.5 cursor-ew-resize group-hover:bg-control/60" />}
             {!locked && <span aria-hidden className="absolute inset-y-0 right-0 w-1.5 cursor-ew-resize group-hover:bg-control/60" />}
@@ -574,7 +574,7 @@ const Bars = memo(function Bars({ w, name, pps, duration, tempoMap, on, locked, 
                   style={f === 'in' ? { left: Math.max(2, off) } : { right: Math.max(2, off) }} />
               );
             })}
-            <span className="pointer-events-none sticky left-2 flex min-w-0 items-center gap-1 truncate px-2">
+            <span className="pointer-events-none sticky left-[calc(var(--tl-tree,0px)+0.5rem)] flex min-w-0 items-center gap-1 truncate px-2" data-testid="clip-label">
               {comp && <Precomp className="h-3 w-3 shrink-0" />}
               {rowH >= 32 || (c.to - c.from) * pps > 48 ? <span className="truncate">{name}</span> : null}
             </span>

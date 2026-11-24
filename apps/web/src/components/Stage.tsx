@@ -41,7 +41,6 @@ export function LiveCanvas({ scene, derived, ast, playback, fonts = 'ready' }: P
 export const Crop = ({ className }: { className: string }) => (
   <svg viewBox="0 0 16 16" className={`absolute h-4 w-4 text-faint ${className}`} aria-hidden fill="none" stroke="currentColor" strokeWidth="1"><path d="M0 8h7M8 0v7" /></svg>
 );
-const GREYS = [0.95, 0.8, 0.65, 0.5, 0.35, 0.2, 0.08];
 
 export function Stage({ scene, derived, ast, playback, styleName, proof, width, fonts, onAspect, children }: Props) {
   const { i18n } = useI18n();
@@ -58,7 +57,7 @@ export function Stage({ scene, derived, ast, playback, styleName, proof, width, 
     );
   }
   return (
-    <div className="mx-auto grid gap-x-4 gap-y-2" style={{ width: width + 26, gridTemplateColumns: `${width}px 0.625rem` }} data-testid="stage-proof">
+    <div className="mx-auto grid gap-y-2" style={{ width, gridTemplateColumns: `${width}px` }} data-testid="stage-proof">
       {/* Một dòng cố định (STAGE_CHROME đã tính chiều cao này): thông số và tên phong cách rút gọn bên trái, bộ chọn tỉ lệ bên phải. */}
       <div className="flex items-center justify-between gap-3 text-xs tabular-nums text-muted" style={{ gridColumn: 1 }}>
         <span className="min-w-0 truncate" title={`${frameInfo(i18n, w, h, aspectRatio)} · ${i18n.t('web.stage.style', { name: styleName })}`}>{frameInfo(i18n, w, h, aspectRatio)}<span aria-hidden> · </span>{styleName}</span>
@@ -70,10 +69,6 @@ export function Stage({ scene, derived, ast, playback, styleName, proof, width, 
         <Crop className="-bottom-5 -left-5 -scale-y-100" /><Crop className="-bottom-5 -right-5 -scale-100" />
         {canvas}
       </figure>
-      {/* Dải xám kiểm độ sáng của bản in thử, cao đúng bằng khung; chỉ để tham chiếu thị giác. */}
-      <div aria-hidden className="flex flex-col border border-line" style={{ gridColumn: 2, gridRow: 2 }}>
-        {GREYS.map((g) => <span key={g} className="flex-1" style={{ background: `hsl(0 0% ${g * 100}%)` }} />)}
-      </div>
       {bar && <div className="border border-line bg-surface" style={{ gridColumn: 1, gridRow: 3 }}>{children}</div>}
     </div>
   );

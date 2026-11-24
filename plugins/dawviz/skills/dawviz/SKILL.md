@@ -54,7 +54,7 @@ node dawviz.mjs --repo /path/to/dawviz \
   --frames 0,8,40 --out-dir out --export out/video.mp4 --resolution 1080 --fps 30
 ```
 
-Prints one JSON line (`ok`, project info, preset warnings, frame files, export file). Look at the frame PNGs before exporting a long video. With no `--url` and no `--repo`, it opens the public build. Use `--url` when the app is already running somewhere else, `--repo` to start it from a clone. MP4 (H.264) needs Google Chrome installed (`--channel chrome`, tried first); otherwise the browser falls back to WebM and the script says so. `node dawviz.mjs --validate my-video.json --repo …` checks a preset without a project.
+Prints one JSON line (`ok`, project info, preset warnings, frame files, export file). Look at the frame PNGs before exporting a long video. With no `--url` and no `--repo`, it opens the public build. Use `--url` when the app is already running somewhere else, `--repo` to start it from a clone. MP4 (H.264) needs a browser with an H.264 encoder: Google Chrome (`--channel chrome`, tried first) and Playwright's Chromium both gave MP4 on Linux when tested; a browser without H.264 falls back to WebM and the script says so. Audio inside the MP4 is AAC when the machine can encode it, otherwise Opus (check `mime` and `ffprobe`). `node dawviz.mjs --validate my-video.json --repo …` checks a preset without a project.
 
 ## Rules
 

@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  COMP_SEP, MAX_COMP_DEPTH, SCENE_SCHEMA_VERSION, canPlaceComp, compDepth, compPathOffset, compView, flatCount, flattenScene, layoutFrame, resolveCompPath, sanitizeScene,
+  COMP_SEP, MAX_COMP_DEPTH, MAX_COMPS, cloneCompTree, SCENE_SCHEMA_VERSION, canPlaceComp, compDepth, compPathOffset, compView, flatCount, flattenScene, layoutFrame, resolveCompPath, sanitizeScene,
   setCompView, shiftWidgetTime, unshiftWidgetTime, validCompPath, mapWidgetTime, unmapWidgetTime, type SceneDocument, type WidgetSpec,
 } from '../src/index.ts';
 import { synthAst, derivedOf } from './helpers.ts';
@@ -147,4 +147,27 @@ test('tốc độ precomp: nội dung co giãn quanh điểm bắt đầu (keyfr
   assert.deepEqual(unmapWidgetTime(undefined, mapWidgetTime(inner, m), m), inner);
   const r = sanitizeScene({ schemaVersion: SCENE_SCHEMA_VERSION, canvas: {}, widgets: [compLayer('L', 'k', 0, { properties: { comp: 'k', start: 0, speed: 99 } })], comps: { k: { name: 'K', widgets: [] } } });
   assert.deepEqual(r.scene.widgets[0].properties, { comp: 'k', start: 0, speed: 10 });
+});
+
+test('cloneCompTree (T-122): bản sao độc lập, id/tên mới, comp lồng nhau trỏ sang bản sao, bản gốc nguyên vẹn, vượt MAX_COMPS thì null', () => {
+  const sc = base([compLayer('L', 'outer')], { outer: { name: 'Intro', widgets: [text('a'), compLayer('inner-layer', 'inner')] }, inner: { name: 'Deep', widgets: [text('b')] } });
+  const before = JSON.stringify(sc.comps);
+  const k = cloneCompTree(sc, 'outer')!;
+  assert.deepEqual(Object.keys(k.comps).sort(), ['comp-1', 'comp-2']);
+  assert.equal(k.comps[k.root].name, 'Intro 2');
+  const innerRef = (k.comps[k.root].widgets[1].properties as { comp: string }).comp;
+  assert.notEqual(innerRef, 'inner'); assert.ok(k.comps[innerRef]); assert.equal(k.comps[innerRef].name, 'Deep 2');
+  assert.equal(JSON.stringify(sc.comps), before, 'scene không bị đổi');
+  // sửa bản sao không đụng bản gốc (sao sâu)
+  k.comps[k.root].widgets[0].layout.x = 999; assert.notEqual(sc.comps!.outer.widgets[0].layout.x, 999);
+  // bản sao thứ hai: tên kế tiếp, id kế tiếp
+  const sc2 = { ...sc, comps: { ...sc.comps, ...k.comps } };
+  const k2 = cloneCompTree(sc2, 'outer')!;
+  assert.equal(k2.comps[k2.root].name, 'Intro 3'); assert.ok(!(k2.root in sc2.comps!));
+  // nhân bản bản sao "Intro 2" cho "Intro 3", không thành "Intro 2 2"
+  assert.equal(cloneCompTree(sc2, k.root)!.comps[cloneCompTree(sc2, k.root)!.root].name, 'Intro 3');
+  assert.equal(cloneCompTree(sc, 'nope'), null);
+  const many: Record<string, { name: string; widgets: WidgetSpec[] }> = {};
+  for (let i = 0; i < MAX_COMPS; i++) many[`c${i}`] = { name: `C${i}`, widgets: [] };
+  assert.equal(cloneCompTree(base([], many), 'c0'), null);
 });

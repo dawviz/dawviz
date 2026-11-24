@@ -114,7 +114,7 @@ export function TextPanel({ widget, styles, advanced, disabled, onRef, onStyles,
         </Select>
         {R('font', i18n.t('web.text.font'))}
       </label>
-      <input ref={fontInput} type="file" accept={FONT_ACCEPT} className="sr-only" tabIndex={-1} aria-label={i18n.t('web.asset.pickFont')} data-testid="text-font-file"
+      <input ref={fontInput} type="file" accept={FONT_ACCEPT} disabled={disabled} className="sr-only" tabIndex={-1} aria-label={i18n.t('web.asset.pickFont')} data-testid="text-font-file"
         onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; if (!f) return; setFontErr(null); assets.add(f).then((m) => { if (m.family) set('font', m.family); else setFontErr('ERR_ASSET_UNSUPPORTED'); }, (err) => setFontErr((err as { code?: string }).code ?? 'ERR_ASSET_DECODE')); }} />
       {fontErr && <p role="alert" className="text-xs leading-snug text-danger" data-testid="text-font-error">{i18n.t(`errors.${fontErr}`)}</p>}
       {num('size', i18n.t('web.text.size'), { min: 4, max: 400, step: 1 }, [6, 120])}

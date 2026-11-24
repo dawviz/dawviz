@@ -6,7 +6,7 @@
 // Khoá là trạng thái của phiên chỉnh sửa (không vào preset video, không vào lịch sử); ẩn/hiện, vị trí, cỡ, góc, neo, thứ tự lớp
 // và bắt dính đều là lệnh hoàn tác được (lib/commands.ts).
 import { Suspense, lazy, useContext, useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
-import { ADDABLE_WIDGETS, COMP_SEP, IDENTITY_TIME, buildHud, chordTimeline, MAX_COMP_DEPTH, MAX_FLAT_WIDGETS, canPlaceComp, compOf, newCompId, resolveCompPath, isKeyAnim, defaultScene, normalizeAngle, rotateGroup, type Animation, type Derived, type NoteNaming, type WidgetMotion, type Phase, type SceneDocument, type UnifiedProjectAST, type WidgetLayout, type WidgetSpec, type WidgetType, type WidgetVisibility, type BackgroundImageSpec } from '@dawviz/render-core';
+import { ADDABLE_WIDGETS, COMP_SEP, IDENTITY_TIME, buildHud, chordTimeline, MAX_COMP_DEPTH, MAX_COMPS, MAX_FLAT_WIDGETS, canPlaceComp, compOf, newCompId, resolveCompPath, isKeyAnim, defaultScene, normalizeAngle, rotateGroup, type Animation, type Derived, type NoteNaming, type WidgetMotion, type Phase, type SceneDocument, type UnifiedProjectAST, type WidgetLayout, type WidgetSpec, type WidgetType, type WidgetVisibility, type BackgroundImageSpec } from '@dawviz/render-core';
 import { startPaintDrag } from '../lib/paintDrag.ts';
 import { GestureContext } from '../lib/storeReact.ts';
 import { useI18n } from '../i18n/I18nProvider.tsx';
@@ -26,6 +26,9 @@ import { refKey } from '../lib/compLens.ts';
 import { clipsOf, newCompName, precompose, splitLayer, uncompose } from '../lib/layerTimeline.ts';
 import { formatClock } from '../lib/timeFormat.ts';
 import { LayerTimeline } from './LayerTimeline.tsx';
+import { createPortal } from 'react-dom';
+import { ConfirmDialog } from './ConfirmDialog.tsx';
+import { useMenuPlacement } from '../lib/useMenuPlacement.ts';
 import { Select } from './Select.tsx';
 import { checkLayerName } from '../lib/layerName.ts';
 import { MAX_WIDGET_NAME } from '@dawviz/render-core';
@@ -100,6 +103,8 @@ export interface EditorActions {
   view(): Doc;
 }
 interface Props {
+  /** Khung bản in thử (dấu cắt quanh khung): tắt ở Cài đặt thì ẩn ở mọi nơi (T-117). Mặc định bật. */
+  proof?: boolean;
   /** Tên phong cách video đang dùng (dòng thông số trên khung, như thẻ Xem trước). */
   styleName?: string;
   /** Khung nhìn đang mở: scene gốc, hoặc nội dung của precomp ở cuối `compPath` (mốc thời gian theo toàn bài). */
@@ -141,7 +146,7 @@ export function useWidgetNames(widgets: readonly WidgetSpec[]): (id: string) => 
   }, [widgets, i18n]);
 }
 
-export function Editor({ styleName, scene, root, compPath, onCompPath, flatFull, derived: derived0, ast, playback, fonts, advanced, actions, transport, active, widgetSections, layoutRef, background }: Props) {
+export function Editor({ proof = true, styleName, scene, root, compPath, onCompPath, flatFull, derived: derived0, ast, playback, fonts, advanced, actions, transport, active, widgetSections, layoutRef, background }: Props) {
   const { i18n } = useI18n();
   const [selected, setSelected] = useState<string[]>([]);
   const [locked, setLocked] = useState<ReadonlySet<string>>(new Set());
@@ -202,7 +207,11 @@ export function Editor({ styleName, scene, root, compPath, onCompPath, flatFull,
   };
   // Delete/Backspace: xoá; Ctrl/⌘+D: nhân bản (lớp khoá không bị xoá/nhân bản). Ctrl/⌘ + ] / [ : lên/xuống một bậc; thêm Shift: lên trên cùng / xuống dưới cùng.
   const removeSel = () => { const ids = live.filter((id) => !locked.has(id)); if (ids.length) { actions.remove(ids); setSelected(live.filter((id) => locked.has(id))); setSay(i18n.t('web.editor.removed', { n: ids.length })); } };
-  const duplicateSel = () => { const ids = live.filter((id) => !locked.has(id)); if (ids.length) setSelected(actions.duplicate(ids)); };
+  const duplicateSel = () => {
+    const ids = live.filter((id) => !locked.has(id)); if (!ids.length) return;
+    const made = actions.duplicate(ids); setSelected(made);
+    if (made.length < ids.length) note(i18n.t('web.comp.copyLimit', { max: MAX_COMPS })); // precomp nhân bản là bản độc lập: vượt số precomp tối đa thì không làm
+  };
   const deselect = () => { setSelected([]); setSay(i18n.t('web.editor.deselected')); };
   const selectAll = () => { setSelected(order); setSay(i18n.t('web.editor.selectedAll', { n: order.length })); };
   // Đổi tên lớp (nhấp đúp hoặc F2): Enter/rời ô thì áp, Esc bỏ. Trống = về tên theo loại. Trùng tên lớp khác: giữ tên cũ và báo lý do.
@@ -258,16 +267,24 @@ export function Editor({ styleName, scene, root, compPath, onCompPath, flatFull,
     setSay(i18n.t('web.comp.created', { name: cname, n: ids.length }));
   };
 
-  // Gỡ precomp (Ctrl+Shift+G): các lớp bên trong ra lại timeline đang mở, đúng chỗ và đúng thời gian.
-  const uncomposeSel = () => {
-    const id = live.length === 1 ? live[0] : null, w = id && scene.widgets.find((x) => x.id === id);
+  // Gỡ precomp (Ctrl+Shift+G): các lớp bên trong ra lại timeline đang mở, đúng chỗ và đúng thời gian. Chỉ khi sẽ MẤT hoạt hình của chính lớp precomp
+  // (keyframe, chuyển động, tỉ lệ, hiện/ẩn dần không chuyển sang lớp con được) mới hỏi xác nhận (T-120); còn lại làm ngay, hoàn tác được.
+  const [askUncompose, setAskUncompose] = useState<string | null>(null);
+  const doUncompose = (id: string) => {
+    const w = scene.widgets.find((x) => x.id === id);
     if (!w || !compOf(w) || locked.has(w.id)) return;
     const v = actions.view(), r = uncompose(v.scene, w.id, duration); if (!r) return;
     const move = <V,>(refs: Record<string, V>) => { const out = { ...refs }; for (const [from, to] of r.refs) if (from in refs) out[to] = refs[from]; return out; };
     actions.layers('uncompose', { widgets: r.widgets, layoutRef: move(v.layoutRef), propsRef: move(v.propsRef) });
     setSelected(r.added);
-    if (r.lost) note(i18n.t('web.comp.uncomposeLost', { name: name(w.id) })); else setTlNote('');
+    setTlNote(''); // mất hoạt hình đã được hỏi trước khi gỡ (hộp thoại xác nhận): không báo thêm trên Timeline
     setSay(i18n.t('web.comp.uncomposed', { name: name(w.id), n: r.added.length }));
+  };
+  const uncomposeSel = () => {
+    const id = live.length === 1 ? live[0] : null, w = id && scene.widgets.find((x) => x.id === id);
+    if (!w || !compOf(w) || locked.has(w.id)) return;
+    const r = uncompose(actions.view().scene, w.id, duration); if (!r) return;
+    if (r.lost) setAskUncompose(w.id); else doUncompose(w.id);
   };
   // Tốc độ phát của precomp (%, 10–1000). Ô số ghi tốc độ so với comp cha; khung nhìn lưu theo thời gian toàn bài nên đổi qua phép đổi thời gian của comp đang mở.
   const frameA = frames.at(-1)?.map.a ?? 1;
@@ -349,6 +366,10 @@ export function Editor({ styleName, scene, root, compPath, onCompPath, flatFull,
     <div ref={panels.ref} style={vars} data-testid="editor" onKeyDown={onKeys}
       className="grid h-full min-h-0 max-lg:content-start max-lg:overflow-y-auto lg:grid-cols-[minmax(0,1fr)_var(--ed-r)] lg:grid-rows-[minmax(0,1fr)_var(--ed-t)]">
       <span className="sr-only" role="status" aria-live="polite">{say}</span>
+      {askUncompose && (
+        <ConfirmDialog title={i18n.t('web.comp.uncomposeAskTitle')} message={i18n.t('web.comp.uncomposeAsk', { name: name(askUncompose) })} confirmLabel={i18n.t('web.comp.uncomposeAskOk')} cancelLabel={i18n.t('web.confirm.cancel')} testId="uncompose-confirm"
+          onCancel={() => setAskUncompose(null)} onConfirm={() => { const id = askUncompose; setAskUncompose(null); doUncompose(id); }} />
+      )}
 
       <div ref={scrollerRef} className="relative min-h-0 min-w-0 overflow-y-auto bg-page p-3 max-lg:order-1 max-lg:h-[75svh] lg:col-start-1 lg:row-start-1 lg:p-6"
         onPointerDown={(e) => { if (live.length && !(e.target as HTMLElement).closest('figure, button, [role="radiogroup"], input, select, [data-testid="editor-transport"]')) setSelected([]); }}>
@@ -365,8 +386,10 @@ export function Editor({ styleName, scene, root, compPath, onCompPath, flatFull,
             <div className="overflow-hidden" style={{ padding: PASTEBOARD }} data-testid="editor-pasteboard">
               <figure aria-label={i18n.t('web.stage')} className="relative outline outline-1 outline-line">
                 {/* Dấu cắt như bản in thử ở thẻ Xem trước: nằm ngoài khung (trong bàn đệm), không vào video xuất. */}
-                <Crop className="-left-5 -top-5" /><Crop className="-right-5 -top-5 -scale-x-100" />
-                <Crop className="-bottom-5 -left-5 -scale-y-100" /><Crop className="-bottom-5 -right-5 -scale-100" />
+                {proof && <>
+                  <Crop className="-left-5 -top-5" /><Crop className="-right-5 -top-5 -scale-x-100" />
+                  <Crop className="-bottom-5 -left-5 -scale-y-100" /><Crop className="-bottom-5 -right-5 -scale-100" />
+                </>}
                 <LiveCanvas scene={scene} derived={derived} ast={ast} playback={playback} fonts={fonts} />
                 <LiveOverlay ctx={liveCtx!} scene={scene} cssWidth={width} selected={live} locked={locked} onSelect={setSelected} onLayouts={editLayouts} name={name} advanced={advanced} />
               </figure>
@@ -454,26 +477,28 @@ function LayerNameInput({ initial, label, onCommit, onCancel }: { initial: strin
 function AddMenu({ onAdd }: { onAdd(type: WidgetType): void }) {
   const { i18n } = useI18n();
   const [open, setOpen] = useState(false);
-  const box = useRef<HTMLDivElement>(null);
-  const items = () => [...(box.current?.querySelectorAll<HTMLButtonElement>('[role=menuitem]') ?? [])];
+  const box = useRef<HTMLDivElement>(null), menuEl = useRef<HTMLDivElement>(null);
+  // Menu dựng bằng portal + `position: fixed`: vùng cuộn của Timeline cắt mọi thứ lòi ra ngoài nó, nên menu lật lên phải thoát khỏi vùng đó (T-114).
+  const place = useMenuPlacement(open, menuEl, { anchor: box, fixed: true });
+  const items = () => [...(menuEl.current?.querySelectorAll<HTMLButtonElement>('[role=menuitem]') ?? [])];
   const pick = (t: WidgetType) => { setOpen(false); onAdd(t); };
   return (
-    <div ref={box} className="relative inline-block" onBlur={(e) => { if (!box.current?.contains(e.relatedTarget as Node)) setOpen(false); }}
+    <div ref={box} className="relative inline-block" onBlur={(e) => { const to = e.relatedTarget as Node | null; if (!box.current?.contains(to) && !menuEl.current?.contains(to)) setOpen(false); }}
       onKeyDown={(e) => {
         if (e.key === 'Escape' && open) { e.stopPropagation(); setOpen(false); box.current?.querySelector<HTMLButtonElement>('button')?.focus(); }
         if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && open) { e.preventDefault(); const l = items(), i = l.indexOf(document.activeElement as HTMLButtonElement); l[(i + (e.key === 'ArrowDown' ? 1 : -1) + l.length) % l.length]?.focus(); }
       }}>
-      <button type="button" className="btn-ghost flex items-center gap-1" aria-haspopup="menu" aria-expanded={open} onClick={() => { setOpen((o) => !o); requestAnimationFrame(() => items()[0]?.focus()); }}
+      <button type="button" className="btn-ghost flex h-6 items-center gap-1" aria-haspopup="menu" aria-expanded={open} onClick={() => { setOpen((o) => !o); requestAnimationFrame(() => items()[0]?.focus()); }}
         data-testid="layers-add"><Plus className="h-3.5 w-3.5" />{i18n.t('web.editor.add')}</button>
-      {open && (
-        <div role="menu" aria-label={i18n.t('web.editor.add')} className="absolute left-0 top-full z-20 mt-1 min-w-[11rem] max-h-[calc(10*2rem+0.5rem)] overflow-y-auto border border-line bg-surface py-1 shadow-sm" data-testid="add-menu">
+      {open && createPortal(
+        <div ref={menuEl} role="menu" aria-label={i18n.t('web.editor.add')} style={place.style ?? { position: 'fixed', visibility: 'hidden' }} className={`z-50 min-w-[11rem] max-h-[calc(10*2rem+0.5rem)] overflow-y-auto border border-line bg-surface py-1 shadow-sm`} data-testid="add-menu">
           {ADDABLE_WIDGETS.map((t) => (
             <button key={t} type="button" role="menuitem" className="block w-full px-3 py-1.5 text-left text-xs text-fg hover:bg-raised focus:bg-raised focus:outline-none" onClick={() => pick(t)}>
               {i18n.t(`web.widget.${t}`)}
             </button>
           ))}
-        </div>
-      )}
+        </div>,
+        document.body)}
     </div>
   );
 }
@@ -507,20 +532,22 @@ function Properties({ background, scene, selected, locked, name, advanced, actio
   const { i18n } = useI18n();
   const ws = selected.map((id) => scene.widgets.find((w) => w.id === id)!).filter(Boolean);
   const { designWidth: W, designHeight: H } = scene.canvas;
+  // Khoá lớp (T-115): mọi lớp đang chọn đã khoá thì Bắt dính (thiết lập chung của khung) cũng tắt, như các mục khác.
+  const lockedAll = ws.length > 0 && ws.every((x) => locked.has(x.id));
   const snapping = (n: number) => (
     <InspectorSection n={n} id="snapping" title={i18n.t('web.editor.snapping')}>
-      <TickField strong label={i18n.t('web.editor.guides')} checked={scene.canvas.snapping.smartGuidesEnabled} onChange={(v) => actions.snapping({ smartGuidesEnabled: v })} reference={SNAP_DEFAULT.smartGuidesEnabled} />
-      <TickField strong label={i18n.t('web.editor.grid')} checked={scene.canvas.snapping.gridEnabled} onChange={(v) => actions.snapping({ gridEnabled: v })} reference={SNAP_DEFAULT.gridEnabled} />
+      <TickField strong label={i18n.t('web.editor.guides')} checked={scene.canvas.snapping.smartGuidesEnabled} onChange={(v) => actions.snapping({ smartGuidesEnabled: v })} reference={SNAP_DEFAULT.smartGuidesEnabled} disabled={lockedAll} />
+      <TickField strong label={i18n.t('web.editor.grid')} checked={scene.canvas.snapping.gridEnabled} onChange={(v) => actions.snapping({ gridEnabled: v })} reference={SNAP_DEFAULT.gridEnabled} disabled={lockedAll} />
       <div className="flex items-center justify-between gap-2 text-[13px] text-fg">
         <span>{i18n.t('web.editor.gridSize')}</span>
         <span className="flex items-center gap-2">
           <div className="seg" role="radiogroup" aria-label={i18n.t('web.editor.gridSize')}>
             {[8, 16].map((g) => (
-              <button key={g} type="button" role="radio" aria-checked={scene.canvas.snapping.gridSize === g} className="seg-btn tabular-nums" disabled={!scene.canvas.snapping.gridEnabled}
+              <button key={g} type="button" role="radio" aria-checked={scene.canvas.snapping.gridSize === g} className="seg-btn tabular-nums" disabled={lockedAll || !scene.canvas.snapping.gridEnabled}
                 onClick={() => actions.snapping({ gridSize: g })}>{i18n.t('web.editor.pt', { n: g })}</button>
             ))}
           </div>
-          <ResetButton label={i18n.t('web.editor.gridSize')} changed={scene.canvas.snapping.gridSize !== SNAP_DEFAULT.gridSize} disabled={!scene.canvas.snapping.gridEnabled} onReset={() => actions.snapping({ gridSize: SNAP_DEFAULT.gridSize })} />
+          <ResetButton label={i18n.t('web.editor.gridSize')} changed={scene.canvas.snapping.gridSize !== SNAP_DEFAULT.gridSize} disabled={lockedAll || !scene.canvas.snapping.gridEnabled} onReset={() => actions.snapping({ gridSize: SNAP_DEFAULT.gridSize })} />
         </span>
       </div>
     </InspectorSection>
@@ -555,11 +582,11 @@ function Properties({ background, scene, selected, locked, name, advanced, actio
           <button type="button" className="btn-ghost shrink-0 border border-control" onClick={onDeselect} title={i18n.t('web.editor.deselectHint')} data-testid="deselect">{i18n.t('web.editor.deselect')}</button>
         </div>
         <NumRow label={i18n.t('web.editor.rotateBy')}>
-          <NumberField label={i18n.t('web.editor.rotateBy')} value={0} spec={{ min: -360, max: 360, step: 1 }}
-            onChange={(d) => { const out = rotateGroup(ws.map((w) => w.layout), d); actions.layouts(Object.fromEntries(ws.map((w, i) => [w.id, round(out[i])]))); }} />
+          <NumberField label={i18n.t('web.editor.rotateBy')} value={0} spec={{ min: -360, max: 360, step: 1 }} disabled={lockedAll}
+            onChange={(d) => { const free = ws.filter((x) => !locked.has(x.id)), out = rotateGroup(free.map((w) => w.layout), d); actions.layouts(Object.fromEntries(free.map((w, i) => [w.id, round(out[i])]))); }} />
         </NumRow>
         <div className="flex gap-1.5">
-          <button type="button" className={btn} onClick={onDuplicate} title={`${i18n.t('web.editor.duplicate')} (Ctrl+D)`} data-testid="duplicate"><Duplicate className="h-3.5 w-3.5" />{i18n.t('web.editor.duplicate')}</button>
+          <button type="button" className={btn} onClick={onDuplicate} disabled={lockedAll} title={`${i18n.t('web.editor.duplicate')} (Ctrl+D)`} data-testid="duplicate"><Duplicate className="h-3.5 w-3.5" />{i18n.t('web.editor.duplicate')}</button>
           <button type="button" className={btn} onClick={onRemove} disabled={ws.every((x) => locked.has(x.id))} title={`${i18n.t('web.editor.remove')} (Delete)`} data-testid="remove"><Trash className="h-3.5 w-3.5" />{i18n.t('web.editor.remove')}</button>
         </div>
       </InspectorSection>
@@ -681,7 +708,7 @@ function Properties({ background, scene, selected, locked, name, advanced, actio
             );
           })}
           <span className="mx-0.5 w-px self-stretch bg-line" aria-hidden />
-          <button type="button" className={`${btn} w-9 justify-center px-0`} aria-label={i18n.t('web.editor.duplicate')} title={`${i18n.t('web.editor.duplicate')} (Ctrl+D)`} onClick={onDuplicate} data-testid="duplicate"><Duplicate className="h-3.5 w-3.5" /></button>
+          <button type="button" className={`${btn} w-9 justify-center px-0`} aria-label={i18n.t('web.editor.duplicate')} disabled={lk} title={`${i18n.t('web.editor.duplicate')} (Ctrl+D)`} onClick={onDuplicate} data-testid="duplicate"><Duplicate className="h-3.5 w-3.5" /></button>
           <button type="button" className={`${btn} w-9 justify-center px-0`} disabled={lk} aria-label={i18n.t('web.editor.remove')} title={`${i18n.t('web.editor.remove')} (Delete)`} onClick={onRemove} data-testid="remove"><Trash className="h-3.5 w-3.5" /></button>
         </div>
         <label className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] items-center gap-2 text-xs text-muted">
@@ -692,7 +719,7 @@ function Properties({ background, scene, selected, locked, name, advanced, actio
             {parentCandidates(scene, w.id).map((id) => <option key={id} value={id}>{name(id)}</option>)}
           </Select>
         </label>
-        <TickField strong label={i18n.t('web.editor.visible')} checked={w.visible} onChange={(v) => actions.visible(w.id, v)} reference />
+        <TickField strong label={i18n.t('web.editor.visible')} checked={w.visible} onChange={(v) => actions.visible(w.id, v)} reference disabled={lk} />
         <TickField strong label={i18n.t('web.editor.locked')} checked={lk} onChange={() => onLock(w.id)} reference={false} />
       </InspectorSection>
       {/* Khoảng hiển thị và hiện dần/ẩn dần chỉnh trên thanh của lớp ở Timeline (D-69): không còn mục riêng ở đây. */}

@@ -142,6 +142,7 @@ Bên trái là cột lớp, bên phải là thước thời gian và các thanh.
 - **Dời thanh:** kéo giữa thanh. Mọi lớp đang chọn cùng dời. Keyframe của lớp đi theo thanh, nên chuyển động vẫn bắt đầu đúng lúc lớp xuất hiện.
 - **Cắt mép:** kéo mép đầu hoặc mép cuối thanh. Keyframe đứng yên. Kéo mép cuối tới hết bài thì lớp hiện tới hết bài. Đang chọn nhiều lớp thì mép cùng phía của mọi lớp đang chọn dời theo cùng một khoảng.
 - **Hiện dần / ẩn dần:** kéo ô vuông nhỏ ở góc trên đầu hoặc cuối thanh (hiện khi rê chuột hoặc khi lớp đang chọn).
+- **Tên thanh dính mép:** khi cuộn hoặc phóng to Timeline mà đầu thanh đã ra khỏi màn hình, tên lớp vẫn hiện ở mép trái vùng nhìn cho tới hết thanh.
 - **Bắt dính:** khi kéo, thanh bám vào vạch phát, mép các thanh khác, phase, chỗ đổi hợp âm (khi làn Nhạc đang mở) và phách của bài. Khi cắt mép, thanh còn bám vào **độ dài** của thanh khác: nhãn "= Tiến độ (0:12)" nghĩa là lúc đó hai lớp dài bằng nhau. Giữ Alt để tắt.
 - **Làn Nhạc:** bấm **Nhạc** dưới làn Phase để hiện làn hợp âm và một làn nốt cho mỗi track, giúp căn thanh theo nhạc. Làn này chỉ để xem.
 - **Tách lớp tại vạch phát:** đặt vạch phát lên thanh, chọn lớp rồi bấm Ctrl+K (hoặc nút kéo cắt ở góc trên bên trái). Lớp thành hai lớp nối nhau: lớp gốc giữ phần trước, bản sao (nằm ngay trên) giữ phần sau. Mỗi lớp có keyframe riêng và chỉnh độc lập.
@@ -169,9 +170,9 @@ Precomp gom nhiều lớp thành một lớp, như precomp của After Effects. 
 - **Lớp precomp** có vị trí, xoay, tỉ lệ, độ đục, chuyển động, khoảng hiển thị và keyframe như mọi lớp; mọi thứ bên trong làm theo. Lớp precomp luôn đúng cỡ khung: muốn phóng to hay thu nhỏ thì dùng **Tỉ lệ** ở tầng keyframe.
 - **Dời thanh precomp** dời cả nội dung bên trong. Cắt mép thanh precomp chỉ cắt lúc nó hiện.
 - **Đổi tên:** nhấp đúp tên lớp precomp như mọi lớp.
-- **Nhân bản** một lớp precomp (Ctrl+D) tạo thêm một chỗ dùng cùng precomp: sửa bên trong thì mọi bản đều đổi theo.
+- **Nhân bản** một lớp precomp (Ctrl+D) tạo một bản **độc lập**: ứng dụng sao chép cả precomp (và các precomp bên trong), đặt tên mới ("Precomp 1" → "Precomp 2"). Sửa bản này không đổi bản kia. Một dự án có tối đa 32 precomp; vượt thì ứng dụng báo và không nhân bản.
 - **Tốc độ:** ô **Tốc độ** (%) ở bảng bên phải khi chọn lớp precomp. 200% chạy nội dung nhanh gấp đôi, 50% chậm một nửa. Chỉ keyframe và lúc hiện của các lớp bên trong bị co giãn; nốt, nhịp và hợp âm vẫn theo bài.
-- **Gỡ precomp:** chọn lớp precomp rồi bấm **Gỡ precomp** ở bảng bên phải (hoặc Ctrl+Shift+G). Các lớp bên trong về lại timeline đang mở, đúng chỗ trên khung và đúng lúc hiện. Keyframe, chuyển động, tỉ lệ và hiện dần/ẩn dần của chính lớp precomp không chuyển sang được; ứng dụng báo khi có.
+- **Gỡ precomp:** chọn lớp precomp rồi bấm **Gỡ precomp** ở bảng bên phải (hoặc Ctrl+Shift+G). Các lớp bên trong về lại timeline đang mở, đúng chỗ trên khung và đúng lúc hiện. Keyframe, chuyển động, tỉ lệ và hiện dần/ẩn dần của chính lớp precomp không chuyển sang được; khi lớp precomp có những thứ này, ứng dụng hỏi xác nhận trước (bấm **Vẫn gỡ** để làm, **Huỷ** hoặc Esc để thôi; vẫn hoàn tác được bằng Ctrl+Z) và không báo thêm sau đó. Không có thì gỡ ngay, không hỏi.
 - Tổng số lớp khi mở hết các precomp tối đa là 512. Vượt quá thì ứng dụng báo và không làm.
 - Ở thẻ Xem trước, khi vạch phát nằm trong một precomp, bấm một ô **Phong cách video** sẽ áp phong cách đó vào precomp ấy, không thay cả video. Nếu Piano Roll nằm trong precomp, phần chỉnh màu theo track ở thẻ Xem trước chỉnh Piano Roll của precomp đang hiện ở vạch phát. Xem [Xem trước](02-xem-truoc.md).
 
@@ -229,7 +230,7 @@ Cột lớp ở bên trái Timeline cho biết widget nào nằm trên widget n�
 - **Đổi tên:** bấm đúp vào tên lớp (hoặc chọn lớp rồi nhấn F2), gõ tên mới, nhấn Enter. Esc để bỏ. Để trống rồi Enter thì lớp quay về tên theo loại (ví dụ Hợp âm 2). Tên tối đa 60 ký tự và không được trùng với lớp khác (hoa/thường coi như nhau). Nếu trùng, tên cũ được giữ nguyên và ứng dụng báo lý do. Tên lớp chỉ để bạn dễ tìm, không hiện trong video; được lưu trong preset. Bản nhân bản không mang tên của bản gốc.
 - **◆:** mở keyframe của lớp. Hình thoi tô kín khi lớp đã có keyframe. Lớp precomp có nút › để mở precomp.
 - **Mắt:** ẩn hoặc hiện widget trong video (giống ô **Hiện trong video**).
-- **Ổ khoá:** khoá widget để không lỡ tay kéo nó, trên khung lẫn trên Timeline. Widget đã khoá vẫn chọn được để xem số liệu hoặc mở khoá.
+- **Ổ khoá:** khoá widget để không lỡ tay đổi nó. Lớp đã khoá không kéo, xoay, đổi cỡ, nhân bản, xoá hay chỉnh thuộc tính được, và các ô tương ứng ở bảng bên phải bị mờ (gồm cả **Hiện trong video** và mục **Bắt dính** khi mọi lớp đang chọn đều đã khoá). Lớp khoá vẫn chọn được để xem số liệu hoặc mở khoá bằng ô **Khoá trên khung**.
 - **Ẩn hoặc khoá nhanh:** bấm giữ một mắt (hoặc ổ khoá) rồi kéo lên/xuống qua các lớp khác; mọi lớp đi qua được đặt cùng trạng thái với lần bấm đầu. Cả lần kéo ẩn/hiện là một bước hoàn tác.
 
 ## Thiết lập

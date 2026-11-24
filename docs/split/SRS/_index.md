@@ -1,6 +1,6 @@
 # Chỉ mục SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 
-nguồn: `SRS.md` (sha1 7d9de60b91)
+nguồn: `SRS.md` (sha1 879a0e809e)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -81,7 +81,7 @@ nguồn: `SRS.md` (sha1 7d9de60b91)
 | 74 | 5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.2. Chế độ tương tác | [5-2-che-do-tuong-tac.md](5-2-che-do-tuong-tac.md) | 364 | REQ-GRAPHICS-05 |
 | 75 | 5. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM NGƯỜI DÙNG > 5.3. Yêu cầu giao diện | [5-3-yeu-cau-giao-dien.md](5-3-yeu-cau-giao-dien.md) | 18661 | ARC-05, BR-07, BR-09, D-19, D-25, D-29… |
 | 76 | 6. MA TRẬN TRUY XUẤT NGUỒN GỐC YÊU CẦU | [6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md](6-ma-tran-truy-xuat-nguon-goc-yeu-cau.md) | 1468 | BR-01, BR-02, BR-03, BR-04, BR-05, BR-06… |
-| 77 | 7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO | [7-dieu-kien-nghiem-thu-va-ban-giao.md](7-dieu-kien-nghiem-thu-va-ban-giao.md) | 8165 | ARC-01, AT-01, AT-02, AT-03, AT-04, AT-05… |
+| 77 | 7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO | [7-dieu-kien-nghiem-thu-va-ban-giao.md](7-dieu-kien-nghiem-thu-va-ban-giao.md) | 8446 | ARC-01, AT-01, AT-02, AT-03, AT-04, AT-05… |
 | 78 | 8. CÁC VẤN ĐỀ CÒN MỞ CỦA SRS | [8-cac-van-de-con-mo-cua-srs.md](8-cac-van-de-con-mo-cua-srs.md) | 4118 | D-20, D-21, D-22, D-31, D-44, D-45… |
 | 79 | 9. PHỤ LỤC > Phụ lục A: Mã lỗi | [phu-luc-a-ma-loi.md](phu-luc-a-ma-loi.md) | 2864 | ERR_ARCHIVE_INVALID, ERR_ARCHIVE_TOO_LARGE, ERR_AST_INVALID, ERR_AST_TOO_LARGE, ERR_AUDIO_DECODE, ERR_AUDIO_TOO_LONG… |
 | 80 | 9. PHỤ LỤC > Phụ lục A1: Mã cảnh báo khi đọc Preset/Scene (REQ-STORAGE-02) | [phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md](phu-luc-a1-ma-canh-bao-khi-doc-preset-scene-req.md) | 1673 | NFR-SEC-04, REQ-STORAGE-02, WARN_PACK_AUDIO_MISSING, WARN_PACK_NEWER_MINOR, WARN_PACK_UNLISTED_FILE, WARN_PRESET_MIGRATED… |
