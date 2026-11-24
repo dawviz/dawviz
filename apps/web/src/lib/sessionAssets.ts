@@ -87,11 +87,14 @@ export const packAssetName = (m: Pick<AssetMeta, 'id' | 'name'>): string => `ass
 export const parsePackAssetName = (n: string): { short: string; name: string } | null => { const m = /^asset-([0-9a-f]{16})-(.+)$/.exec(n); return m ? { short: m[1], name: m[2] } : null; };
 
 /** Tài nguyên mà scene dùng: ảnh (widget Ảnh) và họ phông (kiểu chữ, ghi đè chữ) — để pre-flight báo thiếu trước khi xuất. */
-export function referencedAssets(scene: { widgets: readonly { type: string; properties: unknown }[] }): string[] {
+type WidgetsLike = { widgets: readonly { type: string; properties: unknown }[]; comps?: Readonly<Record<string, { widgets: readonly { type: string; properties: unknown }[] }>> };
+/** Ảnh mà scene dùng, kể cả ảnh trong precomp (D-69). */
+export function referencedAssets(scene: WidgetsLike): string[] {
   const out = new Set<string>();
-  for (const w of scene.widgets) if (w.type === 'IMAGE') { const a = (w.properties as { asset?: unknown }).asset; if (typeof a === 'string' && a) out.add(a); }
+  for (const list of [scene.widgets, ...Object.values(scene.comps ?? {}).map((c) => c.widgets)])
+    for (const w of list) if (w.type === 'IMAGE') { const a = (w.properties as { asset?: unknown }).asset; if (typeof a === 'string' && a) out.add(a); }
   return [...out];
 }
-export function missingAssets(scene: { widgets: readonly { type: string; properties: unknown }[] }, have: ReadonlySet<string>): string[] {
+export function missingAssets(scene: WidgetsLike, have: ReadonlySet<string>): string[] {
   return referencedAssets(scene).filter((id) => !have.has(id));
 }

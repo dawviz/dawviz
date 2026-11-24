@@ -140,8 +140,10 @@ The **Timeline & keyframes** panel under the frame has two levels. Its title bar
 The layer column is on the left, the time ruler and the bars on the right. Each bar is a stretch of time when that layer is in the video. A layer shown for the whole song has one bar from start to end.
 
 - **Move a bar:** drag the middle of it. Every selected layer moves together. The layer's keyframes move with the bar, so its animation still starts when the layer appears.
-- **Trim:** drag the start or end edge of a bar. Keyframes stay where they are. Drag the end to the end of the song to show the layer until the end.
-- **Snapping:** while you drag, bars stick to the playhead, the edges of other bars, phases and the beats of the song. Hold Alt to turn it off.
+- **Trim:** drag the start or end edge of a bar. Keyframes stay where they are. Drag the end to the end of the song to show the layer until the end. With several layers selected, the same edge of every selected layer moves by the same amount.
+- **Fade in / fade out:** drag the small squares at the top corners of a bar (they show on hover or when the layer is selected).
+- **Snapping:** while you drag, bars stick to the playhead, the edges of other bars, phases, chord changes (while the Music lanes are open) and the beats of the song. When you trim, a bar also sticks to the **length** of other bars: the label "= Progress (0:12)" means both layers are the same length at that point. Hold Alt to turn it off.
+- **Music lanes:** press **Music** under the Phases lane to show a chord lane and one note lane per track, to line bars up with the music. These lanes are view only.
 - **Split a layer at the playhead:** put the playhead over the bar, select the layer and press Ctrl+K (or the scissors button at the top left). The layer becomes two layers that meet there: the original keeps the part before, the copy (just above it) keeps the part after. Each has its own keyframes and is edited on its own.
 - **Move a bar to the playhead:** `[` moves the bar so it starts at the playhead, `]` so it ends there. Alt+`[` and Alt+`]` trim the start or end at the playhead.
 - **Nudge:** Alt+← / Alt+→ moves by 1/30 second; add Shift for 1 second.
@@ -168,8 +170,10 @@ A precomp groups several layers into one layer, like a precomp in After Effects.
 - **Moving the precomp's bar** moves everything inside. Trimming it only trims when it is shown.
 - **Rename** a precomp layer like any layer: double-click its name.
 - **Duplicating** a precomp layer (Ctrl+D) uses the same precomp in one more place: change what is inside and every copy changes.
+- **Speed:** the **Speed** (%) field in the right-hand panel when a precomp layer is selected. 200% plays what is inside twice as fast, 50% at half speed. Only the keyframes and show times of the layers inside are stretched; notes, beats and chords still follow the song.
+- **Release a precomp:** select the precomp layer and press **Release precomp** in the right-hand panel (or Ctrl+Shift+G). The layers inside come back to the open timeline, in the same place on the frame and at the same times. The precomp layer's own keyframes, motion, scale and fades cannot be carried over; the app tells you when that happens.
 - With every precomp opened up, there can be at most 512 layers. If an action would go over, the app tells you and does nothing.
-- On the Preview tab, when the playhead is inside a precomp, clicking a **Video styles** tile applies that style to that precomp instead of the whole video. See [Preview](02-preview.md).
+- On the Preview tab, when the playhead is inside a precomp, clicking a **Video styles** tile applies that style to that precomp instead of the whole video. If the Piano roll is inside a precomp, the per-track colours on the Preview tab change the Piano roll of the precomp shown at the playhead. See [Preview](02-preview.md).
 
 ## Note names
 
@@ -177,12 +181,11 @@ Also with no widget selected, the **Note names** section changes the names of no
 
 ## Display range
 
-By default a widget is shown for the whole song. The quickest way to change when it appears is to drag its bar in the Timeline (see above). To type exact times, select the widget and turn on **Show only in these ranges** in the **Display range** section, for example showing the title only for the first 10 seconds.
+By default a widget is shown for the whole song. When it appears is shown by its bars on the Timeline, so change it there (the right-hand panel no longer has a section for this):
 
-- Each row is a range: **Show from** and **Show until**. Type seconds (`90`, `90.5`) or minutes:seconds (`1:30`, `1:30.5`); arithmetic (`1:30+15`) and `+=10`, `-=0:05`, `*=2`, `/=2` relative to the current value work too. Leave **Show until** empty to show it until the end of the song.
-- **Add range** adds a row; the × button removes one. With no range left the widget is never shown.
-- **Fade in** and **Fade out** (seconds) make the widget fade in when a range starts and fade out when it ends. If a range is shorter than the two times together, both shrink in proportion. The ↺ button next to each field sets it back to 0 (no fade).
-- Turn the tick off again to show it for the whole song.
+- **Change when it shows:** drag the middle of a bar to move it, drag its start or end edge to trim. Drag the end to the end of the song to show it until the end.
+- **Show it in several parts:** split the bar with Ctrl+K at the playhead and trim each part, or duplicate the layer (Ctrl+D) and move the copy.
+- **Fade in / fade out:** drag the small square at the top of the bar's start to the right (fade in), or the one at the top of its end to the left (fade out). A diagonal line on the bar shows how long the fade is. The fade applies to every bar of the layer, up to 30 seconds and never longer than the shortest bar.
 
 The display range only affects the video and Preview; in the Editor you can still select and drag the widget as usual.
 

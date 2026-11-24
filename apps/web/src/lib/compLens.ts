@@ -5,7 +5,7 @@
 //
 // Khoá mốc ↺ trong Doc thật: widget ở gốc dùng id; widget trong comp dùng `<id comp>/<id widget>` (COMP_SEP). Trong khung nhìn của comp X, khoá của X
 // không tiền tố; khoá của comp khác giữ nguyên dạng có tiền tố (lệnh gom precomp ghi khoá cho comp mới theo dạng này); khoá gốc bị ẩn.
-import { COMP_SEP, compView, resolveCompPath, setCompView, type CompPath } from '@dawviz/render-core';
+import { COMP_SEP, MAX_COMP_DEPTH, compOf, compTimeMap, compView, resolveCompPath, setCompView, type CompPath, type SceneDocument, type WidgetSpec } from '@dawviz/render-core';
 import type { Cmd, Doc } from './commands.ts';
 
 type Refs<V> = Record<string, V>;
@@ -57,4 +57,27 @@ export function liftCmd(cmd: Cmd | null, path: CompPath): Cmd | null {
     redo: (x) => putView(x, at, cmd.redo(viewDoc(x, at))),
     undo: (x) => putView(x, at, cmd.undo(viewDoc(x, at))),
   };
+}
+
+/**
+ * Đường dẫn tới Piano Roll mà thẻ Xem trước chỉnh nhanh (D-69): Piano Roll ở gốc thì `[]`; không có thì precomp trên cùng đang hiện ở `t` (đi sâu
+ * tối đa MAX_COMP_DEPTH cấp) có Piano Roll. Không tìm thấy → `[]` (inspector báo không có Piano Roll như trước).
+ */
+export function pianoPathAt(scene: SceneDocument, t: number): string[] {
+  const has = (ws: readonly WidgetSpec[]) => ws.some((w) => w.type === 'PIANO_ROLL');
+  if (has(scene.widgets)) return [];
+  const on = (w: WidgetSpec, at: number) => w.visible && (!w.visibility || w.visibility.ranges.some((r) => at >= r.from && (r.to === null || at < r.to)));
+  const walk = (ws: readonly WidgetSpec[], at: number, depth: number, seen: readonly string[]): string[] | null => {
+    if (depth > MAX_COMP_DEPTH) return null;
+    const layers = ws.map((w, i) => ({ w, i })).filter(({ w }) => compOf(w) && on(w, at)).sort((a, b) => b.w.zIndex - a.w.zIndex || b.i - a.i);
+    for (const { w } of layers) {
+      const c = compOf(w)!, spec = scene.comps?.[c.comp]; if (!spec || seen.includes(c.comp)) continue;
+      const m = compTimeMap(c), inner = (at - m.b) / m.a;
+      if (has(spec.widgets)) return [w.id];
+      const deeper = walk(spec.widgets, inner, depth + 1, [...seen, c.comp]);
+      if (deeper) return [w.id, ...deeper];
+    }
+    return null;
+  };
+  return walk(scene.widgets, t, 1, []) ?? [];
 }

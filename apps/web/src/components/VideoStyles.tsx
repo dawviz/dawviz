@@ -102,6 +102,7 @@ export function VideoStyles({ value, edited, onPick, thumb, presets, headerActio
             <span aria-hidden className="text-2xl leading-none">+</span>
             <span className="text-xs leading-tight">{i18n.t('web.preset.add')}</span>
           </button>
+          <PastePreset onAdd={presets.onAddFile} />
           {presets.onShare && <SharePreset onShare={presets.onShare} defaultName={presets.shareName ?? ''} />}
           {presets.onExportCollection && <ExportCollection items={presets.items} onExport={presets.onExportCollection} />}
           {presets.pendingCollection && presets.onResolveCollection && presets.onCancelCollection && <CollectionConflicts conflicts={presets.pendingCollection.conflicts} onResolve={presets.onResolveCollection} onCancel={presets.onCancelCollection} />}
@@ -226,5 +227,32 @@ function CollectionConflicts({ conflicts, onResolve, onCancel }: { conflicts: st
         <button type="button" className="btn-ghost" onClick={onCancel} data-testid="collection-cancel">{i18n.t('web.collection.cancel')}</button>
       </div>
     </form>
+  );
+}
+
+/**
+ * "Dán preset" (D-69, skill cho AI agent cách 1): dán thẳng nội dung JSON mà chatbot trả về, không phải lưu thành tệp. Đi đúng đường của nút +
+ * (cùng bộ kiểm, cùng cảnh báo/lỗi), nên tệp dán và tệp chọn cho kết quả như nhau.
+ */
+function PastePreset({ onAdd }: { onAdd(f: File): void }) {
+  const { i18n } = useI18n();
+  const [open, setOpen] = useState(false), [text, setText] = useState('');
+  if (!open) return <button type="button" className="btn-ghost w-full border border-control" onClick={() => setOpen(true)} data-testid="preset-paste-open">{i18n.t('web.preset.paste')}</button>;
+  const submit = () => {
+    const t = text.trim(); if (!t) return;
+    onAdd(new File([t], 'pasted-preset.json', { type: 'application/json' }));
+    setText(''); setOpen(false);
+  };
+  return (
+    <div className="space-y-1.5" data-testid="preset-paste">
+      <label className="block text-xs text-muted" htmlFor="preset-paste-text">{i18n.t('web.preset.pasteLabel')}</label>
+      <textarea id="preset-paste-text" value={text} onChange={(e) => setText(e.target.value)} rows={5} spellCheck={false} autoFocus
+        className="field w-full resize-y font-mono text-[11px]" placeholder='{ "schemaVersion": "0.8.0", … }' data-testid="preset-paste-text"
+        onKeyDown={(e) => { if (e.key === 'Escape') { e.stopPropagation(); setOpen(false); } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); submit(); } }} />
+      <div className="flex gap-1.5">
+        <button type="button" className="btn-ghost flex-1 border border-control" disabled={!text.trim()} onClick={submit} data-testid="preset-paste-add">{i18n.t('web.preset.pasteAdd')}</button>
+        <button type="button" className="btn-ghost border border-control" onClick={() => { setText(''); setOpen(false); }}>{i18n.t('web.preset.pasteCancel')}</button>
+      </div>
+    </div>
   );
 }

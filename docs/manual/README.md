@@ -18,6 +18,7 @@ Hướng dẫn này viết dần theo ứng dụng. Phần nào chưa có trong 
 8. [Chèn số liệu vào chữ](08-cho-giu.md): ô chữ, `{bpm}`, `{title}`, `{notes}` và cách chọn kiểu hiện số.
 9. [Bản nhạc](09-ban-nhac.md): viết nốt thành bản nhạc, nốt đang phát sáng và phóng to, nét viết tay.
 10. [Widget phân tích](10-phan-tich.md): tempo, ô nhịp, giọng, velocity, mật độ, vòng cao độ, tên đoạn, lời, automation, cách ghi tên nốt.
+11. [Dùng với AI agent](11-ai-agent.md): nhờ AI viết preset hoặc điều khiển ứng dụng, ba cách dùng, `?agent=1`.
 
 ## Vài điều nên biết trước
 

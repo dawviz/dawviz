@@ -440,7 +440,8 @@ export function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] 
       // Lớp precomp (D-69): chỉ mang khoá comp và điểm bắt đầu; comp thiếu/vòng lặp/quá sâu kiểm ở dưới khi đã đọc hết sổ comp.
       const comp = typeof P.comp === 'string' && P.comp.length > 0 && P.comp.length <= MAX_COMP_ID ? P.comp : '';
       if (!comp) { w('WARN_PRESET_VALUE', `${p}.properties.comp`, P.comp, 'lớp precomp thiếu khoá comp; bỏ lớp'); return; }
-      const props: CompProps = { comp, start: num(P.start, 0, -86400, 86400, `${p}.properties.start`) };
+      const speed = num(P.speed, 1, 0.1, 10, `${p}.properties.speed`);
+      const props: CompProps = { comp, start: num(P.start, 0, -86400, 86400, `${p}.properties.start`), ...(speed !== 1 ? { speed } : {}) };
       widgets.push({ ...base, properties: props });
     } else {
       // Widget chưa có renderer (T-37…): giữ nguyên thuộc tính để không mất dữ liệu khi lưu lại; renderFrame bỏ qua.

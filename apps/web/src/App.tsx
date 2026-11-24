@@ -5,7 +5,7 @@
 // nên thành phần này không vẽ lại mỗi khung hình. Không có logic vẽ ở đây: khung hình = renderFrame của Render Core.
 import { Fragment, Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react';
 import { LayoutGroup, MotionConfig } from 'framer-motion';
-import { MAX_FLAT_WIDGETS, flatCount, flattenScene, compOf, validCompPath, visibilityAlpha, usesChordPlaceholder, widgetDefaults, DEFAULT_BRIGHTNESS, DEFAULT_KEYBOARD_STYLE, defaultStyleConfig, sanitizeBrightness, buildIndex, buildSceneHud, type AudioFeatures, type Derived, type SceneDocument, type BrightnessConfig, type NoteStyle, type StyleConfig, type KeyboardStyle, type UnifiedProjectAST, type WidgetSpec, DEFAULT_TEXT_STYLES, createWidget, duplicateWidget } from '@dawviz/render-core';
+import { MAX_FLAT_WIDGETS, renderFrame, type RenderCtx, flatCount, flattenScene, compOf, validCompPath, visibilityAlpha, usesChordPlaceholder, widgetDefaults, DEFAULT_BRIGHTNESS, DEFAULT_KEYBOARD_STYLE, defaultStyleConfig, sanitizeBrightness, buildIndex, buildSceneHud, type AudioFeatures, type Derived, type SceneDocument, type BrightnessConfig, type NoteStyle, type StyleConfig, type KeyboardStyle, type UnifiedProjectAST, type WidgetSpec, DEFAULT_TEXT_STYLES, createWidget, duplicateWidget } from '@dawviz/render-core';
 import type { ParseWarning } from '@dawviz/parser';
 import { useI18n } from './i18n/I18nProvider.tsx';
 import { LanguageSelect } from './components/LanguageSelect.tsx';
@@ -45,7 +45,9 @@ import { AudioLoadError, browserDeps, loadAudioAsset, type AudioAsset } from './
 import { audioLengthCheck } from './lib/audioLength.ts';
 import { peaksInWorker, spectrumInWorker } from './lib/audioWorkers.ts';
 import { CUSTOM_STYLE, initialDoc, pianoOf, type Doc } from './lib/commands.ts';
-import { liftCmd, viewDoc } from './lib/compLens.ts';
+import { liftCmd, pianoPathAt, viewDoc } from './lib/compLens.ts';
+import { agentEnabled, createAgentApi, type AgentHost, type ExportOptions } from './lib/agentApi.ts';
+import type { AutoExport } from './components/ExportDialog.tsx';
 import { GestureContext, useStoreState } from './lib/storeReact.ts';
 import { bindUndoKeys, shortcutLabels } from './lib/undoKeys.ts';
 import { downloadPreset, presetFileName, readPresetFile } from './lib/presetFile.ts';
@@ -65,7 +67,7 @@ import { describeCommand, historyItems, type LabelCtx } from './lib/historyLabel
 import { mergeExtras, missingMidiLevel, type ExternalMidiInfo } from './lib/externalMidi.ts';
 import { loadPref, savePref } from './lib/prefs.ts';
 import { usePref, DEFAULT_UI, sanitizeUi, type UiMode, type UiPrefs } from './lib/usePref.ts';
-import { createPlayback } from './lib/playback.ts';
+import { createPlayback, usePlayback } from './lib/playback.ts';
 import { radioKeys, radioTab } from './lib/a11y.ts';
 import { bindTransportKeys } from './lib/transportKeys.ts';
 import { STAGE_CHROME, STAGE_WEDGE, useStageWidth } from './lib/useStageWidth.ts';
@@ -125,7 +127,16 @@ export function App() {
   }, [store]);
   const eget = useCallback(() => viewDoc(store.get(), pathRef.current), [store]);
   const gesture = useMemo(() => ({ begin: store.beginGesture, end: store.endGesture }), [store]);
-  const piano = pianoOf(doc.scene);
+  const playback = useRef(createPlayback()).current;
+  // Thẻ Xem trước chỉnh nhanh Piano Roll ở gốc; gốc không có (đã gom vào precomp, D-69) thì Piano Roll của precomp đang hiện ở vạch phát.
+  // Chỉ dò lại khi dừng/tua (không đổi đích giữa lúc phát).
+  const pvT = usePlayback(playback, (s) => (s.playing ? null : Math.round(s.t * 4) / 4));
+  const pvLast = useRef<string[]>([]);
+  const pvPath = useMemo(() => { if (pvT === null) return pvLast.current; return (pvLast.current = pianoPathAt(doc.scene, pvT)); }, [doc.scene, pvT]);
+  const pvRef = useRef(pvPath); pvRef.current = pvPath;
+  /** Lệnh của Piano Roll ở thẻ Xem trước: dựng trên khung nhìn của precomp chứa nó (gốc thì như `run`). */
+  const prun = useCallback((make: (d: Doc) => ReturnType<typeof Cmds.toggleHidden>) => { const p = pvRef.current; store.dispatch(liftCmd(make(viewDoc(store.get(), p)), p)); }, [store]);
+  const piano = pianoOf(pvPath.length ? viewDoc(doc, pvPath).scene : doc.scene);
   const style: StyleConfig = useMemo(() => piano?.properties.noteStyle ?? defaultStyleConfig(), [piano]);
   const keyboard: KeyboardStyle = useMemo(() => piano?.properties.keyboard ?? { ...DEFAULT_KEYBOARD_STYLE }, [piano]);
   // Tuỳ chọn lưu theo trình duyệt (tiện lợi, không phải lịch sử): kiểu nốt/bàn phím của phong cách đang chọn. Scene mở từ preset không ghi đè chúng.
@@ -145,7 +156,6 @@ export function App() {
   const advanced = ui.mode === 'advanced';
 
   // Đồng hồ phát ngoài React state (PROGRESS T-70): chỉ canvas, thanh phát và số đo đăng ký theo dõi.
-  const playback = useRef(createPlayback()).current;
   const deviceOffset = activeOffsetMs(device);
   useEffect(() => playback.setDeviceOffset(deviceOffset), [playback, deviceOffset]); // chỉ dời hình so với tiếng ở Xem trước (T-82)
   useEffect(() => () => playback.dispose(), [playback]);
@@ -448,7 +458,7 @@ export function App() {
     const keys = Object.keys(patch) as (keyof BrightnessConfig)[];
     return Cmds.patchBrightness(d, id, sanitizeBrightness({ ...d.brightness[id], ...patch }, keys.length === 1 ? keys[0] : undefined));
   }), [run]);
-  const patchTrackStyle = useCallback((id: string, patch: Partial<NoteStyle> | null) => run((d) => Cmds.patchTrackStyle(d, id, patch)), [run]);
+  const patchTrackStyle = useCallback((id: string, patch: Partial<NoteStyle> | null) => prun((d) => Cmds.patchTrackStyle(d, id, patch)), [prun]);
   // Đổi phong cách là một lệnh hoàn tác được. Nếu nó làm mất chỉnh tay (kiểu nốt hoặc bố cục) thì báo nhỏ, không chặn, cho tới khi tài liệu đổi tiếp.
   const shortcuts = useMemo(() => shortcutLabels(), []);
   // Nhãn lịch sử dựng lúc hiển thị (đổi ngôn ngữ thì đổi theo) và thông báo cho trình đọc màn hình sau mỗi lần hoàn tác/làm lại/nhảy bước.
@@ -558,7 +568,7 @@ export function App() {
       run((d) => Cmds.loadPreset(d, added.preset.scene));
       setPresetProblems(warn); setPresetOpened(null); setPresetStatus(i18n.t('web.preset.openedUnreviewed', { name: r.info.name }));
     } else if (p.kind === 'note-style') {
-      run((d) => { const pr = Cmds.pianoOf(d.scene); return pr ? Cmds.applyNotePreset(d, { ...pr.properties.noteStyle.base, ...p.style }) : null; });
+      prun((d) => { const pr = Cmds.pianoOf(d.scene); return pr ? Cmds.applyNotePreset(d, { ...pr.properties.noteStyle.base, ...p.style }) : null; });
       setPresetProblems([]); setPresetOpened(null); setPresetStatus(i18n.t('web.preset.noteStyleApplied', { name: r.info.name }));
     } else if (p.kind === 'easing') {
       try { localStorage.setItem(EASE_LIBRARY_KEY, JSON.stringify(addSavedEase(parseEaseLibrary(localStorage.getItem(EASE_LIBRARY_KEY)), r.info.name, p.bezier))); } catch { /* bộ nhớ bị chặn */ }
@@ -848,9 +858,53 @@ export function App() {
     </div>
   );
 
+  // ── API cho AI agent (`?agent=1`, lib/agentApi.ts): host đọc trạng thái mới nhất qua ref; xuất video qua hộp thoại Xuất ở chế độ tự động. ──
+  const agent = useMemo(() => typeof location !== 'undefined' && agentEnabled(location.search), []);
+  const [agentExport, setAgentExport] = useState<(ExportOptions & { onFinish: AutoExport['onFinish'] }) | null>(null);
+  const hostRef = useRef<AgentHost | null>(null);
+  hostRef.current = {
+    status: () => ({
+      version: 1, busy,
+      project: loaded ? { name: loaded.name, duration, tracks: loaded.ast.tracks.map((t) => ({ id: t.id, name: t.name, notes: t.notes.length })) } : null,
+      audio: audio && audioFile ? { name: audioFile.name, duration: audio.durationSec } : null,
+      tab, t: playback.get().t, playing: playback.get().playing, videoStyle: doc.videoStyle, styles: [...VIDEO_STYLES],
+      userPresets: userPresets.map(({ id, name }) => ({ id, name })),
+      history: { canUndo: history.canUndo, canRedo: history.canRedo, ...(history.canUndo ? { undoLabel: stepLabel(history, history.position) } : {}) },
+      problems: problems.map((p) => `${p.code}: ${p.text}`),
+    }),
+    loadProject: async (files) => { await load({ main: files[0], extras: files.slice(1) }); },
+    loadAudio: (f) => onLoadAudio(f),
+    scene: () => store.get().scene,
+    openScene: (sc) => { setActiveUser(null); run((d) => Cmds.loadPreset(d, sc)); },
+    addPreset: (f) => onOpenPreset(f),
+    pickStyle: (id) => pickVideoStyle(id),
+    pickPreset: (id) => onPickUserPreset(id),
+    seek: (t) => playback.seek(t), play: () => { if (!playback.get().playing) playback.toggle(); }, pause: () => { if (playback.get().playing) playback.toggle(); },
+    setTab: (t) => setTab(t), undo: doUndo, redo: doRedo,
+    frame: async (t, width) => {
+      if (!derived || !renderAst) throw new Error('no project loaded');
+      const sc = store.get().scene, c = document.createElement('canvas'), k = width / sc.canvas.designWidth;
+      c.width = width; c.height = Math.round(sc.canvas.designHeight * k);
+      const g = c.getContext('2d'); if (!g) throw new Error('no 2d canvas');
+      renderFrame(sc, derived, renderAst, t, { ctx: g as unknown as RenderCtx, width: c.width, height: c.height }, k);
+      return c.toDataURL('image/png');
+    },
+    exportVideo: (o) => new Promise((ok, no) => {
+      if (!derived || !renderAst) { no(new Error('no project loaded')); return; }
+      setAgentExport({ ...o, onFinish: (r) => { setAgentExport(null); if ('error' in r) no(new Error(r.error)); else ok(r); } });
+    }),
+  };
+  useEffect(() => {
+    if (!agent) return;
+    const w = window as unknown as { dawviz?: unknown };
+    w.dawviz = createAgentApi(() => hostRef.current!);
+    return () => { delete w.dawviz; };
+  }, [agent]);
+
   return (
     <GestureContext.Provider value={gesture}><NotationStatusContext.Provider value={notation}><AssetsContext.Provider value={assetsApi}><MotionConfig reducedMotion="user"><LayoutGroup>
     <div className="flex h-screen min-h-0 flex-col">
+      {agent && <div role="status" className="shrink-0 border-b border-guide/60 bg-guide/10 px-4 py-1 text-xs text-fg" data-testid="agent-banner">{i18n.t('web.agent.banner')}</div>}
       <TopBar tab={tab} onTab={setTab} fileName={loaded?.name} onExport={derived && renderAst ? () => setExporting(true) : undefined} mode={ui.mode} onMode={(mode) => setUi((u) => ({ ...u, mode }))}
         history={history} shortcuts={shortcuts} onUndo={doUndo} onRedo={doRedo} onJump={doJump} stepLabel={stepLabel} announce={announce}
         file={<FileDrop onPick={onPick} busy={busy} compact />} theme={<ThemeToggle pref={theme} onChange={setTheme} />} />
@@ -886,6 +940,7 @@ export function App() {
       </main>
     </div>
     {exporting && derived && renderAst && <Suspense fallback={null}><ExportDialog scene={scene} ast={renderAst} derived={derived} audio={audio} offsetMs={offsetMs} projectSec={duration} fileName={loaded?.name ?? 'dawviz'} advanced={advanced} styleId={doc.videoStyle} styleName={VIDEO_STYLES.includes(doc.videoStyle) ? i18n.t(`web.style.video.${doc.videoStyle}`) : undefined} onClose={() => setExporting(false)} /></Suspense>}
+    {agentExport && derived && renderAst && <Suspense fallback={null}><ExportDialog scene={scene} ast={renderAst} derived={derived} audio={audio} offsetMs={offsetMs} projectSec={duration} fileName={loaded?.name ?? 'dawviz'} advanced={advanced} styleId={doc.videoStyle} styleName={VIDEO_STYLES.includes(doc.videoStyle) ? i18n.t(`web.style.video.${doc.videoStyle}`) : undefined} onClose={() => agentExport.onFinish({ error: 'closed' })} auto={agentExport} /></Suspense>}
     </LayoutGroup></MotionConfig></AssetsContext.Provider></NotationStatusContext.Provider></GestureContext.Provider>
   );
 }

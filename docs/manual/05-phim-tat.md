@@ -39,6 +39,7 @@ Khi đang gõ trong một ô nhập, các phím này dùng cho ô đó.
 | Alt+Lên / Alt+Xuống (trên tên lớp ở Timeline) | Đổi thứ tự lớp |
 | Ctrl+K | Tách lớp đang chọn tại vạch phát |
 | Ctrl+G | Gom các lớp đang chọn thành precomp |
+| Ctrl+Shift+G | Gỡ precomp đang chọn (lớp bên trong về lại timeline) |
 | Giữ Alt khi kéo | Di chuyển không bắt dính |
 | Giữ Ctrl khi đổi cỡ | Đổi cỡ không bắt dính |
 | Giữ Alt khi đổi cỡ | Đổi cỡ quanh tâm |
@@ -63,7 +64,8 @@ Khi Timeline đang có focus (bấm vào nó trước):
 | Phím | Việc |
 |---|---|
 | Kéo giữa thanh | Dời lớp theo thời gian (mọi lớp đang chọn; keyframe đi theo) |
-| Kéo mép thanh | Cắt đầu hoặc cuối lớp (keyframe đứng yên) |
+| Kéo mép thanh | Cắt đầu hoặc cuối lớp (keyframe đứng yên; các lớp đang chọn khác cắt theo) |
+| Kéo ô vuông ở góc trên thanh | Hiện dần (đầu thanh) / ẩn dần (cuối thanh) |
 | Giữ Alt khi kéo thanh hoặc thước | Không bắt dính |
 | Nhấp đúp thanh | Mở keyframe của lớp; với precomp: mở precomp |
 | Enter | Như nhấp đúp, cho lớp đang chọn |

@@ -1,56 +1,11 @@
-// Các mục thời gian của bảng Thuộc tính (T-81): "Khoảng hiển thị" của widget đang chọn (REQ-GRAPHICS-14), chuyển động, nốt chủ, cách ghi tên nốt.
+// Các mục thời gian của bảng Thuộc tính: chuyển động, nốt chủ, cách ghi tên nốt. Khoảng hiển thị và hiện dần/ẩn dần chỉnh trên thanh của lớp ở Timeline (D-69).
 // Phase của bài chỉnh trên làn Phase của Timeline (D-69, LayerTimeline.tsx).
-import { DEFAULT_LOOP, DEFAULT_PHASE, DEFAULT_NAMING, LOOP_EFFECT_NAMES, WIDGET_EFFECT_NAMES, type MotionLoop, type WidgetMotion, MAX_RANGES, NAMING_SYSTEMS, PITCH_CLASSES, type NoteNaming, type TimeRange, type WidgetVisibility } from '@dawviz/render-core';
+import { DEFAULT_LOOP, DEFAULT_PHASE, DEFAULT_NAMING, LOOP_EFFECT_NAMES, WIDGET_EFFECT_NAMES, type MotionLoop, type WidgetMotion, NAMING_SYSTEMS, PITCH_CLASSES, type NoteNaming } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
-import { InspectorSection, ResetButton, TickField } from './Inspector.tsx';
+import { InspectorSection, ResetButton } from './Inspector.tsx';
 import { NumberField } from './NumberField.tsx';
-import { TimeField } from './TimeField.tsx';
-import { Plus, Close } from './Icons.tsx';
 import { Select } from './Select.tsx';
 
-const btn = 'flex min-h-[var(--hit)] items-center gap-1.5 rounded border border-control bg-raised px-2.5 text-xs font-medium text-fg transition hover:border-line-strong disabled:cursor-not-allowed disabled:opacity-50';
-const iconBtn = 'tog shrink-0';
-const FADE = { min: 0, max: 30, step: 0.1, units: { s: 1 } } as const;
-const ALWAYS: WidgetVisibility = { ranges: [{ from: 0, to: null }], fadeIn: 0, fadeOut: 0 };
-
-/** Mục "Khoảng hiển thị": tắt = hiện suốt bài; bật = danh sách khoảng (mốc kết thúc trống = hết bài) + thời gian hiện dần/ẩn dần. */
-export function VisibilitySection({ n, widgetId, value, disabled, onChange }: { n: number; widgetId: string; value: WidgetVisibility | undefined; disabled?: boolean; onChange(v: WidgetVisibility | null, key?: string): void }) {
-  const { i18n } = useI18n();
-  const on = !!value, id = `vis-${widgetId}`;
-  const setRange = (i: number, r: TimeRange) => onChange({ ...value!, ranges: value!.ranges.map((x, j) => (j === i ? r : x)).sort((a, b) => a.from - b.from) });
-  return (
-    <InspectorSection n={n} id="visibility" title={i18n.t('web.vis.title')}>
-      <TickField strong label={i18n.t('web.vis.limit')} checked={on} disabled={disabled} onChange={(v) => onChange(v ? ALWAYS : null)} reference={false} testId="vis-limit" />
-      {on && (
-        <>
-          <ul className="space-y-1.5" data-testid="vis-ranges">
-            {value!.ranges.map((r, i) => (
-              <li key={i} className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_1.5rem] items-center gap-1.5 text-xs text-muted">
-                <TimeField id={`${id}-from-${i}`} label={i18n.t('web.vis.from')} value={r.from} max={r.to === null ? 86400 : r.to - 0.001} onChange={(v) => setRange(i, { ...r, from: v ?? 0 })} />
-                <span aria-hidden>–</span>
-                <TimeField id={`${id}-to-${i}`} label={i18n.t('web.vis.to')} value={r.to} emptyText={i18n.t('web.vis.end')} min={r.from + 0.001} onChange={(v) => setRange(i, { ...r, to: v })} />
-                <button type="button" className={iconBtn} aria-label={i18n.t('web.vis.removeRange')} title={i18n.t('web.vis.removeRange')} onClick={() => onChange({ ...value!, ranges: value!.ranges.filter((_, j) => j !== i) })} data-testid={`vis-remove-${i}`}><Close className="h-3.5 w-3.5" /></button>
-              </li>
-            ))}
-          </ul>
-          {value!.ranges.length === 0 && <p className="text-xs leading-snug text-muted" role="status" data-testid="vis-none">{i18n.t('web.vis.none')}</p>}
-          <button type="button" className={btn} disabled={disabled || value!.ranges.length >= MAX_RANGES} onClick={() => {
-            const last = value!.ranges[value!.ranges.length - 1], from = last ? (last.to ?? last.from) : 0;
-            onChange({ ...value!, ranges: [...value!.ranges, { from, to: null }] });
-          }} data-testid="vis-add"><Plus className="h-3.5 w-3.5" />{i18n.t('web.vis.addRange')}</button>
-          <div className="grid grid-cols-[minmax(0,1fr)_4.5rem_1.5rem] items-center gap-2 text-xs text-muted">
-            <span>{i18n.t('web.vis.fadeIn')}</span>
-            <NumberField label={i18n.t('web.vis.fadeIn')} value={value!.fadeIn} spec={FADE} range={[0, 5]} disabled={disabled} onChange={(v) => onChange({ ...value!, fadeIn: v }, 'fadeIn')} />
-            <ResetButton label={i18n.t('web.vis.fadeIn')} changed={value!.fadeIn !== 0} disabled={disabled} onReset={() => onChange({ ...value!, fadeIn: 0 }, 'fadeIn')} />
-            <span>{i18n.t('web.vis.fadeOut')}</span>
-            <NumberField label={i18n.t('web.vis.fadeOut')} value={value!.fadeOut} spec={FADE} range={[0, 5]} disabled={disabled} onChange={(v) => onChange({ ...value!, fadeOut: v }, 'fadeOut')} />
-            <ResetButton label={i18n.t('web.vis.fadeOut')} changed={value!.fadeOut !== 0} disabled={disabled} onReset={() => onChange({ ...value!, fadeOut: 0 }, 'fadeOut')} />
-          </div>
-        </>
-      )}
-    </InspectorSection>
-  );
-}
 
 const MOTION_SEC = { min: 0, max: 30, step: 0.1, units: { s: 1 } } as const;
 /** Mục "Chuyển động" (mọi loại widget): hiệu ứng vào ở đầu khoảng hiển thị, hiệu ứng ra ở cuối, và một chuyển động lặp theo nhịp. */

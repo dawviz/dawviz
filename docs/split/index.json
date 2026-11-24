@@ -4,7 +4,7 @@
  "docs": {
   "BRD.md": {
    "title": "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)",
-   "sha1": "57ad147f37",
+   "sha1": "eb31c690c5",
    "chunks": [
     {
      "n": 0,
@@ -330,10 +330,10 @@
      "path": [
       "7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)"
      ],
-     "chars": 37723,
+     "chars": 39328,
      "lines": [
       204,
-      282
+      283
      ],
      "ids": [
       "AD-08",
@@ -412,6 +412,7 @@
       "D-67",
       "D-68",
       "D-69",
+      "D-70",
       "KPI-04",
       "NFR-ACC-02",
       "NFR-SEC-01",
@@ -458,8 +459,8 @@
      ],
      "chars": 7775,
      "lines": [
-      283,
-      306
+      284,
+      307
      ],
      "ids": [
       "D-01",
@@ -8193,6 +8194,9 @@
    "REFERENCE-VIDEOS/quyet-dinh-chuoi-canh-va-chia-se-preset-d-66.md",
    "UI-DIRECTION/3-7-khung-bo-cuc-chung-tu-vong-1-dung-cho-vong-2.md",
    "UI-DIRECTION/5-3-cau-truc-giao-dien-d-a-e-d-53-da-chot-2026-1.md"
+  ],
+  "D-70": [
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md"
   ],
   "NFR-ACC-02": [
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",

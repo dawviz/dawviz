@@ -1,0 +1,10 @@
+{
+  "name": "dawviz-agent-script",
+  "private": true,
+  "type": "module",
+  "description": "Script Playwright của skill dawviz (cách 3): cài một lần bằng npm install trong thư mục này.",
+  "dependencies": {
+    "playwright-core": "1.65.1"
+  },
+  "license": "Apache-2.0"
+}

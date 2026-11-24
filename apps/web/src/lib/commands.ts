@@ -434,8 +434,8 @@ export const patchSnapping = (d: Doc, patch: Partial<SceneDocument['canvas']['sn
 
 // ── timeline lớp và precomp (D-69, T-112) ──
 /** Loại thao tác trên timeline lớp (tên lệnh và nhãn lịch sử). */
-export type LayerEdit = 'moveClips' | 'trimClip' | 'splitLayer' | 'precompose';
-const LAYER_LABEL: Record<LayerEdit, string> = { moveClips: 'web.cmd.moveClips', trimClip: 'web.cmd.trimClip', splitLayer: 'web.cmd.splitLayer', precompose: 'web.cmd.precompose' };
+export type LayerEdit = 'moveClips' | 'trimClip' | 'fadeClip' | 'splitLayer' | 'precompose' | 'uncompose' | 'compSpeed';
+const LAYER_LABEL: Record<LayerEdit, string> = { moveClips: 'web.cmd.moveClips', trimClip: 'web.cmd.trimClip', fadeClip: 'web.cmd.fadeClip', splitLayer: 'web.cmd.splitLayer', precompose: 'web.cmd.precompose', uncompose: 'web.cmd.uncompose', compSpeed: 'web.cmd.compSpeed' };
 type LayerState = { widgets: WidgetSpec[]; comps: Record<string, CompSpec> | null; layoutRef: Doc['layoutRef']; propsRef: Doc['propsRef'] };
 /**
  * Thay danh sách lớp (và sổ comp, mốc ↺ nếu có) trong MỘT lệnh: dời/cắt mép/tách thanh, gom precomp (lib/layerTimeline.ts tính danh sách mới).
@@ -448,7 +448,14 @@ export const setLayers = (d: Doc, kind: LayerEdit, next: { widgets: WidgetSpec[]
     return { ...x, layoutRef: v.layoutRef, propsRef: v.propsRef, scene: { ...rest, widgets: v.widgets, ...(v.comps && Object.keys(v.comps).length ? { comps: v.comps } : {}) } };
   };
   const cur = get(d);
-  return slice(d, kind, LAYER_LABEL[kind], get, set, { widgets: next.widgets, comps: next.comps ?? cur.comps, layoutRef: next.layoutRef ?? cur.layoutRef, propsRef: next.propsRef ?? cur.propsRef }, mergeKey, params);
+  // Nhãn lịch sử: lớp đầu tiên bị đổi (tên hiện ở "Cắt mép Hợp âm"), số lớp đổi; gom precomp: tên lớp precomp mới.
+  const before = new Map(cur.widgets.map((w) => [w.id, w]));
+  const changed = next.widgets.filter((w) => before.get(w.id) !== w), fresh = next.widgets.filter((w) => !before.has(w.id));
+  const comp = kind === 'precompose' ? fresh.find((w) => w.type === 'COMP') : undefined;
+  const auto: Record<string, unknown> = { n: kind === 'precompose' ? cur.widgets.length - next.widgets.length + 1 : Math.max(1, changed.length) };
+  if (changed[0]) auto.widget = (kind === 'uncompose' ? cur.widgets.find((w) => !next.widgets.some((x) => x.id === w.id)) ?? changed[0] : changed[0]).id;
+  if (comp) auto.name = comp.name ?? '';
+  return slice(d, kind, LAYER_LABEL[kind], get, set, { widgets: next.widgets, comps: next.comps ?? cur.comps, layoutRef: next.layoutRef ?? cur.layoutRef, propsRef: next.propsRef ?? cur.propsRef }, mergeKey, { ...auto, ...(params ?? {}) });
 };
 /** Đổi tên một precomp (tên comp và tên các lớp COMP đang trỏ tới nó ở cùng khung nhìn không đổi theo: lớp có tên riêng). */
 export const renameComp = (d: Doc, comp: string, name: string): Cmd | null => {

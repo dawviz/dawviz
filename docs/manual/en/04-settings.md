@@ -44,6 +44,7 @@ A preset is a `.json` file that stores how the video is laid out: style, widget 
 Presets live in the **Video styles** column of the Preview tab, below Paper and Dark, not in Settings.
 
 - **The plus tile** (dashed frame): pick a preset `.json` file (or a `.dawviz-preset.zip` pack, see below). It becomes a new tile, is applied to the open song and is remembered in this browser. You can undo it.
+- **Paste preset** (below the plus tile): paste a preset's JSON text directly (for example one an AI chatbot wrote, see [Using an AI agent](11-ai-agent.md)) and press **Add preset**. Same result as picking a file; Ctrl+Enter adds it, Esc closes the box.
 - **Each tile keeps its own work in progress.** Edit Paper, switch to Dark, and when you return to Paper your changes are still there; the tile shows "edited". Per-track colour overrides belong to the song and don't count as edits of the tile.
 - Hover a tile to see its buttons: **↓ download** a `.json` of what you see (including edits), **×** (only shown when the tile is edited) returns the tile to its **original**, and your own presets also have a **bin** to remove them from the list. Reverting can still be undone with Ctrl+Z.
 - The **duplicate** button (two stacked squares) creates a new preset from what you see, including edits. The source tile returns to its original and the edits move to the new tile.

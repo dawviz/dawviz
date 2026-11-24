@@ -1,0 +1,751 @@
+{
+  "schemaVersion": "0.8.0",
+  "presetName": "Intro precomp",
+  "author": "DAW Visualizer examples",
+  "canvas": {
+    "aspectRatio": "16:9",
+    "designWidth": 1920,
+    "designHeight": 1080,
+    "backgroundColor": "#0c0e16",
+    "backgroundImageData": null,
+    "snapping": {
+      "gridEnabled": true,
+      "gridSize": 8,
+      "smartGuidesEnabled": true
+    }
+  },
+  "textStyles": {
+    "title": {
+      "font": "Space Grotesk",
+      "weight": 700,
+      "italic": false,
+      "size": 72,
+      "scaleX": 1,
+      "scaleY": 1,
+      "baselineShift": 0,
+      "script": "none",
+      "underline": false,
+      "strike": false,
+      "decoThickness": 0,
+      "decoColor": "",
+      "textCase": "none",
+      "tracking": 0,
+      "leading": 1.2,
+      "color": "#111111",
+      "gradient": null,
+      "opacity": 1,
+      "stroke": {
+        "width": 0,
+        "color": "#000000",
+        "position": "center",
+        "join": "round",
+        "over": false
+      },
+      "shadow": {
+        "enabled": false,
+        "color": "#000000",
+        "opacity": 0.5,
+        "distance": 4,
+        "angle": 45,
+        "blur": 6
+      },
+      "background": {
+        "enabled": false,
+        "color": "#000000",
+        "opacity": 0.6,
+        "padX": 8,
+        "padY": 4,
+        "radius": 4
+      },
+      "tabularNums": false,
+      "overflow": "ellipsis",
+      "minSize": 6,
+      "wrap": false,
+      "maxLines": 1,
+      "name": "Title"
+    },
+    "subtitle": {
+      "font": "Space Grotesk",
+      "weight": 400,
+      "italic": false,
+      "size": 28,
+      "scaleX": 1,
+      "scaleY": 1,
+      "baselineShift": 0,
+      "script": "none",
+      "underline": false,
+      "strike": false,
+      "decoThickness": 0,
+      "decoColor": "",
+      "textCase": "none",
+      "tracking": 0,
+      "leading": 1.2,
+      "color": "#111111",
+      "gradient": null,
+      "opacity": 1,
+      "stroke": {
+        "width": 0,
+        "color": "#000000",
+        "position": "center",
+        "join": "round",
+        "over": false
+      },
+      "shadow": {
+        "enabled": false,
+        "color": "#000000",
+        "opacity": 0.5,
+        "distance": 4,
+        "angle": 45,
+        "blur": 6
+      },
+      "background": {
+        "enabled": false,
+        "color": "#000000",
+        "opacity": 0.6,
+        "padX": 8,
+        "padY": 4,
+        "radius": 4
+      },
+      "tabularNums": false,
+      "overflow": "ellipsis",
+      "minSize": 6,
+      "wrap": false,
+      "maxLines": 1,
+      "name": "Subtitle"
+    },
+    "heading": {
+      "font": "Space Grotesk",
+      "weight": 700,
+      "italic": false,
+      "size": 34,
+      "scaleX": 1,
+      "scaleY": 1,
+      "baselineShift": 0,
+      "script": "none",
+      "underline": false,
+      "strike": false,
+      "decoThickness": 0,
+      "decoColor": "",
+      "textCase": "none",
+      "tracking": 0,
+      "leading": 1.2,
+      "color": "#111111",
+      "gradient": null,
+      "opacity": 1,
+      "stroke": {
+        "width": 0,
+        "color": "#000000",
+        "position": "center",
+        "join": "round",
+        "over": false
+      },
+      "shadow": {
+        "enabled": false,
+        "color": "#000000",
+        "opacity": 0.5,
+        "distance": 4,
+        "angle": 45,
+        "blur": 6
+      },
+      "background": {
+        "enabled": false,
+        "color": "#000000",
+        "opacity": 0.6,
+        "padX": 8,
+        "padY": 4,
+        "radius": 4
+      },
+      "tabularNums": false,
+      "overflow": "ellipsis",
+      "minSize": 6,
+      "wrap": false,
+      "maxLines": 1,
+      "name": "Heading"
+    },
+    "body": {
+      "font": "Space Grotesk",
+      "weight": 400,
+      "italic": false,
+      "size": 17,
+      "scaleX": 1,
+      "scaleY": 1,
+      "baselineShift": 0,
+      "script": "none",
+      "underline": false,
+      "strike": false,
+      "decoThickness": 0,
+      "decoColor": "",
+      "textCase": "none",
+      "tracking": 0,
+      "leading": 1.2,
+      "color": "#777777",
+      "gradient": null,
+      "opacity": 1,
+      "stroke": {
+        "width": 0,
+        "color": "#000000",
+        "position": "center",
+        "join": "round",
+        "over": false
+      },
+      "shadow": {
+        "enabled": false,
+        "color": "#000000",
+        "opacity": 0.5,
+        "distance": 4,
+        "angle": 45,
+        "blur": 6
+      },
+      "background": {
+        "enabled": false,
+        "color": "#000000",
+        "opacity": 0.6,
+        "padX": 8,
+        "padY": 4,
+        "radius": 4
+      },
+      "tabularNums": false,
+      "overflow": "ellipsis",
+      "minSize": 6,
+      "wrap": false,
+      "maxLines": 1,
+      "name": "Body"
+    },
+    "caption": {
+      "font": "Space Grotesk",
+      "weight": 400,
+      "italic": false,
+      "size": 15,
+      "scaleX": 1,
+      "scaleY": 1,
+      "baselineShift": 0,
+      "script": "none",
+      "underline": false,
+      "strike": false,
+      "decoThickness": 0,
+      "decoColor": "",
+      "textCase": "none",
+      "tracking": 0,
+      "leading": 1.2,
+      "color": "#888888",
+      "gradient": null,
+      "opacity": 1,
+      "stroke": {
+        "width": 0,
+        "color": "#000000",
+        "position": "center",
+        "join": "round",
+        "over": false
+      },
+      "shadow": {
+        "enabled": false,
+        "color": "#000000",
+        "opacity": 0.5,
+        "distance": 4,
+        "angle": 45,
+        "blur": 6
+      },
+      "background": {
+        "enabled": false,
+        "color": "#000000",
+        "opacity": 0.6,
+        "padX": 8,
+        "padY": 4,
+        "radius": 4
+      },
+      "tabularNums": false,
+      "overflow": "ellipsis",
+      "minSize": 6,
+      "wrap": false,
+      "maxLines": 1,
+      "name": "Caption"
+    },
+    "label": {
+      "font": "Space Grotesk",
+      "weight": 400,
+      "italic": false,
+      "size": 11,
+      "scaleX": 1,
+      "scaleY": 1,
+      "baselineShift": 0,
+      "script": "none",
+      "underline": false,
+      "strike": false,
+      "decoThickness": 0,
+      "decoColor": "",
+      "textCase": "none",
+      "tracking": 0,
+      "leading": 1.2,
+      "color": "#999999",
+      "gradient": null,
+      "opacity": 1,
+      "stroke": {
+        "width": 0,
+        "color": "#000000",
+        "position": "center",
+        "join": "round",
+        "over": false
+      },
+      "shadow": {
+        "enabled": false,
+        "color": "#000000",
+        "opacity": 0.5,
+        "distance": 4,
+        "angle": 45,
+        "blur": 6
+      },
+      "background": {
+        "enabled": false,
+        "color": "#000000",
+        "opacity": 0.6,
+        "padX": 8,
+        "padY": 4,
+        "radius": 4
+      },
+      "tabularNums": false,
+      "overflow": "ellipsis",
+      "minSize": 6,
+      "wrap": false,
+      "maxLines": 1,
+      "name": "Small label"
+    },
+    "counter": {
+      "font": "Space Grotesk",
+      "weight": 400,
+      "italic": false,
+      "size": 22,
+      "scaleX": 1,
+      "scaleY": 1,
+      "baselineShift": 0,
+      "script": "none",
+      "underline": false,
+      "strike": false,
+      "decoThickness": 0,
+      "decoColor": "",
+      "textCase": "none",
+      "tracking": 0,
+      "leading": 1.2,
+      "color": "#777777",
+      "gradient": null,
+      "opacity": 1,
+      "stroke": {
+        "width": 0,
+        "color": "#000000",
+        "position": "center",
+        "join": "round",
+        "over": false
+      },
+      "shadow": {
+        "enabled": false,
+        "color": "#000000",
+        "opacity": 0.5,
+        "distance": 4,
+        "angle": 45,
+        "blur": 6
+      },
+      "background": {
+        "enabled": false,
+        "color": "#000000",
+        "opacity": 0.6,
+        "padX": 8,
+        "padY": 4,
+        "radius": 4
+      },
+      "tabularNums": true,
+      "overflow": "ellipsis",
+      "minSize": 6,
+      "wrap": false,
+      "maxLines": 1,
+      "name": "Counter"
+    },
+    "clock": {
+      "font": "Space Grotesk",
+      "weight": 400,
+      "italic": false,
+      "size": 18,
+      "scaleX": 1,
+      "scaleY": 1,
+      "baselineShift": 0,
+      "script": "none",
+      "underline": false,
+      "strike": false,
+      "decoThickness": 0,
+      "decoColor": "",
+      "textCase": "none",
+      "tracking": 0,
+      "leading": 1.2,
+      "color": "#777777",
+      "gradient": null,
+      "opacity": 1,
+      "stroke": {
+        "width": 0,
+        "color": "#000000",
+        "position": "center",
+        "join": "round",
+        "over": false
+      },
+      "shadow": {
+        "enabled": false,
+        "color": "#000000",
+        "opacity": 0.5,
+        "distance": 4,
+        "angle": 45,
+        "blur": 6
+      },
+      "background": {
+        "enabled": false,
+        "color": "#000000",
+        "opacity": 0.6,
+        "padX": 8,
+        "padY": 4,
+        "radius": 4
+      },
+      "tabularNums": true,
+      "overflow": "ellipsis",
+      "minSize": 6,
+      "wrap": false,
+      "maxLines": 1,
+      "name": "Clock"
+    },
+    "tiny": {
+      "font": "Space Grotesk",
+      "weight": 400,
+      "italic": false,
+      "size": 7,
+      "scaleX": 1,
+      "scaleY": 1,
+      "baselineShift": 0,
+      "script": "none",
+      "underline": false,
+      "strike": false,
+      "decoThickness": 0,
+      "decoColor": "",
+      "textCase": "none",
+      "tracking": 0,
+      "leading": 1.2,
+      "color": "#BBBBBB",
+      "gradient": null,
+      "opacity": 1,
+      "stroke": {
+        "width": 0,
+        "color": "#000000",
+        "position": "center",
+        "join": "round",
+        "over": false
+      },
+      "shadow": {
+        "enabled": false,
+        "color": "#000000",
+        "opacity": 0.5,
+        "distance": 4,
+        "angle": 45,
+        "blur": 6
+      },
+      "background": {
+        "enabled": false,
+        "color": "#000000",
+        "opacity": 0.6,
+        "padX": 8,
+        "padY": 4,
+        "radius": 4
+      },
+      "tabularNums": true,
+      "overflow": "ellipsis",
+      "minSize": 6,
+      "wrap": false,
+      "maxLines": 1,
+      "name": "Tiny"
+    }
+  },
+  "phases": [
+    {
+      "name": "Intro",
+      "start": 0
+    },
+    {
+      "name": "Verse",
+      "start": 8
+    },
+    {
+      "name": "Chorus",
+      "start": 40
+    }
+  ],
+  "widgets": [
+    {
+      "id": "piano-roll-main",
+      "type": "PIANO_ROLL",
+      "zIndex": 10,
+      "visible": true,
+      "layout": {
+        "x": 0,
+        "y": 200,
+        "width": 1920,
+        "height": 880,
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "trackMappingMode": "ALL",
+      "assignedTrackIndices": [],
+      "properties": {
+        "orientation": "HORIZONTAL",
+        "pitchRangeMode": "CUSTOM",
+        "pitchMin": 21,
+        "pitchMax": 108,
+        "lookaheadSeconds": 3,
+        "playheadPositionRatio": 0.3,
+        "visibleSeconds": 4.285714285714286,
+        "scrollMode": "SCROLL",
+        "pageUnit": "SECONDS",
+        "pageBars": 4,
+        "revealAhead": 0,
+        "transition": "none",
+        "noteStyle": {
+          "base": {
+            "colorMode": "track",
+            "customColor": "#7cc4ff",
+            "opacity": 1,
+            "inactiveOpacity": 0.85,
+            "cornerRadius": 3,
+            "heightScale": 0.8,
+            "glow": 0.5,
+            "glowRadius": 12,
+            "glowActiveOnly": true,
+            "borderWidth": 0,
+            "borderColor": "",
+            "glowMode": "uniform",
+            "glowSource": "velocity",
+            "glowPanMode": "lr",
+            "glowLane": "volume",
+            "glowMin": 0.15,
+            "glowMax": 1,
+            "glowInvert": false,
+            "glowRelease": 0,
+            "playedColor": null,
+            "activeColor": null,
+            "upcomingColor": null
+          },
+          "tracks": {}
+        },
+        "keyboard": {
+          "enabled": true,
+          "width": 96,
+          "whiteColor": "#e8eaf2",
+          "blackColor": "#14161f",
+          "useTrackColor": true
+        },
+        "playheadColor": "#ffffff",
+        "playheadWidth": 2,
+        "playheadVisible": true
+      }
+    },
+    {
+      "id": "chord",
+      "type": "CHORD_DETECTION",
+      "zIndex": 11,
+      "visible": true,
+      "layout": {
+        "x": 40,
+        "y": 40,
+        "width": 420,
+        "height": 120,
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "trackMappingMode": "ALL",
+      "assignedTrackIndices": [],
+      "visibility": {
+        "ranges": [
+          {
+            "from": 8,
+            "to": null
+          }
+        ],
+        "fadeIn": 0.5,
+        "fadeOut": 0
+      },
+      "name": "Chord",
+      "properties": {
+        "mode": "sustained",
+        "align": "right",
+        "nameStyle": {
+          "styleId": "heading",
+          "color": "#ffffff"
+        },
+        "bassStyle": {},
+        "notesStyle": {
+          "styleId": "body",
+          "color": "#a3a8b8"
+        },
+        "notesValueStyle": {},
+        "alwaysShowNotes": false,
+        "notesTemplate": "Notes: {notes}",
+        "unrecognized": "nc",
+        "noChordText": "N.C."
+      }
+    },
+    {
+      "id": "intro",
+      "type": "COMP",
+      "zIndex": 50,
+      "visible": true,
+      "layout": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080,
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "trackMappingMode": "ALL",
+      "assignedTrackIndices": [],
+      "visibility": {
+        "ranges": [
+          {
+            "from": 0,
+            "to": 8
+          }
+        ],
+        "fadeIn": 0.6,
+        "fadeOut": 0.8
+      },
+      "name": "Intro",
+      "properties": {
+        "comp": "intro",
+        "start": 0
+      }
+    }
+  ],
+  "comps": {
+    "intro": {
+      "name": "Intro",
+      "widgets": [
+        {
+          "id": "title",
+          "type": "TEXT",
+          "zIndex": 11,
+          "visible": true,
+          "layout": {
+            "x": 160,
+            "y": 380,
+            "width": 1600,
+            "height": 160,
+            "rotation": 0,
+            "anchor": {
+              "x": 0.5,
+              "y": 0.5
+            }
+          },
+          "trackMappingMode": "ALL",
+          "assignedTrackIndices": [],
+          "animate": {
+            "layout.y": {
+              "keys": [
+                {
+                  "at": {
+                    "sec": 0
+                  },
+                  "value": 420,
+                  "ease": "easeOutCubic"
+                },
+                {
+                  "at": {
+                    "sec": 1.2
+                  },
+                  "value": 380
+                }
+              ]
+            }
+          },
+          "name": "Title",
+          "properties": {
+            "align": "center",
+            "text": "{title}",
+            "style": {
+              "styleId": "title",
+              "size": 120,
+              "color": "#ffffff"
+            },
+            "valueStyle": {},
+            "animator": {
+              "enabled": false,
+              "effect": "fade",
+              "unit": "char",
+              "order": "forward",
+              "direction": "in",
+              "start": 0,
+              "duration": 0.4,
+              "stagger": 0.05,
+              "ease": "easeOutCubic",
+              "fromOpacity": 0,
+              "fromX": 0,
+              "fromY": 24,
+              "fromScale": 1,
+              "fromColor": "",
+              "countUp": false,
+              "seed": 1
+            }
+          }
+        },
+        {
+          "id": "artist",
+          "type": "TEXT",
+          "zIndex": 11,
+          "visible": true,
+          "layout": {
+            "x": 160,
+            "y": 560,
+            "width": 1600,
+            "height": 100,
+            "rotation": 0,
+            "anchor": {
+              "x": 0.5,
+              "y": 0.5
+            }
+          },
+          "trackMappingMode": "ALL",
+          "assignedTrackIndices": [],
+          "name": "Artist",
+          "properties": {
+            "align": "center",
+            "text": "{artist}",
+            "style": {
+              "styleId": "subtitle",
+              "size": 56,
+              "color": "#b8c4ff"
+            },
+            "valueStyle": {},
+            "animator": {
+              "enabled": false,
+              "effect": "fade",
+              "unit": "char",
+              "order": "forward",
+              "direction": "in",
+              "start": 0,
+              "duration": 0.4,
+              "stagger": 0.05,
+              "ease": "easeOutCubic",
+              "fromOpacity": 0,
+              "fromX": 0,
+              "fromY": 24,
+              "fromScale": 1,
+              "fromColor": "",
+              "countUp": false,
+              "seed": 1
+            }
+          }
+        }
+      ]
+    }
+  },
+  "license": "CC0-1.0"
+}

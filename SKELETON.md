@@ -101,6 +101,8 @@ dawviz/
 │     │  │  │  ├─ recordingContext.ts
 │     │  │  │  └─ useNotation.ts
 │     │  │  ├─ a11y.ts
+│     │  │  ├─ agentApi.test.ts
+│     │  │  ├─ agentApi.ts
 │     │  │  ├─ animateFields.test.ts
 │     │  │  ├─ animateFields.ts
 │     │  │  ├─ animDiff.test.ts
@@ -408,6 +410,22 @@ dawviz/
 │  │  │  └─ rpp.js
 │  │  └─ package.json
 │  └─ README.md
+├─ plugins/
+│  └─ dawviz/
+│     ├─ skills/
+│     │  └─ dawviz/
+│     │     ├─ examples/
+│     │     │  ├─ intro-precomp-16x9.json
+│     │     │  └─ section-cards-9x16.json
+│     │     ├─ references/
+│     │     │  ├─ api.md
+│     │     │  ├─ gui.md
+│     │     │  └─ preset.md
+│     │     ├─ scripts/
+│     │     │  ├─ dawviz.mjs
+│     │     │  └─ package.json
+│     │     └─ SKILL.md
+│     └─ README.md
 ├─ presets/
 │  ├─ examples/
 │  │  └─ text-styles-demo.json
@@ -457,7 +475,8 @@ dawviz/
 │  ├─ preset-check/
 │  │  ├─ check.mjs
 │  │  ├─ check.test.mjs
-│  │  └─ cli.mjs
+│  │  ├─ cli.mjs
+│  │  └─ skill.test.mjs
 │  ├─ references/
 │  │  ├─ fetch.sh
 │  │  └─ shot.mjs
@@ -900,9 +919,17 @@ interface CompSpec   // Một comp: tên hiển thị và danh sách widget (cù
 const isCompLayer = (w: Pick<WidgetSpec, 'type'>) =>
 const compOf = (w: WidgetSpec) =>
 const rootIdOf = (flatId: string) =>   // Id lớp gốc (cấp scene) của một id đã trải phẳng.
-function shiftAnimation(a: Animation, dt: number): Animation   // Dời mốc giây của một hoạt hình thêm `dt` (keyframe mốc `sec`; mốc nhạc, binding, biểu thức giữ nguyên).
-function shiftWidgetTime(w: WidgetSpec, dt: number): WidgetSpec   // Dời mọi mốc thời gian dàn dựng của widget thêm `dt` giây: keyframe mốc giây, khoảng hiển thị, và (lớp COMP) đ…
-function unshiftWidgetTime(orig: WidgetSpec | undefined, edited: WidgetSpec, dt: number): WidgetSpec   // Ngược của `shiftWidgetTime` khi sửa trong khung nhìn của một comp (Editor hiện mốc theo thời gian toàn bài): …
+interface TimeMap   // Phép đổi thời gian tuyến tính: giây ngoài = `a` × giây trong + `b` (precomp: `b` = điểm bắt đầu, `a` = 1 / tố…
+const IDENTITY_TIME
+const invertTime = (m: TimeMap) =>   // Phép ngược của `m`.
+const composeTime = (outer: TimeMap, inner: TimeMap) =>   // Ghép: thời gian trong `inner` → thời gian ngoài của `outer` (outer ∘ inner).
+const compTimeMap = (c: CompProps) =>   // Phép đổi thời gian của nội dung lớp COMP (theo thời gian comp cha): giây 0 của comp ở `start`, chạy nhanh gấp…
+function mapAnimation(a: Animation, m: TimeMap): Animation   // Đổi mốc giây của một hoạt hình theo `m` (keyframe mốc `sec`; mốc nhạc, binding, biểu thức giữ nguyên).
+const shiftAnimation = (a: Animation, dt: number) =>   // Dời mốc giây của một hoạt hình thêm `dt`.
+function mapWidgetTime(w: WidgetSpec, m: TimeMap): WidgetSpec   // Đổi mọi mốc thời gian dàn dựng của widget theo `m`: keyframe mốc giây, khoảng hiển thị (và thời gian hiện dần…
+const shiftWidgetTime = (w: WidgetSpec, dt: number) =>   // Dời mọi mốc thời gian dàn dựng của widget thêm `dt` giây: keyframe mốc giây, khoảng hiển thị, và (lớp COMP) đ…
+function unmapWidgetTime(orig: WidgetSpec | undefined, edited: WidgetSpec, m: TimeMap): WidgetSpec   // Ngược của `mapWidgetTime` khi sửa trong khung nhìn của một comp (Editor hiện mốc theo thời gian toàn bài): ph…
+const unshiftWidgetTime = (orig: WidgetSpec | undefined, edited: WidgetSpec, dt: number) =>   // Ngược của `shiftWidgetTime`.
 type CompPath   // Đường dẫn tới một comp đang mở: danh sách id lớp COMP từ gốc vào trong. `[]` = timeline gốc.
 interface CompFrame
 function resolveCompPath(scene: SceneDocument, path: CompPath): CompFrame[]   // Đi theo đường dẫn: các cấp hợp lệ (dừng ở cấp đầu tiên sai: lớp không còn, không phải COMP, comp không có).
@@ -1824,7 +1851,8 @@ Hộp thoại Xuất video (T-09, REQ-EXPORT-00/05/06). Chọn cỡ/FPS/chất l
 
 ```text
 const browserProbe   // Dò hỗ trợ thật của trình duyệt; không có WebCodecs thì mọi cấu hình đều "không hỗ trợ".
-function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec, fileName, advanced = false, styleId, styleName, onClose }: { styleId?: string; styleName?: string; scene: SceneDocument; ast: UnifiedProjectAST; derived: Derived; audio: AudioAsset | null; offsetMs: number; projectSec: number; fileName: string; advanced?: boolean; onClose(): void; })
+interface AutoExport   // Xuất do agent điều khiển (`?agent=1`, lib/agentApi.ts): cấu hình đặt sẵn, tự bắt đầu khi đã dò xong bộ mã hoá…
+function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec, fileName, advanced = false, styleId, styleName, onClose, auto }: { styleId?: string; styleName?: string; scene: SceneDocument; ast: UnifiedProjectAST; derived: Derived; audio: AudioAsset | null; offsetMs: number; projectSec: number; fileName: string; advanced?: boolean; onClose(): void; auto?: AutoExport; })
 ```
 
 #### `apps/web/src/components/FileDrop.tsx`
@@ -2138,10 +2166,9 @@ function TimelinePanel({ open, onOpen, toggleHint, crumbs, keys, hasWidget, sele
 
 #### `apps/web/src/components/TimeSections.tsx`
 
-Các mục thời gian của bảng Thuộc tính (T-81): "Khoảng hiển thị" của widget đang chọn (REQ-GRAPHICS-14), chuyển động, nốt chủ, cách ghi tên nốt.
+Các mục thời gian của bảng Thuộc tính: chuyển động, nốt chủ, cách ghi tên nốt. Khoảng hiển thị và hiện dần/ẩn dần chỉnh trên thanh của lớp ở Timeline (D-69).
 
 ```text
-function VisibilitySection({ n, widgetId, value, disabled, onChange }: { n: number; widgetId: string; value: WidgetVisibility | undefined; disabled?: boolean; onChange(v: WidgetVisibility | null, key?: string): void })   // Mục "Khoảng hiển thị": tắt = hiện suốt bài; bật = danh sách khoảng (mốc kết thúc trống = hết bài) + thời gian…
 function MotionSection({ n, widgetId, value, disabled, onChange }: { n: number; widgetId: string; value: WidgetMotion | undefined; disabled?: boolean; onChange(v: WidgetMotion | null, key?: string): void })   // Mục "Chuyển động" (mọi loại widget): hiệu ứng vào ở đầu khoảng hiển thị, hiệu ứng ra ở cuối, và một chuyển độ…
 function NamingSection({ n, naming, onChange }: { n: number; naming: NoteNaming | undefined; onChange(v: NoteNaming | null): void })   // Mục "Cách ghi tên nốt" (P-12): một thiết lập chung cho mọi widget có tên nốt hoặc hợp âm. Trống = cách ghi cũ.
 function KeySection({ n, tonic, onChange }: { n: number; tonic: number | undefined; onChange(t: number | null): void })
@@ -2217,6 +2244,24 @@ function isKeyboardFocused(el: Element): boolean   // Phần tử đang focus th
 function spaceBelongsToTransport(t: EventTarget | null, focusedByKeyboard: (el: Element) => boolean = isKeyboardFocused): boolean   // Space có thuộc về thanh phát không (phím tắt kiểu DAW)? • Ô gõ chữ/số, select, contentEditable: không, giữ ng…
 function isTextEntry(t: EventTarget | null): boolean   // Đang gõ chữ/số (ô nhập, contentEditable)? Ctrl+Z toàn cục phải để nguyên cho trình duyệt hoàn tác chữ. Hẹp hơ…
 function isTypingTarget(t: EventTarget | null): boolean   // Phím tắt khác (Home…): không nuốt khi đang gõ hoặc ở một điều khiển tự xử lý phím đó.
+```
+
+#### `apps/web/src/lib/agentApi.ts`
+
+API cho AI agent (D-69 mục skill, T-113): `window.dawviz`, chỉ có khi mở app bằng đường dẫn có `?agent=1`. Dùng cho Claude in Chrome (công cụ chạy
+
+```text
+const AGENT_API_VERSION
+const agentEnabled = (search: string) =>   // Có bật API không: chỉ khi URL có `agent=1`.
+interface AgentStatus
+interface ExportOptions
+interface ExportResult
+interface AgentHost
+type FileLike   // Tệp từ dữ liệu agent đưa vào: File thật, hoặc `{ name, base64 }` / `{ name, text }` (Playwright, công cụ JS k…
+function toFile(f: FileLike): File
+function validateScene(json: unknown):    // Kiểm một scene/preset mà không áp: cảnh báo (`WARN_*`) hoặc lỗi (`ERR_*`) như khi mở tệp.
+function createAgentApi(host: () => AgentHost)   // Dựng đối tượng `window.dawviz` từ host. Hàm nào cũng async để agent gọi đồng nhất bằng `await`.
+type DawvizApi
 ```
 
 #### `apps/web/src/lib/animateFields.ts`
@@ -2501,6 +2546,7 @@ const compAt = (d: Doc, path: CompPath) =>   // Comp đang mở ở cuối đư�
 function viewDoc(d: Doc, path: CompPath): Doc   // Doc như Editor thấy khi mở `path`. `path = []` → chính `d`.
 function putView(d: Doc, path: CompPath, v: Doc): Doc   // Ghi khung nhìn đã sửa về Doc thật.
 function liftCmd(cmd: Cmd | null, path: CompPath): Cmd | null   // Lệnh dựng trên khung nhìn của `path` → lệnh trên Doc thật. Khoá gộp mang theo đường dẫn (kéo cùng ô ở hai com…
+function pianoPathAt(scene: SceneDocument, t: number): string[]   // Đường dẫn tới Piano Roll mà thẻ Xem trước chỉnh nhanh (D-69): Piano Roll ở gốc thì `[]`; không có thì precomp…
 ```
 
 #### `apps/web/src/lib/csp.ts`
@@ -2868,10 +2914,14 @@ const clipAt = (w: Pick<WidgetSpec, 'visibility'>, t: number, duration: number) 
 function moveLayers(widgets: readonly WidgetSpec[], ids: readonly string[], dt: number, tempoMap: readonly TempoPoint[]):    // Dời thanh của các lớp `ids` thêm `dt` giây (keyframe mốc giây và comp con dời theo). Kẹp để không mốc nào san…
 function trimLayer(w: WidgetSpec, i: number, edge: 'in' | 'out', t: number, duration: number): WidgetSpec   // Cắt mép thanh `i` của lớp: `in` = đầu thanh, `out` = cuối thanh, tới thời điểm `t` (keyframe đứng yên). Kẹp t…
 function splitLayer(scene: SceneDocument, id: string, t: number, duration: number):    // Tách lớp `id` tại `t` (Ctrl+K, kiểu After Effects): lớp gốc giữ phần trước `t`, bản sao (id mới, ngay trên lớ…
-function precompose(scene: SceneDocument, ids: readonly string[], offset: number, compId: string, name: string):    // Gom các lớp `ids` thành một precomp (Ctrl+Shift+C). `offset` = giây toàn bài của giây 0 trong comp đang mở (k…
+function precompose(scene: SceneDocument, ids: readonly string[], frame: TimeMap, compId: string, name: string):    // Gom các lớp `ids` thành một precomp (Ctrl+G). `frame` = phép đổi thời gian của comp đang mở sang thời gian to…
 function newCompName(scene: SceneDocument, base: string, layerNames: readonly string[]): string   // Tên precomp mới không trùng tên lớp nào trong khung nhìn và tên comp nào: "<gốc> <n>".
 function clipEdges(widgets: readonly WidgetSpec[], skip: ReadonlySet<string>, duration: number): number[]   // Ranh giới để bắt dính khi kéo thanh: đầu/cuối mọi thanh khác (không thuộc các lớp đang kéo).
 const canAddRange = (w: WidgetSpec) =>   // Còn thêm được khoảng hiển thị không (MAX_RANGES).
+function lengthTargets(widgets: readonly WidgetSpec[], skip: ReadonlySet<string>, duration: number, anchor: number, edge: 'in' | 'out'):    // Đích bắt dính theo **độ dài** khi cắt mép (D-69): mép đang kéo dính vào chỗ làm thanh dài bằng một thanh khác…
+function trimMany(widgets: readonly WidgetSpec[], ids: readonly string[], primary: { id: string; clip: number }, edge: 'in' | 'out', t: number, duration: number): WidgetSpec[]   // Cắt mép nhiều lớp cùng lúc: lớp `primary` cắt thanh `clip` tới `t`; mọi lớp khác trong `ids` dời cùng mép đó …
+function setFade(w: WidgetSpec, which: 'in' | 'out', sec: number, duration: number): WidgetSpec   // Đặt thời gian hiện dần (`in`) hoặc ẩn dần (`out`) của lớp, giây; kẹp 0..MAX_FADE và không dài hơn thanh ngắn …
+function uncompose(scene: SceneDocument, layerId: string, duration: number):    // Gỡ precomp (ngược của gom): thay lớp COMP `layerId` bằng các lớp bên trong comp của nó, đúng chỗ trong thứ tự…
 ```
 
 #### `apps/web/src/lib/masterClock.ts`
@@ -3278,8 +3328,8 @@ async function acceptAsset(list: readonly AssetMeta[], name: string, bytes: Uint
 function checkImageSize(name: string, w: number, h: number): void   // Cạnh ảnh sau giải mã: quá 8192 px thì từ chối.
 const packAssetName = (m: Pick<AssetMeta, 'id' | 'name'>) =>   // Tên tệp tài nguyên trong Project Pack: `asset-<16 hex đầu>-<tên gốc an toàn>`; đọc lại bằng parsePackAssetNam…
 const parsePackAssetName = (n: string) =>
-function referencedAssets(scene: { widgets: readonly { type: string; properties: unknown }[] }): string[]   // Tài nguyên mà scene dùng: ảnh (widget Ảnh) và họ phông (kiểu chữ, ghi đè chữ) — để pre-flight báo thiếu trước…
-function missingAssets(scene: { widgets: readonly { type: string; properties: unknown }[] }, have: ReadonlySet<string>): string[]
+function referencedAssets(scene: WidgetsLike): string[]   // Ảnh mà scene dùng, kể cả ảnh trong precomp (D-69).
+function missingAssets(scene: WidgetsLike, have: ReadonlySet<string>): string[]
 ```
 
 #### `apps/web/src/lib/spectrumClient.ts`
@@ -3697,6 +3747,7 @@ type SpectrumOut
 - `scripts/preset-check/check.mjs` — Kiểm preset cộng đồng (T-31, EXPRESSIONS §6.2, COMMUNITY-CONTENT §3): hàm thuần `checkPreset` + CLI. Không cần mạng, không có secret: chạy được trong CI
 - `scripts/preset-check/check.test.mjs` — Test của checkPreset (T-31): preset dựng sẵn và preset cộng đồng hợp lệ đạt; giấy phép, URL ngoài, biểu thức lỗi, khoá nguy hiểm, tên tệp bị chặn.
 - `scripts/preset-check/cli.mjs` — npm run preset:check -- [--community] <tệp.json | tệp.dawviz-preset.zip…> (thoát mã 1 nếu có lỗi; in cảnh báo để người duyệt xem)
+- `scripts/preset-check/skill.test.mjs` — Skill dawviz cho AI agent (T-113): SKILL.md đúng chuẩn, preset mẫu qua bộ kiểm cộng đồng, tài liệu API liệt kê đủ hàm của window.dawviz.
 - `scripts/references/shot.mjs` — Chụp khung xem trước của một preset scene ở các mốc thời gian, để đặt cạnh khung tham chiếu (references/frames). Không vào bản build.
 - `scripts/rewrite-imports.mjs` — Công cụ một lần: viết lại import tương đối giữa các package khi tách monorepo.
 - `scripts/split_doc.py` — Tách tài liệu Markdown (SRS/SDD/TDD...) thành các mảnh nhỏ để đưa cho AI tham chiếu.
@@ -3704,6 +3755,7 @@ type SpectrumOut
 
 ## 4. Tệp test
 
+- `apps/web/src/lib/agentApi.test.ts`
 - `apps/web/src/lib/animDiff.test.ts`
 - `apps/web/src/lib/animateFields.test.ts`
 - `apps/web/src/lib/audioAsset.test.ts`
@@ -3801,4 +3853,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 11 thư mục src, 1710 ký hiệu công khai -->
+<!-- 11 thư mục src, 1734 ký hiệu công khai -->

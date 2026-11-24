@@ -66,7 +66,7 @@
   },
   "$defs": {
     "widget": {
-      "description": "Một lớp (widget). Loại COMP (0.8.0, D-69) là lớp precomp: properties = { comp: khoá trong comps, start: giây mà giây 0 của comp bắt đầu, theo comp cha }; không tự vẽ, nội dung comp theo dời/xoay/độ đục/khoảng hiển thị của lớp.",
+      "description": "Một lớp (widget). Loại COMP (0.8.0, D-69) là lớp precomp: properties = { comp: khoá trong comps, start: giây mà giây 0 của comp bắt đầu, theo comp cha, speed?: tốc độ phát 0,1–10 (vắng = 1) }; không tự vẽ, nội dung comp theo dời/xoay/độ đục/khoảng hiển thị của lớp.",
       "type": "object",
       "required": ["type"],
       "properties": {

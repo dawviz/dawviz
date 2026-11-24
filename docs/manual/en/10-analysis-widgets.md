@@ -45,7 +45,7 @@ Leave it on "Default" to keep the names as before.
 
 Not only the analysis widgets: **every widget** (Piano roll, text, spectrum, particles, sheet music…) has a **Motion** section when you select it in the Editor.
 
-- **Entrance** runs at the start of each of the widget's display ranges (see **Display range**); a widget with no range runs it at the start of the song. Pick a style (fade, slide from the left/right/top/bottom, pop, zoom, drop, spin) and a length in seconds.
+- **Entrance** runs at the start of each of the widget's display ranges (the widget's bars on the Timeline, see [Display range](03-editor.md#display-range)); a widget with no range runs it at the start of the song. Pick a style (fade, slide from the left/right/top/bottom, pop, zoom, drop, spin) and a length in seconds.
 - **Exit** runs just before the end of the display range, with the same styles.
 - **Repeating**: breathe, float, sway, pulse on the beat, blink, wobble. Adjust **Strength** and **Repeat every** (in beats or seconds). Counted in beats, it stays on the beat when the tempo changes.
 

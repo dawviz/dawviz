@@ -18,6 +18,7 @@ This guide grows with the app. If something isn't in the app yet, it isn't descr
 8. [Putting live numbers into text](08-placeholders.md): the text box, `{bpm}`, `{title}`, `{notes}` and how to choose the number style.
 9. [Sheet music](09-sheet-music.md): writing the notes as a score, playing notes that light up and grow, a hand-drawn look.
 10. [Analysis widgets](10-analysis-widgets.md): tempo, bar and beat, key, velocity, density, pitch wheel, sections, lyrics, automation, note names.
+11. [Using an AI agent](11-ai-agent.md): let an AI write presets or drive the app, three ways, `?agent=1`.
 
 ## Good to know
 

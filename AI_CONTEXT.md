@@ -56,6 +56,7 @@ DAW Visualizer: trình duyệt đọc tệp dự án DAW (Ableton `.als/.alp`, R
 | Mã lỗi / cảnh báo | [SRS Phụ lục A](docs/split/SRS/phu-luc-a-ma-loi.md#phụ-lục-a-mã-lỗi) · [A2](docs/split/SRS/phu-luc-a2-ma-canh-bao-cua-parser-library.md#phụ-lục-a2-mã-cảnh-báo-của-parser-library) · [PARSER-SRS §4](docs/split/PARSER-SRS/4-ma-loi.md#4-mã-lỗi) | `locales/en.json` (`errors.*`, `warn.*`) |
 | Quyết định, vấn đề mở, rủi ro | [BRD §7](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md#7-nhật-ký-quyết-định-decision-log) · [BRD §8](docs/split/BRD/8-cac-van-de-con-mo-open-issues.md#8-các-vấn-đề-còn-mở-open-issues) · [SRS §8](docs/split/SRS/8-cac-van-de-con-mo-cua-srs.md#8-các-vấn-đề-còn-mở-của-srs) · [BRD §5](docs/split/BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md#5-phân-tích-rủi-ro--phương-án-giảm-thiểu-risk-management) | — |
 | Hướng dẫn sử dụng (người dùng cuối) | [docs/manual/README.md](docs/manual/README.md) (vi) · [docs/manual/en/README.md](docs/manual/en/README.md) (en). Giải thích cách dùng nằm ở đây, **không** viết thành đoạn chữ trên giao diện (chỉ giữ cảnh báo, thông báo theo tình huống và chú thích khi rê chuột). Đổi giao diện → sửa trang tương ứng cả hai thứ tiếng | `apps/web/src/components/` |
+| Skill cho AI agent, API `window.dawviz` (`?agent=1`), preset mẫu cho agent | `plugins/dawviz/skills/dawviz/SKILL.md` · [D-70](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md) · [hướng dẫn 11](docs/manual/11-ai-agent.md). Đổi API, nút (`data-testid`) hay lược đồ preset → sửa skill cùng PR; `npm run test:tools` kiểm | `apps/web/src/lib/agentApi.ts`, `plugins/dawviz/` |
 | Nghiệm thu | [SRS §7 (AT-xx)](docs/split/SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md#7-điều-kiện-nghiệm-thu-và-bàn-giao) | — |
 
 ## 5. Lệnh thường dùng
@@ -98,7 +99,7 @@ Nguồn: `docs/product/BRD.md` · [thứ tự đọc](docs/split/BRD/_index.md)
 - [4. PHẠM VI DỰ ÁN (PROJECT SCOPE) › 4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](docs/split/BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1.2k
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](docs/split/BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4.3k
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](docs/split/BRD/6-gia-dinh-assumptions.md) · 0.6k
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 37.7k
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 39.3k
 - [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](docs/split/BRD/8-cac-van-de-con-mo-open-issues.md) · 7.8k
 
 ### SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
