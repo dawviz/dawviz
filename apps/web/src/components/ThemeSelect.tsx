@@ -9,16 +9,21 @@ import { Moon, Sun } from './Icons.tsx';
 import { radioKeys, radioTab } from '../lib/a11y.ts';
 
 const DARK_QUERY = '(prefers-color-scheme: dark)';
+/** Favicon theo theme đã áp lên <html> (bản sáng/tối của logo). */
+const syncIcon = () => {
+  const root = document.documentElement;
+  document.getElementById('app-icon')?.setAttribute('href', `${import.meta.env.BASE_URL}logo-${root.dataset.theme}.svg`);
+};
 const systemDark = () => typeof matchMedia === 'function' && matchMedia(DARK_QUERY).matches;
 
 export function useTheme(): [ThemePref, (p: ThemePref) => void] {
   const [pref, setPref] = useState<ThemePref>(() => sanitizeThemePref(loadPref('theme', DEFAULT_THEME)));
   useEffect(() => {
-    applyTheme(document.documentElement, pref, systemDark());
+    applyTheme(document.documentElement, pref, systemDark()); syncIcon();
     savePref('theme', pref);
     if (pref.mode !== 'system' || typeof matchMedia !== 'function') return;
     const mq = matchMedia(DARK_QUERY);
-    const onChange = () => applyTheme(document.documentElement, pref, mq.matches);
+    const onChange = () => { applyTheme(document.documentElement, pref, mq.matches); syncIcon(); };
     mq.addEventListener('change', onChange);
     return () => mq.removeEventListener('change', onChange);
   }, [pref]);
