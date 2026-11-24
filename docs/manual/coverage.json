@@ -129,11 +129,11 @@
         "apps/web/src/lib/sessionAssets.ts",
         "locales/en.json#web.asset."
       ],
-      "uiHash": "5090a88dff2e",
-      "viHash": "255b7d5acd66",
-      "enHash": "fa55cb51156c",
+      "uiHash": "fa275070bc03",
+      "viHash": "232d57287df9",
+      "enHash": "790fbf30d61f",
       "coverHashes": {
-        "apps/web/src/components/Editor.tsx": "36c6212a5bd1",
+        "apps/web/src/components/Editor.tsx": "fa7942b29ec6",
         "apps/web/src/components/EditorOverlay.tsx": "c813801e06af",
         "apps/web/src/components/StylePanel.tsx": "26c35e084860",
         "locales/en.json#web.editor.": "d48edb57a209",
@@ -185,11 +185,11 @@
         "apps/web/src/lib/presetPack.ts",
         "locales/en.json#web.share."
       ],
-      "uiHash": "fe666c5fae33",
+      "uiHash": "26f3feba57d9",
       "viHash": "7ead1444a5bd",
       "enHash": "47aca63bf704",
       "coverHashes": {
-        "apps/web/src/components/ThemeSelect.tsx": "f9b2c3746fbe",
+        "apps/web/src/components/ThemeSelect.tsx": "59f8201a72ab",
         "apps/web/src/components/VideoStyles.tsx": "d096dad9483c",
         "locales/en.json#web.settings.": "6f3092d6a435",
         "locales/en.json#web.theme.": "05a823a18b7d",
@@ -216,7 +216,7 @@
         "apps/web/src/components/KeyframeTimeline.tsx",
         "apps/web/src/components/Splitter.tsx"
       ],
-      "uiHash": "a339aaded21c",
+      "uiHash": "985674194b84",
       "viHash": "15c35ffe41c6",
       "enHash": "e69371011885",
       "coverHashes": {
@@ -224,7 +224,7 @@
         "apps/web/src/lib/undoKeys.ts": "07c2c99f5cf4",
         "apps/web/src/components/EditorOverlay.tsx": "c813801e06af",
         "apps/web/src/lib/numberInput.ts": "8e27c53523c3",
-        "apps/web/src/components/Editor.tsx": "36c6212a5bd1",
+        "apps/web/src/components/Editor.tsx": "fa7942b29ec6",
         "apps/web/src/components/KeyframeTimeline.tsx": "59a48f299169",
         "apps/web/src/components/Splitter.tsx": "7ae82f8548cb"
       }

@@ -90,11 +90,7 @@ The **Sheet music** widget writes your notes as a two-staff score; playing notes
 
 ## Background image
 
-When no widget is selected, the **Background image** section lets you pick a PNG, JPEG, WebP or GIF (up to 20 MB; very large images are scaled down to 4096 pixels on the long side, GIFs use the first frame). The image sits under every widget.
-
-- **Fit:** **Fill** (crops the extra in the middle), **Fit inside** (whole image, background colour around it) or **Stretch** (may distort).
-- **Opacity** and **Darken** (a black layer over the image so text and notes read well).
-- The image is saved with the session and the project pack. **Presets don't contain the image**, only how it is placed, so someone who opens your preset picks their own image.
+The **Background image** section is gone from the Properties panel: to put a picture behind everything, add an **Image** widget (**Add** button) and move it to the bottom of the layers list. Older sessions that already have a background image still show it as before.
 
 ## Image
 

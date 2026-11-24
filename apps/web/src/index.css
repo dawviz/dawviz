@@ -187,3 +187,8 @@ input[type='color'].swatch::-moz-color-swatch { border: none; border-radius: 999
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0ms !important; }
 }
+
+/* Logo theo theme: mặc định (tối) hiện bản tối; theme sáng hiện bản sáng. */
+.logo-light { display: none; }
+:root[data-theme='light'] .logo-light { display: block; }
+:root[data-theme='light'] .logo-dark { display: none; }

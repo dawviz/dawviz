@@ -816,7 +816,7 @@ export function App() {
         <div role="tabpanel" id="panel-preview" aria-labelledby="tab-preview" hidden={tab !== 'preview'} className="h-full">{preview}</div>
         <div role="tabpanel" id="panel-editor" aria-labelledby="tab-editor" hidden={tab !== 'editor'} className="h-full">
           <Editor styleName={styleLabel} scene={scene} derived={derived} ast={renderAst} playback={playback} fonts={fonts} advanced={advanced} actions={editorActions} active={tab === 'editor'}
-            layoutRef={doc.layoutRef} background={{ name: bgFile?.name ?? null, busy: bgBusy, error: bgError }}
+            layoutRef={doc.layoutRef}
             widgetSections={(w, n, lk) => (w.type === 'PIANO_ROLL' ? [w.id === piano?.id ? lookSection(n) : null, settingsSection(w, n + (w.id === piano?.id ? 1 : 0), lk)] : hasWidgetSettings(w.type) ? [settingsSection(w, n, lk), textSection(w, n + 1, lk)] : [textSection(w, n, lk)])}
             transport={loaded ? <Transport playback={playback} duration={playDuration} offsetMs={offsetMs} wave={audio && peaks ? { peaks, durationSec: audio.durationSec } : null} /> : undefined} />
         </div>
@@ -863,7 +863,7 @@ function TopBar({ tab, onTab, fileName, onExport, mode, onMode, file, theme, his
   return (
     <header className="shrink-0 border-b border-line bg-surface">
       <div className="flex min-h-12 flex-wrap items-center gap-x-3 gap-y-1 px-4 max-sm:py-1.5">
-        <h1 className="flex shrink-0 items-center gap-2 text-[20px] font-semibold leading-none tracking-tight text-fg"><Mark className="h-5 w-5" />{i18n.t('web.title')}</h1>
+        <h1 className="flex shrink-0 items-center gap-2 text-[20px] font-semibold leading-none tracking-tight text-fg"><Mark className="h-7 w-7" />{i18n.t('web.title')}</h1>
         {fileName && <span className="hidden min-w-0 truncate text-[13px] text-muted md:block" title={fileName}><span className="text-faint" aria-hidden>/ </span>{fileName}</span>}
         <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
           <div className="seg" role="radiogroup" aria-label={i18n.t('web.mode')} data-testid="mode-switch" onKeyDown={radioKeys}>

@@ -90,11 +90,7 @@ Widget **Bản nhạc** viết nốt của dự án thành bản nhạc khuông 
 
 ## Ảnh nền
 
-Khi không chọn widget nào, mục **Ảnh nền** cho bạn chọn một ảnh PNG, JPEG, WebP hoặc GIF (tối đa 20 MB; ảnh quá lớn về kích thước được thu nhỏ còn 4096 điểm ở cạnh dài, GIF lấy khung đầu). Ảnh nằm dưới mọi widget.
-
-- **Cách đặt:** **Phủ kín** (cắt phần thừa ở giữa), **Vừa khung** (nguyên ảnh, chừa màu nền) hoặc **Kéo giãn** (có thể méo ảnh).
-- **Độ đục** và **Làm tối** (phủ một lớp đen lên ảnh để chữ và nốt dễ đọc).
-- Ảnh được lưu cùng phiên và gói dự án. **Preset không chứa ảnh**, chỉ nhớ cách đặt, nên gửi preset cho người khác thì họ tự chọn ảnh của họ.
+Mục **Ảnh nền** đã bỏ khỏi bảng Thuộc tính: muốn có ảnh phía sau, thêm widget **Ảnh** (nút **Thêm**) rồi kéo xuống dưới cùng trong danh sách lớp. Phiên cũ đã có ảnh nền vẫn hiển thị như trước.
 
 ## Ảnh
 

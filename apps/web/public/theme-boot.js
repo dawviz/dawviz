@@ -10,4 +10,6 @@
   if (mode === 'system') mode = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   document.documentElement.setAttribute('data-theme', mode);
   document.documentElement.setAttribute('data-palette', palette);
+  var icon = document.getElementById('app-icon');
+  if (icon) icon.setAttribute('href', '/logo-' + mode + '.svg');
 })();

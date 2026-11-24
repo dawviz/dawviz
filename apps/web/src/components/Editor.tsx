@@ -479,7 +479,7 @@ function AddMenu({ onAdd }: { onAdd(type: WidgetType): void }) {
       <button type="button" className="btn-ghost flex items-center gap-1" aria-haspopup="menu" aria-expanded={open} onClick={() => { setOpen((o) => !o); requestAnimationFrame(() => items()[0]?.focus()); }}
         data-testid="layers-add"><Plus className="h-3.5 w-3.5" />{i18n.t('web.editor.add')}</button>
       {open && (
-        <div role="menu" aria-label={i18n.t('web.editor.add')} className="absolute left-0 top-full z-20 mt-1 min-w-[11rem] border border-line bg-surface py-1 shadow-sm" data-testid="add-menu">
+        <div role="menu" aria-label={i18n.t('web.editor.add')} className="absolute left-0 top-full z-20 mt-1 min-w-[11rem] max-h-[calc(10*2rem+0.5rem)] overflow-y-auto border border-line bg-surface py-1 shadow-sm" data-testid="add-menu">
           {ADDABLE_WIDGETS.map((t) => (
             <button key={t} type="button" role="menuitem" className="block w-full px-3 py-1.5 text-left text-xs text-fg hover:bg-raised focus:bg-raised focus:outline-none" onClick={() => pick(t)}>
               {i18n.t(`web.widget.${t}`)}

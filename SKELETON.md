@@ -22,8 +22,25 @@ dawviz/
 │     │  │  ├─ space-grotesk-latin-ext-700-normal.woff2
 │     │  │  ├─ space-grotesk-vietnamese-400-normal.woff2
 │     │  │  └─ space-grotesk-vietnamese-700-normal.woff2
+│     │  ├─ icons/
+│     │  │  ├─ icon-dark-16.png
+│     │  │  ├─ icon-dark-180.png
+│     │  │  ├─ icon-dark-192.png
+│     │  │  ├─ icon-dark-32.png
+│     │  │  ├─ icon-dark-48.png
+│     │  │  ├─ icon-dark-512.png
+│     │  │  ├─ icon-dark-maskable-512.png
+│     │  │  ├─ icon-light-16.png
+│     │  │  ├─ icon-light-180.png
+│     │  │  ├─ icon-light-192.png
+│     │  │  ├─ icon-light-32.png
+│     │  │  ├─ icon-light-48.png
+│     │  │  ├─ icon-light-512.png
+│     │  │  └─ icon-light-maskable-512.png
 │     │  ├─ samples/
 │     │  │  └─ demo.rpp
+│     │  ├─ logo-dark.svg
+│     │  ├─ logo-light.svg
 │     │  └─ theme-boot.js
 │     ├─ src/
 │     │  ├─ components/
@@ -1843,7 +1860,7 @@ const Redo = (p: P) =>
 const Sun = (p: P) =>
 const Moon = (p: P) =>
 const Upload = (p: P) =>
-const Mark = ({ className = 'h-4 w-4' }: P) =>
+const Mark = ({ className = 'h-5 w-5' }: P) =>   // Logo ứng dụng (SVG của người dùng): một bản cho theme sáng, một bản cho theme tối; CSS `.logo-*` chọn bản the…
 const Lock = (p: P) =>
 const Unlock = (p: P) =>
 const RotateReset = (p: P) =>   // Mũi tên vòng: đặt lại góc xoay.
