@@ -24,6 +24,8 @@ dawviz/
 │     │  │  └─ space-grotesk-vietnamese-700-normal.woff2
 │     │  ├─ samples/
 │     │  │  └─ demo.rpp
+│     │  ├─ logo-dark.svg
+│     │  ├─ logo-light.svg
 │     │  └─ theme-boot.js
 │     ├─ src/
 │     │  ├─ components/
@@ -1843,7 +1845,7 @@ const Redo = (p: P) =>
 const Sun = (p: P) =>
 const Moon = (p: P) =>
 const Upload = (p: P) =>
-const Mark = ({ className = 'h-4 w-4' }: P) =>
+const Mark = ({ className = 'h-5 w-5' }: P) =>   // Logo ứng dụng (SVG của người dùng): một bản cho theme sáng, một bản cho theme tối; CSS `.logo-*` chọn bản the…
 const Lock = (p: P) =>
 const Unlock = (p: P) =>
 const RotateReset = (p: P) =>   // Mũi tên vòng: đặt lại góc xoay.

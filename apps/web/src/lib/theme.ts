@@ -41,6 +41,8 @@ export function resolveMode(mode: ThemeMode, systemDark: boolean): 'light' | 'da
 export function applyTheme(root: HTMLElement, pref: ThemePref, systemDark: boolean): void {
   root.dataset.theme = resolveMode(pref.mode, systemDark);
   root.dataset.palette = pref.palette;
+  const icon = root.ownerDocument.getElementById('app-icon');
+  if (icon) icon.setAttribute('href', `${import.meta.env.BASE_URL}logo-${root.dataset.theme}.svg`);
 }
 
 // ---- Tương phản WCAG 2.x ----

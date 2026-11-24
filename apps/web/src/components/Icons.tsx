@@ -29,10 +29,16 @@ export const Redo = (p: P) => <S {...p}><path d="m10.5 3 3 3-3 3" /><path d="M13
 export const Sun = (p: P) => <S {...p}><circle cx="8" cy="8" r="2.75" /><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1" /></S>;
 export const Moon = (p: P) => <S {...p}><path d="M13.2 9.6A5.5 5.5 0 0 1 6.4 2.8a5.5 5.5 0 1 0 6.8 6.8Z" /></S>;
 export const Upload = (p: P) => <S {...p}><path d="M8 10.5V2.5m0 0L5.25 5.25M8 2.5l2.75 2.75" /><path d="M2.5 10.5v2a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-2" /></S>;
-/** Dấu ứng dụng: ba thanh nốt lệch nhau gợi piano roll. Dùng màu chữ, không dùng màu nhấn. */
-export const Mark = ({ className = 'h-4 w-4' }: P) => (
-  <svg viewBox="0 0 16 16" className={className} aria-hidden fill="currentColor"><rect x="2" y="3" width="6" height="2" rx=".5" /><rect x="6" y="7" width="8" height="2" rx=".5" /><rect x="3" y="11" width="5" height="2" rx=".5" /></svg>
-);
+/** Logo ứng dụng (SVG của người dùng): một bản cho theme sáng, một bản cho theme tối; CSS `.logo-*` chọn bản theo `data-theme`. */
+export const Mark = ({ className = 'h-5 w-5' }: P) => {
+  const base = import.meta.env.BASE_URL;
+  return (
+    <>
+      <img src={`${base}logo-light.svg`} alt="" aria-hidden className={`logo-light ${className}`} />
+      <img src={`${base}logo-dark.svg`} alt="" aria-hidden className={`logo-dark ${className}`} />
+    </>
+  );
+};
 export const Lock = (p: P) => <S {...p}><rect x="3.5" y="7" width="9" height="6.5" rx="1" /><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" /></S>;
 export const Unlock = (p: P) => <S {...p}><rect x="3.5" y="7" width="9" height="6.5" rx="1" /><path d="M5.5 7V5a2.5 2.5 0 0 1 4.9-.7" /></S>;
 /** Mũi tên vòng: đặt lại góc xoay. */
