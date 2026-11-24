@@ -1,5 +1,6 @@
-// Hai mục của bảng Thuộc tính (T-81): "Khoảng hiển thị" của widget đang chọn (REQ-GRAPHICS-14) và "Phase" của cả bài.
-import { DEFAULT_LOOP, DEFAULT_PHASE, DEFAULT_NAMING, LOOP_EFFECT_NAMES, WIDGET_EFFECT_NAMES, type MotionLoop, type WidgetMotion, MAX_PHASES, MAX_RANGES, NAMING_SYSTEMS, PITCH_CLASSES, type NoteNaming, type Phase, type TimeRange, type WidgetVisibility } from '@dawviz/render-core';
+// Các mục thời gian của bảng Thuộc tính (T-81): "Khoảng hiển thị" của widget đang chọn (REQ-GRAPHICS-14), chuyển động, nốt chủ, cách ghi tên nốt.
+// Phase của bài chỉnh trên làn Phase của Timeline (D-69, LayerTimeline.tsx).
+import { DEFAULT_LOOP, DEFAULT_PHASE, DEFAULT_NAMING, LOOP_EFFECT_NAMES, WIDGET_EFFECT_NAMES, type MotionLoop, type WidgetMotion, MAX_RANGES, NAMING_SYSTEMS, PITCH_CLASSES, type NoteNaming, type TimeRange, type WidgetVisibility } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { InspectorSection, ResetButton, TickField } from './Inspector.tsx';
 import { NumberField } from './NumberField.tsx';
@@ -108,34 +109,6 @@ export function MotionSection({ n, widgetId, value, disabled, onChange }: { n: n
           </Select>
         </label>
       )}
-    </InspectorSection>
-  );
-}
-
-/** Mục "Phase": mỗi dòng là tên + thời điểm bắt đầu; phase kéo dài tới phase kế. Dùng cho chỗ giữ `{phase}`, `{next_phase}`, `{phase_remaining}`… */
-export function PhasesSection({ n, phases, duration, onChange }: { n: number; phases: readonly Phase[]; duration: number; onChange(p: Phase[], key?: string): void }) {
-  const { i18n } = useI18n();
-  const sort = (l: Phase[]) => [...l].sort((a, b) => a.start - b.start);
-  const taken = (start: number, except: number) => phases.some((p, j) => j !== except && Math.abs(p.start - start) < 0.001);
-  return (
-    <InspectorSection n={n} id="phases" title={i18n.t('web.phase.title')}>
-      {phases.length === 0 && <p className="text-xs leading-snug text-muted" data-testid="phase-none">{i18n.t('web.phase.none')}</p>}
-      <ul className="space-y-1.5" data-testid="phase-list">
-        {phases.map((p, i) => (
-          <li key={i} className="grid grid-cols-[minmax(0,1fr)_5.5rem_1.5rem] items-center gap-1.5">
-            <input type="text" aria-label={i18n.t('web.phase.name')} defaultValue={p.name} maxLength={60} data-testid={`phase-name-${i}`} key={`${i}-${p.name}`}
-              onBlur={(e) => { const v = e.target.value.replace(/\s+/g, ' ').trim(); if (!v) e.target.value = p.name; else if (v !== p.name) onChange(phases.map((x, j) => (j === i ? { ...x, name: v } : x)), `name${i}`); }}
-              onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
-              className="w-full min-w-0 rounded border border-control bg-raised px-2 py-1 text-[13px] text-fg" />
-            <TimeField id={`phase-start-${i}`} label={i18n.t('web.phase.start')} value={p.start} max={Math.max(duration, 1)} onChange={(v) => { if (v !== null && !taken(v, i)) onChange(sort(phases.map((x, j) => (j === i ? { ...x, start: v } : x)))); }} />
-            <button type="button" className={iconBtn} aria-label={i18n.t('web.phase.remove')} title={i18n.t('web.phase.remove')} onClick={() => onChange(phases.filter((_, j) => j !== i))} data-testid={`phase-remove-${i}`}><Close className="h-3.5 w-3.5" /></button>
-          </li>
-        ))}
-      </ul>
-      <button type="button" className={btn} disabled={phases.length >= MAX_PHASES} onClick={() => {
-        let start = phases.length ? phases[phases.length - 1].start + 1 : 0; while (taken(start, -1)) start += 1;
-        onChange(sort([...phases, { name: i18n.t('web.phase.defaultName', { n: phases.length + 1 }), start }]));
-      }} data-testid="phase-add"><Plus className="h-3.5 w-3.5" />{i18n.t('web.phase.add')}</button>
     </InspectorSection>
   );
 }

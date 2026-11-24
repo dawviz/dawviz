@@ -5,7 +5,7 @@
 // nên thành phần này không vẽ lại mỗi khung hình. Không có logic vẽ ở đây: khung hình = renderFrame của Render Core.
 import { Fragment, Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react';
 import { LayoutGroup, MotionConfig } from 'framer-motion';
-import { usesChordPlaceholder, widgetDefaults, DEFAULT_BRIGHTNESS, DEFAULT_KEYBOARD_STYLE, defaultStyleConfig, sanitizeBrightness, buildIndex, buildSceneHud, type AudioFeatures, type Derived, type SceneDocument, type BrightnessConfig, type NoteStyle, type StyleConfig, type KeyboardStyle, type UnifiedProjectAST, type WidgetSpec, DEFAULT_TEXT_STYLES, createWidget, duplicateWidget } from '@dawviz/render-core';
+import { MAX_FLAT_WIDGETS, flatCount, flattenScene, compOf, validCompPath, visibilityAlpha, usesChordPlaceholder, widgetDefaults, DEFAULT_BRIGHTNESS, DEFAULT_KEYBOARD_STYLE, defaultStyleConfig, sanitizeBrightness, buildIndex, buildSceneHud, type AudioFeatures, type Derived, type SceneDocument, type BrightnessConfig, type NoteStyle, type StyleConfig, type KeyboardStyle, type UnifiedProjectAST, type WidgetSpec, DEFAULT_TEXT_STYLES, createWidget, duplicateWidget } from '@dawviz/render-core';
 import type { ParseWarning } from '@dawviz/parser';
 import { useI18n } from './i18n/I18nProvider.tsx';
 import { LanguageSelect } from './components/LanguageSelect.tsx';
@@ -45,6 +45,7 @@ import { AudioLoadError, browserDeps, loadAudioAsset, type AudioAsset } from './
 import { audioLengthCheck } from './lib/audioLength.ts';
 import { peaksInWorker, spectrumInWorker } from './lib/audioWorkers.ts';
 import { CUSTOM_STYLE, initialDoc, pianoOf, type Doc } from './lib/commands.ts';
+import { liftCmd, viewDoc } from './lib/compLens.ts';
 import { GestureContext, useStoreState } from './lib/storeReact.ts';
 import { bindUndoKeys, shortcutLabels } from './lib/undoKeys.ts';
 import { downloadPreset, presetFileName, readPresetFile } from './lib/presetFile.ts';
@@ -109,6 +110,20 @@ export function App() {
   });
   const { doc, history } = useStoreState(store);
   const run = useCallback((make: (d: Doc) => ReturnType<typeof Cmds.toggleHidden>) => store.dispatch(make(store.get())), [store]);
+  // Precomp đang mở ở Editor (D-69): đường dẫn id lớp COMP từ gốc vào trong. Editor làm việc trên khung nhìn của comp đó (lib/compLens.ts);
+  // `erun` dựng lệnh trên khung nhìn rồi nâng về Doc thật. Đường dẫn hết hợp lệ (hoàn tác xoá lớp COMP) thì tự cắt.
+  const [compPath, setCompPath] = useState<string[]>([]);
+  const livePath = useMemo(() => validCompPath(doc.scene, compPath), [doc.scene, compPath]);
+  const pathRef = useRef(livePath); pathRef.current = livePath;
+  const edoc = useMemo(() => viewDoc(doc, livePath), [doc, livePath]);
+  const [flatFull, setFlatFull] = useState(0);
+  const erun = useCallback((make: (d: Doc) => ReturnType<typeof Cmds.toggleHidden>) => {
+    const p = pathRef.current, cmd = liftCmd(make(viewDoc(store.get(), p)), p);
+    // Trần số lớp sau khi trải precomp (render-core MAX_FLAT_WIDGETS): lệnh vượt trần thì không chạy, báo trên timeline.
+    if (cmd && flatCount(cmd.redo(store.get()).scene) > MAX_FLAT_WIDGETS && flatCount(cmd.redo(store.get()).scene) > flatCount(store.get().scene)) { setFlatFull((n) => n + 1); return; }
+    store.dispatch(cmd);
+  }, [store]);
+  const eget = useCallback(() => viewDoc(store.get(), pathRef.current), [store]);
   const gesture = useMemo(() => ({ begin: store.beginGesture, end: store.endGesture }), [store]);
   const piano = pianoOf(doc.scene);
   const style: StyleConfig = useMemo(() => piano?.properties.noteStyle ?? defaultStyleConfig(), [piano]);
@@ -227,14 +242,15 @@ export function App() {
   // T-05: khung hình = renderFrame(scene, derived, ast, t). Scene nằm trong store (T-07): kiểu nốt, bàn phím, bố cục widget đều ở đây.
   const scene: SceneDocument = doc.scene;
   const styleEdited = doc.videoStyle !== CUSTOM_STYLE && isEdited(doc.videoStyle, style.base);
-  const fonts = useFontsStatus(scene); // chưa nạp xong phông thì không vẽ khung có chữ (TECHNICAL-DESIGN 5.7)
+  const flat = useMemo(() => flattenScene(scene), [scene]); // precomp (D-69): widget trong comp cũng cần phông, hợp âm, bản nhạc
+  const fonts = useFontsStatus(flat); // chưa nạp xong phông thì không vẽ khung có chữ (TECHNICAL-DESIGN 5.7)
   const index = useMemo(() => (renderAst ? buildIndex(renderAst.tracks, renderAst.meta.totalDurationSeconds) : null), [renderAst]);
   // Dò hợp âm là việc nặng của bước derived: dựng lại chỉ khi đổi dự án/track hiển thị/widget Chord (không phải mỗi lần kéo thanh trượt kiểu nốt).
-  const chordSig = JSON.stringify(scene.widgets.filter((w) => w.type === 'CHORD_DETECTION' || usesChordPlaceholder(w)).map((w) => [w.id, w.trackMappingMode, w.assignedTrackIndices, (w.properties as { mode?: string }).mode, usesChordPlaceholder(w)]));
+  const chordSig = JSON.stringify(flat.widgets.filter((w) => w.type === 'CHORD_DETECTION' || usesChordPlaceholder(w)).map((w) => [w.id, w.trackMappingMode, w.assignedTrackIndices, (w.properties as { mode?: string }).mode, usesChordPlaceholder(w)]));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const hud = useMemo(() => (renderAst && index ? buildSceneHud(scene, renderAst, index) : undefined), [renderAst, index, chordSig]);
   // Bản nhạc (D-63): dựng trong Worker, theo widget; đổi màu/phóng to không dựng lại.
-  const notation = useNotation(scene, renderAst, index, loaded ? projectKey(loaded.name, loaded.ast) : '');
+  const notation = useNotation(flat, renderAst, index, loaded ? projectKey(loaded.name, loaded.ast) : '');
   const derived: Derived | null = useMemo(() => (index ? { index, brightness, hud, fontsReady: fonts === 'ready', ...(notation.layouts.size ? { notation: notation.layouts } : {}), ...(features ? { audio: { features, offsetSec: offsetMs / 1000 } } : {}), ...(bgBitmap ? { background: { image: bgBitmap, width: bgBitmap.width, height: bgBitmap.height } } : {}), ...(images.size ? { images } : {}), ...(fontSet ? { fonts: fontSet } : {}) } : null), [index, brightness, hud, fonts, features, offsetMs, bgBitmap, notation.layouts, images, fontSet]);
 
   // Preset của người dùng (cột Video styles): lưu theo trình duyệt. `activeUser` = ô đang áp khi scene đã bị chỉnh nên không còn khớp từng chữ.
@@ -470,7 +486,23 @@ export function App() {
     setWorking((w) => { const n = { ...w }; if (sameEdit(tileId, cur, orig)) delete n[tileId]; else n[tileId] = cur; return n; });
   };
   const takeWorking = (tile: string) => { const w = working[tile]; if (w) setWorking((x) => { const n = { ...x }; delete n[tile]; return n; }); return w; };
+  // Precomp tại vạch phát (D-69): scene gốc có lớp COMP đang hiện ở vạch phát thì ô phong cách/preset áp vào nội dung precomp trên cùng đó,
+  // không thay cả scene. Không có precomp nào ở vạch phát thì áp cả scene như trước.
+  const compAtPlayhead = (): { comp: string; name: string } | null => {
+    const sc = store.get().scene; if (!sc.comps) return null;
+    const t = playback.get().t, dur = index?.duration ?? 0;
+    const hit = sc.widgets.map((w, i) => ({ w, i })).filter(({ w }) => compOf(w) && w.visible && visibilityAlpha(w.visibility, t, dur) > 0)
+      .sort((a, b) => a.w.zIndex - b.w.zIndex || a.i - b.i).at(-1)?.w;
+    const c = hit && compOf(hit); const spec = c && sc.comps[c.comp];
+    return c && spec ? { comp: c.comp, name: hit!.name ?? spec.name } : null;
+  };
+  const applyToComp = (src: SceneDocument): boolean => {
+    const at = compAtPlayhead(); if (!at) return false;
+    run((d) => Cmds.applySceneToComp(d, at.comp, src)); say(i18n.t('web.comp.styleApplied', { name: at.name }));
+    return true;
+  };
   const pickVideoStyle = (id: string) => {
+    if (applyToComp(sceneForStyle(id, { base: videoStyleBase(id), tracks: pianoOf(store.get().scene)?.properties.noteStyle.tracks ?? {} }, {}))) return;
     if (id === tileId) return;
     stashCurrent(); setActiveUser(null);
     store.dispatch(Cmds.setVideoStyle(store.get(), id, takeWorking(id)));
@@ -546,6 +578,7 @@ export function App() {
   const [presetStatus, setPresetStatus] = useState<string | null>(null);
   const onPickUserPreset = (id: string) => {
     const pr = userPresets.find((x) => x.id === id); if (!pr) return;
+    if (applyToComp(pr.scene)) return;
     if (id === tileId) return;
     stashCurrent(); setActiveUser(id); setPresetProblems([]); setPresetOpened(null);
     const w = takeWorking(id);
@@ -590,35 +623,39 @@ export function App() {
   // do chuột; focus do bàn phím thì Space bấm nút như chuẩn; ô gõ chữ giữ nguyên (lib/transportKeys.ts).
   useEffect(() => (tab !== 'settings' && loaded ? bindTransportKeys(window, playback) : undefined), [tab, loaded, playback]);
   const editorActions: EditorActions = useMemo(() => ({
-    layouts: (p) => run((d) => Cmds.patchLayouts(d, p)),
+    layouts: (p) => erun((d) => Cmds.patchLayouts(d, p)),
     aspect: (a) => run((d) => Cmds.setAspect(d, a)),
     canvasSize: (w, h) => run((d) => Cmds.setCanvasSize(d, w, h)),
-    visible: (id, v) => run((d) => Cmds.setWidgetVisible(d, id, v)),
-    parent: (id, p) => run((d) => Cmds.setWidgetParent(d, id, p)),
-    paintVisible: (id, v) => run((d) => Cmds.paintWidgetVisible(d, id, v)),
-    rename: (id, name) => run((d) => Cmds.renameWidget(d, id, name)),
-    allVisible: () => run((d) => Cmds.toggleAllWidgetsVisible(d)),
-    z: (id, where) => run((d) => Cmds.reorderZ(d, id, where)),
-    moveLayer: (id, to) => run((d) => Cmds.moveLayer(d, id, to)),
+    visible: (id, v) => erun((d) => Cmds.setWidgetVisible(d, id, v)),
+    parent: (id, p) => erun((d) => Cmds.setWidgetParent(d, id, p)),
+    paintVisible: (id, v) => erun((d) => Cmds.paintWidgetVisible(d, id, v)),
+    rename: (id, name) => erun((d) => Cmds.renameWidget(d, id, name)),
+    allVisible: () => erun((d) => Cmds.toggleAllWidgetsVisible(d)),
+    z: (id, where) => erun((d) => Cmds.reorderZ(d, id, where)),
+    moveLayer: (id, to) => erun((d) => Cmds.moveLayer(d, id, to)),
     snapping: (p) => run((d) => Cmds.patchSnapping(d, p)),
-    animate: (id, path, v, key) => run((d) => Cmds.setWidgetAnimate(d, id, path, v, key)),
-    animEdit: (edits, key) => run((d) => Cmds.editWidgetAnimation(d, edits, key)),
-    motion: (id, v, key) => run((d) => Cmds.setWidgetMotion(d, id, v, key)),
-    visibility: (id, v, key) => run((d) => Cmds.setWidgetVisibility(d, id, v, key)),
+    animate: (id, path, v, key) => erun((d) => Cmds.setWidgetAnimate(d, id, path, v, key)),
+    animEdit: (edits, key) => erun((d) => Cmds.editWidgetAnimation(d, edits, key)),
+    motion: (id, v, key) => erun((d) => Cmds.setWidgetMotion(d, id, v, key)),
+    visibility: (id, v, key) => erun((d) => Cmds.setWidgetVisibility(d, id, v, key)),
     phases: (list, key) => run((d) => Cmds.setPhases(d, list, key)),
     tonic: (t) => run((d) => Cmds.setTonic(d, t)),
     noteNaming: (n) => run((d) => Cmds.setNoteNaming(d, n)),
     background: { pick: (f) => void onBackground(f), remove: dropBackground, spec: (p) => run((d) => Cmds.setBackgroundSpec(d, p)) },
-    add: (type) => { const w = createWidget(store.get().scene, type); run((d) => Cmds.addWidget(d, w)); return w.id; },
+    add: (type) => { const w = createWidget(eget().scene, type); erun((d) => Cmds.addWidget(d, w)); return w.id; },
     duplicate: (ids) => {
-      let sc = store.get().scene; const out: WidgetSpec[] = [];
+      let sc = eget().scene; const out: WidgetSpec[] = [];
       for (const id of ids) { const w = sc.widgets.find((x) => x.id === id); if (!w) continue; const c = duplicateWidget(sc, w); out.push(c); sc = { ...sc, widgets: [...sc.widgets, c] }; }
-      const d0 = store.get(), refs: Record<string, Record<string, unknown>> = {};
+      const d0 = eget(), refs: Record<string, Record<string, unknown>> = {};
       ids.forEach((id, i) => { const src = d0.scene.widgets.find((x) => x.id === id); if (src && out[i]) refs[out[i].id] = d0.propsRef[id] ?? widgetDefaults(src.type); });
-      run((d) => Cmds.addWidgets(d, out, refs)); return out.map((w) => w.id);
+      erun((d) => Cmds.addWidgets(d, out, refs)); return out.map((w) => w.id);
     },
-    remove: (ids) => run((d) => Cmds.removeWidgets(d, ids)),
-  }), [run, store, onBackground, dropBackground]);
+    remove: (ids) => erun((d) => Cmds.removeWidgets(d, ids)),
+    // Timeline lớp và precomp (D-69): khung nhìn đang mở; cỡ khung, phase, bắt dính... luôn là của scene gốc (run).
+    layers: (kind, next, key) => erun((d) => Cmds.setLayers(d, kind, next, key)),
+    renameComp: (comp, name) => run((d) => Cmds.renameComp(d, comp, name)),
+    view: eget,
+  }), [run, erun, eget, onBackground, dropBackground]);
 
   // Lane automation có trong dự án (nguồn phát sáng "automation", REQ-GRAPHICS-17).
   const lanes = useMemo(() => [...new Set((loaded?.ast.tracks ?? []).flatMap((tr) => Object.entries(tr.automation ?? {}).filter(([, l]) => l?.points.length).map(([k]) => k)))], [loaded]);
@@ -662,14 +699,19 @@ export function App() {
 
   // Inspector của Preview: Bài, Track (D-57). Mục Hình thức chỉ còn ở bảng Thuộc tính của Editor khi chọn Piano Roll
   // (chủ dự án chốt 2026-11-14): Preview giữ phong cách video, bài và track để chỉnh nhanh.
-  const pianoRef = piano ? (doc.propsRef[piano.id] as Record<string, unknown> | undefined) : undefined;
+  // Các mục sau chỉ có ở bảng Thuộc tính của Editor: làm việc trên khung nhìn của precomp đang mở (edoc/erun, D-69).
+  const epiano = pianoOf(edoc.scene);
+  const estyle: StyleConfig = epiano?.properties.noteStyle ?? defaultStyleConfig();
+  const ekeyboard: KeyboardStyle = epiano?.properties.keyboard ?? { ...DEFAULT_KEYBOARD_STYLE };
+  const elookEdited = ADVANCED_STYLE_KEYS.some((k) => estyle.base[k] !== ref[k]);
+  const epianoRef = epiano ? (edoc.propsRef[epiano.id] as Record<string, unknown> | undefined) : undefined;
   const lookSection = (n: number) => (
-    <InspectorSection key="look" n={n} id="look" title={i18n.t('web.section.look')} more={more('look', lookEdited)}>
-      {piano
-        ? <StylePanel style={style} keyboard={keyboard} onStyle={(n2) => run((d) => Cmds.patchNoteStyle(d, n2.base))} onKeyboard={(n2) => run((d) => Cmds.patchKeyboard(d, n2))} lanes={lanes} advanced={showAdv('look')} notePresets={NOTE_PRESETS} onNotePreset={pickNotePreset}
-            pitchRange={{ value: Cmds.pitchRangeOf(piano.properties), reference: pianoRef && typeof pianoRef.pitchRangeMode === 'string' ? { mode: pianoRef.pitchRangeMode as 'FIT_CONTENT' | 'CUSTOM', min: Number(pianoRef.pitchMin), max: Number(pianoRef.pitchMax) } : undefined, onChange: (v) => run((d) => Cmds.setPitchRange(d, v)) }}
-            reference={ref} keyboardRef={(doc.propsRef[piano.id] as { keyboard?: { enabled?: boolean } } | undefined)?.keyboard?.enabled}
-            playhead={{ scrollMode: piano.properties.scrollMode, scrollModeRef: pianoRef?.scrollMode as 'SCROLL' | 'PAGE' | undefined, onScrollMode: (m) => run((d) => Cmds.setScrollMode(d, m)), visibleSeconds: piano.properties.visibleSeconds, visibleSecondsRef: typeof pianoRef?.visibleSeconds === 'number' ? pianoRef.visibleSeconds : undefined, onVisibleSeconds: (v) => run((d) => Cmds.setVisibleSeconds(d, v)), page: { unit: piano.properties.pageUnit, bars: piano.properties.pageBars, reveal: piano.properties.revealAhead, unitRef: pianoRef?.pageUnit as 'SECONDS' | 'BARS' | undefined, barsRef: typeof pianoRef?.pageBars === 'number' ? pianoRef.pageBars : undefined, revealRef: typeof pianoRef?.revealAhead === 'number' ? pianoRef.revealAhead : undefined, onUnit: (u) => run((d) => Cmds.setPageProp(d, 'pageUnit', u)), onBars: (n) => run((d) => Cmds.setPageProp(d, 'pageBars', n)), onReveal: (s) => run((d) => Cmds.setPageProp(d, 'revealAhead', s)) }, ratio: piano.properties.playheadPositionRatio, visible: piano.properties.playheadVisible, visibleRef: (doc.propsRef[piano.id] as { playheadVisible?: boolean } | undefined)?.playheadVisible, reference: playheadRef, onChange: (r) => run((d) => Cmds.setPlayheadRatio(d, r)), onVisible: (v) => run((d) => Cmds.setPlayheadVisible(d, v)) }} />
+    <InspectorSection key="look" n={n} id="look" title={i18n.t('web.section.look')} more={more('look', elookEdited)}>
+      {epiano
+        ? <StylePanel style={estyle} keyboard={ekeyboard} onStyle={(n2) => erun((d) => Cmds.patchNoteStyle(d, n2.base))} onKeyboard={(n2) => erun((d) => Cmds.patchKeyboard(d, n2))} lanes={lanes} advanced={showAdv('look')} notePresets={NOTE_PRESETS} onNotePreset={(id) => erun((d) => Cmds.applyNotePreset(d, noteStylePreset(id), id))}
+            pitchRange={{ value: Cmds.pitchRangeOf(epiano.properties), reference: epianoRef && typeof epianoRef.pitchRangeMode === 'string' ? { mode: epianoRef.pitchRangeMode as 'FIT_CONTENT' | 'CUSTOM', min: Number(epianoRef.pitchMin), max: Number(epianoRef.pitchMax) } : undefined, onChange: (v) => erun((d) => Cmds.setPitchRange(d, v)) }}
+            reference={ref} keyboardRef={(edoc.propsRef[epiano.id] as { keyboard?: { enabled?: boolean } } | undefined)?.keyboard?.enabled}
+            playhead={{ scrollMode: epiano.properties.scrollMode, scrollModeRef: epianoRef?.scrollMode as 'SCROLL' | 'PAGE' | undefined, onScrollMode: (m) => erun((d) => Cmds.setScrollMode(d, m)), visibleSeconds: epiano.properties.visibleSeconds, visibleSecondsRef: typeof epianoRef?.visibleSeconds === 'number' ? epianoRef.visibleSeconds : undefined, onVisibleSeconds: (v) => erun((d) => Cmds.setVisibleSeconds(d, v)), page: { unit: epiano.properties.pageUnit, bars: epiano.properties.pageBars, reveal: epiano.properties.revealAhead, unitRef: epianoRef?.pageUnit as 'SECONDS' | 'BARS' | undefined, barsRef: typeof epianoRef?.pageBars === 'number' ? epianoRef.pageBars : undefined, revealRef: typeof epianoRef?.revealAhead === 'number' ? epianoRef.revealAhead : undefined, onUnit: (u) => erun((d) => Cmds.setPageProp(d, 'pageUnit', u)), onBars: (n) => erun((d) => Cmds.setPageProp(d, 'pageBars', n)), onReveal: (s) => erun((d) => Cmds.setPageProp(d, 'revealAhead', s)) }, ratio: epiano.properties.playheadPositionRatio, visible: epiano.properties.playheadVisible, visibleRef: (edoc.propsRef[epiano.id] as { playheadVisible?: boolean } | undefined)?.playheadVisible, reference: playheadRef, onChange: (r) => erun((d) => Cmds.setPlayheadRatio(d, r)), onVisible: (v) => erun((d) => Cmds.setPlayheadVisible(d, v)) }} />
         : <p className="text-xs text-muted">{i18n.t('web.look.noPiano')}</p>}
     </InspectorSection>
   );
@@ -683,21 +725,21 @@ export function App() {
     return (
       <InspectorSection key="text" n={n} id="text" title={i18n.t('web.section.text')} more={more('text', advEdited)}>
         <TextPanel widget={w} styles={scene.textStyles ?? DEFAULT_TEXT_STYLES} advanced={showAdv('text')} disabled={locked}
-          onRef={(field, next, path) => run((d) => Cmds.patchTextRef(d, w.id, field, next, path))}
-          onStyles={(set, field, r, kind) => run((d) => Cmds.setTextStyles(d, set, w.id, field, r, kind))}
-          onProps={(patch) => run((d) => Cmds.patchWidgetProps(d, w.id, patch))} reference={doc.propsRef[w.id] ?? widgetDefaults(w.type)} />
+          onRef={(field, next, path) => erun((d) => Cmds.patchTextRef(d, w.id, field, next, path))}
+          onStyles={(set, field, r, kind) => erun((d) => Cmds.setTextStyles(d, set, w.id, field, r, kind))}
+          onProps={(patch) => erun((d) => Cmds.patchWidgetProps(d, w.id, patch))} reference={edoc.propsRef[w.id] ?? widgetDefaults(w.type)} />
       </InspectorSection>
     );
   };
   // Mục "Thiết lập" (T-68): thuộc tính riêng của widget chữ. "Đã chỉnh nâng cao" = thuộc tính chỉ có ở Nâng cao khác mặc định.
   const settingsSection = (w: WidgetSpec, n: number, locked = false) => {
     if (!hasWidgetSettings(w.type)) return null;
-    const reference = doc.propsRef[w.id] ?? widgetDefaults(w.type); // mốc ↺: bộ dựng sẵn áp gần nhất (widget mới: mặc định của loại)
+    const reference = edoc.propsRef[w.id] ?? widgetDefaults(w.type); // mốc ↺: bộ dựng sẵn áp gần nhất (widget mới: mặc định của loại)
     const edited = advancedEdited(w, w.properties as Record<string, unknown>, reference);
     return (
       <InspectorSection key="settings" n={n} id="settings" title={i18n.t('web.section.settings')} more={more('settings', edited)}>
-        <WidgetSettings widget={w} advanced={showAdv('settings')} disabled={locked} reference={reference} onProps={(patch) => run((d) => Cmds.patchWidgetProps(d, w.id, patch))}
-          tracks={loaded?.ast.tracks.map((t) => ({ index: t.index, name: t.name }))} onTracks={(mode, idx) => run((d) => Cmds.setWidgetTracks(d, w.id, mode, idx))} />
+        <WidgetSettings widget={w} advanced={showAdv('settings')} disabled={locked} reference={reference} onProps={(patch) => erun((d) => Cmds.patchWidgetProps(d, w.id, patch))}
+          tracks={loaded?.ast.tracks.map((t) => ({ index: t.index, name: t.name }))} onTracks={(mode, idx) => erun((d) => Cmds.setWidgetTracks(d, w.id, mode, idx))} />
       </InspectorSection>
     );
   };
@@ -815,9 +857,9 @@ export function App() {
       <main className="min-h-0 flex-1">
         <div role="tabpanel" id="panel-preview" aria-labelledby="tab-preview" hidden={tab !== 'preview'} className="h-full">{preview}</div>
         <div role="tabpanel" id="panel-editor" aria-labelledby="tab-editor" hidden={tab !== 'editor'} className="h-full">
-          <Editor styleName={styleLabel} scene={scene} derived={derived} ast={renderAst} playback={playback} fonts={fonts} advanced={advanced} actions={editorActions} active={tab === 'editor'}
-            layoutRef={doc.layoutRef}
-            widgetSections={(w, n, lk) => (w.type === 'PIANO_ROLL' ? [w.id === piano?.id ? lookSection(n) : null, settingsSection(w, n + (w.id === piano?.id ? 1 : 0), lk)] : hasWidgetSettings(w.type) ? [settingsSection(w, n, lk), textSection(w, n + 1, lk)] : [textSection(w, n, lk)])}
+          <Editor styleName={styleLabel} scene={edoc.scene} root={scene} compPath={livePath} onCompPath={setCompPath} flatFull={flatFull} derived={derived} ast={renderAst} playback={playback} fonts={fonts} advanced={advanced} actions={editorActions} active={tab === 'editor'}
+            layoutRef={edoc.layoutRef}
+            widgetSections={(w, n, lk) => (w.type === 'PIANO_ROLL' ? [w.id === epiano?.id ? lookSection(n) : null, settingsSection(w, n + (w.id === epiano?.id ? 1 : 0), lk)] : hasWidgetSettings(w.type) ? [settingsSection(w, n, lk), textSection(w, n + 1, lk)] : [textSection(w, n, lk)])}
             transport={loaded ? <Transport playback={playback} duration={playDuration} offsetMs={offsetMs} wave={audio && peaks ? { peaks, durationSec: audio.durationSec } : null} /> : undefined} />
         </div>
         <div role="tabpanel" id="panel-settings" aria-labelledby="tab-settings" hidden={tab !== 'settings'} className="h-full overflow-y-auto bg-page">

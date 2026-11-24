@@ -82,7 +82,7 @@ export function EditorOverlay({ scene, cssWidth, selected, locked, onSelect, onL
       begin({ kind: 'rotate', ids, starts, pivot, a0: pointerAngle(pivot, p) }, e); return;
     }
     if (handle === 'anchor' && single && advanced) { begin({ kind: 'anchor', id: single.id, start: single.layout }, e); return; }
-    if (handle && single) { begin({ kind: 'resize', handle: handle as Handle, id: single.id, start: single.layout }, e); return; }
+    if (handle && single && single.type !== 'COMP') { begin({ kind: 'resize', handle: handle as Handle, id: single.id, start: single.layout }, e); return; }
     const hit = hitTest(framed, p, locked);
     if (!hit) {
       if (!e.shiftKey) onSelect([]);
@@ -203,7 +203,8 @@ export function EditorOverlay({ scene, cssWidth, selected, locked, onSelect, onL
             <circle data-handle="rotate" cx={single.layout.width / 2} cy={-px(22)} r={px(5)} fill="white" stroke="rgb(var(--guide))" strokeWidth={1.5} vectorEffect="non-scaling-stroke" style={{ cursor: active === 'rotate' ? 'grabbing' : 'grab' }}>
               <title>{i18n.t('web.editor.rotateHandle')}</title>
             </circle>
-            {HANDLES.map((h) => {
+            {/* Lớp precomp (D-69) luôn đúng cỡ khung: không có tay nắm đổi cỡ (phóng to/thu nhỏ bằng Tỉ lệ trên timeline). */}
+            {single.type !== 'COMP' && HANDLES.map((h) => {
               const [fx, fy] = frac(h), s = px(8);
               return <rect key={h} data-handle={h} x={fx * single.layout.width - s / 2} y={fy * single.layout.height - s / 2} width={s} height={s}
                 fill="white" stroke="rgb(var(--guide))" strokeWidth={1.5} vectorEffect="non-scaling-stroke" style={{ cursor: cursorFor(h, single.layout.rotation) }} />;

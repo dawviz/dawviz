@@ -81,3 +81,12 @@ export const ZoomOut = (p: P) => <S {...p}><circle cx="7" cy="7" r="4.5" /><path
 export const FitWidth = (p: P) => <S {...p}><path d="M2 3.5v9M14 3.5v9M4.5 8h7M6.5 6 4.5 8l2 2M9.5 6l2 2-2 2" /></S>;
 /** Lọc: chỉ hiện thuộc tính đang animate. */
 export const Filter = (p: P) => <S {...p}><path d="M2.5 3.5h11L9.25 8.5v4l-2.5 1v-5Z" /></S>;
+/** Kéo cho hàng cao hơn / thấp hơn (timeline lớp): hai vạch ngang với mũi tên ra / vào. */
+export const RowsTaller = (p: P) => <S {...p}><path d="M3 6.5h10M3 9.5h10M8 1.5v3M6.5 3 8 1.5 9.5 3M8 14.5v-3M6.5 13 8 14.5 9.5 13" /></S>;
+export const RowsShorter = (p: P) => <S {...p}><path d="M3 6.5h10M3 9.5h10M8 1.5v3M6.5 3 8 4.5 9.5 3M8 14.5v-3M6.5 13 8 11.5 9.5 13" /></S>;
+/** Kéo cắt: tách lớp tại vạch phát. */
+export const Scissors = (p: P) => <S {...p}><circle cx="4.5" cy="11.5" r="2" /><circle cx="11.5" cy="11.5" r="2" /><path d="M5.9 10 12 2.5M10.1 10 4 2.5" /></S>;
+/** Hai khung chồng nhau: precomp. */
+export const Precomp = (p: P) => <S {...p}><rect x="2.5" y="5" width="8.5" height="8.5" rx="1" /><path d="M5 5V3.5a1 1 0 0 1 1-1h6.5a1 1 0 0 1 1 1V10a1 1 0 0 1-1 1H11" /></S>;
+/** Cờ đánh dấu: phase. */
+export const Flag = (p: P) => <S {...p}><path d="M3.5 14.5V2M3.5 2.5h8l-1.8 2.8 1.8 2.7h-8" /></S>;

@@ -178,6 +178,12 @@ export function describeCommand(cmd: Cmd, c: LabelCtx): string {
     case 'setTonic': return cmd.after === null ? i18n.t('web.hist.tonicOff') : i18n.t('web.hist.tonic', { note: pitchClassName(Number(cmd.after)) });
     case 'setNoteNaming': return cmd.after === null ? i18n.t('web.hist.noteNamingOff') : i18n.t('web.hist.noteNaming', { system: i18n.t(`web.naming.system.${String((cmd.after as { system: string }).system)}`) });
     case 'setPhases': return i18n.t('web.hist.phases', { n: Number(p.n) });
+    case 'moveClips': return i18n.t('web.hist.moveClips', { n: Number(p.n ?? 1) });
+    case 'trimClip': return i18n.t('web.hist.trimClip', { widget });
+    case 'splitLayer': return i18n.t('web.hist.splitLayer', { widget });
+    case 'precompose': return i18n.t('web.hist.precompose', { name: String(p.name ?? ''), n: Number(p.n ?? 1) });
+    case 'renameComp': return i18n.t('web.hist.renameComp', { name: String(p.name ?? '') });
+    case 'applySceneToComp': return i18n.t('web.hist.styleToComp', { name: String(p.name ?? '') });
     case 'patchTextRef': return i18n.t('web.hist.text', { widget });
     case 'setTextStyles': return i18n.t(p.kind === 'save' ? 'web.hist.textStyleSave' : 'web.hist.textStyleUpdate', { widget });
     default: return i18n.has(cmd.label) ? i18n.t(cmd.label) : cmd.type;

@@ -50,8 +50,6 @@ export interface PackInput {
   tempoOverride?: PackManifest['tempoOverride'];
   audio?: { name: string; bytes: Uint8Array; offsetMs: number };
   assets?: { name: string; bytes: Uint8Array }[];
-  /** Chuỗi cảnh (T-110, D-66 kiểu C): manifest mốc thời gian + các scene đã dùng theo khoá. JSON tuỳ ý, kiểm bằng `sanitizeManifest`/`sanitizeScene` khi nạp. */
-  sequence?: { manifest: unknown; scenes: Record<string, unknown> };
 }
 
 export interface PackContents {
@@ -62,12 +60,10 @@ export interface PackContents {
   source: { name: string; bytes: Uint8Array };
   audio?: { name: string; bytes: Uint8Array; offsetMs: number };
   assets: { name: string; bytes: Uint8Array }[];
-  /** Chuỗi cảnh nếu pack có (đã đọc JSON, CHƯA kiểm schema). */
-  sequence?: { manifest: unknown; scenes: Record<string, unknown> };
   warnings: { code: string; message: string; details?: Record<string, unknown> }[];
 }
 
-const SEQUENCE_PATH = 'sequence.json', SCENE_PATH = 'workspace_preset.json', WORKSPACE_PATH = 'workspace.json', OVERRIDES_PATH = 'overrides.json', MANIFEST_PATH = 'manifest.json';
+const SCENE_PATH = 'workspace_preset.json', WORKSPACE_PATH = 'workspace.json', OVERRIDES_PATH = 'overrides.json', MANIFEST_PATH = 'manifest.json';
 
 /** Chuẩn hoá tên tệp người dùng thành một thành phần đường dẫn an toàn (không `/`, `\`, `..`, ký tự điều khiển). */
 export function safeName(name: string, fallback: string): string {
@@ -117,7 +113,6 @@ export async function buildPack(input: PackInput): Promise<Uint8Array> {
   await add(SCENE_PATH, json(input.scene), 'json');
   await add(WORKSPACE_PATH, json(input.workspace), 'json');
   await add(OVERRIDES_PATH, json(input.overrides ?? {}), 'json');
-  if (input.sequence) await add(SEQUENCE_PATH, json(input.sequence), 'json');
   await add(`source/${sourceName}`, input.source.bytes, 'source');
   let audio: PackManifest['audio'];
   if (input.audio) {
@@ -217,7 +212,6 @@ export async function readPack(bytes: Uint8Array, limitsIn: Partial<PackLimits> 
   return {
     manifest, scene: jsonOf(files, SCENE_PATH, limits, true), workspace: jsonOf(files, WORKSPACE_PATH, limits, false) ?? {},
     overrides: jsonOf(files, OVERRIDES_PATH, limits, false) ?? {},
-    ...(listed.has(SEQUENCE_PATH) ? (() => { const q = jsonOf(files, SEQUENCE_PATH, limits, false) as { manifest?: unknown; scenes?: unknown } | undefined; return q && typeof q === 'object' && q.scenes && typeof q.scenes === 'object' ? { sequence: { manifest: q.manifest, scenes: q.scenes as Record<string, unknown> } } : {}; })() : {}),
     source: { name: srcName as string, bytes: files[srcPath] }, ...(audio ? { audio } : {}), assets, warnings,
   };
 }

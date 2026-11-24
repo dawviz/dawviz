@@ -1,6 +1,6 @@
 // Tài liệu có hoàn tác và các lệnh (T-07, Technical Design §6.4). Hàm dựng lệnh nhận `doc` hiện tại để lấy giá trị "trước";
 // trả null khi không có gì đổi (không ghi mục lịch sử rỗng). `redo`/`undo` là hàm thuần trên Doc bất biến.
-import type { Animation, BrightnessConfig, NoteNaming, WidgetMotion, NoteStyle, KeyboardStyle, PianoRollProps, Phase, SceneDocument, TextRef, TextStyleSet, WidgetLayout, WidgetSpec, WidgetVisibility } from '@dawviz/render-core';
+import type { Animation, BrightnessConfig, CompSpec, NoteNaming, WidgetMotion, NoteStyle, KeyboardStyle, PianoRollProps, Phase, SceneDocument, TextRef, TextStyleSet, WidgetLayout, WidgetSpec, WidgetVisibility } from '@dawviz/render-core';
 import { ASPECTS, DEFAULT_BACKGROUND, hasMotion, widgetDefaults, type BackgroundImageSpec } from '@dawviz/render-core';
 import type { Command } from './store.ts';
 import { clampOffsetMs } from './audioMap.ts';
@@ -405,15 +405,20 @@ export const setCanvasSize = (d: Doc, width: number, height: number): Cmd | null
   const r2 = (v: number) => Math.round(v * 100) / 100;
   const scale = (l: WidgetLayout): WidgetLayout => ({ ...l, x: r2(l.x * sx), y: r2(l.y * sy), width: r2(l.width * sx), height: r2(l.height * sy) });
   type S = { canvas: Pick<SceneDocument['canvas'], 'aspectRatio' | 'designWidth' | 'designHeight'>; layouts: Record<string, WidgetLayout>; ref: Record<string, WidgetLayout> };
-  const get = (x: Doc): S => ({ canvas: { aspectRatio: x.scene.canvas.aspectRatio, designWidth: x.scene.canvas.designWidth, designHeight: x.scene.canvas.designHeight }, layouts: layoutsOf(x.scene), ref: x.layoutRef });
+  const allLayouts = (s: SceneDocument) => ({ ...layoutsOf(s), ...Object.fromEntries(Object.entries(s.comps ?? {}).flatMap(([c, spec]) => spec.widgets.map((q) => [`${c}/${q.id}`, q.layout]))) });
+  const get = (x: Doc): S => ({ canvas: { aspectRatio: x.scene.canvas.aspectRatio, designWidth: x.scene.canvas.designWidth, designHeight: x.scene.canvas.designHeight }, layouts: allLayouts(x.scene), ref: x.layoutRef });
+  // Widget trong precomp (D-69) co giãn cùng: khoá bố cục của chúng là `<comp>/<id>` (lib/compLens.ts refKey).
   const set = (x: Doc, v: S): Doc => ({
     ...x, layoutRef: v.ref,
-    scene: { ...x.scene, canvas: { ...x.scene.canvas, ...v.canvas }, widgets: x.scene.widgets.map((q) => (v.layouts[q.id] ? { ...q, layout: v.layouts[q.id] } : q)) },
+    scene: {
+      ...x.scene, canvas: { ...x.scene.canvas, ...v.canvas }, widgets: x.scene.widgets.map((q) => (v.layouts[q.id] ? { ...q, layout: v.layouts[q.id] } : q)),
+      ...(x.scene.comps ? { comps: Object.fromEntries(Object.entries(x.scene.comps).map(([c, spec]) => [c, { ...spec, widgets: spec.widgets.map((q) => { const l = v.layouts[`${c}/${q.id}`]; return l ? { ...q, layout: l } : q; }) }])) } : {}),
+    },
   });
   const g = gcd(w, h), ratio = `${w / g}:${h / g}`;
   const after: S = {
     canvas: { aspectRatio: ratio, designWidth: w, designHeight: h },
-    layouts: Object.fromEntries(Object.entries(layoutsOf(d.scene)).map(([id, l]) => [id, scale(l)])),
+    layouts: Object.fromEntries(Object.entries(allLayouts(d.scene)).map(([id, l]) => [id, scale(l)])),
     ref: Object.fromEntries(Object.entries(d.layoutRef).map(([id, l]) => [id, scale(l)])),
   };
   return slice(d, 'setAspect', 'web.cmd.aspect', get, set, after, undefined, { from: d.scene.canvas.aspectRatio, to: ratio, size: `${w} × ${h}` });
@@ -426,6 +431,49 @@ export const setAspect = (d: Doc, aspect: string): Cmd | null => {
 };
 export const patchSnapping = (d: Doc, patch: Partial<SceneDocument['canvas']['snapping']>): Cmd | null =>
   slice(d, 'patchSnapping', 'web.cmd.snapping', (x) => x.scene.canvas.snapping, (x, v) => ({ ...x, scene: { ...x.scene, canvas: { ...x.scene.canvas, snapping: v } } }), { ...d.scene.canvas.snapping, ...patch }, `snap:${Object.keys(patch).join(',')}`);
+
+// ── timeline lớp và precomp (D-69, T-112) ──
+/** Loại thao tác trên timeline lớp (tên lệnh và nhãn lịch sử). */
+export type LayerEdit = 'moveClips' | 'trimClip' | 'splitLayer' | 'precompose';
+const LAYER_LABEL: Record<LayerEdit, string> = { moveClips: 'web.cmd.moveClips', trimClip: 'web.cmd.trimClip', splitLayer: 'web.cmd.splitLayer', precompose: 'web.cmd.precompose' };
+type LayerState = { widgets: WidgetSpec[]; comps: Record<string, CompSpec> | null; layoutRef: Doc['layoutRef']; propsRef: Doc['propsRef'] };
+/**
+ * Thay danh sách lớp (và sổ comp, mốc ↺ nếu có) trong MỘT lệnh: dời/cắt mép/tách thanh, gom precomp (lib/layerTimeline.ts tính danh sách mới).
+ * `mergeKey` gộp cả lần kéo một thanh thành một bước hoàn tác.
+ */
+export const setLayers = (d: Doc, kind: LayerEdit, next: { widgets: WidgetSpec[]; comps?: Record<string, CompSpec>; layoutRef?: Doc['layoutRef']; propsRef?: Doc['propsRef'] }, mergeKey?: string, params?: Cmd['params']): Cmd | null => {
+  const get = (x: Doc): LayerState => ({ widgets: x.scene.widgets, comps: x.scene.comps ?? null, layoutRef: x.layoutRef, propsRef: x.propsRef });
+  const set = (x: Doc, v: LayerState): Doc => {
+    const { comps: _c, ...rest } = x.scene;
+    return { ...x, layoutRef: v.layoutRef, propsRef: v.propsRef, scene: { ...rest, widgets: v.widgets, ...(v.comps && Object.keys(v.comps).length ? { comps: v.comps } : {}) } };
+  };
+  const cur = get(d);
+  return slice(d, kind, LAYER_LABEL[kind], get, set, { widgets: next.widgets, comps: next.comps ?? cur.comps, layoutRef: next.layoutRef ?? cur.layoutRef, propsRef: next.propsRef ?? cur.propsRef }, mergeKey, params);
+};
+/** Đổi tên một precomp (tên comp và tên các lớp COMP đang trỏ tới nó ở cùng khung nhìn không đổi theo: lớp có tên riêng). */
+export const renameComp = (d: Doc, comp: string, name: string): Cmd | null => {
+  if (!d.scene.comps?.[comp]) return null;
+  return slice(d, 'renameComp', 'web.cmd.renameComp', (x) => x.scene.comps?.[comp]?.name ?? '', (x, v) => ({ ...x, scene: { ...x.scene, comps: { ...x.scene.comps, [comp]: { ...x.scene.comps![comp], name: v } } } }), name, undefined, { comp, name });
+};
+/**
+ * Áp một scene dựng sẵn (phong cách video, preset) vào nội dung của precomp `comp` (thẻ Xem trước, D-69: precomp tại vạch phát). Keyframe của scene
+ * tính từ giây 0 của comp. Mốc ↺ của widget trong comp lấy theo scene đó. Doc chuyển sang 'custom' (scene không còn trùng một phong cách nào).
+ */
+export const applySceneToComp = (d: Doc, comp: string, src: SceneDocument): Cmd | null => {
+  const spec = d.scene.comps?.[comp]; if (!spec) return null;
+  const pre = `${comp}/`;
+  const strip = <V,>(r: Record<string, V>) => Object.fromEntries(Object.entries(r).filter(([k]) => !k.startsWith(pre)));
+  type V = { videoStyle: string; widgets: WidgetSpec[]; layoutRef: Doc['layoutRef']; propsRef: Doc['propsRef'] };
+  const get = (x: Doc): V => ({ videoStyle: x.videoStyle, widgets: x.scene.comps?.[comp]?.widgets ?? [], layoutRef: x.layoutRef, propsRef: x.propsRef });
+  const set = (x: Doc, v: V): Doc => ({ ...x, videoStyle: v.videoStyle, layoutRef: v.layoutRef, propsRef: v.propsRef, scene: { ...x.scene, comps: { ...x.scene.comps, [comp]: { ...x.scene.comps![comp], widgets: v.widgets } } } });
+  const widgets = src.widgets.filter((w) => w.type !== 'COMP').map((w) => JSON.parse(JSON.stringify(w)) as WidgetSpec);
+  const after: V = {
+    videoStyle: CUSTOM_STYLE, widgets,
+    layoutRef: { ...strip(d.layoutRef), ...Object.fromEntries(widgets.map((w) => [pre + w.id, w.layout])) },
+    propsRef: { ...strip(d.propsRef), ...Object.fromEntries(widgets.map((w) => [pre + w.id, w.properties as Record<string, unknown>])) },
+  };
+  return slice(d, 'applySceneToComp', 'web.cmd.styleToComp', get, set, after, undefined, { comp, name: spec.name });
+};
 
 /** Chỉnh tay (kiểu nốt hoặc bố cục) có bị mất nếu đổi sang phong cách khác không? Dùng để hiện thông báo nhỏ sau khi đổi. */
 export function handEdited(d: Doc): boolean {

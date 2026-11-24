@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import { checkPreset, checkPresetPack } from './check.mjs';
 
 const enc = (o) => new TextEncoder().encode(typeof o === 'string' ? o : JSON.stringify(o));
-const scene = (extra = {}, widgets = []) => ({ schemaVersion: '0.7.0', license: 'CC0-1.0', canvas: {}, widgets, ...extra });
+const scene = (extra = {}, widgets = []) => ({ schemaVersion: '0.8.0', license: 'CC0-1.0', canvas: {}, widgets, ...extra });
 const text = (animate) => ({ id: 'a', type: 'TEXT', layout: { x: 0, y: 0, width: 100, height: 50 }, properties: {}, animate });
 
 test('preset dựng sẵn qua kiểm (không cần license); preset cộng đồng hợp lệ qua', () => {
@@ -20,7 +20,7 @@ test('chặn: thiếu/sai giấy phép, URL ngoài, biểu thức lỗi, khoá n
   assert.ok(has(checkPreset('a.json', enc(scene({ license: 'GPL-3.0' })), { community: true }), 'GPL-3.0'));
   assert.ok(has(checkPreset('a.json', enc(scene({ presetName: 'https://evil.example/x' }))), 'URL'));
   assert.ok(has(checkPreset('a.json', enc(scene({}, [text({ opacity: { expr: 'window.alert' } })]))), 'ERR_EXPR_UNKNOWN_NAME'));
-  assert.ok(has(checkPreset('a.json', enc('{"schemaVersion":"0.7.0","canvas":{},"widgets":[],"__proto__":{"x":1}}')), 'WARN_PRESET_UNSAFE_KEY'));
+  assert.ok(has(checkPreset('a.json', enc('{"schemaVersion":"0.8.0","canvas":{},"widgets":[],"__proto__":{"x":1}}')), 'WARN_PRESET_UNSAFE_KEY'));
   assert.ok(has(checkPreset('Bad Name.json', enc(scene()), { community: true }), 'slug'));
   assert.equal(checkPreset('a.json', enc('{oops')).ok, false);
   assert.ok(has(checkPreset('a.json', enc({ kind: 'note-style', license: 'MIT', style: { glow: 1 }, pad: 'x'.repeat(20000) })), 'vượt'));

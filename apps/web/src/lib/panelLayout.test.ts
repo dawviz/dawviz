@@ -11,7 +11,7 @@ test('parseLayout: dữ liệu hỏng hoặc thiếu → mặc định; số ngo
   assert.equal(l.size.timeline, DEFAULT_LAYOUT.size.timeline);
   assert.equal(l.size.tree, 320);
   assert.deepEqual(l.collapsed, { layers: true, props: false, timeline: false });
-  assert.equal('timeline' in parseLayout({ collapsed: {} }).collapsed, false, 'timeline chưa chọn thì để theo chế độ');
+  assert.equal('timeline' in parseLayout({ collapsed: {} }).collapsed, false, 'timeline chưa chọn thì để mặc định (mở)');
 });
 
 test('setSize / resetSize / toggle', () => {
@@ -23,10 +23,10 @@ test('setSize / resetSize / toggle', () => {
   assert.equal(toggle(t, 'layers', false).collapsed.layers, true);
 });
 
-test('resolveLayout: timeline theo chế độ khi chưa chọn; thu gọn còn dải mỏng', () => {
+test('resolveLayout: timeline mở khi chưa chọn, ở cả hai chế độ (D-69); thu gọn còn dải mỏng', () => {
   const big = { width: 1600, height: 900 };
-  assert.equal(resolveLayout(DEFAULT_LAYOUT, big, false).open.timeline, false);
-  assert.equal(resolveLayout(DEFAULT_LAYOUT, big, false).timeline, TIMELINE_BAR);
+  assert.equal(resolveLayout(DEFAULT_LAYOUT, big, false).open.timeline, true);
+  assert.equal(resolveLayout(toggle(DEFAULT_LAYOUT, 'timeline', false), big, false).timeline, TIMELINE_BAR);
   assert.equal(resolveLayout(DEFAULT_LAYOUT, big, true).timeline, DEFAULT_LAYOUT.size.timeline);
   const closed = toggle(toggle(DEFAULT_LAYOUT, 'layers', false), 'props', false);
   const r = resolveLayout(closed, big, true);
