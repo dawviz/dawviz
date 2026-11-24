@@ -386,13 +386,13 @@
         "locales/en.json#web.agent.",
         "plugins/dawviz/skills/dawviz/SKILL.md"
       ],
-      "uiHash": "5d1f1f971077",
-      "viHash": "21088b81f126",
-      "enHash": "648add51fc50",
+      "uiHash": "92d99cb83581",
+      "viHash": "56bb11808a09",
+      "enHash": "2f0cb985d987",
       "coverHashes": {
         "apps/web/src/lib/agentApi.ts": "659724b54701",
         "locales/en.json#web.agent.": "f45a58e74448",
-        "plugins/dawviz/skills/dawviz/SKILL.md": "9b33cdfc3bc8"
+        "plugins/dawviz/skills/dawviz/SKILL.md": "3a0db24f4756"
       }
     }
   }

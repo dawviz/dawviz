@@ -5,7 +5,7 @@ section: "REQ-GRAPHICS-20: Nét tay tất định cho đường vẽ (D-63; đã
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-GRAPHICS-20: Nét tay tất định cho đường vẽ (D-63; đã làm 2026-11-21 cho bản nhạc)"
 chunk: req-graphics-20-net-tay-tat-dinh-cho-duong-ve-d.md
 source_lines: 691-695
-source_sha1: 78bd49a501
+source_sha1: 7d9de60b91
 ids: [D-63, REQ-GRAPHICS-20]
 ---
 #### REQ-GRAPHICS-20: Nét tay tất định cho đường vẽ (D-63; đã làm 2026-11-21 cho bản nhạc)

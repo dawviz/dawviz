@@ -1,6 +1,6 @@
 # Chỉ mục BRD.md — TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)
 
-nguồn: `BRD.md` (sha1 eb31c690c5)
+nguồn: `BRD.md` (sha1 6bd64fd3f1)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -16,5 +16,5 @@ nguồn: `BRD.md` (sha1 eb31c690c5)
 | 9 | 4. PHẠM VI DỰ ÁN (PROJECT SCOPE) > 4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope) | [4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md](4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) | 1202 | D-12, D-13, D-14, D-15, D-28, D-44… |
 | 10 | 5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT) | [5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md](5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) | 4347 | D-01, D-12, D-24, D-25, D-29, KPI-02… |
 | 11 | 6. GIẢ ĐỊNH (ASSUMPTIONS) | [6-gia-dinh-assumptions.md](6-gia-dinh-assumptions.md) | 554 | D-01 |
-| 12 | 7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG) | [7-nhat-ky-quyet-dinh-decision-log.md](7-nhat-ky-quyet-dinh-decision-log.md) | 39328 | AD-08, AD-12, AD-13, AD-15, ARC-01, ARC-02… |
+| 12 | 7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG) | [7-nhat-ky-quyet-dinh-decision-log.md](7-nhat-ky-quyet-dinh-decision-log.md) | 39503 | AD-08, AD-12, AD-13, AD-15, ARC-01, ARC-02… |
 | 13 | 8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES) | [8-cac-van-de-con-mo-open-issues.md](8-cac-van-de-con-mo-open-issues.md) | 7775 | D-01, D-05, D-39, D-40, D-41, D-42… |

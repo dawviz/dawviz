@@ -14,7 +14,7 @@ The instructions for the AI are the `dawviz` skill in the repo (`plugins/dawviz/
 
 ## Way 2: the AI drives the browser (for example Claude in Chrome)
 
-Open the app with `?agent=1` added to its address (for example `http://localhost:5173/?agent=1`). A strip at the top says an AI can control this window. The AI clicks buttons as you would, or calls the app directly; everything happens in front of you and can be undone with Ctrl+Z. You still pick the project file in the **Open file** dialog.
+Open the app with `?agent=1` added to its address: for the public build that is `https://dawviz.github.io/dawviz/app/?agent=1` (from source: `http://localhost:5173/?agent=1`). A strip at the top says an AI can control this window. The AI clicks buttons as you would, or calls the app directly; everything happens in front of you and can be undone with Ctrl+Z. You still pick the project file in the **Open file** dialog.
 
 Without `?agent=1` the app opens no way for an AI to control it.
 

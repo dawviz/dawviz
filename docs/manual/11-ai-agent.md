@@ -14,7 +14,7 @@ Hướng dẫn cho AI nằm ở skill `dawviz` trong repo (`plugins/dawviz/skill
 
 ## Cách 2: AI điều khiển trình duyệt (ví dụ Claude in Chrome)
 
-Mở ứng dụng bằng địa chỉ có thêm `?agent=1` (ví dụ `http://localhost:5173/?agent=1`). Một dải ở trên cùng báo rằng AI có thể điều khiển cửa sổ này. AI sẽ bấm nút như bạn, hoặc gọi thẳng ứng dụng; mọi thao tác đều hiện ra trước mắt bạn và hoàn tác được bằng Ctrl+Z. Bạn vẫn là người chọn tệp dự án trong hộp thoại **Mở tệp**.
+Mở ứng dụng bằng địa chỉ có thêm `?agent=1`: với bản công khai là `https://dawviz.github.io/dawviz/app/?agent=1` (bản chạy từ mã nguồn: `http://localhost:5173/?agent=1`). Một dải ở trên cùng báo rằng AI có thể điều khiển cửa sổ này. AI sẽ bấm nút như bạn, hoặc gọi thẳng ứng dụng; mọi thao tác đều hiện ra trước mắt bạn và hoàn tác được bằng Ctrl+Z. Bạn vẫn là người chọn tệp dự án trong hộp thoại **Mở tệp**.
 
 Không có `?agent=1` thì ứng dụng không mở đường điều khiển nào cho AI.
 

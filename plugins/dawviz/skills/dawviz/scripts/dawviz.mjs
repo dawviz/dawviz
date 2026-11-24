@@ -5,7 +5,7 @@
 //
 //   node dawviz.mjs --project song.rpp [--audio mix.wav] [--preset video.json] [--style paper] \
 //                   [--frames 0,8,30] [--out-dir out] [--export out/video.mp4 --resolution 1080 --fps 30 --quality medium] \
-//                   [--url http://localhost:5173/ | --repo /path/to/dawviz] [--headed] [--channel chrome]
+//                   [--url http://localhost:5173/ | --repo /path/to/dawviz]   (không có cả hai: dùng bản công khai) [--headed] [--channel chrome]
 //   node dawviz.mjs --validate video.json [--url … | --repo …]     (chỉ kiểm preset, không cần dự án)
 //
 // Cần `playwright-core` (cd vào thư mục này rồi `npm install`, hoặc chạy trong repo dawviz đã `npm install`). Xuất MP4 (H.264) cần Chrome thật
@@ -43,10 +43,11 @@ function findRepo(dir) {
 }
 
 // ── app: --url có sẵn, hoặc tự chạy Vite dev trong repo ──
+const PUBLIC_APP = 'https://dawviz.github.io/dawviz/app/';
 let url = opt('url'), vite = null;
+const repo = url ? null : (opt('repo') ?? findRepo(HERE) ?? findRepo(process.cwd()));
+if (!url && !repo) url = PUBLIC_APP;
 if (!url) {
-  const repo = opt('repo') ?? findRepo(HERE) ?? findRepo(process.cwd());
-  if (!repo) fail('no app: pass --url (where DAW Visualizer runs) or --repo (a dawviz checkout with npm install done)');
   const port = Number(opt('port', '5297'));
   log(`starting app from ${repo} on port ${port}`);
   vite = spawn(path.join(repo, 'node_modules/.bin/vite'), ['--port', String(port), '--strictPort'], { cwd: path.join(repo, 'apps/web'), stdio: ['ignore', 'pipe', 'pipe'] });

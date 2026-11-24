@@ -19,7 +19,7 @@ Check what tools you have, then follow one path:
 | A browser you control (e.g. Claude in Chrome) | **B. Drive the app in the browser** | [references/gui.md](references/gui.md), and [references/api.md](references/api.md) if you can run JavaScript in the page |
 | A terminal with Node 22+ | **C. Run the script** | [references/api.md](references/api.md), `scripts/dawviz.mjs --help` |
 
-Where the app is: ask the user for their DawViz address. In a clone of the repo, `npm install` then `npm run dev` serves it at `http://localhost:5173/`. Paths B and C add `?agent=1` to the address; that turns on `window.dawviz` and shows a banner telling the user an agent can control the window.
+Where the app is: the public build at **https://dawviz.github.io/dawviz/app/** (no install, nothing is uploaded: it runs in the browser). Use another address only if the user gives one. In a clone of the repo, `npm install` then `npm run dev` serves it at `http://localhost:5173/`. Paths B and C add `?agent=1` to the address; that turns on `window.dawviz` and shows a banner telling the user an agent can control the window.
 
 ## 2. Workflow (all paths)
 
@@ -41,7 +41,7 @@ Give the user the preset in one ```json block, then these steps (use their langu
 
 ## 4. Path B: browser
 
-- Open the app address with `?agent=1`. If you can run JavaScript in the page, prefer `window.dawviz` ([references/api.md](references/api.md)): it is exact and every change is one undo step the user can see and undo.
+- Open the app address with `?agent=1` (for the public build: `https://dawviz.github.io/dawviz/app/?agent=1`). If you can run JavaScript in the page, prefer `window.dawviz` ([references/api.md](references/api.md)): it is exact and every change is one undo step the user can see and undo.
 - Otherwise click through [references/gui.md](references/gui.md). Prefer `data-testid` selectors and the visible button names listed there.
 - Loading files: the user picks the project in the browser's file dialog (**Open file**); you cannot read files from their disk yourself. Then paste your preset with **Paste preset**.
 
@@ -54,7 +54,7 @@ node dawviz.mjs --repo /path/to/dawviz \
   --frames 0,8,40 --out-dir out --export out/video.mp4 --resolution 1080 --fps 30
 ```
 
-Prints one JSON line (`ok`, project info, preset warnings, frame files, export file). Look at the frame PNGs before exporting a long video. Use `--url` instead of `--repo` when the app is already running somewhere. MP4 (H.264) needs Google Chrome installed (`--channel chrome`, tried first); otherwise the browser falls back to WebM and the script says so. `node dawviz.mjs --validate my-video.json --repo …` checks a preset without a project.
+Prints one JSON line (`ok`, project info, preset warnings, frame files, export file). Look at the frame PNGs before exporting a long video. With no `--url` and no `--repo`, it opens the public build. Use `--url` when the app is already running somewhere else, `--repo` to start it from a clone. MP4 (H.264) needs Google Chrome installed (`--channel chrome`, tried first); otherwise the browser falls back to WebM and the script says so. `node dawviz.mjs --validate my-video.json --repo …` checks a preset without a project.
 
 ## Rules
 

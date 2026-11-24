@@ -5,7 +5,7 @@ section: "REQ-GRAPHICS-07: Kiểu dáng nốt tuỳ chỉnh và bàn phím"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-07: Kiểu dáng nốt tuỳ chỉnh và bàn phím"
 chunk: req-graphics-07-kieu-dang-not-tuy-chinh-va-ban-p.md
 source_lines: 481-500
-source_sha1: 78bd49a501
+source_sha1: 7d9de60b91
 ids: [P-01, P-04, P-12, REQ-GRAPHICS-05, REQ-GRAPHICS-06, REQ-GRAPHICS-07, REQ-STORAGE-02, REQ-STORAGE-05]
 ---
 #### REQ-GRAPHICS-07: Kiểu dáng nốt tuỳ chỉnh và bàn phím
