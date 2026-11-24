@@ -28,7 +28,7 @@ Khi đang gõ trong một ô nhập, các phím này dùng cho ô đó.
 | Shift + mũi tên | Dịch 10 điểm |
 | Esc | Bỏ chọn; không chọn gì thì ra khỏi precomp đang mở |
 | Delete | Xoá widget đang chọn |
-| Ctrl+D | Nhân bản widget đang chọn |
+| Ctrl+D | Nhân bản widget đang chọn (lớp precomp thành một bản độc lập; lớp đã khoá không nhân bản) |
 | Ctrl+A (⌘A) | Chọn tất cả các lớp |
 | F2 | Đổi tên lớp đang chọn |
 | Alt+nhấp (Option+nhấp trên Mac) vào nhãn của một thiết lập | Khôi phục thiết lập đó về giá trị gốc (khi nó đã đổi) |
@@ -39,7 +39,7 @@ Khi đang gõ trong một ô nhập, các phím này dùng cho ô đó.
 | Alt+Lên / Alt+Xuống (trên tên lớp ở Timeline) | Đổi thứ tự lớp |
 | Ctrl+K | Tách lớp đang chọn tại vạch phát |
 | Ctrl+G | Gom các lớp đang chọn thành precomp |
-| Ctrl+Shift+G | Gỡ precomp đang chọn (lớp bên trong về lại timeline) |
+| Ctrl+Shift+G | Gỡ precomp đang chọn (lớp bên trong về lại timeline; hỏi xác nhận nếu sẽ mất hoạt hình của lớp precomp) |
 | Giữ Alt khi kéo | Di chuyển không bắt dính |
 | Giữ Ctrl khi đổi cỡ | Đổi cỡ không bắt dính |
 | Giữ Alt khi đổi cỡ | Đổi cỡ quanh tâm |

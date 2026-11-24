@@ -8,8 +8,8 @@
 //                   [--url http://localhost:5173/ | --repo /path/to/dawviz]   (không có cả hai: dùng bản công khai) [--headed] [--channel chrome]
 //   node dawviz.mjs --validate video.json [--url … | --repo …]     (chỉ kiểm preset, không cần dự án)
 //
-// Cần `playwright-core` (cd vào thư mục này rồi `npm install`, hoặc chạy trong repo dawviz đã `npm install`). Xuất MP4 (H.264) cần Chrome thật
-// (`--channel chrome`, mặc định thử Chrome trước); Chromium của Playwright thường chỉ có VP9/WebM.
+// Cần `playwright-core` (cd vào thư mục này rồi `npm install`, hoặc chạy trong repo dawviz đã `npm install`). Xuất MP4 (H.264) cần trình duyệt có bộ
+// mã hoá H.264: Chrome thật (`--channel chrome`, mặc định thử trước), Chromium của Playwright cũng ra MP4 khi thử (2026-11-24, Linux); không có H.264 thì ra WebM.
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';

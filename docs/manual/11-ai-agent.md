@@ -20,7 +20,7 @@ Không có `?agent=1` thì ứng dụng không mở đường điều khiển n�
 
 ## Cách 3: AI có terminal (ví dụ Claude Code)
 
-AI chạy một script mở ứng dụng trong Chrome ẩn, nạp dự án và âm thanh, áp preset, chụp vài khung để tự kiểm tra rồi xuất video ra tệp. Cần Node 22 trở lên; xuất MP4 cần Google Chrome cài trên máy (không có thì ra WebM).
+AI chạy một script mở ứng dụng trong Chrome ẩn, nạp dự án và âm thanh, áp preset, chụp vài khung để tự kiểm tra rồi xuất video ra tệp. Cần Node 22 trở lên; xuất MP4 cần trình duyệt mã hoá được H.264: Google Chrome cài trên máy là chắc nhất (script thử Chrome trước, rồi Chromium của Playwright; đã thử cả hai đều ra MP4 H.264 trên Linux). Trình duyệt không có H.264 thì ra WebM. Âm thanh trong MP4 là AAC nếu máy mã hoá được, không thì Opus (Chrome và Firefox trên Ubuntu hiện chỉ có Opus).
 
 ## Lưu ý
 

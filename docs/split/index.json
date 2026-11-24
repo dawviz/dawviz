@@ -4,7 +4,7 @@
  "docs": {
   "BRD.md": {
    "title": "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)",
-   "sha1": "6bd64fd3f1",
+   "sha1": "fd23d2a11f",
    "chunks": [
     {
      "n": 0,
@@ -330,7 +330,7 @@
      "path": [
       "7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)"
      ],
-     "chars": 39503,
+     "chars": 39798,
      "lines": [
       204,
       283
@@ -506,7 +506,7 @@
   },
   "SRS.md": {
    "title": "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)",
-   "sha1": "7d9de60b91",
+   "sha1": "879a0e809e",
    "chunks": [
     {
      "n": 0,
@@ -2477,7 +2477,7 @@
      "path": [
       "7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO"
      ],
-     "chars": 8165,
+     "chars": 8446,
      "lines": [
       1137,
       1174
@@ -3690,7 +3690,7 @@
   },
   "TDD.md": {
    "title": "TÀI LIỆU THIẾT KẾ KIỂM THỬ (TDD = Test Design Document) — ỨNG DỤNG DAW VISUALIZER",
-   "sha1": "a3e0d42183",
+   "sha1": "9a9294212d",
    "chunks": [
     {
      "n": 0,
@@ -3782,10 +3782,10 @@
      "path": [
       "5. Danh sách kiểm thủ công cho AT-18 (Chrome)"
      ],
-     "chars": 6773,
+     "chars": 8369,
      "lines": [
       72,
-      89
+      93
      ],
      "ids": [
       "AT-18",

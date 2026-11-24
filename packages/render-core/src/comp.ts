@@ -160,6 +160,36 @@ export function newCompId(scene: SceneDocument): string {
   return `comp-${n}`;
 }
 
+/**
+ * Nhân bản ĐỘC LẬP một comp (T-122, Ctrl+D trên lớp COMP): sao chép sâu comp `rootId` và mọi comp nó chứa (lớp COMP bên trong trỏ sang bản sao
+ * mới), id mới `comp-<n>`, tên mới "<tên> 2…" không trùng tên comp nào (so không phân biệt hoa thường). Trả sổ comp mới (chỉ các bản sao) và id
+ * của bản sao gốc; `null` nếu vượt MAX_COMPS hoặc comp không tồn tại. Hàm thuần: không đổi `scene`.
+ */
+export function cloneCompTree(scene: SceneDocument, rootId: string): { root: string; comps: Record<string, CompSpec> } | null {
+  const have = scene.comps ?? {};
+  if (!have[rootId]) return null;
+  const order: string[] = [];
+  const walk = (id: string, seen: ReadonlySet<string>) => { if (order.includes(id) || seen.has(id) || !have[id]) return; order.push(id); for (const c of childComps(have[id])) walk(c, new Set(seen).add(id)); };
+  walk(rootId, new Set());
+  if (Object.keys(have).length + order.length > MAX_COMPS) return null;
+  const ids = new Set(Object.keys(have)), names = new Set(Object.values(have).map((c) => c.name.toLocaleLowerCase()));
+  const map = new Map<string, string>();
+  for (const id of order) { let n = 1; while (ids.has(`comp-${n}`)) n++; ids.add(`comp-${n}`); map.set(id, `comp-${n}`); }
+  const out: Record<string, CompSpec> = {};
+  for (const id of order) {
+    const src = have[id], base = src.name.replace(/ \d+$/, '');
+    let k = 2, name = '';
+    do { name = `${base} ${k++}`.slice(-MAX_COMP_NAME); } while (names.has(name.toLocaleLowerCase()));
+    names.add(name.toLocaleLowerCase());
+    const widgets = (JSON.parse(JSON.stringify(src.widgets)) as WidgetSpec[]).map((w) => {
+      const c = compOf(w);
+      return c && map.has(c.comp) ? { ...w, properties: { ...(w.properties as CompProps), comp: map.get(c.comp)! } } as WidgetSpec : w;
+    });
+    out[map.get(id)!] = { name, widgets };
+  }
+  return { root: map.get(rootId)!, comps: out };
+}
+
 // ───────────────────────────── kiểm tra cây comp ─────────────────────────────
 /** Comp mà comp `id` dùng trực tiếp (qua lớp COMP của nó). */
 const childComps = (spec: CompSpec | undefined): string[] => (spec ? spec.widgets.flatMap((w) => { const c = compOf(w); return c ? [c.comp] : []; }) : []);

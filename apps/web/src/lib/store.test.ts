@@ -33,6 +33,10 @@ roundTrip('patchKeyboard', (d) => C.patchKeyboard(d, { ...C.pianoOf(d.scene)!.pr
 roundTrip('patchTrackStyle (đặt)', (d) => C.patchTrackStyle(d, 'a', { customColor: '#112233', colorMode: 'custom' }));
 roundTrip('setVideoStyle', (d) => C.setVideoStyle(d, 'default'));
 roundTrip('loadPreset', (d) => C.loadPreset(d, defaultScene('9:16')));
+roundTrip('duplicateWidgets + bản sao precomp (T-122)', (d) => {
+  const w = { id: 'comp-layer-9', type: 'COMP', zIndex: 3, visible: true, layout: d.scene.widgets[0].layout, trackMappingMode: 'ALL', assignedTrackIndices: [], properties: { comp: 'comp-2', start: 0 } } as never;
+  return C.addWidgets(d, [w], {}, { 'comp-2': { name: 'Intro 2', widgets: [] } });
+});
 roundTrip('patchBrightness', (d) => C.patchBrightness(d, 'a', { ...d.brightness.a, source: 'velocity' } as any));
 roundTrip('toggleHidden', (d) => C.toggleHidden(d, 'b'));
 roundTrip('toggleSolo', (d) => C.toggleSolo(d, 'a'));

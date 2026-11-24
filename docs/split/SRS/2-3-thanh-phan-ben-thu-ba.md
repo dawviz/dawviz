@@ -5,7 +5,7 @@ section: "2.3. Thành phần bên thứ ba"
 path: "2. KIẾN TRÚC KỸ THUẬT, LUỒNG DỮ LIỆU & ĐÁNH GIÁ KIẾN TRÚC > 2.3. Thành phần bên thứ ba"
 chunk: 2-3-thanh-phan-ben-thu-ba.md
 source_lines: 202-216
-source_sha1: 7d9de60b91
+source_sha1: 879a0e809e
 ids: [ARC-01, D-04, D-23, D-34, D-36, OI-05, OI-07, REQ-STORAGE-01, REQ-WIDGET-06]
 ---
 ### 2.3. Thành phần bên thứ ba

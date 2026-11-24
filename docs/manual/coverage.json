@@ -11,13 +11,13 @@
         "locales/en.json#web.mode",
         "locales/en.json#web.number."
       ],
-      "uiHash": "6d90d8951bae",
+      "uiHash": "e0defb1bd39e",
       "viHash": "a7f4fe812b24",
       "enHash": "e2a14a9d2ac4",
       "coverHashes": {
         "apps/web/src/lib/numberInput.ts": "8e27c53523c3",
         "apps/web/src/components/NumberField.tsx": "f7668b64f388",
-        "apps/web/src/components/HistoryMenu.tsx": "7ddeee2941d7",
+        "apps/web/src/components/HistoryMenu.tsx": "f00b11a4bfc2",
         "locales/en.json#web.mode": "a81afde54c35",
         "locales/en.json#web.number.": "5ca95d85a4e1"
       }
@@ -36,11 +36,11 @@
         "apps/web/src/components/SchemaPanel.tsx",
         "locales/en.json#web.schema."
       ],
-      "uiHash": "b20f76f73358",
+      "uiHash": "a9d778409ce1",
       "viHash": "07a8dfd16c88",
       "enHash": "4aadd4fc25e2",
       "coverHashes": {
-        "apps/web/src/components/FileDrop.tsx": "22055ae4fb21",
+        "apps/web/src/components/FileDrop.tsx": "0f2666cc778b",
         "apps/web/src/components/MissingMidiPanel.tsx": "e23f856f4d3c",
         "apps/web/src/components/Notices.tsx": "458fa4c2f2ac",
         "locales/en.json#web.drop.": "643e2f893a72",
@@ -73,7 +73,7 @@
         "locales/en.json#web.comp.styleApplied",
         "locales/en.json#web.preset.paste"
       ],
-      "uiHash": "094a60910c1e",
+      "uiHash": "b71f5a4aa99a",
       "viHash": "6dcbf8e1177e",
       "enHash": "c3d0b8a7a976",
       "coverHashes": {
@@ -81,7 +81,7 @@
         "apps/web/src/components/VideoStyles.tsx": "dfd16f77e8e8",
         "apps/web/src/components/AudioPanel.tsx": "11547f9d52e7",
         "apps/web/src/components/TrackPanel.tsx": "dd45b2157ab8",
-        "apps/web/src/components/Stage.tsx": "af98beb6a53e",
+        "apps/web/src/components/Stage.tsx": "6b8d74b8cb33",
         "locales/en.json#web.audio.": "833abe622053",
         "locales/en.json#web.track": "e06c4e497fcd",
         "locales/en.json#web.brightness.": "0cf9c6022fb9",
@@ -137,11 +137,11 @@
         "locales/en.json#web.layers.",
         "locales/en.json#web.comp."
       ],
-      "uiHash": "7e08acc7564d",
-      "viHash": "8f3ce1f95e3d",
-      "enHash": "5ea34e83361e",
+      "uiHash": "53ae51ceeda6",
+      "viHash": "a96bdb25217a",
+      "enHash": "85b94b96fbab",
       "coverHashes": {
-        "apps/web/src/components/Editor.tsx": "42e6ad4ae658",
+        "apps/web/src/components/Editor.tsx": "7978df1c62e7",
         "apps/web/src/components/EditorOverlay.tsx": "c10a644a5f66",
         "apps/web/src/components/StylePanel.tsx": "26c35e084860",
         "locales/en.json#web.editor.": "315a1a12894d",
@@ -149,7 +149,7 @@
         "locales/en.json#web.glow.": "a02382b4889a",
         "locales/en.json#web.keyboard.": "e1b6968f1e6b",
         "locales/en.json#web.playhead.": "a9aab88bc783",
-        "apps/web/src/components/TextPanel.tsx": "9c96879d2f98",
+        "apps/web/src/components/TextPanel.tsx": "f25cca737f09",
         "locales/en.json#web.text.": "1dcb3963c82b",
         "apps/web/src/components/WidgetSettings.tsx": "953893f6e1df",
         "locales/en.json#web.ws.": "3d1c968fd76d",
@@ -173,10 +173,10 @@
         "packages/render-core/src/image.ts": "314b9694a52b",
         "apps/web/src/lib/sessionAssets.ts": "281ce11cbc11",
         "locales/en.json#web.asset.": "dffd9c37b639",
-        "apps/web/src/components/LayerTimeline.tsx": "268841328a44",
+        "apps/web/src/components/LayerTimeline.tsx": "f08f97764c87",
         "apps/web/src/lib/layerTimeline.ts": "dd69b9e8dc21",
         "locales/en.json#web.layers.": "0f5945486fb1",
-        "locales/en.json#web.comp.": "f4c591dba585"
+        "locales/en.json#web.comp.": "f60606069e72"
       }
     },
     "04-cai-dat": {
@@ -197,13 +197,13 @@
         "apps/web/src/lib/presetPack.ts",
         "locales/en.json#web.share."
       ],
-      "uiHash": "480446776265",
-      "viHash": "4040a0c459c5",
-      "enHash": "3adf51140261",
+      "uiHash": "548c10ebfb44",
+      "viHash": "6c296cc958c0",
+      "enHash": "61622e7e6611",
       "coverHashes": {
         "apps/web/src/components/ThemeSelect.tsx": "59f8201a72ab",
         "apps/web/src/components/VideoStyles.tsx": "dfd16f77e8e8",
-        "locales/en.json#web.settings.": "6f3092d6a435",
+        "locales/en.json#web.settings.": "abc072e87d51",
         "locales/en.json#web.theme.": "05a823a18b7d",
         "locales/en.json#web.preset.": "e1d1d39254ad",
         "apps/web/src/components/SessionSettings.tsx": "c219b962dda8",
@@ -229,18 +229,18 @@
         "apps/web/src/components/Splitter.tsx",
         "apps/web/src/components/LayerTimeline.tsx"
       ],
-      "uiHash": "ccb5a0f46fa5",
-      "viHash": "2fa694427a62",
-      "enHash": "a0734f42321d",
+      "uiHash": "25c9f0dd06fc",
+      "viHash": "12c4975a411f",
+      "enHash": "180ab56b2be4",
       "coverHashes": {
         "apps/web/src/lib/transportKeys.ts": "3c74099d457e",
         "apps/web/src/lib/undoKeys.ts": "07c2c99f5cf4",
         "apps/web/src/components/EditorOverlay.tsx": "c10a644a5f66",
         "apps/web/src/lib/numberInput.ts": "8e27c53523c3",
-        "apps/web/src/components/Editor.tsx": "42e6ad4ae658",
+        "apps/web/src/components/Editor.tsx": "7978df1c62e7",
         "apps/web/src/components/KeyframeTimeline.tsx": "908b1ff7cb0a",
         "apps/web/src/components/Splitter.tsx": "7ae82f8548cb",
-        "apps/web/src/components/LayerTimeline.tsx": "268841328a44"
+        "apps/web/src/components/LayerTimeline.tsx": "f08f97764c87"
       }
     },
     "06-xuat-video": {
@@ -386,13 +386,13 @@
         "locales/en.json#web.agent.",
         "plugins/dawviz/skills/dawviz/SKILL.md"
       ],
-      "uiHash": "92d99cb83581",
-      "viHash": "56bb11808a09",
-      "enHash": "2f0cb985d987",
+      "uiHash": "ec6d69477403",
+      "viHash": "220e4bd4d2d3",
+      "enHash": "fb88794c3c39",
       "coverHashes": {
         "apps/web/src/lib/agentApi.ts": "659724b54701",
         "locales/en.json#web.agent.": "f45a58e74448",
-        "plugins/dawviz/skills/dawviz/SKILL.md": "3a0db24f4756"
+        "plugins/dawviz/skills/dawviz/SKILL.md": "caefc690127a"
       }
     }
   }
