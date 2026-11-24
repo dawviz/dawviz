@@ -22,6 +22,21 @@ dawviz/
 │     │  │  ├─ space-grotesk-latin-ext-700-normal.woff2
 │     │  │  ├─ space-grotesk-vietnamese-400-normal.woff2
 │     │  │  └─ space-grotesk-vietnamese-700-normal.woff2
+│     │  ├─ icons/
+│     │  │  ├─ icon-dark-16.png
+│     │  │  ├─ icon-dark-180.png
+│     │  │  ├─ icon-dark-192.png
+│     │  │  ├─ icon-dark-32.png
+│     │  │  ├─ icon-dark-48.png
+│     │  │  ├─ icon-dark-512.png
+│     │  │  ├─ icon-dark-maskable-512.png
+│     │  │  ├─ icon-light-16.png
+│     │  │  ├─ icon-light-180.png
+│     │  │  ├─ icon-light-192.png
+│     │  │  ├─ icon-light-32.png
+│     │  │  ├─ icon-light-48.png
+│     │  │  ├─ icon-light-512.png
+│     │  │  └─ icon-light-maskable-512.png
 │     │  ├─ samples/
 │     │  │  └─ demo.rpp
 │     │  ├─ logo-dark.svg

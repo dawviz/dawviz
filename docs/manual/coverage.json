@@ -185,11 +185,11 @@
         "apps/web/src/lib/presetPack.ts",
         "locales/en.json#web.share."
       ],
-      "uiHash": "fe666c5fae33",
+      "uiHash": "26f3feba57d9",
       "viHash": "7ead1444a5bd",
       "enHash": "47aca63bf704",
       "coverHashes": {
-        "apps/web/src/components/ThemeSelect.tsx": "f9b2c3746fbe",
+        "apps/web/src/components/ThemeSelect.tsx": "59f8201a72ab",
         "apps/web/src/components/VideoStyles.tsx": "d096dad9483c",
         "locales/en.json#web.settings.": "6f3092d6a435",
         "locales/en.json#web.theme.": "05a823a18b7d",
