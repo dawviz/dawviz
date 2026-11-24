@@ -9,14 +9,14 @@ const dir = new URL('../../../presets/scene/', import.meta.url);
 const read = (u: URL) => JSON.parse(fs.readFileSync(u, 'utf8'));
 const V03 = () => read(new URL('./fixtures/paper-1x1.v0.3.0.json', import.meta.url));
 
-test('preset dựng sẵn (presets/scene/*.json) qua lược đồ: 0.7.0, không cảnh báo, mỗi layout có anchor, khớp scene.schema.json', () => {
+test('preset dựng sẵn (presets/scene/*.json) qua lược đồ: 0.8.0, không cảnh báo, mỗi layout có anchor, khớp scene.schema.json', () => {
   const files = fs.readdirSync(dir).filter((f) => f.endsWith('.json'));
   assert.ok(files.includes('paper-1x1.json') && files.includes('paper-16x9.json'));
   const schema = read(new URL('../../../presets/schema/scene.schema.json', import.meta.url));
-  const layoutProps = schema.properties.widgets.items.properties.layout.properties;
+  const layoutProps = schema.$defs.widget.properties.layout.properties;
   for (const f of files) {
     const raw = read(new URL(f, dir));
-    assert.equal(raw.schemaVersion, '0.7.0', f);
+    assert.equal(raw.schemaVersion, '0.8.0', f);
     assert.match(raw.schemaVersion, new RegExp(schema.properties.schemaVersion.pattern), f);
     assert.ok(fs.statSync(new URL(f, dir)).size < PRESET_LIMITS.maxBytes, f);
     const { scene, warnings } = sanitizeScene(raw);
@@ -27,16 +27,16 @@ test('preset dựng sẵn (presets/scene/*.json) qua lược đồ: 0.7.0, khôn
   }
 });
 
-test('di trú 0.3.0 → 0.7.0: thêm anchor = tâm, báo WARN_PRESET_MIGRATED, không sửa đối tượng vào; vẽ giống bản 0.7.0 dựng sẵn', () => {
+test('di trú 0.3.0 → 0.8.0: thêm anchor = tâm, báo WARN_PRESET_MIGRATED, không sửa đối tượng vào; vẽ giống bản 0.8.0 dựng sẵn', () => {
   const old = V03();
   const frozen = JSON.stringify(old);
   const m = migrateScene(old);
   assert.equal(JSON.stringify(old), frozen, 'migrateScene không được sửa đối tượng vào');
-  assert.equal(m.from, '0.3.0'); assert.equal(m.raw.schemaVersion, '0.7.0');
+  assert.equal(m.from, '0.3.0'); assert.equal(m.raw.schemaVersion, '0.8.0');
   assert.ok((m.raw.widgets as any[]).every((w) => w.layout.anchor.x === 0.5 && w.layout.anchor.y === 0.5));
   const { scene, warnings } = sanitizeScene(old);
   assert.equal(scene.schemaVersion, SCENE_SCHEMA_VERSION);
-  assert.deepEqual(warnings.map((w) => [w.code, w.details.from, w.details.to]), [['WARN_PRESET_MIGRATED', '0.3.0', '0.7.0']]);
+  assert.deepEqual(warnings.map((w) => [w.code, w.details.from, w.details.to]), [['WARN_PRESET_MIGRATED', '0.3.0', '0.8.0']]);
   // Bản cũ ghi chữ đầy đủ {font,size,weight,color} (thành ghi đè), bản 0.5.0 trỏ styleId cùng giá trị: cấu trúc khác, khung vẽ phải giống hệt.
   const cur = sanitizeScene(read(new URL('paper-1x1.json', dir))).scene;
   assert.deepEqual({ ...scene, widgets: scene.widgets.map((w) => w.layout) }, { ...cur, widgets: cur.widgets.map((w) => w.layout) });
@@ -52,17 +52,17 @@ test('di trú 0.3.0 → 0.7.0: thêm anchor = tâm, báo WARN_PRESET_MIGRATED, k
   assert.equal(r.warnings[0].details.from, '0.3.7');
 });
 
-test('phiên bản: mới hơn → ERR_SCHEMA_NEWER; quá cũ/sai dạng → ERR_PRESET_INVALID; khác bản vá 0.7.x → WARN_PRESET_VERSION', () => {
+test('phiên bản: mới hơn → ERR_SCHEMA_NEWER; quá cũ/sai dạng → ERR_PRESET_INVALID; khác bản vá 0.8.x → WARN_PRESET_VERSION', () => {
   const base = { canvas: {}, widgets: [] };
-  for (const v of ['0.8.0', '1.0.0', '2.3.1']) assert.throws(() => sanitizeScene({ ...base, schemaVersion: v }), (e: any) => e.code === 'ERR_SCHEMA_NEWER' && e.details.found === v, v);
+  for (const v of ['0.9.0', '1.0.0', '2.3.1']) assert.throws(() => sanitizeScene({ ...base, schemaVersion: v }), (e: any) => e.code === 'ERR_SCHEMA_NEWER' && e.details.found === v, v);
   for (const v of ['0.2.9', '0.0.1', 'abc', '0.3', '0.4.0-beta', '']) assert.throws(() => sanitizeScene({ ...base, schemaVersion: v }), (e: any) => e.code === 'ERR_PRESET_INVALID', v);
   assert.throws(() => sanitizeScene({ ...base, schemaVersion: 4 }), (e: any) => e.code === 'ERR_PRESET_INVALID');
-  const r = sanitizeScene({ ...base, schemaVersion: '0.7.3' });
+  const r = sanitizeScene({ ...base, schemaVersion: '0.8.3' });
   assert.deepEqual(r.warnings.map((w) => w.code), ['WARN_PRESET_VERSION']);
-  const old = sanitizeScene({ ...base, schemaVersion: '0.5.0' }); // T-73: 0.5.x di trú lên 0.6.0, rồi 0.7.0 (parenting), không đổi cấu trúc
-  assert.deepEqual(old.warnings.map((w) => [w.code, w.details.from, w.details.to]), [['WARN_PRESET_MIGRATED', '0.5.0', '0.7.0']]);
+  const old = sanitizeScene({ ...base, schemaVersion: '0.5.0' }); // T-73: 0.5.x di trú lên 0.6.0, rồi 0.7.0 (parenting), 0.8.0 (precomp), không đổi cấu trúc
+  assert.deepEqual(old.warnings.map((w) => [w.code, w.details.from, w.details.to]), [['WARN_PRESET_MIGRATED', '0.5.0', '0.8.0']]);
   const p6 = sanitizeScene({ ...base, schemaVersion: '0.6.0' });
-  assert.deepEqual(p6.warnings.map((w) => [w.code, w.details.from, w.details.to]), [['WARN_PRESET_MIGRATED', '0.6.0', '0.7.0']]);
+  assert.deepEqual(p6.warnings.map((w) => [w.code, w.details.from, w.details.to]), [['WARN_PRESET_MIGRATED', '0.6.0', '0.8.0']]);
 });
 
 test('preset hỏng: không phải đối tượng, thiếu trường, kiểu sai → ERR_PRESET_INVALID hoặc về mặc định kèm cảnh báo, không bao giờ văng lỗi lạ', () => {

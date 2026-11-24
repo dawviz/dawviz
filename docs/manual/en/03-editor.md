@@ -4,27 +4,28 @@
 
 The Editor tab is where you arrange the blocks on the video frame and change how notes and text look. Each block (a widget) does one job: piano roll, title and artist, note counter, live notes, time and bar, chord, progress bar.
 
-The screen has four parts: **Layers** on the left, the frame in the middle, **Widget properties** on the right, and the **Timeline & keyframes** panel along the bottom.
+The screen has three parts: the frame in the middle, **Widget properties** on the right (full height), and the **Timeline & keyframes** panel under the frame. The Timeline holds the layer list too: each layer is a row and each stretch of time it appears is a bar, as in the timeline of Premiere Pro or After Effects.
 
 ## Resize and collapse panels
 
 - **Resize:** drag the border between two panels (the pointer turns into a two-headed arrow). Double-click the border to go back to the default size. You can also Tab to the border and use the arrow keys (Shift: bigger steps).
-- **Collapse:** press the panel button at the top corner of Layers or Widget properties, or the button at the start of the **Timeline & keyframes** bar. A collapsed panel leaves a thin strip; click the strip to open it again. Shortcuts: Ctrl+B (Layers), Ctrl+Alt+B (Widget properties), Ctrl+J (Timeline).
+- **Collapse:** press the panel button at the top corner of Widget properties, or the button at the start of the **Timeline & keyframes** bar. A collapsed panel leaves a thin strip; click the strip to open it again. Shortcuts: Ctrl+Alt+B (Widget properties), Ctrl+J (Timeline).
+- **Make the Timeline as tall as you like:** drag the border above the Timeline up or down; it goes up until only a small strip of the frame is left.
 - **Fold sections:** click a section title (for example **Position and size**) to fold it away when you don't need it, click again to open it. The right column gets much shorter. The app remembers which sections are folded, on the Preview tab too.
 - Panel sizes and states are remembered in this browser. On screens narrower than 1024 points the panels stack as before.
 
 ## Selecting
 
-- Click a widget on the frame, or its name in Layers.
+- Click a widget on the frame, click its name in the Timeline's layer column, or click its bar in the Timeline.
 - Shift-click (or Ctrl/⌘-click) to add more widgets to the selection.
 - Press and hold on a layer's name and drag up or down to select the whole run of layers you pass over. Hold Shift when you start the drag to add to the layers already selected.
-- **Select all** at the top of the Layers list, or Ctrl+A (⌘A on Mac), selects every layer.
+- Ctrl+A (⌘A on Mac) selects every layer.
 - Drag on an empty part of the frame to draw a selection box: every widget it touches is selected. Hold Shift to add to the current selection.
-- **Deselect:** press **Deselect** at the top of the right-hand panel (while something is selected), or press Esc, or click the background around the frame. Once everything is selected, **Select all** in Layers turns into **Deselect**. This works even when a widget covers the whole frame, where clicking on the frame cannot clear the selection.
+- **Deselect:** press **Deselect** at the top of the right-hand panel (while something is selected), press Esc, click the background around the frame, or click an empty spot in the Timeline. This works even when a widget covers the whole frame, where clicking on the frame cannot clear the selection.
 
 ## Add, duplicate, delete
 
-- **Add:** click **Add** at the top of Layers and pick a widget type. The new widget sits in the middle of the frame, on top of the other layers, and is selected.
+- **Add:** click **Add** at the top left of the Timeline and pick a widget type. The new widget sits in the middle of the frame, on top of the other layers, and is selected.
 - **Duplicate:** the duplicate button in **Arrange**, or Ctrl+D (⌘D on Mac). The copy is moved down a little so you can see it.
 - **Delete:** the bin button, or the Delete key. Locked widgets can't be deleted.
 
@@ -63,7 +64,7 @@ The **Particles** widget throws out small particles whenever a note starts. Part
 
 - **Particles per note**, **Lifetime**, **Speed**, **Direction** (0° is up, increasing clockwise), **Spread** (width of the fan), **Gravity** (positive falls, negative rises), **Start size** and **End size**.
 - **Colour:** the colour of the track that plays the note, or **One colour**.
-- In Advanced: harder notes give more particles, speed variation, circle or square, opacity, fade out, glow, **Start position** (**At the note, where it meets the playhead**: particles fly out from the exact spot a note touches the Piano Roll's playhead, like sparks; by pitch across the widget's width; centre; or spread evenly. With "At the note", the Particles widget's frame is hidden on the picture (select the layer from Layers), and particles are not clipped to the widget: they fly across the whole video frame; with no Piano Roll there are no particles) and start height, **Random seed** (change it for a different scatter), **Most particles at once** (beyond it the oldest are dropped).
+- In Advanced: harder notes give more particles, speed variation, circle or square, opacity, fade out, glow, **Start position** (**At the note, where it meets the playhead**: particles fly out from the exact spot a note touches the Piano Roll's playhead, like sparks; by pitch across the widget's width; centre; or spread evenly. With "At the note", the Particles widget's frame is hidden on the picture (select the layer from the Timeline's layer column), and particles are not clipped to the widget: they fly across the whole video frame; with no Piano Roll there are no particles) and start height, **Random seed** (change it for a different scatter), **Most particles at once** (beyond it the oldest are dropped).
 - Choose the tracks for the widget in the **Track** part of **Settings**, like other widgets.
 
 **Example: sparks rising from notes at the playhead.** Add a Particles widget, then set:
@@ -94,7 +95,7 @@ The **Background image** section is gone from the Properties panel: to put a pic
 
 ## Image
 
-The **Image** widget (from **Add** at the top of the Layers list) draws one of your pictures on the frame, such as a logo or a character. In **Settings**, press **Choose an image file…** to add a PNG, JPEG, WebP, GIF (first frame) or SVG; added images show in the **Image** box so other widgets can reuse them. **Fit**: **Fit inside** (whole picture visible), **Fill** (crop the overflow) or **Stretch**.
+The **Image** widget (from **Add** at the top left of the Timeline) draws one of your pictures on the frame, such as a logo or a character. In **Settings**, press **Choose an image file…** to add a PNG, JPEG, WebP, GIF (first frame) or SVG; added images show in the **Image** box so other widgets can reuse them. **Fit**: **Fit inside** (whole picture visible), **Fill** (crop the overflow) or **Stretch**.
 
 Each file can be up to 20 MB, images up to 8192 px on the long side, and the whole session up to 200 MB. The app recognises the file type from its content, not its name. An SVG with scripts, event handlers or external links is refused. Adding the same file twice keeps one copy.
 
@@ -132,7 +133,43 @@ Select a widget and open **Motion** to give it an entrance, an exit and a repeat
 
 ## Timeline & keyframes
 
-The **Timeline & keyframes** panel at the bottom shows the selected widget's properties over time: the property list on the left, the time ruler and diamond-shaped keyframes on the right. The **Transform** group has Position, Scale, Rotation and Opacity. Press the stopwatch on a property to start animating it; once it is on, dragging the widget on the frame sets a keyframe at the playhead. Drag keyframes to change their time, and select a keyframe to shape its curve in the **Keyframe** section on the right. The **List / Graph** switch at the right of the panel's title bar switches to **Graph**, where you see and shape the value and speed curves of the selected row. Details in [Analysis widgets](10-analysis-widgets.md#animate-properties).
+The **Timeline & keyframes** panel under the frame has two levels. Its title bar shows where you are, for example **Main timeline › Intro › Keyframes · Chord**; click an item there to go back up.
+
+### Level 1: the layer timeline
+
+The layer column is on the left, the time ruler and the bars on the right. Each bar is a stretch of time when that layer is in the video. A layer shown for the whole song has one bar from start to end.
+
+- **Move a bar:** drag the middle of it. Every selected layer moves together. The layer's keyframes move with the bar, so its animation still starts when the layer appears.
+- **Trim:** drag the start or end edge of a bar. Keyframes stay where they are. Drag the end to the end of the song to show the layer until the end.
+- **Snapping:** while you drag, bars stick to the playhead, the edges of other bars, phases and the beats of the song. Hold Alt to turn it off.
+- **Split a layer at the playhead:** put the playhead over the bar, select the layer and press Ctrl+K (or the scissors button at the top left). The layer becomes two layers that meet there: the original keeps the part before, the copy (just above it) keeps the part after. Each has its own keyframes and is edited on its own.
+- **Move a bar to the playhead:** `[` moves the bar so it starts at the playhead, `]` so it ends there. Alt+`[` and Alt+`]` trim the start or end at the playhead.
+- **Nudge:** Alt+← / Alt+→ moves by 1/30 second; add Shift for 1 second.
+- **Zoom:** Ctrl+scroll (or the magnifier buttons) zooms horizontally; Alt+scroll (or the two buttons with lines) makes rows taller or shorter. Plain scrolling moves up/down or sideways.
+- **Drag the ruler** to scrub. The playhead sticks to bar edges and phases; hold Alt to turn it off.
+- **See a layer's keyframes:** double-click its bar, press the ◆ button on its row, select it and press Enter, or press **Keyframes** at the top of the right-hand panel. Press Esc to go back to the layer timeline.
+
+The **All layers** row at the bottom of the layer column hides/shows or locks/unlocks every layer at once.
+
+### Level 2: keyframes
+
+This level shows the selected layer's properties over time: the property list on the left, the time ruler and diamond-shaped keyframes on the right. The **Transform** group has Position, Scale, Rotation and Opacity. Press the stopwatch on a property to start animating it; once it is on, dragging the widget on the frame sets a keyframe at the playhead. Drag keyframes to change their time, and select a keyframe to shape its curve in the **Keyframe** section on the right. The **List / Graph** switch at the right of the panel's title bar switches to **Graph**, where you see and shape the value and speed curves of the selected row. Details in [Analysis widgets](10-analysis-widgets.md#animate-properties).
+
+Keyframes set in seconds move with the bar when you move it. Keyframes set on the beat grid (bar, beat) belong to the music and stay put.
+
+### Precomps
+
+A precomp groups several layers into one layer, like a precomp in After Effects. Use it when a whole group should appear, move, fade or animate together, for example the whole intro.
+
+- **Make one:** select the layers and press Ctrl+G (or the two-frames button at the top left of the Timeline). They go into a new precomp, in exactly the same place on the frame and in time. The precomp's bar spans from the earliest to the latest bar of the group.
+- **Open it:** double-click the precomp's bar, press the › button on its row, or press **Open precomp** in the right-hand panel. The frame shows only what is inside; the time when the precomp is not shown is dimmed in the Timeline. Press Esc (with nothing selected) or click **Main timeline** in the title bar to come back out.
+- **Inside a precomp** you work as on the main timeline: add, drag, keyframe, split, and even precompose again. Precomps nest up to 4 levels deep.
+- **A precomp layer** has position, rotation, scale, opacity, motion, display ranges and keyframes like any layer, and everything inside follows. It is always the size of the frame: to make it bigger or smaller use **Scale** on the keyframe level.
+- **Moving the precomp's bar** moves everything inside. Trimming it only trims when it is shown.
+- **Rename** a precomp layer like any layer: double-click its name.
+- **Duplicating** a precomp layer (Ctrl+D) uses the same precomp in one more place: change what is inside and every copy changes.
+- With every precomp opened up, there can be at most 512 layers. If an action would go over, the app tells you and does nothing.
+- On the Preview tab, when the playhead is inside a precomp, clicking a **Video styles** tile applies that style to that precomp instead of the whole video. See [Preview](02-preview.md).
 
 ## Note names
 
@@ -140,7 +177,7 @@ Also with no widget selected, the **Note names** section changes the names of no
 
 ## Display range
 
-By default a widget is shown for the whole song. Select a widget and turn on **Show only in these ranges** in the **Display range** section to limit when it appears, for example showing the title only for the first 10 seconds.
+By default a widget is shown for the whole song. The quickest way to change when it appears is to drag its bar in the Timeline (see above). To type exact times, select the widget and turn on **Show only in these ranges** in the **Display range** section, for example showing the title only for the first 10 seconds.
 
 - Each row is a range: **Show from** and **Show until**. Type seconds (`90`, `90.5`) or minutes:seconds (`1:30`, `1:30.5`); arithmetic (`1:30+15`) and `+=10`, `-=0:05`, `*=2`, `/=2` relative to the current value work too. Leave **Show until** empty to show it until the end of the song.
 - **Add range** adds a row; the × button removes one. With no range left the widget is never shown.
@@ -151,7 +188,15 @@ The display range only affects the video and Preview; in the Editor you can stil
 
 ## Phases
 
-Phases are the parts of a song (verse, chorus…). When no widget is selected, the **Phases** section on the right lets you add them: each row has a name and a start time. A phase lasts until the next one; the last phase lasts to the end of the song. The values `{phase}`, `{next_phase}`, `{phase_remaining}`… work in any text (see [Placeholders](08-placeholders.md)).
+Phases are the parts of a song (verse, chorus…). They live on the **Phases** lane at the top of the layer timeline. A phase lasts until the next one; the last phase lasts to the end of the song.
+
+- **Add:** press + at the start of the **Phases** lane to add a phase at the playhead, or double-click an empty spot on the lane. Type a name and press Enter.
+- **Move:** drag the phase marker (it sticks to the playhead, beats and bar edges; hold Alt to turn it off), or click the marker and press Alt+← / Alt+→ (add Shift for 1 second).
+- **Rename:** double-click the marker.
+- **Remove:** click the marker and press Delete.
+- When you drag a layer's bar it sticks to phases, so it is easy to show a layer exactly during the chorus.
+
+The values `{phase}`, `{next_phase}`, `{phase_remaining}`… work in any text (see [Placeholders](08-placeholders.md)).
 
 ## Anchor (Advanced)
 
@@ -174,14 +219,14 @@ To turn snapping off for a moment, hold Alt while moving, or Ctrl (⌘ on Mac) w
 
 ## Layers
 
-The **Layers** list shows which widget sits on top: the top row is drawn on top.
+The layer column on the left of the Timeline shows which widget sits on top: the top row is drawn on top.
 
 - **Reorder:** drag the six-dot handle (only the handle reorders; dragging elsewhere on the row doesn't), or select a row and press Alt+Up / Alt+Down. **Arrange** on the right has four buttons: bring to front, bring forward, send backward, send to back (shortcuts Ctrl+] and Ctrl+[, add Shift to go all the way).
 - **Parent:** the **Parent** box in **Arrange** attaches this widget to another one. When the parent moves, rotates, scales or fades (through keyframes or motion), the child follows exactly that change; the child stays where it is while the parent is at rest. A widget that is already its child can't be chosen. Deleting the parent unparents the child. Note: while the parent is away from its original place, the child's selection box on the canvas doesn't follow it yet.
 - **Rename:** double-click a layer's name (or select the layer and press F2), type the new name, press Enter. Esc cancels. Leave it empty and press Enter to go back to the name by type (for example Chord 2). A name can have up to 60 characters and cannot match another layer (upper and lower case count as the same). If it matches, the old name is kept and the app tells you why. Layer names are only for finding things; they do not appear in the video and are saved in the preset. A duplicate does not carry over the original's name.
 - **Eye:** hide or show the widget in the video (same as **Show in video**).
-- **Lock:** stops the widget from being dragged by accident. A locked widget can still be selected in Layers to see its numbers or unlock it.
-- The top row hides/shows or locks/unlocks every layer at once.
+- **◆:** opens the layer's keyframes. The diamond is filled once the layer has keyframes. A precomp layer has a › button that opens the precomp.
+- **Lock:** stops the widget from being dragged by accident, on the frame and in the Timeline. A locked widget can still be selected to see its numbers or unlock it.
 - **Quick hide or lock:** press and hold an eye (or lock) and drag up or down over other layers; every layer you pass gets the same state as the first one you pressed. A drag that hides/shows is one undo step.
 
 ## Settings

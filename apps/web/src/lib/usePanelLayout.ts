@@ -37,20 +37,21 @@ export function usePanelLayout(advanced: boolean, which: 'editor' | 'preview' = 
   return { ref, layout, r, profile: pf, resize, reset, setOpen };
 }
 
-/** Phím tắt thu gọn/mở panel khi thẻ đang mở và không gõ chữ. `timeline` = có panel Timeline (thẻ Editor). */
-export function usePanelShortcuts(panels: PanelLayoutApi, active: boolean, timeline: boolean): void {
+/** Phím tắt thu gọn/mở panel khi thẻ đang mở và không gõ chữ. `timeline` = có panel Timeline (thẻ Editor); `left` = có cột trái (Ctrl/⌘+B;
+ *  thẻ Editor không còn cột Lớp từ D-69: cột lớp nằm trong Timeline). */
+export function usePanelShortcuts(panels: PanelLayoutApi, active: boolean, timeline: boolean, left = true): void {
   const live = useRef(panels); live.current = panels;
   useEffect(() => {
     if (!active) return;
     const h = (e: KeyboardEvent) => {
       if (!(e.ctrlKey || e.metaKey) || e.shiftKey || isTextEntry(e.target)) return;
       const p = live.current;
-      const id: CollapsibleId | null = e.code === 'KeyB' ? (e.altKey ? 'props' : 'layers') : e.code === 'KeyJ' && !e.altKey && timeline ? 'timeline' : null;
+      const id: CollapsibleId | null = e.code === 'KeyB' ? (e.altKey ? 'props' : left ? 'layers' : null) : e.code === 'KeyJ' && !e.altKey && timeline ? 'timeline' : null;
       if (!id) return;
       e.preventDefault();
       p.setOpen(id, !p.r.open[id]);
     };
     window.addEventListener('keydown', h);
     return () => window.removeEventListener('keydown', h);
-  }, [active, timeline]);
+  }, [active, timeline, left]);
 }

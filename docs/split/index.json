@@ -4,7 +4,7 @@
  "docs": {
   "BRD.md": {
    "title": "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)",
-   "sha1": "927410be47",
+   "sha1": "57ad147f37",
    "chunks": [
     {
      "n": 0,
@@ -330,10 +330,10 @@
      "path": [
       "7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)"
      ],
-     "chars": 35450,
+     "chars": 37723,
      "lines": [
       204,
-      281
+      282
      ],
      "ids": [
       "AD-08",
@@ -411,6 +411,7 @@
       "D-66",
       "D-67",
       "D-68",
+      "D-69",
       "KPI-04",
       "NFR-ACC-02",
       "NFR-SEC-01",
@@ -457,8 +458,8 @@
      ],
      "chars": 7775,
      "lines": [
-      282,
-      305
+      283,
+      306
      ],
      "ids": [
       "D-01",
@@ -4716,7 +4717,7 @@
   },
   "REFERENCE-VIDEOS.md": {
    "title": "Video tham chiếu: ý tưởng, mức tái hiện và lộ trình",
-   "sha1": "70b5971deb",
+   "sha1": "7580d5f888",
    "chunks": [
     {
      "n": 0,
@@ -4809,13 +4810,14 @@
      "path": [
       "Quyết định: chuỗi cảnh và chia sẻ preset (D-66)"
      ],
-     "chars": 1266,
+     "chars": 1549,
      "lines": [
       69,
-      79
+      81
      ],
      "ids": [
-      "D-66"
+      "D-66",
+      "D-69"
      ]
     },
     {
@@ -4827,8 +4829,8 @@
      ],
      "chars": 916,
      "lines": [
-      80,
-      91
+      82,
+      93
      ],
      "ids": []
     }
@@ -4836,7 +4838,7 @@
   },
   "UI-DIRECTION.md": {
    "title": "Định hướng hình ảnh: khung preview và giao diện web",
-   "sha1": "7e6ce0b584",
+   "sha1": "a14f74399e",
    "chunks": [
     {
      "n": 0,
@@ -5005,12 +5007,13 @@
       "3. Bộ prompt sinh ảnh giao diện web",
       "3.7 Khung bố cục chung (từ vòng 1, dùng cho vòng 2)"
      ],
-     "chars": 1529,
+     "chars": 1585,
      "lines": [
       160,
       177
      ],
      "ids": [
+      "D-69",
       "REQ-UI-13"
      ]
     },
@@ -5089,7 +5092,7 @@
       "5. Theme giao diện chỉ đổi màu (D-52)",
       "5.3 Cấu trúc giao diện: D + A + E (D-53, đã chốt 2026-11-13)"
      ],
-     "chars": 4174,
+     "chars": 4556,
      "lines": [
       329,
       351
@@ -5098,6 +5101,7 @@
       "D-53",
       "D-57",
       "D-64",
+      "D-69",
       "REQ-UI-13",
       "REQ-UI-15"
      ]
@@ -8183,6 +8187,12 @@
   ],
   "D-68": [
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md"
+  ],
+  "D-69": [
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
+   "REFERENCE-VIDEOS/quyet-dinh-chuoi-canh-va-chia-se-preset-d-66.md",
+   "UI-DIRECTION/3-7-khung-bo-cuc-chung-tu-vong-1-dung-cho-vong-2.md",
+   "UI-DIRECTION/5-3-cau-truc-giao-dien-d-a-e-d-53-da-chot-2026-1.md"
   ],
   "NFR-ACC-02": [
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",

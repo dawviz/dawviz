@@ -1,6 +1,6 @@
 # Chỉ mục UI-DIRECTION.md — Định hướng hình ảnh: khung preview và giao diện web
 
-nguồn: `UI-DIRECTION.md` (sha1 7e6ce0b584)
+nguồn: `UI-DIRECTION.md` (sha1 a14f74399e)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -13,12 +13,12 @@ nguồn: `UI-DIRECTION.md` (sha1 7e6ce0b584)
 | 6 | 3. Bộ prompt sinh ảnh giao diện web > 3.4 Khối tránh (luôn dán cuối) | [3-4-khoi-tranh-luon-dan-cuoi.md](3-4-khoi-tranh-luon-dan-cuoi.md) | 441 |  |
 | 7 | 3. Bộ prompt sinh ảnh giao diện web > 3.5 Prompt phụ | [3-5-prompt-phu.md](3-5-prompt-phu.md) | 1290 | REQ-UI-10 |
 | 8 | 3. Bộ prompt sinh ảnh giao diện web > 3.6 Tiêu chí chọn | [3-6-tieu-chi-chon.md](3-6-tieu-chi-chon.md) | 559 | REQ-UI-10, REQ-UI-13, REQ-UI-14 |
-| 9 | 3. Bộ prompt sinh ảnh giao diện web > 3.7 Khung bố cục chung (từ vòng 1, dùng cho vòng 2) | [3-7-khung-bo-cuc-chung-tu-vong-1-dung-cho-vong-2.md](3-7-khung-bo-cuc-chung-tu-vong-1-dung-cho-vong-2.md) | 1529 | REQ-UI-13 |
+| 9 | 3. Bộ prompt sinh ảnh giao diện web > 3.7 Khung bố cục chung (từ vòng 1, dùng cho vòng 2) | [3-7-khung-bo-cuc-chung-tu-vong-1-dung-cho-vong-2.md](3-7-khung-bo-cuc-chung-tu-vong-1-dung-cho-vong-2.md) | 1585 | D-69, REQ-UI-13 |
 | 10 | 3. Bộ prompt sinh ảnh giao diện web > 3.8 Prompt vòng 2 (dùng kèm tệp đính kèm) | [3-8-prompt-vong-2-dung-kem-tep-dinh-kem.md](3-8-prompt-vong-2-dung-kem-tep-dinh-kem.md) | 9757 |  |
 | 11 | 4. Nhật ký thử và hướng được chọn | [4-nhat-ky-thu-va-huong-duoc-chon.md](4-nhat-ky-thu-va-huong-duoc-chon.md) | 3486 | D-51, D-53 |
 | 12 | 5. Theme giao diện chỉ đổi màu (D-52) > 5.1 Quyết định | [5-1-quyet-dinh.md](5-1-quyet-dinh.md) | 779 | NFR-SEC-05, REQ-UI-10 |
 | 13 | 5. Theme giao diện chỉ đổi màu (D-52) > 5.2 Bộ token (đề xuất, chốt khi làm) | [5-2-bo-token-de-xuat-chot-khi-lam.md](5-2-bo-token-de-xuat-chot-khi-lam.md) | 1000 | REQ-GRAPHICS-02 |
-| 14 | 5. Theme giao diện chỉ đổi màu (D-52) > 5.3 Cấu trúc giao diện: D + A + E (D-53, đã chốt 2026-11-13) | [5-3-cau-truc-giao-dien-d-a-e-d-53-da-chot-2026-1.md](5-3-cau-truc-giao-dien-d-a-e-d-53-da-chot-2026-1.md) | 4174 | D-53, D-57, D-64, REQ-UI-13, REQ-UI-15 |
+| 14 | 5. Theme giao diện chỉ đổi màu (D-52) > 5.3 Cấu trúc giao diện: D + A + E (D-53, đã chốt 2026-11-13) | [5-3-cau-truc-giao-dien-d-a-e-d-53-da-chot-2026-1.md](5-3-cau-truc-giao-dien-d-a-e-d-53-da-chot-2026-1.md) | 4556 | D-53, D-57, D-64, D-69, REQ-UI-13, REQ-UI-15 |
 | 15 | 5. Theme giao diện chỉ đổi màu (D-52) > 5.4 Bảng màu dựng sẵn (đã kiểm AA, v0.5) | [5-4-bang-mau-dung-san-da-kiem-aa-v0-5.md](5-4-bang-mau-dung-san-da-kiem-aa-v0-5.md) | 4454 | REQ-GRAPHICS-02 |
 | 16 | 6. Việc tiếp theo đề xuất | [6-viec-tiep-theo-de-xuat.md](6-viec-tiep-theo-de-xuat.md) | 988 | D-57, REQ-EXPORT-00, REQ-UI-06, REQ-UI-07, REQ-UI-13, REQ-UI-15 |
 | 17 | 7. Nguyên tắc sản phẩm: trình dựng thật, mặc định đơn giản (D-54) | [7-nguyen-tac-san-pham-trinh-dung-that-mac-dinh-d.md](7-nguyen-tac-san-pham-trinh-dung-that-mac-dinh-d.md) | 1117 | D-15, D-54, REQ-GRAPHICS-03, REQ-GRAPHICS-15, REQ-UI-13, REQ-WIDGET-07 |

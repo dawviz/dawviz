@@ -1,17 +1,17 @@
-// Bố cục panel đổi cỡ (UI-DIRECTION 5.3, DESIGN.md "Panel đổi cỡ"). Thẻ Editor: cột Lớp, cột Thiết lập, panel Timeline ở đáy và cột cây thuộc tính
-// trong Timeline. Thẻ Xem trước (profile 'preview'): cột Phong cách video (`layers`) và inspector (`props`), cùng cách đổi cỡ/thu gọn. Logic thuần: giới hạn, kẹp theo cỡ cửa sổ, đọc lại dữ liệu đã lưu. Không DOM; test ở panelLayout.test.ts.
+// Bố cục panel đổi cỡ (UI-DIRECTION 5.3, DESIGN.md "Panel đổi cỡ"). Thẻ Editor: cột Thiết lập, panel Timeline ở đáy và cột cây (cột lớp / cây thuộc tính)
+// trong Timeline (D-69: cột Lớp riêng đã gộp vào Timeline; `layers` chỉ còn dùng cho cột trái của thẻ Xem trước). Thẻ Xem trước (profile 'preview'): cột Phong cách video (`layers`) và inspector (`props`), cùng cách đổi cỡ/thu gọn. Logic thuần: giới hạn, kẹp theo cỡ cửa sổ, đọc lại dữ liệu đã lưu. Không DOM; test ở panelLayout.test.ts.
 
 export type PanelId = 'layers' | 'props' | 'timeline' | 'tree';
 export type CollapsibleId = 'layers' | 'props' | 'timeline';
 export interface PanelLayout {
   /** Cỡ (px) khi mở: bề rộng của layers/props/tree, chiều cao của timeline. */
   size: Record<PanelId, number>;
-  /** Thu gọn. `timeline` chưa có giá trị = theo chế độ (Cơ bản thu gọn, Nâng cao mở). */
+  /** Thu gọn. `timeline` chưa có giá trị = mở (D-69: cột lớp nằm trong Timeline). */
   collapsed: { layers: boolean; props: boolean; timeline?: boolean };
 }
 
 export const PANEL_LIMITS: Readonly<Record<PanelId, readonly [number, number]>> = {
-  layers: [160, 400], props: [272, 560], timeline: [140, 640], tree: [248, 480],
+  layers: [160, 400], props: [272, 560], timeline: [140, 2000], tree: [248, 480],
 };
 export const DEFAULT_LAYOUT: PanelLayout = { size: { layers: 224, props: 336, timeline: 220, tree: 300 }, collapsed: { layers: false, props: false } };
 /** Cỡ mặc định và giới hạn theo thẻ. Xem trước: cột trái là Phong cách video (ảnh thu nhỏ co theo bề rộng), cột phải là inspector. */
@@ -22,8 +22,8 @@ export const PROFILES: Readonly<Record<'editor' | 'preview', Profile>> = {
 };
 /** Cỡ khi thu gọn: dải dọc chứa nút mở (cột) và thanh tiêu đề (timeline). */
 export const RAIL = 36, TIMELINE_BAR = 36;
-/** Sân khấu luôn còn tối thiểu chừng này (px) để khung preview không bị bóp mất. */
-export const STAGE_MIN = { width: 360, height: 420 } as const;
+/** Sân khấu luôn còn tối thiểu chừng này (px) để khung preview không bị bóp mất. Chiều cao: Timeline kéo lên được tới khi sân khấu còn chừng này (D-69). */
+export const STAGE_MIN = { width: 360, height: 180 } as const;
 
 const clamp = (v: number, [lo, hi]: readonly [number, number]) => Math.round(Math.min(hi, Math.max(lo, v)));
 const num = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
@@ -50,8 +50,9 @@ export interface Resolved { layers: number; props: number; timeline: number; tre
  * Cỡ thật để vẽ trong khung `view` (px): panel thu gọn còn dải RAIL/TIMELINE_BAR; nếu cửa sổ hẹp tới mức sân khấu dưới STAGE_MIN thì
  * hai cột bị thu bớt (cột lớn hơn chịu trước, không xuống dưới giới hạn dưới), timeline thấp bớt. Không ghi đè cỡ người dùng đã lưu.
  */
-export function resolveLayout(l: PanelLayout, view: { width: number; height: number }, advanced: boolean, pf: Profile = PROFILES.editor): Resolved {
-  const open = { layers: !l.collapsed.layers, props: !l.collapsed.props, timeline: l.collapsed.timeline === undefined ? advanced : !l.collapsed.timeline };
+export function resolveLayout(l: PanelLayout, view: { width: number; height: number }, _advanced: boolean, pf: Profile = PROFILES.editor): Resolved {
+  // Timeline mặc định mở ở cả hai chế độ từ D-69 (trước đó Cơ bản thu gọn): cột lớp (thêm, chọn, ẩn, khoá lớp) nằm trong đó.
+  const open = { layers: !l.collapsed.layers, props: !l.collapsed.props, timeline: l.collapsed.timeline !== true };
   let layers = open.layers ? l.size.layers : RAIL, props = open.props ? l.size.props : RAIL;
   let over = layers + props + STAGE_MIN.width - view.width;
   for (const k of (props >= layers ? ['props', 'layers'] : ['layers', 'props']) as ('props' | 'layers')[]) {

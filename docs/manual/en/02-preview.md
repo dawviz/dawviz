@@ -28,6 +28,8 @@ The left column lists the video styles. Each thumbnail is drawn from your own so
 
 Once you change something, the style name shows "edited". Each style keeps its own work in progress: switch to another style and back and your changes are still there. To return a style to its original, hover its tile and press **×**; Ctrl+Z still undoes it. Work in progress on every tile is remembered in this browser (it survives a reload). The duplicate button on a tile makes a new preset from what you see. The plus tile below the list adds a preset from a `.json` file (see [Settings](04-settings.md)).
 
+**When the video has precomps** (made in the Editor tab, see [Precomps](03-editor.md#precomps)): if the playhead is inside a precomp, clicking a style or preset tile applies it to that precomp only (the top one if several overlap). The rest of the video stays as it is, so each part of the song can have its own style. With the playhead outside every precomp, a tile applies to the whole video as usual. Both can be undone.
+
 Above the frame you can see its size and shape (for example `1,080 × 1,080 · 1:1`) and the name of the style in use.
 
 ## Frame ratio

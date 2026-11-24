@@ -98,7 +98,7 @@ Nguồn: `docs/product/BRD.md` · [thứ tự đọc](docs/split/BRD/_index.md)
 - [4. PHẠM VI DỰ ÁN (PROJECT SCOPE) › 4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](docs/split/BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1.2k
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](docs/split/BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4.3k
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](docs/split/BRD/6-gia-dinh-assumptions.md) · 0.6k
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 35.5k
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 37.7k
 - [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](docs/split/BRD/8-cac-van-de-con-mo-open-issues.md) · 7.8k
 
 ### SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
@@ -344,7 +344,7 @@ Nguồn: `docs/design/REFERENCE-VIDEOS.md` · [thứ tự đọc](docs/split/REF
 - [Video 2 (tn-shi): đã làm phần lớn](docs/split/REFERENCE-VIDEOS/video-2-tn-shi-da-lam-phan-lon.md) · 0.9k
 - [Video 3 (Emocute): lộ trình](docs/split/REFERENCE-VIDEOS/video-3-emocute-lo-trinh.md) · 1.4k
 - [Video 4 (Silentroom, từ 1:01 đến hết): lộ trình](docs/split/REFERENCE-VIDEOS/video-4-silentroom-tu-1-01-den-het-lo-trinh.md) · 1.1k
-- [Quyết định: chuỗi cảnh và chia sẻ preset (D-66)](docs/split/REFERENCE-VIDEOS/quyet-dinh-chuoi-canh-va-chia-se-preset-d-66.md) · 1.3k
+- [Quyết định: chuỗi cảnh và chia sẻ preset (D-66)](docs/split/REFERENCE-VIDEOS/quyet-dinh-chuoi-canh-va-chia-se-preset-d-66.md) · 1.5k
 - [Task đề xuất (đã vào `PROGRESS`)](docs/split/REFERENCE-VIDEOS/task-de-xuat-da-vao-progress.md) · 0.9k
 
 ### UI-DIRECTION.md — Định hướng hình ảnh: khung preview và giao diện web
@@ -360,12 +360,12 @@ Nguồn: `docs/design/UI-DIRECTION.md` · [thứ tự đọc](docs/split/UI-DIRE
 - [3. Bộ prompt sinh ảnh giao diện web › 3.4 Khối tránh (luôn dán cuối)](docs/split/UI-DIRECTION/3-4-khoi-tranh-luon-dan-cuoi.md) · 0.4k
 - [3. Bộ prompt sinh ảnh giao diện web › 3.5 Prompt phụ](docs/split/UI-DIRECTION/3-5-prompt-phu.md) · 1.3k
 - [3. Bộ prompt sinh ảnh giao diện web › 3.6 Tiêu chí chọn](docs/split/UI-DIRECTION/3-6-tieu-chi-chon.md) · 0.6k
-- [3. Bộ prompt sinh ảnh giao diện web › 3.7 Khung bố cục chung (từ vòng 1, dùng cho vòng 2)](docs/split/UI-DIRECTION/3-7-khung-bo-cuc-chung-tu-vong-1-dung-cho-vong-2.md) · 1.5k
+- [3. Bộ prompt sinh ảnh giao diện web › 3.7 Khung bố cục chung (từ vòng 1, dùng cho vòng 2)](docs/split/UI-DIRECTION/3-7-khung-bo-cuc-chung-tu-vong-1-dung-cho-vong-2.md) · 1.6k
 - [3. Bộ prompt sinh ảnh giao diện web › 3.8 Prompt vòng 2 (dùng kèm tệp đính kèm)](docs/split/UI-DIRECTION/3-8-prompt-vong-2-dung-kem-tep-dinh-kem.md) · 9.8k
 - [4. Nhật ký thử và hướng được chọn](docs/split/UI-DIRECTION/4-nhat-ky-thu-va-huong-duoc-chon.md) · 3.5k
 - [5. Theme giao diện chỉ đổi màu (D-52) › 5.1 Quyết định](docs/split/UI-DIRECTION/5-1-quyet-dinh.md) · 0.8k
 - [5. Theme giao diện chỉ đổi màu (D-52) › 5.2 Bộ token (đề xuất, chốt khi làm)](docs/split/UI-DIRECTION/5-2-bo-token-de-xuat-chot-khi-lam.md) · 1.0k
-- [5. Theme giao diện chỉ đổi màu (D-52) › 5.3 Cấu trúc giao diện: D + A + E (D-53, đã chốt 2026-11-13)](docs/split/UI-DIRECTION/5-3-cau-truc-giao-dien-d-a-e-d-53-da-chot-2026-1.md) · 4.2k
+- [5. Theme giao diện chỉ đổi màu (D-52) › 5.3 Cấu trúc giao diện: D + A + E (D-53, đã chốt 2026-11-13)](docs/split/UI-DIRECTION/5-3-cau-truc-giao-dien-d-a-e-d-53-da-chot-2026-1.md) · 4.6k
 - [5. Theme giao diện chỉ đổi màu (D-52) › 5.4 Bảng màu dựng sẵn (đã kiểm AA, v0.5)](docs/split/UI-DIRECTION/5-4-bang-mau-dung-san-da-kiem-aa-v0-5.md) · 4.5k
 - [6. Việc tiếp theo đề xuất](docs/split/UI-DIRECTION/6-viec-tiep-theo-de-xuat.md) · 1.0k
 - [7. Nguyên tắc sản phẩm: trình dựng thật, mặc định đơn giản (D-54)](docs/split/UI-DIRECTION/7-nguyen-tac-san-pham-trinh-dung-that-mac-dinh-d.md) · 1.1k

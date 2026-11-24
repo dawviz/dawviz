@@ -476,20 +476,25 @@ describe('khoảng hiển thị và phase (T-81)', () => {
     expect(undoBtn().title).toMatch(/G|Sol|nốt chủ|key/i);
     ctrlZ(); await waitFor(() => expect((screen.getByTestId('tonic-select') as HTMLSelectElement).value).toBe(''));
   });
-  it('thêm phase: tên và thời điểm, sắp theo thời điểm, xoá được; hoàn tác', async () => {
+  it('phase trên làn Phase của Timeline (D-69): thêm tại vạch phát, đặt tên, dời bằng Alt+→, xoá bằng Delete; hoàn tác', async () => {
     await openProject();
     fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
-    expect(screen.getByTestId('phase-none')).toBeInTheDocument();
+    expect(screen.queryByTestId('phase-0')).toBeNull();
+    expect(screen.queryByTestId('phase-list')).toBeNull(); // không còn mục Phase ở bảng Thuộc tính
     fireEvent.click(screen.getByTestId('phase-add'));
-    await waitFor(() => expect(screen.getByTestId('phase-name-0')).toBeInTheDocument());
+    const input = await screen.findByTestId('phase-name-input') as HTMLInputElement;
+    fireEvent.change(input, { target: { value: '  Verse  ' } }); fireEvent.keyDown(input, { key: 'Enter' });
+    await waitFor(() => expect(screen.getByTestId('phase-0').textContent).toBe('Verse'));
+    fireEvent.change(screen.getAllByLabelText(/^(Seek|Tua)$/)[0], { target: { value: '2' } });
     fireEvent.click(screen.getByTestId('phase-add'));
-    await waitFor(() => expect(screen.getByTestId('phase-name-1')).toBeInTheDocument());
-    typeIn(screen.getByTestId('phase-start-0'), '0:02'); // phase đầu dời ra sau phase thứ hai: danh sách sắp lại
-    await waitFor(() => expect((screen.getByTestId('phase-start-0') as HTMLInputElement).value).toBe('0:01'));
-    expect((screen.getByTestId('phase-start-1') as HTMLInputElement).value).toBe('0:02');
-    fireEvent.click(screen.getByTestId('phase-remove-1'));
-    await waitFor(() => expect(screen.queryByTestId('phase-name-1')).toBeNull());
-    ctrlZ(); await waitFor(() => expect(screen.getByTestId('phase-name-1')).toBeInTheDocument());
+    fireEvent.keyDown(await screen.findByTestId('phase-name-input'), { key: 'Escape' });
+    await waitFor(() => expect(screen.getByTestId('phase-1')).toBeInTheDocument());
+    expect(screen.getByTestId('phase-1').getAttribute('aria-label')).toMatch(/0:02/);
+    fireEvent.keyDown(screen.getByTestId('phase-0'), { key: 'ArrowRight', altKey: true, shiftKey: true }); // +1 s
+    await waitFor(() => expect(screen.getByTestId('phase-0').getAttribute('aria-label')).toMatch(/Verse.*0:01/));
+    fireEvent.keyDown(screen.getByTestId('phase-1'), { key: 'Delete' });
+    await waitFor(() => expect(screen.queryByTestId('phase-1')).toBeNull());
+    ctrlZ(); await waitFor(() => expect(screen.getByTestId('phase-1')).toBeInTheDocument());
   });
 });
 
@@ -683,10 +688,12 @@ describe('thẻ Editor (T-68)', () => {
     fireEvent.click(screen.getByTestId('layers-add'));
     fireEvent.click(screen.getByRole('menuitem', { name: /^(Text box|Ô chữ)$/ }));
     await waitFor(() => expect(screen.getByTestId('editor-selected').textContent).toMatch(/(Text box|Ô chữ)/));
-    // Cơ bản: Timeline thu gọn sẵn; mở bằng nút ở thanh tiêu đề.
-    expect(screen.getByTestId('timeline-panel')).not.toHaveAttribute('data-open');
-    fireEvent.click(screen.getByTestId('timeline-toggle'));
+    // D-69: Timeline mở sẵn ở timeline lớp (tầng 1); nút Keyframe ở bảng Thuộc tính mở tầng 2 của lớp đang chọn.
+    expect(screen.getByTestId('timeline-panel')).toHaveAttribute('data-open');
+    expect(screen.getByTestId('layer-timeline')).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('props-open-keys'));
     await waitFor(() => expect(screen.getByTestId('keyframe-timeline')).toBeInTheDocument());
+    expect(screen.getByTestId('timeline-crumbs').textContent).toMatch(/(Keyframes|Keyframe) · (Text box|Ô chữ)/);
     expect(screen.queryByTestId('section-keyframe')).toBeNull(); // chưa chọn gì trên Timeline: không có mục Keyframe
     fireEvent.click(screen.getByTestId('tl-watch-position'));
     // Vị trí = x + y: một hình thoi gộp cả hai keyframe
@@ -727,7 +734,7 @@ describe('thẻ Editor (T-68)', () => {
     fireEvent.click(screen.getByTestId('layers-add'));
     fireEvent.click(screen.getByRole('menuitem', { name: /^(Text box|Ô chữ)$/ }));
     await waitFor(() => expect(screen.getByTestId('editor-selected').textContent).toMatch(/(Text box|Ô chữ)/));
-    fireEvent.click(screen.getByTestId('timeline-toggle'));
+    fireEvent.click(screen.getByTestId('props-open-keys'));
     fireEvent.click(await screen.findByTestId('tl-row-opacity'));
     const ins = () => within(screen.getByTestId('section-keyframe'));
     await waitFor(() => expect(ins().getByTestId('keyinsp-mode')).toBeInTheDocument());
@@ -744,7 +751,8 @@ describe('thẻ Editor (T-68)', () => {
     fireEvent.click(screen.getByTestId('layers-add'));
     fireEvent.click(screen.getByRole('menuitem', { name: /^(Text box|Ô chữ)$/ }));
     await waitFor(() => expect(screen.getByTestId('editor-selected').textContent).toMatch(/(Text box|Ô chữ)/));
-    fireEvent.click(screen.getByTestId('timeline-toggle'));
+    fireEvent.click(screen.getByTestId('props-open-keys'));
+    await screen.findByTestId('keyframe-timeline');
     const dia = (id: string) => screen.getByTestId(`tl-here-${id}`);
     const rowEl = (id: string) => document.querySelector(`[data-row="${id}"]`) as HTMLElement;
     const orig = (document as { elementFromPoint?: unknown }).elementFromPoint;
@@ -775,19 +783,21 @@ describe('thẻ Editor (T-68)', () => {
     await waitFor(() => expect(screen.getByTestId('inspector')).toBeInTheDocument());
     expect(screen.getByTestId('video-styles')).toBeInTheDocument();
   });
-  it('Panel Editor: Ctrl+J mở/đóng Timeline, Ctrl+B thu gọn Lớp thành dải mỏng và mở lại', async () => {
+  it('Panel Editor (D-69): Timeline mở sẵn và chứa cột lớp; Ctrl+J đóng/mở; Ctrl+Alt+B thu gọn Thiết lập; không còn cột Lớp riêng', async () => {
     await openProject();
     fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
-    expect(screen.getByTestId('timeline-panel')).not.toHaveAttribute('data-open');
-    fireEvent.keyDown(document.body, { key: 'j', code: 'KeyJ', ctrlKey: true });
-    await waitFor(() => expect(screen.getByTestId('timeline-panel')).toHaveAttribute('data-open'));
-    fireEvent.keyDown(document.body, { key: 'b', code: 'KeyB', ctrlKey: true });
-    await waitFor(() => expect(screen.getByTestId('rail-layers')).toBeInTheDocument());
-    expect(screen.queryByTestId('layers')).toBeNull();
-    fireEvent.click(screen.getByTestId('rail-layers'));
-    await waitFor(() => expect(screen.getByTestId('layers')).toBeInTheDocument());
+    expect(screen.getByTestId('timeline-panel')).toHaveAttribute('data-open');
+    expect(within(screen.getByTestId('timeline-panel')).getByTestId('layers')).toBeInTheDocument();
+    expect(screen.queryByTestId('rail-layers')).toBeNull();
     fireEvent.keyDown(document.body, { key: 'j', code: 'KeyJ', ctrlKey: true });
     await waitFor(() => expect(screen.getByTestId('timeline-panel')).not.toHaveAttribute('data-open'));
+    fireEvent.keyDown(document.body, { key: 'b', code: 'KeyB', ctrlKey: true }); // Editor: Ctrl+B không còn panel nào để thu gọn
+    expect(screen.queryByTestId('rail-layers')).toBeNull();
+    fireEvent.keyDown(document.body, { key: 'b', code: 'KeyB', ctrlKey: true, altKey: true });
+    await waitFor(() => expect(screen.getByTestId('rail-props')).toBeInTheDocument());
+    fireEvent.click(screen.getByTestId('rail-props'));
+    fireEvent.keyDown(document.body, { key: 'j', code: 'KeyJ', ctrlKey: true });
+    await waitFor(() => expect(screen.getByTestId('layers')).toBeInTheDocument());
   });
   it('T-73: thêm Ô chữ, gõ { hiện gợi ý chỗ giữ, bấm gợi ý điền {tên}; Enter ở ô nhiều dòng không áp, rời ô mới áp (một bước hoàn tác)', async () => {
     await openProject();
@@ -974,15 +984,79 @@ describe('thẻ Editor (T-68)', () => {
     fireEvent.click(picker().getByTestId('reset'));
     expect(picker().getByRole('radio', { name: /^(All showing|Mọi track đang hiện)$/ }).getAttribute('aria-checked')).toBe('true');
   });
-  it('chọn nhiều lớp: nút Chọn tất cả và Ctrl+A; kéo trên tên lớp chọn một dãy', async () => {
+  it('timeline lớp (D-69): Ctrl+K tách lớp tại vạch phát, Ctrl+G gom thành precomp, nhấp đúp mở precomp, Esc quay ra; hoàn tác từng bước', async () => {
+    await openProject();
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    const rows = () => [...screen.getByTestId('layers').querySelectorAll('li')];
+    const n0 = rows().length;
+    fireEvent.click(layerBtn(/Piano roll/));
+    fireEvent.change(screen.getAllByLabelText(/^(Seek|Tua)$/)[0], { target: { value: '2' } });
+    fireEvent.keyDown(screen.getByTestId('layer-timeline'), { key: 'k', code: 'KeyK', ctrlKey: true });
+    await waitFor(() => expect(rows()).toHaveLength(n0 + 1));
+    expect(undoBtn().title).toMatch(/Split|Tách/);
+    // hai thanh nối nhau tại 0:02: bản sao (đang chọn) bắt đầu ở đó
+    const copyBar = document.querySelector<HTMLElement>('[data-clip][aria-pressed="true"]')!;
+    expect(copyBar.getAttribute('aria-label')).toMatch(/0:02/);
+    fireEvent.keyDown(screen.getByTestId('layer-timeline'), { key: 'g', code: 'KeyG', ctrlKey: true });
+    await waitFor(() => expect(screen.getByTestId('layers').textContent).toMatch(/Precomp 1/));
+    expect(rows()).toHaveLength(n0 + 1);
+    expect(undoBtn().title).toMatch(/Precompose|Gom/);
+    const compBar = document.querySelector<HTMLElement>('[data-clip][aria-pressed="true"]')!;
+    fireEvent.doubleClick(compBar);
+    await waitFor(() => expect(screen.getByTestId('stage-comp').textContent).toMatch(/Precomp 1/));
+    expect(screen.getByTestId('timeline-crumbs').textContent).toMatch(/(Main timeline|Timeline chính).*Precomp 1/);
+    expect(rows()).toHaveLength(1); // bên trong: chỉ bản sao của Piano Roll
+    fireEvent.keyDown(screen.getByTestId('editor'), { key: 'Escape' });
+    await waitFor(() => expect(screen.queryByTestId('stage-comp')).toBeNull());
+    ctrlZ(); await waitFor(() => expect(screen.getByTestId('layers').textContent).not.toMatch(/Precomp 1/));
+    ctrlZ(); await waitFor(() => expect(rows()).toHaveLength(n0));
+  });
+  it('timeline lớp: kéo mép cuối thanh để cắt, kéo giữa thanh để dời; mỗi lần kéo là một bước hoàn tác', async () => {
+    await openProject();
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    fireEvent.click(layerBtn(/Piano roll/));
+    const bar = () => document.querySelector<HTMLElement>('[data-clip][aria-pressed="true"]')!;
+    const label = () => bar().getAttribute('aria-label') ?? '';
+    const rect = (el: HTMLElement) => { el.getBoundingClientRect = () => ({ left: 0, right: 200, width: 200, top: 0, bottom: 20, height: 20, x: 0, y: 0, toJSON() {} }); };
+    expect(label()).toMatch(/0:00.*(the end|hết bài)/);
+    rect(bar());
+    fireEvent.pointerDown(bar(), { button: 0, clientX: 198, clientY: 5 }); // mép phải: cắt
+    fireEvent.pointerMove(window, { clientX: 150, clientY: 5 });
+    fireEvent.pointerUp(window, {});
+    await waitFor(() => expect(label()).not.toMatch(/(the end|hết bài)/));
+    expect(undoBtn().title).toMatch(/Trim|Cắt mép/);
+    const trimmed = label();
+    rect(bar());
+    fireEvent.pointerDown(bar(), { button: 0, clientX: 100, clientY: 5 }); // giữa: dời
+    fireEvent.pointerMove(window, { clientX: 140, clientY: 5, altKey: true });
+    fireEvent.pointerMove(window, { clientX: 160, clientY: 5, altKey: true });
+    fireEvent.pointerUp(window, {});
+    await waitFor(() => expect(label()).not.toBe(trimmed));
+    expect(label()).not.toMatch(/: 0:00/);
+    expect(undoBtn().title).toMatch(/Move 1 layer in time|Dời 1 lớp theo thời gian/);
+    ctrlZ(); await waitFor(() => expect(label()).toBe(trimmed)); // cả lần kéo dời là một bước
+    ctrlZ(); await waitFor(() => expect(label()).toMatch(/(the end|hết bài)/));
+  });
+  it('Video styles (D-69): vạch phát nằm trong precomp thì ô phong cách áp vào precomp đó, không thay cả scene', async () => {
+    await openProject();
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    fireEvent.click(layerBtn(/Piano roll/));
+    fireEvent.keyDown(screen.getByTestId('layer-timeline'), { key: 'g', code: 'KeyG', ctrlKey: true });
+    await waitFor(() => expect(screen.getByTestId('layers').textContent).toMatch(/Precomp 1/));
+    fireEvent.click(screen.getByRole('tab', { name: /Preview|Xem trước/ }));
+    const other = radios().find((r) => r.getAttribute('aria-checked') !== 'true')!;
+    fireEvent.click(other);
+    await waitFor(() => expect(undoBtn().title).toMatch(/(Apply style to precomp|Áp phong cách vào precomp) Precomp 1/));
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    expect(screen.getByTestId('layers').textContent).toMatch(/Precomp 1/); // lớp precomp vẫn còn
+  });
+  it('chọn nhiều lớp: Ctrl+A; kéo trên tên lớp chọn một dãy', async () => {
     await openProject();
     fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
     const btns = () => [...screen.getByTestId('layers').querySelectorAll<HTMLButtonElement>('li button[aria-pressed]:not([data-paint])')];
     const picked = () => btns().map((b) => b.getAttribute('aria-pressed') === 'true');
     expect(picked().some(Boolean)).toBe(false);
-    fireEvent.click(screen.getByTestId('layers-select-all'));
-    expect(picked().every(Boolean)).toBe(true);
-    fireEvent.click(btns()[0]);                                          // chọn lại một lớp
+    fireEvent.click(btns()[0]);                                          // chọn một lớp
     expect(picked().filter(Boolean)).toHaveLength(1);
     fireEvent.keyDown(screen.getByTestId('editor'), { key: 'a', code: 'KeyA', ctrlKey: true });
     expect(picked().every(Boolean)).toBe(true);

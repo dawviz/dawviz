@@ -5,7 +5,7 @@ section: "Video tham chiếu: ý tưởng, mức tái hiện và lộ trình (m�
 path: "Video tham chiếu: ý tưởng, mức tái hiện và lộ trình (mở đầu)"
 chunk: video-tham-chieu-y-tuong-muc-tai-hien-va-lo-trin.md
 source_lines: 1-11
-source_sha1: 70b5971deb
+source_sha1: 7580d5f888
 ids: []
 ---
 # Video tham chiếu: ý tưởng, mức tái hiện và lộ trình

@@ -15,6 +15,7 @@ import { measureText } from './text.ts';
 import { DEFAULT_TEXT_STYLES, TEXT_METRICS, type PlacedRun, type RichText, type TextGradient } from './typography.ts';
 import { normalizeAngle } from './snap.ts';
 import { visibilityAlpha } from './visibility.ts';
+import { flattenScene, rootIdOf } from './comp.ts';
 import { resolveAnimated } from './animation.ts';
 import { FRAME_BUDGET } from '@dawviz/expr';
 import { deltaMatrix, mul, resolveParents, widgetMatrix, type Mat } from './parenting.ts';
@@ -153,7 +154,7 @@ export const WIDGET_RENDERERS: Partial<Record<WidgetSpec['type'], WidgetRenderer
 /** Bố cục toàn khung (thuần): danh sách widget đã sắp theo zIndex kèm primitive của từng widget. Dùng để test tất định. */
 /** HudData cho một scene: số đếm, lưới ô nhịp và hợp âm của mọi widget Chord Detection. Gọi ở bước derived (một lần cho mỗi dự án × scene). */
 export const buildSceneHud = (scene: SceneDocument, ast: UnifiedProjectAST, index: TimelineIndex): HudData =>
-  buildHud(ast, index, scene.widgets.filter((w) => w.type === 'CHORD_DETECTION' || usesChordPlaceholder(w))
+  buildHud(ast, index, flattenScene(scene).widgets.filter((w) => w.type === 'CHORD_DETECTION' || usesChordPlaceholder(w))
     .map((w) => ({ tracks: tracksFor(w, index), mode: (w.properties as ChordProps).mode ?? 'sustained' })));
 const hudMemo = new WeakMap<Derived, WeakMap<SceneDocument, HudData>>();
 /** Derived có hud: dùng cái đã dựng; thiếu (gọi trực tiếp, kiểm thử) thì dựng một lần cho (derived, scene) rồi đệm. */
@@ -163,7 +164,8 @@ function withHud(scene: SceneDocument, derived: Derived, ast: UnifiedProjectAST)
   let h = m.get(scene); if (!h) m.set(scene, h = buildSceneHud(scene, ast, derived.index));
   return { ...derived, hud: h };
 }
-export function layoutFrame(scene: SceneDocument, derived0: Derived, ast: UnifiedProjectAST, t: number, renderers = WIDGET_RENDERERS) {
+export function layoutFrame(scene0: SceneDocument, derived0: Derived, ast: UnifiedProjectAST, t: number, renderers = WIDGET_RENDERERS) {
+  const scene = flattenScene(scene0); // precomp (D-69): trải cây comp thành danh sách phẳng; scene không có comp giữ nguyên
   const derived: Derived = { ...withHud(scene, derived0, ast), phases: scene.phases, tonic: scene.tonic, naming: scene.noteNaming }; // phase thuộc scene: gắn mỗi khung (đối tượng nhỏ, không đệm)
   const dur = derived.index.duration;
   const order = scene.widgets.map((w, i) => ({ w, i })).filter(({ w }) => w.visible && renderers[w.type])
@@ -202,8 +204,12 @@ export function layoutFrame(scene: SceneDocument, derived0: Derived, ast: Unifie
     const pid = parents.get(id); if (pid === undefined) return null;
     let c = chain.get(pid); if (c) return c;
     const pw = byId.get(pid)!, po = ownOf(pw), up = parentOf(pid);
-    const L = po.we.layout, fx = po.fx;
-    const d = deltaMatrix(widgetMatrix(L, normalizeAngle(L.rotation) + (fx ? fx.rot : 0), fx), widgetMatrix(pw.layout, normalizeAngle(pw.layout.rotation))), a = po.opacity * (fx?.alpha ?? 1);
+    const L = po.we.layout, fx = po.fx, comp = pw.type === 'COMP';
+    // Lớp precomp (D-69): nội dung comp ở toạ độ khung, nên tư thế "tĩnh" để so là khung đầy đủ ở gốc; lớp còn truyền cho con khoảng hiển thị,
+    // hiện dần/ẩn dần và nút mắt của nó (cha thường thì không).
+    const rest = comp ? widgetMatrix({ ...pw.layout, x: 0, y: 0, width: scene.canvas.designWidth, height: scene.canvas.designHeight }, 0) : widgetMatrix(pw.layout, normalizeAngle(pw.layout.rotation));
+    const d = deltaMatrix(widgetMatrix(L, normalizeAngle(L.rotation) + (fx ? fx.rot : 0), fx), rest);
+    const a = po.opacity * (fx?.alpha ?? 1) * (comp ? (pw.visible ? visibilityAlpha(pw.visibility, t, dur) : 0) : 1);
     c = up ? { m: mul(up.m, d), a: up.a * a } : { m: d, a };
     chain.set(pid, c); return c;
   };
@@ -237,7 +243,8 @@ export interface FrameOptions {
   /** Chuỗi cảnh: không xoá canvas trước khi vẽ (vẽ chồng lên cảnh trước). */
   noClear?: boolean;
 }
-export function renderFrame(scene: SceneDocument, derived: Derived, ast: UnifiedProjectAST, t: number, target: RenderTarget, scale: number, renderers = WIDGET_RENDERERS, opts: FrameOptions = {}): void {
+export function renderFrame(scene0: SceneDocument, derived: Derived, ast: UnifiedProjectAST, t: number, target: RenderTarget, scale: number, renderers = WIDGET_RENDERERS, opts: FrameOptions = {}): void {
+  const scene = flattenScene(scene0);
   const g = target.ctx, { designWidth: W, designHeight: H } = scene.canvas;
   g.setTransform(1, 0, 0, 1, 0, 0);
   g.globalAlpha = 1; g.shadowBlur = 0;
@@ -249,7 +256,8 @@ export function renderFrame(scene: SceneDocument, derived: Derived, ast: Unified
     g.fillRect(0, 0, W, H); if (K < 1) g.globalAlpha = 1;
     if (derived.background) drawBackground(g, scene, derived.background, W, H, K);
   }
-  const only = opts.layers;
+  // `layers` chứa id lớp cấp gốc; con của một lớp precomp thuộc lớp đó (id có tiền tố).
+  const only0 = opts.layers, only = only0 && { has: (id: string) => only0.has(id) || only0.has(rootIdOf(id)) };
   for (const { widget, prims: prims0, fx, pm } of layoutFrame(only ? { ...scene, widgets: scene.widgets.filter((w) => only.has(w.id) || scene.widgets.some((c) => c.parent === w.id && only.has(c.id))) } : scene, derived, ast, t, renderers)) {
     if (only && !only.has(widget.id)) continue; // cha chỉ được giữ để dẫn con (parenting), không vẽ
     const prims = K >= 1 ? prims0 : prims0.map((p) => fadePrim(p, K)); // chuỗi cảnh: làm mờ cả cảnh

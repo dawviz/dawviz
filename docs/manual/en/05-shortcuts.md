@@ -26,7 +26,7 @@ While you're typing in a field, these keys go to the field.
 |---|---|
 | Arrow keys | Move the selected widget 1 point |
 | Shift + arrow | Move 10 points |
-| Esc | Clear the selection |
+| Esc | Clear the selection; with nothing selected, leave the open precomp |
 | Delete | Delete the selected widgets |
 | Ctrl+D | Duplicate the selected widgets |
 | Ctrl+A (⌘A) | Select all layers |
@@ -36,7 +36,9 @@ While you're typing in a field, these keys go to the field.
 | Shift-click | Add a widget to the selection |
 | Ctrl+] / Ctrl+[ | Bring forward / send backward |
 | Ctrl+Shift+] / Ctrl+Shift+[ | Bring to front / send to back |
-| Alt+Up / Alt+Down (in Layers) | Reorder layers |
+| Alt+Up / Alt+Down (on a layer name in the Timeline) | Reorder layers |
+| Ctrl+K | Split the selected layers at the playhead |
+| Ctrl+G | Precompose the selected layers |
 | Hold Alt while dragging | Move without snapping |
 | Hold Ctrl while resizing | Resize without snapping |
 | Hold Alt while resizing | Resize around the centre |
@@ -47,12 +49,34 @@ While you're typing in a field, these keys go to the field.
 
 | Key | Action |
 |---|---|
-| Ctrl+B | Collapse or open the left column (Layers / Video styles) |
+| Ctrl+B | Collapse or open the Video styles column (Preview tab) |
 | Ctrl+Alt+B | Collapse or open the right column (Widget properties / Inspector) |
 | Ctrl+J | Collapse or open the Timeline (Editor tab) |
 | Arrows (on a panel border) | Resize the panel (Shift: bigger steps) |
 | Enter (on a panel border) | Collapse the panel |
 | Double-click a panel border | Back to the default size |
+
+## Layer timeline
+
+When the Timeline has focus (click it first):
+
+| Key | Action |
+|---|---|
+| Drag the middle of a bar | Move the layer in time (every selected layer; keyframes move with it) |
+| Drag a bar edge | Trim the start or end (keyframes stay put) |
+| Hold Alt while dragging a bar or the ruler | No snapping |
+| Double-click a bar | Open the layer's keyframes; for a precomp, open the precomp |
+| Enter | Same as double-click, for the selected layer |
+| Ctrl+K | Split the layer at the playhead |
+| Ctrl+G | Precompose |
+| `[` / `]` | Move the bar so it starts / ends at the playhead |
+| Alt+`[` / Alt+`]` | Trim the start / end at the playhead |
+| Alt+Left / Alt+Right | Move the selected layers one frame (add Shift: one second); on a phase marker: move the phase |
+| Up / Down | Select the layer above / below |
+| Delete (on a phase marker) | Remove the phase |
+| Double-click the Phases lane | Add a phase there |
+| Ctrl + scroll | Zoom in / out horizontally |
+| Alt + scroll | Taller / shorter rows |
 
 ## Timeline & keyframes
 

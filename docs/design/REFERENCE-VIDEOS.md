@@ -68,6 +68,8 @@ Nền đen; các khung dọc (đường vector uốn cong, piano roll mảnh) **
 
 ## Quyết định: chuỗi cảnh và chia sẻ preset (D-66)
 
+> **Cập nhật 2026-11-24 (D-69):** chuỗi cảnh nay làm bằng precomp trong scene (lớp `COMP` + sổ `scene.comps`, lồng tối đa 4 cấp) trên timeline lớp của Editor, không còn manifest riêng; ý "thời gian cục bộ trong cảnh, dữ liệu nhạc theo toàn bài" và phần chia sẻ bên dưới giữ nguyên.
+
 Video 2 và 4 đổi giao diện theo đoạn nhạc. Thay vì một preset khổng lồ tự chia thời gian, ta dùng **nhiều preset trọn vẹn + manifest thời gian của dự án**:
 
 - **Manifest** là dạng lưu của chuỗi cảnh: danh sách `{preset, từ, đến, chuyển cảnh}` và một lớp chung luôn bật. Nó đi cùng dự án, không nằm trong preset. Preset không chứa mốc thời gian nào, nên dùng lại cho bài dài ngắn khác nhau.

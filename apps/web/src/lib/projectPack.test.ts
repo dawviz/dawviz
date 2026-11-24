@@ -91,10 +91,3 @@ test('pack: tệp thừa ngoài manifest bị bỏ và báo; âm thanh thiếu b
   assert.deepEqual(r.warnings.map((w) => w.code).sort(), ['WARN_PACK_AUDIO_MISSING', 'WARN_PACK_UNLISTED_FILE']);
 });
 
-test('Project Pack mang chuỗi cảnh (T-110/T-111 kiểu C): manifest mốc thời gian + scene đã dùng; pack cũ không có thì không có sequence', async () => {
-  const base = { title: 'Bài', now: new Date('2026-11-22T00:00:00Z'), scene: { a: 1 }, workspace: {}, source: { name: 'bai.mid', bytes: new Uint8Array([1, 2, 3]) } };
-  const seq = { manifest: { version: 1, cues: [{ id: 'c1', scene: 'mo-dau', from: 0, to: 30 }] }, scenes: { 'mo-dau': { presetName: 'Mở đầu' } } };
-  const r = await readPack(await buildPack({ ...base, sequence: seq }));
-  assert.deepEqual(r.sequence, seq); assert.ok(r.manifest.files.some((f) => f.path === 'sequence.json')); assert.deepEqual(r.warnings, []);
-  assert.equal((await readPack(await buildPack(base))).sequence, undefined);
-});

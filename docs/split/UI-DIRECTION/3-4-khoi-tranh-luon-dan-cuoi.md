@@ -5,7 +5,7 @@ section: "3.4 Khối tránh (luôn dán cuối)"
 path: "3. Bộ prompt sinh ảnh giao diện web > 3.4 Khối tránh (luôn dán cuối)"
 chunk: 3-4-khoi-tranh-luon-dan-cuoi.md
 source_lines: 133-137
-source_sha1: 7e6ce0b584
+source_sha1: a14f74399e
 ids: []
 ---
 ### 3.4 Khối tránh (luôn dán cuối)

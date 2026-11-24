@@ -50,7 +50,7 @@ export interface KeyframeTimelineProps {
 
 const FRAME = 1 / 30;
 /** Lề trái của làn (px): keyframe ở 0:00 không bị cắt nửa ở mép. */
-const PAD = 10;
+export const PAD = 10;
 const GROUPS: readonly { id: GroupId; key: string }[] = [{ id: 'transform', key: 'web.timeline.group.transform' }, { id: 'props', key: 'web.timeline.group.props' }];
 type Mode = 'none' | 'keys' | 'bind';
 type RowItem = { kind: 'row'; row: RowDef; anims: (Animation | undefined)[]; mode: Mode; vkeys: VKey[] };
@@ -570,12 +570,12 @@ function TreeRow({ it, name, widget, tempoMap, playback, locked, selected, full,
 }
 
 /** Đầu vạch phát trên thước. */
-function PlayheadHead({ playback, pps }: { playback: Playback; pps: number }) {
+export function PlayheadHead({ playback, pps }: { playback: Playback; pps: number }) {
   const t = usePlayback(playback, (s) => s.t);
   return <span aria-hidden className="pointer-events-none absolute bottom-0 h-3 w-2.5 -translate-x-1/2 bg-fg [clip-path:polygon(0_0,100%_0,100%_55%,50%_100%,0_55%)]" style={{ left: PAD + t * pps }} />;
 }
 /** Vạch phát dọc qua các làn (dưới cột cây). Đang phát mà vạch chạy ra khỏi phần đang thấy thì cuộn theo từng trang. */
-function PlayheadLine({ playback, pps, tree, scroller, laneW }: { playback: Playback; pps: number; tree: number; scroller: React.RefObject<HTMLDivElement>; laneW: number }) {
+export function PlayheadLine({ playback, pps, tree, scroller, laneW }: { playback: Playback; pps: number; tree: number; scroller: React.RefObject<HTMLDivElement>; laneW: number }) {
   const t = usePlayback(playback, (s) => s.t), playing = usePlayback(playback, (s) => s.playing);
   useEffect(() => {
     const el = scroller.current; if (!el || !playing) return;

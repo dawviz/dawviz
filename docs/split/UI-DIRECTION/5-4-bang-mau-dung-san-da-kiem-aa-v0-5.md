@@ -5,7 +5,7 @@ section: "5.4 Bảng màu dựng sẵn (đã kiểm AA, v0.5)"
 path: "5. Theme giao diện chỉ đổi màu (D-52) > 5.4 Bảng màu dựng sẵn (đã kiểm AA, v0.5)"
 chunk: 5-4-bang-mau-dung-san-da-kiem-aa-v0-5.md
 source_lines: 352-414
-source_sha1: 7e6ce0b584
+source_sha1: a14f74399e
 ids: [REQ-GRAPHICS-02]
 ---
 ### 5.4 Bảng màu dựng sẵn (đã kiểm AA, v0.5)

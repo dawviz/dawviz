@@ -28,10 +28,11 @@ import { MAX_PARENT_DEPTH, resolveParents } from './parenting.ts';
 import { ANIM_EFFECTS, ANIM_ORDERS, ANIM_UNITS, DEFAULT_TEXT_ANIMATOR, type TextAnimator } from './textAnimator.ts';
 import { EASING_NAMES } from './motion.ts';
 import { ASSET_REF, DEFAULT_IMAGE, IMAGE_FITS, type ImageProps } from './image.ts';
+import { COMP_SEP, MAX_COMPS, MAX_COMP_DEPTH, MAX_COMP_ID, MAX_COMP_NAME, MAX_FLAT_WIDGETS, canPlaceComp, compOf, flatCount, type CompProps, type CompSpec } from './comp.ts';
 
-export const SCENE_SCHEMA_VERSION = '0.7.0';
+export const SCENE_SCHEMA_VERSION = '0.8.0';
 
-export const WIDGET_TYPES = ['TRACK_INFO', 'PIANO_ROLL', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'AUDIO_SPECTRUM', 'PROGRESS_BAR', 'TEXT', 'PARTICLES', 'NOTATION', ...INSIGHT_TYPES, 'IMAGE'] as const;
+export const WIDGET_TYPES = ['TRACK_INFO', 'PIANO_ROLL', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'AUDIO_SPECTRUM', 'PROGRESS_BAR', 'TEXT', 'PARTICLES', 'NOTATION', ...INSIGHT_TYPES, 'IMAGE', 'COMP'] as const;
 export type WidgetType = typeof WIDGET_TYPES[number];
 
 /** `rotation`: độ, (−180, 180]. `anchor`: điểm neo xoay theo tỉ lệ khung widget (0..1), mặc định tâm (REQ-GRAPHICS-03). */
@@ -115,6 +116,8 @@ export interface SceneDocument {
   noteNaming?: NoteNaming;
   /** Thuộc tính tuỳ loại: PIANO_ROLL → PianoRollProps; loại chưa có renderer → giữ nguyên JSON. */
   widgets: WidgetSpec[];
+  /** Sổ precomp (0.8.0, D-69): id comp → comp. Lớp loại `COMP` trong `widgets` (hoặc trong comp khác) đặt comp lên timeline. Vắng = không có comp. */
+  comps?: Record<string, CompSpec>;
 }
 
 export const DEFAULT_PIANO_ROLL: Readonly<PianoRollProps> = Object.freeze({
@@ -271,7 +274,8 @@ const parseVersion = (v: unknown): [number, number, number] | null => {
  *  `textStyles` vắng = bộ dựng sẵn (REQ-GRAPHICS-18).
  *  0.5.x → 0.6.0: không đổi cấu trúc; thêm loại widget `TEXT` (ô chữ) và cú pháp chỗ giữ `{tên:định_dạng}`, `{{` (T-73). Preset cũ vẽ như cũ.
  *  0.6.x → 0.7.0: không đổi cấu trúc; thêm `widget.parent` (parenting), keyframe theo bậc (`kind: 'discrete'`: bật/tắt, lựa chọn, chữ) và đường dẫn
- *  animate của Piano Roll (T-22, T-32). Preset cũ vẽ như cũ. */
+ *  animate của Piano Roll (T-22, T-32). Preset cũ vẽ như cũ.
+ *  0.7.x → 0.8.0: không đổi cấu trúc; thêm sổ precomp `comps` và loại lớp `COMP` (D-69). Preset cũ vẽ như cũ. */
 export function migrateScene(raw: unknown): { raw: Obj; from: string } {
   if (!isObj(raw)) throw new SceneError('preset không phải đối tượng JSON', '$');
   if (typeof raw.schemaVersion !== 'string') throw new SceneError('thiếu schemaVersion', '$.schemaVersion');
@@ -280,7 +284,7 @@ export function migrateScene(raw: unknown): { raw: Obj; from: string } {
   const cur = parseVersion(SCENE_SCHEMA_VERSION)!;
   if (v[0] > cur[0] || (v[0] === cur[0] && v[1] > cur[1]))
     throw new SceneError(`preset phiên bản ${raw.schemaVersion} mới hơn ứng dụng (đọc được tới ${cur[0]}.${cur[1]}.x)`, '$.schemaVersion', 'ERR_SCHEMA_NEWER', { found: raw.schemaVersion, supported: SCENE_SCHEMA_VERSION });
-  if (v[0] !== 0 || v[1] < 3) throw new SceneError(`schemaVersion ${raw.schemaVersion} không đọc được (cần 0.3.x đến 0.7.x)`, '$.schemaVersion');
+  if (v[0] !== 0 || v[1] < 3) throw new SceneError(`schemaVersion ${raw.schemaVersion} không đọc được (cần 0.3.x đến 0.8.x)`, '$.schemaVersion');
   let out: Obj = structuredClone(raw);
   if (v[1] === 3) {
     if (Array.isArray(out.widgets)) for (const w of out.widgets) if (isObj(w) && isObj(w.layout) && w.layout.anchor === undefined) w.layout.anchor = { x: DEFAULT_ANCHOR.x, y: DEFAULT_ANCHOR.y };
@@ -289,6 +293,7 @@ export function migrateScene(raw: unknown): { raw: Obj; from: string } {
   if (v[1] <= 4) out = { ...out, schemaVersion: '0.5.0' };
   if (v[1] <= 5) out = { ...out, schemaVersion: '0.6.0' };
   if (v[1] <= 6) out = { ...out, schemaVersion: '0.7.0' };
+  if (v[1] <= 7) out = { ...out, schemaVersion: '0.8.0' };
   return { raw: out, from: raw.schemaVersion };
 }
 
@@ -352,14 +357,17 @@ export function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] 
     },
   };
 
+  // Đọc một danh sách widget (của scene, hoặc của một comp: D-69). Id và tên lớp không trùng trong cùng danh sách.
+  const readWidgets = (rawList: unknown, at: string): WidgetSpec[] => {
   const widgets: WidgetSpec[] = [];
   const ids = new Set<string>(), names = new Set<string>();
-  const list = Array.isArray(raw.widgets) ? raw.widgets : (w('WARN_PRESET_VALUE', '$.widgets', raw.widgets, 'không phải mảng; bỏ qua'), []);
+  const list = Array.isArray(rawList) ? rawList : (w('WARN_PRESET_VALUE', at, rawList, 'không phải mảng; bỏ qua'), []);
   list.forEach((rw, i) => {
-    const p = `$.widgets[${i}]`;
+    const p = `${at}[${i}]`;
     if (!isObj(rw)) { w('WARN_PRESET_VALUE', p, rw, 'widget không phải đối tượng; bỏ qua'); return; }
     if (!WIDGET_TYPES.includes(rw.type as WidgetType)) { w('WARN_PRESET_WIDGET_UNKNOWN', `${p}.type`, rw.type, 'loại widget không hợp lệ; bỏ qua'); return; }
     let id = str(rw.id, `${String(rw.type).toLowerCase()}-${i}`, `${p}.id`, (s) => s.length > 0 && s.length <= 64);
+    if (id.includes(COMP_SEP)) { const n = id.split(COMP_SEP).join('-'); w('WARN_PRESET_VALUE', `${p}.id`, id, `id không được chứa "${COMP_SEP}"; đổi thành ${n}`); id = n; }
     if (ids.has(id)) { const n = `${id}-${i}`; w('WARN_PRESET_VALUE', `${p}.id`, id, `id trùng; đổi thành ${n}`); id = n; }
     ids.add(id);
     const L = isObj(rw.layout) ? rw.layout : {};
@@ -428,6 +436,12 @@ export function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] 
       widgets.push({ ...base, properties: props });
     } else if (base.type in HUD_SANITIZERS) {
       widgets.push({ ...base, properties: HUD_SANITIZERS[base.type as keyof typeof HUD_SANITIZERS](P, `${p}.properties`, S) });
+    } else if (rw.type === 'COMP') {
+      // Lớp precomp (D-69): chỉ mang khoá comp và điểm bắt đầu; comp thiếu/vòng lặp/quá sâu kiểm ở dưới khi đã đọc hết sổ comp.
+      const comp = typeof P.comp === 'string' && P.comp.length > 0 && P.comp.length <= MAX_COMP_ID ? P.comp : '';
+      if (!comp) { w('WARN_PRESET_VALUE', `${p}.properties.comp`, P.comp, 'lớp precomp thiếu khoá comp; bỏ lớp'); return; }
+      const props: CompProps = { comp, start: num(P.start, 0, -86400, 86400, `${p}.properties.start`) };
+      widgets.push({ ...base, properties: props });
     } else {
       // Widget chưa có renderer (T-37…): giữ nguyên thuộc tính để không mất dữ liệu khi lưu lại; renderFrame bỏ qua.
       widgets.push({ ...base, properties: P });
@@ -439,8 +453,39 @@ export function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] 
   for (const pr of resolveParents(widgets).problems) {
     const i = widgets.findIndex((x) => x.id === pr.id);
     delete widgets[i].parent;
-    w('WARN_PRESET_VALUE', `$.widgets[${i}].parent`, pr.parent, REASON[pr.reason]);
+    w('WARN_PRESET_VALUE', `${at}[${i}].parent`, pr.parent, REASON[pr.reason]);
   }
+  return widgets;
+  };
+  const widgets = readWidgets(raw.widgets, '$.widgets');
+
+  // Sổ comp (D-69): khoá 1–64 ký tự không chứa "/", tối đa MAX_COMPS comp, mỗi comp tối đa PRESET_LIMITS.maxWidgets widget.
+  const comps: Record<string, CompSpec> = {};
+  if (raw.comps !== undefined) {
+    if (!isObj(raw.comps)) w('WARN_PRESET_VALUE', '$.comps', raw.comps, 'không phải đối tượng; bỏ');
+    else {
+      const entries = Object.entries(raw.comps);
+      if (entries.length > MAX_COMPS) w('WARN_PRESET_VALUE', '$.comps', entries.length, `quá ${MAX_COMPS} comp; bỏ phần thừa`);
+      for (const [cid, rc] of entries.slice(0, MAX_COMPS)) {
+        const cp = `$.comps.${cid}`;
+        if (!cid || cid.length > MAX_COMP_ID || cid.includes(COMP_SEP) || !isObj(rc)) { w('WARN_PRESET_VALUE', cp, cid, 'comp không hợp lệ; bỏ'); continue; }
+        if (Array.isArray(rc.widgets) && rc.widgets.length > PRESET_LIMITS.maxWidgets) throw new SceneError(`comp "${cid}" có hơn ${PRESET_LIMITS.maxWidgets} widget`, `${cp}.widgets`);
+        const nm = typeof rc.name === 'string' ? normalizeWidgetName(rc.name).slice(0, MAX_COMP_NAME) : '';
+        comps[cid] = { name: nm || cid, widgets: readWidgets(rc.widgets, `${cp}.widgets`) };
+      }
+    }
+  }
+  // Lớp COMP trỏ tới comp không có, tạo vòng lặp hoặc lồng quá MAX_COMP_DEPTH cấp: bỏ lớp đó kèm cảnh báo. Comp không lớp nào dùng vẫn giữ.
+  const dropBadLayers = (list: WidgetSpec[], at: string, inside: readonly string[]): WidgetSpec[] => list.filter((x, i) => {
+    const c = compOf(x); if (!c) return true;
+    const ok = !!comps[c.comp] && canPlaceComp(comps, c.comp, inside);
+    if (!ok) w('WARN_PRESET_VALUE', `${at}[${i}].properties.comp`, c.comp, comps[c.comp] ? `precomp tạo vòng lặp hoặc lồng sâu hơn ${MAX_COMP_DEPTH} cấp; bỏ lớp` : 'comp không tồn tại; bỏ lớp');
+    return ok;
+  });
+  for (const [cid, spec] of Object.entries(comps)) spec.widgets = dropBadLayers(spec.widgets, `$.comps.${cid}.widgets`, [cid]);
+  const rootWidgets = dropBadLayers(widgets, '$.widgets', []);
+  widgets.length = 0; widgets.push(...rootWidgets);
+  if (flatCount({ widgets, comps } as unknown as SceneDocument) > MAX_FLAT_WIDGETS) throw new SceneError(`preset có hơn ${MAX_FLAT_WIDGETS} lớp sau khi trải precomp`, '$.comps');
 
   // Phông không có sẵn: một cảnh báo cho mỗi họ (đường dẫn chỗ đầu tiên dùng nó).
   const fonts = opts.fonts ?? BUNDLED_TEXT_FAMILIES, seen = new Set<string>();
@@ -450,10 +495,12 @@ export function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] 
     warnings.push({ code: 'WARN_PRESET_FONT_MISSING', message: `phông "${font}" không có sẵn; vẽ bằng ${TEXT_DEFAULT_FONT}`, details: { path, value: font, to: TEXT_DEFAULT_FONT } });
   };
   for (const [id, st] of Object.entries(textStyles)) missing(st.font, `$.textStyles.${id}.font`);
-  widgets.forEach((wd, i) => {
+  const fontsOf = (list: WidgetSpec[], at: string) => list.forEach((wd, i) => {
     const P = wd.properties as Record<string, unknown>;
-    for (const f of Object.keys((TEXT_FIELDS as Record<string, object>)[wd.type] ?? {})) missing((P[f] as TextRef | undefined)?.font, `$.widgets[${i}].properties.${f}.font`);
+    for (const f of Object.keys((TEXT_FIELDS as Record<string, object>)[wd.type] ?? {})) missing((P[f] as TextRef | undefined)?.font, `${at}[${i}].properties.${f}.font`);
   });
+  fontsOf(widgets, '$.widgets');
+  for (const [cid, spec] of Object.entries(comps)) fontsOf(spec.widgets, `$.comps.${cid}.widgets`);
 
   const phases = raw.phases === undefined ? undefined : sanitizePhases(S, raw.phases, '$.phases');
   const nn = isObj(raw.noteNaming) ? raw.noteNaming : null;
@@ -461,7 +508,7 @@ export function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] 
     ascii: S.bool(nn.ascii, DEFAULT_NAMING.ascii, '$.noteNaming.ascii'), middleC: Math.round(S.num(nn.middleC, DEFAULT_NAMING.middleC, 3, 4, '$.noteNaming.middleC')) === 3 ? 3 : 4 } : undefined;
   const tonic = raw.tonic === undefined ? undefined : Math.round(num(raw.tonic, NaN, 0, 11, '$.tonic'));
   return {
-    scene: { schemaVersion: SCENE_SCHEMA_VERSION, presetName: str(raw.presetName, 'Untitled', '$.presetName'), author: str(raw.author, '', '$.author'), canvas, textStyles, ...(phases?.length ? { phases } : {}), ...(tonic !== undefined && !Number.isNaN(tonic) ? { tonic } : {}), ...(noteNaming ? { noteNaming } : {}), widgets },
+    scene: { schemaVersion: SCENE_SCHEMA_VERSION, presetName: str(raw.presetName, 'Untitled', '$.presetName'), author: str(raw.author, '', '$.author'), canvas, textStyles, ...(phases?.length ? { phases } : {}), ...(tonic !== undefined && !Number.isNaN(tonic) ? { tonic } : {}), ...(noteNaming ? { noteNaming } : {}), widgets, ...(Object.keys(comps).length ? { comps } : {}) },
     warnings,
   };
 }

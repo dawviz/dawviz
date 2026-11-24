@@ -1,6 +1,6 @@
 # Chỉ mục REFERENCE-VIDEOS.md — Video tham chiếu: ý tưởng, mức tái hiện và lộ trình
 
-nguồn: `REFERENCE-VIDEOS.md` (sha1 70b5971deb)
+nguồn: `REFERENCE-VIDEOS.md` (sha1 7580d5f888)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -10,5 +10,5 @@ nguồn: `REFERENCE-VIDEOS.md` (sha1 70b5971deb)
 | 3 | Video 2 (tn-shi): đã làm phần lớn | [video-2-tn-shi-da-lam-phan-lon.md](video-2-tn-shi-da-lam-phan-lon.md) | 946 |  |
 | 4 | Video 3 (Emocute): lộ trình | [video-3-emocute-lo-trinh.md](video-3-emocute-lo-trinh.md) | 1425 |  |
 | 5 | Video 4 (Silentroom, từ 1:01 đến hết): lộ trình | [video-4-silentroom-tu-1-01-den-het-lo-trinh.md](video-4-silentroom-tu-1-01-den-het-lo-trinh.md) | 1091 |  |
-| 6 | Quyết định: chuỗi cảnh và chia sẻ preset (D-66) | [quyet-dinh-chuoi-canh-va-chia-se-preset-d-66.md](quyet-dinh-chuoi-canh-va-chia-se-preset-d-66.md) | 1266 | D-66 |
+| 6 | Quyết định: chuỗi cảnh và chia sẻ preset (D-66) | [quyet-dinh-chuoi-canh-va-chia-se-preset-d-66.md](quyet-dinh-chuoi-canh-va-chia-se-preset-d-66.md) | 1549 | D-66, D-69 |
 | 7 | Task đề xuất (đã vào `PROGRESS`) | [task-de-xuat-da-vao-progress.md](task-de-xuat-da-vao-progress.md) | 916 |  |
