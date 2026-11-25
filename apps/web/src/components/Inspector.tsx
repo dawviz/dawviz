@@ -1,10 +1,12 @@
 // Inspector (UI-DIRECTION 5.3): mục đánh số 01, 02, 03…, phân cách bằng kẻ 1 px, không thẻ có bóng.
 // Ở Cơ bản, mục có phần nâng cao hiện nút "Thêm tuỳ chọn" ở đầu mục (REQ-UI-13, nhớ theo mục). Dòng nâng cao KHÔNG mang nhãn
 // nào, ở cả hai chế độ (D-57, chủ dự án bỏ hẳn nhãn NC 2026-11-14: không phần mềm dựng hình nào đánh dấu như vậy).
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { ChevronRight, RotateReset } from './Icons.tsx';
 import { useSectionOpen } from '../lib/sectionState.ts';
+import { matchesQuery, queryTerms } from '../lib/settingsSearch.ts';
+import { SettingsSearchContext, useSettingsSearch } from './SettingsSearch.tsx';
 
 export function InspectorSection({ n, id, title, more, children }: {
   n: number; id: string; title: string; children: ReactNode;
@@ -13,12 +15,21 @@ export function InspectorSection({ n, id, title, more, children }: {
 }) {
   const { i18n } = useI18n();
   // Nhấp tiêu đề để thu gọn/mở mục (nhớ theo id, dùng chung Xem trước và Editor): cột dài thì gấp những mục không dùng tới.
-  const [open, setOpen] = useSectionOpen(id);
+  const [open0, setOpen] = useSectionOpen(id);
+  // Tìm thiết lập (T-60): đang tìm thì mở thân mục (không đổi trạng thái đã nhớ) và ẩn cả mục nếu cả tên mục lẫn chữ trong thân không khớp.
+  // Tên mục khớp thì giữ nguyên cả mục (con nhận câu tìm rỗng, không lọc).
+  const search = useSettingsSearch();
+  const q = queryTerms(search.query).length ? search.query : '';
+  const titleHit = !!q && matchesQuery(title, q);
+  const open = open0 || !!q;
+  const body = useRef<HTMLDivElement>(null);
+  const [hit, setHit] = useState(true);
+  useLayoutEffect(() => { const h = !q || titleHit || matchesQuery(body.current?.textContent ?? '', q); setHit((p) => (p === h ? p : h)); });
   return (
-    <section aria-labelledby={`${id}-h`} className="border-b border-line" data-testid={`section-${id}`} data-collapsed={open ? undefined : true}>
+    <section aria-labelledby={`${id}-h`} className="border-b border-line" data-testid={`section-${id}`} data-collapsed={open ? undefined : true} hidden={!!q && !hit} data-search-hit={q && hit ? true : undefined}>
       <header className={`flex items-center gap-2 px-4 pt-2 ${open ? 'pb-1' : 'pb-2'}`}>
         <h2 id={`${id}-h`} className="min-w-0 flex-1 text-[15px] font-semibold text-fg">
-          <button type="button" aria-expanded={open} aria-controls={`${id}-body`} onClick={() => setOpen(!open)} data-testid={`section-toggle-${id}`}
+          <button type="button" aria-expanded={open} aria-controls={`${id}-body`} onClick={() => setOpen(!open0)} data-testid={`section-toggle-${id}`}
             title={i18n.t(open ? 'web.section.collapse' : 'web.section.expand', { name: title })}
             className="group -mx-1 flex min-h-[var(--hit)] w-[calc(100%+0.5rem)] items-center gap-2 rounded px-1 py-1 text-left transition hover:bg-raised">
             <ChevronRight className={`h-3 w-3 shrink-0 text-faint transition-transform duration-150 group-hover:text-fg ${open ? 'rotate-90' : ''}`} />
@@ -26,7 +37,7 @@ export function InspectorSection({ n, id, title, more, children }: {
             <span className="min-w-0 flex-1 break-words leading-tight">{title}</span>
           </button>
         </h2>
-        {more && open && (
+        {more && open && !q && (
           <button type="button" className="btn-ghost flex items-center gap-1.5" aria-expanded={more.open} onClick={more.onToggle}
             title={more.edited && !more.open ? i18n.t('web.more.edited') : undefined}>
             {more.edited && !more.open && <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-line-strong" />}
@@ -35,7 +46,7 @@ export function InspectorSection({ n, id, title, more, children }: {
           </button>
         )}
       </header>
-      {open && <div id={`${id}-body`} className="space-y-2.5 px-4 pb-4 pt-1">{children}</div>}
+      {open && <div ref={body} id={`${id}-body`} className="space-y-2.5 px-4 pb-4 pt-1">{titleHit ? <SettingsSearchContext.Provider value={{ ...search, query: '' }}>{children}</SettingsSearchContext.Provider> : children}</div>}
     </section>
   );
 }

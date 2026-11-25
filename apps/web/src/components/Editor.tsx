@@ -18,6 +18,7 @@ import { LiveCanvas } from './Stage.tsx';
 import { AspectSwitch, frameInfo } from './AspectSwitch.tsx';
 import { Crop } from './Stage.tsx';
 import { InspectorSection, ResetButton, TickField } from './Inspector.tsx';
+import { SearchEmpty, SettingsSearchBox } from './SettingsSearch.tsx';
 import { NumberField } from './NumberField.tsx';
 import { AlignBottom, AlignHCenter, AlignLeft, AlignRight, AlignTop, AlignVCenter, Diamond, DistributeH, DistributeV, Duplicate, LayerDown, LayerUp, Lock, PanelRight, Plus, Precomp, ToBack, ToFront, Trash } from './Icons.tsx';
 import { isTextEntry } from '../lib/a11y.ts';
@@ -412,13 +413,15 @@ export function Editor({ proof = true, styleName, scene, root, compPath, onCompP
           <span className="truncate text-xs text-muted">{i18n.t('web.editor.properties')}</span>
           <PanelCollapse label={keyHint(i18n.t('web.panel.collapse', { name: i18n.t('web.editor.properties') }), 'Ctrl+Alt+B')} icon={<PanelRight className="h-3.5 w-3.5" />} onClick={() => panels.setOpen('props', false)} testId="collapse-props" />
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto max-lg:flex-none max-lg:overflow-visible">
+        <SettingsSearchBox />
+        <div className="relative min-h-0 flex-1 overflow-y-auto max-lg:flex-none max-lg:overflow-visible">
         <Properties background={background} scene={scene} selected={live} locked={locked} name={name} advanced={advanced} actions={actions} onLock={toggleLock} order={order} move={move} widgetSections={widgetSections} onPick={(id) => setSelected([id])} layoutRef={layoutRef}
           onDuplicate={duplicateSel} onRemove={removeSel} onDeselect={deselect} live={liveCtx} editLayouts={editLayouts} onOpenComp={openComp} onOpenKeys={openKeys} inComp={frames.length > 0} onUncompose={uncomposeSel} compSpeed={(w) => Math.round((compOf(w)?.speed ?? 1) * frameA * 100)} onCompSpeed={setCompSpeed}
           keyInspector={single && ast && keysOpen && hasInspectorTarget(single, keySel) ? (n) => (
             <AnimationInspector n={n} widget={single} sel={keySel} tempoMap={ast.tempoMap} locked={locked.has(single.id)} getTime={() => playback.get().t}
               onAnimate={(p, v, k) => actions.animate(single.id, p, v, k)} onAnimateMany={(ch, k) => actions.animEdit({ [single.id]: { animate: ch } }, k)} onSel={onKeySel} gesture={gestureCtx} />
           ) : undefined} />
+        <SearchEmpty />
         </div>
       </aside>
       <Splitter axis="x" grow={-1} label={i18n.t('web.panel.resize', { name: i18n.t('web.editor.properties') })} title={i18n.t('web.panel.resizeHint')} controls="editor-props-panel"

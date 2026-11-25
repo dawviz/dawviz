@@ -7,7 +7,7 @@ import type { ExportIn, ExportJob, ExportOut } from '../lib/exportProtocol.ts';
 import { createStats, type ExportStats } from '../lib/exportStats.ts';
 import { loadFontBytes } from '../lib/assetsRuntime.ts';
 import { dirSink, pngName, wavBytes, zipSink, type DirTarget } from '../lib/pngSequence.ts';
-import { frameCount } from '../lib/exportPlan.ts';
+import { fitRect, frameCount } from '../lib/exportPlan.ts';
 
 const REPORT_EVERY_MS = 250; // gói số liệu cho giao diện ~4 lần/giây, không phải mỗi khung
 const THUMB_EVERY_MS = 500, THUMB_WIDTH = 240;
@@ -21,20 +21,43 @@ const loadFont = async (spec: FontFaceSpec) => {
   (self as unknown as { fonts: FontFaceSet }).fonts.add(face);
 };
 
+type DrawCtx = { scene: ExportJob['scene']; ast: ExportJob['ast']; derived: Derived; canvas: OffscreenCanvas; ctx: OffscreenCanvasRenderingContext2D };
+/**
+ * Hàm vẽ một khung lên canvas xuất. `layers` (T-55): chỉ các lớp gốc này. Kích thước tuỳ ý khác tỉ lệ khung video (D-26): vẽ vào canvas phụ
+ * vừa khít rồi đặt giữa, phần thừa tô màu nền (trong suốt khi xuất PNG trong suốt) — không kéo méo, không cắt.
+ */
+function makeDraw(job: ExportJob, c: DrawCtx, transparent: boolean): (t: number) => void {
+  const { width, height } = job, { designWidth: W, designHeight: H } = c.scene.canvas;
+  const layers = job.layers ?? job.png?.layers;
+  const opts = { transparent, ...(layers ? { layers: new Set(layers) } : {}) };
+  const fit = fitRect(W, H, width, height);
+  if (fit.fits) return (t) => renderFrame(c.scene, c.derived, c.ast, t, { ctx: c.ctx as unknown as RenderCtx, width, height }, width / W, undefined, opts);
+  const inner = new OffscreenCanvas(fit.w, fit.h), ictx = inner.getContext('2d');
+  if (!ictx) throw new Error('2D context unavailable');
+  const bg = c.scene.canvas.backgroundColor;
+  return (t) => {
+    renderFrame(c.scene, c.derived, c.ast, t, { ctx: ictx as unknown as RenderCtx, width: fit.w, height: fit.h }, fit.w / W, undefined, opts);
+    const g = c.ctx;
+    g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.clearRect(0, 0, width, height);
+    if (!transparent) { g.fillStyle = bg; g.fillRect(0, 0, width, height); }
+    g.drawImage(inner, fit.x, fit.y);
+  };
+}
+
 /**
  * Chuỗi PNG (T-55): cùng vòng khung với video (runExport), nhưng mỗi khung thành một tệp PNG có kênh trong suốt, ghi vào thư mục người dùng chọn
  * hoặc gói `.zip`. Âm thanh (nếu chọn) ghi thành một tệp `.wav` cùng khoảng xuất.
  */
-async function runPng(job: ExportJob, dir: DirTarget | undefined, c: { scene: ExportJob['scene']; ast: ExportJob['ast']; derived: Derived; canvas: OffscreenCanvas; ctx: OffscreenCanvasRenderingContext2D; scale: number; faces: number; t0: number }) {
+async function runPng(job: ExportJob, dir: DirTarget | undefined, c: DrawCtx & { faces: number; t0: number }) {
   const png = job.png!, { width, height } = job, total = frameCount(job.duration, job.fps);
   const sink = dir ? dirSink(dir) : zipSink(), stats = createStats();
-  const opts = { transparent: png.transparent, ...(png.layers ? { layers: new Set(png.layers) } : {}) };
+  const drawFrame = makeDraw(job, c, png.transparent);
   let k = 0, last: ExportStats | null = null;
   const base = { fontFaces: c.faces, container: 'png', videoCodec: 'png', audioCodec: png.wav && job.audio ? 'wav' : null } as unknown as Pick<ExportStats, 'fontFaces' | 'container' | 'videoCodec' | 'audioCodec'>;
   try {
     await runExport({
       fps: job.fps, start: job.start, duration: job.duration, signal: flag,
-      draw: (t, i) => { k = i; const a = performance.now(); renderFrame(c.scene, c.derived, c.ast, t, { ctx: c.ctx as unknown as RenderCtx, width, height }, c.scale, undefined, opts); stats.addDraw(performance.now() - a); },
+      draw: (t, i) => { k = i; const a = performance.now(); drawFrame(t); stats.addDraw(performance.now() - a); },
       video: { add: async () => { const a = performance.now(); const blob = await c.canvas.convertToBlob({ type: 'image/png' }); await sink.write(pngName(png.base, k, total), new Uint8Array(await blob.arrayBuffer())); stats.addEncode(performance.now() - a); } },
       progressEveryMs: REPORT_EVERY_MS,
       onProgress: (progress) => { last = { ...stats.snapshot(progress.frame), ...base }; post({ type: 'progress', progress, stats: last }); },
@@ -62,8 +85,8 @@ async function run(job: ExportJob, file: Extract<ExportIn, { type: 'start' }>['f
   const canvas = new OffscreenCanvas(width, height);
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('2D context unavailable');
-  const scale = width / scene.canvas.designWidth;
-  if (job.png) return runPng(job, dir, { scene, ast, derived, canvas, ctx, scale, faces: faces.length, t0 });
+  if (job.png) return runPng(job, dir, { scene, ast, derived, canvas, ctx, faces: faces.length, t0 });
+  const drawFrame = makeDraw(job, { scene, ast, derived, canvas, ctx }, false);
   const stream = file ? await file.createWritable() : undefined; // tạo ở đây (không ở luồng chính): luồng ghi không chuyển qua Worker được
   const out = createExportOutput({
     choice: job.choice, canvas, fps: job.fps, bitrate: job.bitrate, file: stream,
@@ -79,7 +102,7 @@ async function run(job: ExportJob, file: Extract<ExportIn, { type: 'start' }>['f
     await runExport({
       fps: job.fps, start: job.start, duration: job.duration, signal: flag, video: timedVideo,
       audio: out.audio && job.audio ? { sink: out.audio, input: job.audio } : undefined,
-      draw: (t) => { const t0 = performance.now(); renderFrame(scene, derived, ast, t, { ctx: ctx as unknown as RenderCtx, width, height }, scale); stats.addDraw(performance.now() - t0); },
+      draw: (t) => { const t0 = performance.now(); drawFrame(t); stats.addDraw(performance.now() - t0); },
       progressEveryMs: REPORT_EVERY_MS,
       onProgress: (progress) => {
         const st = statsNow(progress.frame), now = performance.now();

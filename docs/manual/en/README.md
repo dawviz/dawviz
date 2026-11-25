@@ -22,7 +22,8 @@ This guide grows with the app. If something isn't in the app yet, it isn't descr
 
 ## Good to know
 
-- **Basic and Advanced.** The switch is at the top right. Basic shows what you use most. Advanced shows every option. Switch any time; your settings stay.
+- **Basic and Advanced.** The first time you open the app, a dialog asks how you want to start: **I'm new to this** (Basic) or **I know video editing software** (Advanced); Esc means Basic. The app remembers your choice and doesn't ask again. After that, use the **Basic · Advanced** switch at the top right. Basic shows what you use most. Advanced shows every option. Switch any time; your settings stay.
+- **Find a setting.** The **Find a setting…** box sits at the top of the right-hand panel (the Preview inspector and the Editor's widget properties). Type part of a setting's name, with or without accents: only the matching sections and boxes stay. In Basic mode, Advanced-only boxes that match still show up, without pressing **More options**. Type a section name (for example `Settings`) to see that whole section. Press Esc or clear the text to go back.
 - **Undo.** Almost every change can be undone with Ctrl+Z (⌘Z on Mac). The clock button next to Undo/Redo lists your steps; click one to go back to that point.
 - **The ↺ button.** It appears next to a setting you have changed, in every section (Position, Settings, Text, note look…). Click it to return that setting to the value of the video style or preset you applied last; for a widget you just added, to the default for its type. A faster way: hold Alt (Option on Mac) and click the setting's **label text** (not the input box). Each reset is its own undo step.
 - **Hover over a button** to see its name and shortcut.

@@ -67,6 +67,8 @@ import { describeCommand, historyItems, type LabelCtx } from './lib/historyLabel
 import { mergeExtras, missingMidiLevel, type ExternalMidiInfo } from './lib/externalMidi.ts';
 import { loadPref, savePref } from './lib/prefs.ts';
 import { usePref, DEFAULT_UI, sanitizeUi, type UiMode, type UiPrefs } from './lib/usePref.ts';
+import { ConfirmDialog } from './components/ConfirmDialog.tsx';
+import { SearchEmpty, SettingsSearchBox, SettingsSearchContext } from './components/SettingsSearch.tsx';
 import { createPlayback, usePlayback } from './lib/playback.ts';
 import { radioKeys, radioTab } from './lib/a11y.ts';
 import { bindTransportKeys } from './lib/transportKeys.ts';
@@ -154,6 +156,10 @@ export function App() {
   const [tab, setTab] = useState<Tab>('preview');
   const [exporting, setExporting] = useState(false);
   const advanced = ui.mode === 'advanced';
+  // Tìm thiết lập (T-60): câu tìm dùng chung inspector Xem trước và bảng Thuộc tính Editor; không lưu.
+  const [settingsQuery, setSettingsQuery] = useState('');
+  const searchCtx = useMemo(() => ({ query: settingsQuery, setQuery: setSettingsQuery }), [settingsQuery]);
+  const searching = settingsQuery.trim() !== '';
 
   // Đồng hồ phát ngoài React state (PROGRESS T-70): chỉ canvas, thanh phát và số đo đăng ký theo dõi.
   const deviceOffset = activeOffsetMs(device);
@@ -691,7 +697,7 @@ export function App() {
   const more = (id: string, edited: boolean) => advanced ? undefined : {
     open: !!ui.more[id], edited, onToggle: () => setUi((u) => ({ ...u, more: { ...u.more, [id]: !u.more[id] } })),
   };
-  const showAdv = (id: string) => advanced || !!ui.more[id];
+  const showAdv = (id: string) => advanced || !!ui.more[id] || searching; // đang tìm: hiện cả phần nâng cao để tìm thấy
 
   const trackProps = loaded && {
     tracks: ordered, config: brightness, overrides: style.tracks, onChange: patchBrightness, onStyle: patchTrackStyle,
@@ -857,8 +863,10 @@ export function App() {
                 <span className="truncate text-xs text-muted">{i18n.t('web.inspector')}</span>
                 <PanelCollapse label={pvHint(i18n.t('web.inspector'), true, 'Ctrl+Alt+B')} icon={<PanelRight className="h-3.5 w-3.5" />} onClick={() => pv.setOpen('props', false)} testId="collapse-inspector" />
               </div>
-              <div className="min-h-0 flex-1 overflow-y-auto max-lg:flex-none max-lg:overflow-visible">
+              <SettingsSearchBox />
+              <div className="relative min-h-0 flex-1 overflow-y-auto max-lg:flex-none max-lg:overflow-visible">
                 {sectionOrder.map((id, i) => sections[id](i + 1))}
+                <SearchEmpty />
               </div>
             </aside>
             <Splitter axis="x" grow={-1} label={i18n.t('web.panel.resize', { name: i18n.t('web.inspector') })} title={i18n.t('web.panel.resizeHint')} controls="preview-inspector"
@@ -914,10 +922,10 @@ export function App() {
   }, [agent]);
 
   return (
-    <GestureContext.Provider value={gesture}><NotationStatusContext.Provider value={notation}><AssetsContext.Provider value={assetsApi}><MotionConfig reducedMotion="user"><LayoutGroup>
+    <SettingsSearchContext.Provider value={searchCtx}><GestureContext.Provider value={gesture}><NotationStatusContext.Provider value={notation}><AssetsContext.Provider value={assetsApi}><MotionConfig reducedMotion="user"><LayoutGroup>
     <div className="flex h-screen min-h-0 flex-col">
       {agent && <div role="status" className="shrink-0 border-b border-guide/60 bg-guide/10 px-4 py-1 text-xs text-fg" data-testid="agent-banner">{i18n.t('web.agent.banner')}</div>}
-      <TopBar tab={tab} onTab={setTab} fileName={loaded?.name} onExport={derived && renderAst ? () => setExporting(true) : undefined} mode={ui.mode} onMode={(mode) => setUi((u) => ({ ...u, mode }))}
+      <TopBar tab={tab} onTab={setTab} fileName={loaded?.name} onExport={derived && renderAst ? () => setExporting(true) : undefined} mode={ui.mode} onMode={(mode) => setUi((u) => ({ ...u, mode, modeChosen: true }))}
         history={history} shortcuts={shortcuts} onUndo={doUndo} onRedo={doRedo} onJump={doJump} stepLabel={stepLabel} announce={announce}
         file={<FileDrop onPick={onPick} busy={busy} compact />} theme={<ThemeToggle pref={theme} onChange={setTheme} />} />
       <main className="min-h-0 flex-1">
@@ -951,9 +959,13 @@ export function App() {
         </div>
       </main>
     </div>
-    {exporting && derived && renderAst && <Suspense fallback={null}><ExportDialog scene={scene} ast={renderAst} derived={derived} audio={audio} offsetMs={offsetMs} projectSec={duration} fileName={loaded?.name ?? 'dawviz'} advanced={advanced} styleId={doc.videoStyle} styleName={VIDEO_STYLES.includes(doc.videoStyle) ? i18n.t(`web.style.video.${doc.videoStyle}`) : undefined} onClose={() => setExporting(false)} /></Suspense>}
-    {agentExport && derived && renderAst && <Suspense fallback={null}><ExportDialog scene={scene} ast={renderAst} derived={derived} audio={audio} offsetMs={offsetMs} projectSec={duration} fileName={loaded?.name ?? 'dawviz'} advanced={advanced} styleId={doc.videoStyle} styleName={VIDEO_STYLES.includes(doc.videoStyle) ? i18n.t(`web.style.video.${doc.videoStyle}`) : undefined} onClose={() => agentExport.onFinish({ error: 'closed' })} auto={agentExport} /></Suspense>}
-    </LayoutGroup></MotionConfig></AssetsContext.Provider></NotationStatusContext.Provider></GestureContext.Provider>
+    {exporting && derived && renderAst && <Suspense fallback={null}><ExportDialog scene={scene} ast={renderAst} derived={derived} audio={audio} offsetMs={offsetMs} projectSec={duration} fileName={loaded?.name ?? 'dawviz'} advanced={advanced} layerName={widgetName} styleId={doc.videoStyle} styleName={VIDEO_STYLES.includes(doc.videoStyle) ? i18n.t(`web.style.video.${doc.videoStyle}`) : undefined} onClose={() => setExporting(false)} /></Suspense>}
+    {agentExport && derived && renderAst && <Suspense fallback={null}><ExportDialog scene={scene} ast={renderAst} derived={derived} audio={audio} offsetMs={offsetMs} projectSec={duration} fileName={loaded?.name ?? 'dawviz'} advanced={advanced} layerName={widgetName} styleId={doc.videoStyle} styleName={VIDEO_STYLES.includes(doc.videoStyle) ? i18n.t(`web.style.video.${doc.videoStyle}`) : undefined} onClose={() => agentExport.onFinish({ error: 'closed' })} auto={agentExport} /></Suspense>}
+    {/* REQ-UI-13: lần đầu mở app thì hỏi Cơ bản hay Nâng cao (nhớ theo trình duyệt, không hỏi lại). Esc = Cơ bản. Không hỏi khi agent điều khiển (?agent=1). */}
+    {!agent && !ui.modeChosen && <ConfirmDialog testId="mode-choice" title={i18n.t('web.modeChoice.title')} message={i18n.t('web.modeChoice.message')}
+      cancelLabel={i18n.t('web.modeChoice.basic')} confirmLabel={i18n.t('web.modeChoice.advanced')}
+      onCancel={() => setUi((u) => ({ ...u, mode: 'basic', modeChosen: true }))} onConfirm={() => setUi((u) => ({ ...u, mode: 'advanced', modeChosen: true }))} />}
+    </LayoutGroup></MotionConfig></AssetsContext.Provider></NotationStatusContext.Provider></GestureContext.Provider></SettingsSearchContext.Provider>
   );
 }
 

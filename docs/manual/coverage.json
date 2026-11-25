@@ -9,17 +9,21 @@
         "apps/web/src/components/NumberField.tsx",
         "apps/web/src/components/HistoryMenu.tsx",
         "locales/en.json#web.mode",
-        "locales/en.json#web.number."
+        "locales/en.json#web.number.",
+        "apps/web/src/components/SettingsSearch.tsx",
+        "locales/en.json#web.search."
       ],
-      "uiHash": "e0defb1bd39e",
-      "viHash": "a7f4fe812b24",
-      "enHash": "e2a14a9d2ac4",
+      "uiHash": "9d877a368a5f",
+      "viHash": "e7445055696b",
+      "enHash": "7909edfe6921",
       "coverHashes": {
         "apps/web/src/lib/numberInput.ts": "8e27c53523c3",
         "apps/web/src/components/NumberField.tsx": "f7668b64f388",
         "apps/web/src/components/HistoryMenu.tsx": "f00b11a4bfc2",
-        "locales/en.json#web.mode": "a81afde54c35",
-        "locales/en.json#web.number.": "5ca95d85a4e1"
+        "locales/en.json#web.mode": "a1b70d2dfc66",
+        "locales/en.json#web.number.": "5ca95d85a4e1",
+        "apps/web/src/components/SettingsSearch.tsx": "e6eab6dfd766",
+        "locales/en.json#web.search.": "b2440064e02d"
       }
     },
     "01-mo-du-an": {
@@ -137,11 +141,11 @@
         "locales/en.json#web.layers.",
         "locales/en.json#web.comp."
       ],
-      "uiHash": "53ae51ceeda6",
-      "viHash": "a96bdb25217a",
-      "enHash": "85b94b96fbab",
+      "uiHash": "da2073ae7ffc",
+      "viHash": "18f9e02bc2e9",
+      "enHash": "3fb1bf656a41",
       "coverHashes": {
-        "apps/web/src/components/Editor.tsx": "7978df1c62e7",
+        "apps/web/src/components/Editor.tsx": "f112d4cb33a5",
         "apps/web/src/components/EditorOverlay.tsx": "c10a644a5f66",
         "apps/web/src/components/StylePanel.tsx": "26c35e084860",
         "locales/en.json#web.editor.": "315a1a12894d",
@@ -151,7 +155,7 @@
         "locales/en.json#web.playhead.": "a9aab88bc783",
         "apps/web/src/components/TextPanel.tsx": "f25cca737f09",
         "locales/en.json#web.text.": "1dcb3963c82b",
-        "apps/web/src/components/WidgetSettings.tsx": "953893f6e1df",
+        "apps/web/src/components/WidgetSettings.tsx": "f72f25381663",
         "locales/en.json#web.ws.": "3d1c968fd76d",
         "apps/web/src/components/TimeSections.tsx": "aa30f2bb1dd2",
         "apps/web/src/components/TimeField.tsx": "4627c46c0bf7",
@@ -229,15 +233,15 @@
         "apps/web/src/components/Splitter.tsx",
         "apps/web/src/components/LayerTimeline.tsx"
       ],
-      "uiHash": "25c9f0dd06fc",
-      "viHash": "12c4975a411f",
-      "enHash": "180ab56b2be4",
+      "uiHash": "10c037762b27",
+      "viHash": "223e75903e10",
+      "enHash": "0a26cf6d99e9",
       "coverHashes": {
         "apps/web/src/lib/transportKeys.ts": "3c74099d457e",
         "apps/web/src/lib/undoKeys.ts": "07c2c99f5cf4",
         "apps/web/src/components/EditorOverlay.tsx": "c10a644a5f66",
         "apps/web/src/lib/numberInput.ts": "8e27c53523c3",
-        "apps/web/src/components/Editor.tsx": "7978df1c62e7",
+        "apps/web/src/components/Editor.tsx": "f112d4cb33a5",
         "apps/web/src/components/KeyframeTimeline.tsx": "908b1ff7cb0a",
         "apps/web/src/components/Splitter.tsx": "7ae82f8548cb",
         "apps/web/src/components/LayerTimeline.tsx": "f08f97764c87"
@@ -251,12 +255,12 @@
         "locales/en.json#web.export",
         "apps/web/src/lib/pngSequence.ts"
       ],
-      "uiHash": "f6bac57b19ac",
-      "viHash": "0d18ba118f68",
-      "enHash": "3d0ccb1d0104",
+      "uiHash": "57cc2354a836",
+      "viHash": "90ecb0bae68c",
+      "enHash": "c60cdf32a704",
       "coverHashes": {
-        "apps/web/src/components/ExportDialog.tsx": "c979ca759212",
-        "locales/en.json#web.export": "f05c3554e5b9",
+        "apps/web/src/components/ExportDialog.tsx": "f71ea4717196",
+        "locales/en.json#web.export": "a90de91906e1",
         "apps/web/src/lib/pngSequence.ts": "2f21f016ccdb"
       }
     },
@@ -286,11 +290,11 @@
         "locales/en.json#web.widget.",
         "locales/en.json#web.tonic."
       ],
-      "uiHash": "61ebcca6bd65",
+      "uiHash": "b2f4aaa37b0d",
       "viHash": "68a7c6b2d74f",
       "enHash": "f8b8cafb2ca6",
       "coverHashes": {
-        "apps/web/src/components/WidgetSettings.tsx": "953893f6e1df",
+        "apps/web/src/components/WidgetSettings.tsx": "f72f25381663",
         "locales/en.json#web.ws.": "3d1c968fd76d",
         "locales/en.json#web.widget.": "f46915639b89",
         "locales/en.json#web.tonic.": "2b1a6b41c82b"
@@ -386,13 +390,13 @@
         "locales/en.json#web.agent.",
         "plugins/dawviz/skills/dawviz/SKILL.md"
       ],
-      "uiHash": "ec6d69477403",
-      "viHash": "220e4bd4d2d3",
-      "enHash": "fb88794c3c39",
+      "uiHash": "8d0a9d72423d",
+      "viHash": "5aca07ea9075",
+      "enHash": "dd16522553ee",
       "coverHashes": {
-        "apps/web/src/lib/agentApi.ts": "659724b54701",
+        "apps/web/src/lib/agentApi.ts": "32900641e5f4",
         "locales/en.json#web.agent.": "f45a58e74448",
-        "plugins/dawviz/skills/dawviz/SKILL.md": "caefc690127a"
+        "plugins/dawviz/skills/dawviz/SKILL.md": "8939fbbe4e55"
       }
     }
   }

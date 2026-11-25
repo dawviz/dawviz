@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import {
   audibleSeconds, audioBlocks, sliceAudioForRange, chooseCodec, createBackpressure, createProgress, estimateBytes, exportDuration, frameCount,
   detectSupport, frameDurationUs, frameTimestampUs, h264Candidates, manualChoice, normalizeSelection, optionsFor, usableContainers, isKeyFrame, parseAspect, preflight, renderAudioBlock, sizeForClass,
-  sizeFromCustom, videoBitrate, type CodecProbe,
+  sizeFromCustom, videoBitrate, normalizeRange, exportBaseName, fitRect, heightForWidth, widthForHeight, type CodecProbe,
 } from './exportPlan.ts';
 import { exportSegments } from './audioMap.ts';
 
@@ -299,4 +299,33 @@ test('sliceAudioForRange: bản cắt dựng ra đúng từng mẫu như bản g
     }
   }
   assert.equal(sliceAudioForRange([ramp(100)], 100, 10, 2, 0), null);
+});
+
+test('normalizeRange: kẹp đoạn Start→End trong [0, độ dài cả bài]; rỗng hoặc ngắn hơn một khung thì không hợp lệ', () => {
+  assert.deepEqual(normalizeRange({ start: 10, end: 20 }, 32), { start: 10, end: 20, ok: true });
+  assert.deepEqual(normalizeRange({ start: -5, end: 99 }, 32), { start: 0, end: 32, ok: true });
+  assert.equal(normalizeRange({ start: 20, end: 10 }, 32).ok, false);
+  assert.equal(normalizeRange({ start: 5, end: 5 }, 32).ok, false);
+  assert.equal(normalizeRange({ start: 5, end: 5.01 }, 32, 1 / 30).ok, false);
+  assert.equal(normalizeRange({ start: 5, end: 5 + 1 / 30 }, 32, 1 / 30).ok, true);
+  assert.equal(normalizeRange({ start: Number.NaN, end: 3 }, 32).start, 0);
+  // đoạn khớp exportDuration: độ dài đúng đoạn
+  const r = normalizeRange({ start: 45, end: 105 }, 200);
+  assert.deepEqual(exportDuration({ projectSec: 198, range: r }), { start: 45, duration: 60 });
+});
+
+test('exportBaseName: tên chốt trước khi render gồm rộng×cao, fps và đoạn (D-26)', () => {
+  assert.equal(exportBaseName('Song', { width: 1920, height: 1080, fps: 30 }), 'Song_1920x1080_30fps');
+  assert.equal(exportBaseName('Song', { width: 1080, height: 1920, fps: 60, range: { start: 45, end: 105 } }), 'Song_1080x1920_60fps_0m45s-1m45s');
+  assert.equal(exportBaseName('a', { width: 720, height: 720, fps: 24, range: { start: 5.5, end: 65.25 } }), 'a_720x720_24fps_0m05.5s-1m05.25s');
+  assert.doesNotMatch(exportBaseName('a', { width: 2, height: 2, fps: 24, range: { start: 0, end: 3600.001 } }), /[:\\/]/);
+});
+
+test('fitRect: cùng tỉ lệ thì vẽ thẳng; khác tỉ lệ thì vừa khít, căn giữa (viền)', () => {
+  assert.deepEqual(fitRect(1920, 1080, 1280, 720), { x: 0, y: 0, w: 1280, h: 720, fits: true });
+  assert.equal(fitRect(1920, 1080, 1281, 720).fits, true); // lệch 1 điểm ảnh do làm chẵn: không viền
+  assert.deepEqual(fitRect(1920, 1080, 1080, 1080), { x: 0, y: 236, w: 1080, h: 608, fits: false });
+  assert.deepEqual(fitRect(1080, 1920, 1920, 1080), { x: 656, y: 0, w: 608, h: 1080, fits: false });
+  assert.equal(heightForWidth(1280, 1920, 1080), 720);
+  assert.equal(widthForHeight(1920, 1080, 1920), 1080);
 });

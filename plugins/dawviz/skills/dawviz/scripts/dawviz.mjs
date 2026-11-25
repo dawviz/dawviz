@@ -4,7 +4,7 @@
 // In một dòng JSON tóm tắt ra stdout (agent đọc), tiến trình ra stderr.
 //
 //   node dawviz.mjs --project song.rpp [--audio mix.wav] [--preset video.json] [--style paper] \
-//                   [--frames 0,8,30] [--out-dir out] [--export out/video.mp4 --resolution 1080 --fps 30 --quality medium] \
+//                   [--frames 0,8,30] [--out-dir out] [--export out/video.mp4 --resolution 1080 --fps 30 --quality medium [--size 1080x1350] [--range 45-105]] \
 //                   [--url http://localhost:5173/ | --repo /path/to/dawviz]   (không có cả hai: dùng bản công khai) [--headed] [--channel chrome]
 //   node dawviz.mjs --validate video.json [--url … | --repo …]     (chỉ kiểm preset, không cần dự án)
 //
@@ -121,7 +121,10 @@ if (frames) {
 const exportTo = opt('export');
 if (exportTo) {
   log('exporting…');
-  const r = await api('exportVideo', { resolution: Number(opt('resolution', '1080')), fps: Number(opt('fps', '30')), quality: opt('quality', 'medium'), kind: opt('kind', 'video'), download: false });
+  // --size RỘNGxCAO (kích thước tuỳ ý, D-26), --range BẮT_ĐẦU-KẾT_THÚC (giây dự án): chỉ xuất đoạn đó.
+  const size = /^(\d+)[x×](\d+)$/.exec(opt('size', '')), range = /^(\d+(?:\.\d+)?)-(\d+(?:\.\d+)?)$/.exec(opt('range', ''));
+  const r = await api('exportVideo', { resolution: Number(opt('resolution', '1080')), fps: Number(opt('fps', '30')), quality: opt('quality', 'medium'), kind: opt('kind', 'video'), download: false,
+    ...(size ? { width: Number(size[1]), height: Number(size[2]) } : {}), ...(range ? { range: { start: Number(range[1]), end: Number(range[2]) } } : {}) });
   const f = await api('lastExport');
   const ext = path.extname(f.name), target = path.extname(exportTo) ? exportTo.replace(/\.[^.]+$/, ext) : `${exportTo}${ext}`;
   fs.mkdirSync(path.dirname(path.resolve(target)), { recursive: true });

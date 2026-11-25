@@ -27,6 +27,7 @@ While you're typing in a field, these keys go to the field.
 | Arrow keys | Move the selected widget 1 point |
 | Shift + arrow | Move 10 points |
 | Esc | Clear the selection; with nothing selected, leave the open precomp |
+| Esc (in the **Find a setting…** box) | Clear the search text, keep the selected widget |
 | Delete | Delete the selected widgets |
 | Ctrl+D | Duplicate the selected widgets (a precomp layer becomes an independent copy; locked layers are not copied) |
 | Ctrl+A (⌘A) | Select all layers |

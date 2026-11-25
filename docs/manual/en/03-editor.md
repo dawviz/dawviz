@@ -12,6 +12,7 @@ The screen has three parts: the frame in the middle, **Widget properties** on th
 - **Collapse:** press the panel button at the top corner of Widget properties, or the button at the start of the **Timeline & keyframes** bar. A collapsed panel leaves a thin strip; click the strip to open it again. Shortcuts: Ctrl+Alt+B (Widget properties), Ctrl+J (Timeline).
 - **Make the Timeline as tall as you like:** drag the border above the Timeline up or down; it goes up until only a small strip of the frame is left.
 - **Fold sections:** click a section title (for example **Position and size**) to fold it away when you don't need it, click again to open it. The right column gets much shorter. The app remembers which sections are folded, on the Preview tab too.
+- **Find a setting:** type in the **Find a setting…** box at the top of Widget properties to keep only the sections and boxes whose names match, Advanced ones included while in Basic mode; folded sections open when they have a match (see [Contents](README.md)). Esc clears the text.
 - Panel sizes and states are remembered in this browser. On screens narrower than 1024 points the panels stack as before.
 
 ## Selecting

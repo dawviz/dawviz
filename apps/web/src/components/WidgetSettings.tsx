@@ -16,6 +16,8 @@ import { Select } from './Select.tsx';
 import { NotationStatusContext } from '../lib/notation/useNotation.ts';
 import { useAssets } from '../lib/assetsRuntime.ts';
 import { IMAGE_ACCEPT } from '../lib/sessionAssets.ts';
+import { matchesQuery, queryTerms } from '../lib/settingsSearch.ts';
+import { useSettingsSearch } from './SettingsSearch.tsx';
 
 type Obj = Record<string, unknown>;
 const numRow = 'grid grid-cols-[minmax(0,1fr)_4.5rem_1.5rem] items-center gap-2 text-xs text-muted';
@@ -42,9 +44,11 @@ export function WidgetSettings({ widget, advanced, disabled, reference, onProps,
   const T = (k: string) => i18n.t(`web.ws.${k}`);
   const names = placeholderNames(widget.type);
   const hint = i18n.t('web.ws.placeholders', { list: names.map((k) => `{${k}}`).join(' ') });
-  const showTracks = !!tracks?.length && !!onTracks && TRACK_WIDGETS.includes(widget.type) && (widget.type === 'TEXT' || widget.type === 'NOTATION' || advanced);
-
+  // Tìm thiết lập (T-60): đang tìm thì chỉ giữ ô có nhãn khớp, kể cả ô nâng cao (ở Cơ bản cũng hiện, không cần "Thêm tuỳ chọn").
+  const { query } = useSettingsSearch();
+  const q = queryTerms(query).length ? query : '';
   const name = (f: FieldDef) => (f.group ? `${T(f.group)}: ${T(f.label)}` : T(f.label));
+  const showTracks = !!tracks?.length && !!onTracks && TRACK_WIDGETS.includes(widget.type) && (q ? matchesQuery(i18n.t('web.ws.tracks'), q) : widget.type === 'TEXT' || widget.type === 'NOTATION' || advanced);
   const changed = (f: FieldDef) => !disabled && fieldChanged(f, P, reference);
   // Một lần khôi phục là MỘT bước hoàn tác, không gộp với lần kéo/gõ trước đó.
   const reset = (f: FieldDef) => { if (!reference) return; gesture.begin(); onProps(resetPatch(f, P, reference)); gesture.end(); };
@@ -105,8 +109,8 @@ export function WidgetSettings({ widget, advanced, disabled, reference, onProps,
 
   return (
     <div className="space-y-2.5" data-testid="widget-settings">
-      {widget.type === 'NOTATION' && <NotationStatus id={widget.id} />}
-      {fields.filter((f) => (!f.adv || advanced) && (f.when?.(P) ?? true)).map(control)}
+      {widget.type === 'NOTATION' && !q && <NotationStatus id={widget.id} />}
+      {fields.filter((f) => (q ? matchesQuery(name(f), q) : !f.adv || advanced) && (f.when?.(P) ?? true)).map(control)}
       {showTracks && <TrackPicker widget={widget} tracks={tracks!} disabled={disabled} onTracks={onTracks!} />}
     </div>
   );
