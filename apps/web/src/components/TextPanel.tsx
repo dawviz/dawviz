@@ -11,6 +11,8 @@ import { ResetButton } from './Inspector.tsx';
 import { Select } from './Select.tsx';
 import { useAssets } from '../lib/assetsRuntime.ts';
 import { FONT_ACCEPT } from '../lib/sessionAssets.ts';
+/** Độ đậm chọn được ở mục Chữ: đúng các mặt phông đóng gói (Mảnh, Thường, Đậm). */
+const TEXT_WEIGHTS = [300, 400, 700] as const;
 
 const row = 'grid grid-cols-[minmax(0,1fr)_minmax(0,9.5rem)_1.5rem] items-center gap-2 text-xs text-muted';
 const numRow = 'grid grid-cols-[minmax(0,1fr)_4.5rem_1.5rem] items-center gap-2 text-xs text-muted';
@@ -119,7 +121,15 @@ export function TextPanel({ widget, styles, advanced, disabled, onRef, onStyles,
       {fontErr && <p role="alert" className="text-xs leading-snug text-danger" data-testid="text-font-error">{i18n.t(`errors.${fontErr}`)}</p>}
       {num('size', i18n.t('web.text.size'), { min: 4, max: 400, step: 1 }, [6, 120])}
       {color('color', i18n.t('web.text.color'))}
-      {check('weight', i18n.t('web.text.bold'), resolved.weight >= 600, (x) => (x ? 700 : 400))}
+      <label className={row} key="weight" data-testid="text-weight">
+        <span className="min-w-0 break-words leading-tight">{i18n.t('web.text.weight')}</span>
+        {/* Ba độ đậm có phông đóng gói (Space Grotesk 300/400/700); giá trị khác trong preset hiện theo mức gần nhất. */}
+        <Select value={String(TEXT_WEIGHTS.reduce((b, w) => (Math.abs(w - resolved.weight) < Math.abs(b - resolved.weight) ? w : b), 400))} disabled={disabled}
+          onChange={(e) => set('weight', Number(e.target.value))} className="py-1 pl-2" wrapClassName="min-w-0">
+          {TEXT_WEIGHTS.map((w) => <option key={w} value={w}>{i18n.t(`web.text.weight.${w}`)}</option>)}
+        </Select>
+        {R('weight', i18n.t('web.text.weight'))}
+      </label>
       {check('italic', i18n.t('web.text.italic'))}
       {alignKey && (
         <div className="space-y-1.5">

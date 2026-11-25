@@ -30,7 +30,10 @@ test('bảng đo phủ Latin cơ bản, Latin mở rộng và tiếng Việt', (
 
 test('ensureFonts: nạp mọi mặt phông cần; một mặt lỗi → ERR_FONT_LOAD (không xuất bằng phông dự phòng)', async () => {
   const need = requiredFonts(paper());
-  assert.equal(need.length, BUNDLED_FONTS.length); assert.ok(needsFonts(paper()));
+  assert.equal(need.length, BUNDLED_FONTS.filter((b) => b.weight !== 300).length); assert.ok(needsFonts(paper())); // paper không dùng chữ Mảnh
+  const light = sanitizeScene({ ...JSON.parse(JSON.stringify(paper())), textStyles: { ...paper().textStyles, title: { ...paper().textStyles!.title, weight: 300 } } }).scene;
+  assert.equal(requiredFonts(light).length, BUNDLED_FONTS.length);                               // có chữ Mảnh: nạp thêm 3 mặt 300
+  assert.equal(requiredFonts(light, 'The Last Dice').filter((f) => f.weight === 300).length, 1);   // chữ ASCII: chỉ dải latin
   const loaded: string[] = [];
   await ensureFonts(need, async (s) => { loaded.push(s.file); });
   assert.equal(loaded.length, need.length);
@@ -59,7 +62,7 @@ function findChrome(): string | null {
   return null;
 }
 const SAMPLES: [string, number, number][] = [
-  ['The Last Dice', 72, 700], ['Num played notes: 1271/1917 (66.30%)', 22, 400], ['001 35 083', 18, 400], ['E7/G#', 34, 700],
+  ['The Last Dice', 72, 700], ['The Last Dice', 72, 300], ['Num played notes: 1271/1917 (66.30%)', 22, 400], ['001 35 083', 18, 400], ['E7/G#', 34, 700],
   ['Notes: G#2 E3 D4 E4 G#4 B4', 17, 400], ['Bản nhạc tiếng Việt: Ướt át, Ệ Ữ Ặ', 28, 400], ['Đêm không tên – Nguyễn Văn A', 28, 700], ['0123456789', 100, 400],
 ];
 test('FONT_METRICS so với measureText của Chromium thật: lệch ≤ 1 pt (bỏ qua nếu không có trình duyệt)', { skip: findChrome() ? false : 'không tìm thấy Chromium (đặt CHROMIUM_PATH hoặc cài qua Playwright)' }, () => {

@@ -18,6 +18,8 @@ import {
   INSIGHT_TEMPLATE_KEYS, INSIGHT_TYPES, type ArrangementProps, type AutomationProps, type BarBeatProps, type DensityProps, type DrumPadProps, type KeyScaleProps, type LyricsProps, type PitchWheelProps, type SectionProps, type TempoInfoProps, type VelocityProps,
 } from './insight.ts';
 import { DEFAULT_NOTATION, notationInkFor, type NotationProps } from './notation/widget.ts';
+import { DASHBOARD_TYPES, DEFAULT_DEGREE, DEFAULT_DOTS, DEFAULT_PANEL, DEFAULT_PITCH_STRIP, DOTS_GRIDS, MAX_PANEL_STATS, type DegreeProps, type DotsProps, type PanelProps, type PitchStripProps } from './dashboard.ts';
+import { ROMAN_STYLES } from './degree.ts';
 import { DEFAULT_SPECTRUM, SPECTRUM_STYLES, type SpectrumProps } from './spectrum.ts';
 import { sanitizeAnimate, type Animation } from './animation.ts';
 import { DEFAULT_LOOP, DEFAULT_PHASE, LOOP_EFFECT_NAMES, WIDGET_EFFECT_NAMES, hasMotion, type MotionLoop, type MotionPhase, type WidgetMotion } from './widgetMotion.ts';
@@ -32,7 +34,7 @@ import { COMP_SEP, MAX_COMPS, MAX_COMP_DEPTH, MAX_COMP_ID, MAX_COMP_NAME, MAX_FL
 
 export const SCENE_SCHEMA_VERSION = '0.8.0';
 
-export const WIDGET_TYPES = ['TRACK_INFO', 'PIANO_ROLL', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'AUDIO_SPECTRUM', 'PROGRESS_BAR', 'TEXT', 'PARTICLES', 'NOTATION', ...INSIGHT_TYPES, 'IMAGE', 'COMP'] as const;
+export const WIDGET_TYPES = ['TRACK_INFO', 'PIANO_ROLL', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'AUDIO_SPECTRUM', 'PROGRESS_BAR', 'TEXT', 'PARTICLES', 'NOTATION', ...INSIGHT_TYPES, ...DASHBOARD_TYPES, 'IMAGE', 'COMP'] as const;
 export type WidgetType = typeof WIDGET_TYPES[number];
 
 /** `rotation`: độ, (−180, 180]. `anchor`: điểm neo xoay theo tỉ lệ khung widget (0..1), mặc định tâm (REQ-GRAPHICS-03). */
@@ -146,12 +148,13 @@ export function pianoRollWidget(layout: Omit<WidgetLayout, 'anchor'> & { anchor?
     properties: { ...clonePiano(DEFAULT_PIANO_ROLL), ...props } };
 }
 /** Loại widget người dùng thêm được từ Editor (có renderer). */
-export const ADDABLE_WIDGETS = ['PIANO_ROLL', 'TRACK_INFO', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'AUDIO_SPECTRUM', 'PARTICLES', 'NOTATION', ...INSIGHT_TYPES, 'PROGRESS_BAR', 'TEXT', 'IMAGE'] as const satisfies readonly WidgetType[];
+export const ADDABLE_WIDGETS = ['PIANO_ROLL', 'TRACK_INFO', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'TIME_BAR', 'CHORD_DETECTION', 'AUDIO_SPECTRUM', 'PARTICLES', 'NOTATION', ...INSIGHT_TYPES, ...DASHBOARD_TYPES, 'PROGRESS_BAR', 'TEXT', 'IMAGE'] as const satisfies readonly WidgetType[];
 const HUD_DEFAULTS: Record<string, unknown> = {
   TRACK_INFO: DEFAULT_TRACK_INFO, EVENT_COUNTER: DEFAULT_EVENT_COUNTER, LIVE_TRIGGER: DEFAULT_LIVE_TRIGGER,
   TIME_BAR: DEFAULT_TIME_BAR, CHORD_DETECTION: DEFAULT_CHORD, AUDIO_SPECTRUM: DEFAULT_SPECTRUM, PARTICLES: DEFAULT_PARTICLES, NOTATION: DEFAULT_NOTATION, PROGRESS_BAR: DEFAULT_PROGRESS_BAR, TEXT: DEFAULT_TEXT_BOX, IMAGE: DEFAULT_IMAGE,
   TEMPO_INFO: DEFAULT_TEMPO_INFO, BAR_BEAT: DEFAULT_BAR_BEAT, KEY_SCALE: DEFAULT_KEY_SCALE, VELOCITY: DEFAULT_VELOCITY, DENSITY: DEFAULT_DENSITY, PITCH_WHEEL: DEFAULT_PITCH_WHEEL,
   ARRANGEMENT: DEFAULT_ARRANGEMENT, DRUM_PAD: DEFAULT_DRUM_PAD, SECTION: DEFAULT_SECTION, LYRICS: DEFAULT_LYRICS, AUTOMATION: DEFAULT_AUTOMATION,
+  PANEL: DEFAULT_PANEL, DEGREE: DEFAULT_DEGREE, DOTS: DEFAULT_DOTS, PITCH_STRIP: DEFAULT_PITCH_STRIP,
 };
 /** Thuộc tính mặc định của một loại widget (bản sao sâu): mốc tham chiếu của nút ↺ khi widget chưa có bộ dựng sẵn nào áp lên nó. */
 export function widgetDefaults(type: WidgetType): Record<string, unknown> {
@@ -163,6 +166,7 @@ const NEW_SIZE: Record<string, (W: number, H: number) => [number, number]> = {
   TIME_BAR: () => [320, 100], CHORD_DETECTION: () => [400, 100], AUDIO_SPECTRUM: (W) => [W * 0.5, 240], PARTICLES: (W, H) => [W * 0.5, H * 0.5], NOTATION: (W, H) => [W * 0.8, H * 0.45], PROGRESS_BAR: (W) => [W * 0.8, 24], TEXT: () => [480, 100], IMAGE: (W, H) => [Math.min(W, H) * 0.4, Math.min(W, H) * 0.4],
   TEMPO_INFO: () => [360, 110], BAR_BEAT: () => [320, 110], KEY_SCALE: () => [320, 110], VELOCITY: () => [360, 160], DENSITY: (W) => [W * 0.5, 200], PITCH_WHEEL: () => [320, 320],
   ARRANGEMENT: (W) => [W * 0.6, 180], DRUM_PAD: () => [360, 360], SECTION: () => [420, 100], LYRICS: (W) => [W * 0.7, 120], AUTOMATION: (W) => [W * 0.5, 140],
+  PANEL: (W, H) => [W * 0.4, H * 0.3], DEGREE: (W) => [W * 0.4, 150], DOTS: (W) => [W * 0.35, 180], PITCH_STRIP: (W) => [W * 0.6, 70],
 };
 /** Độ dài tối đa của tên lớp. */
 export const MAX_WIDGET_NAME = 60;
@@ -836,7 +840,56 @@ const HUD_SANITIZERS = {
     const d = DEFAULT_PITCH_WHEEL;
     return { order: S.oneOf(P.order, ['CHROMATIC', 'FIFTHS'] as const, d.order, `${p}.order`), ring: S.num(P.ring, d.ring, 0.1, 0.5, `${p}.ring`), litColor: hexp(S, P.litColor, d.litColor, `${p}.litColor`), dimColor: hexp(S, P.dimColor, d.dimColor, `${p}.dimColor`),
       dimAlpha: S.num(P.dimAlpha, d.dimAlpha, 0, 1, `${p}.dimAlpha`), showNames: S.bool(P.showNames, d.showNames, `${p}.showNames`), nameStyle: textRef(S, P.nameStyle, d.nameStyle, `${p}.nameStyle`),
-      showChord: S.bool(P.showChord, d.showChord, `${p}.showChord`), chordStyle: textRef(S, P.chordStyle, d.chordStyle, `${p}.chordStyle`) };
+      showChord: S.bool(P.showChord, d.showChord, `${p}.showChord`), chordStyle: textRef(S, P.chordStyle, d.chordStyle, `${p}.chordStyle`),
+      labels: S.oneOf(P.labels, ['NAMES', 'DEGREES'] as const, d.labels, `${p}.labels`), nodeShape: S.oneOf(P.nodeShape, ['TILE', 'CIRCLE'] as const, d.nodeShape, `${p}.nodeShape`),
+      litTextColor: hexOpt(S, P.litTextColor, d.litTextColor, `${p}.litTextColor`), polygon: S.bool(P.polygon, d.polygon, `${p}.polygon`),
+      polygonColor: hexOpt(S, P.polygonColor, d.polygonColor, `${p}.polygonColor`), polygonAlpha: S.num(P.polygonAlpha, d.polygonAlpha, 0, 1, `${p}.polygonAlpha`),
+      rootColor: hexOpt(S, P.rootColor, d.rootColor, `${p}.rootColor`), progress: S.oneOf(P.progress, ['OFF', 'BAR', 'SONG'] as const, d.progress, `${p}.progress`),
+      progressColor: hexOpt(S, P.progressColor, d.progressColor, `${p}.progressColor`), progressWidth: S.num(P.progressWidth, d.progressWidth, 0.5, 40, `${p}.progressWidth`),
+      beatMarks: S.bool(P.beatMarks, d.beatMarks, `${p}.beatMarks`), outlineColor: hexOpt(S, P.outlineColor, d.outlineColor, `${p}.outlineColor`),
+      chordAs: S.oneOf(P.chordAs, ['NAME', 'DEGREE'] as const, d.chordAs, `${p}.chordAs`), romanStyle: S.oneOf(P.romanStyle, ROMAN_STYLES, d.romanStyle, `${p}.romanStyle`),
+      subTemplate: tpl(S, P.subTemplate, d.subTemplate, `${p}.subTemplate`, []), subStyle: textRef(S, P.subStyle, d.subStyle, `${p}.subStyle`),
+      windowSec: S.num(P.windowSec, d.windowSec, 2, 120, `${p}.windowSec`) };
+  },
+  PANEL(P: Obj, p: string, S: Sanitizer): PanelProps {
+    const d = DEFAULT_PANEL, raw = Array.isArray(P.stats) ? P.stats : (P.stats === undefined ? d.stats : (S.warn(`${p}.stats`, P.stats, 'không phải mảng; dùng mặc định'), d.stats));
+    if (raw.length > MAX_PANEL_STATS) S.warn(`${p}.stats`, raw.length, `quá ${MAX_PANEL_STATS} cột; bỏ phần thừa`);
+    const stats = Array.from({ length: MAX_PANEL_STATS }, (_, i) => {
+      const s = isObj(raw[i]) ? raw[i] as Obj : {};
+      return { label: tpl(S, s.label, '', `${p}.stats[${i}].label`, [], 60), value: tpl(S, s.value, '', `${p}.stats[${i}].value`, [], 120) };
+    });
+    return { number: S.str(P.number, d.number, `${p}.number`, (s) => s.length <= 8), title: S.str(P.title, d.title, `${p}.title`, (s) => s.length <= 60),
+      numberColor: hexOpt(S, P.numberColor, d.numberColor, `${p}.numberColor`), titleStyle: textRef(S, P.titleStyle, d.titleStyle, `${p}.titleStyle`),
+      frame: S.bool(P.frame, d.frame, `${p}.frame`), frameColor: hexp(S, P.frameColor, d.frameColor, `${p}.frameColor`), frameWidth: S.num(P.frameWidth, d.frameWidth, 0, 20, `${p}.frameWidth`),
+      fillColor: hexOpt(S, P.fillColor, d.fillColor, `${p}.fillColor`), fillAlpha: S.num(P.fillAlpha, d.fillAlpha, 0, 1, `${p}.fillAlpha`),
+      stats, labelStyle: textRef(S, P.labelStyle, d.labelStyle, `${p}.labelStyle`), valueStyle: textRef(S, P.valueStyle, d.valueStyle, `${p}.valueStyle`) };
+  },
+  DEGREE(P: Obj, p: string, S: Sanitizer): DegreeProps {
+    const d = DEFAULT_DEGREE, c = (k: keyof DegreeProps) => hexp(S, P[k], d[k] as string, `${p}.${k}`);
+    return { windowBars: S.num(P.windowBars, d.windowBars, 1, 64, `${p}.windowBars`), playheadRatio: S.num(P.playheadRatio, d.playheadRatio, 0, 1, `${p}.playheadRatio`),
+      showDetail: S.bool(P.showDetail, d.showDetail, `${p}.showDetail`), showFunction: S.bool(P.showFunction, d.showFunction, `${p}.showFunction`), showBars: S.bool(P.showBars, d.showBars, `${p}.showBars`),
+      romanStyle: S.oneOf(P.romanStyle, ROMAN_STYLES, d.romanStyle, `${p}.romanStyle`), keyWindowSec: S.num(P.keyWindowSec, d.keyWindowSec, 2, 120, `${p}.keyWindowSec`),
+      accentColor: c('accentColor'), detailColor: c('detailColor'), blockColor: c('blockColor'), activeTextColor: c('activeTextColor'), pastAlpha: S.num(P.pastAlpha, d.pastAlpha, 0, 1, `${p}.pastAlpha`),
+      tonicColor: c('tonicColor'), subdominantColor: c('subdominantColor'), dominantColor: c('dominantColor'), playheadColor: hexOpt(S, P.playheadColor, d.playheadColor, `${p}.playheadColor`),
+      radius: S.num(P.radius, d.radius, 0, 40, `${p}.radius`), gap: S.num(P.gap, d.gap, 0, 40, `${p}.gap`),
+      labelStyle: textRef(S, P.labelStyle, d.labelStyle, `${p}.labelStyle`), smallStyle: textRef(S, P.smallStyle, d.smallStyle, `${p}.smallStyle`) };
+  },
+  DOTS(P: Obj, p: string, S: Sanitizer): DotsProps {
+    const d = DEFAULT_DOTS;
+    return { grid: (DOTS_GRIDS as readonly number[]).includes(P.grid as number) ? P.grid as number : (P.grid !== undefined && S.warn(`${p}.grid`, P.grid, `không phải ${DOTS_GRIDS.join('/')}; dùng ${d.grid}`), d.grid), cols: Math.round(S.num(P.cols, d.cols, 8, 256, `${p}.cols`)), playheadRatio: S.num(P.playheadRatio, d.playheadRatio, 0, 1, `${p}.playheadRatio`),
+      pitchRangeMode: S.oneOf(P.pitchRangeMode, ['FIT_CONTENT', 'CUSTOM'] as const, d.pitchRangeMode, `${p}.pitchRangeMode`),
+      pitchMin: Math.round(S.num(P.pitchMin, d.pitchMin, 0, 127, `${p}.pitchMin`)), pitchMax: Math.round(S.num(P.pitchMax, d.pitchMax, 0, 127, `${p}.pitchMax`)),
+      dotSize: S.num(P.dotSize, d.dotSize, 0.05, 1, `${p}.dotSize`), shape: S.oneOf(P.shape, ['ROUND', 'SQUARE'] as const, d.shape, `${p}.shape`),
+      emptyColor: hexp(S, P.emptyColor, d.emptyColor, `${p}.emptyColor`), emptyColorB: hexOpt(S, P.emptyColorB, d.emptyColorB, `${p}.emptyColorB`), emptyAlpha: S.num(P.emptyAlpha, d.emptyAlpha, 0, 1, `${p}.emptyAlpha`),
+      colorMode: S.oneOf(P.colorMode, ['TRACK', 'SOLID'] as const, d.colorMode, `${p}.colorMode`), color: hexp(S, P.color, d.color, `${p}.color`),
+      upcomingAlpha: S.num(P.upcomingAlpha, d.upcomingAlpha, 0, 1, `${p}.upcomingAlpha`), activeScale: S.num(P.activeScale, d.activeScale, 1, 3, `${p}.activeScale`),
+      playheadColor: hexOpt(S, P.playheadColor, d.playheadColor, `${p}.playheadColor`), playheadWidth: S.num(P.playheadWidth, d.playheadWidth, 0, 10, `${p}.playheadWidth`) };
+  },
+  PITCH_STRIP(P: Obj, p: string, S: Sanitizer): PitchStripProps {
+    const d = DEFAULT_PITCH_STRIP;
+    return { order: S.oneOf(P.order, ['CHROMATIC', 'FIFTHS'] as const, d.order, `${p}.order`), labels: S.oneOf(P.labels, ['NAMES', 'DEGREES'] as const, d.labels, `${p}.labels`),
+      style: textRef(S, P.style, d.style, `${p}.style`), litColor: hexOpt(S, P.litColor, d.litColor, `${p}.litColor`), dimAlpha: S.num(P.dimAlpha, d.dimAlpha, 0, 1, `${p}.dimAlpha`),
+      brackets: S.bool(P.brackets, d.brackets, `${p}.brackets`), keyWindowSec: S.num(P.keyWindowSec, d.keyWindowSec, 2, 120, `${p}.keyWindowSec`) };
   },
   ARRANGEMENT(P: Obj, p: string, S: Sanitizer): ArrangementProps {
     const d = DEFAULT_ARRANGEMENT;

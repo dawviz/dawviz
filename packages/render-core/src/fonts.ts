@@ -10,7 +10,9 @@ const LATIN_EXT = 'U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U
 const VIET = 'U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB';
 export const DEFAULT_FONT = 'Space Grotesk';
 /** Phông đóng gói cùng ứng dụng (OFL, tự host; CSP font-src 'self'). `file` tính từ thư mục phông của ứng dụng. */
-export const BUNDLED_FONTS: readonly FontFaceSpec[] = [400, 700].flatMap((weight) => ([['latin', LATIN], ['latin-ext', LATIN_EXT], ['vietnamese', VIET]] as const)
+/** Mặt Mảnh (300, tiêu đề mảnh kiểu bản in, REFERENCE-VIDEOS video 1) chỉ nạp khi scene có chữ dùng độ đậm gần 300 (xem `requiredFonts`). */
+export const LIGHT_WEIGHT = 300;
+export const BUNDLED_FONTS: readonly FontFaceSpec[] = [LIGHT_WEIGHT, 400, 700].flatMap((weight) => ([['latin', LATIN], ['latin-ext', LATIN_EXT], ['vietnamese', VIET]] as const)
   .map(([s, unicodeRange]) => ({ family: DEFAULT_FONT, weight, file: `space-grotesk-${s}-${weight}-normal.woff2`, unicodeRange })));
 
 /** Họ phông mà scene dùng (widget chữ ẩn cũng tính để không giật khi bật). Thứ tự ổn định. */
@@ -36,9 +38,16 @@ export function fontFamiliesOf(scene: SceneDocument): string[] {
  * Firefox chậm dần theo SỐ mặt phông trong Worker (docs/design/FIREFOX-FONT-SLOWDOWN.md), nên văn bản chỉ có ASCII chỉ cần 2 mặt thay vì 6.
  * Ký tự không dải nào phủ vẫn rơi về phông dự phòng như trước. Không có `chars` thì nạp đủ (Preview).
  */
+/** Scene có chữ nào dùng độ đậm gần Mảnh (< 350) không: kiểu chữ của scene hoặc ghi đè trong thuộc tính widget. */
+export function usesLightWeight(scene: SceneDocument): boolean {
+  let hit = false;
+  const walk = (v: unknown) => { if (hit || !v || typeof v !== 'object') return; for (const [k, x] of Object.entries(v)) { if (k === 'weight' && typeof x === 'number' && x < 350) { hit = true; return; } walk(x); } };
+  walk(scene.textStyles); for (const w of scene.widgets) walk(w.properties); for (const c of Object.values(scene.comps ?? {})) for (const w of c.widgets) walk(w.properties);
+  return hit;
+}
 export function requiredFonts(scene: SceneDocument, chars?: string): FontFaceSpec[] {
-  const fam = new Set(fontFamiliesOf(scene));
-  const all = BUNDLED_FONTS.filter((f) => fam.has(f.family));
+  const fam = new Set(fontFamiliesOf(scene)), light = usesLightWeight(scene);
+  const all = BUNDLED_FONTS.filter((f) => fam.has(f.family) && (f.weight !== LIGHT_WEIGHT || light)); // thêm mặt phông làm Firefox chậm dần: chỉ nạp mặt Mảnh khi cần
   if (chars === undefined) return all;
   const need = new Set<string>(); // tệp mặt phông cần giữ (theo dải, không theo độ đậm)
   const ranges = new Map<string, Array<[number, number]>>();

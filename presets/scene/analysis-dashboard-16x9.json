@@ -1,0 +1,848 @@
+{
+  "schemaVersion": "0.8.0",
+  "presetName": "Analysis Dashboard 16:9",
+  "author": "DAW Visualizer",
+  "canvas": {
+    "aspectRatio": "16:9",
+    "designWidth": 1920,
+    "designHeight": 1080,
+    "backgroundColor": "#F8EEF4",
+    "backgroundImageData": null,
+    "snapping": {
+      "gridEnabled": true,
+      "gridSize": 8,
+      "smartGuidesEnabled": true
+    }
+  },
+  "widgets": [
+    {
+      "id": "panel-fifths",
+      "type": "PANEL",
+      "zIndex": 1,
+      "visible": true,
+      "layout": {
+        "x": 60,
+        "y": 50,
+        "width": 560,
+        "height": 940,
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "trackMappingMode": "ALL",
+      "assignedTrackIndices": [],
+      "properties": {
+        "number": "00",
+        "title": "FIFTHS",
+        "numberColor": "#ff3d8b",
+        "titleStyle": {
+          "weight": 700,
+          "size": 15,
+          "tracking": 120,
+          "color": "#222230",
+          "styleId": "label"
+        },
+        "frame": false,
+        "frameColor": "#dccbd6",
+        "frameWidth": 1,
+        "fillColor": "",
+        "fillAlpha": 1,
+        "stats": [
+          {
+            "label": "KEY",
+            "value": "{key}"
+          },
+          {
+            "label": "DEGREE",
+            "value": "{degree}"
+          },
+          {
+            "label": "BAR",
+            "value": "{bar}.{beat}"
+          },
+          {
+            "label": "TEMPO",
+            "value": "{bpm:0.0}"
+          },
+          {
+            "label": "",
+            "value": ""
+          },
+          {
+            "label": "",
+            "value": ""
+          }
+        ],
+        "labelStyle": {
+          "size": 13,
+          "tracking": 80,
+          "color": "#8f8090",
+          "styleId": "label"
+        },
+        "valueStyle": {
+          "size": 26,
+          "color": "#222230",
+          "styleId": "body"
+        }
+      }
+    },
+    {
+      "id": "key",
+      "type": "KEY_SCALE",
+      "zIndex": 2,
+      "visible": true,
+      "layout": {
+        "x": 60,
+        "y": 100,
+        "width": 400,
+        "height": 50,
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "trackMappingMode": "ALL",
+      "assignedTrackIndices": [],
+      "properties": {
+        "align": "left",
+        "nameStyle": {
+          "size": 26,
+          "color": "#222230",
+          "styleId": "heading"
+        },
+        "confStyle": {
+          "styleId": "caption"
+        },
+        "template": "■ KEY {key}",
+        "majorLabel": "major",
+        "minorLabel": "minor",
+        "noKeyText": "—",
+        "windowSec": 16,
+        "minConfidence": 0.3,
+        "showConfidence": false,
+        "confTemplate": "Confidence {confidence}"
+      }
+    },
+    {
+      "id": "wheel",
+      "type": "PITCH_WHEEL",
+      "zIndex": 3,
+      "visible": true,
+      "layout": {
+        "x": 80,
+        "y": 200,
+        "width": 520,
+        "height": 520,
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "trackMappingMode": "ALL",
+      "assignedTrackIndices": [],
+      "properties": {
+        "order": "FIFTHS",
+        "ring": 0.3,
+        "litColor": "#ff3d8b",
+        "dimColor": "#b9a3b2",
+        "dimAlpha": 0.9,
+        "showNames": true,
+        "nameStyle": {
+          "size": 14,
+          "color": "#6f6070",
+          "styleId": "label"
+        },
+        "showChord": true,
+        "chordStyle": {
+          "size": 46,
+          "color": "#222230",
+          "styleId": "heading"
+        },
+        "labels": "DEGREES",
+        "nodeShape": "CIRCLE",
+        "litTextColor": "#ffffff",
+        "polygon": true,
+        "polygonColor": "",
+        "polygonAlpha": 0.2,
+        "rootColor": "#2ec4b6",
+        "progress": "BAR",
+        "progressColor": "",
+        "progressWidth": 5,
+        "beatMarks": true,
+        "outlineColor": "#dccbd6",
+        "chordAs": "DEGREE",
+        "romanStyle": "SUFFIX",
+        "subTemplate": "BAR {bar}",
+        "subStyle": {
+          "size": 14,
+          "color": "#8f8090",
+          "styleId": "label"
+        },
+        "windowSec": 16
+      }
+    },
+    {
+      "id": "progress",
+      "type": "PROGRESS_BAR",
+      "zIndex": 4,
+      "visible": true,
+      "layout": {
+        "x": 60,
+        "y": 1030,
+        "width": 1800,
+        "height": 22,
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "trackMappingMode": "ALL",
+      "assignedTrackIndices": [],
+      "properties": {
+        "orientation": "HORIZONTAL",
+        "thickness": 2,
+        "progressColor": "#222230",
+        "trackColor": "#dccbd6",
+        "radius": 0,
+        "showTime": true,
+        "timeStyle": {
+          "size": 13,
+          "color": "#6f6070",
+          "styleId": "tiny"
+        },
+        "timeValueStyle": {},
+        "timeTemplate": "{elapsed} / {total}",
+        "timeAlign": "right"
+      }
+    },
+    {
+      "id": "panel-wave",
+      "type": "PANEL",
+      "zIndex": 5,
+      "visible": true,
+      "layout": {
+        "x": 660,
+        "y": 50,
+        "width": 560,
+        "height": 380,
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "trackMappingMode": "ALL",
+      "assignedTrackIndices": [],
+      "properties": {
+        "number": "01",
+        "title": "WAVE",
+        "numberColor": "#ff3d8b",
+        "titleStyle": {
+          "weight": 700,
+          "size": 15,
+          "tracking": 120,
+          "color": "#222230",
+          "styleId": "label"
+        },
+        "frame": true,
+        "frameColor": "#dccbd6",
+        "frameWidth": 1,
+        "fillColor": "",
+        "fillAlpha": 1,
+        "stats": [
+          {
+            "label": "MOMENTARY",
+            "value": "{level} dB"
+          },
+          {
+            "label": "AVERAGE",
+            "value": "{level_avg} dB"
+          },
+          {
+            "label": "PEAK",
+            "value": "{peak_db} dBFS"
+          },
+          {
+            "label": "",
+            "value": ""
+          },
+          {
+            "label": "",
+            "value": ""
+          },
+          {
+            "label": "",
+            "value": ""
+          }
+        ],
+        "labelStyle": {
+          "size": 13,
+          "tracking": 80,
+          "color": "#8f8090",
+          "styleId": "label"
+        },
+        "valueStyle": {
+          "size": 26,
+          "color": "#222230",
+          "styleId": "body"
+        }
+      }
+    },
+    {
+      "id": "waveform",
+      "type": "AUDIO_SPECTRUM",
+      "zIndex": 6,
+      "visible": true,
+      "layout": {
+        "x": 672,
+        "y": 100,
+        "width": 536,
+        "height": 220,
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "trackMappingMode": "ALL",
+      "assignedTrackIndices": [],
+      "properties": {
+        "style": "WAVEFORM",
+        "scale": "LOG",
+        "peakCap": false,
+        "capFall": 0.6,
+        "scopeMs": 30,
+        "playedColor": "#ff3d8b",
+        "shape": "LINE",
+        "bars": 48,
+        "minHz": 40,
+        "maxHz": 14000,
+        "reverse": false,
+        "mirror": false,
+        "angle": 0,
+        "length": 536,
+        "radius": 120,
+        "startAngle": 0,
+        "thickness": 200,
+        "minLen": 2,
+        "barWidth": 0.6,
+        "roundness": 0,
+        "attackMs": 15,
+        "releaseMs": 180,
+        "floorDb": -70,
+        "ceilDb": -25,
+        "colorMode": "SOLID",
+        "color": "#9a8a98",
+        "colorB": "#7aa2ff",
+        "opacity": 1,
+        "glow": 0
+      }
+    },
+    {
+      "id": "panel-meter",
+      "type": "PANEL",
+      "zIndex": 7,
+      "visible": true,
+      "layout": {
+        "x": 1260,
+        "y": 50,
+        "width": 600,
+        "height": 380,
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "trackMappingMode": "ALL",
+      "assignedTrackIndices": [],
+      "properties": {
+        "number": "02",
+        "title": "SPECTRUM",
+        "numberColor": "#ff3d8b",
+        "titleStyle": {
+          "weight": 700,
+          "size": 15,
+          "tracking": 120,
+          "color": "#222230",
+          "styleId": "label"
+        },
+        "frame": true,
+        "frameColor": "#dccbd6",
+        "frameWidth": 1,
+        "fillColor": "",
+        "fillAlpha": 1,
+        "stats": [
+          {
+            "label": "LOWS",
+            "value": "{lows}"
+          },
+          {
+            "label": "MIDS",
+            "value": "{mids}"
+          },
+          {
+            "label": "HIGHS",
+            "value": "{highs}"
+          },
+          {
+            "label": "",
+            "value": ""
+          },
+          {
+            "label": "",
+            "value": ""
+          },
+          {
+            "label": "",
+            "value": ""
+          }
+        ],
+        "labelStyle": {
+          "size": 13,
+          "tracking": 80,
+          "color": "#8f8090",
+          "styleId": "label"
+        },
+        "valueStyle": {
+          "size": 26,
+          "color": "#222230",
+          "styleId": "body"
+        }
+      }
+    },
+    {
+      "id": "spectrum",
+      "type": "AUDIO_SPECTRUM",
+      "zIndex": 8,
+      "visible": true,
+      "layout": {
+        "x": 1272,
+        "y": 100,
+        "width": 576,
+        "height": 220,
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "trackMappingMode": "ALL",
+      "assignedTrackIndices": [],
+      "properties": {
+        "style": "BARS",
+        "scale": "LOG",
+        "peakCap": true,
+        "capFall": 0.6,
+        "scopeMs": 30,
+        "playedColor": "#7aa2ff",
+        "shape": "LINE",
+        "bars": 64,
+        "minHz": 40,
+        "maxHz": 14000,
+        "reverse": false,
+        "mirror": false,
+        "angle": 0,
+        "length": 576,
+        "radius": 120,
+        "startAngle": 0,
+        "thickness": 200,
+        "minLen": 2,
+        "barWidth": 0.6,
+        "roundness": 0,
+        "attackMs": 15,
+        "releaseMs": 180,
+        "floorDb": -70,
+        "ceilDb": -25,
+        "colorMode": "SOLID",
+        "color": "#6f6070",
+        "colorB": "#7aa2ff",
+        "opacity": 1,
+        "glow": 0
+      }
+    },
+    {
+      "id": "panel-notes",
+      "type": "PANEL",
+      "zIndex": 9,
+      "visible": true,
+      "layout": {
+        "x": 660,
+        "y": 470,
+        "width": 1200,
+        "height": 300,
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "trackMappingMode": "ALL",
+      "assignedTrackIndices": [],
+      "properties": {
+        "number": "03",
+        "title": "NOTES",
+        "numberColor": "#ff3d8b",
+        "titleStyle": {
+          "weight": 700,
+          "size": 15,
+          "tracking": 120,
+          "color": "#222230",
+          "styleId": "label"
+        },
+        "frame": true,
+        "frameColor": "#dccbd6",
+        "frameWidth": 1,
+        "fillColor": "",
+        "fillAlpha": 1,
+        "stats": [
+          {
+            "label": "BAR",
+            "value": "{bar}.{beat}"
+          },
+          {
+            "label": "TEMPO",
+            "value": "{bpm:0.0}"
+          },
+          {
+            "label": "CHORD",
+            "value": "{chord}"
+          },
+          {
+            "label": "SOUNDING",
+            "value": "{notes}"
+          },
+          {
+            "label": "",
+            "value": ""
+          },
+          {
+            "label": "",
+            "value": ""
+          }
+        ],
+        "labelStyle": {
+          "size": 13,
+          "tracking": 80,
+          "color": "#8f8090",
+          "styleId": "label"
+        },
+        "valueStyle": {
+          "size": 26,
+          "color": "#222230",
+          "styleId": "body"
+        }
+      }
+    },
+    {
+      "id": "notes",
+      "type": "PIANO_ROLL",
+      "zIndex": 10,
+      "visible": true,
+      "layout": {
+        "x": 662,
+        "y": 512,
+        "width": 1196,
+        "height": 180,
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "trackMappingMode": "ALL",
+      "assignedTrackIndices": [],
+      "properties": {
+        "orientation": "HORIZONTAL",
+        "pitchRangeMode": "FIT_CONTENT",
+        "pitchMin": 21,
+        "pitchMax": 108,
+        "lookaheadSeconds": 3,
+        "playheadPositionRatio": 0.32,
+        "visibleSeconds": 8,
+        "scrollMode": "SCROLL",
+        "pageUnit": "SECONDS",
+        "pageBars": 4,
+        "revealAhead": 0,
+        "transition": "none",
+        "noteStyle": {
+          "base": {
+            "colorMode": "custom",
+            "customColor": "#ff3d8b",
+            "opacity": 1,
+            "inactiveOpacity": 1,
+            "cornerRadius": 1,
+            "heightScale": 0.7,
+            "glow": 0,
+            "glowRadius": 0,
+            "glowActiveOnly": true,
+            "borderWidth": 0,
+            "borderColor": "",
+            "glowMode": "uniform",
+            "glowSource": "velocity",
+            "glowPanMode": "lr",
+            "glowLane": "volume",
+            "glowMin": 0.15,
+            "glowMax": 1,
+            "glowInvert": false,
+            "glowRelease": 0,
+            "playedColor": "#ff3d8b",
+            "activeColor": "#ff3d8b",
+            "upcomingColor": "#f3a9c8"
+          },
+          "tracks": {}
+        },
+        "keyboard": {
+          "enabled": false,
+          "width": 96,
+          "whiteColor": "#e8eaf2",
+          "blackColor": "#14161f",
+          "useTrackColor": true
+        },
+        "playheadColor": "#222230",
+        "playheadWidth": 1.5,
+        "playheadVisible": true
+      }
+    },
+    {
+      "id": "panel-degree",
+      "type": "PANEL",
+      "zIndex": 11,
+      "visible": true,
+      "layout": {
+        "x": 660,
+        "y": 800,
+        "width": 600,
+        "height": 200,
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "trackMappingMode": "ALL",
+      "assignedTrackIndices": [],
+      "properties": {
+        "number": "04",
+        "title": "DEGREE",
+        "numberColor": "#ff3d8b",
+        "titleStyle": {
+          "weight": 700,
+          "size": 15,
+          "tracking": 120,
+          "color": "#222230",
+          "styleId": "label"
+        },
+        "frame": false,
+        "frameColor": "#dccbd6",
+        "frameWidth": 1,
+        "fillColor": "",
+        "fillAlpha": 1,
+        "stats": [
+          {
+            "label": "CHORDS",
+            "value": "{chord_count}"
+          },
+          {
+            "label": "NOW",
+            "value": "{degree}"
+          },
+          {
+            "label": "NEXT",
+            "value": "{next_degree}"
+          },
+          {
+            "label": "",
+            "value": ""
+          },
+          {
+            "label": "",
+            "value": ""
+          },
+          {
+            "label": "",
+            "value": ""
+          }
+        ],
+        "labelStyle": {
+          "size": 13,
+          "tracking": 80,
+          "color": "#8f8090",
+          "styleId": "label"
+        },
+        "valueStyle": {
+          "size": 26,
+          "color": "#222230",
+          "styleId": "body"
+        }
+      }
+    },
+    {
+      "id": "degree",
+      "type": "DEGREE",
+      "zIndex": 12,
+      "visible": true,
+      "layout": {
+        "x": 660,
+        "y": 836,
+        "width": 600,
+        "height": 100,
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "trackMappingMode": "ALL",
+      "assignedTrackIndices": [],
+      "properties": {
+        "windowBars": 8,
+        "playheadRatio": 0.42,
+        "showDetail": true,
+        "showFunction": true,
+        "showBars": true,
+        "romanStyle": "SUFFIX",
+        "keyWindowSec": 16,
+        "accentColor": "#ff3d8b",
+        "detailColor": "#2ec4b6",
+        "blockColor": "#222230",
+        "activeTextColor": "#ffffff",
+        "pastAlpha": 0.45,
+        "tonicColor": "#2ec4b6",
+        "subdominantColor": "#f7b6d0",
+        "dominantColor": "#ff3d8b",
+        "playheadColor": "#222230",
+        "radius": 6,
+        "gap": 4,
+        "labelStyle": {
+          "weight": 700,
+          "size": 15,
+          "color": "#222230",
+          "styleId": "caption"
+        },
+        "smallStyle": {
+          "size": 11,
+          "color": "#6f6070",
+          "styleId": "label"
+        }
+      }
+    },
+    {
+      "id": "panel-dots",
+      "type": "PANEL",
+      "zIndex": 13,
+      "visible": true,
+      "layout": {
+        "x": 1300,
+        "y": 800,
+        "width": 560,
+        "height": 200,
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "trackMappingMode": "ALL",
+      "assignedTrackIndices": [],
+      "properties": {
+        "number": "05",
+        "title": "DOTS",
+        "numberColor": "#ff3d8b",
+        "titleStyle": {
+          "weight": 700,
+          "size": 15,
+          "tracking": 120,
+          "color": "#222230",
+          "styleId": "label"
+        },
+        "frame": false,
+        "frameColor": "#dccbd6",
+        "frameWidth": 1,
+        "fillColor": "",
+        "fillAlpha": 1,
+        "stats": [
+          {
+            "label": "GRID",
+            "value": "1/16"
+          },
+          {
+            "label": "LOWS",
+            "value": "{lows}"
+          },
+          {
+            "label": "HIGHS",
+            "value": "{highs}"
+          },
+          {
+            "label": "",
+            "value": ""
+          },
+          {
+            "label": "",
+            "value": ""
+          },
+          {
+            "label": "",
+            "value": ""
+          }
+        ],
+        "labelStyle": {
+          "size": 13,
+          "tracking": 80,
+          "color": "#8f8090",
+          "styleId": "label"
+        },
+        "valueStyle": {
+          "size": 26,
+          "color": "#222230",
+          "styleId": "body"
+        }
+      }
+    },
+    {
+      "id": "dots",
+      "type": "DOTS",
+      "zIndex": 14,
+      "visible": true,
+      "layout": {
+        "x": 1300,
+        "y": 836,
+        "width": 560,
+        "height": 100,
+        "rotation": 0,
+        "anchor": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "trackMappingMode": "ALL",
+      "assignedTrackIndices": [],
+      "properties": {
+        "grid": 16,
+        "cols": 96,
+        "playheadRatio": 0.96,
+        "pitchRangeMode": "FIT_CONTENT",
+        "pitchMin": 36,
+        "pitchMax": 96,
+        "dotSize": 0.5,
+        "shape": "ROUND",
+        "emptyColor": "#c9a6bd",
+        "emptyColorB": "#8fd3cb",
+        "emptyAlpha": 0.55,
+        "colorMode": "SOLID",
+        "color": "#ff3d8b",
+        "upcomingAlpha": 0.3,
+        "activeScale": 1.5,
+        "playheadColor": "#222230",
+        "playheadWidth": 1.5
+      }
+    }
+  ],
+  "license": "CC0-1.0"
+}

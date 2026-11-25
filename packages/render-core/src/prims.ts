@@ -81,8 +81,28 @@ export interface ImagePrim {
   x: number; y: number; w: number; h: number;
   alpha: number; smooth: boolean;
 }
+/**
+ * Đường gấp khúc / đa giác (vòng quãng năm, cung tiến độ, lưới…): `pts` là toạ độ phẳng [x0, y0, x1, y1, …] (pt, toạ độ widget).
+ * `closed` nối điểm cuối về điểm đầu; `fill` rỗng = không tô; `stroke` rỗng hoặc `width` 0 = không viền. `dash`: nét đứt [vạch, khoảng] (pt).
+ * Cung tròn vẽ bằng nhiều đoạn thẳng (hàm `arcPts`), nên mọi trình duyệt và Export Worker vẽ như nhau.
+ */
+export interface PolyPrim {
+  kind: 'poly'; pts: readonly number[]; closed: boolean;
+  fill: string; fillAlpha: number;
+  stroke: string; width: number; alpha: number;
+  dash?: readonly number[];
+}
 /** Hình học thuần, đơn vị pt trong toạ độ widget. */
-export type Primitive = RectPrim | TextPrim | PathPrim | ImagePrim;
+export type Primitive = RectPrim | TextPrim | PathPrim | ImagePrim | PolyPrim;
+/** Điểm của cung tròn tâm (cx, cy) bán kính r, từ góc a0 tới a1 (độ, 0 = đỉnh, theo chiều kim đồng hồ); số đoạn theo độ dài cung. */
+export function arcPts(cx: number, cy: number, r: number, a0: number, a1: number, segPerTurn = 96): number[] {
+  const n = Math.max(1, Math.ceil(Math.abs(a1 - a0) / 360 * segPerTurn)), out: number[] = [];
+  for (let i = 0; i <= n; i++) { const a = (a0 + (a1 - a0) * i / n) * Math.PI / 180; out.push(cx + r * Math.sin(a), cy - r * Math.cos(a)); }
+  return out;
+}
+/** Primitive đa giác/đường với giá trị mặc định (không tô, không nét đứt). */
+export const poly = (pts: readonly number[], o: Partial<Omit<PolyPrim, 'kind' | 'pts'>> = {}): PolyPrim =>
+  ({ kind: 'poly', pts, closed: false, fill: '', fillAlpha: 1, stroke: '', width: 0, alpha: 1, ...o });
 
 export interface LayoutCtx {
   ast: UnifiedProjectAST; derived: Derived; tracks: TrackIndex[]; measure: Measure;

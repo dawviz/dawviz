@@ -8,9 +8,10 @@ import { NOTE_TRANSITIONS, rippleAt } from './noteTransition.ts';
 import { barPosAt } from './hud.ts';
 import { DEFAULT_KEYBOARD_STYLE } from './style.ts';
 import type { PianoRollProps, SceneDocument, WidgetSpec } from './scene.ts';
-import type { Derived, LayoutCtx, Primitive, RectPrim, TextPrim, WidgetRenderer } from './prims.ts';
+import type { Derived, LayoutCtx, PolyPrim, Primitive, RectPrim, TextPrim, WidgetRenderer } from './prims.ts';
 import { HUD_RENDERERS, barPageAt, buildHud, hudOf, usesChordPlaceholder, type ChordProps, type HudData } from './hud.ts';
 import { INSIGHT_RENDERERS } from './insight.ts';
+import { DASHBOARD_RENDERERS } from './dashboard.ts';
 import { measureText } from './text.ts';
 import { DEFAULT_TEXT_STYLES, TEXT_METRICS, type PlacedRun, type RichText, type TextGradient } from './typography.ts';
 import { normalizeAngle } from './snap.ts';
@@ -35,6 +36,9 @@ export interface RenderCtx extends Ctx2D {
   rotate(rad: number): void;
   rect(x: number, y: number, w: number, h: number): void;
   clip(): void;
+  /** Đường gấp khúc / đa giác (PolyPrim). `setLineDash` tuỳ chọn: đích vẽ không có thì nét đứt thành nét liền. */
+  lineTo(x: number, y: number): void;
+  setLineDash?(segments: number[]): void;
   // Chữ tự vẽ (T-72): tỉ lệ/nghiêng run, viền, gradient, đổ bóng.
   scale(x: number, y: number): void;
   transform(a: number, b: number, c: number, d: number, e: number, f: number): void;
@@ -149,13 +153,16 @@ export const pianoRollRenderer: WidgetRenderer<PianoRollProps> = {
 const rect = (x: number, y: number, w: number, h: number, fill: string): RectPrim => ({ kind: 'rect', x, y, w, h, fill, alpha: 1, radius: 0, glowColor: '', glowBlur: 0, stroke: '', strokeWidth: 0 });
 
 /** Bảng renderer theo loại. Widget chưa có renderer được bỏ qua khi vẽ (vẫn giữ trong Scene). */
-export const WIDGET_RENDERERS: Partial<Record<WidgetSpec['type'], WidgetRenderer<any>>> = { IMAGE: imageRenderer, PIANO_ROLL: pianoRollRenderer, AUDIO_SPECTRUM: spectrumRenderer, PARTICLES: particleRenderer, NOTATION: notationRenderer, ...INSIGHT_RENDERERS, ...HUD_RENDERERS };
+export const WIDGET_RENDERERS: Partial<Record<WidgetSpec['type'], WidgetRenderer<any>>> = { IMAGE: imageRenderer, PIANO_ROLL: pianoRollRenderer, AUDIO_SPECTRUM: spectrumRenderer, PARTICLES: particleRenderer, NOTATION: notationRenderer, ...INSIGHT_RENDERERS, ...DASHBOARD_RENDERERS, ...HUD_RENDERERS };
 
 /** Bố cục toàn khung (thuần): danh sách widget đã sắp theo zIndex kèm primitive của từng widget. Dùng để test tất định. */
 /** HudData cho một scene: số đếm, lưới ô nhịp và hợp âm của mọi widget Chord Detection. Gọi ở bước derived (một lần cho mỗi dự án × scene). */
 export const buildSceneHud = (scene: SceneDocument, ast: UnifiedProjectAST, index: TimelineIndex): HudData =>
-  buildHud(ast, index, flattenScene(scene).widgets.filter((w) => w.type === 'CHORD_DETECTION' || usesChordPlaceholder(w))
-    .map((w) => ({ tracks: tracksFor(w, index), mode: (w.properties as ChordProps).mode ?? 'sustained' })));
+  buildHud(ast, index, flattenScene(scene).widgets.flatMap((w) => {
+    const tracks = tracksFor(w, index);
+    if (w.type === 'DEGREE') return [{ tracks, mode: 'sustained' as const }, { tracks, mode: 'strike' as const }]; // hàng chính + hàng phụ (theo lần dập)
+    return w.type === 'CHORD_DETECTION' || usesChordPlaceholder(w) ? [{ tracks, mode: (w.properties as ChordProps).mode ?? 'sustained' }] : [];
+  }));
 const hudMemo = new WeakMap<Derived, WeakMap<SceneDocument, HudData>>();
 /** Derived có hud: dùng cái đã dựng; thiếu (gọi trực tiếp, kiểm thử) thì dựng một lần cho (derived, scene) rồi đệm. */
 function withHud(scene: SceneDocument, derived: Derived, ast: UnifiedProjectAST): Derived {
@@ -300,6 +307,7 @@ export function drawPrimitives(g: RenderCtx, prims: Primitive[], env0: DrawEnv =
   for (const p of prims) {
     if (p.kind === 'text') { if (p.rich) drawRichText(g, p, p.rich, env); else drawText(g, p, env); continue; }
     if (p.kind === 'path') { drawPathPrim(g, p, env.scale); continue; }
+    if (p.kind === 'poly') { drawPoly(g, p); continue; }
     if (p.kind === 'image') {
       const img = env.images?.get(p.asset);
       if (img && p.alpha > 0 && p.w > 0 && p.h > 0 && p.sw > 0 && p.sh > 0) {
@@ -321,6 +329,21 @@ export function drawPrimitives(g: RenderCtx, prims: Primitive[], env0: DrawEnv =
     if (rot) g.restore();
   }
   g.globalAlpha = 1;
+}
+
+/** Đa giác/đường gấp khúc: tô (nếu có) rồi viền (nếu có). Độ đục tô = alpha × fillAlpha. */
+function drawPoly(g: RenderCtx, p: PolyPrim): void {
+  const n = p.pts.length >> 1; if (n < 2 || !(p.alpha > 0)) return;
+  g.shadowBlur = 0; g.beginPath(); g.moveTo(p.pts[0], p.pts[1]);
+  for (let i = 1; i < n; i++) g.lineTo(p.pts[2 * i], p.pts[2 * i + 1]);
+  if (p.closed) g.closePath();
+  if (p.fill && n >= 3 && p.fillAlpha > 0) { g.globalAlpha = Math.min(1, p.alpha * p.fillAlpha); g.fillStyle = p.fill; g.fill(); }
+  if (p.stroke && p.width > 0) {
+    g.globalAlpha = Math.min(1, p.alpha); g.strokeStyle = p.stroke; g.lineWidth = p.width; g.lineJoin = 'round';
+    if (p.dash?.length) g.setLineDash?.([...p.dash]);
+    g.stroke();
+    if (p.dash?.length) g.setLineDash?.([]);
+  }
 }
 
 /** Gán `g.font` chỉ khi khác giá trị đang đặt (xem DrawEnv.font). */

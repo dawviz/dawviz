@@ -10,6 +10,9 @@ import { fixed, groupDigits, pad, type Measure } from './text.ts';
 import { pitchName } from './music.ts';
 import { chordNameFor, noteNameFor, pitchClassNameFor } from './naming.ts';
 import { phaseInfoAt, type PhaseInfo } from './visibility.ts';
+import { keyAt } from './keyDetect.ts';
+import { chordDegree, romanAscii } from './degree.ts';
+import { bandShareAt, dbText, levelsAt } from './loudness.ts';
 import { RECENT_ONSETS, degreeName, formatUnits, ioiSixteenths, pitchClassName, quarterFraction, recentOnsets } from './musicAnalysis.ts';
 import { listV, numV, timeV, type PV } from './placeholders.ts';
 import { DEFAULT_TEXT_STYLES, resolveTextStyle, templateSpans, textPrims, textWidth, type Align, type TextRef, type TextSpan, type TextStyle, type TextStyleSet } from './typography.ts';
@@ -50,8 +53,10 @@ export const TEXT_FIELDS = {
   TEXT: { style: 'body', valueStyle: null },
   // widget phân tích (insight.ts)
   TEMPO_INFO: { style: 'clock' }, BAR_BEAT: { style: 'clock' }, KEY_SCALE: { nameStyle: 'heading', confStyle: 'caption' }, DENSITY: { polyStyle: 'caption' },
-  PITCH_WHEEL: { nameStyle: 'label', chordStyle: 'heading' }, DRUM_PAD: { labelStyle: 'tiny' }, SECTION: { style: 'heading', nextStyle: 'caption' },
+  PITCH_WHEEL: { nameStyle: 'label', chordStyle: 'heading', subStyle: 'label' }, DRUM_PAD: { labelStyle: 'tiny' }, SECTION: { style: 'heading', nextStyle: 'caption' },
   LYRICS: { style: 'body', nextStyle: 'caption' }, AUTOMATION: { valueStyle: 'tiny' },
+  // bảng phân tích (dashboard.ts)
+  PANEL: { titleStyle: 'label', labelStyle: 'label', valueStyle: 'body' }, DEGREE: { labelStyle: 'caption', smallStyle: 'label' }, PITCH_STRIP: { style: 'heading' },
 } as const satisfies Record<string, Record<string, keyof typeof DEFAULT_TEXT_STYLES | null>>;
 /** Ghi đè một đoạn → trường của dòng chứa nó (kiểu gốc của đoạn là kiểu thật của dòng đó). */
 export const TEXT_SPAN_OF = {
@@ -260,6 +265,12 @@ export function globalValues(src: PlaceholderSource, t: number): Record<string, 
   };
   const nm = derived.naming, nName = (p: number) => (nm ? noteNameFor(p, nm) : pitchName(p)), pcN = (p: number) => (nm ? pitchClassNameFor(p, nm) : pitchClassName(p));
   const active = () => activePitches().map(nName);
+  const chords = () => hud().chords.get(chordKey(shown(tracks))) ?? [];
+  const asc = (s: string) => (nm?.ascii ? romanAscii(s) : s);
+  const nextChord = () => { const cs = chords(); for (const s of cs) if (s.start > t + 1e-9 && s.name) return s; return null; };
+  let tn: number | null | undefined; const tonic = () => (tn !== undefined ? tn : (tn = derived.tonic ?? keyAt(shown(tracks), t, 16)?.tonic ?? null));
+  let bs: ReturnType<typeof bandShareAt> | undefined; const share = (k: 'low' | 'mid' | 'high'): PV => { bs ??= bandShareAt(derived.audio, t); const v = bs ? bs[k] * 100 : 0; return numV(v, bs ? `${Math.round(v)}%` : '—'); };
+  let lv: ReturnType<typeof levelsAt> | undefined; const lvl = (k: 'short' | 'average' | 'peak'): PV => { lv ??= levelsAt(derived.audio, t); const v = lv ? lv[k] : -Infinity; return numV(Number.isFinite(v) ? v : -120, lv ? dbText(v) : '—'); };
   const make: Record<string, () => PV> = {
     time: () => timeV(tt), elapsed: () => timeV(tt), remaining: () => timeV(Math.max(0, dur - t)), total_time: () => timeV(dur),
     bpm: () => numV(bar().bpm, String(Math.round(bar().bpm * 100) / 100)), tempo: () => numV(bar().bpm, String(Math.round(bar().bpm * 100) / 100)), // tempo = tên cũ của bpm
@@ -271,6 +282,14 @@ export function globalValues(src: PlaceholderSource, t: number): Record<string, 
     bar: () => bar().bar, beat: () => bar().beat, sig: () => `${bar().num}/${bar().den}`,
     title: () => ast.meta.title ?? '', artist: () => (ast.meta as { artist?: string }).artist ?? '',
     chord: () => { const c = chordAt(hud().chords.get(chordKey(shown(tracks))) ?? [], t)?.name ?? ''; return c && nm ? chordNameFor(c, nm) : c; }, notes: () => listV(active()),
+    // Bảng phân tích (REFERENCE-VIDEOS video 3): bậc hợp âm theo giọng, hợp âm kế tiếp, số lần đổi hợp âm, giọng, năng lượng dải và mức âm.
+    degree: () => { const c = chordAt(chords(), t)?.name, k = tonic(); return c ? (k === null ? c : asc(chordDegree(c, k))) : ''; },
+    next_chord: () => { const s = nextChord(); return s?.name ? (nm ? chordNameFor(s.name, nm) : s.name) : ''; },
+    next_degree: () => { const s = nextChord(), k = tonic(); return s?.name ? (k === null ? s.name : asc(chordDegree(s.name, k))) : ''; },
+    chord_count: () => { let n = 0; for (const s of chords()) { if (s.start > t) break; if (s.name) n++; } return n; },
+    key: () => { const k = tonic(); return k === null ? '' : pcN(k); },
+    lows: () => share('low'), mids: () => share('mid'), highs: () => share('high'),
+    level: () => lvl('short'), level_avg: () => lvl('average'), peak_db: () => lvl('peak'),
     played: () => count().played, total: () => count().total, events: () => count().events, events_total: () => count().eventsTotal,
     events_pct: () => { const c = count(), v = c.eventsTotal ? c.events / c.eventsTotal * 100 : 0; return numV(v, String(Math.round(v))); },
     pct: () => { const c = count(), v = c.total ? c.played / c.total * 100 : 0; return numV(v, String(Math.round(v))); },
@@ -286,7 +305,7 @@ export function withLocals(glob: Record<string, PV>, local: Record<string, PV>):
   return out;
 }
 /** Mẫu của mọi widget có dùng `{chord` thì nhóm track của nó cần dựng dòng thời gian hợp âm ở bước derived. */
-export const usesChordPlaceholder = (w: { properties: unknown }) => JSON.stringify(w.properties).includes('{chord');
+export const usesChordPlaceholder = (w: { properties: unknown }) => /\{(chord|degree|next_chord|next_degree)/.test(JSON.stringify(w.properties));
 
 // ───────────────────────────── trợ giúp vẽ chữ ─────────────────────────────
 export const xFor = (align: Align, width: number) => (align === 'left' ? 0 : align === 'center' ? width / 2 : width);

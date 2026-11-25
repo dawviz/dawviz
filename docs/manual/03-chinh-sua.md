@@ -257,7 +257,7 @@ Chọn một widget có chữ (tên bài, bộ đếm nốt, nốt đang phát, 
 Mỗi chữ dùng một **kiểu chữ** có sẵn (Tiêu đề, Phụ đề, Số đếm, Đồng hồ…). Bạn đổi gì thì chỉ thứ đó khác kiểu, phần còn lại vẫn theo kiểu. Cạnh mỗi thứ đã đổi có nút ↺ để quay về giá trị của kiểu.
 
 - **Dòng chữ:** widget có nhiều chữ thì chọn chữ cần sửa ở đây, ví dụ Tên bài hay Nghệ sĩ. Một số mục là một phần của dòng, ví dụ **Con số trong dòng** của bộ đếm nốt hay **Nốt bass sau dấu /** của hợp âm: đổi ở đó thì chỉ phần ấy khác, phần còn lại của dòng giữ nguyên. Chữ đang có chỉnh sửa được đánh dấu • trong danh sách.
-- **Kiểu chữ**, **Phông**, **Cỡ**, **Màu**, **Đậm**, **Nghiêng**. Cuối danh sách **Phông** có **Nạp tệp phông…** để dùng phông của bạn (WOFF2, WOFF, TTF, OTF, tối đa 20 MB); phông này đi theo phiên, gói dự án và video xuất. Hãy chỉ dùng phông bạn có quyền dùng.
+- **Kiểu chữ**, **Phông**, **Cỡ**, **Màu**, **Độ đậm** (Mảnh, Thường, Đậm), **Nghiêng**. Cuối danh sách **Phông** có **Nạp tệp phông…** để dùng phông của bạn (WOFF2, WOFF, TTF, OTF, tối đa 20 MB); phông này đi theo phiên, gói dự án và video xuất. Hãy chỉ dùng phông bạn có quyền dùng.
 - **Căn lề:** trái, giữa hoặc phải trong khung widget.
 
 Ở chế độ Nâng cao (hoặc bấm **Thêm tuỳ chọn**):

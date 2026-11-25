@@ -3,4 +3,5 @@ declare module '@dawviz/parser-core' {
   export function volumeToUnit(gain: number, o?: { floorDb?: number; ceilDb?: number }): number;
   export function dbToGain(db: number): number;
   export function secToTick(map: { tick: number; timeSeconds: number; bpm: number }[], sec: number): number;
+  export function tickToSec(map: { tick: number; timeSeconds: number; bpm: number }[], tick: number): number;
 }

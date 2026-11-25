@@ -83,12 +83,14 @@ export const PLACEHOLDER_KINDS: Readonly<Record<string, readonly PlaceholderKind
   title: ['text'], artist: ['text'], chord: ['text'], notes: ['list'],
   played: ['num'], total: ['num', 'time'], pct: ['num'],
   rhythm: ['list'], bass: ['list'], lengths: ['list'], pitch_classes: ['list'], phase: ['text'], next_phase: ['text'], phase_elapsed: ['time'], phase_remaining: ['time'], phase_no: ['num'],
+  degree: ['text'], next_chord: ['text'], next_degree: ['text'], chord_count: ['num'], lows: ['num'], mids: ['num'], highs: ['num'], level: ['num'], level_avg: ['num'], peak_db: ['num'],
   name: ['text'], velocity: ['num'], track: ['text'], pitch: ['num'],
   // widget phân tích (insight.ts)
   key: ['text'], scale: ['text'], confidence: ['num'], poly: ['num'], section: ['text'], next: ['text'], next_in: ['time'], section_no: ['num'], section_elapsed: ['time'],
 });
 /** Tên chỗ giữ dùng chung, dùng được ở mọi chữ (D-60). Widget có thể che bằng giá trị riêng cùng tên. */
-export const GLOBAL_KEYS = ['time', 'elapsed', 'remaining', 'total_time', 'bpm', 'bar', 'beat', 'sig', 'title', 'artist', 'chord', 'notes', 'played', 'total', 'pct', 'events', 'events_total', 'events_pct', 'phase', 'next_phase', 'phase_elapsed', 'phase_remaining', 'phase_no', 'rhythm', 'bass', 'lengths', 'pitch_classes'] as const;
+export const GLOBAL_KEYS = ['time', 'elapsed', 'remaining', 'total_time', 'bpm', 'bar', 'beat', 'sig', 'title', 'artist', 'chord', 'notes', 'played', 'total', 'pct', 'events', 'events_total', 'events_pct', 'phase', 'next_phase', 'phase_elapsed', 'phase_remaining', 'phase_no', 'rhythm', 'bass', 'lengths', 'pitch_classes',
+  'degree', 'next_chord', 'next_degree', 'chord_count', 'key', 'lows', 'mids', 'highs', 'level', 'level_avg', 'peak_db'] as const;
 
 /** Tên cũ còn đọc được nhưng không gợi ý: `{tempo}` = `{bpm}` (cùng giá trị, cùng cách hiện) để preset cũ không hỏng. */
 export const ALIAS_KEYS = ['tempo'] as const;

@@ -12,7 +12,7 @@ import * as fontkit from 'fontkit';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DIR = path.join(ROOT, 'apps/web/public/fonts');
 const OUT = path.join(ROOT, 'packages/render-core/src/fontMetrics.generated.ts');
-const FAMILY = 'Space Grotesk', WEIGHTS = [400, 700], SUBSETS = ['latin', 'latin-ext', 'vietnamese'];
+const FAMILY = 'Space Grotesk', WEIGHTS = [300, 400, 700], SUBSETS = ['latin', 'latin-ext', 'vietnamese'];
 
 const files = {}, weights = {};
 let upm = 0;
