@@ -7,8 +7,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { buildIndex } from './build-index.mjs';
 
-const here = path.dirname(new URL(import.meta.url).pathname);
-const repoRoot = path.join(here, '..', '..');
+const repoRoot = path.join(import.meta.dirname, '..', '..');
 
 test('repo hiện tại: mọi preset hợp lệ, có băm đúng', () => {
   const { index, errors } = buildIndex(repoRoot);
