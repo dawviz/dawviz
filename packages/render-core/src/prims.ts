@@ -57,6 +57,8 @@ export interface TextPrim {
   font: string; size: number; weight: number; align: 'left' | 'center' | 'right';
   color: string; alpha: number;
   maxWidth?: number;                // layout đã cắt bằng bảng đo; bước vẽ truyền tiếp cho fillText để không bao giờ tràn
+  /** Độ, chiều kim đồng hồ quanh điểm neo (x, y) (T-59: tên nốt xoay theo làn Piano Roll). Vắng/0 = không xoay. Chỉ áp cho chữ thường (không `rich`). */
+  rotation?: number;
   /** T-72: chữ có thuộc tính Canvas 2D không làm đồng nhất (tracking, chữ số đều, gạch, viền, gradient, bóng, nền, nhiều kiểu):
    *  Render Core tự vẽ theo vị trí đã dàn; `text`/`x`/`size`… vẫn điền để đọc/kiểm. Vắng = một lệnh fillText như trước. */
   rich?: RichText;

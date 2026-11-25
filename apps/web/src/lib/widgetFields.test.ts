@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ADDABLE_WIDGETS, widgetDefaults, sanitizeScene, SCENE_SCHEMA_VERSION } from '@dawviz/render-core';
-import { SETTINGS_EXEMPT, WIDGET_FIELDS, advancedEdited, fieldChanged, getIn, resetPatch, setIn, type FieldDef } from './widgetFields.ts';
+import { SETTINGS_EXEMPT, WIDGET_FIELDS, advancedEdited, fieldChanged, getIn, resetPatch, setIn, withNestedDefaults, type FieldDef } from './widgetFields.ts';
 
 type Obj = Record<string, unknown>;
 const types = ADDABLE_WIDGETS.filter((t) => t !== 'PIANO_ROLL');
@@ -43,6 +43,25 @@ test('đổi bất kỳ thiết lập nào khỏi mốc thì ↺ hiện; khôi p
       assert.deepEqual(back, R, `${type}.${f.path.join('.')}`);
     }
   }
+});
+
+test('Piano Roll (T-58/T-51/T-59, lưới ô nhịp): mọi thiết lập có trong mặc định, ↺ hiện khi đổi và khôi phục đúng; mặc định qua lược đồ không cảnh báo', () => {
+  const R = widgetDefaults('PIANO_ROLL'), fields = WIDGET_FIELDS.PIANO_ROLL!;
+  for (const k of ['flowAngle', 'playheadStyle', 'playheadHit', 'grid', 'keyboard']) assert.ok(fields.some((f) => f.path[0] === k), k);
+  for (const f of fields) {
+    const v = getIn(R, f.path), nv = other(f, v);
+    assert.notEqual(v, undefined, f.path.join('.'));
+    const P1 = { ...R, ...{ [f.path[0]]: setIn(R, f.path, nv)[f.path[0]] } };
+    assert.equal(fieldChanged(f, P1, R), true, f.path.join('.'));
+    for (const g of fields) if (g.path.join('.') !== f.path.join('.')) assert.equal(fieldChanged(g, P1, R), false, `${f.path.join('.')} làm ${g.path.join('.')} bị coi là đã đổi`);
+    assert.deepEqual({ ...P1, ...resetPatch(f, P1, R) }, R, f.path.join('.'));
+  }
+  const { warnings } = sanitizeScene({ schemaVersion: SCENE_SCHEMA_VERSION, canvas: {}, widgets: [{ id: 'w', type: 'PIANO_ROLL', properties: R, layout: { x: 0, y: 0, width: 100, height: 50 } }] });
+  assert.deepEqual(warnings, []);
+  // tài liệu cũ thiếu trường mới: bảng Thiết lập đọc trên bản đã điền mặc định
+  const old = { ...R } as Obj; delete old.grid; delete old.flowAngle;
+  const P = withNestedDefaults('PIANO_ROLL', old);
+  assert.equal(getIn(P, ['grid', 'opacity']), (R.grid as Obj).opacity); assert.equal(P.flowAngle, 0);
 });
 
 test('mỗi khoá cấp trên của bản vá khôi phục giữ nguyên các nhánh anh em (lines.played không làm mất lines.total)', () => {

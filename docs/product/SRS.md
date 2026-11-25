@@ -448,6 +448,7 @@ Vạch đánh dấu thời điểm đang phát trên Piano Roll (và các widget
   * **Phản ứng khi nốt chạm vạch:** nhấp sáng hoặc phình độ dày trong một khoảng ngắn (ms), mức theo velocity; có thể tắt.
   * Thứ tự lớp: trên hoặc dưới nốt. Vạch luôn vuông góc với hướng chảy (kể cả góc tự do của REQ-WIDGET-01).
 * **1.1:** vạch là **ảnh/sprite** người dùng nạp (REQ-STORAGE-05); mọi thuộc tính gắn keyframe, binding, biểu thức (REQ-GRAPHICS-09…13), ví dụ độ dày đập theo kick; bộ phát hạt đặt tại vạch (REQ-GRAPHICS-11); preset `playhead` chia sẻ được.
+* **Đã làm (T-58, 2026-11-25):** `playheadStyle` `LINE`/`DASHED`/`BAND`/`GRADIENT`, `playheadArrows` (tam giác hai đầu chỉ vào trong), `playheadWidth` 0–40, `playheadLength` 0,05–1 (tỉ lệ chiều cao làn, căn giữa), `playheadColor`, `playheadGlow` 0–1, `playheadHit` `OFF`/`FLASH` (màu ngả về màu nốt vừa chạm, sáng thêm)/`SWELL` (dày tới ×3), mức = velocity, tắt dần tuyến tính trong `playheadHitMs`. Mặc định ra đúng một vạch liền như trước. Độ dài, phát sáng, màu animate được bằng keyframe. **Chưa làm:** kiểu chấm, vạch đôi, căn đầu/cuối, màu liên tục theo track đang chạm, bo đầu, thứ tự lớp dưới nốt, alpha riêng của màu.
 
 #### REQ-GRAPHICS-03: Xoay widget tự do (D-54, thay D-15)
 **Sửa tài liệu v1.2 (2026-11-13): xoay 2D chỉnh được từ bản phát hành 1.0.**
@@ -496,6 +497,7 @@ Vạch đánh dấu thời điểm đang phát trên Piano Roll (và các widget
   * **Cách ghi tên:** dùng thiết lập chung P-12 / REQ-I18N-08 (`C D E`, `Do Re Mi`, `H` thay `B`, `ハニホ`…); thăng/giáng hiển thị `♯`/`♭` hoặc `#`/`b`.
   * **Số quãng tám:** chọn quy ước Đô giữa (MIDI 60) là **C4** (mặc định, theo chuẩn khoa học) hay **C3** (kiểu Yamaha/Ableton) để khớp DAW người dùng; tuỳ chọn ẩn số.
   * **Kiểu chữ:** phông (gồm phông người dùng nạp, REQ-STORAGE-05), cỡ, màu, vị trí (đáy phím / giữa), xoay theo hướng bàn phím.
+* **Đã làm (T-51, 2026-11-25):** `keyboard.shape` `FLAT`/`ROUNDED` (bo góc, khe giữa phím); phím nhấn theo màu nốt (`useTrackColor`) hoặc `pressedColor`; `keyboard.scale` `OFF`/`AUTO`/`MAJOR`/`MINOR` tô `scaleColor` với `scaleOpacity` (phím nốt chủ đậm ×1,8): AUTO = giọng nhận diện `keyAt` (cửa sổ 16 s), có `scene.tonic` thì giữ nốt chủ đó và chọn trưởng/thứ trùng nhiều lớp cao độ hơn với giọng nhận diện; MAJOR/MINOR dùng `scene.tonic` (chưa đặt thì nốt chủ nhận diện); `keyboard.labels` `NONE`/`C`/`WHITE`/`ALL`/`ACTIVE`, `labelOctave`, `labelColor`; tên theo `scene.noteNaming` (hệ ghi tên, dấu hoá, quy ước C3/C4). Cỡ chữ theo chiều cao hàng phím, dưới 5 pt thì không vẽ. Phạm vi phím = dải cao độ của Piano Roll (Vừa nội dung / Tuỳ chọn). **Chưa làm:** nút chọn nhanh 88/76/61… phím, tỉ lệ dài phím đen, bóng nổi, viền, độ lún theo velocity, nhả dần, phông/cỡ/vị trí nhãn riêng.
 * Mọi kiểu dáng vẽ qua Render Core nên Preview và Export giống nhau (REQ-GRAPHICS-05). Phát sáng dùng `shadowBlur`; chi phí khi xuất độ phân giải cao cần đo (T-09).
 
 #### REQ-GRAPHICS-08: Hiệu ứng chuyển động tất định (D-37)
@@ -585,6 +587,8 @@ Mỗi widget có thuộc tính hình học `(x, y, width, height, zIndex, rotati
 * **Pitch Range**: *Custom Octave Range* (mặc định, 21–108 = A0–C8, đủ 88 phím) cho chọn khoảng (ví dụ C2–C6), nốt ngoài khoảng bị cắt; *Fit to Content* lấy min/max pitch của track được gán (±1 bán cung). Giao diện nhập khoảng bằng tên nốt (C1, C#3), tệp JSON lưu số MIDI (`pitchMin`, `pitchMax`).
 * **Scroll Mode**: *Scroll* (mặc định) nốt cuộn qua vạch phát cố định; *Page* nốt đứng yên theo trang dài `visibleSeconds`, vạch phát chạy ngang rồi sang trang mới, nốt qua biên trang bị cắt ở mép trang.
 * **Lookahead**: 1.0 đến 8.0 giây (mặc định 3.0).
+* **Đã làm (T-59, 2026-11-25):** `flowAngle` 0–360° (nhập số; bắt dính 15° khi kéo chưa có), `flowMirror` lật trục cao độ (90° + lật = nốt rơi, nốt trầm bên trái), `labelsUpright` (tên nốt và số ô nhịp đứng thẳng hoặc xoay theo làn). Làn dựng trong hệ toạ độ riêng rồi xoay quanh tâm khung; kích thước làn = hộp bao của khung đã xoay ngược nên phủ kín khung ở mọi góc; tỉ lệ thời gian và vị trí vạch phát tính trên đoạn trục thời gian qua tâm nằm trong khung (ở 0° đúng như trước); bàn phím kéo dài từ mép làn tới vạch phát. Preset cũ ghi `orientation: VERTICAL` đọc thành 90°. Ở góc không bội 90° mà bật bàn phím, phần lớn bàn phím nằm ngoài khung; mũi tên vạch phát ở đầu làn cũng ra ngoài khung khi độ dài = 1.
+* **Lưới ô nhịp (2026-11-25):** `grid.bars` (vạch đầu ô nhịp), `grid.beats` (vạch phách, độ đục ×0,45), `grid.numbers` (số ô nhịp nhỏ ở đầu mỗi ô), `grid.color`, `grid.opacity`; theo lưới ô nhịp của bài (`gridLinesIn` trên `BarGrid`) nên đúng khi đổi tempo/nhịp; vẽ dưới nốt và dưới bàn phím.
 * **Hiệu năng**: chỉ vẽ nốt giao với cửa sổ thời gian hiển thị (tìm bằng chỉ mục theo `startTick`), không duyệt toàn bộ nốt mỗi khung (NFR-PERF-02).
 
 #### REQ-WIDGET-02: Track Info

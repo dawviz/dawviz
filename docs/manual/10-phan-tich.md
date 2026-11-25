@@ -53,7 +53,7 @@ Các chuyển động có thể dùng chung: ví dụ hiệu ứng vào "Trượ
 
 ## Hoạt hình của từng nốt
 
-Piano Roll còn có mục **Hoạt hình của nốt** trong **Thiết lập**: mỗi nốt đi qua bốn pha (đang tới, chạm, đang kêu, vừa tắt) với kiểu bạn chọn: bật to dần, mờ và co giãn, rơi và nảy, bay lên, biến hình (chấm thành thanh), nổ tung khi tắt, nảy khi chạm, gợn sóng khi chạm (một vòng tròn toả ra từ đầu nốt). Chọn **Không** thì nốt chỉ trôi như cũ. Muốn nốt rơi từ trên xuống hoặc bay lên, xoay cả widget Piano Roll.
+Piano Roll còn có mục **Hoạt hình của nốt** trong **Thiết lập**: mỗi nốt đi qua bốn pha (đang tới, chạm, đang kêu, vừa tắt) với kiểu bạn chọn: bật to dần, mờ và co giãn, rơi và nảy, bay lên, biến hình (chấm thành thanh), nổ tung khi tắt, nảy khi chạm, gợn sóng khi chạm (một vòng tròn toả ra từ đầu nốt). Chọn **Không** thì nốt chỉ trôi như cũ. Muốn nốt rơi từ trên xuống, đặt **Góc chảy nốt** của Piano Roll (xem [Chỉnh sửa](03-chinh-sua.md#hình-thức-nốt)).
 
 ## Hoạt hình thuộc tính
 
@@ -70,7 +70,7 @@ Muốn một thuộc tính **đổi theo thời gian hoặc theo nhạc** thay v
 
 **Bật/tắt và lựa chọn:** ô đánh dấu (vd. Hiện thời gian), ô chọn và chữ cũng có đồng hồ. Giá trị của chúng không chạy dần mà **đổi đúng tại keyframe** (giữ tới keyframe kế). Chúng không chạy theo nhạc và không có đường cong.
 
-**Piano roll:** ngoài vị trí, xoay, tỉ lệ, độ đục, Piano roll animate được số giây trên khung, vị trí, độ dày, màu và việc hiện vạch phát, bàn phím, và kiểu nốt chung (độ đục, bo góc, độ cao, phát sáng, màu).
+**Piano roll:** ngoài vị trí, xoay, tỉ lệ, độ đục, Piano roll animate được số giây trên khung, vị trí, độ dày, độ dài, phát sáng, màu và việc hiện vạch phát, góc chảy nốt, bàn phím (màu phím nhấn, độ đậm tô thang âm), lưới ô nhịp (độ đục, màu), và kiểu nốt chung (độ đục, bo góc, độ cao, phát sáng, màu).
 
 **Sao chép và dán:** chọn keyframe rồi Ctrl+C; đưa vạch phát tới chỗ khác (hoặc chọn widget khác) rồi Ctrl+V. Keyframe sớm nhất rơi vào vạch phát, các keyframe khác giữ khoảng cách. Thuộc tính mà widget đích không có thì bị bỏ qua.
 

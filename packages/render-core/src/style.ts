@@ -33,7 +33,42 @@ export interface NoteStyle {
   upcomingColor: string | null; // nốt sắp tới: start > t
 }
 export interface StyleConfig { base: NoteStyle; tracks: Record<string, Partial<NoteStyle>> }
-export interface KeyboardStyle { enabled: boolean; width: number; whiteColor: string; blackColor: string; useTrackColor: boolean }
+export interface KeyboardStyle {
+  enabled: boolean; width: number; whiteColor: string; blackColor: string;
+  /** Phím đang nhấn lấy màu nốt (theo track/chế độ màu của nốt); tắt thì dùng `pressedColor`. */
+  useTrackColor: boolean;
+  // ---- T-51 (REQ-GRAPHICS-07): mọi trường dưới đây tuỳ chọn trong preset, vắng = mặc định (vẽ như trước).
+  /** Hình dạng phím: phẳng (mặc định, như trước) hoặc bo góc có khe giữa các phím. */
+  shape: KeyboardShape;
+  /** Màu phím nhấn khi `useTrackColor` tắt. */
+  pressedColor: string;
+  /** Đánh dấu thang âm: OFF; AUTO = giọng nhận diện (keyAt, P-04), có `scene.tonic` thì giữ nốt chủ đó và chọn trưởng/thứ khớp hơn; MAJOR/MINOR = thang trưởng/thứ tự nhiên của nốt chủ (`scene.tonic`, chưa đặt thì nốt chủ nhận diện). */
+  scale: KeyboardScale;
+  scaleColor: string;
+  /** 0..1, độ đục lớp tô thang âm (phím nốt chủ đậm hơn). */
+  scaleOpacity: number;
+  /** Tên nốt trên phím (P-12, theo `scene.noteNaming`): không, chỉ phím C, mọi phím trắng, mọi phím, chỉ phím đang nhấn. */
+  labels: KeyLabelMode;
+  /** Ghi số quãng tám (quy ước C3/C4 theo `noteNaming.middleC`). */
+  labelOctave: boolean;
+  /** '' = tự chọn (chữ tối trên phím trắng, sáng trên phím đen). */
+  labelColor: string;
+}
+export const KEYBOARD_SHAPES = ['FLAT', 'ROUNDED'] as const;
+export type KeyboardShape = typeof KEYBOARD_SHAPES[number];
+export const KEYBOARD_SCALES = ['OFF', 'AUTO', 'MAJOR', 'MINOR'] as const;
+export type KeyboardScale = typeof KEYBOARD_SCALES[number];
+export const KEY_LABEL_MODES = ['NONE', 'C', 'WHITE', 'ALL', 'ACTIVE'] as const;
+export type KeyLabelMode = typeof KEY_LABEL_MODES[number];
+
+// ---- Vạch phát tuỳ chỉnh (T-58, REQ-GRAPHICS-16 phần 1.0) và lưới ô nhịp của Piano Roll.
+export const PLAYHEAD_STYLES = ['LINE', 'DASHED', 'BAND', 'GRADIENT'] as const;
+export type PlayheadStyle = typeof PLAYHEAD_STYLES[number];
+export const PLAYHEAD_HITS = ['OFF', 'FLASH', 'SWELL'] as const;
+export type PlayheadHit = typeof PLAYHEAD_HITS[number];
+/** Lưới ô nhịp trên Piano Roll: vạch đầu ô nhịp, vạch phách mờ, số ô nhịp nhỏ ở đầu mỗi ô. Mặc định tắt hết (vẽ như trước). */
+export interface RollGrid { bars: boolean; beats: boolean; numbers: boolean; color: string; opacity: number }
+export const DEFAULT_ROLL_GRID: Readonly<RollGrid> = Object.freeze({ bars: false, beats: false, numbers: false, color: '#ffffff', opacity: 0.25 });
 
 export const DEFAULT_NOTE_STYLE: Readonly<NoteStyle> = Object.freeze({
   colorMode: 'track', customColor: '#7cc4ff', opacity: 1, inactiveOpacity: 0.85, cornerRadius: 3, heightScale: 0.8,
@@ -43,6 +78,7 @@ export const DEFAULT_NOTE_STYLE: Readonly<NoteStyle> = Object.freeze({
 });
 export const DEFAULT_KEYBOARD_STYLE: Readonly<KeyboardStyle> = Object.freeze({
   enabled: true, width: 64, whiteColor: '#e8eaf2', blackColor: '#14161f', useTrackColor: true,
+  shape: 'FLAT', pressedColor: '#7cc4ff', scale: 'OFF', scaleColor: '#f5c542', scaleOpacity: 0.35, labels: 'NONE', labelOctave: true, labelColor: '',
 });
 export const defaultStyleConfig = (): StyleConfig => ({ base: { ...DEFAULT_NOTE_STYLE }, tracks: {} });
 
@@ -102,6 +138,18 @@ export function noteColor(style: NoteStyle, trackColor: string, pitch: number, v
     case 'velocity': return shade(trackColor, (clamp(velocity, 0, 127) / 127 - 0.6) * 0.9);
     default: return trackColor;
   }
+}
+
+/** Trộn hai màu #rrggbb, k = 0 → a, 1 → b. */
+export function mixHex(a: string, b: string, k: number): string {
+  const [r1, g1, b1] = parseHex(a), [r2, g2, b2] = parseHex(b), u = clamp(k, 0, 1);
+  return toHex(r1 + (r2 - r1) * u, g1 + (g2 - g1) * u, b1 + (b2 - b1) * u);
+}
+const MAJOR_STEPS = [0, 2, 4, 5, 7, 9, 11], MINOR_STEPS = [0, 2, 3, 5, 7, 8, 10];
+/** Tập lớp cao độ của thang trưởng / thứ tự nhiên trên nốt chủ `tonic` (0 = C). */
+export function scalePitchClasses(tonic: number, minor: boolean): Set<number> {
+  const t = ((Math.round(tonic) % 12) + 12) % 12;
+  return new Set((minor ? MINOR_STEPS : MAJOR_STEPS).map((s) => (t + s) % 12));
 }
 
 export type NoteState = 'played' | 'active' | 'upcoming';
