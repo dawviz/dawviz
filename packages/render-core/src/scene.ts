@@ -18,7 +18,7 @@ import {
   INSIGHT_TEMPLATE_KEYS, INSIGHT_TYPES, type ArrangementProps, type AutomationProps, type BarBeatProps, type DensityProps, type DrumPadProps, type KeyScaleProps, type LyricsProps, type PitchWheelProps, type SectionProps, type TempoInfoProps, type VelocityProps,
 } from './insight.ts';
 import { DEFAULT_NOTATION, notationInkFor, type NotationProps } from './notation/widget.ts';
-import { DASHBOARD_TYPES, DEFAULT_DEGREE, DEFAULT_DOTS, DEFAULT_PANEL, DOTS_GRIDS, MAX_PANEL_STATS, type DegreeProps, type DotsProps, type PanelProps } from './dashboard.ts';
+import { CHORD_RESOLUTIONS, DASHBOARD_TYPES, DEFAULT_DEGREE, DEFAULT_DOTS, DEFAULT_PANEL, DOTS_GRIDS, MAX_PANEL_STATS, type DegreeProps, type DotsProps, type PanelProps } from './dashboard.ts';
 import { ROMAN_STYLES } from './degree.ts';
 import { DEFAULT_SPECTRUM, SPECTRUM_STYLES, type SpectrumProps } from './spectrum.ts';
 import { sanitizeAnimate, type Animation } from './animation.ts';
@@ -868,6 +868,7 @@ const HUD_SANITIZERS = {
     const d = DEFAULT_DEGREE, c = (k: keyof DegreeProps) => hexp(S, P[k], d[k] as string, `${p}.${k}`);
     return { windowBars: S.num(P.windowBars, d.windowBars, 1, 64, `${p}.windowBars`), playheadRatio: S.num(P.playheadRatio, d.playheadRatio, 0, 1, `${p}.playheadRatio`),
       showDetail: S.bool(P.showDetail, d.showDetail, `${p}.showDetail`), showFunction: S.bool(P.showFunction, d.showFunction, `${p}.showFunction`), showBars: S.bool(P.showBars, d.showBars, `${p}.showBars`),
+      resolution: S.oneOf(P.resolution, CHORD_RESOLUTIONS, d.resolution, `${p}.resolution`),
       romanStyle: S.oneOf(P.romanStyle, ROMAN_STYLES, d.romanStyle, `${p}.romanStyle`), keyWindowSec: S.num(P.keyWindowSec, d.keyWindowSec, 2, 120, `${p}.keyWindowSec`),
       accentColor: c('accentColor'), detailColor: c('detailColor'), blockColor: c('blockColor'), activeTextColor: c('activeTextColor'), pastAlpha: S.num(P.pastAlpha, d.pastAlpha, 0, 1, `${p}.pastAlpha`),
       tonicColor: c('tonicColor'), subdominantColor: c('subdominantColor'), dominantColor: c('dominantColor'), playheadColor: hexOpt(S, P.playheadColor, d.playheadColor, `${p}.playheadColor`),
@@ -879,7 +880,7 @@ const HUD_SANITIZERS = {
     return { grid: (DOTS_GRIDS as readonly number[]).includes(P.grid as number) ? P.grid as number : (P.grid !== undefined && S.warn(`${p}.grid`, P.grid, `không phải ${DOTS_GRIDS.join('/')}; dùng ${d.grid}`), d.grid), cols: Math.round(S.num(P.cols, d.cols, 8, 256, `${p}.cols`)), playheadRatio: S.num(P.playheadRatio, d.playheadRatio, 0, 1, `${p}.playheadRatio`),
       pitchRangeMode: S.oneOf(P.pitchRangeMode, ['FIT_CONTENT', 'CUSTOM'] as const, d.pitchRangeMode, `${p}.pitchRangeMode`),
       pitchMin: Math.round(S.num(P.pitchMin, d.pitchMin, 0, 127, `${p}.pitchMin`)), pitchMax: Math.round(S.num(P.pitchMax, d.pitchMax, 0, 127, `${p}.pitchMax`)),
-      dotSize: S.num(P.dotSize, d.dotSize, 0.05, 1, `${p}.dotSize`), shape: S.oneOf(P.shape, ['ROUND', 'SQUARE'] as const, d.shape, `${p}.shape`),
+      maxRows: Math.round(S.num(P.maxRows, d.maxRows, 8, 128, `${p}.maxRows`)), dotSize: S.num(P.dotSize, d.dotSize, 0.05, 1, `${p}.dotSize`), shape: S.oneOf(P.shape, ['ROUND', 'SQUARE'] as const, d.shape, `${p}.shape`),
       emptyColor: hexp(S, P.emptyColor, d.emptyColor, `${p}.emptyColor`), emptyColorB: hexOpt(S, P.emptyColorB, d.emptyColorB, `${p}.emptyColorB`), emptyAlpha: S.num(P.emptyAlpha, d.emptyAlpha, 0, 1, `${p}.emptyAlpha`),
       colorMode: S.oneOf(P.colorMode, ['TRACK', 'SOLID'] as const, d.colorMode, `${p}.colorMode`), color: hexp(S, P.color, d.color, `${p}.color`),
       upcomingAlpha: S.num(P.upcomingAlpha, d.upcomingAlpha, 0, 1, `${p}.upcomingAlpha`), activeScale: S.num(P.activeScale, d.activeScale, 1, 3, `${p}.activeScale`),

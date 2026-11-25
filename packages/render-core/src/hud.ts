@@ -267,7 +267,8 @@ export function globalValues(src: PlaceholderSource, t: number): Record<string, 
   const active = () => activePitches().map(nName);
   const chords = () => hud().chords.get(chordKey(shown(tracks))) ?? [];
   const asc = (s: string) => (nm?.ascii ? romanAscii(s) : s);
-  const nextChord = () => { const cs = chords(); for (const s of cs) if (s.start > t + 1e-9 && s.name) return s; return null; };
+  // Hợp âm KẾ TIẾP = đoạn đầu tiên sau t có tên khác hợp âm đang vang (đoạn liền sau cùng tên chỉ là đổi nốt trong cùng hợp âm).
+  const nextChord = () => { const cs = chords(), cur = chordAt(cs, t)?.name ?? null; for (const s of cs) if (s.start > t + 1e-9 && s.name && s.name !== cur) return s; return null; };
   let tn: number | null | undefined; const tonic = () => (tn !== undefined ? tn : (tn = derived.tonic ?? keyAt(shown(tracks), t, 16)?.tonic ?? null));
   let bs: ReturnType<typeof bandShareAt> | undefined; const share = (k: 'low' | 'mid' | 'high'): PV => { bs ??= bandShareAt(derived.audio, t); const v = bs ? bs[k] * 100 : 0; return numV(v, bs ? `${Math.round(v)}%` : '—'); };
   let lv: ReturnType<typeof levelsAt> | undefined; const lvl = (k: 'short' | 'average' | 'peak'): PV => { lv ??= levelsAt(derived.audio, t); const v = lv ? lv[k] : -Infinity; return numV(Number.isFinite(v) ? v : -120, lv ? dbText(v) : '—'); };

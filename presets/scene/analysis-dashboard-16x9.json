@@ -701,7 +701,7 @@
       "trackMappingMode": "ALL",
       "assignedTrackIndices": [],
       "properties": {
-        "windowBars": 8,
+        "windowBars": 7,
         "playheadRatio": 0.42,
         "showDetail": true,
         "showFunction": true,
@@ -729,7 +729,8 @@
           "size": 11,
           "color": "#6f6070",
           "styleId": "label"
-        }
+        },
+        "resolution": "BAR"
       }
     },
     {
@@ -814,7 +815,7 @@
         "x": 1300,
         "y": 836,
         "width": 560,
-        "height": 100,
+        "height": 110,
         "rotation": 0,
         "anchor": {
           "x": 0.5,
@@ -825,22 +826,23 @@
       "assignedTrackIndices": [],
       "properties": {
         "grid": 16,
-        "cols": 96,
+        "cols": 64,
         "playheadRatio": 0.96,
         "pitchRangeMode": "FIT_CONTENT",
         "pitchMin": 36,
         "pitchMax": 96,
-        "dotSize": 0.5,
+        "dotSize": 0.8,
         "shape": "ROUND",
         "emptyColor": "#c9a6bd",
         "emptyColorB": "#8fd3cb",
-        "emptyAlpha": 0.55,
+        "emptyAlpha": 0.6,
         "colorMode": "SOLID",
         "color": "#ff3d8b",
         "upcomingAlpha": 0.3,
-        "activeScale": 1.5,
+        "activeScale": 1.3,
         "playheadColor": "#222230",
-        "playheadWidth": 1.5
+        "playheadWidth": 1.5,
+        "maxRows": 22
       }
     }
   ],

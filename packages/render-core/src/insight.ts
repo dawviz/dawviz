@@ -223,7 +223,7 @@ export const pitchWheelRenderer: WidgetRenderer<PitchWheelProps> = {
     const beatPad = p.beatMarks ? nst.size * 1.8 : 0, arcW = p.progress !== 'OFF' ? Math.max(0.5, p.progressWidth) : 0;
     const Rm = Math.max(4, Math.min(W, H) / 2 - beatPad - (arcW ? arcW / 2 + 1 : 0)), circle = p.nodeShape === 'CIRCLE';
     const thick = Rm * p.ring * 2, r0 = circle ? Rm * (1 - p.ring * 0.6) : Rm - thick / 2, step = 2 * Math.PI * r0 / 12;
-    const nodeR = circle ? Math.max(2, Math.min(step * 0.36, Rm * p.ring * 0.55)) : 0, tw = step * 0.86;
+    const nodeR = circle ? Math.max(2, Math.min(step * 0.24, Rm * p.ring * 0.4)) : 0, tw = step * 0.86;
     const at = (i: number) => { const th = i * 30 * Math.PI / 180; return { x: cx + r0 * Math.sin(th), y: cy - r0 * Math.cos(th) }; };
     const slotOf = (pc: number) => (p.order === 'FIFTHS' ? (pc * 7) % 12 : pc); // vị trí quanh vòng của lớp cao độ (7 tự nghịch đảo mod 12)
     const asc = (s: string) => (derived.naming?.ascii ? romanAscii(s) : s);

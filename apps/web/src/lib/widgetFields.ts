@@ -261,6 +261,7 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
   ],
   DEGREE: [
     L(['windowBars'], 'num', 'dgWindowBars', { num: { min: 1, max: 64, step: 1, range: [2, 16] } }),
+    L(['resolution'], 'choice', 'dgResolution', { options: ['BAR', 'HALF', 'BEAT', 'CHANGE'], prefix: 'web.ws.dgResolution.' }),
     L(['showDetail'], 'check', 'dgShowDetail'),
     L(['showFunction'], 'check', 'dgShowFunction'),
     L(['showBars'], 'check', 'dgShowBars'),
@@ -285,6 +286,7 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['pitchRangeMode'], 'choice', 'dtRange', { options: ['FIT_CONTENT', 'CUSTOM'], prefix: 'web.ws.dtRange.' }),
     L(['pitchMin'], 'num', 'dtPitchMin', { when: (P) => P.pitchRangeMode === 'CUSTOM', num: { min: 0, max: 127, step: 1 } }),
     L(['pitchMax'], 'num', 'dtPitchMax', { when: (P) => P.pitchRangeMode === 'CUSTOM', num: { min: 0, max: 127, step: 1 } }),
+    L(['maxRows'], 'num', 'dtMaxRows', { adv: true, num: { min: 8, max: 128, step: 1, range: [12, 64] } }),
     L(['shape'], 'choice', 'dtShape', { options: ['ROUND', 'SQUARE'], prefix: 'web.ws.dtShape.' }),
     L(['dotSize'], 'num', 'dtDotSize', { num: { min: 0.05, max: 1, step: 0.05 } }),
     L(['colorMode'], 'choice', 'inColorMode', { options: ['TRACK', 'SOLID'], prefix: 'web.ws.inColor.' }),

@@ -3,7 +3,7 @@
 // (spec, t, AST, derived), không trạng thái, không đồng hồ, nên Preview = Export. Chữ lấy từ mẫu/thuộc tính, không từ locales/ của app.
 import { secToTick, tickToSec } from '@dawviz/parser-core';
 import { notesInRange, type TrackIndex } from './notes.ts';
-import { barPosAt, base, chordTimeline, globalValues, hudOf, shown, typo, xFor, type Align, type ChordSeg } from './hud.ts';
+import { barPosAt, barStartSec, base, chordTimeline, globalValues, hudOf, shown, typo, xFor, type Align, type ChordSeg } from './hud.ts';
 import { tonicAt } from './keyDetect.ts';
 import { chordDegree, chordFunction, romanAscii, type HarmonicFunction, type RomanStyle } from './degree.ts';
 import { templateSpans, type TextRef } from './typography.ts';
@@ -30,6 +30,9 @@ export interface PanelProps {
 export interface DegreeProps {
   /** Số ô nhịp hiện trên bề rộng widget và vị trí vạch phát (0–1). */
   windowBars: number; playheadRatio: number;
+  /** Độ mịn hàng chính: mỗi ô nhịp / nửa ô nhịp / mỗi phách lấy MỘT hợp âm (hợp âm vang lâu nhất trong ô), hoặc CHANGE = theo từng lần đổi nốt.
+   *  Hàng phụ mịn hơn một bậc. Gom theo ô cho khối gọn như bảng phân tích tham chiếu; nhạc dày nốt không còn vụn thành sợi. */
+  resolution: ChordResolution;
   /** Hàng phụ (hợp âm theo lần dập), dải chức năng (T/SD/D) và số ô nhịp. */
   showDetail: boolean; showFunction: boolean; showBars: boolean;
   romanStyle: RomanStyle;
@@ -40,10 +43,14 @@ export interface DegreeProps {
   radius: number; gap: number;
   labelStyle: TextRef; smallStyle: TextRef;
 }
+export type ChordResolution = 'BAR' | 'HALF' | 'BEAT' | 'CHANGE';
+export const CHORD_RESOLUTIONS: readonly ChordResolution[] = ['BAR', 'HALF', 'BEAT', 'CHANGE'];
 export interface DotsProps {
   /** Số ô mỗi nốt tròn (4, 8, 16, 32): 16 = mỗi cột một móc kép. */
   grid: number; cols: number; playheadRatio: number;
   pitchRangeMode: 'FIT_CONTENT' | 'CUSTOM'; pitchMin: number; pitchMax: number;
+  /** Số hàng tối đa: dải cao độ rộng hơn thì nhiều nốt chung một hàng (chấm không bé quá mức nhìn được). */
+  maxRows: number;
   dotSize: number; shape: 'ROUND' | 'SQUARE';
   /** Chấm rỗng: màu trên → dưới (màu dưới rỗng = một màu). */
   emptyColor: string; emptyColorB: string; emptyAlpha: number;
@@ -58,13 +65,13 @@ export const DEFAULT_PANEL: Readonly<PanelProps> = Object.freeze({
   labelStyle: ts('label'), valueStyle: ts('body'),
 });
 export const DEFAULT_DEGREE: Readonly<DegreeProps> = Object.freeze({
-  windowBars: 8, playheadRatio: 0.42, showDetail: true, showFunction: true, showBars: true, romanStyle: 'SUFFIX', keyWindowSec: 16,
+  windowBars: 8, playheadRatio: 0.42, resolution: 'BAR', showDetail: true, showFunction: true, showBars: true, romanStyle: 'SUFFIX', keyWindowSec: 16,
   accentColor: '#ff3d8b', detailColor: '#2ec4b6', blockColor: '#2b2b33', activeTextColor: '#ffffff', pastAlpha: 0.45,
   tonicColor: '#2ec4b6', subdominantColor: '#ffb3cf', dominantColor: '#ff3d8b', playheadColor: '#222222',
   radius: 6, gap: 4, labelStyle: ts('caption'), smallStyle: ts('label'),
 });
 export const DEFAULT_DOTS: Readonly<DotsProps> = Object.freeze({
-  grid: 16, cols: 64, playheadRatio: 0.96, pitchRangeMode: 'FIT_CONTENT', pitchMin: 36, pitchMax: 96, dotSize: 0.5, shape: 'ROUND',
+  grid: 16, cols: 64, playheadRatio: 0.96, pitchRangeMode: 'FIT_CONTENT', pitchMin: 36, pitchMax: 96, maxRows: 32, dotSize: 0.6, shape: 'ROUND',
   emptyColor: '#c7a3bb', emptyColorB: '#8fd3cb', emptyAlpha: 0.45, colorMode: 'SOLID', color: '#ff3d8b', upcomingAlpha: 0.3, activeScale: 1.5,
   playheadColor: '#333344', playheadWidth: 1.5,
 });
@@ -118,6 +125,39 @@ function segTonic(derived: Derived, tracks: readonly TrackIndex[], segs: readonl
   const s = segs[i], v = tonicAt(derived, tracks, Math.min(s.end, s.start + 0.25), windowSec); // giọng tính tới ngay sau lúc hợp âm vào
   m.set(k, v); return v;
 }
+/** Đoạn hợp âm gom theo ô (ô nhịp/nửa ô/phách): mỗi ô lấy hợp âm có tên vang lâu nhất trong ô, ô liền nhau cùng tên nối lại. Đệm theo danh sách gốc. */
+const quantMemo = new WeakMap<readonly ChordSeg[], Map<string, ChordSeg[]>>();
+export function quantizeChords(segs: readonly ChordSeg[], grid: Parameters<typeof barStartSec>[0], dur: number, res: ChordResolution): readonly ChordSeg[] {
+  if (res === 'CHANGE' || !(dur > 0)) return segs;
+  let m = quantMemo.get(segs); if (!m) quantMemo.set(segs, (m = new Map()));
+  const key = `${res}|${dur}`, hit = m.get(key); if (hit) return hit;
+  const slots: number[] = [];
+  for (let b = 0; b < 100000; b++) {
+    const a = barStartSec(grid, b); if (a >= dur) break;
+    const e = Math.min(dur, barStartSec(grid, b + 1)), n = res === 'BAR' ? 1 : res === 'HALF' ? 2 : barPosAt(grid, a + 1e-6).num;
+    for (let k = 0; k < n; k++) slots.push(a + (e - a) * k / n);
+  }
+  slots.push(dur);
+  const out: ChordSeg[] = []; let j = 0;
+  for (let i = 0; i + 1 < slots.length; i++) {
+    const a = slots[i], b = slots[i + 1]; if (!(b > a)) continue;
+    while (j < segs.length && segs[j].end <= a) j++;
+    const dur2 = new Map<string, { len: number; seg: ChordSeg }>();
+    for (let k = j; k < segs.length && segs[k].start < b; k++) {
+      const s = segs[k]; if (!s.name) continue;
+      const len = Math.min(b, s.end) - Math.max(a, s.start), cur = dur2.get(s.name);
+      if (len > 0) dur2.set(s.name, { len: (cur?.len ?? 0) + len, seg: cur?.seg ?? s });
+    }
+    let best: { len: number; seg: ChordSeg } | null = null;
+    for (const v of dur2.values()) if (!best || v.len > best.len + 1e-9) best = v;
+    const last = out[out.length - 1];
+    if (!best) continue;
+    if (last && last.name === best.seg.name && Math.abs(last.end - a) < 1e-6) { last.end = b; continue; }
+    out.push({ start: a, end: b, pitches: best.seg.pitches, name: best.seg.name });
+  }
+  m.set(key, out); return out;
+}
+const FINER: Record<ChordResolution, ChordResolution> = { BAR: 'BEAT', HALF: 'BEAT', BEAT: 'CHANGE', CHANGE: 'CHANGE' };
 const FN_COLOR = (p: DegreeProps, f: HarmonicFunction) => (f === 'T' ? p.tonicColor : f === 'SD' ? p.subdominantColor : p.dominantColor);
 export const degreeRenderer: WidgetRenderer<DegreeProps> = {
   type: 'DEGREE',
@@ -146,8 +186,9 @@ export const degreeRenderer: WidgetRenderer<DegreeProps> = {
         }
       }
     };
-    drawRow(chordTimeline(hud, list, 'sustained'), top, mainH, lst, p.accentColor, true);
-    if (p.showDetail) drawRow(chordTimeline(hud, list, 'strike'), yDetail, rowDetail, sst, p.detailColor, false);
+    const dur = derived.index.duration;
+    drawRow(quantizeChords(chordTimeline(hud, list, 'sustained'), hud.bars, dur, p.resolution), top, mainH, lst, p.accentColor, true);
+    if (p.showDetail) drawRow(quantizeChords(chordTimeline(hud, list, 'strike'), hud.bars, dur, FINER[p.resolution]), yDetail, rowDetail, sst, p.detailColor, false);
     if (p.showBars) {
       for (let b = Math.ceil(b0); b <= Math.floor(b1); b++) {
         const x = xOf(b); if (x < 0 || x > W) continue;
@@ -188,15 +229,15 @@ export const dotsRenderer: WidgetRenderer<DotsProps> = {
   type: 'DOTS',
   layout({ ast, derived, tracks }, spec, t) {
     const p = spec.properties, { width: W, height: H } = spec.layout, out: Primitive[] = [], list = shown(tracks).filter((ti) => ti.notes.some((n) => n.channel !== 9));
-    const [lo, hi] = dotsPitchRange(p, list), rows0 = hi - lo + 1, cols = Math.max(4, Math.min(Math.round(p.cols), Math.floor(MAX_DOTS / Math.max(1, rows0))));
-    const rows = Math.max(1, rows0), cw = W / cols, rh = H / rows, d = Math.max(0.5, Math.min(cw, rh) * Math.min(1, Math.max(0.05, p.dotSize)));
+    const [lo, hi] = dotsPitchRange(p, list), rows0 = hi - lo + 1, cols = Math.max(4, Math.min(Math.round(p.cols), Math.floor(MAX_DOTS / Math.max(1, Math.min(rows0, Math.round(p.maxRows))))));
+    const rows = Math.max(1, Math.min(rows0, Math.round(p.maxRows))), rowOf = (pitch: number) => Math.min(rows - 1, Math.floor((hi - pitch) * rows / rows0)), cw = W / cols, rh = H / rows, d = Math.max(0.5, Math.min(cw, rh) * Math.min(1, Math.max(0.05, p.dotSize)));
     const ppq = ast.meta.internalPPQ || 960, stepT = ppq * 4 / Math.max(1, p.grid), map = ast.tempoMap as never;
     const nowStep = secToTick(map, Math.max(0, t)) / stepT, s0 = Math.floor(nowStep - p.playheadRatio * cols), cur = Math.floor(nowStep) - s0;
     const grid = new Int8Array(cols * rows), color: string[] = new Array(cols * rows); // 0 rỗng, 1 có nốt (đã/đang phát), 2 nốt sắp tới
     const t0 = tickToSec(map, Math.max(0, s0 * stepT)), t1 = tickToSec(map, Math.max(0, (s0 + cols) * stepT));
     for (const ti of list) for (const n of notesInRange(ti, t0, t1)) {
       if (n.channel === 9 || n.pitch < lo || n.pitch > hi) continue;
-      const a = Math.max(0, Math.floor(n.startTick / stepT) - s0), b = Math.min(cols - 1, Math.ceil(n.endTick / stepT) - 1 - s0), r = hi - n.pitch;
+      const a = Math.max(0, Math.floor(n.startTick / stepT) - s0), b = Math.min(cols - 1, Math.ceil(n.endTick / stepT) - 1 - s0), r = rowOf(n.pitch);
       for (let c = a; c <= b; c++) { const i = r * cols + c, v = s0 + c <= Math.floor(nowStep) ? 1 : 2; if (grid[i] !== 1) { grid[i] = v; color[i] = p.colorMode === 'TRACK' ? ti.track.color : p.color; } }
     }
     const round = p.shape === 'ROUND';
