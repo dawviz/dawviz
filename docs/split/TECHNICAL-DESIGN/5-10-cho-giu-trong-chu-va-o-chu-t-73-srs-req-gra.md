@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "5.10 Chỗ giữ trong chữ và Ô chữ 🟢 (T-73, SRS REQ-GRAPHICS-19, D-60/OI-18)"
 path: "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.10 Chỗ giữ trong chữ và Ô chữ 🟢 (T-73, SRS REQ-GRAPHICS-19, D-60/OI-18)"
 chunk: 5-10-cho-giu-trong-chu-va-o-chu-t-73-srs-req-gra.md
-source_lines: 213-226
-source_sha1: 8cbe7fce2c
+source_lines: 215-228
+source_sha1: 89904b8414
 ids: [D-60, OI-18, REQ-GRAPHICS-19, WARN_PRESET_MIGRATED, WARN_PRESET_VALUE]
 ---
 ### 5.10 Chỗ giữ trong chữ và Ô chữ 🟢 (T-73, SRS REQ-GRAPHICS-19, D-60/OI-18)

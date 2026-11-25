@@ -5,7 +5,7 @@ section: "Video 2 (tn-shi): đã làm phần lớn"
 path: "Video 2 (tn-shi): đã làm phần lớn"
 chunk: video-2-tn-shi-da-lam-phan-lon.md
 source_lines: 29-40
-source_sha1: 7580d5f888
+source_sha1: 796d7dc0be
 ids: []
 ---
 ## Video 2 (tn-shi): đã làm phần lớn
@@ -16,6 +16,6 @@ ids: []
 |---|---|
 | Nền ảnh nhân vật | Có cơ chế (`Derived.background`), nhưng ảnh là tài nguyên phiên của người dùng, không nằm trong preset |
 | Phase `Synthesis.xxx()` | Cần người dùng đặt phase ở dự án; preset mặc định dùng tên bài |
-| Dải phím `[ C C# E G# A# ]` giữ nguyên vị trí từng nốt | Ta xếp theo danh sách đang vang, không giữ ô cố định cho 12 lớp cao độ |
+| Dải phím `[ C C# E G# A# ]` giữ nguyên vị trí từng nốt | Chủ dự án quyết định **bỏ** (PITCH_STRIP không làm): dải `[ {pitch_classes} ]` dùng Ô chữ như cũ |
 | Phiến màu bay lớn, mờ (bokeh) | Particles chỉ có tròn/vuông, không mờ theo độ sâu (xem T-106) |
 | Ký hiệu nhịp `4/4`, `3/4` ở góc | Có `BAR_BEAT`/`TEMPO_INFO`, chưa đặt vào preset |

@@ -5,7 +5,7 @@ section: "5.2 Hợp đồng widget 🟢"
 path: "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.2 Hợp đồng widget 🟢"
 chunk: 5-2-hop-dong-widget.md
 source_lines: 131-142
-source_sha1: 8cbe7fce2c
+source_sha1: 89904b8414
 ids: []
 ---
 ### 5.2 Hợp đồng widget 🟢

@@ -5,7 +5,7 @@ section: "Video tham chiếu: ý tưởng, mức tái hiện và lộ trình (m�
 path: "Video tham chiếu: ý tưởng, mức tái hiện và lộ trình (mở đầu)"
 chunk: video-tham-chieu-y-tuong-muc-tai-hien-va-lo-trin.md
 source_lines: 1-11
-source_sha1: 7580d5f888
+source_sha1: 796d7dc0be
 ids: []
 ---
 # Video tham chiếu: ý tưởng, mức tái hiện và lộ trình
@@ -16,5 +16,5 @@ ids: []
 |---|---|---|---|---|---|
 | 1 | Bản nhạc nền trắng, thanh nốt ngang | Usagin_P | `references/frames/01-usagin-last-dice/` | ``paper-light-1x1.json`` (và `paper-*` có sẵn) | Gần khớp |
 | 2 | Khuông nhạc phát sáng trên nền ảnh tối, hạt, visualizer dọc | tn-shi | `references/frames/02-tn-shi-synthesis/` | ``dark-score-16x9.json`` | Khá khớp (thiếu ảnh nền và dữ liệu phase của người dùng) |
-| 3 | Bảng điều khiển phân tích nhạc nền hồng nhạt | Emocute | `references/frames/03-emocute-kawaii-bass/` | chưa có | Một phần: lộ trình bên dưới |
+| 3 | Bảng điều khiển phân tích nhạc nền hồng nhạt | Emocute | `references/frames/03-emocute-kawaii-bass/` | `analysis-dashboard-16x9.json` | Khá khớp (còn thiếu stems và vectorscope; loudness một phần) |
 | 4 | Khung dọc có parallax, nghiêng, đường vector | Silentroom | `references/frames/04-silentroom-limen/` (đoạn từ 1:01: `late/`) | chưa có | Thấp: cần camera/độ sâu |

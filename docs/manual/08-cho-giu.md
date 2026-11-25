@@ -42,6 +42,13 @@ Chữ của widget có sẵn vẫn như cũ. Ở chế độ **Nâng cao**, ô c
 | `{events_pct}` | phần trăm sự kiện đã xảy ra (kèm `%` ở bộ đếm nốt, giống `{pct}`) |
 | `{events}`, `{events_total}` | số sự kiện đã xảy ra, tổng số sự kiện; mỗi nốt có hai sự kiện (bắt đầu và kết thúc) nên tổng gấp đôi số nốt |
 | `{pct}` | phần trăm nốt đã phát, số nguyên |
+| `{key}` | tên nốt chủ của giọng (không kèm trưởng/thứ); trống nếu chưa biết |
+| `{degree}` | bậc của hợp âm đang vang theo giọng, ví dụ `VIm7`; chưa biết giọng thì hiện tên hợp âm |
+| `{next_chord}`, `{next_degree}` | hợp âm kế tiếp (tên khác hợp âm đang vang) và bậc của nó |
+| `{chord_count}` | số lần hợp âm đã đổi tính tới thời điểm này |
+| `{lows}`, `{mids}`, `{highs}` | phần trăm năng lượng âm thanh ở dải trầm (dưới 250 Hz), giữa và cao (trên 4 kHz) |
+| `{level}` | mức âm hiện tại tính bằng dB, trong khoảng 400 ms gần nhất |
+| `{level_avg}`, `{peak_db}` | mức âm trung bình và mức đỉnh, tính bằng dB |
 
 `{tempo}` là tên cũ của `{bpm}`: vẫn dùng được và cho đúng cùng kết quả, nhưng ứng dụng không gợi ý nữa.
 
@@ -50,6 +57,10 @@ Số liệu tính theo các track đang hiện (xem [thẻ Xem trước](02-xem-
 Tên nốt và hợp âm trong các chỗ giữ (`{notes}`, `{chord}`, `{bass}`, `{pitch_classes}`, `{name}`) theo **Cách ghi tên nốt** của cả dự án. Các [widget phân tích](10-phan-tich.md) có tên riêng: Giọng (`{key}`, `{scale}`, `{confidence}`), Tên đoạn (`{section}`, `{next}`, `{next_in}`, `{section_no}`, `{section_elapsed}`), Mật độ nốt (`{poly}`).
 
 Một số widget có thêm tên riêng và chúng được ưu tiên hơn tên chung: nốt đang phát có `{name}`, `{velocity}`, `{track}`, `{pitch}`; thanh tiến độ có `{elapsed}`, `{total}`, `{remaining}`, `{pct}` theo thời gian của bài (ở đó `{total}` là độ dài bài, không phải số nốt).
+
+Giọng của `{key}`, `{degree}`, `{next_degree}`: lấy nốt chủ đã đặt ở Editor; chưa đặt thì tự nhận trong 16 giây gần nhất.
+
+Các số `{lows}`, `{mids}`, `{highs}`, `{level}`, `{level_avg}`, `{peak_db}` cần tệp âm thanh; không có âm thanh thì hiện "—". Mức âm là dBFS tính từ độ to trung bình (RMS), **không phải LUFS** (chưa lọc theo tai người).
 
 ## Chọn cách hiện số
 

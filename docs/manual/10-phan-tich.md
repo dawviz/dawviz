@@ -1,6 +1,6 @@
 # Widget phân tích
 
-Ngoài Piano Roll và các widget chữ, Editor có mười một widget cho biết điều gì đang xảy ra trong bài. Thêm bằng nút **Thêm** ở góc trên bên trái Timeline; chỉnh ở mục **Thiết lập** của widget.
+Ngoài Piano Roll và các widget chữ, Editor có mười bốn widget cho biết điều gì đang xảy ra trong bài. Thêm bằng nút **Thêm** ở góc trên bên trái Timeline; chỉnh ở mục **Thiết lập** của widget.
 
 | Widget | Cho thấy |
 |---|---|
@@ -9,12 +9,44 @@ Ngoài Piano Roll và các widget chữ, Editor có mười một widget cho bi�
 | **Giọng** | Giọng đang chạy (ví dụ "C major") và độ tin cậy, đoán từ các nốt trong vài giây gần nhất. |
 | **Cường độ (velocity)** | Cột mức theo từng track (bật lên lúc nốt vang rồi tắt dần), hoặc biểu đồ phân bố velocity. |
 | **Mật độ nốt** | Mỗi track một hàng, ô đậm hơn nơi nhiều nốt, kèm số nốt đang vang. |
-| **Vòng cao độ** | 12 ô cho 12 nốt, ô của nốt đang vang sáng lên; hợp âm hiện ở giữa. Có thể xếp theo nửa cung hoặc vòng quãng năm. |
+| **Vòng cao độ** | 12 ô cho 12 nốt, ô của nốt đang vang sáng lên; hợp âm hiện ở giữa. Có thể xếp theo nửa cung hoặc vòng quãng năm. Xem [Vòng cao độ: tuỳ chọn thêm](#vòng-cao-độ-tuỳ-chọn-thêm). |
 | **Tổng quan bản phối** | Bản đồ thu nhỏ các track theo thời gian, phần đã qua đậm hơn, có vạch phát. |
 | **Pad trống** | Lưới pad cho track trống: pad sáng khi nốt chạm, ghi tên trống GM (Kick, Snare, HH Closed…). |
 | **Tên đoạn** | Tên đoạn hiện tại (Intro, Verse…) và đoạn kế tiếp. |
 | **Lời bài hát** | Dòng lời đang hát, âm tiết đã hát đậm hơn; dòng kế tiếp hiện nhỏ bên dưới. |
 | **Automation** | Đường automation của một lane (âm lượng, pan, hoặc MIDI CC và pitch bend) theo thời gian, kèm giá trị hiện tại. |
+| **Khung ô** | Khung có số thứ tự, tiêu đề và hàng số liệu nhỏ ở đáy, để ghép các widget khác thành một bảng. |
+| **Bậc hợp âm** | Dải khối hợp âm theo bậc (I, V, vi…), khối đang chơi tô đậm. |
+| **Lưới chấm** | Lưới chấm theo thời gian và cao độ; chấm nào có nốt thì sáng. |
+
+## Khung ô, Bậc hợp âm, Lưới chấm
+
+Ba widget này dùng để dựng bảng phân tích. Mẫu có sẵn: preset `analysis-dashboard-16x9`.
+
+**Khung ô.** Chỉnh ở **Thiết lập**: **Số thứ tự**, **Tiêu đề**, **Màu số thứ tự**; bật **Khung quanh nội dung** rồi chỉnh **Màu khung**, **Độ dày khung**, **Màu nền**, **Độ đục nền**. Hàng ở đáy có tới sáu cột (**Cột 1** đến **Cột 6**), mỗi cột có **Nhãn** và **Giá trị**; **Giá trị** dùng được [chỗ giữ](08-cho-giu.md), ví dụ `{bpm}`. Cột để trống cả hai ô thì không hiện.
+
+**Bậc hợp âm.** Giọng lấy từ nốt chủ bạn đặt ở Editor; chưa đặt thì widget tự nhận giọng trong **Cửa sổ nhìn lại (giây)**. Chỉnh:
+
+- **Số ô nhịp hiện** và **Vị trí vạch phát**.
+- **Mỗi khối một hợp âm theo**: **Ô nhịp**, **Nửa ô nhịp**, **Phách** hoặc **Mỗi lần đổi**. Chọn theo ô nhịp thì khối gọn, nhạc nhiều nốt không bị vụn.
+- **Cách viết bậc**: `VIm7` hoặc `vi7`.
+- **Hàng thứ hai (theo từng lần dập)**, **Dải chức năng (T, SD, D)** và **Số ô nhịp** bật hoặc tắt từng phần. Dải chức năng tô màu theo **Màu chủ (T)**, **Màu hạ át (SD)**, **Màu át (D)**.
+- **Màu hợp âm đang chơi**, **Màu chữ hợp âm đang chơi**, **Màu khối**, **Màu hàng thứ hai**, **Độ đục hợp âm đã qua**, **Khoảng cách giữa các khối**.
+
+**Lưới chấm.** Mỗi cột là một bước của **Lưới** (1/4, 1/8, 1/16, 1/32), mỗi hàng là một cao độ. Chỉnh **Số cột**, **Dải cao độ** (**Vừa các nốt** hoặc **Tự đặt** với **Nốt thấp nhất (MIDI)** và **Nốt cao nhất (MIDI)**), **Số hàng tối đa** (dải rộng hơn thì nhiều nốt chung một hàng), **Hình chấm**, **Cỡ chấm**, **Màu nốt**, **Màu chấm trống**, **Màu chấm trống ở đáy**, **Độ đục chấm trống** và **Cỡ nốt tại vạch phát**.
+
+## Vòng cao độ: tuỳ chọn thêm
+
+Trong **Thiết lập** của Vòng cao độ:
+
+- **Nhãn**: **Tên nốt** hoặc **Bậc (I, V…)** theo giọng. **Cách viết bậc** đổi `VIm7` thành `vi7`.
+- **Hình**: **Thanh** (như cũ) hoặc **Nút tròn**.
+- **Nối các nốt đang vang**: vẽ hình nối các nốt đang vang; chỉnh **Màu hình nối** và **Độ đục phần tô**.
+- **Vòng tiến độ**: **Tắt**, **Ô nhịp** hoặc **Cả bài**; chỉnh **Màu tiến độ** và **Độ dày tiến độ**.
+- **Số phách quanh vòng**: hiện số phách, phách đang chơi tô màu tiến độ.
+- **Màu vòng nốt bass**: khoanh nốt thấp nhất đang vang; để trống thì không khoanh.
+- **Ở giữa hiện**: **Tên hợp âm** hoặc **Bậc hợp âm**.
+- **Dòng dưới hợp âm**: chữ nhỏ dưới hợp âm, dùng được chỗ giữ, ví dụ `BAR {bar}`.
 
 ## Dữ liệu lấy từ đâu
 
@@ -39,6 +71,7 @@ Khi không chọn widget nào, mục **Cách ghi tên nốt** đổi tên nốt 
 ## Mẹo
 
 - Chữ trong các widget này là mẫu có chỗ giữ, như ở [Chèn số liệu vào chữ](08-cho-giu.md). Ví dụ Giọng dùng `{key}`, `{scale}`, `{confidence}`; Tên đoạn dùng `{section}`, `{next}`, `{next_in}`, `{section_no}`, `{section_elapsed}`; Mật độ nốt dùng `{poly}`.
+- Mức âm (`{level}`…) cần tệp âm thanh; không có âm thanh thì hiện "—".
 - Chữ "major" và "minor" của widget Giọng là chữ bạn sửa được (mục Nâng cao), nên đổi thành "trưởng" và "thứ" tuỳ ý.
 - Preview và video xuất ra giống hệt nhau: mọi widget này chỉ phụ thuộc thời điểm đang xem.
 

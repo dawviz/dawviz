@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "10. Lỗi, ghi nhật ký, quan sát"
 path: "10. Lỗi, ghi nhật ký, quan sát"
 chunk: 10-loi-ghi-nhat-ky-quan-sat.md
-source_lines: 479-483
-source_sha1: 8cbe7fce2c
+source_lines: 481-485
+source_sha1: 89904b8414
 ids: [D-13]
 ---
 ## 10. Lỗi, ghi nhật ký, quan sát

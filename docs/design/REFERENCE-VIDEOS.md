@@ -6,7 +6,7 @@
 |---|---|---|---|---|---|
 | 1 | Bản nhạc nền trắng, thanh nốt ngang | Usagin_P | `references/frames/01-usagin-last-dice/` | ``paper-light-1x1.json`` (và `paper-*` có sẵn) | Gần khớp |
 | 2 | Khuông nhạc phát sáng trên nền ảnh tối, hạt, visualizer dọc | tn-shi | `references/frames/02-tn-shi-synthesis/` | ``dark-score-16x9.json`` | Khá khớp (thiếu ảnh nền và dữ liệu phase của người dùng) |
-| 3 | Bảng điều khiển phân tích nhạc nền hồng nhạt | Emocute | `references/frames/03-emocute-kawaii-bass/` | chưa có | Một phần: lộ trình bên dưới |
+| 3 | Bảng điều khiển phân tích nhạc nền hồng nhạt | Emocute | `references/frames/03-emocute-kawaii-bass/` | `analysis-dashboard-16x9.json` | Khá khớp (còn thiếu stems và vectorscope; loudness một phần) |
 | 4 | Khung dọc có parallax, nghiêng, đường vector | Silentroom | `references/frames/04-silentroom-limen/` (đoạn từ 1:01: `late/`) | chưa có | Thấp: cần camera/độ sâu |
 
 ## Cách đối chiếu bằng trình duyệt
@@ -23,7 +23,7 @@ Script mở ứng dụng bằng Playwright, nạp dự án (mặc định `test/
 Bố cục `paper-*` đã dựa trên kênh này (D-51, [UI-DIRECTION](UI-DIRECTION.md)). Lần này đối chiếu thêm và làm `paper-light`:
 
 - Dòng đếm thứ hai là **Num played events: a/b (pct)** với a, b tính cả sự kiện bắt đầu và kết thúc nốt (b = 2 × số nốt): placeholder mới `{events}`, `{events_total}`, `{events_pct}`.
-- Tiêu đề mảnh hơn (weight 400; bản gốc dùng nét Light 300, **ta chưa đóng gói Space Grotesk 300**), chữ đếm xám nhạt hơn, vạch phát hồng mảnh (1 px), tên hợp âm không đậm.
+- Tiêu đề mảnh hơn (bản gốc dùng nét Light 300; **Space Grotesk 300 đã đóng gói** (T-109), chỉ nạp khi scene dùng chữ mảnh; mục Chữ có ô **Độ đậm** Mảnh/Thường/Đậm), chữ đếm xám nhạt hơn, vạch phát hồng mảnh (1 px), tên hợp âm không đậm.
 - Còn lệch: dòng nhật ký nốt của video hiện cả năm nốt gần nhất, ta hiện một dòng rồi `+N`; nốt trong video chuyển ra rìa phải mờ dần như bị "nhoè" (ta dùng màu xám cho nốt sắp tới); chưa có nhãn phiên bản nhỏ ở góc dưới.
 
 ## Video 2 (tn-shi): đã làm phần lớn
@@ -34,7 +34,7 @@ Bố cục `paper-*` đã dựa trên kênh này (D-51, [UI-DIRECTION](UI-DIRECT
 |---|---|
 | Nền ảnh nhân vật | Có cơ chế (`Derived.background`), nhưng ảnh là tài nguyên phiên của người dùng, không nằm trong preset |
 | Phase `Synthesis.xxx()` | Cần người dùng đặt phase ở dự án; preset mặc định dùng tên bài |
-| Dải phím `[ C C# E G# A# ]` giữ nguyên vị trí từng nốt | Ta xếp theo danh sách đang vang, không giữ ô cố định cho 12 lớp cao độ |
+| Dải phím `[ C C# E G# A# ]` giữ nguyên vị trí từng nốt | Chủ dự án quyết định **bỏ** (PITCH_STRIP không làm): dải `[ {pitch_classes} ]` dùng Ô chữ như cũ |
 | Phiến màu bay lớn, mờ (bokeh) | Particles chỉ có tròn/vuông, không mờ theo độ sâu (xem T-106) |
 | Ký hiệu nhịp `4/4`, `3/4` ở góc | Có `BAR_BEAT`/`TEMPO_INFO`, chưa đặt vào preset |
 
@@ -44,15 +44,15 @@ Bảng gồm sáu ô đánh số (FIFTHS, STEMS, METER, NOTES, DEGREE, DOTS) tr�
 
 | Ô | Đã có | Còn thiếu |
 |---|---|---|
-| 00 FIFTHS (vòng quãng năm, đa giác nối các lớp cao độ đang vang, vòng tiến độ ô nhịp) | `PITCH_WHEEL` (vòng quãng năm), `KEY_SCALE` | đa giác nối nốt, vòng tiến độ quanh vòng, nhãn bậc La Mã ở giữa |
-| 01 STEMS (nhiều đường sóng, mỗi stem một dòng) | `AUDIO_SPECTRUM` kiểu Waveform cho một nguồn | nhiều nguồn/stem cùng lúc; ta chỉ có một tệp âm thanh |
-| 02 METER (waveform + LUFS, scope, spectrum, vector) | Waveform, Oscilloscope, Spectrum | đo loudness (momentary, integrated, peak), **vectorscope** (cần dữ liệu trái/phải) |
+| 00 FIFTHS (vòng quãng năm, đa giác nối các lớp cao độ đang vang, vòng tiến độ ô nhịp) | **Đã làm:** `PITCH_WHEEL` nâng cấp (nhãn bậc La Mã, nút tròn, nối nốt đang vang, vòng tiến độ ô nhịp/cả bài, số phách, vòng nốt bass, giữa hiện bậc hợp âm, dòng dưới hợp âm), `KEY_SCALE` | không |
+| 01 STEMS (nhiều đường sóng, mỗi stem một dòng) | `AUDIO_SPECTRUM` kiểu Waveform cho một nguồn | **Chưa làm:** nhiều nguồn/stem cùng lúc; ta chỉ có một tệp âm thanh (T-108) |
+| 02 METER (waveform + LUFS, scope, spectrum, vector) | Waveform, Oscilloscope, Spectrum; **một phần loudness:** chỗ giữ `{level}`, `{level_avg}`, `{peak_db}` là **dBFS tính từ RMS, không phải LUFS** (chưa lọc K-weighting), kèm `{lows}`/`{mids}`/`{highs}` | LUFS thật (K-weighting, integrated), **vectorscope** (cần dữ liệu trái/phải): chưa làm |
 | 03 NOTES (piano roll nhỏ có vạch ô nhịp, nhãn hợp âm trên đầu) | `PIANO_ROLL` + lưới ô nhịp (`grid`: vạch ô nhịp, vạch phách mờ, số ô nhịp; 2026-11-25), tên nốt trên phím (`keyboard.labels`), `CHORD_DETECTION` | nhãn hợp âm gắn trên Piano Roll (chủ dự án đã bỏ ở T-121), viền khung |
-| 04 DEGREE (dải ô bậc hợp âm: I, Imaj7, VIm7…, ô đang phát tô đậm, ô kế tiếp) | dò hợp âm, giọng (`KEY_SCALE`) | quy hợp âm về bậc theo giọng, dải ô cuộn |
-| 05 DOTS (lưới chấm theo thời gian × cao độ, độ chia lưới, tỉ lệ nốt thấp/cao) | primitive `rect` | widget lưới chấm; thống kê "lows/highs" |
-| Khung ô có số thứ tự, nhãn nhỏ | `TEXT`, `rect` | **widget Khung ô** (viền, tiêu đề đánh số, ngăn cách) để ghép nhanh |
+| 04 DEGREE (dải ô bậc hợp âm: I, Imaj7, VIm7…, ô đang phát tô đậm, ô kế tiếp) | **Đã làm:** widget `DEGREE` (Bậc hợp âm: gom theo ô nhịp/nửa ô/phách/mỗi lần đổi, hàng phụ, dải chức năng T/SD/D, số ô nhịp), chỗ giữ `{degree}`, `{next_chord}`, `{next_degree}`, `{chord_count}`, `{key}` | không |
+| 05 DOTS (lưới chấm theo thời gian × cao độ, độ chia lưới, tỉ lệ nốt thấp/cao) | **Đã làm:** widget `DOTS` (Lưới chấm: lưới 1/4 đến 1/32, số hàng tối đa), `{lows}`/`{mids}`/`{highs}` (cần âm thanh) | không |
+| Khung ô có số thứ tự, nhãn nhỏ | **Đã làm:** widget `PANEL` (Khung ô: viền, tiêu đề đánh số, hàng số liệu tới 6 cột); primitive vẽ `poly` (đường gấp khúc/đa giác); preset `analysis-dashboard-16x9.json` ghép bố cục video 3 | không |
 
-Thứ tự đề xuất: widget Khung ô → Degree → Dots → vòng quãng năm nâng cấp → (cần dữ liệu mới) loudness, stems, vectorscope.
+Thứ tự đề xuất: widget Khung ô → Degree → Dots → vòng quãng năm nâng cấp (**đã làm**, T-107) → (cần dữ liệu mới) loudness (một phần), stems, vectorscope (chưa).
 
 ## Video 4 (Silentroom, từ 1:01 đến hết): lộ trình
 
@@ -86,8 +86,8 @@ Video 2 và 4 đổi giao diện theo đoạn nhạc. Thay vì một preset kh�
 | T-104 | Camera ảo và độ sâu: `depth` mỗi widget, parallax theo quỹ đạo camera (keyframe được), sau đó nghiêng phối cảnh. Đo chi phí ở Export Worker trước | spike nhỏ về chiếu phối cảnh trên Canvas 2D |
 | T-105 | Stereo trong bộ phân tích âm thanh (L/R, mid/side) và widget Vectorscope | `audioFeatures.ts` |
 | T-106 | Hậu kỳ: phản chiếu, mờ theo độ sâu, bloom; hạt mờ (bokeh) | T-104 (độ sâu) |
-| T-107 | Widget Khung ô, Degree, Dots (video 3) | `KEY_SCALE`, `CHORD_DETECTION` |
+| T-107 | Widget Khung ô, Degree, Dots (video 3): **xong** | `KEY_SCALE`, `CHORD_DETECTION` |
 | T-108 | Loudness (momentary/integrated/peak) và nhiều nguồn âm thanh (stems) | `audioFeatures.ts`, `audioEngine.ts` |
-| T-109 | Đóng gói thêm Space Grotesk 300 (tiêu đề mảnh của video 1) và dải phím `[ C C# … ]` giữ ô cố định | — |
+| T-109 | Đóng gói thêm Space Grotesk 300 (tiêu đề mảnh của video 1): **xong**. Dải phím `[ C C# … ]` giữ ô cố định: **bỏ** theo quyết định chủ dự án | — |
 
 Gộp với việc "thống nhất khả năng keyframe cho mọi widget" đã bàn: mỗi hiệu ứng mới ở trên phải keyframe được ngay từ đầu.

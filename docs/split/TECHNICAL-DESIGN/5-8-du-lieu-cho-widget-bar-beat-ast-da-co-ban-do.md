@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp 🟢 (đã dùng ở T-69)"
 path: "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp 🟢 (đã dùng ở T-69)"
 chunk: 5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md
-source_lines: 195-197
-source_sha1: 8cbe7fce2c
+source_lines: 197-199
+source_sha1: 89904b8414
 ids: [REQ-WIDGET-05]
 ---
 ### 5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp 🟢 (đã dùng ở T-69)

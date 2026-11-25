@@ -45,11 +45,11 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [REQ-GRAPHICS-00: Độ phân giải thiết kế logic (D-06)](SRS/req-graphics-00-do-phan-giai-thiet-ke-logic-d-06.md) · 421 ký tự
 - [REQ-GRAPHICS-01: Phân lớp đồ họa (D-07)](SRS/req-graphics-01-phan-lop-do-hoa-d-07.md) · 1434 ký tự
 - [REQ-GRAPHICS-02: Bắt dính thông minh](SRS/req-graphics-02-bat-dinh-thong-minh.md) · 1248 ký tự
-- [REQ-GRAPHICS-16: Thanh phát (playhead) tuỳ chỉnh](SRS/req-graphics-16-thanh-phat-playhead-tuy-chinh.md) · 1489 ký tự
+- [REQ-GRAPHICS-16: Thanh phát (playhead) tuỳ chỉnh](SRS/req-graphics-16-thanh-phat-playhead-tuy-chinh.md) · 2116 ký tự
 - [REQ-GRAPHICS-03: Xoay widget tự do (D-54, thay D-15)](SRS/req-graphics-03-xoay-widget-tu-do-d-54-thay-d-15.md) · 1998 ký tự
 - [REQ-GRAPHICS-04: Preset dựng sẵn và đổi tỉ lệ khung](SRS/req-graphics-04-preset-dung-san-va-doi-ti-le-khu.md) · 1907 ký tự
 - [REQ-GRAPHICS-06: Độ sáng track theo automation (D-33)](SRS/req-graphics-06-do-sang-track-theo-automation-d.md) · 2443 ký tự
-- [REQ-GRAPHICS-07: Kiểu dáng nốt tuỳ chỉnh và bàn phím](SRS/req-graphics-07-kieu-dang-not-tuy-chinh-va-ban-p.md) · 3425 ký tự
+- [REQ-GRAPHICS-07: Kiểu dáng nốt tuỳ chỉnh và bàn phím](SRS/req-graphics-07-kieu-dang-not-tuy-chinh-va-ban-p.md) · 4312 ký tự
 - [REQ-GRAPHICS-08: Hiệu ứng chuyển động tất định (D-37)](SRS/req-graphics-08-hieu-ung-chuyen-dong-tat-dinh-d.md) · 442 ký tự
 - [REQ-GRAPHICS-05: Render Core dùng chung (ARC-01, D-20)](SRS/req-graphics-05-render-core-dung-chung-arc-01-d.md) · 1021 ký tự
 - [REQ-GRAPHICS-17: Phát sáng động khi chạm (D-50, 1.0)](SRS/req-graphics-17-phat-sang-dong-khi-cham-d-50-1-0.md) · 2766 ký tự
@@ -57,7 +57,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [REQ-GRAPHICS-19: Ô chữ người dùng thêm và chỗ giữ dùng chung (D-60; đã làm 2026-11-18, T-73)](SRS/req-graphics-19-o-chu-nguoi-dung-them-va-cho-giu.md) · 2854 ký tự
 - [REQ-AST-02: Automation tổng quát (D-50; 1.0 cho Reaper track + MIDI CC, các nguồn khác theo tệp mẫu)](SRS/req-ast-02-automation-tong-quat-d-50-1-0-cho-rea.md) · 2371 ký tự
 - [3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04)](SRS/3-4-dac-ta-8-widget-hud-br-02-br-03-br-04.md) · 368 ký tự
-- [REQ-WIDGET-01: Piano Roll](SRS/req-widget-01-piano-roll.md) · 1750 ký tự
+- [REQ-WIDGET-01: Piano Roll](SRS/req-widget-01-piano-roll.md) · 2757 ký tự
 - [REQ-WIDGET-02: Track Info](SRS/req-widget-02-track-info.md) · 1101 ký tự
 - [REQ-WIDGET-03: Event Counter](SRS/req-widget-03-event-counter.md) · 1220 ký tự
 - [REQ-WIDGET-04: Live Note Trigger](SRS/req-widget-04-live-note-trigger.md) · 935 ký tự
@@ -70,7 +70,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [REQ-WIDGET-09: Bản nhạc (Notation) (D-63; đã làm 2026-11-21, T-90…T-95)](SRS/req-widget-09-ban-nhac-notation-d-63-da-lam-2026.md) · 3392 ký tự
 - [REQ-NOTATION-01: Lượng tử hoá để vẽ bản nhạc (D-63; đã làm 2026-11-21)](SRS/req-notation-01-luong-tu-hoa-de-ve-ban-nhac-d-63.md) · 1936 ký tự
 - [REQ-GRAPHICS-20: Nét tay tất định cho đường vẽ (D-63; đã làm 2026-11-21 cho bản nhạc)](SRS/req-graphics-20-net-tay-tat-dinh-cho-duong-ve-d.md) · 602 ký tự
-- [3.4b. Đề xuất widget và dữ liệu hiển thị bổ sung (D-32, OI-11) **[ĐỀ XUẤT, chưa cam kết v1.0]**](SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md) · 3784 ký tự
+- [3.4b. Đề xuất widget và dữ liệu hiển thị bổ sung (D-32, OI-11) **[ĐỀ XUẤT, chưa cam kết v1.0]**](SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md) · 4862 ký tự
 - [3.5. Lưu trữ, cấu hình & đóng gói (BR-05, D-11)](SRS/3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md) · 4696 ký tự
 - [REQ-CAP-01: Phát hiện khả năng của trình duyệt (R-06, D-05)](SRS/req-cap-01-phat-hien-kha-nang-cua-trinh-duyet-r.md) · 413 ký tự
 - [REQ-EXPORT-00: Pre-flight (R-01, D-17)](SRS/req-export-00-pre-flight-r-01-d-17.md) · 2606 ký tự
@@ -128,7 +128,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [5.1 Giao diện chính 🟢](TECHNICAL-DESIGN/5-1-giao-dien-chinh.md) · 7271 ký tự
 - [5.2 Hợp đồng widget 🟢](TECHNICAL-DESIGN/5-2-hop-dong-widget.md) · 459 ký tự
 - [5.3 Hệ toạ độ và tỉ lệ 🟡](TECHNICAL-DESIGN/5-3-he-toa-do-va-ti-le.md) · 364 ký tự
-- [5.4 Piano Roll 🟢](TECHNICAL-DESIGN/5-4-piano-roll.md) · 714 ký tự
+- [5.4 Piano Roll 🟢](TECHNICAL-DESIGN/5-4-piano-roll.md) · 2033 ký tự
 - [5.5 Quy tắc tất định (kiểm bằng test)](TECHNICAL-DESIGN/5-5-quy-tac-tat-dinh-kiem-bang-test.md) · 640 ký tự
 - [5.6 Phát sáng động khi chạm 🟢](TECHNICAL-DESIGN/5-6-phat-sang-dong-khi-cham.md) · 1776 ký tự
 - [5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)](TECHNICAL-DESIGN/5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md) · 5581 ký tự
@@ -151,8 +151,8 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)](TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) · 19139 ký tự
 - [7.1 Trình tự](TECHNICAL-DESIGN/7-1-trinh-tu.md) · 1019 ký tự
 - [7.2 Quyết định kỹ thuật](TECHNICAL-DESIGN/7-2-quyet-dinh-ky-thuat.md) · 1109 ký tự
-- [7.3 Phần lõi thuần đã làm (T-09, 2026-11-14)](TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md) · 1745 ký tự
-- [7.4 Export Worker và giao diện (T-09, 2026-11-14)](TECHNICAL-DESIGN/7-4-export-worker-va-giao-dien-t-09-2026-11-14.md) · 8203 ký tự
+- [7.3 Phần lõi thuần đã làm (T-09, 2026-11-14)](TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md) · 2596 ký tự
+- [7.4 Export Worker và giao diện (T-09, 2026-11-14)](TECHNICAL-DESIGN/7-4-export-worker-va-giao-dien-t-09-2026-11-14.md) · 8175 ký tự
 - [8. Lưu trữ 🟢 (M4, T-10)](TECHNICAL-DESIGN/8-luu-tru-m4-t-10.md) · 1704 ký tự
 - [9. Đa ngôn ngữ 🟢](TECHNICAL-DESIGN/9-da-ngon-ngu.md) · 492 ký tự
 - [10. Lỗi, ghi nhật ký, quan sát](TECHNICAL-DESIGN/10-loi-ghi-nhat-ky-quan-sat.md) · 470 ký tự
@@ -238,14 +238,14 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 
 ## REFERENCE-VIDEOS.md — Video tham chiếu: ý tưởng, mức tái hiện và lộ trình
 
-- [Video tham chiếu: ý tưởng, mức tái hiện và lộ trình (mở đầu)](REFERENCE-VIDEOS/video-tham-chieu-y-tuong-muc-tai-hien-va-lo-trin.md) · 1305 ký tự
+- [Video tham chiếu: ý tưởng, mức tái hiện và lộ trình (mở đầu)](REFERENCE-VIDEOS/video-tham-chieu-y-tuong-muc-tai-hien-va-lo-trin.md) · 1361 ký tự
 - [Cách đối chiếu bằng trình duyệt](REFERENCE-VIDEOS/cach-doi-chieu-bang-trinh-duyet.md) · 566 ký tự
-- [Video 1 (Usagin_P): đã làm](REFERENCE-VIDEOS/video-1-usagin-p-da-lam.md) · 735 ký tự
-- [Video 2 (tn-shi): đã làm phần lớn](REFERENCE-VIDEOS/video-2-tn-shi-da-lam-phan-lon.md) · 946 ký tự
-- [Video 3 (Emocute): lộ trình](REFERENCE-VIDEOS/video-3-emocute-lo-trinh.md) · 1425 ký tự
+- [Video 1 (Usagin_P): đã làm](REFERENCE-VIDEOS/video-1-usagin-p-da-lam.md) · 800 ký tự
+- [Video 2 (tn-shi): đã làm phần lớn](REFERENCE-VIDEOS/video-2-tn-shi-da-lam-phan-lon.md) · 972 ký tự
+- [Video 3 (Emocute): lộ trình](REFERENCE-VIDEOS/video-3-emocute-lo-trinh.md) · 2177 ký tự
 - [Video 4 (Silentroom, từ 1:01 đến hết): lộ trình](REFERENCE-VIDEOS/video-4-silentroom-tu-1-01-den-het-lo-trinh.md) · 1091 ký tự
 - [Quyết định: chuỗi cảnh và chia sẻ preset (D-66)](REFERENCE-VIDEOS/quyet-dinh-chuoi-canh-va-chia-se-preset-d-66.md) · 1549 ký tự
-- [Task đề xuất (đã vào `PROGRESS`)](REFERENCE-VIDEOS/task-de-xuat-da-vao-progress.md) · 916 ký tự
+- [Task đề xuất (đã vào `PROGRESS`)](REFERENCE-VIDEOS/task-de-xuat-da-vao-progress.md) · 968 ký tự
 
 ## UI-DIRECTION.md — Định hướng hình ảnh: khung preview và giao diện web
 

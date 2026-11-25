@@ -5,7 +5,7 @@ section: "Cách đối chiếu bằng trình duyệt"
 path: "Cách đối chiếu bằng trình duyệt"
 chunk: cach-doi-chieu-bang-trinh-duyet.md
 source_lines: 12-20
-source_sha1: 7580d5f888
+source_sha1: 796d7dc0be
 ids: []
 ---
 ## Cách đối chiếu bằng trình duyệt

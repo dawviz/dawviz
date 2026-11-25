@@ -42,6 +42,13 @@ Built-in widgets look the same as before. In **Advanced** mode, the text of ever
 | `{events_pct}` | percent of events so far (with `%` in the note counter, like `{pct}`) |
 | `{events}`, `{events_total}` | events so far, all events; each note has two events (start and end), so the total is twice the note count |
 | `{pct}` | share of notes played, whole number |
+| `{key}` | the name of the key's tonic note (without major/minor); empty if unknown |
+| `{degree}` | the degree of the sounding chord in the key, for example `VIm7`; if the key is unknown, the chord name |
+| `{next_chord}`, `{next_degree}` | the next chord (a name different from the sounding chord) and its degree |
+| `{chord_count}` | how many times the chord has changed up to now |
+| `{lows}`, `{mids}`, `{highs}` | percent of the audio energy in the low (below 250 Hz), middle and high (above 4 kHz) bands |
+| `{level}` | the current sound level in dB, over the last 400 ms |
+| `{level_avg}`, `{peak_db}` | the average and the peak sound level in dB |
 
 `{tempo}` is the old name of `{bpm}`: it still works and gives exactly the same result, but the app no longer suggests it.
 
@@ -50,6 +57,10 @@ Values follow the tracks that are showing (see the [Preview tab](02-preview.md) 
 Note and chord names in the placeholders (`{notes}`, `{chord}`, `{bass}`, `{pitch_classes}`, `{name}`) follow the project-wide **Note names** setting. The [analysis widgets](10-analysis-widgets.md) have names of their own: Key (`{key}`, `{scale}`, `{confidence}`), Section name (`{section}`, `{next}`, `{next_in}`, `{section_no}`, `{section_elapsed}`), Note density (`{poly}`).
 
 Some widgets have names of their own, and those win over the general ones: live notes has `{name}`, `{velocity}`, `{track}`, `{pitch}`; the progress bar has `{elapsed}`, `{total}`, `{remaining}`, `{pct}` for the song's time (there `{total}` is the song length, not the note count).
+
+The key behind `{key}`, `{degree}` and `{next_degree}` is the tonic you set in the Editor; if none is set, it is found from the last 16 seconds.
+
+`{lows}`, `{mids}`, `{highs}`, `{level}`, `{level_avg}` and `{peak_db}` need an audio file; with no audio they show "—". The level is dBFS from the average loudness (RMS), **not LUFS** (no ear-weighting filter).
 
 ## Choosing how a number looks
 

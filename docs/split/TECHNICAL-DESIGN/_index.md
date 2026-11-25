@@ -1,6 +1,6 @@
 # Chỉ mục TECHNICAL-DESIGN.md — THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER
 
-nguồn: `TECHNICAL-DESIGN.md` (sha1 8cbe7fce2c)
+nguồn: `TECHNICAL-DESIGN.md` (sha1 89904b8414)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -13,7 +13,7 @@ nguồn: `TECHNICAL-DESIGN.md` (sha1 8cbe7fce2c)
 | 6 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.1 Giao diện chính 🟢 | [5-1-giao-dien-chinh.md](5-1-giao-dien-chinh.md) | 7271 | D-54, D-56, ERR_PRESET_INVALID, REQ-STORAGE-02, WARN_PRESET_UNSUPPORTED, WARN_PRESET_VALUE… |
 | 7 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.2 Hợp đồng widget 🟢 | [5-2-hop-dong-widget.md](5-2-hop-dong-widget.md) | 459 |  |
 | 8 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.3 Hệ toạ độ và tỉ lệ 🟡 | [5-3-he-toa-do-va-ti-le.md](5-3-he-toa-do-va-ti-le.md) | 364 |  |
-| 9 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.4 Piano Roll 🟢 | [5-4-piano-roll.md](5-4-piano-roll.md) | 714 | D-50 |
+| 9 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.4 Piano Roll 🟢 | [5-4-piano-roll.md](5-4-piano-roll.md) | 2033 | D-50 |
 | 10 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.5 Quy tắc tất định (kiểm bằng test) | [5-5-quy-tac-tat-dinh-kiem-bang-test.md](5-5-quy-tac-tat-dinh-kiem-bang-test.md) | 640 | REQ-GRAPHICS-05 |
 | 11 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.6 Phát sáng động khi chạm 🟢 | [5-6-phat-sang-dong-khi-cham.md](5-6-phat-sang-dong-khi-cham.md) | 1776 | D-50, REQ-GRAPHICS-06, REQ-GRAPHICS-17 |
 | 12 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02) | [5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md](5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md) | 5581 | ERR_FONT_LOAD, NFR-SEC-03, REQ-STORAGE-05, REQ-WIDGET-02 |
@@ -36,8 +36,8 @@ nguồn: `TECHNICAL-DESIGN.md` (sha1 8cbe7fce2c)
 | 29 | 6. Ứng dụng web và phát lại 🟡 > 6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68) | [6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md](6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) | 19139 | ARC-05, D-55, D-57, ERR_PRESET_, ERR_PRESET_INVALID, ERR_PRESET_TOO_LARGE… |
 | 30 | 7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) > 7.1 Trình tự | [7-1-trinh-tu.md](7-1-trinh-tu.md) | 1019 | REQ-EXPORT-00, REQ-EXPORT-02, REQ-EXPORT-06 |
 | 31 | 7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) > 7.2 Quyết định kỹ thuật | [7-2-quyet-dinh-ky-thuat.md](7-2-quyet-dinh-ky-thuat.md) | 1109 | AT-03, D-01, D-63, ERR_EXPORT_FAILED, ERR_NO_SUPPORTED_ENCODER, SOI-10 |
-| 32 | 7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) > 7.3 Phần lõi thuần đã làm (T-09, 2026-11-14) | [7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md](7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md) | 1745 | D-26, ERR_NO_SUPPORTED_ENCODER, REQ-EXPORT-00, REQ-EXPORT-01, REQ-EXPORT-02, REQ-EXPORT-03… |
-| 33 | 7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) > 7.4 Export Worker và giao diện (T-09, 2026-11-14) | [7-4-export-worker-va-giao-dien-t-09-2026-11-14.md](7-4-export-worker-va-giao-dien-t-09-2026-11-14.md) | 8203 | AT-03, AT-05, D-04, D-26, D-61, ERR_EXPORT_FAILED… |
+| 32 | 7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) > 7.3 Phần lõi thuần đã làm (T-09, 2026-11-14) | [7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md](7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md) | 2596 | D-26, ERR_NO_SUPPORTED_ENCODER, REQ-EXPORT-00, REQ-EXPORT-01, REQ-EXPORT-02, REQ-EXPORT-03… |
+| 33 | 7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) > 7.4 Export Worker và giao diện (T-09, 2026-11-14) | [7-4-export-worker-va-giao-dien-t-09-2026-11-14.md](7-4-export-worker-va-giao-dien-t-09-2026-11-14.md) | 8175 | AT-03, AT-05, D-04, D-26, D-61, ERR_EXPORT_FAILED… |
 | 34 | 8. Lưu trữ 🟢 (M4, T-10) | [8-luu-tru-m4-t-10.md](8-luu-tru-m4-t-10.md) | 1704 | ERR_PRESET_INVALID, ERR_SCHEMA_NEWER, WARN_PRESET_MIGRATED |
 | 35 | 9. Đa ngôn ngữ 🟢 | [9-da-ngon-ngu.md](9-da-ngon-ngu.md) | 492 |  |
 | 36 | 10. Lỗi, ghi nhật ký, quan sát | [10-loi-ghi-nhat-ky-quan-sat.md](10-loi-ghi-nhat-ky-quan-sat.md) | 470 | D-13 |

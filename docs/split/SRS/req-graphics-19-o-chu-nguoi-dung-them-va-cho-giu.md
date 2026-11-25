@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-GRAPHICS-19: Ô chữ người dùng thêm và chỗ giữ dùng chung (D-60; đã làm 2026-11-18, T-73)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-19: Ô chữ người dùng thêm và chỗ giữ dùng chung (D-60; đã làm 2026-11-18, T-73)"
 chunk: req-graphics-19-o-chu-nguoi-dung-them-va-cho-giu.md
-source_lines: 553-561
-source_sha1: 879a0e809e
+source_lines: 555-563
+source_sha1: fee32c2554
 ids: [D-60, OI-18, P-04, REQ-GRAPHICS-01, REQ-GRAPHICS-05, REQ-GRAPHICS-12, REQ-GRAPHICS-13, REQ-GRAPHICS-18, REQ-GRAPHICS-19, REQ-UI-13, REQ-WIDGET-03]
 ---
 #### REQ-GRAPHICS-19: Ô chữ người dùng thêm và chỗ giữ dùng chung (D-60; đã làm 2026-11-18, T-73)
