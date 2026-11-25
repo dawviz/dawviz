@@ -54,7 +54,7 @@ You can combine them: for example the entrance "Slide from the left" with the re
 
 ## Per-note animation
 
-The Piano roll also has **Note animation** under **Settings**: each note goes through four phases (arriving, hit, sounding, just ended) in the style you pick: pop in, fade and scale, drop and bounce, rise up, morph (dot to bar), burst when it ends, pulse on hit, ripple on hit (a ring spreading from the start of the note). Choose **None** and notes just scroll as before. To make notes fall from above or rise from below, rotate the whole Piano roll widget.
+The Piano roll also has **Note animation** under **Settings**: each note goes through four phases (arriving, hit, sounding, just ended) in the style you pick: pop in, fade and scale, drop and bounce, rise up, morph (dot to bar), burst when it ends, pulse on hit, ripple on hit (a ring spreading from the start of the note). Choose **None** and notes just scroll as before. To make notes fall from above, set the Piano roll's **Note flow angle** (see [Editor](03-editor.md#note-look)).
 
 ## Animate properties
 
@@ -71,7 +71,7 @@ To make a property **change over time or with the music** instead of staying sti
 
 **On/off and choices:** checkboxes (e.g. Show the time), choice boxes and text have a stopwatch too. Their value doesn't glide; it **switches exactly at each keyframe** (holding until the next one). They can't follow the music and have no curve.
 
-**Piano roll:** besides position, rotation, scale and opacity, the piano roll can animate the seconds across the roll, the playhead's position, width, colour and visibility, the keyboard, and the shared note style (opacity, corners, height, glow, colour).
+**Piano roll:** besides position, rotation, scale and opacity, the piano roll can animate the seconds across the roll, the playhead's position, width, length, glow, colour and visibility, the note flow angle, the keyboard (pressed key colour, scale highlight strength), the bar grid (opacity, colour), and the shared note style (opacity, corners, height, glow, colour).
 
 **Copy and paste:** select keyframes and press Ctrl+C; move the playhead (or select another widget) and press Ctrl+V. The earliest keyframe lands on the playhead and the others keep their spacing. Properties the target widget doesn't have are skipped.
 

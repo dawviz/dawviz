@@ -76,12 +76,15 @@ export const MAX_CHOICE_LEN = 200;
  */
 const PIANO_NUM: Readonly<Record<string, [number, number]>> = {
   visibleSeconds: [0.5, 60], playheadPositionRatio: [0.05, 0.95], playheadWidth: [0, 40], 'keyboard.width': [8, 400],
+  // T-58/T-51/T-59 và lưới ô nhịp
+  flowAngle: [0, 360], playheadLength: [0.05, 1], playheadGlow: [0, 1], 'grid.opacity': [0, 1], 'keyboard.scaleOpacity': [0, 1],
 };
 const PIANO_STYLE_NUM = ['opacity', 'inactiveOpacity', 'cornerRadius', 'heightScale', 'glow', 'glowRadius', 'borderWidth', 'glowMin', 'glowMax', 'glowRelease'] as const;
 export const PIANO_PATHS: ReadonlyMap<string, AnimKind> = new Map<string, AnimKind>([
   ...Object.keys(PIANO_NUM).map((p) => [p, 'number'] as [string, AnimKind]),
   ...PIANO_STYLE_NUM.map((k) => [`noteStyle.base.${k}`, 'number'] as [string, AnimKind]),
   ['noteStyle.base.customColor', 'color'], ['playheadColor', 'color'], ['keyboard.whiteColor', 'color'], ['keyboard.blackColor', 'color'],
+  ['keyboard.pressedColor', 'color'], ['keyboard.scaleColor', 'color'], ['grid.color', 'color'], ['grid.bars', 'bool'], ['grid.beats', 'bool'], ['grid.numbers', 'bool'],
   ['noteStyle.base.glowActiveOnly', 'bool'], ['noteStyle.base.colorMode', 'choice'], ['playheadVisible', 'bool'], ['keyboard.enabled', 'bool'], ['keyboard.useTrackColor', 'bool'],
 ]);
 /**
@@ -341,7 +344,7 @@ function cleanPiano(p: Obj, kinds: ReadonlyMap<string, AnimKind>): Obj {
     if (v !== undefined) out = setIn(out, ks, finite(v) ? Math.min(hi, Math.max(lo, v)) : lo);
   }
   for (const [path, kind] of kinds) {
-    if (!path.startsWith('keyboard.') && path !== 'playheadColor' && path !== 'playheadVisible') continue;
+    if (!path.startsWith('keyboard.') && !path.startsWith('grid.') && path !== 'playheadColor' && path !== 'playheadVisible') continue;
     const ks = path.split('.'); let v: unknown = out; for (const k of ks) v = isObj(v) ? v[k] : undefined;
     if (kind === 'color' && !(typeof v === 'string' && HEX.test(v))) out = setIn(out, ks, '#ffffff');
     if (kind === 'bool' && typeof v !== 'boolean') out = setIn(out, ks, !!v);

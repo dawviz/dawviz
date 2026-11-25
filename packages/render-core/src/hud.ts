@@ -145,6 +145,29 @@ export function barPageAt(g: BarGrid, bars: number, t: number): { start: number;
   return { start: barStartSec(g, page * n), end: barStartSec(g, (page + 1) * n) };
 }
 
+/** Một vạch lưới nhịp: thời điểm (giây), số ô nhịp (đếm từ 1), phách trong ô (1 = đầu ô nhịp). */
+export interface GridLine { sec: number; bar: number; beat: number }
+/**
+ * Các vạch phách (và đầu ô nhịp) nằm trong [t0, t1], theo tempo và nhịp của bài (đổi tempo/nhịp giữa bài vẫn đúng). `beats = false`: chỉ đầu ô nhịp.
+ * Giới hạn `max` vạch để cửa sổ rất dài không làm chậm khung hình. Thời điểm âm (trước đầu bài) không có vạch.
+ */
+export function gridLinesIn(g: BarGrid, t0: number, t1: number, beats: boolean, max = 4000): GridLine[] {
+  const out: GridLine[] = [];
+  if (!(t1 >= 0) || t1 < t0) return out;
+  const secAt = (tick: number) => { const tp = lastLE(g.tempo, (x) => x.tick, tick); return tp.sec + (tick - tp.tick) / g.ppq * 60 / tp.bpm; };
+  let bar0 = Math.max(0, barPosAt(g, Math.max(0, t0)).bar - 1);
+  for (let guard = 0; guard < max; bar0++) {
+    const sg = lastLE(g.sigs, (x) => x.barStart, bar0), perBeat = g.ppq * 4 / sg.den;
+    const barTick = sg.tick + (bar0 - sg.barStart) * perBeat * sg.num;
+    for (let k = 0; k < (beats ? sg.num : 1); k++, guard++) {
+      const sec = secAt(barTick + k * perBeat);
+      if (sec > t1 + 1e-9) return out;
+      if (sec >= t0 - 1e-9) out.push({ sec, bar: bar0 + 1, beat: k + 1 });
+    }
+  }
+  return out;
+}
+
 /** Nhóm track + chế độ của một widget Chord Detection. */
 export interface ChordGroup { tracks: TrackIndex[]; mode: ChordMode }
 /** `chordGroups`: các nhóm track mà widget Chord Detection sẽ đọc; dò hợp âm (@tonaljs/chord-detect) chạy ở ĐÂY, ở bước derived, không chạy khi vẽ khung. */

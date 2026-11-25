@@ -26,7 +26,7 @@ import { DEFAULT_LOOP, DEFAULT_PHASE, LOOP_EFFECT_NAMES, WIDGET_EFFECT_NAMES, ha
 import { parseEase } from './motion.ts';
 import { MAX_FADE, MAX_PHASES, MAX_PHASE_NAME, MAX_RANGES, type Phase, type TimeRange, type WidgetVisibility } from './visibility.ts';
 import { isLaneId } from './glow.ts';
-import { DEFAULT_KEYBOARD_STYLE, DEFAULT_NOTE_STYLE, sanitizeStyle, type KeyboardStyle, type NoteStyle, type StyleConfig } from './style.ts';
+import { DEFAULT_KEYBOARD_STYLE, DEFAULT_NOTE_STYLE, DEFAULT_ROLL_GRID, KEYBOARD_SCALES, KEYBOARD_SHAPES, KEY_LABEL_MODES, PLAYHEAD_HITS, PLAYHEAD_STYLES, sanitizeStyle, type KeyboardStyle, type NoteStyle, type PlayheadHit, type PlayheadStyle, type RollGrid, type StyleConfig } from './style.ts';
 import { MAX_PARENT_DEPTH, resolveParents } from './parenting.ts';
 import { ANIM_EFFECTS, ANIM_ORDERS, ANIM_UNITS, DEFAULT_TEXT_ANIMATOR, type TextAnimator } from './textAnimator.ts';
 import { EASING_NAMES } from './motion.ts';
@@ -76,7 +76,7 @@ export interface TrackRange { from: number; to: number | null; tracks: number[] 
 export const MAX_TRACK_RANGES = 32;
 
 export interface PianoRollProps {
-  orientation: 'HORIZONTAL';          // VERTICAL và góc tự do: T-59
+  orientation: 'HORIZONTAL';          // giữ để đọc preset cũ; hướng chảy thật là `flowAngle` (T-59). Preset cũ ghi VERTICAL → flowAngle 90.
   pitchRangeMode: 'FIT_CONTENT' | 'CUSTOM';
   pitchMin: number; pitchMax: number; // dùng khi CUSTOM
   lookaheadSeconds: number;           // 1–8 (REQ-WIDGET-01). Chỉ dùng để suy ra visibleSeconds khi preset cũ thiếu trường đó.
@@ -101,6 +101,27 @@ export interface PianoRollProps {
   playheadWidth: number;              // pt
   /** Hiện vạch phát (REQ-GRAPHICS-16). Ẩn thì nốt vẫn phát tại vị trí vạch, chỉ không vẽ vạch. */
   playheadVisible: boolean;
+  // ---- Các trường dưới đây tuỳ chọn trong preset (vắng = mặc định, vẽ như trước).
+  /** Góc chảy nốt 0–360° (T-59, REQ-WIDGET-01): 0 = nốt chạy từ phải sang trái, 90 = nốt rơi từ trên xuống. Làn nốt, vạch phát, bàn phím, lưới
+   *  xoay bên trong khung widget; làn tự kéo dài phủ kín khung. Khác `layout.rotation` (xoay cả khung widget). */
+  flowAngle: number;
+  /** Lật trục cao độ (nốt cao ở phía ngược lại), ví dụ 90° + lật = kiểu "nốt rơi", nốt trầm bên trái. */
+  flowMirror: boolean;
+  /** Tên nốt trên phím và số ô nhịp luôn đứng thẳng khi làn xoay (tắt = xoay theo làn). */
+  labelsUpright: boolean;
+  /** Kiểu vạch phát (T-58): vạch liền, nét đứt, dải mờ, dải mờ dần hai bên. */
+  playheadStyle: PlayheadStyle;
+  /** Đầu tam giác ở hai đầu vạch, chỉ vào trong. */
+  playheadArrows: boolean;
+  /** Độ dài vạch so với chiều cao làn (0,05–1), căn giữa. */
+  playheadLength: number;
+  /** Phát sáng quanh vạch, 0..1. */
+  playheadGlow: number;
+  /** Phản ứng khi nốt chạm vạch: nháy (màu theo nốt vừa chạm, sáng hơn) hoặc phình độ dày; mức theo velocity, tắt dần trong `playheadHitMs`. */
+  playheadHit: PlayheadHit;
+  playheadHitMs: number;
+  /** Lưới ô nhịp (vạch ô nhịp, vạch phách, số ô nhịp), theo tempo/nhịp của bài. */
+  grid: RollGrid;
 }
 
 export interface CanvasSpec {
@@ -132,11 +153,17 @@ export interface SceneDocument {
   comps?: Record<string, CompSpec>;
 }
 
+/** Góc chảy về [0, 360). */
+export const flowAngleOf = (deg: number): number => { if (!Number.isFinite(deg)) return 0; const r = ((deg % 360) + 360) % 360; return r >= 360 - 1e-9 ? 0 : r; };
+
 export const DEFAULT_PIANO_ROLL: Readonly<PianoRollProps> = Object.freeze({
   orientation: 'HORIZONTAL', pitchRangeMode: 'CUSTOM', pitchMin: 21, pitchMax: 108, // mặc định hiện đủ 88 phím (A0–C8); FIT_CONTENT là lựa chọn
   lookaheadSeconds: 3, playheadPositionRatio: 0.3, visibleSeconds: 3 / 0.7, scrollMode: 'SCROLL', pageUnit: 'SECONDS', pageBars: 4, revealAhead: 0, transition: 'none',
   noteStyle: { base: { ...DEFAULT_NOTE_STYLE }, tracks: {} }, keyboard: { ...DEFAULT_KEYBOARD_STYLE, width: 96 }, // 96 pt ≈ 5% bề rộng 1920
   playheadColor: '#ffffff', playheadWidth: 2, playheadVisible: true,
+  flowAngle: 0, flowMirror: false, labelsUpright: true,
+  playheadStyle: 'LINE', playheadArrows: false, playheadLength: 1, playheadGlow: 0, playheadHit: 'OFF', playheadHitMs: 250,
+  grid: { ...DEFAULT_ROLL_GRID },
 });
 
 export const ASPECTS: Readonly<Record<string, [number, number]>> = Object.freeze({ '16:9': [1920, 1080], '9:16': [1080, 1920], '1:1': [1080, 1080] });
@@ -213,7 +240,7 @@ export function duplicateWidget(scene: SceneDocument, w: WidgetSpec, offset = 16
 }
 /** Bản sao sâu của bộ kiểu chữ (sửa kiểu trong một scene không đụng bộ mặc định đã đóng băng). */
 export const cloneTextStyles = (set: TextStyleSet): Record<string, NamedTextStyle> => Object.fromEntries(Object.entries(set).map(([k, v]) => [k, cloneStyle(v)]));
-const clonePiano = (p: PianoRollProps): PianoRollProps => ({ ...p, noteStyle: { base: { ...p.noteStyle.base }, tracks: { ...p.noteStyle.tracks } }, keyboard: { ...p.keyboard } });
+const clonePiano = (p: PianoRollProps): PianoRollProps => ({ ...p, noteStyle: { base: { ...p.noteStyle.base }, tracks: { ...p.noteStyle.tracks } }, keyboard: { ...p.keyboard }, grid: { ...(p.grid ?? DEFAULT_ROLL_GRID) } });
 
 /** Text animator của Ô chữ (T-35): mọi trường về mặc định/kẹp khi sai. */
 function sanitizeTextAnimator(S: Sanitizer, v: unknown, p: string): TextAnimator {
@@ -414,7 +441,9 @@ export function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] 
     const P = isObj(rw.properties) ? rw.properties : {};
     if (rw.type === 'PIANO_ROLL') {
       const d = DEFAULT_PIANO_ROLL;
-      if (P.orientation !== undefined && P.orientation !== 'HORIZONTAL') w('WARN_PRESET_UNSUPPORTED', `${p}.properties.orientation`, P.orientation, 'hướng dọc/góc tự do chưa hỗ trợ (T-59); dùng HORIZONTAL');
+      // T-59: hướng chảy là `flowAngle`; preset cũ ghi VERTICAL (nốt rơi) đọc thành 90°.
+      if (P.orientation !== undefined && P.orientation !== 'HORIZONTAL' && P.orientation !== 'VERTICAL') w('WARN_PRESET_VALUE', `${p}.properties.orientation`, P.orientation, 'không thuộc HORIZONTAL/VERTICAL; dùng HORIZONTAL');
+      const gr = isObj(P.grid) ? P.grid : {};
       const ns = isObj(P.noteStyle) ? P.noteStyle : {};
       const nsBase = { ...DEFAULT_NOTE_STYLE, ...(isObj(ns.base) ? ns.base : {}) } as NoteStyle;
       if (typeof P.noteBorderRadius === 'number') nsBase.cornerRadius = P.noteBorderRadius; // tên cũ trong ví dụ SRS
@@ -444,10 +473,32 @@ export function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] 
           whiteColor: str(kb.whiteColor, d.keyboard.whiteColor, `${p}.properties.keyboard.whiteColor`, (s) => HEX.test(s)),
           blackColor: str(kb.blackColor, d.keyboard.blackColor, `${p}.properties.keyboard.blackColor`, (s) => HEX.test(s)),
           useTrackColor: bool(kb.useTrackColor, d.keyboard.useTrackColor, `${p}.properties.keyboard.useTrackColor`),
+          shape: oneOf(kb.shape, KEYBOARD_SHAPES, d.keyboard.shape, `${p}.properties.keyboard.shape`),
+          pressedColor: str(kb.pressedColor, d.keyboard.pressedColor, `${p}.properties.keyboard.pressedColor`, (s) => HEX.test(s)),
+          scale: oneOf(kb.scale, KEYBOARD_SCALES, d.keyboard.scale, `${p}.properties.keyboard.scale`),
+          scaleColor: str(kb.scaleColor, d.keyboard.scaleColor, `${p}.properties.keyboard.scaleColor`, (s) => HEX.test(s)),
+          scaleOpacity: num(kb.scaleOpacity, d.keyboard.scaleOpacity, 0, 1, `${p}.properties.keyboard.scaleOpacity`),
+          labels: oneOf(kb.labels, KEY_LABEL_MODES, d.keyboard.labels, `${p}.properties.keyboard.labels`),
+          labelOctave: bool(kb.labelOctave, d.keyboard.labelOctave, `${p}.properties.keyboard.labelOctave`),
+          labelColor: str(kb.labelColor, d.keyboard.labelColor, `${p}.properties.keyboard.labelColor`, (s) => s === '' || HEX.test(s)),
         },
         playheadColor: str(P.playheadColor, d.playheadColor, `${p}.properties.playheadColor`, (s) => HEX.test(s)),
         playheadWidth: num(P.playheadWidth, d.playheadWidth, 0, 40, `${p}.properties.playheadWidth`),
         playheadVisible: bool(P.playheadVisible, d.playheadVisible, `${p}.properties.playheadVisible`),
+        flowAngle: flowAngleOf(num(P.flowAngle, P.orientation === 'VERTICAL' ? 90 : d.flowAngle, -360, 720, `${p}.properties.flowAngle`)),
+        flowMirror: bool(P.flowMirror, d.flowMirror, `${p}.properties.flowMirror`),
+        labelsUpright: bool(P.labelsUpright, d.labelsUpright, `${p}.properties.labelsUpright`),
+        playheadStyle: oneOf(P.playheadStyle, PLAYHEAD_STYLES, d.playheadStyle, `${p}.properties.playheadStyle`),
+        playheadArrows: bool(P.playheadArrows, d.playheadArrows, `${p}.properties.playheadArrows`),
+        playheadLength: num(P.playheadLength, d.playheadLength, 0.05, 1, `${p}.properties.playheadLength`),
+        playheadGlow: num(P.playheadGlow, d.playheadGlow, 0, 1, `${p}.properties.playheadGlow`),
+        playheadHit: oneOf(P.playheadHit, PLAYHEAD_HITS, d.playheadHit, `${p}.properties.playheadHit`),
+        playheadHitMs: num(P.playheadHitMs, d.playheadHitMs, 30, 2000, `${p}.properties.playheadHitMs`),
+        grid: {
+          bars: bool(gr.bars, d.grid.bars, `${p}.properties.grid.bars`), beats: bool(gr.beats, d.grid.beats, `${p}.properties.grid.beats`),
+          numbers: bool(gr.numbers, d.grid.numbers, `${p}.properties.grid.numbers`),
+          color: str(gr.color, d.grid.color, `${p}.properties.grid.color`, (s) => HEX.test(s)), opacity: num(gr.opacity, d.grid.opacity, 0, 1, `${p}.properties.grid.opacity`),
+        },
       };
       widgets.push({ ...base, properties: props });
     } else if (base.type in HUD_SANITIZERS) {

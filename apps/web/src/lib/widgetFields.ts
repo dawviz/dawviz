@@ -3,6 +3,7 @@
 // (test `widgetFields.test.ts` bắt thiết lập có trong mặc định mà thiếu trong bảng). Hàm thuần, không DOM.
 import { NOTE_TRANSITION_NAMES, type WidgetSpec, type WidgetType } from '@dawviz/render-core';
 import { ANIM_EFFECTS, ANIM_ORDERS, ANIM_UNITS, DEFAULT_TEXT_ANIMATOR, EASING_NAMES, SPECTRUM_STYLES } from '@dawviz/render-core';
+import { DEFAULT_KEYBOARD_STYLE, DEFAULT_ROLL_GRID, KEYBOARD_SCALES, KEYBOARD_SHAPES, KEY_LABEL_MODES, PLAYHEAD_HITS, PLAYHEAD_STYLES, widgetDefaults } from '@dawviz/render-core';
 
 type Obj = Record<string, unknown>;
 export type FieldKind = 'check' | 'num' | 'choice' | 'select' | 'color' | 'colorOpt' | 'text' | 'asset';
@@ -40,14 +41,20 @@ const ta = (P: Obj) => (P.animator ?? {}) as Obj;
 const taOn = (P: Obj) => !!ta(P).enabled;
 const taCustom = (P: Obj) => taOn(P) && ta(P).effect === 'custom';
 /** Đối tượng lồng tuỳ chọn và giá trị mặc định của nó: bảng Thiết lập đọc/ghi trên bản đã trộn, nên bật lần đầu ghi đủ trường. */
-const NESTED_DEFAULTS: Partial<Record<WidgetType, Obj>> = { TEXT: { animator: DEFAULT_TEXT_ANIMATOR as unknown as Obj } };
-export function withNestedDefaults(type: WidgetType, P: Obj): Obj {
-  const d = NESTED_DEFAULTS[type]; if (!d) return P;
+const NESTED_DEFAULTS: Partial<Record<WidgetType, Obj>> = { TEXT: { animator: DEFAULT_TEXT_ANIMATOR as unknown as Obj }, PIANO_ROLL: { keyboard: DEFAULT_KEYBOARD_STYLE as unknown as Obj, grid: DEFAULT_ROLL_GRID as unknown as Obj } };
+/** Piano Roll của tài liệu cũ có thể thiếu các trường phẳng mới (T-58/T-59): lấy mặc định của loại. */
+const FLAT_DEFAULTS: Partial<Record<WidgetType, () => Obj>> = { PIANO_ROLL: () => widgetDefaults('PIANO_ROLL') };
+export function withNestedDefaults(type: WidgetType, P0: Obj): Obj {
+  const d = NESTED_DEFAULTS[type]; if (!d) return P0;
+  const flat = FLAT_DEFAULTS[type], P = flat && Object.keys(flat()).some((k) => !(k in P0)) ? { ...flat(), ...P0 } : P0;
   let out = P;
   for (const [k, v] of Object.entries(d)) out = { ...out, [k]: { ...(v as Obj), ...((P[k] as Obj | undefined) ?? {}) } };
   return out;
 }
 const LINES = ['played', 'total', 'progress', 'tempo'] as const;
+const kb = (P: Obj) => (P.keyboard ?? {}) as Obj;
+const kbOn = (P: Obj) => !!kb(P).enabled;
+const gridOn = (P: Obj) => { const g = (P.grid ?? {}) as Obj; return !!(g.bars || g.beats || g.numbers); };
 /** Số chữ số tối thiểu của mỗi nhóm trong kiểu "nhóm số" (001 35 083): 1–8, như lược đồ preset. */
 const DIGITS = { min: 1, max: 8, step: 1 } as const;
 
@@ -349,8 +356,40 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['ceilDb'], 'num', 'inCeilDb', { adv: true, when: (P) => P.lane === 'volume', num: { min: -120, max: 24, step: 1, range: [-24, 12] } }),
     L(['playheadColor'], 'colorOpt', 'inPlayheadColor', { adv: true }),
   ],
+  // Piano Roll: hình thức nốt, dải cao độ, bật bàn phím, vị trí vạch phát ở mục Hình thức (StylePanel); ở đây là phần còn lại (T-58, T-51, T-59, lưới ô nhịp).
   PIANO_ROLL: [
     L(['transition'], 'select', 'pianoTransition', { options: NOTE_TRANSITION_NAMES, prefix: 'web.ws.pianoTransition.' }),
+    // Hướng chảy (T-59)
+    L(['flowAngle'], 'num', 'prFlowAngle', { num: { min: 0, max: 360, step: 1 }, testId: 'ws-pr-angle' }),
+    L(['flowMirror'], 'check', 'prFlowMirror'),
+    L(['labelsUpright'], 'check', 'prLabelsUpright', { adv: true, when: (P) => Number(P.flowAngle) % 360 !== 0 }),
+    // Vạch phát (T-58)
+    L(['playheadStyle'], 'select', 'prPhStyle', { when: (P) => !!P.playheadVisible, options: PLAYHEAD_STYLES, prefix: 'web.ws.prPhStyle.', testId: 'ws-pr-ph-style' }),
+    L(['playheadWidth'], 'num', 'prPhWidth', { when: (P) => !!P.playheadVisible, num: { min: 0, max: 40, step: 0.5, range: [0, 12] } }),
+    L(['playheadColor'], 'color', 'prPhColor', { when: (P) => !!P.playheadVisible }),
+    L(['playheadArrows'], 'check', 'prPhArrows', { when: (P) => !!P.playheadVisible }),
+    L(['playheadHit'], 'choice', 'prPhHit', { when: (P) => !!P.playheadVisible, options: PLAYHEAD_HITS, prefix: 'web.ws.prPhHit.' }),
+    L(['playheadHitMs'], 'num', 'prPhHitMs', { adv: true, when: (P) => !!P.playheadVisible && P.playheadHit !== 'OFF', num: { min: 30, max: 2000, step: 10, range: [50, 800] } }),
+    L(['playheadLength'], 'num', 'prPhLength', { adv: true, when: (P) => !!P.playheadVisible, num: { min: 0.05, max: 1, step: 0.05 } }),
+    L(['playheadGlow'], 'num', 'prPhGlow', { adv: true, when: (P) => !!P.playheadVisible, num: { min: 0, max: 1, step: 0.05 } }),
+    // Bàn phím (T-51)
+    L(['keyboard', 'shape'], 'choice', 'prKbShape', { when: kbOn, options: KEYBOARD_SHAPES, prefix: 'web.ws.prKbShape.' }),
+    L(['keyboard', 'labels'], 'select', 'prKbLabels', { when: kbOn, options: KEY_LABEL_MODES, prefix: 'web.ws.prKbLabels.', testId: 'ws-pr-kb-labels' }),
+    L(['keyboard', 'labelOctave'], 'check', 'prKbLabelOctave', { when: (P) => kbOn(P) && kb(P).labels !== 'NONE' }),
+    L(['keyboard', 'labelColor'], 'colorOpt', 'prKbLabelColor', { adv: true, when: (P) => kbOn(P) && kb(P).labels !== 'NONE' }),
+    L(['keyboard', 'scale'], 'select', 'prKbScale', { when: kbOn, options: KEYBOARD_SCALES, prefix: 'web.ws.prKbScale.' }),
+    L(['keyboard', 'scaleColor'], 'color', 'prKbScaleColor', { when: (P) => kbOn(P) && kb(P).scale !== 'OFF' }),
+    L(['keyboard', 'scaleOpacity'], 'num', 'prKbScaleOpacity', { adv: true, when: (P) => kbOn(P) && kb(P).scale !== 'OFF', num: { min: 0, max: 1, step: 0.05 } }),
+    L(['keyboard', 'useTrackColor'], 'check', 'prKbTrackColor', { when: kbOn }),
+    L(['keyboard', 'pressedColor'], 'color', 'prKbPressed', { when: (P) => kbOn(P) && !kb(P).useTrackColor }),
+    L(['keyboard', 'whiteColor'], 'color', 'prKbWhite', { adv: true, when: kbOn }),
+    L(['keyboard', 'blackColor'], 'color', 'prKbBlack', { adv: true, when: kbOn }),
+    // Lưới ô nhịp
+    L(['grid', 'bars'], 'check', 'prGridBars', { testId: 'ws-pr-grid-bars' }),
+    L(['grid', 'beats'], 'check', 'prGridBeats'),
+    L(['grid', 'numbers'], 'check', 'prGridNumbers'),
+    L(['grid', 'color'], 'color', 'prGridColor', { when: gridOn }),
+    L(['grid', 'opacity'], 'num', 'prGridOpacity', { when: gridOn, num: { min: 0, max: 1, step: 0.05 } }),
   ],
   // Ảnh của phiên (T-21): chọn ảnh/SVG, cách khớp; sprite sheet (lưới, số khung, tốc độ) ở Nâng cao.
   IMAGE: [
