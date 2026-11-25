@@ -9,6 +9,7 @@
 // ←/→ trên hình thoi đi qua keyframe cùng hàng, ↑/↓ sang hàng khác, Enter đưa vạch phát tới keyframe.
 // Logic thuần ở lib/timeline.ts và lib/timelineRows.ts; hình dạng hình thoi cho biết cách đi tiếp: thoi = đều, vuông = giữ rồi nhảy, tròn = cong mượt.
 import { memo, useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent as RPointerEvent } from 'react';
+import { ColorField } from './ColorField.tsx';
 import { MAX_ANIMATIONS, MAX_ANIM_KEYS, compileTrack, isBinding, isExpr, isKeyAnim, sampleTrack, type Animation, type Binding, type ExprAnimation, type KeyAnimation, type KeyValue, type TempoPoint, type WidgetSpec } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { usePlayback, type Playback } from '../lib/playback.ts';
@@ -543,8 +544,8 @@ function TreeRow({ it, name, widget, tempoMap, playback, locked, selected, full,
     if (f.kind === 'bool' || f.kind === 'choice') return c
       ? <DiscreteValue key={f.path} f={f} value={value} label={lbl} disabled={locked} compact onChange={(v) => onValue(f.path, v)} />
       : <span key={f.path} className="block min-w-0 flex-1 truncate text-right text-[11px] text-muted" title={i18n.t('web.timeline.staticHint')}>{String(value)}</span>;
-    if (f.kind === 'color') return <input key={f.path} type="color" aria-label={lbl} value={String(value).slice(0, 7)} disabled={!c || locked} onChange={(e) => onValue(f.path, e.target.value)}
-      className="h-5 min-w-0 flex-1 cursor-pointer rounded-sm border border-control bg-raised disabled:cursor-default" title={c ? undefined : i18n.t('web.timeline.staticHint')} />;
+    if (f.kind === 'color') return <ColorField key={f.path} variant="compact" label={lbl} value={String(value)} disabled={!c || locked} onChange={(v) => onValue(f.path, v)}
+      title={c ? undefined : i18n.t('web.timeline.staticHint')} />;
     if (c) return <div key={f.path} className="min-w-0 flex-1"><NumberField label={lbl} value={Number(value)} spec={{ min: f.min, max: f.max, step: f.step }} range={f.range} disabled={locked} onChange={(v) => onValue(f.path, v)} className="!min-h-5 !py-0 text-[11px]" /></div>;
     return <span key={f.path} className="block min-w-0 flex-1 truncate text-right text-[11px] tabular-nums text-muted" title={i18n.t('web.timeline.staticHint')}>{fmt(Number(value))}</span>;
   };

@@ -19,6 +19,7 @@ import { ExprError, colorToHex, compile, isFiniteValue, type Budget, type Compil
 import { keyTimeSec } from './keyframes.ts';
 import { strHash } from './particles.ts';
 import { normalizeAngle } from './snap.ts';
+import { HEX_COLOR } from './color.ts';
 import { widgetDefaults, silentSanitizer, sanitizeWidgetProps, type Sanitizer, type SceneDocument, type WidgetSpec, type WidgetType } from './scene.ts';
 import type { Derived } from './prims.ts';
 import type { UnifiedProjectAST } from './types.ts';
@@ -58,7 +59,7 @@ export interface ExprIssue { widgetId: string; path: string; code: ExprErrorCode
 export const MAX_ANIMATIONS = 24, MAX_ANIM_KEYS = 256;
 /** Giới hạn của `scale` (%): 0 (biến mất) tới 2000. */
 export const MAX_SCALE = 2000;
-const HEX = /^#[0-9a-f]{6}$/i;
+const HEX = HEX_COLOR; // #rrggbb hoặc #rrggbbaa (T-49)
 const LAYOUT_PATHS = ['layout.x', 'layout.y', 'layout.width', 'layout.height', 'layout.rotation'] as const;
 /** Kiểu giá trị của một đường dẫn animate được. `bool`/`choice` animate theo bậc (track `kind: 'discrete'`). */
 export type AnimKind = 'number' | 'color' | 'bool' | 'choice';

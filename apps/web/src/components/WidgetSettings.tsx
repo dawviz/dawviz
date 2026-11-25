@@ -4,6 +4,7 @@
 // và Alt+nhấp (Option+nhấp trên Mac) vào nhãn để khôi phục nhanh (làm trong `ResetButton`, dùng chung cho mọi bảng). Mỗi thay đổi là `patchWidgetProps` (gộp bước theo khoá thuộc tính);
 // mỗi lần khôi phục là một bước hoàn tác riêng. Chữ của mẫu chỉ áp khi Enter hoặc rời ô.
 import { useContext, useEffect, useId, useRef, useState } from 'react';
+import { ColorField } from './ColorField.tsx';
 import { GLOBAL_KEYS, INSIGHT_TEMPLATE_KEYS, TEMPLATE_KEYS, type WidgetSpec } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { radioKeys, radioTab } from '../lib/a11y.ts';
@@ -90,7 +91,7 @@ export function WidgetSettings({ widget, advanced, disabled, reference, onProps,
             <span className="min-w-0 break-words leading-tight">{T(f.label)}</span>
             <span className="flex items-center gap-1.5">
               {opt && <input type="checkbox" aria-label={i18n.t('web.ws.show', { name: label })} checked={!!s} disabled={disabled} onChange={(e) => set(f)(e.target.checked ? '#E4E4E4' : '')} />}
-              {(!opt || s) && <input type="color" aria-label={label} value={s || '#000000'} disabled={disabled} onChange={(e) => set(f)(e.target.value.toUpperCase())} className="h-6 w-full" />}
+              {(!opt || s) && <ColorField label={label} value={s || '#000000'} disabled={disabled} onChange={set(f)} testId={f.testId} />}
             </span>
             {resetBtn(f)}
           </div>);

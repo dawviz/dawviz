@@ -1,5 +1,6 @@
 // Kiểu dáng nốt và bàn phím (SRS REQ-GRAPHICS-07). Dữ liệu thuần, tuần tự hoá được (sau này lưu vào Preset/Pack).
 // Kiểu có hai tầng: mặc định toàn cục + ghi đè theo track (chỉ cần khai báo trường khác mặc định).
+import { alphaSuffix, hexAlpha, isHexColor, parseHexRgba } from './color.ts';
 export type ColorMode = 'track' | 'custom' | 'pitch' | 'velocity';
 export type GlowMode = 'uniform' | 'dynamic';
 export type GlowSource = 'velocity' | 'pitch' | 'pan' | 'fade' | 'automation';
@@ -8,7 +9,7 @@ export type GlowPanMode = 'lr' | 'spread';
 export const GLOW_SOURCES: readonly GlowSource[] = ['velocity', 'pitch', 'pan', 'fade', 'automation'];
 export interface NoteStyle {
   colorMode: ColorMode;
-  customColor: string;      // dùng khi colorMode = 'custom' (#rrggbb)
+  customColor: string;      // dùng khi colorMode = 'custom' (#rrggbb hoặc #rrggbbaa)
   opacity: number;          // 0..1, độ đục cơ bản của nốt (nhân với độ sáng theo automation)
   inactiveOpacity: number;  // 0..1, hệ số nhân khi nốt chưa/đã qua playhead (nốt đang phát = 1)
   cornerRadius: number;     // px; bị kẹp ở nửa chiều cao nốt (rất lớn = viên thuốc)
@@ -56,17 +57,17 @@ export const STYLE_PRESETS: Readonly<Record<string, Partial<NoteStyle>>> = Objec
 
 const num = (v: unknown, d: number) => (typeof v === 'number' && Number.isFinite(v) ? v : d); // trường mới có thể vắng trong preset/tuỳ chọn cũ
 const clamp = (v: number, lo: number, hi: number) => (Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : lo);
-const optHex = (c: unknown): string | null => (typeof c === 'string' && /^#[0-9a-f]{6}$/i.test(c) ? c : null); // vắng hoặc sai định dạng → null
+const optHex = (c: unknown): string | null => (isHexColor(c) ? c : null); // vắng hoặc sai định dạng → null; nhận #rrggbbaa (T-49)
 /** Chuẩn hoá về miền hợp lệ (giá trị lạ từ UI/preset không làm sập vẽ). */
 export function sanitizeStyle(s: NoteStyle): NoteStyle {
-  const hex = (c: string, d: string) => (/^#[0-9a-f]{6}$/i.test(c) ? c : d);
+  const hex = (c: string, d: string) => (isHexColor(c) ? c : d);
   return {
     colorMode: (['track', 'custom', 'pitch', 'velocity'] as const).includes(s.colorMode) ? s.colorMode : 'track',
     customColor: hex(s.customColor, DEFAULT_NOTE_STYLE.customColor),
     opacity: clamp(s.opacity, 0, 1), inactiveOpacity: clamp(s.inactiveOpacity, 0, 1),
     cornerRadius: clamp(s.cornerRadius, 0, 999), heightScale: clamp(s.heightScale, 0.1, 1.5),
     glow: clamp(s.glow, 0, 1), glowRadius: clamp(s.glowRadius, 0, 64), glowActiveOnly: !!s.glowActiveOnly,
-    borderWidth: clamp(s.borderWidth, 0, 8), borderColor: s.borderColor && /^#[0-9a-f]{6}$/i.test(s.borderColor) ? s.borderColor : '',
+    borderWidth: clamp(s.borderWidth, 0, 8), borderColor: isHexColor(s.borderColor) ? s.borderColor : '',
     glowMode: s.glowMode === 'dynamic' ? 'dynamic' : 'uniform',
     glowSource: GLOW_SOURCES.includes(s.glowSource) ? s.glowSource : DEFAULT_NOTE_STYLE.glowSource,
     glowPanMode: s.glowPanMode === 'spread' ? 'spread' : 'lr',
@@ -80,15 +81,15 @@ export const resolveNoteStyle = (cfg: StyleConfig | undefined, trackId: string):
   sanitizeStyle({ ...DEFAULT_NOTE_STYLE, ...(cfg?.base ?? {}), ...(cfg?.tracks[trackId] ?? {}) });
 
 // ---- màu
+/** `#rrggbb` / `#rrggbbaa` → [r, g, b] (bỏ alpha; lấy alpha bằng `parseHexRgba`). Sai định dạng → trắng. */
 export function parseHex(c: string): [number, number, number] {
-  const m = /^#?([0-9a-f]{6})$/i.exec(c.trim()); if (!m) return [255, 255, 255];
-  const n = parseInt(m[1], 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  const v = parseHexRgba(c); return v ? [v[0], v[1], v[2]] : [255, 255, 255];
 }
 export const toHex = (r: number, g: number, b: number) => '#' + [r, g, b].map((v) => Math.round(clamp(v, 0, 255)).toString(16).padStart(2, '0')).join('');
-/** Trộn `c` về phía trắng (k>0) hoặc đen (k<0), |k| ≤ 1. */
+/** Trộn `c` về phía trắng (k>0) hoặc đen (k<0), |k| ≤ 1. Giữ alpha của `c`. */
 export function shade(c: string, k: number): string {
   const [r, g, b] = parseHex(c), t = k >= 0 ? 255 : 0, a = Math.abs(clamp(k, -1, 1));
-  return toHex(r + (t - r) * a, g + (t - g) * a, b + (t - b) * a);
+  return toHex(r + (t - r) * a, g + (t - g) * a, b + (t - b) * a) + alphaSuffix(hexAlpha(c));
 }
 function hslToHex(h: number, s: number, l: number): string {
   const a = s * Math.min(l, 1 - l), f = (n: number) => { const k = (n + h / 30) % 12; return l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)); };

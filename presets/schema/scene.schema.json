@@ -139,11 +139,11 @@
         "underline": { "type": "boolean" },
         "strike": { "type": "boolean" },
         "decoThickness": { "type": "number", "minimum": 0, "maximum": 50 },
-        "decoColor": { "type": "string", "pattern": "^(#[0-9a-fA-F]{6})?$" },
+        "decoColor": { "type": "string", "pattern": "^(#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?)?$" },
         "textCase": { "enum": ["none", "upper", "lower", "title", "smallCaps"] },
         "tracking": { "type": "number", "minimum": -500, "maximum": 2000, "description": "phần nghìn em" },
         "leading": { "type": "number", "minimum": 0.5, "maximum": 5 },
-        "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+        "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$" },
         "gradient": {
           "oneOf": [
             { "type": "null" },
@@ -160,7 +160,7 @@
                   "items": {
                     "type": "object",
                     "required": ["at", "color"],
-                    "properties": { "at": { "type": "number", "minimum": 0, "maximum": 1 }, "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" } }
+                    "properties": { "at": { "type": "number", "minimum": 0, "maximum": 1 }, "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$" } }
                   }
                 }
               }
@@ -172,7 +172,7 @@
           "type": "object",
           "properties": {
             "width": { "type": "number", "minimum": 0, "maximum": 50 },
-            "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+            "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$" },
             "position": { "enum": ["center", "outside"] },
             "join": { "enum": ["miter", "round", "bevel"] },
             "over": { "type": "boolean" }
@@ -182,7 +182,7 @@
           "type": "object",
           "properties": {
             "enabled": { "type": "boolean" },
-            "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+            "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$" },
             "opacity": { "type": "number", "minimum": 0, "maximum": 1 },
             "distance": { "type": "number", "minimum": 0, "maximum": 200 },
             "angle": { "type": "number", "minimum": -360, "maximum": 360 },
@@ -193,7 +193,7 @@
           "type": "object",
           "properties": {
             "enabled": { "type": "boolean" },
-            "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+            "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$" },
             "opacity": { "type": "number", "minimum": 0, "maximum": 1 },
             "padX": { "type": "number", "minimum": 0, "maximum": 200 },
             "padY": { "type": "number", "minimum": 0, "maximum": 200 },

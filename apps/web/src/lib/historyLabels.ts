@@ -111,6 +111,7 @@ export function describeCommand(cmd: Cmd, c: LabelCtx): string {
     case 'patchKeyboard': return changeLabel(c, i18n.t('web.hist.what.keyboard'), KEYBOARD_FIELD, cmd);
     case 'patchTrackStyle':
       return cmd.after === undefined ? i18n.t('web.hist.trackStyleClear', { track }) : changeLabel(c, i18n.t('web.hist.what.trackStyle'), NOTE_FIELD, cmd, track);
+    case 'applyTrackPalette': return i18n.t('web.hist.trackPalette', { n: String(p.n ?? 0) });
     case 'patchBrightness': return changeLabel(c, i18n.t('web.hist.what.brightness'), BRIGHTNESS_FIELD, cmd, track);
     case 'applyNotePreset': {
       const id = typeof p.preset === 'string' ? p.preset : '';

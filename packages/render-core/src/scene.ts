@@ -9,6 +9,7 @@ import {
 import { BASE_TEXT_STYLE, BUNDLED_TEXT_FAMILIES, DEFAULT_TEXT_STYLES, TEXT_DEFAULT_FONT, applyOverride, cloneStyle, type NamedTextStyle, type TextRef, type TextStyle, type TextStyleSet } from './typography.ts';
 import { ALIAS_KEYS, GLOBAL_KEYS, checkTemplate } from './placeholders.ts';
 import { normalizeAngle } from './snap.ts';
+import { HEX_COLOR, HEX_OPAQUE } from './color.ts';
 import { DEFAULT_BACKGROUND, type BackgroundImageSpec } from './background.ts';
 import { DEFAULT_PARTICLES, type ParticleProps } from './particles.ts';
 import { NOTE_TRANSITION_NAMES } from './noteTransition.ts';
@@ -234,7 +235,8 @@ export const UNSAFE_KEYS: ReadonlySet<string> = new Set(['__proto__', 'construct
 
 type Obj = Record<string, unknown>;
 const isObj = (v: unknown): v is Obj => typeof v === 'object' && v !== null && !Array.isArray(v);
-const HEX = /^#[0-9a-f]{6}$/i;
+/** Màu của widget/chữ/kiểu nốt: `#rrggbb` hoặc `#rrggbbaa` (T-49). Nền khung hình chỉ nhận `#rrggbb` (HEX_OPAQUE). */
+const HEX = HEX_COLOR;
 
 /** Sao chép JSON thô thành cây an toàn: bỏ khoá nguy hiểm (kèm cảnh báo), kiểm giới hạn độ sâu/số nút/độ dài (NFR-SEC-04).
  *  Đối tượng mới luôn dựng bằng `{}` + gán khoá đã lọc, nên `__proto__` không bao giờ thành nguyên mẫu. */
@@ -346,7 +348,7 @@ export function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] 
   const canvas: CanvasSpec = {
     aspectRatio: str(c.aspectRatio, `${dw}:${dh}`, '$.canvas.aspectRatio'),
     designWidth: dw, designHeight: dh,
-    backgroundColor: str(c.backgroundColor, '#0c0e16', '$.canvas.backgroundColor', (s) => HEX.test(s)),
+    backgroundColor: str(c.backgroundColor, '#0c0e16', '$.canvas.backgroundColor', (s) => HEX_OPAQUE.test(s)),
     backgroundImageData: null,
     ...(bi ? { backgroundImage: { fit: oneOf(bi.fit, ['COVER', 'CONTAIN', 'STRETCH'] as const, DEFAULT_BACKGROUND.fit, '$.canvas.backgroundImage.fit'),
       opacity: num(bi.opacity, DEFAULT_BACKGROUND.opacity, 0, 1, '$.canvas.backgroundImage.opacity'), dim: num(bi.dim, DEFAULT_BACKGROUND.dim, 0, 1, '$.canvas.backgroundImage.dim') } } : {}),

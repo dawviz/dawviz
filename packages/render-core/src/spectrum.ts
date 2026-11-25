@@ -4,6 +4,7 @@
 import type { Derived, LayoutCtx, PathPrim, Primitive, RectPrim, WidgetRenderer } from './prims.ts';
 import type { WidgetSpec } from './scene.ts';
 import { frameAt, u8ToDb, type AudioFeatures } from './audioFeatures.ts';
+import { mixHexRgb } from './color.ts';
 
 /** Kiểu hiển thị (REQ-WIDGET-07, T-53): cột, vùng, đường, chấm (phổ tại t); dao động ký (sóng tức thời); sóng âm cả bài; đồng hồ đỉnh/RMS. */
 export type SpectrumStyle = 'BARS' | 'AREA' | 'LINE' | 'DOTS' | 'OSCILLOSCOPE' | 'WAVEFORM' | 'METER';
@@ -65,11 +66,8 @@ export interface DerivedAudio { features: AudioFeatures; offsetSec: number }
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 const lerp = (a: number, b: number, k: number) => a + (b - a) * k;
-function mix(a: string, b: string, k: number): string {
-  const p = (h: string, s: number) => parseInt(h.slice(s, s + 2), 16);
-  const c = (s: number) => Math.round(lerp(p(a, s), p(b, s), k)).toString(16).padStart(2, '0');
-  return `#${c(1)}${c(3)}${c(5)}`;
-}
+/** Gradient của cột: trộn sRGB (như trước), giữ alpha khi mã có `#rrggbbaa`. */
+const mix = (a: string, b: string, k: number): string => mixHexRgb(a, b, k);
 
 /** Giá trị mượt (0..255, kiểu số thực) của mọi dải tại khung `f`: bám lên theo attack, xuống theo release; đọc ngược tối đa ~6 hằng số thời gian. */
 export function smoothedBands(ft: AudioFeatures, f: number, attackMs: number, releaseMs: number): Float64Array {

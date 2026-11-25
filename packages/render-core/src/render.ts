@@ -7,6 +7,7 @@ import { layoutPianoRoll, layoutKeyboard } from './pianoroll.ts';
 import { NOTE_TRANSITIONS, rippleAt } from './noteTransition.ts';
 import { barPosAt } from './hud.ts';
 import { DEFAULT_KEYBOARD_STYLE } from './style.ts';
+import { rgbaOf } from './color.ts';
 import type { PianoRollProps, SceneDocument, WidgetSpec } from './scene.ts';
 import type { Derived, LayoutCtx, Primitive, RectPrim, TextPrim, WidgetRenderer } from './prims.ts';
 import { HUD_RENDERERS, barPageAt, buildHud, hudOf, usesChordPlaceholder, type ChordProps, type HudData } from './hud.ts';
@@ -338,10 +339,7 @@ function drawText(g: Ctx2D, p: TextPrim, env: DrawEnv): void {
 // Vị trí từng run/cụm ký tự đã tính ở layout bằng bảng đo, nên mọi trình duyệt đặt chữ như nhau. Không dùng letterSpacing,
 // fontVariantNumeric hay italic tổng hợp của trình duyệt: tracking/chữ số đều bề rộng là vị trí đã dàn, nghiêng là phép xiên.
 const FAR = 1e5; // bản sao chữ cho bóng nằm ngoài vùng cắt của widget; chỉ bóng của nó rơi vào khung
-const rgba = (hex: string, a: number) => {
-  const n = parseInt(hex.slice(1), 16);
-  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${Math.min(1, Math.max(0, a))})`;
-};
+const rgba = (hex: string, a: number) => rgbaOf(hex, a); // alpha của mã (#rrggbbaa) nhân với độ đục của bóng
 function drawRichText(g: RenderCtx, p: TextPrim, r: RichText, env: DrawEnv): void {
   const alpha = p.alpha * r.opacity;
   if (!(alpha > 0.004)) return;

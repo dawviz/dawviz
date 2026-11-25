@@ -2,6 +2,7 @@
 // Mỗi thuộc tính là một ghi đè trên kiểu dựng sẵn; nút ↺ bỏ ghi đè (về kiểu, hoặc về dòng chứa nó nếu là một đoạn).
 // Cơ bản: chỗ chữ, kiểu, phông, cỡ, màu, đậm, nghiêng, căn lề. Nâng cao: mọi thuộc tính còn lại + Lưu thành kiểu mới / Cập nhật kiểu.
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import { ColorField } from './ColorField.tsx';
 import { BUNDLED_FONTS, saveAsTextStyle, updateTextStyleFromRef, type TextRef, type TextStyle, type TextStyleSet, type WidgetSpec } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { radioKeys, radioTab } from '../lib/a11y.ts';
@@ -61,7 +62,7 @@ export function TextPanel({ widget, styles, advanced, disabled, onRef, onStyles,
   const color = (p: TextPath, name: string) => (
     <div className={numRow} key={p} data-testid={`text-${p}`}>
       <span className="min-w-0 break-words leading-tight">{name}</span>
-      <input type="color" aria-label={name} value={String(v(p))} disabled={disabled} onChange={(e) => set(p, e.target.value.toUpperCase())} className="h-6 w-full" />
+      <ColorField label={name} value={String(v(p))} disabled={disabled} onChange={(c) => set(p, c)} />
       {R(p, name)}
     </div>
   );
@@ -227,8 +228,8 @@ function GradientRows({ g, disabled, color, onChange }: { g: NonNullable<TextSty
     <div className={numRow}>
       <span>{i18n.t('web.text.gradientStops')}</span>
       <span className="flex gap-1">
-        <input type="color" aria-label={i18n.t('web.text.gradientFrom')} value={first.color} disabled={disabled} onChange={(e) => stop(0, e.target.value.toUpperCase())} className="h-6 w-1/2" />
-        <input type="color" aria-label={i18n.t('web.text.gradientTo')} value={last.color} disabled={disabled} onChange={(e) => stop(1, e.target.value.toUpperCase())} className="h-6 w-1/2" />
+        <ColorField label={i18n.t('web.text.gradientFrom')} value={first.color} disabled={disabled} onChange={(c) => stop(0, c)} className="!w-1/2" />
+        <ColorField label={i18n.t('web.text.gradientTo')} value={last.color} disabled={disabled} onChange={(c) => stop(1, c)} className="!w-1/2" />
       </span>
       <ResetButton label={i18n.t('web.text.gradientStops')} changed={first.color.toUpperCase() !== D.from.toUpperCase() || last.color.toUpperCase() !== D.to.toUpperCase()} disabled={disabled}
         onReset={() => onChange({ ...g, stops: g.stops.map((s, k) => (k === 0 ? { ...s, color: D.from } : k === g.stops.length - 1 ? { ...s, color: D.to } : s)) })} />

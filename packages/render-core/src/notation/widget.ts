@@ -70,7 +70,7 @@ export const DEFAULT_NOTATION: Readonly<NotationProps> = Object.freeze({
  * Nền sáng thì "sáng cả bản nhạc" dùng màu nốt đang phát (quầng theo mực tối trông như nét nhoè, không phải phát sáng).
  */
 export function notationInkFor(background: string): Pick<NotationProps, 'inkColor' | 'playedColor' | 'auraColor'> {
-  const m = /^#([0-9a-f]{6})$/i.exec(background);
+  const m = /^#([0-9a-f]{6})(?:[0-9a-f]{2})?$/i.exec(background); // alpha (#rrggbbaa) không đổi độ sáng của nền
   const n = m ? parseInt(m[1], 16) : 0, lin = (c: number) => { const v = c / 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };
   const L = 0.2126 * lin((n >> 16) & 255) + 0.7152 * lin((n >> 8) & 255) + 0.0722 * lin(n & 255);
   return L > 0.5 ? { inkColor: '#16181d', playedColor: '#8a909c', auraColor: DEFAULT_NOTATION.activeColor }

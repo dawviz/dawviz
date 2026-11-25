@@ -67,6 +67,10 @@ The preset is the whole video design. The app reads it with a forgiving checker:
 - Seconds; `to: null` = until the end. Leave `visibility` out to show the layer for the whole song. Up to 32 ranges; `to` must be after `from`.
 - `fadeIn`/`fadeOut` (0–30 s) apply at the edges of every range. These are the bars and fade handles on the Timeline.
 
+## Colours
+
+A colour is `#rrggbb`, or `#rrggbbaa` when it should be translucent (`aa` is the alpha, `ff` opaque). Both forms are accepted for widget, text and note colours; `canvas.backgroundColor` stays `#rrggbb`. A preset with only `#rrggbb` renders exactly as before.
+
 ## Animation
 
 **Keyframes** (`animate`, path → track). Paths: `layout.x`, `layout.y`, `layout.width`, `layout.height`, `layout.rotation`, `opacity` (0–1), `scale` (percent, 100 = normal), and number/colour properties by name (e.g. `color`, `thickness`, `glow`).

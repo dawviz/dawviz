@@ -176,6 +176,12 @@ Precomp gom nhiều lớp thành một lớp, như precomp của After Effects. 
 - Tổng số lớp khi mở hết các precomp tối đa là 512. Vượt quá thì ứng dụng báo và không làm.
 - Ở thẻ Xem trước, khi vạch phát nằm trong một precomp, bấm một ô **Phong cách video** sẽ áp phong cách đó vào precomp ấy, không thay cả video. Nếu Piano Roll nằm trong precomp, phần chỉnh màu theo track ở thẻ Xem trước chỉnh Piano Roll của precomp đang hiện ở vạch phát. Xem [Xem trước](02-xem-truoc.md).
 
+## Chọn màu và bảng màu
+
+Mọi ô màu đều mở cùng một bộ chọn: kéo trong vùng màu và thanh sắc màu, hoặc gõ mã vào ô nhập. Ô nhập hiểu `#f80`, `#ff8800`, `#ff880080` (hai số cuối là độ đục), `rgb(255 136 0)`, `hsl(32 100% 50%)`, `hsv(32 100% 100%)`, `oklch(0.75 0.15 60)`, tên màu CSS như `tomato`, hoặc một số. Thanh **Độ đục** chỉ hiện ở ô cho phép trong suốt; màu lưu dạng `#rrggbbaa`, preset cũ không đổi hình. Công tắc HEX/RGB/HSL/HSV đổi cách hiển thị, nút sao chép lấy mã, nút ống hút lấy màu từ màn hình (chỉ có khi trình duyệt hỗ trợ, như Chrome và Edge). **Gần đây** giữ 12 màu vừa dùng. Esc đóng bộ chọn.
+
+**Bảng màu** nằm ở đầu mục **Track**: dán danh sách mã màu, một bảng GIMP `.gpl`, JSON hoặc các biến CSS (`--ten: #aabbcc`), hoặc bấm **Lấy màu track hiện tại**; sửa từng màu, đặt tên rồi **Lưu bảng màu**. **Áp lần lượt cho track** gán các màu theo thứ tự track (hết màu thì quay vòng) bằng một bước hoàn tác (Ctrl+Z).
+
 ## Cách ghi tên nốt
 
 Cũng khi không chọn widget nào, mục **Cách ghi tên nốt** đổi tên nốt và hợp âm ở mọi widget cùng lúc (chữ cái, Do Re Mi, kiểu Đức; dấu thăng hay giáng; C4 hay C3). Chi tiết ở [Widget phân tích](10-phan-tich.md#cách-ghi-tên-nốt).

@@ -1,6 +1,7 @@
 // Mục "Hình thức" của inspector: kiểu dáng nốt (toàn cục) và bàn phím. Chỉ sửa dữ liệu StyleConfig; việc vẽ nằm ở Render Core.
 // Phân bổ Cơ bản / Nâng cao theo SRS REQ-UI-13 (dòng "Kiểu nốt", "Bàn phím"). Phong cách dựng sẵn chọn ở cột Video styles.
 import { GLOW_SOURCES, type StyleConfig, type NoteStyle, type ColorMode, type KeyboardStyle, type GlowSource, type GlowPanMode } from '@dawviz/render-core';
+import { ColorField } from './ColorField.tsx';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { radioKeys, radioTab } from '../lib/a11y.ts';
 import { matchNotePreset } from '../lib/videoScenes.ts';
@@ -44,7 +45,7 @@ export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], a
           <Select value={b.colorMode} onChange={(e) => set({ colorMode: e.target.value as ColorMode })} className="py-1 pl-2" wrapClassName="min-w-0 flex-1">
             {MODES.map((m) => <option key={m} value={m}>{i18n.t(`web.style.mode.${m}`)}</option>)}
           </Select>
-          {b.colorMode === 'custom' && <input type="color" aria-label={i18n.t('web.style.customColor')} value={b.customColor} onChange={(e) => set({ customColor: e.target.value })} />}
+          {b.colorMode === 'custom' && <ColorField variant="swatch" label={i18n.t('web.style.customColor')} value={b.customColor} onChange={(c) => set({ customColor: c })} />}
         </span>
         <ResetButton label={i18n.t('web.style.colorMode')} changed={!!reference && (reference.colorMode !== b.colorMode || (b.colorMode === 'custom' && reference.customColor !== b.customColor))}
           onReset={() => set({ colorMode: reference!.colorMode, customColor: reference!.customColor })} />

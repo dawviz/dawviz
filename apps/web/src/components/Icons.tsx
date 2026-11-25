@@ -59,6 +59,8 @@ export const DistributeV = (p: P) => <S {...p}><path d="M2 2h12M2 14h12" /><rect
 export const Duplicate = (p: P) => <S {...p}><rect x="5.5" y="5.5" width="8" height="8" rx="1" /><path d="M10.5 3.5v-1a.5.5 0 0 0-.5-.5H3a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .5.5h1" /></S>;
 export const Trash = (p: P) => <S {...p}><path d="M2.5 4h11M6 4V2.5h4V4M4 4l.7 9.5h6.6L12 4M6.75 6.5v4.5M9.25 6.5v4.5" /></S>;
 export const Download = (p: P) => <S {...p}><path d="M8 2.5v8m0 0L5.25 7.75M8 10.5l2.75-2.75" /><path d="M2.5 13.5h11" /></S>;
+/** Ống hút màu (EyeDropper). */
+export const Pipette = (p: P) => <S {...p}><path d="m9.5 4.5 2 2M3 13l1-3 5.5-5.5 2 2L6 12Z" /><path d="M10.5 3.5 12 2a1.4 1.4 0 0 1 2 2l-1.5 1.5" /></S>;
 export const Close = (p: P) => <S {...p}><path d="m4 4 8 8M12 4l-8 8" /></S>;
 // ── Panel và timeline (Editor) ──
 export const ChevronLeft = (p: P) => <S {...p}><path d="M10 3.5 5.5 8l4.5 4.5" /></S>;

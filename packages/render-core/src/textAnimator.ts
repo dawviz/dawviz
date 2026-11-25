@@ -4,6 +4,7 @@
 // Mỗi phần tử được dàn bằng đúng textPrims (giữ tracking, gradient, viền…), rồi biến đổi primitive của phần tử đó. Thuần, tất định: hàm của (props, t).
 import { EASINGS } from './motion.ts';
 import { mixColor } from './keyframes.ts';
+import { isHexColor } from './color.ts';
 import { hash32 } from './particles.ts';
 import { clusters, type TextSpan } from './typography.ts';
 import type { Primitive, TextPrim } from './prims.ts';
@@ -102,7 +103,7 @@ export function countUpText(s: string, k: number): string {
 /** Biến đổi các primitive chữ của một phần tử: tỉ lệ quanh (cx, cy), dời (dx, dy), nhân độ đục, pha màu về `color` theo `mix`. */
 export function transformText(prims: Primitive[], cx: number, cy: number, dx: number, dy: number, s: number, alpha: number, color: string, mix: number): void {
   const X = (x: number) => cx + (x - cx) * s + dx, Y = (y: number) => cy + (y - cy) * s + dy;
-  const tint = (c: string) => (color && mix > 0 && /^#[0-9a-f]{6}$/i.test(c) ? mixColor(c, color, mix) : c);
+  const tint = (c: string) => (color && mix > 0 && isHexColor(c) ? mixColor(c, color, mix) : c);
   for (let i = 0; i < prims.length; i++) {
     const p = prims[i]; if (p.kind !== 'text') continue;
     const q: TextPrim = { ...p, x: X(p.x), y: Y(p.y), size: p.size * s, alpha: p.alpha * alpha, color: tint(p.color) };
