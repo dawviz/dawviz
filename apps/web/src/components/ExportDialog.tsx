@@ -10,15 +10,20 @@ import { radioKeys } from '../lib/a11y.ts';
 import { useAssets, type ExportAssets } from '../lib/assetsRuntime.ts';
 import { missingAssets } from '../lib/sessionAssets.ts';
 import type { FileTarget } from '../lib/exportProtocol.ts';
-import { AUDIO_LABEL, CONTAINER_EXT, CONTAINER_LABEL, CONTAINER_MIME, FPS_CHOICES, VIDEO_LABEL, autoChoice, detectSupport, exportDuration, manualChoice, normalizeSelection, optionsFor, preflight, sizeForClass, sliceAudioForRange, usableContainers, type AudioId, type CodecChoice, type CodecProbe, type ContainerId, type Fps, type ProgressInfo, type Quality, type ResolutionClass, type Selection, type Support, type VideoId } from '../lib/exportPlan.ts';
+import { AUDIO_LABEL, CONTAINER_EXT, CONTAINER_LABEL, CONTAINER_MIME, FPS_CHOICES, MAX_EDGE, MIN_SHORT_EDGE, VIDEO_LABEL, autoChoice, detectSupport, exportBaseName, exportDuration, fitRect, heightForWidth, manualChoice, normalizeRange, normalizeSelection, optionsFor, preflight, sizeForClass, sizeFromCustom, sliceAudioForRange, usableContainers, widthForHeight, type AudioId, type CodecChoice, type CodecProbe, type ContainerId, type Fps, type ProgressInfo, type Quality, type ResolutionClass, type Selection, type Support, type VideoId } from '../lib/exportPlan.ts';
 import { downsample, formatExportReport, type ExportReport, type ExportStats } from '../lib/exportStats.ts';
 import { isExportBusy, tryExportLock, type ExportLock } from '../lib/exportLock.ts';
 import { makeExportWorker } from '../lib/exportWorker.ts';
 import { runDiagnostics } from '../lib/exportDiagnostics.ts';
 import pkg from '../../package.json';
 import { Select } from './Select.tsx';
+import { NumberField } from './NumberField.tsx';
+import { TimeField } from './TimeField.tsx';
 
 const CLASSES: ResolutionClass[] = [720, 1080, 2160];
+/** Ô Kích thước: ba mốc hoặc "Tuỳ chỉnh" (rộng × cao, D-26). */
+type SizeChoice = ResolutionClass | 'custom';
+const PX = { min: 2, max: 8192, step: 2, units: { px: 1 } };
 const CLASS_LABEL: Record<ResolutionClass, string> = { 720: '720p', 1080: '1080p', 2160: '4K' };
 const QUALITIES: Quality[] = ['low', 'medium', 'high'];
 
@@ -36,13 +41,35 @@ const mmss = (sec: number) => `${Math.floor(sec / 60)}:${String(Math.round(sec %
 const baseOf = (n: string) => (n.replace(/\.[^.]+$/, '') || 'dawviz').replace(/[\\/:*?"<>|]+/g, '_');
 
 /** Xuất do agent điều khiển (`?agent=1`, lib/agentApi.ts): cấu hình đặt sẵn, tự bắt đầu khi đã dò xong bộ mã hoá, không hỏi nơi lưu, báo kết quả qua `onFinish`. */
-export interface AutoExport { resolution?: ResolutionClass; fps?: Fps; quality?: Quality; kind?: 'video' | 'png'; onFinish(r: { blob: Blob | null; name: string; bytes: number; ms: number } | { error: string }): void }
-export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec, fileName, advanced = false, styleId, styleName, onClose, auto }: {
+export interface AutoExport {
+  resolution?: ResolutionClass; fps?: Fps; quality?: Quality; kind?: 'video' | 'png';
+  /** Kích thước tuỳ ý (cả hai cùng có thì thay `resolution`). */
+  width?: number; height?: number;
+  /** Chỉ xuất đoạn này (giây dự án). */
+  range?: { start: number; end: number };
+  /** Chỉ đưa các lớp gốc này vào lần xuất (id lớp). */
+  layers?: string[];
+  onFinish(r: { blob: Blob | null; name: string; bytes: number; ms: number } | { error: string }): void }
+export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec, fileName, advanced = false, styleId, styleName, onClose, auto, layerName }: {
+  /** Tên hiển thị của lớp (như cột lớp ở Timeline); vắng thì tên riêng hoặc loại widget. */
+  layerName?(id: string): string;
   styleId?: string; styleName?: string; scene: SceneDocument; ast: UnifiedProjectAST; derived: Derived; audio: AudioAsset | null; offsetMs: number; projectSec: number; fileName: string; advanced?: boolean; onClose(): void; auto?: AutoExport;
 }) {
   const { i18n } = useI18n();
   const assetsApi = useAssets();
-  const [cls, setCls] = useState<ResolutionClass>(auto?.resolution ?? 1080);
+  const { designWidth: DW, designHeight: DH } = scene.canvas;
+  const autoCustom = !!(auto?.width && auto?.height);
+  const [cls, setCls] = useState<SizeChoice>(autoCustom ? 'custom' : auto?.resolution ?? 1080);
+  // Kích thước tuỳ ý (D-26): rộng × cao; "giữ tỉ lệ" thì sửa một ô, ô kia tự tính theo tỉ lệ khung video.
+  const [custom, setCustom] = useState(() => (autoCustom ? { w: auto!.width!, h: auto!.height! } : { w: sizeForClass(DW, DH, 1080).width, h: sizeForClass(DW, DH, 1080).height }));
+  const [keepRatio, setKeepRatio] = useState(!autoCustom);
+  // Đoạn xuất Start→End (D-10); `end` null = tới hết bài.
+  const [part, setPart] = useState(!!auto?.range);
+  const [rStart, setRStart] = useState(auto?.range?.start ?? 0);
+  const [rEnd, setREnd] = useState<number | null>(auto?.range?.end ?? null);
+  // Chọn lớp cho lần xuất này (T-55): lớp gốc bị bỏ ra; mặc định không bỏ lớp nào.
+  const roots = useMemo(() => [...scene.widgets].sort((a, b) => b.zIndex - a.zIndex), [scene]);
+  const [excluded, setExcluded] = useState<ReadonlySet<string>>(() => new Set(auto?.layers ? scene.widgets.filter((w) => !auto.layers!.includes(w.id)).map((w) => w.id) : []));
   const [fps, setFps] = useState<Fps>(auto?.fps ?? 30);
   const [quality, setQuality] = useState<Quality>(auto?.quality ?? 'medium');
   const [phase, setPhase] = useState<Phase>('setup');
@@ -70,8 +97,22 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
   const [wav, setWav] = useState(true);
   const [vp9Alpha, setVp9Alpha] = useState<boolean | null>(null);
 
-  const size = useMemo(() => sizeForClass(scene.canvas.designWidth, scene.canvas.designHeight, cls), [scene, cls]);
-  const range = useMemo(() => exportDuration({ projectSec, audioSec: audio ? Math.max(0, offsetMs / 1000 + audio.durationSec) : 0 }), [projectSec, audio, offsetMs]);
+  const customSize = useMemo(() => (cls === 'custom' ? sizeFromCustom(custom.w, custom.h) : null), [cls, custom]);
+  const tooSmall = cls === 'custom' && !customSize;
+  // Kích thước quá nhỏ: vẫn cần một kích thước để tính ước tính, nhưng nút Bắt đầu bị khoá.
+  const size = useMemo(() => customSize ?? sizeForClass(DW, DH, cls === 'custom' ? 720 : cls), [customSize, DW, DH, cls]);
+  const letterbox = !fitRect(DW, DH, size.width, size.height).fits;
+  const whole = useMemo(() => exportDuration({ projectSec, audioSec: audio ? Math.max(0, offsetMs / 1000 + audio.durationSec) : 0 }), [projectSec, audio, offsetMs]);
+  const span = useMemo(() => normalizeRange({ start: rStart, end: rEnd ?? whole.duration }, whole.duration, 1 / fps), [rStart, rEnd, whole, fps]);
+  const range = useMemo(() => (part ? exportDuration({ projectSec, range: span }) : whole), [part, projectSec, span, whole]);
+  const rangeBad = part && !span.ok;
+  const layers = excluded.size ? roots.filter((w) => !excluded.has(w.id)).map((w) => w.id) : undefined;
+  const noLayers = !!layers && layers.length === 0;
+  const invalid = tooSmall || rangeBad || noLayers;
+  const lname = (w: (typeof roots)[number]) => layerName?.(w.id) ?? w.name ?? (i18n.has(`web.widget.${w.type}`) ? i18n.t(`web.widget.${w.type}`) : w.type);
+  // Tên tệp chốt trước khi render (D-26): tên dự án + rộng×cao + fps (+ đoạn).
+  const outBase = exportBaseName(baseOf(fileName), { width: size.width, height: size.height, fps, range: part ? span : null });
+  const pngBase = exportBaseName(safeBase(baseOf(fileName)), { width: size.width, height: size.height, fps, range: part ? span : null });
   // Bản nhạc còn đang viết (D-63): chưa cho xuất, nếu không widget sẽ trống trong video.
   const notationPending = flattenScene(scene).widgets.some((w) => w.type === 'NOTATION' && w.visible && !derived.notation?.has(w.id));
   // Agent: không hỏi nơi lưu (không có người bấm hộp thoại của hệ điều hành); kết quả về dạng Blob.
@@ -112,6 +153,7 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
     if (kind === 'video' && choice === 'checking') return;
     if (notationPending) return;
     autoStarted.current = true;
+    if (invalid) { auto.onFinish({ error: tooSmall ? 'invalid size: short side must be at least 128 px' : rangeBad ? 'invalid range: end must be after start' : 'no layers selected' }); return; }
     if (kind === 'video' && !choice) { auto.onFinish({ error: 'unsupported: no video encoder for this size/fps in this browser' }); return; }
     void start();
   }); // eslint-disable-line react-hooks/exhaustive-deps
@@ -132,12 +174,16 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
     AUDIO_FALLBACK: choice && choice !== 'checking' && choice.audioCodec ? i18n.t('web.export.note.AUDIO_FALLBACK', { codec: AUDIO_LABEL[choice.audioCodec] }) : '',
     LARGE_IN_MEMORY: i18n.t('web.export.note.LARGE_IN_MEMORY'), SAVE_AFTER: i18n.t('web.export.note.SAVE_AFTER'),
   };
-  for (const n of size.notes) notes.push(NOTE[n]);
+  // Ghi chú về kích thước và tài nguyên: đúng cho cả video lẫn chuỗi PNG.
+  const common: string[] = size.notes.map((n) => NOTE[n]);
+  if (letterbox) common.push(i18n.t('web.export.note.LETTERBOX'));
   if (choice && choice !== 'checking') for (const n of choice.notices) notes.push(NOTE[n]);
   for (const w of pre.warnings) notes.push(NOTE[w]);
   // Pre-flight tài nguyên (T-21): ảnh widget dùng mà phiên chưa có thì báo trước khi xuất.
   const missing = missingAssets(scene, new Set(derived.images?.keys() ?? []));
-  if (missing.length) notes.push(i18n.t('web.export.note.MISSING_ASSETS', { n: missing.length }));
+  if (missing.length) common.push(i18n.t('web.export.note.MISSING_ASSETS', { n: missing.length }));
+  // Lỗi chặn xuất (nút Bắt đầu bị khoá): nói rõ vì sao.
+  const blockers = [tooSmall && i18n.t('web.export.note.TOO_SMALL', { min: MIN_SHORT_EDGE, max: MAX_EDGE }), rangeBad && i18n.t('web.export.note.RANGE_EMPTY'), noLayers && i18n.t('web.export.note.NO_LAYERS')].filter(Boolean) as string[];
   if (!hasFsa) notes.push(NOTE.SAVE_AFTER);
 
   const format = choice && choice !== 'checking'
@@ -146,6 +192,7 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
 
   const start = async () => {
     if (kind === 'video' && (!choice || choice === 'checking')) return;
+    if (invalid) return;
     // Chuỗi PNG không cần bộ mã hoá video: giữ chỗ để thông điệp đủ trường (Worker bỏ qua).
     const codec: CodecChoice = choice && choice !== 'checking' ? choice : { container: 'mp4', video: 'avc', videoCodec: 'png', audioCodec: null, notices: [] };
     setError(null);
@@ -154,9 +201,9 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
     if (!got) { setBusy(true); return; }
     exportLock.current = got;
     const freeLock = () => { exportLock.current?.release(); exportLock.current = null; };
-    const isPng = kind === 'png', base = safeBase(baseOf(fileName));
+    const isPng = kind === 'png', base = pngBase;
     const ext = isPng ? 'zip' : CONTAINER_EXT[codec.container];
-    const suggestedName = `${isPng ? base : baseOf(fileName)}.${ext}`;
+    const suggestedName = `${isPng ? pngBase : outBase}.${ext}`;
     let file: SaveHandle | undefined;
     let dir: DirTarget | undefined;
     if (isPng && hasDirPicker) {
@@ -181,7 +228,7 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
     try { h = startExport({
       ...(payload.images.length ? { images: payload.images } : {}), ...(payload.fonts.length ? { userFonts: payload.fonts } : {}),
       ast, scene, brightness: derived.brightness, spectrum: derived.audio, background, ...(derived.notation?.size ? { notation: [...derived.notation] } : {}), width: size.width, height: size.height, fps, bitrate: pre.bitrate, choice: codec,
-      start: range.start, duration: range.duration, style: styleId,
+      start: range.start, duration: range.duration, style: styleId, ...(layers ? { layers } : {}),
       audio: slice ? { channels: slice.channels, sampleRate: audio!.buffer.sampleRate, offsetMs: slice.offsetMs } : undefined,
       ...(isPng ? { png: { base, wav: !!slice, transparent: true } } : {}),
     }, makeExportWorker, {
@@ -232,9 +279,37 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
             </div>
             <div className="grid grid-cols-[7rem_1fr] items-center gap-2 text-[13px]">
               <label htmlFor="exp-size" className="text-muted">{i18n.t('web.export.size')}</label>
-              <Select id="exp-size" value={cls} onChange={(e) => setCls(Number(e.target.value) as ResolutionClass)}>{CLASSES.map((c) => <option key={c} value={c}>{CLASS_LABEL[c]}</option>)}</Select>
+              <Select id="exp-size" value={cls} onChange={(e) => { const v = e.target.value; if (v === 'custom') { setCustom({ w: size.width, h: size.height }); setCls('custom'); } else setCls(Number(v) as ResolutionClass); }}>
+                {CLASSES.map((c) => <option key={c} value={c}>{CLASS_LABEL[c]}</option>)}
+                <option value="custom">{i18n.t('web.export.size.custom')}</option>
+              </Select>
+              {cls === 'custom' && <>
+                <span aria-hidden />
+                <div className="space-y-1.5" data-testid="export-custom">
+                  <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-1.5">
+                    <NumberField label={i18n.t('web.export.width')} value={custom.w} spec={PX} range={[MIN_SHORT_EDGE, MAX_EDGE]} onChange={(w) => setCustom((c) => ({ w, h: keepRatio ? heightForWidth(w, DW, DH) : c.h }))} />
+                    <span aria-hidden className="text-muted">×</span>
+                    <NumberField label={i18n.t('web.export.height')} value={custom.h} spec={PX} range={[MIN_SHORT_EDGE, MAX_EDGE]} onChange={(h) => setCustom((c) => ({ w: keepRatio ? widthForHeight(h, DW, DH) : c.w, h }))} />
+                  </div>
+                  <label className="flex items-center gap-2 text-xs text-muted">
+                    <input type="checkbox" checked={keepRatio} onChange={(e) => { setKeepRatio(e.target.checked); if (e.target.checked) setCustom((c) => ({ w: c.w, h: heightForWidth(c.w, DW, DH) })); }} data-testid="export-keep-ratio" />{i18n.t('web.export.keepRatio')}
+                  </label>
+                </div>
+              </>}
               <label htmlFor="exp-fps" className="text-muted">{i18n.t('web.export.fps')}</label>
               <Select id="exp-fps" value={fps} onChange={(e) => setFps(Number(e.target.value) as Fps)}>{FPS_CHOICES.map((f) => <option key={f} value={f}>{f}</option>)}</Select>
+              <span className="text-muted" id="exp-range-l">{i18n.t('web.export.range')}</span>
+              <div className="seg w-full" role="radiogroup" aria-labelledby="exp-range-l" onKeyDown={radioKeys} data-testid="export-range">
+                {([false, true] as const).map((p) => <button key={String(p)} type="button" role="radio" aria-checked={part === p} tabIndex={part === p ? 0 : -1} className="seg-btn flex-1" onClick={() => setPart(p)} data-testid={`export-range-${p ? 'part' : 'all'}`}>{i18n.t(p ? 'web.export.range.part' : 'web.export.range.all')}</button>)}
+              </div>
+              {part && <>
+                <span aria-hidden />
+                <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-1.5" data-testid="export-range-fields">
+                  <TimeField id="export-range-start" label={i18n.t('web.export.range.start')} value={span.start} max={whole.duration} onChange={(v) => setRStart(v ?? 0)} />
+                  <span aria-hidden className="text-muted">→</span>
+                  <TimeField id="export-range-end" label={i18n.t('web.export.range.end')} value={span.end} max={whole.duration} onChange={(v) => setREnd(v)} />
+                </div>
+              </>}
               {kind === 'video' && <>
               <label htmlFor="exp-q" className="text-muted">{i18n.t('web.export.quality')}</label>
               <Select id="exp-q" value={quality} onChange={(e) => setQuality(e.target.value as Quality)}>
@@ -249,6 +324,25 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
                 {!hasDirPicker && pngBytes > ZIP_WARN_BYTES && <p role="alert" className="text-warning" data-testid="export-png-big">{i18n.t('web.export.png.big')}</p>}
                 <p className="text-muted" data-testid="export-vp9-alpha">{vp9Alpha === null ? '' : i18n.t(vp9Alpha ? 'web.export.png.alphaYes' : 'web.export.png.alphaNo')}</p>
               </div>
+            )}
+            {(advanced || kind === 'png') && roots.length > 1 && (
+              <details className="text-[13px]" data-testid="export-layers">
+                <summary className="disclosure cursor-pointer text-muted">{i18n.t('web.export.layers', { n: roots.length - excluded.size, total: roots.length })}</summary>
+                <div className="mt-1.5 space-y-0.5">
+                  <button type="button" className="hit text-xs text-muted underline-offset-2 hover:text-fg hover:underline disabled:opacity-40" disabled={!excluded.size} onClick={() => setExcluded(new Set())} data-testid="export-layers-all">{i18n.t('web.export.layers.all')}</button>
+                  <ul className="max-h-40 space-y-0.5 overflow-y-auto">
+                    {roots.map((w) => (
+                      <li key={w.id}>
+                        <label className="flex min-h-[var(--hit)] items-center gap-2 text-xs text-muted">
+                          <input type="checkbox" checked={!excluded.has(w.id)} onChange={(e) => setExcluded((s) => { const n = new Set(s); if (e.target.checked) n.delete(w.id); else n.add(w.id); return n; })} data-testid={`export-layer-${w.id}`} />
+                          <span className="min-w-0 truncate text-fg">{lname(w)}</span>
+                          {!w.visible && <span className="text-faint">{i18n.t('web.export.layers.hidden')}</span>}
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </details>
             )}
             {kind === 'video' && advanced && support !== 'checking' && effSel && (
               <div className="grid grid-cols-[7rem_1fr] items-center gap-2 text-[13px]" data-testid="export-format-pickers">
@@ -273,6 +367,9 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
             <p className="text-[13px]" aria-live="polite">
               {kind === 'png' ? i18n.t('web.export.format', { format: `PNG ${i18n.t('web.export.png.alpha')}${audio && wav ? ' + WAV' : ''}` }) : choice === 'checking' ? i18n.t('web.export.checking') : unsupported ? '' : i18n.t('web.export.format', { format: format ?? '' })}
             </p>
+            <p className="break-all text-[13px] text-muted" data-testid="export-filename">{i18n.t('web.export.fileName', { name: kind === 'png' ? (hasDirPicker ? `${pngBase}_000001.png…` : `${pngBase}.zip`) : `${outBase}.${choice && choice !== 'checking' ? CONTAINER_EXT[choice.container] : CONTAINER_EXT[sel.container]}` }) }</p>
+            {blockers.length > 0 && <ul role="alert" className="space-y-1 text-[13px] text-danger" data-testid="export-blockers">{blockers.map((n) => <li key={n}>{n}</li>)}</ul>}
+            {common.length > 0 && <ul className="space-y-1 text-[13px] text-warning" data-testid="export-notes">{common.map((n, i) => <li key={i}>{n}</li>)}</ul>}
             {busy && <p role="alert" className="text-[13px] text-warning" data-testid="export-busy">{i18n.t('web.export.busy')}</p>}
             {notationPending && <p role="status" className="text-[13px] text-warning" data-testid="export-notation-pending">{i18n.t('web.export.notationPending')}</p>}
             {kind === 'video' && unsupported && <p role="alert" className="text-[13px] text-danger">{i18n.t('errors.ERR_NO_SUPPORTED_ENCODER')}</p>}
@@ -344,7 +441,7 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
             ? <button type="button" className="btn-ghost border border-control" onClick={() => handle.current?.cancel()} data-testid="export-cancel">{i18n.t('web.export.cancel')}</button>
             : <>
                 <button type="button" className="btn-ghost border border-control" onClick={onClose} data-testid="export-close">{i18n.t('web.export.close')}</button>
-                {phase !== 'done' && <button ref={startBtn} type="button" disabled={(kind === 'video' && (choice === 'checking' || unsupported)) || busy || notationPending} onClick={() => void start()}
+                {phase !== 'done' && <button ref={startBtn} type="button" disabled={(kind === 'video' && (choice === 'checking' || unsupported)) || busy || notationPending || invalid} onClick={() => void start()}
                   className="rounded border border-accent px-3 py-1.5 text-[13px] font-medium text-accent disabled:cursor-not-allowed disabled:opacity-50" data-testid="export-start">{i18n.t('web.export.start')}</button>}
               </>}
         </div>

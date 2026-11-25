@@ -12,13 +12,17 @@ export function usePref<T extends object>(name: string, fallback: T, sanitize: (
 export type UiMode = 'basic' | 'advanced';
 /** Tuỳ chọn bố cục T-70: chế độ (REQ-UI-13, mặc định Cơ bản cho người dùng chính), mục đang mở "Thêm tuỳ chọn",
  *  khung bản in thử quanh sân khấu (UI-DIRECTION 5.3, mặc định bật) và phong cách video đã chọn gần nhất. */
-export interface UiPrefs { mode: UiMode; more: Record<string, boolean>; proofFrame: boolean; videoStyle: string }
-export const DEFAULT_UI: UiPrefs = { mode: 'basic', more: {}, proofFrame: true, videoStyle: 'paper' }; // D-51: Paper là phong cách mặc định khi mở tệp
+export interface UiPrefs { mode: UiMode; more: Record<string, boolean>; proofFrame: boolean; videoStyle: string;
+  /** Đã trả lời hộp chọn chế độ lần đầu (REQ-UI-13) hoặc đã tự đổi chế độ: không hỏi lại. */
+  modeChosen: boolean }
+export const DEFAULT_UI: UiPrefs = { mode: 'basic', more: {}, proofFrame: true, videoStyle: 'paper', modeChosen: false }; // D-51: Paper là phong cách mặc định khi mở tệp
 export function sanitizeUi(r: Partial<UiPrefs>): UiPrefs {
   return {
     mode: r.mode === 'advanced' ? 'advanced' : 'basic',
     more: r.more && typeof r.more === 'object' ? Object.fromEntries(Object.entries(r.more).filter(([, b]) => b === true)) : {},
     proofFrame: r.proofFrame !== false,
     videoStyle: typeof r.videoStyle === 'string' && VIDEO_STYLES.includes(r.videoStyle) ? r.videoStyle : DEFAULT_UI.videoStyle,
+    // Tuỳ chọn lưu trước T-60 (có `mode` mà chưa có cờ): người đã dùng app, không hỏi lại.
+    modeChosen: typeof r.modeChosen === 'boolean' ? r.modeChosen : r.mode !== undefined,
   };
 }

@@ -16,7 +16,7 @@ The instructions for the AI are the `dawviz` skill in the repo (`plugins/dawviz/
 
 Open the app with `?agent=1` added to its address: for the public build that is `https://dawviz.github.io/dawviz/app/?agent=1` (from source: `http://localhost:5173/?agent=1`). A strip at the top says an AI can control this window. The AI clicks buttons as you would, or calls the app directly; everything happens in front of you and can be undone with Ctrl+Z. You still pick the project file in the **Open file** dialog.
 
-Without `?agent=1` the app opens no way for an AI to control it.
+Without `?agent=1` the app opens no way for an AI to control it. With `?agent=1` the first-run Basic/Advanced dialog doesn't appear, so the AI isn't blocked. When exporting, the AI can pick a custom size, a Start→End section and the layers to include, like the boxes in the [Export video](06-export-video.md) dialog.
 
 ## Way 3: the AI has a terminal (for example Claude Code)
 

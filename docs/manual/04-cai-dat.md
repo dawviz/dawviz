@@ -6,6 +6,7 @@
 
 - **Sáng hoặc tối:** Sáng, Tối, hoặc Theo hệ thống (đổi theo cài đặt của máy). Nút mặt trăng/mặt trời ở góc trên cũng đổi nhanh được.
 - **Màu nhấn:** màu của nút, thẻ đang chọn và các điểm nhấn khác.
+- **Cơ bản hoặc Nâng cao:** lần đầu mở ứng dụng có hộp hỏi bạn chọn một trong hai; về sau đổi bằng nút **Cơ bản · Nâng cao** ở thanh trên. Ô **Tìm thiết lập…** ở đầu bảng bên phải giúp tìm nhanh một thiết lập ở cả hai chế độ (xem [Mục lục](README.md)).
 
 Hai mục này chỉ đổi giao diện của ứng dụng. Màu trong video do phong cách video quyết định.
 

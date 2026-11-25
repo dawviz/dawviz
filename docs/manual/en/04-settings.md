@@ -6,6 +6,7 @@
 
 - **Light or dark:** Light, Dark, or Match system (follows your computer's setting). The moon/sun button at the top switches quickly too.
 - **Accent colour:** the colour of buttons, the selected tab and other highlights.
+- **Basic or Advanced:** the first time you open the app a dialog asks you to pick one; later, switch with the **Basic · Advanced** control in the top bar. The **Search settings…** box at the top of the right panel finds a setting in either mode (see the [Contents](README.md)).
 
 These change the app only. The colours in the video come from the video style.
 

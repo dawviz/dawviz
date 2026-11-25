@@ -47,7 +47,7 @@ const tabWalk = async (pg, state) => {
 
 for (const theme of ['dark', 'light']) {
   const ctx = await b.newContext({ viewport: { width: 1440, height: 900 }, locale: 'vi-VN' });
-  await ctx.addInitScript((th) => { localStorage.setItem('dawviz.prefs.v1.theme', JSON.stringify({ mode: th, palette: 'studio' })); localStorage.setItem('dawviz.lang', 'vi'); }, theme);
+  await ctx.addInitScript((th) => { localStorage.setItem('dawviz.prefs.v1.theme', JSON.stringify({ mode: th, palette: 'studio' })); localStorage.setItem('dawviz.lang', 'vi'); if (!localStorage.getItem('dawviz.prefs.v1.ui')) localStorage.setItem('dawviz.prefs.v1.ui', JSON.stringify({ modeChosen: true })); }, theme); // ui: bỏ qua hộp chọn chế độ lần đầu (T-60)
   const pg = await ctx.newPage();
   await pg.goto(`http://localhost:${PORT}/`, { timeout: 120000 });
   await pg.locator('[data-testid="file-input"]').first().setInputFiles(file);

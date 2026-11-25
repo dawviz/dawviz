@@ -26,7 +26,9 @@ export interface ExportJob {
   background?: BackgroundImage;
   /** Bản nhạc đã dựng ở Xem trước theo id widget Bản nhạc (D-63): Export vẽ đúng bản đó (Preview = Export). */
   notation?: [string, NotationLayout][];
-  /** Xuất chuỗi PNG (T-55): `base` tên gốc, `wav` kèm âm thanh, `transparent` bỏ nền, `layers` chỉ các widget này. Vắng = xuất video. */
+  /** Chọn lớp cho lần xuất này (T-55): chỉ vẽ các lớp gốc có id ở đây (con trong precomp đi theo lớp precomp). Vắng = mọi lớp. Dùng cho cả video lẫn PNG. */
+  layers?: string[];
+  /** Xuất chuỗi PNG (T-55): `base` tên gốc, `wav` kèm âm thanh, `transparent` bỏ nền, `layers` (cũ, như `ExportJob.layers`). Vắng = xuất video. */
   png?: { base: string; wav: boolean; transparent: boolean; layers?: string[] };
   /** Tài nguyên của phiên (T-21): bitmap ảnh theo `sha256:…` (chuyển sang Worker) và phông người dùng (byte). */
   images?: [string, ImageBitmap][];

@@ -46,7 +46,8 @@ async function pick(name: string) {
   await waitFor(() => expect(screen.getByTestId('inspector')).toBeInTheDocument());
 }
 
-beforeEach(() => { localStorage.clear(); });
+// Hộp chọn chế độ lần đầu (T-60) đã trả lời: các test khác không bị hộp thoại đè lên. Test riêng của hộp này xoá cờ.
+beforeEach(() => { localStorage.clear(); localStorage.setItem('dawviz.prefs.v1.ui', JSON.stringify({ modeChosen: true })); });
 
 describe('hoàn tác trong ứng dụng (T-07)', () => {
   it('đổi phong cách video rồi Ctrl+Z trở về kiểu cũ; Ctrl+Shift+Z và Ctrl+Y làm lại', async () => {
@@ -1107,5 +1108,55 @@ describe('thẻ Editor (T-68)', () => {
     fireEvent.click(screen.getByTestId('align-left'));
     expect(undoBtn().title).toMatch(/Move 2|Dời 2|2/);
     expect(screen.getByTestId('distribute-x')).toBeDisabled(); // cần ít nhất 3 widget
+  });
+});
+
+describe('Hộp chọn chế độ lần đầu (T-60, REQ-UI-13)', () => {
+  it('lần đầu mở app hỏi Cơ bản hay Nâng cao; chọn Nâng cao thì đổi chế độ, nhớ lại và không hỏi lần sau', async () => {
+    localStorage.removeItem('dawviz.prefs.v1.ui');
+    const r = render(<I18nProvider><App /></I18nProvider>);
+    const dlg = await screen.findByTestId('mode-choice');
+    expect(within(dlg).getByTestId('mode-choice-cancel')).toHaveTextContent(/new to this|mới dùng/);
+    expect(within(dlg).getByTestId('mode-choice-cancel')).toHaveFocus(); // lựa chọn an toàn: Cơ bản
+    fireEvent.click(within(dlg).getByTestId('mode-choice-ok'));
+    expect(screen.queryByTestId('mode-choice')).toBeNull();
+    expect(within(screen.getByTestId('mode-switch')).getByRole('radio', { name: /Advanced|Nâng cao/ })).toHaveAttribute('aria-checked', 'true');
+    expect(JSON.parse(localStorage.getItem('dawviz.prefs.v1.ui')!)).toMatchObject({ mode: 'advanced', modeChosen: true });
+    r.unmount();
+    render(<I18nProvider><App /></I18nProvider>);
+    expect(screen.queryByTestId('mode-choice')).toBeNull();
+  });
+  it('Esc là Cơ bản; tuỳ chọn cũ (đã có chế độ, trước T-60) thì không hỏi', async () => {
+    localStorage.removeItem('dawviz.prefs.v1.ui');
+    const r = render(<I18nProvider><App /></I18nProvider>);
+    fireEvent.keyDown(await screen.findByTestId('mode-choice'), { key: 'Escape' });
+    expect(screen.queryByTestId('mode-choice')).toBeNull();
+    expect(JSON.parse(localStorage.getItem('dawviz.prefs.v1.ui')!)).toMatchObject({ mode: 'basic', modeChosen: true });
+    r.unmount();
+    localStorage.setItem('dawviz.prefs.v1.ui', JSON.stringify({ mode: 'advanced', more: {} }));
+    render(<I18nProvider><App /></I18nProvider>);
+    expect(screen.queryByTestId('mode-choice')).toBeNull();
+  });
+  it('không hỏi khi agent điều khiển (?agent=1)', async () => {
+    localStorage.removeItem('dawviz.prefs.v1.ui');
+    const old = window.location.href;
+    window.history.replaceState({}, '', '/?agent=1');
+    try {
+      render(<I18nProvider><App /></I18nProvider>);
+      expect(await screen.findByTestId('agent-banner')).toBeInTheDocument();
+      expect(screen.queryByTestId('mode-choice')).toBeNull();
+    } finally { window.history.replaceState({}, '', old); }
+  });
+  it('tìm thiết lập ở inspector Xem trước: mục không khớp bị ẩn, không gì khớp thì báo; Esc xoá ô tìm', async () => {
+    await openProject();
+    const insp = screen.getByTestId('inspector'), box = within(insp).getByTestId('settings-search');
+    fireEvent.change(box, { target: { value: 'zzqq' } });
+    expect(screen.getByTestId('section-song')).not.toBeVisible();
+    expect(screen.getByTestId('section-tracks')).not.toBeVisible();
+    await waitFor(() => expect(within(insp).getByTestId('settings-search-none')).toBeVisible());
+    fireEvent.change(box, { target: { value: 'track' } });
+    expect(screen.getByTestId('section-tracks')).toBeVisible();
+    fireEvent.keyDown(within(insp).getByTestId('settings-search'), { key: 'Escape' });
+    expect((within(insp).getByTestId('settings-search') as HTMLInputElement).value).toBe('');
   });
 });

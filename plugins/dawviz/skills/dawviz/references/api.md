@@ -16,7 +16,7 @@ Available only when the app address has `?agent=1` (a banner says so). Every met
 | `setTab('preview' \| 'editor' \| 'settings')` | switch tab | |
 | `undo()`, `redo()` | history | `{ canUndo, canRedo, undoLabel }` |
 | `frame(t?, width = 960)` | render the frame at `t` (default: playhead) | PNG data URL, so you can look at the result |
-| `exportVideo({ resolution: 720\|1080\|2160, fps: 24\|30\|60, quality: 'low'\|'medium'\|'high', kind: 'video'\|'png', download = true })` | export without any save dialog; `download` saves it like the **Save file** button | `{ name, bytes, ms, mime }` |
+| `exportVideo({ resolution: 720\|1080\|2160, fps: 24\|30\|60, quality: 'low'\|'medium'\|'high', kind: 'video'\|'png', width?, height?, range?: { start, end }, layers?: string[], download = true })` | export without any save dialog; `download` saves it like the **Save file** button. `width` + `height` (both) replace `resolution`: rounded down to even, short side ≥ 128, long side ≤ 4096; a shape different from the frame is centred with background-colour bars. `range` exports only that section (project seconds). `layers` lists root layer ids to include (`getScene().widgets[].id`; a precomp includes its children); default all | `{ name, bytes, ms, mime }`; `name` is `project_WxH_FPSfps[_0m45s-1m45s].ext` |
 | `lastExport()` | the last exported file | `{ name, mime, base64 }` or `null` |
 
 Typical session (Claude in Chrome's JavaScript tool, or `page.evaluate` in Playwright):

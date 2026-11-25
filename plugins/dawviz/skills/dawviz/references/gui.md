@@ -12,7 +12,9 @@ Button names are shown in English / Vietnamese (the app follows the browser lang
 | Undo / redo | **Undo** / **Hoàn tác**, **Redo** / **Làm lại** (Ctrl+Z, Ctrl+Shift+Z) | `undo-button`, `redo-button` |
 | Export | **Export video** / **Xuất video** | opens `export-dialog` |
 
-With `?agent=1` a banner under the top bar says an agent can control the window (`agent-banner`).
+With `?agent=1` a banner under the top bar says an agent can control the window (`agent-banner`). Without it, the very first visit shows a Basic/Advanced choice (`mode-choice`): **I'm new to this / Tôi mới dùng** (Basic) or **I know video editing software / Tôi đã quen phần mềm dựng hình** (Advanced); Esc picks Basic. It is not shown again, and never with `?agent=1`.
+
+The right-hand panel of Preview and Editor starts with **Find a setting… / Tìm thiết lập…** (`settings-search`): typing keeps only the matching sections and fields, Advanced ones included.
 
 ## Preview tab
 
@@ -34,7 +36,7 @@ With `?agent=1` a banner under the top bar says an agent can control the window 
 
 ## Export dialog (`export-dialog`)
 
-Pick **Video / PNG**, the size (720p, 1080p, 4K), the frame rate and the quality, then **Start export / Bắt đầu xuất** (`export-start`). When it is done, **Save file / Lưu tệp** (`export-download`). Chrome may first ask where to save. **Cancel** (`export-cancel`) stops it.
+Pick **Video / PNG**, the size (720p, 1080p, 4K, or **Custom… / Tuỳ chỉnh…** with **Width / Rộng** × **Height / Cao**, `export-custom`), the frame rate, **Whole song / Cả bài** or **A section / Một đoạn** (`export-range`, then the Start/End boxes `export-range-start`, `export-range-end`) and the quality; **Layers / Lớp** (`export-layers`, PNG or Advanced) ticks the layers to include. The **File name / Tên tệp** line (`export-filename`) shows the name. Then **Start export / Bắt đầu xuất** (`export-start`). When it is done, **Save file / Lưu tệp** (`export-download`). Chrome may first ask where to save. **Cancel** (`export-cancel`) stops it.
 
 ## Steps to give a user (path A)
 

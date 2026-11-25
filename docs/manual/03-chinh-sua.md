@@ -12,6 +12,7 @@ Màn hình có ba phần: khung video ở giữa, **Thuộc tính widget** bên 
 - **Thu gọn:** bấm nút panel ở góc trên của Thuộc tính widget, hoặc nút ở đầu thanh **Timeline và keyframe**. Panel thu gọn còn một dải mỏng; bấm dải đó để mở lại. Phím tắt: Ctrl+Alt+B (Thuộc tính widget), Ctrl+J (Timeline).
 - **Timeline cao hay thấp tuỳ ý:** kéo đường ranh phía trên Timeline lên hoặc xuống; kéo được tới khi khung video còn một dải nhỏ.
 - **Gấp mục:** bấm tiêu đề một mục (ví dụ **Vị trí và kích thước**) để gấp lại khi không dùng tới, bấm lần nữa để mở. Cột bên phải ngắn đi rất nhiều. Ứng dụng nhớ mục nào đang gấp, cả ở thẻ Xem trước.
+- **Tìm thiết lập:** gõ vào ô **Tìm thiết lập…** ở đầu Thuộc tính widget để chỉ giữ các mục và ô có tên khớp, kể cả ô Nâng cao khi đang ở Cơ bản; mục đang gấp tự mở khi có kết quả (xem [Mục lục](README.md)). Esc xoá chữ.
 - Cỡ và trạng thái các panel được nhớ trong trình duyệt này. Màn hình hẹp hơn 1024 điểm thì các panel xếp dọc như cũ.
 
 ## Chọn widget
