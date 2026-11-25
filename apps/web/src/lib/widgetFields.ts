@@ -298,14 +298,6 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['playheadColor'], 'colorOpt', 'inPlayheadColor', { adv: true }),
     L(['playheadWidth'], 'num', 'inPlayheadWidth', { adv: true, num: { min: 0, max: 10, step: 0.5 } }),
   ],
-  PITCH_STRIP: [
-    L(['order'], 'choice', 'inWheelOrder', { options: ['CHROMATIC', 'FIFTHS'], prefix: 'web.ws.inWheelOrder.' }),
-    L(['labels'], 'choice', 'inWheelLabels', { options: ['NAMES', 'DEGREES'], prefix: 'web.ws.inWheelLabels.' }),
-    L(['brackets'], 'check', 'psBrackets'),
-    L(['litColor'], 'colorOpt', 'inLitColor'),
-    L(['dimAlpha'], 'num', 'psDimAlpha', { num: { min: 0, max: 1, step: 0.05 } }),
-    L(['keyWindowSec'], 'num', 'inKeyWindow', { adv: true, when: (P) => P.labels === 'DEGREES', num: { min: 2, max: 120, step: 1, range: [4, 60] } }),
-  ],
   ARRANGEMENT: [
     L(['cols'], 'num', 'inCols', { num: { min: 16, max: 600, step: 4, range: [32, 300] } }),
     L(['colorMode'], 'choice', 'inColorMode', { options: ['TRACK', 'SOLID'], prefix: 'web.ws.inColor.' }),
@@ -452,7 +444,6 @@ export const SETTINGS_EXEMPT: Readonly<Record<string, readonly string[]>> = {
   PITCH_WHEEL: ['nameStyle', 'chordStyle', 'subStyle'],
   PANEL: ['titleStyle', 'labelStyle', 'valueStyle'],
   DEGREE: ['labelStyle', 'smallStyle'],
-  PITCH_STRIP: ['style'],
   DRUM_PAD: ['labelStyle'],
   SECTION: ['align', 'style', 'nextStyle'],
   LYRICS: ['align', 'style', 'unsungStyle', 'nextStyle'],
@@ -493,4 +484,4 @@ export function advancedEdited(widget: Pick<WidgetSpec, 'type' | 'trackMappingMo
   return adv || (widget.type !== 'TEXT' && widget.type !== 'NOTATION' && TRACK_WIDGETS.includes(widget.type) && widget.trackMappingMode === 'MANUAL');
 }
 /** Widget đọc số liệu từ các track nên có mục chọn track (Ô chữ ở Cơ bản, còn lại ở Nâng cao). */
-export const TRACK_WIDGETS: readonly string[] = ['TEXT', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'CHORD_DETECTION', 'PARTICLES', 'NOTATION', 'KEY_SCALE', 'VELOCITY', 'DENSITY', 'PITCH_WHEEL', 'ARRANGEMENT', 'DRUM_PAD', 'AUTOMATION', 'PANEL', 'DEGREE', 'DOTS', 'PITCH_STRIP'];
+export const TRACK_WIDGETS: readonly string[] = ['TEXT', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'CHORD_DETECTION', 'PARTICLES', 'NOTATION', 'KEY_SCALE', 'VELOCITY', 'DENSITY', 'PITCH_WHEEL', 'ARRANGEMENT', 'DRUM_PAD', 'AUTOMATION', 'PANEL', 'DEGREE', 'DOTS'];

@@ -1,5 +1,5 @@
-// Bảng phân tích nhạc (REFERENCE-VIDEOS video 3, T-107; video 2 dải lớp cao độ, T-109): bậc hợp âm, Vòng quãng năm nâng cấp,
-// Khung ô, Degree, Dots, Dải lớp cao độ, chỗ giữ mới và primitive poly. Kết quả khớp tính tay, tất định, không NaN.
+// Bảng phân tích nhạc (REFERENCE-VIDEOS video 3, T-107): bậc hợp âm, Vòng quãng năm nâng cấp,
+// Khung ô, Degree, Dots, chỗ giữ mới và primitive poly. Kết quả khớp tính tay, tất định, không NaN.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { layoutFrame, renderFrame, sanitizeScene, SCENE_SCHEMA_VERSION, chordDegree, chordFunction, parseChordName, romanOf, levelsAt, bandShareAt, arcPts, DEFAULT_PITCH_WHEEL, DEFAULT_PANEL,
@@ -91,18 +91,6 @@ test('Dots: lưới cột × hàng, chấm có nốt sáng, nốt sắp tới m�
   assert.equal(polys(p).length, 1);
   const bad = sanitizeScene({ schemaVersion: SCENE_SCHEMA_VERSION, canvas: {}, widgets: [{ id: 'w', type: 'DOTS', layout: { x: 0, y: 0, width: 10, height: 10 }, properties: { grid: 12 } }] });
   assert.equal((bad.scene.widgets[0].properties as { grid: number }).grid, 16); assert.ok(bad.warnings.length === 1);
-});
-
-test('Dải lớp cao độ: 12 ô cố định, chỉ lớp đang vang hiện chữ, vị trí không đổi theo số nốt', () => {
-  const ast = synthAst();
-  const sc = sceneWith('PITCH_STRIP', {}, {}, { x: 0, y: 0, width: 640, height: 60 });
-  const a = textsOf(prims(sc, 0.1, ast)), b = textsOf(prims(sc, 1.0, ast));
-  assert.ok(a.some((x) => x.text === '[') && a.some((x) => x.text === ']'));
-  const xOf = (arr: TextPrim[], n: string) => arr.find((x) => x.text === n)?.x;
-  assert.ok(xOf(a, 'E') !== undefined && xOf(a, 'E') === xOf(b, 'E'));
-  assert.ok(!a.some((x) => x.text === 'F') && !a.some((x) => x.text === 'C') && b.some((x) => x.text === 'C'));
-  const dim = textsOf(prims(sceneWith('PITCH_STRIP', { dimAlpha: 0.3 }, {}, { x: 0, y: 0, width: 640, height: 60 }), 0.1, ast));
-  assert.equal(dim.filter((x) => x.text !== '[' && x.text !== ']').length, 12);
 });
 
 test('chỗ giữ mới: {degree} {next_chord} {next_degree} {chord_count} {key}; không có âm thanh thì {lows} {level} là —', () => {

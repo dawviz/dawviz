@@ -1,13 +1,11 @@
 // Widget cho bảng phân tích nhạc kiểu "dashboard" (tham chiếu REFERENCE-VIDEOS video 3, T-107; video 2 dải lớp cao độ, T-109):
-// Khung ô (PANEL), Bậc hợp âm (DEGREE), Lưới chấm (DOTS), Dải lớp cao độ (PITCH_STRIP). Như insight.ts: mỗi renderer là hàm thuần của
+// Khung ô (PANEL), Bậc hợp âm (DEGREE), Lưới chấm (DOTS). Như insight.ts: mỗi renderer là hàm thuần của
 // (spec, t, AST, derived), không trạng thái, không đồng hồ, nên Preview = Export. Chữ lấy từ mẫu/thuộc tính, không từ locales/ của app.
 import { secToTick, tickToSec } from '@dawviz/parser-core';
 import { notesInRange, type TrackIndex } from './notes.ts';
 import { barPosAt, base, chordTimeline, globalValues, hudOf, shown, typo, xFor, type Align, type ChordSeg } from './hud.ts';
 import { tonicAt } from './keyDetect.ts';
-import { chordDegree, chordFunction, ROMAN_DEGREES, romanAscii, type HarmonicFunction, type RomanStyle } from './degree.ts';
-import { pitchClassNameFor } from './naming.ts';
-import { pitchClassName } from './musicAnalysis.ts';
+import { chordDegree, chordFunction, romanAscii, type HarmonicFunction, type RomanStyle } from './degree.ts';
 import { templateSpans, type TextRef } from './typography.ts';
 import { poly, type Derived, type Primitive, type RectPrim, type WidgetRenderer } from './prims.ts';
 
@@ -52,14 +50,6 @@ export interface DotsProps {
   colorMode: 'TRACK' | 'SOLID'; color: string; upcomingAlpha: number; activeScale: number;
   playheadColor: string; playheadWidth: number;
 }
-export interface PitchStripProps {
-  order: 'CHROMATIC' | 'FIFTHS'; labels: 'NAMES' | 'DEGREES'; style: TextRef;
-  /** Màu lớp cao độ đang vang (rỗng = màu kiểu chữ); lớp không vang hiện với độ đục `dimAlpha` (0 = ẩn, ô vẫn giữ chỗ). */
-  litColor: string; dimAlpha: number;
-  /** Ngoặc "[" "]" ở hai đầu dải. */
-  brackets: boolean;
-  keyWindowSec: number;
-}
 
 export const DEFAULT_PANEL: Readonly<PanelProps> = Object.freeze({
   number: '01', title: 'PANEL', numberColor: '#ff3d8b', titleStyle: { styleId: 'label', weight: 700, tracking: 120, color: '#222222', size: 13 },
@@ -78,12 +68,9 @@ export const DEFAULT_DOTS: Readonly<DotsProps> = Object.freeze({
   emptyColor: '#c7a3bb', emptyColorB: '#8fd3cb', emptyAlpha: 0.45, colorMode: 'SOLID', color: '#ff3d8b', upcomingAlpha: 0.3, activeScale: 1.5,
   playheadColor: '#333344', playheadWidth: 1.5,
 });
-export const DEFAULT_PITCH_STRIP: Readonly<PitchStripProps> = Object.freeze({
-  order: 'CHROMATIC', labels: 'NAMES', style: ts('heading'), litColor: '', dimAlpha: 0, brackets: true, keyWindowSec: 16,
-});
-export const DASHBOARD_TYPES = ['PANEL', 'DEGREE', 'DOTS', 'PITCH_STRIP'] as const;
+export const DASHBOARD_TYPES = ['PANEL', 'DEGREE', 'DOTS'] as const;
 export const DASHBOARD_TEXT_FIELDS = {
-  PANEL: { titleStyle: 'label', labelStyle: 'label', valueStyle: 'body' }, DEGREE: { labelStyle: 'caption', smallStyle: 'label' }, PITCH_STRIP: { style: 'heading' },
+  PANEL: { titleStyle: 'label', labelStyle: 'label', valueStyle: 'body' }, DEGREE: { labelStyle: 'caption', smallStyle: 'label' },
 } as const;
 export const MAX_PANEL_STATS = 6;
 export const DOTS_GRIDS = [4, 8, 16, 32] as const;
@@ -230,27 +217,6 @@ export const dotsRenderer: WidgetRenderer<DotsProps> = {
   },
 };
 
-// ───────────────────────────── Dải lớp cao độ ─────────────────────────────
-/** 12 ô cố định (C … B, hoặc theo vòng quãng năm): ô của lớp cao độ không vang để trống nhưng vẫn giữ chỗ, nên chữ không nhảy khi nốt đổi. */
-export const pitchStripRenderer: WidgetRenderer<PitchStripProps> = {
-  type: 'PITCH_STRIP',
-  layout({ derived, tracks, measure, textStyles, fonts }, spec, t) {
-    const p = spec.properties, { width: W, height: H } = spec.layout, out: Primitive[] = [], T = typo(textStyles, measure, fonts), list = shown(tracks);
-    const st = T.style(p.style, 'heading'), on = new Set<number>();
-    for (const ti of list) for (const n of notesInRange(ti, t, t)) if (n.channel !== 9 && n.startTimeSeconds <= t && t < n.endTimeSeconds) on.add(n.pitch % 12);
-    const tonic = p.labels === 'DEGREES' ? tonicAt(derived, list, t, p.keyWindowSec) : null;
-    const y = H / 2 + st.size * 0.35, pad = p.brackets ? st.size * 1.2 : 0, cw = (W - 2 * pad) / 12;
-    if (p.brackets) { T.text(out, '[', pad / 2, y, st, 'center', pad); T.text(out, ']', W - pad / 2, y, st, 'center', pad); }
-    for (let i = 0; i < 12; i++) {
-      const pc = p.order === 'FIFTHS' ? (i * 7) % 12 : i, lit = on.has(pc), alpha = lit ? 1 : p.dimAlpha;
-      if (alpha <= 0) continue;
-      const name = tonic !== null ? (derived.naming?.ascii ? romanAscii(ROMAN_DEGREES[(pc - tonic + 12) % 12]) : ROMAN_DEGREES[(pc - tonic + 12) % 12]) : derived.naming ? pitchClassNameFor(pc, derived.naming) : pitchClassName(pc);
-      T.text(out, name, pad + cw * (i + 0.5), y, lit && p.litColor ? { ...st, color: p.litColor } : st, 'center', cw, alpha);
-    }
-    return out;
-  },
-};
-
-export const DASHBOARD_RENDERERS = { PANEL: panelRenderer, DEGREE: degreeRenderer, DOTS: dotsRenderer, PITCH_STRIP: pitchStripRenderer } as const;
+export const DASHBOARD_RENDERERS = { PANEL: panelRenderer, DEGREE: degreeRenderer, DOTS: dotsRenderer } as const;
 void xFor; void clamp01;
 export type { Align };

@@ -56,7 +56,7 @@ export const TEXT_FIELDS = {
   PITCH_WHEEL: { nameStyle: 'label', chordStyle: 'heading', subStyle: 'label' }, DRUM_PAD: { labelStyle: 'tiny' }, SECTION: { style: 'heading', nextStyle: 'caption' },
   LYRICS: { style: 'body', nextStyle: 'caption' }, AUTOMATION: { valueStyle: 'tiny' },
   // bảng phân tích (dashboard.ts)
-  PANEL: { titleStyle: 'label', labelStyle: 'label', valueStyle: 'body' }, DEGREE: { labelStyle: 'caption', smallStyle: 'label' }, PITCH_STRIP: { style: 'heading' },
+  PANEL: { titleStyle: 'label', labelStyle: 'label', valueStyle: 'body' }, DEGREE: { labelStyle: 'caption', smallStyle: 'label' },
 } as const satisfies Record<string, Record<string, keyof typeof DEFAULT_TEXT_STYLES | null>>;
 /** Ghi đè một đoạn → trường của dòng chứa nó (kiểu gốc của đoạn là kiểu thật của dòng đó). */
 export const TEXT_SPAN_OF = {

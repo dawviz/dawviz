@@ -18,7 +18,7 @@ import {
   INSIGHT_TEMPLATE_KEYS, INSIGHT_TYPES, type ArrangementProps, type AutomationProps, type BarBeatProps, type DensityProps, type DrumPadProps, type KeyScaleProps, type LyricsProps, type PitchWheelProps, type SectionProps, type TempoInfoProps, type VelocityProps,
 } from './insight.ts';
 import { DEFAULT_NOTATION, notationInkFor, type NotationProps } from './notation/widget.ts';
-import { DASHBOARD_TYPES, DEFAULT_DEGREE, DEFAULT_DOTS, DEFAULT_PANEL, DEFAULT_PITCH_STRIP, DOTS_GRIDS, MAX_PANEL_STATS, type DegreeProps, type DotsProps, type PanelProps, type PitchStripProps } from './dashboard.ts';
+import { DASHBOARD_TYPES, DEFAULT_DEGREE, DEFAULT_DOTS, DEFAULT_PANEL, DOTS_GRIDS, MAX_PANEL_STATS, type DegreeProps, type DotsProps, type PanelProps } from './dashboard.ts';
 import { ROMAN_STYLES } from './degree.ts';
 import { DEFAULT_SPECTRUM, SPECTRUM_STYLES, type SpectrumProps } from './spectrum.ts';
 import { sanitizeAnimate, type Animation } from './animation.ts';
@@ -154,7 +154,7 @@ const HUD_DEFAULTS: Record<string, unknown> = {
   TIME_BAR: DEFAULT_TIME_BAR, CHORD_DETECTION: DEFAULT_CHORD, AUDIO_SPECTRUM: DEFAULT_SPECTRUM, PARTICLES: DEFAULT_PARTICLES, NOTATION: DEFAULT_NOTATION, PROGRESS_BAR: DEFAULT_PROGRESS_BAR, TEXT: DEFAULT_TEXT_BOX, IMAGE: DEFAULT_IMAGE,
   TEMPO_INFO: DEFAULT_TEMPO_INFO, BAR_BEAT: DEFAULT_BAR_BEAT, KEY_SCALE: DEFAULT_KEY_SCALE, VELOCITY: DEFAULT_VELOCITY, DENSITY: DEFAULT_DENSITY, PITCH_WHEEL: DEFAULT_PITCH_WHEEL,
   ARRANGEMENT: DEFAULT_ARRANGEMENT, DRUM_PAD: DEFAULT_DRUM_PAD, SECTION: DEFAULT_SECTION, LYRICS: DEFAULT_LYRICS, AUTOMATION: DEFAULT_AUTOMATION,
-  PANEL: DEFAULT_PANEL, DEGREE: DEFAULT_DEGREE, DOTS: DEFAULT_DOTS, PITCH_STRIP: DEFAULT_PITCH_STRIP,
+  PANEL: DEFAULT_PANEL, DEGREE: DEFAULT_DEGREE, DOTS: DEFAULT_DOTS,
 };
 /** Thuộc tính mặc định của một loại widget (bản sao sâu): mốc tham chiếu của nút ↺ khi widget chưa có bộ dựng sẵn nào áp lên nó. */
 export function widgetDefaults(type: WidgetType): Record<string, unknown> {
@@ -166,7 +166,7 @@ const NEW_SIZE: Record<string, (W: number, H: number) => [number, number]> = {
   TIME_BAR: () => [320, 100], CHORD_DETECTION: () => [400, 100], AUDIO_SPECTRUM: (W) => [W * 0.5, 240], PARTICLES: (W, H) => [W * 0.5, H * 0.5], NOTATION: (W, H) => [W * 0.8, H * 0.45], PROGRESS_BAR: (W) => [W * 0.8, 24], TEXT: () => [480, 100], IMAGE: (W, H) => [Math.min(W, H) * 0.4, Math.min(W, H) * 0.4],
   TEMPO_INFO: () => [360, 110], BAR_BEAT: () => [320, 110], KEY_SCALE: () => [320, 110], VELOCITY: () => [360, 160], DENSITY: (W) => [W * 0.5, 200], PITCH_WHEEL: () => [320, 320],
   ARRANGEMENT: (W) => [W * 0.6, 180], DRUM_PAD: () => [360, 360], SECTION: () => [420, 100], LYRICS: (W) => [W * 0.7, 120], AUTOMATION: (W) => [W * 0.5, 140],
-  PANEL: (W, H) => [W * 0.4, H * 0.3], DEGREE: (W) => [W * 0.4, 150], DOTS: (W) => [W * 0.35, 180], PITCH_STRIP: (W) => [W * 0.6, 70],
+  PANEL: (W, H) => [W * 0.4, H * 0.3], DEGREE: (W) => [W * 0.4, 150], DOTS: (W) => [W * 0.35, 180],
 };
 /** Độ dài tối đa của tên lớp. */
 export const MAX_WIDGET_NAME = 60;
@@ -884,12 +884,6 @@ const HUD_SANITIZERS = {
       colorMode: S.oneOf(P.colorMode, ['TRACK', 'SOLID'] as const, d.colorMode, `${p}.colorMode`), color: hexp(S, P.color, d.color, `${p}.color`),
       upcomingAlpha: S.num(P.upcomingAlpha, d.upcomingAlpha, 0, 1, `${p}.upcomingAlpha`), activeScale: S.num(P.activeScale, d.activeScale, 1, 3, `${p}.activeScale`),
       playheadColor: hexOpt(S, P.playheadColor, d.playheadColor, `${p}.playheadColor`), playheadWidth: S.num(P.playheadWidth, d.playheadWidth, 0, 10, `${p}.playheadWidth`) };
-  },
-  PITCH_STRIP(P: Obj, p: string, S: Sanitizer): PitchStripProps {
-    const d = DEFAULT_PITCH_STRIP;
-    return { order: S.oneOf(P.order, ['CHROMATIC', 'FIFTHS'] as const, d.order, `${p}.order`), labels: S.oneOf(P.labels, ['NAMES', 'DEGREES'] as const, d.labels, `${p}.labels`),
-      style: textRef(S, P.style, d.style, `${p}.style`), litColor: hexOpt(S, P.litColor, d.litColor, `${p}.litColor`), dimAlpha: S.num(P.dimAlpha, d.dimAlpha, 0, 1, `${p}.dimAlpha`),
-      brackets: S.bool(P.brackets, d.brackets, `${p}.brackets`), keyWindowSec: S.num(P.keyWindowSec, d.keyWindowSec, 2, 120, `${p}.keyWindowSec`) };
   },
   ARRANGEMENT(P: Obj, p: string, S: Sanitizer): ArrangementProps {
     const d = DEFAULT_ARRANGEMENT;
