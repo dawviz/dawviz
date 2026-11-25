@@ -15,7 +15,7 @@ const hasFrameAnim = (w: WidgetSpec): boolean => !!w.animate && Object.keys(w.an
 /** Bố cục của `w` tại `t` (chỉ phần layout.* được áp; thuộc tính khác giữ nguyên). */
 export function layoutAt(w: WidgetSpec, ctx: Omit<LiveCtx, 'playback'>, canvas: SceneDocument['canvas'], t: number): WidgetLayout {
   if (!hasLayoutAnim(w)) return w.layout;
-  return resolveAnimated(w, { ast: ctx.ast, derived: ctx.derived, tracks: tracksFor(w, ctx.derived.index), t }, canvas).widget.layout;
+  return resolveAnimated(w, { ast: ctx.ast, derived: ctx.derived, tracks: tracksFor(w, ctx.derived.index, t), t }, canvas).widget.layout;
 }
 
 /** Render-prop: con nhận bố cục tại vạch phát của widget. */
@@ -37,7 +37,7 @@ export function LiveOverlay({ ctx, scene, onLayouts, ...rest }: { ctx: LiveCtx }
     const m = new Map<string, { layout: WidgetLayout; scale: number }>();
     if (moving) for (const w of scene.widgets) {
       if (!hasFrameAnim(w)) continue;
-      const r = resolveAnimated(w, { ast: ctx.ast, derived: ctx.derived, tracks: tracksFor(w, ctx.derived.index), t }, scene.canvas);
+      const r = resolveAnimated(w, { ast: ctx.ast, derived: ctx.derived, tracks: tracksFor(w, ctx.derived.index, t), t }, scene.canvas);
       m.set(w.id, { layout: scaledLayout(r.widget.layout, r.scale), scale: r.scale });
     }
     return m;

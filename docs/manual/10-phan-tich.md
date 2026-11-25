@@ -14,14 +14,15 @@ Ngoài Piano Roll và các widget chữ, Editor có mười một widget cho bi�
 | **Pad trống** | Lưới pad cho track trống: pad sáng khi nốt chạm, ghi tên trống GM (Kick, Snare, HH Closed…). |
 | **Tên đoạn** | Tên đoạn hiện tại (Intro, Verse…) và đoạn kế tiếp. |
 | **Lời bài hát** | Dòng lời đang hát, âm tiết đã hát đậm hơn; dòng kế tiếp hiện nhỏ bên dưới. |
-| **Automation** | Đường âm lượng hoặc pan của track theo thời gian, kèm giá trị hiện tại. |
+| **Automation** | Đường automation của một lane (âm lượng, pan, hoặc MIDI CC và pitch bend) theo thời gian, kèm giá trị hiện tại. |
 
 ## Dữ liệu lấy từ đâu
 
 - **Tên đoạn** lấy marker của dự án: Reaper (`MARKER` và vùng), Ableton (Locators), DAWproject (Markers), MIDI (Marker). Dự án không có marker thì widget dùng **Phase** bạn đặt ở Editor khi không chọn widget nào.
 - **Lời bài hát** lấy từ MIDI (sự kiện Lyric, hoặc Text kiểu karaoke `.kar`). Dòng mới bắt đầu khi gặp `/` hoặc `\`, khi nghỉ quá lâu, hoặc khi dòng dài quá giới hạn. Dự án không có lời thì widget không hiện gì.
-- **Automation** lấy từ envelope âm lượng và pan của Reaper, automation âm lượng và pan của track Ableton, và Points của DAWproject. FL Studio đọc được âm lượng và pan của kênh. Track không có automation thì widget không vẽ gì.
+- **Automation** lấy từ envelope âm lượng và pan của Reaper, automation âm lượng và pan của track Ableton, và Points của DAWproject. FL Studio đọc được âm lượng và pan của kênh. File MIDI: mỗi Control Change (Mod Wheel, Expression, Sustain, Cutoff…) và Pitch Bend thành một lane riêng, tên như "Mod Wheel (CC1)" hay "Pitch Bend". Trong **Cài đặt** của widget, ô **Lane** liệt kê các lane có trong dự án theo tên; lane không có trong dự án vẫn giữ lại và ghi "không có trong dự án". Track không có lane đó thì widget không vẽ gì. Cùng các lane này dùng được ở mục **Theo nhạc** (nguồn "Lane: …") để điều khiển thuộc tính của mọi widget.
 - **Pad trống** chỉ lấy track có nốt ở kênh MIDI 10 hoặc tên có "Drums"; đổi **Track dùng** thành "Mọi track đã chọn" để lấy cả track khác.
+- **Hợp âm:** khi để **Track dùng** ở "Track đầu tiên có nốt giai điệu" (mặc định của widget Hợp âm), widget ưu tiên track có tên Piano, Keys/Keyboard hoặc Guitar; không có thì lấy track giai điệu đầu tiên. Muốn dùng track khác, chọn thủ công ở **Nâng cao**.
 - Các widget đọc nốt (Giọng, Cường độ, Mật độ, Vòng cao độ, Tổng quan, Pad trống, Automation) có mục chọn track ở **Nâng cao**.
 
 ## Cách ghi tên nốt

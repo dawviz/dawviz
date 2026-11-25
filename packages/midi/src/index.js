@@ -1,2 +1,2 @@
 // Cổng vào của @dawviz/parser-midi: parseMidi.
-export { parseMidi, readSmf } from './midi.js';
+export { parseMidi, readSmf, controllerLanes, ccLaneName, CC_NAMES, CC_NOT_AUTOMATION, PITCH_BEND } from './midi.js';

@@ -14,14 +14,15 @@ Besides the Piano roll and the text widgets, the Editor has eleven widgets that 
 | **Drum pads** | A grid of pads for the drum track: a pad lights when a note hits, labelled with GM drum names (Kick, Snare, HH Closed…). |
 | **Section name** | The current section (Intro, Verse…) and the next one. |
 | **Lyrics** | The line being sung, the syllables already sung brighter; the next line small underneath. |
-| **Automation** | The volume or pan line of a track over time, with its current value. |
+| **Automation** | The automation line of one lane (volume, pan, or MIDI CC and pitch bend) over time, with its current value. |
 
 ## Where the data comes from
 
 - **Section name** uses the project's markers: Reaper (`MARKER` and regions), Ableton (Locators), DAWproject (Markers), MIDI (Marker). With no markers the widget uses the **Phases** you set in the Editor when no widget is selected.
 - **Lyrics** come from MIDI (Lyric events, or karaoke-style Text events from a `.kar`). A new line starts at `/` or `\`, after a long pause, or when a line gets too long. With no lyrics the widget shows nothing.
-- **Automation** comes from Reaper volume and pan envelopes, Ableton track volume and pan automation, and DAWproject Points. FL Studio gives channel volume and pan. A track without automation draws nothing.
+- **Automation** comes from Reaper volume and pan envelopes, Ableton track volume and pan automation, and DAWproject Points. FL Studio gives channel volume and pan. In a MIDI file, every Control Change (Mod Wheel, Expression, Sustain, Cutoff…) and Pitch Bend becomes its own lane, named like "Mod Wheel (CC1)" or "Pitch Bend". In the widget's **Settings**, the **Lane** box lists the project's lanes by name; a lane the project lacks is kept and marked "not in this project". A track without that lane draws nothing. The same lanes work in **Follow the music** (source "Lane: …") to drive any widget's property.
 - **Drum pads** takes only tracks with notes on MIDI channel 10 or a name with "Drums"; set **Tracks** to "All chosen tracks" to include others.
+- **Chord:** when **Tracks** is "First melodic track" (the Chord widget's default), the widget prefers a track named Piano, Keys/Keyboard or Guitar; otherwise it takes the first melodic track. To use another, pick tracks by hand under **Advanced**.
 - The widgets that read notes (Key, Velocity, Note density, Pitch wheel, Arrangement, Drum pads, Automation) have a track picker under **Advanced**.
 
 ## Note names

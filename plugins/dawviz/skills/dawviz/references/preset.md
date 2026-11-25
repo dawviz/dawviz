@@ -34,7 +34,8 @@ The preset is the whole video design. The app reads it with a forgiving checker:
 - `id`: unique in its list, 1–64 characters, **no `/`**. `name`: optional label shown in the layer list (unique, ≤ 60 characters).
 - `zIndex`: higher is drawn on top. `layout` is the box in canvas points; `x`, `y` is the top-left corner; `rotation` in degrees around `anchor` (0–1 of the box).
 - `properties`: **only the ones you change**. Anything left out gets the widget's default, so a minimal layer is `{ "id", "type", "layout" }`.
-- `trackMappingMode`: `ALL` (every visible track) or `MANUAL` with `assignedTrackIndices` (track numbers from the project, 0-based).
+- `trackMappingMode`: `ALL` (every visible track), `MANUAL` with `assignedTrackIndices` (track numbers from the project, 0-based), or `AUTO_ASSIGN_FIRST_MELODIC` (first visible non-drum track; `CHORD_DETECTION` prefers a track named piano/keys/guitar).
+- `trackRanges` (optional, max 32): change the track set over time. `[{ "from": 0, "to": 30, "tracks": [0, 2] }]` makes the widget use exactly those track numbers in [from, to) seconds (`to` null or missing = to the end). Outside every range the widget follows `trackMappingMode`; overlapping ranges: the earlier `from` wins. Sheet music ignores it.
 - `parent`: id of another layer in the same list; the child follows the parent's movement, rotation, scale and opacity changes.
 
 ### Layer types and the properties worth knowing
@@ -52,7 +53,7 @@ The preset is the whole video design. The app reads it with a forgiving checker:
 | `NOTATION` | sheet music | `barsPerSystem` [2], `inkColor`, `activeColor` |
 | `AUDIO_SPECTRUM` | spectrum (needs audio) | `style` `BARS`/`AREA`/`LINE`/`DOTS`/`SCOPE`/`WAVE`/`METER`, `shape` `LINE`/`CIRCLE`, `bars` [48], `color` |
 | `PARTICLES` | particles on notes | `originX` `NOTE` (sparks where notes hit the playhead) |
-| `SECTION`, `LYRICS`, `TEMPO_INFO`, `BAR_BEAT`, `KEY_SCALE`, `VELOCITY`, `DENSITY`, `PITCH_WHEEL`, `ARRANGEMENT`, `DRUM_PAD`, `AUTOMATION` | analysis widgets | leave properties out at first |
+| `AUTOMATION` property `lane` takes a lane id (`volume`, `pan`, `cc1`, `pitchBend`…); see below. | `SECTION`, `LYRICS`, `TEMPO_INFO`, `BAR_BEAT`, `KEY_SCALE`, `VELOCITY`, `DENSITY`, `PITCH_WHEEL`, `ARRANGEMENT`, `DRUM_PAD`, `AUTOMATION` | analysis widgets | leave properties out at first |
 
 `IMAGE` needs an image file the user adds in the app; do not use it in a preset you write. Text styles available as `styleId`: `title`, `subtitle`, `heading`, `body`, `caption`, `label`, `counter`, `clock`, `tiny`. On a dark background always set a light `color`.
 
@@ -82,7 +83,7 @@ The preset is the whole video design. The app reads it with a forgiving checker:
 - `ease` (on the key you arrive at): a name — `linear`, `easeIn|Out|InOut` + `Sine|Quad|Cubic|Quart|Quint|Expo|Circ|Back|Elastic|Bounce` (e.g. `easeOutCubic`), `hold` — or an object: `{ "cubicBezier": [x1, y1, x2, y2] }`, `{ "steps": 4 }`, `{ "spring": { "stiffness": 170, "damping": 26 } }`. Anything else falls back to linear with a warning. `interp`: `linear` (default), `hold` (jump), `smooth`.
 - Up to 24 animated paths per layer, 256 keys each.
 
-**Follow the music** instead of keyframes: `{ "bind": "<source>", "from": [a, b], "to": [c, d] }` maps the source range to the value range. Sources: `beat.phase`, `bar.phase` (0→1 each beat/bar), `progress` (song 0→1), `notes.count`, `notes.velocity`, `note.hit` (jumps on each note then decays), `track.volume`, `track.pan`, `audio.level` (needs audio).
+**Follow the music** instead of keyframes: `{ "bind": "<source>", "from": [a, b], "to": [c, d] }` maps the source range to the value range. Sources: `beat.phase`, `bar.phase` (0→1 each beat/bar), `progress` (song 0→1), `notes.count`, `notes.velocity`, `note.hit` (jumps on each note then decays), `track.volume`, `track.pan`, `audio.level` (needs audio), and `track.automation.<id>` for any lane of the project (0→1 by lane kind; ids: `cc1`, `cc11`, `pitchBend` from MIDI, plus `volume`, `pan`, `mute`).
 
 **Motion** (entrance, exit, loop) for any layer:
 

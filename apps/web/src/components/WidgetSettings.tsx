@@ -9,6 +9,7 @@ import { useI18n } from '../i18n/I18nProvider.tsx';
 import { radioKeys, radioTab } from '../lib/a11y.ts';
 import { clickIsKeyboard, startPaintDrag } from '../lib/paintDrag.ts';
 import { GestureContext } from '../lib/storeReact.ts';
+import { laneLabel, type LaneChoice } from '../lib/animateFields.ts';
 import { TRACK_WIDGETS, WIDGET_FIELDS, fieldChanged, getIn, hasWidgetFields, resetPatch, setIn, withNestedDefaults, type FieldDef } from '../lib/widgetFields.ts';
 import { NumberField } from './NumberField.tsx';
 import { ResetButton } from './Inspector.tsx';
@@ -33,9 +34,11 @@ export interface WidgetSettingsProps {
   onProps(patch: Obj): void;
   tracks?: TrackChoice[];
   onTracks?(mode: 'ALL' | 'MANUAL', indices: number[]): void;
+  /** Lane automation của dự án (T-66): ô chọn lane của widget Automation liệt kê theo tên. */
+  lanes?: readonly LaneChoice[];
 }
 
-export function WidgetSettings({ widget, advanced, disabled, reference, onProps, tracks, onTracks }: WidgetSettingsProps) {
+export function WidgetSettings({ widget, advanced, disabled, reference, onProps, tracks, onTracks, lanes = [] }: WidgetSettingsProps) {
   const { i18n } = useI18n();
   const gesture = useContext(GestureContext);
   const P = withNestedDefaults(widget.type, widget.properties as Obj), fields = WIDGET_FIELDS[widget.type] ?? [];
@@ -75,14 +78,21 @@ export function WidgetSettings({ widget, advanced, disabled, reference, onProps,
             {f.options!.map((o) => <button key={o} type="button" role="radio" aria-checked={v === o} tabIndex={radioTab(v === o)} className="seg-btn flex-1" disabled={disabled} onClick={() => set(f)(o)}>{i18n.t(`${f.prefix}${o}`)}</button>)}
           </div>
         </div>);
-      case 'select': return (
+      case 'select': {
+        // Lane automation (T-66): lựa chọn cố định + lane của dự án + giá trị đang dùng (đánh dấu khi dự án không có lane đó).
+        const opts = f.lanes ? [...new Set([...f.options!.map(String), ...lanes.map((l) => l.id), String(v)])] : f.options!;
+        const optLabel = (o: string | number) => f.raw ? String(o)
+          : f.lanes && !i18n.has(`${f.prefix}${o}`) ? `${laneLabel(i18n, String(o), lanes)}${lanes.some((l) => l.id === o) ? '' : ` (${i18n.t('web.glow.lane.absent')})`}`
+          : i18n.t(`${f.prefix}${o}`);
+        return (
         <div key={f.path.join('.')} className="grid grid-cols-[minmax(0,1fr)_minmax(0,9.5rem)_1.5rem] items-center gap-2 text-xs text-muted">
           <label>{T(f.label)}</label>
           <Select value={String(v)} disabled={disabled} aria-label={label} onChange={(e) => set(f)(f.options!.find((o) => String(o) === e.target.value) ?? e.target.value)} className="py-1 pl-2" wrapClassName="min-w-0" data-testid={f.testId}>
-            {f.options!.map((o) => <option key={o} value={o}>{f.raw ? String(o) : i18n.t(`${f.prefix}${o}`)}</option>)}
+            {opts.map((o) => <option key={o} value={o}>{optLabel(o)}</option>)}
           </Select>
           {resetBtn(f)}
         </div>);
+      }
       case 'color': case 'colorOpt': {
         const opt = f.kind === 'colorOpt', s = String(v ?? '');
         return (

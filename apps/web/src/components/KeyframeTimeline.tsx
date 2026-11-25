@@ -15,7 +15,7 @@ import { usePlayback, type Playback } from '../lib/playback.ts';
 import type { Gesture } from '../lib/storeReact.ts';
 import { isTextEntry } from '../lib/a11y.ts';
 import { formatClock } from '../lib/timeFormat.ts';
-import { addKey, newKeyAnimation, setKey, staticValue, type AnimField } from '../lib/animateFields.ts';
+import { addKey, newKeyAnimation, setKey, sourceLabel, staticValue, type AnimField } from '../lib/animateFields.ts';
 import {
   DRAG_SLOP, ROW_H, RULER_H, SAME_TIME, beatTimes, copyKeys, keyClipboard, pasteIntoWidget, clampPps, clampShift, fitPps, groupRefs, keyAt, keyRef, keySecs, moveKeys,
   parseKeyRef, removeKeys, rulerLabel, rulerStep, rulerTicks, snapTime, xToTime, zoomAround,
@@ -453,7 +453,7 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
                   <div className="absolute inset-y-0 right-0" style={{ left: PAD }}>
                   {it.mode === 'bind' && (
                     <div className="absolute inset-y-1.5 left-0 flex items-center overflow-hidden rounded-sm border border-control bg-raised px-2 text-[11px] text-muted" style={{ width: duration * pps }}>
-                      <span className="sticky left-2 truncate">{(() => { const b = it.anims.find((a): a is Binding => !!a && isBinding(a)); const ex = it.anims.find((a): a is ExprAnimation => !!a && isExpr(a)); return b ? i18n.t('web.timeline.bound', { source: i18n.t(`web.anim.src.${b.bind}`) }) : i18n.t('web.timeline.expr', { expr: ex?.expr.replace(/\s+/g, ' ').slice(0, 80) ?? '' }); })()}</span>
+                      <span className="sticky left-2 truncate">{(() => { const b = it.anims.find((a): a is Binding => !!a && isBinding(a)); const ex = it.anims.find((a): a is ExprAnimation => !!a && isExpr(a)); return b ? i18n.t('web.timeline.bound', { source: sourceLabel(i18n, b.bind) }) : i18n.t('web.timeline.expr', { expr: ex?.expr.replace(/\s+/g, ' ').slice(0, 80) ?? '' }); })()}</span>
                     </div>
                   )}
                   {it.vkeys.length > 0 && (

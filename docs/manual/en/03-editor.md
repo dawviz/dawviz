@@ -144,7 +144,7 @@ The layer column is on the left, the time ruler and the bars on the right. Each 
 - **Fade in / fade out:** drag the small squares at the top corners of a bar (they show on hover or when the layer is selected).
 - **Bar names stay in view:** when you scroll or zoom the Timeline and a bar's start is off screen, the layer's name stays at the left edge of the view until the bar ends.
 - **Snapping:** while you drag, bars stick to the playhead, the edges of other bars, phases, chord changes (while the Music lanes are open) and the beats of the song. When you trim, a bar also sticks to the **length** of other bars: the label "= Progress (0:12)" means both layers are the same length at that point. Hold Alt to turn it off.
-- **Music lanes:** press **Music** under the Phases lane to show a chord lane and one note lane per track, to line bars up with the music. These lanes are view only.
+- **Music lanes:** press **Music** under the Phases lane to show a chord lane and one note lane per track, to line bars up with the music. These lanes only show the music; the lock on each track is the one thing you can change here.
 - **Split a layer at the playhead:** put the playhead over the bar, select the layer and press Ctrl+K (or the scissors button at the top left). The layer becomes two layers that meet there: the original keeps the part before, the copy (just above it) keeps the part after. Each has its own keyframes and is edited on its own.
 - **Move a bar to the playhead:** `[` moves the bar so it starts at the playhead, `]` so it ends there. Alt+`[` and Alt+`]` trim the start or end at the playhead.
 - **Nudge:** Alt+← / Alt+→ moves by 1/30 second; add Shift for 1 second.
@@ -198,6 +198,8 @@ Phases are the parts of a song (verse, chorus…). They live on the **Phases** l
 - **Move:** drag the phase marker (it sticks to the playhead, beats and bar edges; hold Alt to turn it off), or click the marker and press Alt+← / Alt+→ (add Shift for 1 second).
 - **Rename:** double-click the marker.
 - **Remove:** click the marker and press Delete.
+- **From markers:** if the project has markers, the download button at the start of the **Phases** lane creates phases from them (one phase per marker, same name). If phases already exist, it replaces them all.
+- **Lock a track:** in the **Music** lanes each track has a lock. A locked track cannot change its show/hide, solo, color, order or brightness (also in the Tracks panel) until unlocked. Locks last for the session and are not saved in the preset.
 - When you drag a layer's bar it sticks to phases, so it is easy to show a layer exactly during the chorus.
 
 The values `{phase}`, `{next_phase}`, `{phase_remaining}`… work in any text (see [Placeholders](08-placeholders.md)).

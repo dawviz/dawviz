@@ -164,11 +164,13 @@ export const toggleSolo = (d: Doc, id: TrackId): Cmd | null => slice(d, 'toggleS
 const withId = (list: readonly string[], id: string, on: boolean) => (list.includes(id) === on ? [...list] : on ? [...list, id] : list.filter((x) => x !== id));
 export const setHiddenOf = (d: Doc, id: TrackId, on: boolean): Cmd | null => slice(d, 'toggleHidden', 'web.cmd.hide', (x) => x.hidden, (x, v) => ({ ...x, hidden: v }), withId(d.hidden, id, on), 'paint:hide', { track: id, on });
 export const setSoloOf = (d: Doc, id: TrackId, on: boolean): Cmd | null => slice(d, 'toggleSolo', 'web.cmd.solo', (x) => x.solo, (x, v) => ({ ...x, solo: v }), withId(d.solo, id, on), 'paint:solo', { track: id, on });
-export const setAllHidden = (d: Doc, hidden: boolean): Cmd | null => slice(d, 'setAllHidden', 'web.cmd.hide', (x) => x.hidden, (x, v) => ({ ...x, hidden: v }), hidden ? [...d.order] : [], undefined, { hidden });
-/** Ô "bật/tắt tất cả" của cột mắt: đang có track ẩn thì hiện hết trước; đã hiện hết thì ẩn hết. */
-export const toggleAllHidden = (d: Doc): Cmd | null => setAllHidden(d, d.hidden.length === 0);
-/** Ô "bỏ solo tất cả" của cột S. */
-export const clearSolo = (d: Doc): Cmd | null => slice(d, 'clearSolo', 'web.cmd.solo', (x) => x.solo, (x, v) => ({ ...x, solo: v }), [], undefined, { n: d.solo.length });
+/** `keep`: track đang khoá (T-52, D-57) giữ nguyên trạng thái ẩn/hiện của nó. */
+export const setAllHidden = (d: Doc, hidden: boolean, keep: ReadonlySet<TrackId> = new Set()): Cmd | null =>
+  slice(d, 'setAllHidden', 'web.cmd.hide', (x) => x.hidden, (x, v) => ({ ...x, hidden: v }), d.order.filter((id) => (keep.has(id) ? d.hidden.includes(id) : hidden)), undefined, { hidden });
+/** Ô "bật/tắt tất cả" của cột mắt: đang có track ẩn (không khoá) thì hiện hết trước; đã hiện hết thì ẩn hết. Track khoá đứng yên. */
+export const toggleAllHidden = (d: Doc, keep: ReadonlySet<TrackId> = new Set()): Cmd | null => setAllHidden(d, !d.hidden.some((id) => !keep.has(id)), keep);
+/** Ô "bỏ solo tất cả" của cột S. Track khoá giữ solo của nó. */
+export const clearSolo = (d: Doc, keep: ReadonlySet<TrackId> = new Set()): Cmd | null => slice(d, 'clearSolo', 'web.cmd.solo', (x) => x.solo, (x, v) => ({ ...x, solo: v }), d.solo.filter((id) => keep.has(id)), undefined, { n: d.solo.length });
 export const moveTrack = (d: Doc, id: TrackId, to: number): Cmd | null => {
   const from = d.order.indexOf(id), dest = Math.max(0, Math.min(d.order.length - 1, to));
   if (from < 0 || from === dest) return null;

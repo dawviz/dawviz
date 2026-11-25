@@ -9,7 +9,7 @@ import { barPosAt } from './hud.ts';
 import { DEFAULT_KEYBOARD_STYLE } from './style.ts';
 import type { PianoRollProps, SceneDocument, WidgetSpec } from './scene.ts';
 import type { Derived, LayoutCtx, PolyPrim, Primitive, RectPrim, TextPrim, WidgetRenderer } from './prims.ts';
-import { HUD_RENDERERS, barPageAt, buildHud, hudOf, usesChordPlaceholder, type ChordProps, type HudData } from './hud.ts';
+import { HUD_RENDERERS, barPageAt, buildHud, hudOf, isDrumTrack, usesChordPlaceholder, type ChordProps, type HudData } from './hud.ts';
 import { INSIGHT_RENDERERS } from './insight.ts';
 import { DASHBOARD_RENDERERS } from './dashboard.ts';
 import { measureText } from './text.ts';
@@ -66,15 +66,33 @@ export interface RenderTarget { ctx: RenderCtx; width: number; height: number }
 
 export type { Derived, RectPrim, TextPrim, Primitive, LayoutCtx, WidgetRenderer } from './prims.ts';
 
-/** Chọn track cho widget theo trackMappingMode (SRS REQ-STORAGE-02). */
-export function tracksFor(spec: WidgetSpec<unknown>, index: TimelineIndex): TrackIndex[] {
+/** Tên track nhạc cụ hoà âm (Chord Detection chọn trước, T-06): piano, keys/keyboard, guitar, organ, Rhodes/EP, đàn… */
+export const isHarmonicTrack = (name: string) => /piano|pno|\bkeys?\b|keyboard|guitar|gtr|organ|rhodes|e\.?\s?piano|\bep\b|clav|harpsichord|ukulele|đàn|ghi\s?ta|dương cầm/i.test(name);
+/** Track trống: kênh 10 (GM) chiếm đa số nốt hoặc tên Drums/Percussion… (cùng quy tắc P-09/T-41). */
+export const isDrumTrackIndex = (ti: TrackIndex) => isDrumTrack(ti.track.name) || (ti.notes.length > 0 && ti.notes.filter((n) => n.channel === 9).length * 2 > ti.notes.length);
+/**
+ * AUTO_ASSIGN_FIRST_MELODIC (T-06): track đang hiện có nốt, bỏ track trống. Chord Detection (`harmonic`) chọn trước track có tên piano/keys/guitar…;
+ * không có thì track giai điệu đầu tiên; chỉ có track trống thì track đầu tiên có nốt.
+ */
+export function firstMelodicTrack(tracks: readonly TrackIndex[], harmonic = false): TrackIndex | undefined {
+  const live = tracks.filter((ti) => ti.track.isVisible && ti.notes.length > 0), melodic = live.filter((ti) => !isDrumTrackIndex(ti));
+  return (harmonic ? melodic.find((ti) => isHarmonicTrack(ti.track.name)) : undefined) ?? melodic[0] ?? live[0];
+}
+/** Đoạn đổi track (T-52) đang hiệu lực tại `t`: đoạn đầu tiên (theo `from`) chứa t; không có → undefined. */
+export const trackRangeAt = (spec: Pick<WidgetSpec<unknown>, 'trackRanges'>, t: number) => spec.trackRanges?.find((r) => t >= r.from && (r.to === null || t < r.to));
+/**
+ * Chọn track cho widget theo trackMappingMode (SRS REQ-STORAGE-02). Có `t` và widget có `trackRanges` (T-52): trong một đoạn thì dùng đúng tập track
+ * của đoạn đó. Không có `t` (bước dựng trước như Bản nhạc) → bỏ qua đoạn.
+ */
+export function tracksFor(spec: WidgetSpec<unknown>, index: TimelineIndex, t?: number): TrackIndex[] {
+  const seg = t === undefined ? undefined : trackRangeAt(spec, t);
+  if (seg) { const want = new Set(seg.tracks); return index.tracks.filter((ti) => want.has(ti.track.index)); }
   if (spec.trackMappingMode === 'MANUAL') {
     const want = new Set(spec.assignedTrackIndices);
     return index.tracks.filter((ti) => want.has(ti.track.index));
   }
   if (spec.trackMappingMode === 'AUTO_ASSIGN_FIRST_MELODIC') {
-    // Tạm: track hiện đầu tiên có nốt. Loại track trống (drum) cần nhận diện kênh 10 / tên: làm cùng P-09 (T-41).
-    const first = index.tracks.find((ti) => ti.track.isVisible && ti.notes.length > 0);
+    const first = firstMelodicTrack(index.tracks, spec.type === 'CHORD_DETECTION');
     return first ? [first] : [];
   }
   return index.tracks;
@@ -159,9 +177,12 @@ export const WIDGET_RENDERERS: Partial<Record<WidgetSpec['type'], WidgetRenderer
 /** HudData cho một scene: số đếm, lưới ô nhịp và hợp âm của mọi widget Chord Detection. Gọi ở bước derived (một lần cho mỗi dự án × scene). */
 export const buildSceneHud = (scene: SceneDocument, ast: UnifiedProjectAST, index: TimelineIndex): HudData =>
   buildHud(ast, index, flattenScene(scene).widgets.flatMap((w) => {
-    const tracks = tracksFor(w, index);
-    if (w.type === 'DEGREE') return [{ tracks, mode: 'sustained' as const }, { tracks, mode: 'strike' as const }]; // hàng chính + hàng phụ (theo lần dập)
-    return w.type === 'CHORD_DETECTION' || usesChordPlaceholder(w) ? [{ tracks, mode: (w.properties as ChordProps).mode ?? 'sustained' }] : [];
+    // mỗi tập track widget có thể dùng: mặc định + từng đoạn đổi track (T-52)
+    const sets = [tracksFor(w, index), ...(w.trackRanges ?? []).map((r) => tracksFor(w, index, r.from))];
+    if (w.type === 'DEGREE') return sets.flatMap((tracks) => [{ tracks, mode: 'sustained' as const }, { tracks, mode: 'strike' as const }]); // hàng chính + hàng phụ (theo lần dập)
+    if (w.type !== 'CHORD_DETECTION' && !usesChordPlaceholder(w)) return [];
+    const mode = (w.properties as ChordProps).mode ?? 'sustained';
+    return sets.map((tracks) => ({ tracks, mode }));
   }));
 const hudMemo = new WeakMap<Derived, WeakMap<SceneDocument, HudData>>();
 /** Derived có hud: dùng cái đã dựng; thiếu (gọi trực tiếp, kiểm thử) thì dựng một lần cho (derived, scene) rồi đệm. */
@@ -182,7 +203,7 @@ export function layoutFrame(scene0: SceneDocument, derived0: Derived, ast: Unifi
   // Điểm chạm vạch phát của nốt (hạt `NOTE`): cùng hình học với Piano Roll nên khớp ở Preview và Export.
   const roll = order.map(({ w }) => w).find((w): w is WidgetSpec<PianoRollProps> => w.type === 'PIANO_ROLL');
   const emitter: LayoutCtx['emitter'] | undefined = roll && ((pitch, ts) => {
-    const p = roll.properties, { x, y, width, height } = roll.layout, [lo, hi] = pianoRollPitchRange(p, tracksFor(roll, derived.index));
+    const p = roll.properties, { x, y, width, height } = roll.layout, [lo, hi] = pianoRollPitchRange(p, tracksFor(roll, derived.index, ts));
     if (pitch < lo || pitch > hi) return null;
     const page = p.scrollMode === 'PAGE' && p.pageUnit === 'BARS' ? barPageAt(hudOf(derived, ast).bars, p.pageBars, ts) : undefined;
     const rowH = height / (hi - lo + 1);
@@ -197,7 +218,7 @@ export function layoutFrame(scene0: SceneDocument, derived0: Derived, ast: Unifi
   const ownOf = (w: WidgetSpec): Own => {
     let o = owns.get(w.id); if (o) return o;
     let we = w, opacity = 1, sc = 1; // `scale` animate được (%, quanh điểm neo): gộp vào phép co giãn của chuyển động cấp widget
-    if (w.animate) { const r = resolveAnimated(w, { ast, derived, tracks: tracksFor(w, derived.index), t, budget, onExprIssue: derived.onExprIssue }, scene.canvas); we = r.widget; opacity = r.opacity; sc = r.scale; } // hoạt hình thuộc tính (T-22)
+    if (w.animate) { const r = resolveAnimated(w, { ast, derived, tracks: tracksFor(w, derived.index, t), t, budget, onExprIssue: derived.onExprIssue }, scene.canvas); we = r.widget; opacity = r.opacity; sc = r.scale; } // hoạt hình thuộc tính (T-22)
     let fx = hasMotion(w.motion) ? widgetFxAt(w.motion, activeRange(w.visibility, t, dur), t, ast.tempoMap) : undefined;
     if (sc !== 1) fx = { ...(fx ?? NEUTRAL_WFX), sx: (fx?.sx ?? 1) * sc, sy: (fx?.sy ?? 1) * sc };
     if (fx && fx.dx === 0 && fx.dy === 0 && fx.sx === 1 && fx.sy === 1 && fx.rot === 0 && fx.alpha === 1) fx = undefined; // trung tính: chuỗi lệnh vẽ giữ như không có motion
@@ -223,7 +244,7 @@ export function layoutFrame(scene0: SceneDocument, derived0: Derived, ast: Unifi
   for (const { w } of order) {
     let k = visibilityAlpha(w.visibility, t, dur);
     if (k <= 0) continue; // ngoài khoảng hiển thị: không dựng gì
-    const wTracks = tracksFor(w, derived.index);
+    const wTracks = tracksFor(w, derived.index, t);
     const own = ownOf(w), we = own.we, fx = own.fx, par = parentOf(w.id);
     k *= own.opacity * (par ? par.a : 1);
     if (k <= 0 || own.sc <= 0) continue;

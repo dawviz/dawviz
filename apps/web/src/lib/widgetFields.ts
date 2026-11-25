@@ -26,6 +26,8 @@ export interface FieldDef {
   prefix?: string;
   /** Lựa chọn hiện đúng giá trị (tên kỹ thuật như tên easing), không dịch qua `prefix`. */
   raw?: boolean;
+  /** kind 'select': thêm các lane automation của dự án đang mở (T-66) vào `options`, gọi theo tên lane. */
+  lanes?: boolean;
   /** kind 'text'. `placeholder`: khoá con của `web.ws.*` khi để trống. */
   text?: { max?: number; multiline?: boolean; placeholder?: string };
   testId?: string;
@@ -334,7 +336,7 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['gapSec'], 'num', 'inGapSec', { adv: true, num: { min: 0.5, max: 10, step: 0.1 } }),
   ],
   AUTOMATION: [
-    L(['lane'], 'choice', 'inLane', { options: ['volume', 'pan'], prefix: 'web.ws.inLane.' }),
+    L(['lane'], 'select', 'inLane', { options: ['volume', 'pan'], prefix: 'web.ws.inLane.', lanes: true, testId: 'ws-lane' }),
     L(['windowSec'], 'num', 'inAutoWindow', { num: { min: 0, max: 1800, step: 1, range: [0, 120] } }),
     L(['playheadRatio'], 'num', 'inAutoRatio', { when: (P) => Number(P.windowSec) > 0, num: { min: 0, max: 1, step: 0.05 } }),
     L(['colorMode'], 'choice', 'inColorMode', { options: ['TRACK', 'SOLID'], prefix: 'web.ws.inColor.' }),

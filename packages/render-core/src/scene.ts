@@ -25,6 +25,7 @@ import { sanitizeAnimate, type Animation } from './animation.ts';
 import { DEFAULT_LOOP, DEFAULT_PHASE, LOOP_EFFECT_NAMES, WIDGET_EFFECT_NAMES, hasMotion, type MotionLoop, type MotionPhase, type WidgetMotion } from './widgetMotion.ts';
 import { parseEase } from './motion.ts';
 import { MAX_FADE, MAX_PHASES, MAX_PHASE_NAME, MAX_RANGES, type Phase, type TimeRange, type WidgetVisibility } from './visibility.ts';
+import { isLaneId } from './glow.ts';
 import { DEFAULT_KEYBOARD_STYLE, DEFAULT_NOTE_STYLE, sanitizeStyle, type KeyboardStyle, type NoteStyle, type StyleConfig } from './style.ts';
 import { MAX_PARENT_DEPTH, resolveParents } from './parenting.ts';
 import { ANIM_EFFECTS, ANIM_ORDERS, ANIM_UNITS, DEFAULT_TEXT_ANIMATOR, type TextAnimator } from './textAnimator.ts';
@@ -62,8 +63,17 @@ export interface WidgetSpec<P = unknown> {
   trackMappingMode: TrackMappingMode;
   /** Chỉ số track trong AST (khớp `ProjectTrack.index`), dùng khi `trackMappingMode = MANUAL`. */
   assignedTrackIndices: number[];
+  /**
+   * Đổi tập track theo đoạn (T-52, REQ-GRAPHICS-14; tuỳ chọn): trong một đoạn `[from, to)` (giây) widget dùng đúng các track `tracks` thay cho
+   * `trackMappingMode`; ngoài mọi đoạn thì theo `trackMappingMode`. Đoạn chồng nhau: đoạn bắt đầu trước thắng. Bản nhạc (NOTATION) bỏ qua trường này.
+   */
+  trackRanges?: TrackRange[];
   properties: P;
 }
+
+/** Một đoạn đổi tập track (T-52): `to = null` = tới hết bài; `tracks` = chỉ số track (`ProjectTrack.index`). */
+export interface TrackRange { from: number; to: number | null; tracks: number[] }
+export const MAX_TRACK_RANGES = 32;
 
 export interface PianoRollProps {
   orientation: 'HORIZONTAL';          // VERTICAL và góc tự do: T-59
@@ -192,7 +202,8 @@ export function createWidget(scene: SceneDocument, type: WidgetType, center?: { 
   if (type === 'PIANO_ROLL') return { ...pianoRollWidget(layout, {}, id), zIndex };
   const properties = JSON.parse(JSON.stringify(HUD_DEFAULTS[type] ?? {}));
   if (type === 'NOTATION') Object.assign(properties, notationInkFor(scene.canvas.backgroundColor)); // mực nhìn rõ trên nền khung
-  return { id, type, zIndex, visible: true, layout: { ...layout, anchor: { ...DEFAULT_ANCHOR } }, trackMappingMode: 'ALL', assignedTrackIndices: [], properties };
+  // Chord Detection mới tự chọn track hoà âm (piano/keys/guitar, T-06); loại khác đọc mọi track đang hiện.
+  return { id, type, zIndex, visible: true, layout: { ...layout, anchor: { ...DEFAULT_ANCHOR } }, trackMappingMode: type === 'CHORD_DETECTION' ? 'AUTO_ASSIGN_FIRST_MELODIC' : 'ALL', assignedTrackIndices: [], properties };
 }
 /** Bản sao của widget (nhân bản): id mới, dời `offset` pt, nằm ngay trên bản gốc. */
 export function duplicateWidget(scene: SceneDocument, w: WidgetSpec, offset = 16): WidgetSpec {
@@ -393,6 +404,7 @@ export function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] 
     if (rw.animate !== undefined) { const an = sanitizeAnimate(S, rw.animate, `${p}.animate`, rw.type as WidgetType); if (an) base.animate = an; }
     if (rw.parent !== undefined) { if (typeof rw.parent === 'string' && rw.parent && rw.parent.length <= 64 && rw.parent !== id) base.parent = rw.parent; else w('WARN_PRESET_VALUE', `${p}.parent`, rw.parent, 'widget cha không hợp lệ; bỏ'); }
     if (rw.visibility !== undefined) { const vis = sanitizeVisibility(S, rw.visibility, `${p}.visibility`); if (vis) base.visibility = vis; }
+    if (rw.trackRanges !== undefined) { const tr = sanitizeTrackRanges(S, rw.trackRanges, `${p}.trackRanges`); if (tr.length) base.trackRanges = tr; }
     if (rw.name !== undefined) { // tên lớp: chuỗi 1–60 ký tự, không trùng (trùng thì bỏ tên, dùng tên theo loại)
       const nm = typeof rw.name === 'string' ? normalizeWidgetName(rw.name) : '';
       if (!nm || nm.length > MAX_WIDGET_NAME) w('WARN_PRESET_VALUE', `${p}.name`, rw.name, `tên lớp phải dài 1–${MAX_WIDGET_NAME} ký tự; bỏ tên`);
@@ -562,6 +574,24 @@ export function sanitizeVisibility(S: Sanitizer, v: unknown, path: string): Widg
   });
   ranges.sort((a, b) => a.from - b.from);
   return { ranges, fadeIn: S.num(v.fadeIn, 0, 0, MAX_FADE, `${path}.fadeIn`), fadeOut: S.num(v.fadeOut, 0, 0, MAX_FADE, `${path}.fadeOut`) };
+}
+/** Đoạn đổi tập track (T-52): tối đa MAX_TRACK_RANGES đoạn; mốc như khoảng hiển thị; chỉ số track nguyên ≥ 0, không trùng, sắp tăng; sắp đoạn theo `from`. */
+export function sanitizeTrackRanges(S: Sanitizer, v: unknown, path: string): TrackRange[] {
+  if (!Array.isArray(v)) { S.warn(path, v, 'không phải mảng; bỏ'); return []; }
+  if (v.length > MAX_TRACK_RANGES) S.warn(path, v.length, `quá ${MAX_TRACK_RANGES} đoạn; bỏ phần thừa`);
+  const out: TrackRange[] = [];
+  v.slice(0, MAX_TRACK_RANGES).forEach((r, i) => {
+    const rp = `${path}[${i}]`;
+    if (!isObj(r)) { S.warn(rp, r, 'đoạn không phải đối tượng; bỏ'); return; }
+    const from = S.num(r.from, NaN, 0, 86400, `${rp}.from`);
+    const to = r.to === null || r.to === undefined ? null : S.num(r.to, NaN, 0, 86400, `${rp}.to`);
+    if (Number.isNaN(from) || (to !== null && Number.isNaN(to))) { S.warn(rp, r, 'đoạn thiếu mốc hợp lệ; bỏ'); return; }
+    if (to !== null && to <= from) { S.warn(rp, r, '"to" phải lớn hơn "from"; bỏ'); return; }
+    const list = Array.isArray(r.tracks) ? r.tracks : (S.warn(`${rp}.tracks`, r.tracks, 'không phải mảng; coi như rỗng'), []);
+    const tracks = [...new Set(list.filter((n): n is number => Number.isInteger(n) && (n as number) >= 0 && (n as number) < 4096))].sort((a, b) => a - b);
+    out.push({ from, to, tracks });
+  });
+  return out.sort((a, b) => a.from - b.from);
 }
 /** Phase: mảng {name, start}; tên 1–60 ký tự, start ≥ 0; sắp theo start; hai phase cùng start thì giữ phase đầu. */
 export function sanitizePhases(S: Sanitizer, v: unknown, path: string): Phase[] {
@@ -912,7 +942,8 @@ const HUD_SANITIZERS = {
     const d = DEFAULT_AUTOMATION;
     let fl = S.num(P.floorDb, d.floorDb, -120, 24, `${p}.floorDb`), ce = S.num(P.ceilDb, d.ceilDb, -120, 24, `${p}.ceilDb`);
     if (ce - fl < 1) { S.warn(`${p}.ceilDb`, ce, 'ceilDb phải lớn hơn floorDb ít nhất 1 dB; dùng mặc định'); fl = d.floorDb; ce = d.ceilDb; }
-    return { lane: S.oneOf(P.lane, ['volume', 'pan'] as const, d.lane, `${p}.lane`), windowSec: S.num(P.windowSec, d.windowSec, 0, 1800, `${p}.windowSec`), playheadRatio: S.num(P.playheadRatio, d.playheadRatio, 0, 1, `${p}.playheadRatio`),
+    const lane = P.lane === undefined ? d.lane : isLaneId(P.lane) ? P.lane : (S.warn(`${p}.lane`, P.lane, 'id lane không hợp lệ (chữ, số, . : _ -; tối đa 64 ký tự); dùng volume'), d.lane);
+    return { lane, windowSec: S.num(P.windowSec, d.windowSec, 0, 1800, `${p}.windowSec`), playheadRatio: S.num(P.playheadRatio, d.playheadRatio, 0, 1, `${p}.playheadRatio`),
       colorMode: S.oneOf(P.colorMode, ['TRACK', 'SOLID'] as const, d.colorMode, `${p}.colorMode`), color: hexp(S, P.color, d.color, `${p}.color`), thickness: S.num(P.thickness, d.thickness, 1, 20, `${p}.thickness`), fill: S.bool(P.fill, d.fill, `${p}.fill`),
       fillAlpha: S.num(P.fillAlpha, d.fillAlpha, 0, 1, `${p}.fillAlpha`), floorDb: fl, ceilDb: ce, playheadColor: hexOpt(S, P.playheadColor, d.playheadColor, `${p}.playheadColor`), showValue: S.bool(P.showValue, d.showValue, `${p}.showValue`),
       valueStyle: textRef(S, P.valueStyle, d.valueStyle, `${p}.valueStyle`) };
