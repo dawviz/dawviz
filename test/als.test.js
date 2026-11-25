@@ -77,12 +77,13 @@ test('Clip không lặp: bỏ nốt trước start-marker và nốt sau LoopEnd 
   assert.equal(ast.tracks[0].notes[1].endTick, 54 * 960); // cắt tại CurrentEnd
 });
 
-test('Track tắt tiếng: giữ trong AST nhưng ẩn; chỉ có track tắt tiếng -> ERR_NO_NOTES, showMuted cứu được', async () => {
+test('Track tắt tiếng: giữ trong AST nhưng ẩn; chỉ có track tắt tiếng -> vẫn đọc + WARN_ALL_TRACKS_MUTED; showMuted (CLI) hiện luôn', async () => {
   const both = live(simpleMaster, track('A', 'true', clip(0, 4, 0, 4, 0, 'false', [[60, 0, 1]])) + track('B', 'false', clip(0, 4, 0, 4, 0, 'false', [[61, 0, 1]])));
   const { ast } = await parseAls(Buffer.from(both));
   assert.deepEqual(ast.tracks.map((t) => [t.name, t.isMuted, t.isVisible]), [['A', false, true], ['B', true, false]]);
   const only = live(simpleMaster, track('B', 'false', clip(0, 4, 0, 4, 0, 'false', [[61, 0, 1]])));
-  await assert.rejects(parseAls(Buffer.from(only)), { code: 'ERR_NO_NOTES' });
+  const hid = await parseAls(Buffer.from(only));
+  assert.equal(hid.ast.tracks[0].isVisible, false); assert.ok(hid.warnings.some((w) => w.code === 'WARN_ALL_TRACKS_MUTED'));
   const ok = await parseAls(Buffer.from(only), { showMuted: true });
   assert.equal(ok.ast.tracks[0].isVisible, true);
 });

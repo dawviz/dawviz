@@ -7,17 +7,22 @@ import type { NoteStyle } from './style.ts';
 
 export interface GlowCtx { track: ProjectTrack; note: ASTNote; t: number; tempoMap: TempoPoint[]; pitchMin: number; pitchMax: number }
 
+/** Id lane hợp lệ trong preset (khoá của `track.automation`): `volume`, `pan`, `cc1`, `pitchBend`… */
+export const isLaneId = (s: unknown): s is string => typeof s === 'string' && /^[\w.:-]{1,64}$/.test(s);
+/** Giá trị thô `v` của lane → 0..1 theo loại lane (REQ-AST-02). `volume`: dB trong [floorDb, ceilDb] (mặc định −36..0). */
+export function laneNorm(lane: Pick<AutomationLane, 'kind' | 'range'>, v: number, db?: { floorDb: number; ceilDb: number }): number {
+  if (lane.kind === 'volume') return volumeToUnit(v, db);       // gain tuyến tính → dB → 0..1
+  if (lane.kind === 'pan') return clamp01((v + 1) / 2);         // -1 (trái) .. 1 (phải) → 0..1 [VERIFY chiều pan, SOI-19]
+  if (lane.range && lane.range.max !== lane.range.min) return clamp01((v - lane.range.min) / (lane.range.max - lane.range.min));
+  if (lane.kind === 'midi-cc') return clamp01(v / 127);
+  if (lane.kind === 'pitch-bend') return clamp01((v + 8192) / 16383);
+  return clamp01(v);                                            // mute, send, plugin không có range: coi như đã chuẩn hoá 0..1 [VERIFY]
+}
 /** Giá trị lane automation tại t, chuẩn hoá 0..1 theo loại lane. Không có lane → undefined. */
 export function laneUnit(track: ProjectTrack, name: string, tempoMap: TempoPoint[], t: number): number | undefined {
   const lane: AutomationLane | undefined = track.automation?.[name];
   if (!lane || !lane.points.length) return undefined;
-  const v = sampleLane(lane, secToTick(tempoMap, Math.max(0, t)));
-  if (lane.kind === 'volume') return volumeToUnit(v);          // gain tuyến tính → dB → 0..1 trong [-36, 0] dB
-  if (lane.kind === 'pan') return clamp01((v + 1) / 2);         // -1 (trái) .. 1 (phải) → 0..1 [VERIFY chiều pan, SOI-19]
-  if (lane.kind === 'midi-cc') return clamp01(v / 127);
-  if (lane.kind === 'pitch-bend') return clamp01((v + 8192) / 16383);
-  if (lane.range && lane.range.max !== lane.range.min) return clamp01((v - lane.range.min) / (lane.range.max - lane.range.min));
-  return clamp01(v);                                            // mute, send, plugin không có range: coi như đã chuẩn hoá 0..1 [VERIFY]
+  return laneNorm(lane, sampleLane(lane, secToTick(tempoMap, Math.max(0, t))));
 }
 
 /** Giá trị nguồn 0..1 cho nốt tại t; undefined = không có dữ liệu (khi đó coi như 1: sáng như chế độ đều nhau). */

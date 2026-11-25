@@ -144,7 +144,7 @@ Bên trái là cột lớp, bên phải là thước thời gian và các thanh.
 - **Hiện dần / ẩn dần:** kéo ô vuông nhỏ ở góc trên đầu hoặc cuối thanh (hiện khi rê chuột hoặc khi lớp đang chọn).
 - **Tên thanh dính mép:** khi cuộn hoặc phóng to Timeline mà đầu thanh đã ra khỏi màn hình, tên lớp vẫn hiện ở mép trái vùng nhìn cho tới hết thanh.
 - **Bắt dính:** khi kéo, thanh bám vào vạch phát, mép các thanh khác, phase, chỗ đổi hợp âm (khi làn Nhạc đang mở) và phách của bài. Khi cắt mép, thanh còn bám vào **độ dài** của thanh khác: nhãn "= Tiến độ (0:12)" nghĩa là lúc đó hai lớp dài bằng nhau. Giữ Alt để tắt.
-- **Làn Nhạc:** bấm **Nhạc** dưới làn Phase để hiện làn hợp âm và một làn nốt cho mỗi track, giúp căn thanh theo nhạc. Làn này chỉ để xem.
+- **Làn Nhạc:** bấm **Nhạc** dưới làn Phase để hiện làn hợp âm và một làn nốt cho mỗi track, giúp căn thanh theo nhạc. Làn này chỉ để xem nhạc; thứ duy nhất đổi được ở đây là ổ khoá của từng track.
 - **Tách lớp tại vạch phát:** đặt vạch phát lên thanh, chọn lớp rồi bấm Ctrl+K (hoặc nút kéo cắt ở góc trên bên trái). Lớp thành hai lớp nối nhau: lớp gốc giữ phần trước, bản sao (nằm ngay trên) giữ phần sau. Mỗi lớp có keyframe riêng và chỉnh độc lập.
 - **Đưa thanh tới vạch phát:** `[` đưa đầu thanh tới vạch phát, `]` đưa cuối thanh tới vạch phát (cả thanh dời theo). Alt+`[` và Alt+`]` cắt đầu hoặc cuối thanh tại vạch phát.
 - **Dời từng chút:** Alt+← / Alt+→ dời 1/30 giây, thêm Shift để dời 1 giây.
@@ -198,6 +198,8 @@ Phase là các đoạn của bài (verse, chorus…). Phase nằm ở làn **Pha
 - **Dời:** kéo mốc phase (bám vào vạch phát, phách và mép thanh; giữ Alt để tắt), hoặc bấm vào mốc rồi Alt+← / Alt+→ (thêm Shift để dời 1 giây).
 - **Đổi tên:** nhấp đúp vào mốc.
 - **Xoá:** bấm vào mốc rồi nhấn Delete.
+- **Từ marker:** nếu dự án có marker, nút tải xuống ở đầu làn **Phase** tạo phase từ marker (mỗi marker một phase cùng tên). Nếu đã có phase, nút này thay hết chúng.
+- **Khoá track:** ở làn **Nhạc**, mỗi track có ổ khoá. Track khoá không đổi được ẩn/hiện, solo, màu, thứ tự và độ sáng (kể cả ở bảng Track) cho tới khi mở khoá. Khoá chỉ có trong phiên làm việc, không lưu vào preset.
 - Khi kéo thanh lớp, thanh bám vào phase, nên dễ cho một lớp hiện đúng đoạn chorus.
 
 Các số liệu `{phase}`, `{next_phase}`, `{phase_remaining}`… dùng được trong mọi ô chữ (xem [Chỗ giữ](08-cho-giu.md)).

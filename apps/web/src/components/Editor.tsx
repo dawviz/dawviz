@@ -10,6 +10,7 @@ import { ADDABLE_WIDGETS, COMP_SEP, IDENTITY_TIME, buildHud, chordTimeline, MAX_
 import { startPaintDrag } from '../lib/paintDrag.ts';
 import { GestureContext } from '../lib/storeReact.ts';
 import { useI18n } from '../i18n/I18nProvider.tsx';
+import { projectLanes } from '../lib/animateFields.ts';
 import type { Playback } from '../lib/playback.ts';
 import type { FontsStatus } from '../lib/fonts.ts';
 import { STAGE_CHROME, useStageWidth } from '../lib/useStageWidth.ts';
@@ -128,6 +129,9 @@ interface Props {
   layoutRef?: Record<string, WidgetLayout>;
   /** Trạng thái ảnh nền của phiên. */
   background?: BackgroundState;
+  /** Khoá track ở làn Nhạc của timeline (D-57, T-52): trạng thái phiên do App giữ (bảng Track cũng đọc). */
+  trackLocks?: ReadonlySet<string>;
+  onLockTrack?(id: string): void;
 }
 
 /** Tên hiển thị của widget: tên loại theo ngôn ngữ, đánh số khi có nhiều widget cùng loại. */
@@ -146,7 +150,7 @@ export function useWidgetNames(widgets: readonly WidgetSpec[]): (id: string) => 
   }, [widgets, i18n]);
 }
 
-export function Editor({ proof = true, styleName, scene, root, compPath, onCompPath, flatFull, derived: derived0, ast, playback, fonts, advanced, actions, transport, active, widgetSections, layoutRef, background }: Props) {
+export function Editor({ proof = true, styleName, scene, root, compPath, onCompPath, flatFull, derived: derived0, ast, playback, fonts, advanced, actions, transport, active, widgetSections, layoutRef, background, trackLocks, onLockTrack }: Props) {
   const { i18n } = useI18n();
   const [selected, setSelected] = useState<string[]>([]);
   const [locked, setLocked] = useState<ReadonlySet<string>>(new Set());
@@ -187,6 +191,7 @@ export function Editor({ proof = true, styleName, scene, root, compPath, onCompP
   const compName = (f: { layer: WidgetSpec; spec: { name: string } }) => f.layer.name ?? f.spec.name;
   // Làn tham chiếu nhạc của timeline lớp: nốt từng track (dữ liệu đã có trong chỉ mục) và hợp âm của mọi track, dò một lần mỗi dự án.
   const index = derived0?.index;
+  const lanes = useMemo(() => projectLanes(ast?.tracks ?? []), [ast]); // nguồn "Theo nhạc" theo lane automation (T-66)
   const music = useMemo(() => (ast && index ? { tracks: index.tracks, chords: chordTimeline(buildHud(ast, index, [{ tracks: index.tracks, mode: 'sustained' }]), index.tracks) } : undefined), [ast, index]);
   const openComp = (layerId: string) => { onCompPath([...compPath, layerId]); setSelected([]); setKeysOpen(false); setSay(i18n.t('web.comp.opened', { name: name(layerId) })); };
   const goUp = (depth: number) => { const back = compPath[depth]; onCompPath(compPath.slice(0, depth)); setSelected(back ? [back] : []); setKeysOpen(false); };
@@ -416,7 +421,7 @@ export function Editor({ proof = true, styleName, scene, root, compPath, onCompP
         <Properties background={background} scene={scene} selected={live} locked={locked} name={name} advanced={advanced} actions={actions} onLock={toggleLock} order={order} move={move} widgetSections={widgetSections} onPick={(id) => setSelected([id])} layoutRef={layoutRef}
           onDuplicate={duplicateSel} onRemove={removeSel} onDeselect={deselect} live={liveCtx} editLayouts={editLayouts} onOpenComp={openComp} onOpenKeys={openKeys} inComp={frames.length > 0} onUncompose={uncomposeSel} compSpeed={(w) => Math.round((compOf(w)?.speed ?? 1) * frameA * 100)} onCompSpeed={setCompSpeed}
           keyInspector={single && ast && keysOpen && hasInspectorTarget(single, keySel) ? (n) => (
-            <AnimationInspector n={n} widget={single} sel={keySel} tempoMap={ast.tempoMap} locked={locked.has(single.id)} getTime={() => playback.get().t}
+            <AnimationInspector n={n} widget={single} sel={keySel} tempoMap={ast.tempoMap} locked={locked.has(single.id)} getTime={() => playback.get().t} lanes={lanes}
               onAnimate={(p, v, k) => actions.animate(single.id, p, v, k)} onAnimateMany={(ch, k) => actions.animEdit({ [single.id]: { animate: ch } }, k)} onSel={onKeySel} gesture={gestureCtx} />
           ) : undefined} />
         </div>
@@ -439,7 +444,7 @@ export function Editor({ proof = true, styleName, scene, root, compPath, onCompP
             <LayerTimeline scene={scene} order={order} duration={duration} tempoMap={ast.tempoMap} playback={playback} phases={root.phases ?? []} onPhases={actions.phases}
               selected={live} onSelect={setSelected} locked={locked} onLock={toggleLock} onLockAll={lockAll} name={name} onVisible={actions.visible} onAllVisible={actions.allVisible} onPaint={paintLayers}
               onMoveLayer={move} onLayers={(kind, next, key) => actions.layers(kind, next, key)} onOpenKeys={openKeys} onOpenComp={openComp} onSplit={splitSel} onPrecompose={precomposeSel}
-              bounds={bounds} music={music} tree={r.tree} onTree={(v) => panels.resize('tree', v)} onTreeReset={() => panels.reset('tree')} gesture={gestureCtx} addMenu={<AddMenu onAdd={addWidget} />}
+              bounds={bounds} music={music} markers={ast.meta.markers} trackLocks={trackLocks} onLockTrack={onLockTrack} tree={r.tree} onTree={(v) => panels.resize('tree', v)} onTreeReset={() => panels.reset('tree')} gesture={gestureCtx} addMenu={<AddMenu onAdd={addWidget} />}
               editing={editing} onEdit={setEditing}
               renameInput={(id) => <LayerNameInput initial={scene.widgets.find((w) => w.id === id)?.name ?? name(id)} label={i18n.t('web.editor.nameLabel')} onCommit={(v) => commitName(id, v)} onCancel={() => setEditing(null)} />} />
           )}

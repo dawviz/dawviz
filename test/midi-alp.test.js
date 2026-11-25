@@ -136,3 +136,32 @@ test('MIDI: đuôi .kar (karaoke) được nhận như .mid; sai nội dung thì
   assert.equal(r.ast.tracks.find((x) => x.name === 'Lead').notes.length, 1);
   await assert.rejects(() => parseProject('song.kar', new Uint8Array([1, 2, 3, 4])), (e) => e.code === 'ERR_UNSUPPORTED_FORMAT');
 });
+
+test('MIDI CC + pitch bend → lane automation của track (T-66): tên chuẩn, giá trị thô + range, bậc thang, gộp trùng', async () => {
+  const cc = (tick, n, v, ch = 0) => ({ tick, bytes: [0xb0 | ch, n, v] });
+  const pb = (tick, v14, ch = 0) => ({ tick, bytes: [0xe0 | ch, v14 & 0x7f, v14 >> 7] });
+  const b = smf({ ppq: 480, tracks: [[tempoEv(0, 120)], [nameEv('Lead'), cc(0, 0, 1), cc(0, 1, 0), on(0, 60), cc(240, 1, 64), cc(240, 1, 100), cc(480, 1, 100), cc(480, 11, 90), cc(960, 64, 127), pb(480, 8192), pb(720, 16383), pb(960, 0), off(960, 60), cc(100, 1, 50, 3)]] });
+  const { ast, warnings } = await parseMidi(b);
+  const t = ast.tracks.find((x) => x.name === 'Lead');
+  assert.deepEqual(Object.keys(t.automation).sort(), ['cc1', 'cc11', 'cc64', 'pitchBend']); // CC0 (Bank Select) không phải automation; CC1 ở kênh 4 bị bỏ (kênh chính của track là kênh 1)
+  const m = t.automation.cc1;
+  assert.equal(m.kind, 'midi-cc'); assert.equal(m.name, 'Mod Wheel (CC1)'); assert.deepEqual(m.param, { name: 'CC1', index: 1 }); assert.deepEqual(m.range, { min: 0, max: 127 });
+  // cùng tick: sự kiện sau thắng (240 → 100); 480 lặp lại 100 nên bị gộp; tick quy về 960 PPQ; điểm có thời gian theo tempo map
+  assert.deepEqual(m.points.map((p) => [p.tick, p.value, p.shape]), [[0, 0, 1], [480, 100, 1]]);
+  assert.ok(Math.abs(m.points[1].timeSeconds - 0.25) < 1e-9);
+  assert.equal(t.automation.cc11.name, 'Expression (CC11)'); assert.equal(t.automation.cc64.name, 'Sustain (CC64)');
+  const bend = t.automation.pitchBend;
+  assert.equal(bend.kind, 'pitch-bend'); assert.deepEqual(bend.range, { min: -8192, max: 8191 });
+  assert.deepEqual(bend.points.map((p) => p.value), [0, 8191, -8192]);
+  assert.ok(warnings.some((w) => w.code === 'WARN_MIDI_CC_CHANNELS' && w.details.events === 1));
+  assertAstInvariants(assert, ast);
+});
+
+test('MIDI format 0: CC đi theo kênh của track tách ra; track không có CC thì không có automation', async () => {
+  const b = smf({ format: 0, ppq: 96, tracks: [[tempoEv(0, 100), on(0, 36, 100, 9), off(96, 36, 9), on(0, 60, 100, 0), { tick: 48, bytes: [0xb0, 74, 33] }, off(96, 60, 0)]] });
+  const { ast } = await parseMidi(b);
+  const ch1 = ast.tracks.find((t) => t.name === 'Channel 1'), dr = ast.tracks.find((t) => /drums/.test(t.name));
+  assert.deepEqual(Object.keys(ch1.automation), ['cc74']); assert.equal(ch1.automation.cc74.name, 'Cutoff (CC74)');
+  assert.equal(ch1.automation.cc74.points[0].tick, 480);
+  assert.equal(dr.automation, undefined);
+});

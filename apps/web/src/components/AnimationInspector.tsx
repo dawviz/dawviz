@@ -9,7 +9,7 @@ import { useI18n } from '../i18n/I18nProvider.tsx';
 import type { Gesture } from '../lib/storeReact.ts';
 import { radioKeys, radioTab } from '../lib/a11y.ts';
 import { formatClock } from '../lib/timeFormat.ts';
-import { animFields, keyTimeText, newBinding, newKeyAnimation, setKey, SOURCES, staticValue, withSource, type AnimField } from '../lib/animateFields.ts';
+import { animFields, bindSourcesFor, keyTimeText, newBinding, newKeyAnimation, setKey, sourceLabel, staticValue, withSource, type AnimField, type LaneChoice } from '../lib/animateFields.ts';
 import { DEFAULT_BEZIER, bezierOf, common, easeName, sameEase, type Bezier } from '../lib/easeCurve.ts';
 import { groupRefs, keyRef, keySecs, parseKeyRef, removeKeys } from '../lib/timeline.ts';
 import { InspectorSection, ResetButton } from './Inspector.tsx';
@@ -39,6 +39,8 @@ export interface AnimationInspectorProps {
   onAnimateMany(changes: Record<string, Animation | null>, key?: string): void;
   onSel(s: KeySel): void;
   gesture: Gesture;
+  /** Lane automation của dự án đang mở (T-66): thêm vào danh sách nguồn "Theo nhạc", gọi theo tên. */
+  lanes?: readonly LaneChoice[];
 }
 
 /** Có gì để hiện không (để cột Thiết lập biết có đánh số thêm một mục hay không). */
@@ -47,7 +49,7 @@ export function hasInspectorTarget(widget: WidgetSpec, sel: KeySel): boolean {
   return !!sel.row && timelineRows(widget.type, widget.animate).some((r) => r.id === sel.row);
 }
 
-export function AnimationInspector({ n, widget, sel, tempoMap, locked, getTime, onAnimate, onAnimateMany, onSel, gesture }: AnimationInspectorProps) {
+export function AnimationInspector({ n, widget, sel, tempoMap, locked, getTime, onAnimate, onAnimateMany, onSel, gesture, lanes = [] }: AnimationInspectorProps) {
   const { i18n } = useI18n();
   const fields = animFields(widget.type), byPath = new Map(fields.map((f) => [f.path, f]));
   const label = (f: AnimField) => (f.labelKey && i18n.has(f.labelKey) ? i18n.t(f.labelKey) : f.path);
@@ -222,7 +224,7 @@ export function AnimationInspector({ n, widget, sel, tempoMap, locked, getTime, 
         ? <ExprEditor key={f.path} f={f} source={ex.expr} name={row.paths.length > 1 ? label(f) : rname} disabled={locked} onChange={(v) => onAnimate(f.path, { expr: v }, `expr${f.path}`)} />
         : null; })}
       {mode === 'bind' && row.fields.map((f, j) => { const b = anims[j]; return b && isBinding(b)
-        ? <BindEditor key={f.path} f={f} b={b} name={row.paths.length > 1 ? label(f) : rname} disabled={locked} onChange={(v, key) => onAnimate(f.path, v, key)} />
+        ? <BindEditor key={f.path} f={f} b={b} name={row.paths.length > 1 ? label(f) : rname} disabled={locked} lanes={lanes} onChange={(v, key) => onAnimate(f.path, v, key)} />
         : null; })}
       {mode && (
         <button type="button" className={btn} disabled={locked} data-testid="keyinsp-remove"
@@ -271,7 +273,7 @@ function ExprEditor({ f, source, name, disabled, onChange }: { f: AnimField; sou
 }
 
 /** Form "Theo nhạc": nguồn, khoảng nguồn, khoảng giá trị, đường cong (chuyển từ mục Hoạt hình cũ). */
-function BindEditor({ f, b, name, disabled, onChange }: { f: AnimField; b: Binding; name: string; disabled: boolean; onChange(v: Binding, key?: string): void }) {
+function BindEditor({ f, b, name, disabled, lanes, onChange }: { f: AnimField; b: Binding; name: string; disabled: boolean; lanes: readonly LaneChoice[]; onChange(v: Binding, key?: string): void }) {
   const { i18n } = useI18n();
   const value = (v: number | string, set: (v: number | string) => void, lbl: string) => f.kind === 'color'
     ? <input type="color" aria-label={lbl} value={String(v)} disabled={disabled} onChange={(e) => set(e.target.value)} className="h-6 w-full" />
@@ -281,7 +283,7 @@ function BindEditor({ f, b, name, disabled, onChange }: { f: AnimField; b: Bindi
     <div className="space-y-2" data-testid="keyinsp-bind">
       <Row label={i18n.t('web.anim.source')}>
         <Select wrapClassName="w-full" aria-label={i18n.t('web.anim.source')} value={b.bind} disabled={disabled} data-testid="keyinsp-source" onChange={(e) => onChange(withSource(b, e.target.value as BindSource))}>
-          {SOURCES.map((s) => <option key={s} value={s}>{i18n.t(`web.anim.src.${s}`)}</option>)}
+          {bindSourcesFor(lanes, b.bind).map((s) => <option key={s} value={s}>{sourceLabel(i18n, s, lanes)}</option>)}
         </Select>
       </Row>
       <div className="grid grid-cols-[minmax(0,1fr)_4.5rem_4.5rem] items-center gap-2 text-xs text-muted">

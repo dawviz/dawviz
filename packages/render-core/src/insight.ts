@@ -1,7 +1,8 @@
 // Các widget phân tích (P-02…P-13, SRS 3.4b, AT-23): Tempo & nhịp, Bar & Beat, Giọng, Velocity, Mật độ, Vòng cao độ, Tổng quan bản phối,
 // Drum pad, Tên đoạn (marker), Lời, Automation. Mỗi widget là một renderer thuần của (spec, t, AST, derived): không trạng thái, không đồng hồ,
 // nên Preview = Export. Chữ lấy từ MẪU trong thuộc tính widget (như sáu widget chữ ở hud.ts); tên nốt đi qua `derived.naming` (P-12).
-import { sampleLane, secToTick, volumeToUnit } from '@dawviz/parser-core';
+import { sampleLane, secToTick } from '@dawviz/parser-core';
+import { laneNorm } from './glow.ts';
 import { activeNotes, notesInRange, type TrackIndex } from './notes.ts';
 import { barPosAt, base, block, chordName, hudOf, pct, shown, typo, xFor, globalValues, withLocals, isDrumTrack, type Align } from './hud.ts';
 import { chordNameFor, noteNameFor, pitchClassNameFor } from './naming.ts';
@@ -37,7 +38,8 @@ export interface ArrangementProps { cols: number; rowGap: number; colorMode: 'TR
 export interface DrumPadProps { source: 'DRUMS' | 'ALL'; cols: number; maxPads: number; gap: number; radius: number; padColor: string; hitColor: string; colorMode: 'TRACK' | 'SOLID'; decayMs: number; labels: boolean; labelStyle: TextRef }
 export interface SectionProps { align: Align; style: TextRef; nextStyle: TextRef; template: string; showNext: boolean; nextTemplate: string; fadeMs: number }
 export interface LyricsProps { align: Align; style: TextRef; unsungStyle: TextRef; showNext: boolean; nextStyle: TextRef; maxChars: number; gapSec: number; hideAfterSec: number }
-export interface AutomationProps { lane: 'volume' | 'pan'; windowSec: number; playheadRatio: number; colorMode: 'TRACK' | 'SOLID'; color: string; thickness: number; fill: boolean; fillAlpha: number; floorDb: number; ceilDb: number; playheadColor: string; showValue: boolean; valueStyle: TextRef }
+/** `lane`: id lane của track (`volume`, `pan`, `cc1`, `cc11`, `pitchBend`… — T-66); widget vẽ các track có lane đó. */
+export interface AutomationProps { lane: string; windowSec: number; playheadRatio: number; colorMode: 'TRACK' | 'SOLID'; color: string; thickness: number; fill: boolean; fillAlpha: number; floorDb: number; ceilDb: number; playheadColor: string; showValue: boolean; valueStyle: TextRef }
 
 export const DEFAULT_TEMPO_INFO: Readonly<TempoInfoProps> = Object.freeze({ align: 'left', style: ts('clock'), template: '{bpm} BPM  {sig}', showCurve: true, curveHeight: 36, curveColor: '#8aa4ff', flash: true, flashColor: '#ffd166', flashMs: 600 });
 export const DEFAULT_BAR_BEAT: Readonly<BarBeatProps> = Object.freeze({ align: 'left', style: ts('clock'), format: 'PERCENT', barDigits: 3, dots: true, dotSize: 10, dotColor: '#3a4060', dotActiveColor: '#ffd166', pulse: true });
@@ -331,8 +333,18 @@ export const lyricsRenderer: WidgetRenderer<LyricsProps> = {
 // ───────────────────────────── P-13 Automation lane ─────────────────────────────
 const laneValue = (lane: AutomationLane, tick: number, p: AutomationProps): number => {
   const v = sampleLane(lane as never, tick) as number | undefined; if (v === undefined) return 0;
-  return lane.kind === 'volume' ? volumeToUnit(v, { floorDb: p.floorDb, ceilDb: p.ceilDb }) : clamp01((v + 1) / 2);
+  return laneNorm(lane, v, { floorDb: p.floorDb, ceilDb: p.ceilDb });
 };
+/** Chữ giá trị hiện tại của lane theo loại: dB (âm lượng), L/C/R (pan), số thô 0–127 (CC), ±1 (pitch bend), % theo `range` (loại khác). */
+export function laneValueText(lane: Pick<AutomationLane, 'kind' | 'range'>, v: number): string {
+  switch (lane.kind) {
+    case 'volume': { const db = v > 1e-6 ? 20 * Math.log10(v) : -Infinity; return db <= -120 ? '-∞ dB' : `${db.toFixed(1)} dB`; }
+    case 'pan': return Math.abs(v) < 0.005 ? 'C' : `${v < 0 ? 'L' : 'R'}${Math.round(Math.abs(v) * 100)}`;
+    case 'midi-cc': return String(Math.round(v));
+    case 'pitch-bend': { const n = v / (v < 0 ? 8192 : 8191); return Math.abs(n) < 0.005 ? '0' : `${n > 0 ? '+' : '−'}${Math.abs(n).toFixed(2)}`; }
+    default: return lane.range && lane.range.max !== lane.range.min ? `${Math.round(laneNorm(lane, v) * 100)}%` : v.toFixed(2);
+  }
+}
 export const automationRenderer: WidgetRenderer<AutomationProps> = {
   type: 'AUTOMATION',
   layout({ ast, derived, tracks, measure, textStyles, fonts }, spec, t) {
@@ -355,7 +367,7 @@ export const automationRenderer: WidgetRenderer<AutomationProps> = {
     if (p.showValue) {
       const ti = withLane[0], lane = ti.track.automation![p.lane]!, v = sampleLane(lane as never, secToTick(ast.tempoMap as never, t)) as number | undefined;
       if (v !== undefined) {
-        const text = p.lane === 'volume' ? `${(v > 1e-6 ? 20 * Math.log10(v) : -Infinity) <= -120 ? '-∞' : (20 * Math.log10(v)).toFixed(1)} dB` : Math.abs(v) < 0.005 ? 'C' : `${v < 0 ? 'L' : 'R'}${Math.round(Math.abs(v) * 100)}`;
+        const text = laneValueText(lane, v);
         T.text(out, text, W - 2, vst.size * 1.1, vst, 'right', W);
       }
     }

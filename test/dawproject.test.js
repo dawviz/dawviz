@@ -48,7 +48,8 @@ test('timeUnit=seconds quy đổi qua tempo (120 BPM: 1 giây = 2 beat)', () => 
 
 test('Track tắt tiếng; thiếu tempo -> fallback có cờ; tempoOverride', () => {
   const clips = `<Clips><Clip time="0" duration="4"><Notes>${note(0, 1)}</Notes></Clip></Clips>`;
-  assert.throws(() => parseDawprojectXml(proj({ mute: 'true', clips })), { code: 'ERR_NO_NOTES' });
+  const muted = parseDawprojectXml(proj({ mute: 'true', clips })); // T-50: không còn lỗi, track ẩn mặc định + cảnh báo
+  assert.equal(muted.ast.tracks[0].isVisible, false); assert.ok(muted.warnings.some((w) => w.code === 'WARN_ALL_TRACKS_MUTED'));
   assert.equal(parseDawprojectXml(proj({ mute: 'true', clips }), { showMuted: true }).ast.tracks[0].isVisible, true);
   const nt = parseDawprojectXml(proj({ tempo: '', clips }));
   assert.equal(nt.ast.meta.tempoSource, 'fallback'); assert.ok(nt.warnings.some((w) => w.code === 'WARN_TEMPO_FALLBACK'));

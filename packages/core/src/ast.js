@@ -18,13 +18,24 @@ export function createPairer() {
   };
 }
 
+/** Lane automation: điểm thiếu `timeSeconds` (parser chỉ biết tick, vd. MIDI CC) được tính theo tempo map. */
+function lanesWithTime(auto, tempoMap) {
+  if (!auto) return undefined;
+  const out = {};
+  for (const [id, lane] of Object.entries(auto)) {
+    if (!lane) continue;
+    out[id] = !Array.isArray(lane.points) || lane.points.every((p) => Number.isFinite(p.timeSeconds)) ? lane : { ...lane, points: lane.points.map((p) => (Number.isFinite(p.timeSeconds) ? p : { ...p, timeSeconds: tickToSec(tempoMap, p.tick) })) };
+  }
+  return Object.keys(out).length ? out : undefined;
+}
+
 /**
  * @param {object} inp
  *  title, artist, sourceFormat, sourceVersion, sourcePPQ,
  *  tempoPoints:[{tick,bpm,num,den}], tempoSource:'file'|'midi-default'|'fallback'|'user',
  *  markers?:[{tick,name}] (P-10), lyrics?:[{tick,text}] (P-11): tick @960; thành meta.markers / meta.lyrics
- *  tracks:[{name,muted,sourceId,mix?:{volumeDb,pan},automation?:{volume?,pan?,mute?}(Lane, xem automation.js),notes:[{pitch,startTick,endTick,velocity,channel?}]}]
- * @param {{maxNotes?:number, showMuted?:boolean, warnings?:Array}} opts
+ *  tracks:[{name,muted,sourceId,mix?:{volumeDb,pan},automation?:{volume?,pan?,mute?,[id]:Lane}(Lane, xem automation.js; điểm thiếu timeSeconds được tính ở đây),notes:[{pitch,startTick,endTick,velocity,channel?}]}]
+ * @param {{maxNotes?:number, showMuted?:boolean, warnings?:Array}} opts  showMuted: giữ để tương thích CLI (--show-muted): track tắt tiếng cũng isVisible=true.
  */
 export function buildAST(inp, opts = {}) {
   const warnings = inp.warnings || [];
@@ -61,9 +72,13 @@ export function buildAST(inp, opts = {}) {
     const visible = !muted || !!opts.showMuted;
     (visible ? (visibleNotes += notes.length) : (hiddenNotes += notes.length));
     const index = tracks.length;
-    tracks.push({ id: `t${index}`, index, name: rt.name || `Track ${srcIndex + 1}`, color: rt.color || PALETTE[index % PALETTE.length], isMuted: muted, isVisible: visible, notes, pitchRange: { min, max }, ...(rt.sourceId !== undefined ? { sourceId: String(rt.sourceId) } : {}), ...(rt.mix ? { mix: rt.mix } : {}), ...(rt.automation && Object.keys(rt.automation).length ? { automation: rt.automation } : {}) });
+    const automation = lanesWithTime(rt.automation, tempoMap);
+    tracks.push({ id: `t${index}`, index, name: rt.name || `Track ${srcIndex + 1}`, color: rt.color || PALETTE[index % PALETTE.length], isMuted: muted, isVisible: visible, notes, pitchRange: { min, max }, ...(rt.sourceId !== undefined ? { sourceId: String(rt.sourceId) } : {}), ...(rt.mix ? { mix: rt.mix } : {}), ...(automation ? { automation } : {}) });
   });
-  if (!visibleNotes) fail('ERR_NO_NOTES', hiddenNotes ? `chỉ có nốt ở track tắt tiếng (${hiddenNotes} nốt); bật showMuted để hiển thị` : 'không có nốt nào sau khi lọc', { hiddenNotes });
+  // T-50: ẩn/hiện là việc của ứng dụng (Doc.hidden/solo, REQ-UI-12). Track tắt tiếng vẫn vào AST với isVisible=false (gợi ý "ẩn mặc định");
+  // dự án chỉ có nốt ở track tắt tiếng KHÔNG còn là lỗi: báo WARN_ALL_TRACKS_MUTED để giao diện gợi ý bật mắt. Chỉ lỗi khi không có nốt nào.
+  if (!visibleNotes && !hiddenNotes) fail('ERR_NO_NOTES', 'không có nốt nào', { reason: 'empty' });
+  if (!visibleNotes) warn(warnings, 'WARN_ALL_TRACKS_MUTED', `mọi nốt (${hiddenNotes}) nằm ở track tắt tiếng trong DAW: các track này được đánh dấu ẩn (isVisible=false); hãy bật hiện trong ứng dụng hoặc dùng --show-muted`, { hiddenNotes });
   if (zeroLen) warn(warnings, 'WARN_ZERO_LENGTH_NOTES', `${zeroLen} nốt có độ dài 0 được nâng lên 1 tick`);
   if (inp.tempoSource === 'fallback') warn(warnings, 'WARN_TEMPO_FALLBACK', 'không đọc được tempo từ file: tạm dùng 120 BPM. Hãy truyền options.tempoOverride (hoặc nhập BPM thủ công) rồi phân tích lại.');
 

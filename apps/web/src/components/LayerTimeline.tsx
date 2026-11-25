@@ -15,12 +15,12 @@ import { isTextEntry } from '../lib/a11y.ts';
 import { clickIsKeyboard } from '../lib/paintDrag.ts';
 import { formatClock } from '../lib/timeFormat.ts';
 import { DRAG_SLOP, ROW_H, RULER_H, beatTimes, clampPps, fitPps, keySecs, rulerLabel, rulerStep, rulerTicks, snapTime, xToTime, zoomAround } from '../lib/timeline.ts';
-import { clipEdges, clipsOf, lengthTargets, moveLayers, setFade, trimLayer, trimMany, type Clip } from '../lib/layerTimeline.ts';
+import { clipEdges, clipsOf, lengthTargets, markersToPhases, moveLayers, setFade, trimLayer, trimMany, type Clip } from '../lib/layerTimeline.ts';
 import type { LayerEdit } from '../lib/commands.ts';
 import { PANEL_LIMITS } from '../lib/panelLayout.ts';
 import { Splitter } from './Splitter.tsx';
 import { PAD, PlayheadHead, PlayheadLine } from './KeyframeTimeline.tsx';
-import { ChevronRight, Diamond, Eye, EyeOff, FitWidth, Flag, Grip, Lock, Plus, Precomp, RowsShorter, RowsTaller, Scissors, Unlock, ZoomIn, ZoomOut } from './Icons.tsx';
+import { ChevronRight, Diamond, Download, Eye, EyeOff, FitWidth, Flag, Grip, Lock, Plus, Precomp, RowsShorter, RowsTaller, Scissors, Unlock, ZoomIn, ZoomOut } from './Icons.tsx';
 
 const FRAME = 1 / 30;
 const ROW_MIN = 24, ROW_MAX = 64, ROW_STEP = 8;
@@ -60,6 +60,11 @@ export interface LayerTimelineProps {
   bounds: { from: number; to: number }[] | null;
   /** Làn tham chiếu nhạc (chỉ xem và bắt dính): nốt của từng track và hợp âm theo thời gian. Vắng = chưa có dự án. */
   music?: { tracks: readonly TrackIndex[]; chords: readonly ChordSeg[] };
+  /** Marker của dự án (P-10): có thì làn Phase có nút "Lấy phase từ marker" (một bước hoàn tác, T-52). */
+  markers?: readonly { name: string; timeSeconds: number }[];
+  /** Khoá track (D-57, T-52): track đã khoá không đổi được ẩn/hiện, solo, màu, thứ tự, độ sáng ở bảng Track. Trạng thái phiên. */
+  trackLocks?: ReadonlySet<string>;
+  onLockTrack?(id: string): void;
   tree: number;
   onTree(px: number): void;
   onTreeReset(): void;
@@ -410,6 +415,10 @@ export function LayerTimeline(props: LayerTimelineProps) {
                 <Flag className="h-3.5 w-3.5 shrink-0 text-faint" />
                 <span className="min-w-0 flex-1 truncate text-xs font-semibold text-fg">{i18n.t('web.phase.title')}</span>
                 {phases.length > 0 && <span className="text-[11px] tabular-nums text-muted">{i18n.number(phases.length)}</span>}
+                {!!props.markers?.length && (
+                  <button type="button" className="tog" onClick={() => onPhases(markersToPhases(props.markers!, duration))} aria-label={i18n.t('web.phase.fromMarkers')}
+                    title={i18n.t(phases.length ? 'web.phase.fromMarkersReplace' : 'web.phase.fromMarkersHint', { n: props.markers.length })} data-testid="phase-from-markers"><Download className="h-3.5 w-3.5" /></button>
+                )}
                 <button type="button" className="tog" disabled={phases.length >= MAX_PHASES} onClick={() => addPhase(playback.get().t)} aria-label={i18n.t('web.phase.addHere')} title={i18n.t('web.phase.addHere')} data-testid="phase-add"><Plus className="h-3.5 w-3.5" /></button>
               </div>
               {music && (
@@ -422,12 +431,21 @@ export function LayerTimeline(props: LayerTimelineProps) {
                       <span className="ml-auto pr-1 font-normal tabular-nums text-muted">{i18n.number(music.tracks.length)}</span>
                     </button>
                   </div>
-                  {musicOpen && [{ key: 'chords', label: i18n.t('web.layers.chords'), color: '' }, ...music.tracks.map((t) => ({ key: t.track.id, label: t.track.name, color: t.track.color }))].map((r) => (
-                    <div key={r.key} className="flex items-center gap-1.5 border-b border-r border-line/70 pl-6 pr-2 text-[11px] text-muted" style={{ height: MUSIC_H }} data-testid={`music-row-${r.key}`}>
-                      {r.color && <span aria-hidden className="h-2 w-2 shrink-0 rounded-sm" style={{ background: r.color }} />}
-                      <span className="min-w-0 truncate" title={r.label}>{r.label}</span>
-                    </div>
-                  ))}
+                  {musicOpen && [{ key: 'chords', label: i18n.t('web.layers.chords'), color: '', track: false }, ...music.tracks.map((t) => ({ key: t.track.id, label: t.track.name, color: t.track.color, track: true }))].map((r) => {
+                    const lk = !!props.trackLocks?.has(r.key);
+                    return (
+                      <div key={r.key} className="flex items-center gap-1.5 border-b border-r border-line/70 pl-6 pr-1 text-[11px] text-muted" style={{ height: MUSIC_H }} data-testid={`music-row-${r.key}`} data-locked={lk || undefined}>
+                        {r.color && <span aria-hidden className="h-2 w-2 shrink-0 rounded-sm" style={{ background: r.color }} />}
+                        <span className="min-w-0 flex-1 truncate" title={r.label}>{r.label}</span>
+                        {r.track && props.onLockTrack && (
+                          <button type="button" className={`tog h-[18px] w-[18px] ${lk ? 'text-fg' : ''}`} aria-pressed={lk} onClick={() => props.onLockTrack!(r.key)} data-testid={`track-lock-${r.key}`}
+                            aria-label={i18n.t(lk ? 'web.track.unlock' : 'web.track.lock', { name: r.label })} title={i18n.t(lk ? 'web.track.unlock' : 'web.track.lock', { name: r.label })}>
+                            {lk ? <Lock className="h-3 w-3" /> : <Unlock className="h-3 w-3" />}
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
                 </>
               )}
               <ul aria-label={i18n.t('web.editor.layers')} data-testid="layers">

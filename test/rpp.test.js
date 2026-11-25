@@ -53,13 +53,17 @@ test('Nhiều take: dùng take đang chọn (TAKE SEL)', async () => {
   assert.deepEqual(ast.tracks[0].notes.map((n) => n.pitch), [62]);
 });
 
-test('Item MUTE bị bỏ; track mute ẩn; chỉ có track mute -> ERR_NO_NOTES', async () => {
+test('Item MUTE bị bỏ; track mute ẩn; chỉ có track mute -> vẫn đọc, track ẩn + WARN_ALL_TRACKS_MUTED (T-50)', async () => {
   const mi = item(0, 4, midiSrc(NOTE_A), 'MUTE 1');
   const t = rpp({ tracks: [{ name: 'A', items: [item(0, 4, midiSrc(NOTE_A))] }, { name: 'B', items: [mi] }, { name: 'C', mute: true, items: [item(0, 4, midiSrc(NOTE_A))] }] });
   const { ast, warnings } = await parseRppText(t);
   assert.deepEqual(ast.tracks.filter((x) => x.isVisible).map((x) => x.name), ['A']);
   assert.ok(warnings.some((w) => w.code === 'WARN_RPP_MUTED_ITEMS'));
-  await assert.rejects(parseRppText(rpp({ tracks: [{ mute: true, items: [item(0, 4, midiSrc(NOTE_A))] }] })), { code: 'ERR_NO_NOTES' });
+  const only = await parseRppText(rpp({ tracks: [{ mute: true, items: [item(0, 4, midiSrc(NOTE_A))] }] }));
+  assert.deepEqual(only.ast.tracks.map((x) => [x.isMuted, x.isVisible]), [[true, false]]);
+  assert.ok(only.warnings.some((w) => w.code === 'WARN_ALL_TRACKS_MUTED' && w.details.hiddenNotes === 1));
+  // dự án không có nốt nào (chỉ có track trống): vẫn ERR_NO_NOTES, kèm lý do để giao diện gợi ý đúng
+  await assert.rejects(parseRppText(rpp({ tracks: [{ name: 'empty', items: [] }] })), (e) => e.code === 'ERR_NO_NOTES' && e.details.reason === 'empty');
 });
 
 test('POOLEDEVTS: item thứ hai dùng lại sự kiện của item đầu', async () => {

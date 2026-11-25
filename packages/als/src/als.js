@@ -179,7 +179,7 @@ export function parseAlsText(text, options = {}) {
   try {
     built = buildAST({ title: options.title || 'Ableton project', markers, sourceFormat: 'als', sourceVersion, tempoPoints, tempoSource, sourcePPQ: PPQ, tracks, warnings }, { maxNotes: limits.maxNotes, showMuted: options.showMuted });
   } catch (e) {
-    if (e.code === 'ERR_NO_NOTES' && sessionClips > 0) fail('ERR_NO_NOTES', `Arrangement không có nốt, nhưng có ${sessionClips} clip MIDI ở Session View (chưa hỗ trợ đọc Session). Hãy kéo clip vào Arrangement trong Live rồi lưu lại.`, { sessionClips });
+    if (e.code === 'ERR_NO_NOTES' && sessionClips > 0) fail('ERR_NO_NOTES', `Arrangement không có nốt, nhưng có ${sessionClips} clip MIDI ở Session View (chưa hỗ trợ đọc Session). Hãy kéo clip vào Arrangement trong Live rồi lưu lại.`, { reason: 'sessionClips', sessionClips });
     throw e;
   }
   const { ast } = built;

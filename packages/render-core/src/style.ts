@@ -70,7 +70,7 @@ export function sanitizeStyle(s: NoteStyle): NoteStyle {
     glowMode: s.glowMode === 'dynamic' ? 'dynamic' : 'uniform',
     glowSource: GLOW_SOURCES.includes(s.glowSource) ? s.glowSource : DEFAULT_NOTE_STYLE.glowSource,
     glowPanMode: s.glowPanMode === 'spread' ? 'spread' : 'lr',
-    glowLane: typeof s.glowLane === 'string' && /^[\w.:-]{1,64}$/.test(s.glowLane) ? s.glowLane : DEFAULT_NOTE_STYLE.glowLane,
+    glowLane: typeof s.glowLane === 'string' && /^[\w.:-]{1,64}$/.test(s.glowLane) ? s.glowLane : DEFAULT_NOTE_STYLE.glowLane, // cùng quy tắc isLaneId (glow.ts)
     glowMin: clamp(num(s.glowMin, DEFAULT_NOTE_STYLE.glowMin), 0, 1), glowMax: clamp(num(s.glowMax, DEFAULT_NOTE_STYLE.glowMax), 0, 1),
     glowInvert: !!s.glowInvert, glowRelease: clamp(num(s.glowRelease, 0), 0, 4),
     playedColor: optHex(s.playedColor), activeColor: optHex(s.activeColor), upcomingColor: optHex(s.upcomingColor),

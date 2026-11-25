@@ -12,6 +12,7 @@
 import type { Animation } from './animation.ts';
 import type { SceneDocument, WidgetSpec } from './scene.ts';
 import type { WidgetVisibility } from './visibility.ts';
+import type { TrackRange } from './scene.ts';
 
 export const MAX_COMP_DEPTH = 4;
 export const MAX_COMPS = 32;
@@ -60,6 +61,7 @@ const mapVisibility = (v: WidgetVisibility, m: TimeMap): WidgetVisibility => ({
   ranges: v.ranges.map((r) => ({ from: mt(m, r.from), to: r.to === null ? null : mt(m, r.to) })),
   fadeIn: m.a === 1 ? v.fadeIn : r6(v.fadeIn * m.a), fadeOut: m.a === 1 ? v.fadeOut : r6(v.fadeOut * m.a),
 });
+const mapTrackRanges = (list: TrackRange[], m: TimeMap): TrackRange[] => list.map((r) => ({ ...r, from: mt(m, r.from), to: r.to === null ? null : mt(m, r.to) }));
 const mapCompProps = (c: CompProps, m: TimeMap): CompProps => {
   const speed = r6((c.speed ?? 1) / m.a);
   const { speed: _s, ...rest } = c;
@@ -67,7 +69,7 @@ const mapCompProps = (c: CompProps, m: TimeMap): CompProps => {
 };
 
 /**
- * Đổi mọi mốc thời gian dàn dựng của widget theo `m`: keyframe mốc giây, khoảng hiển thị (và thời gian hiện dần/ẩn dần co theo `a`), và (lớp COMP)
+ * Đổi mọi mốc thời gian dàn dựng của widget theo `m`: keyframe mốc giây, khoảng hiển thị (và thời gian hiện dần/ẩn dần co theo `a`), đoạn đổi track (T-52), và (lớp COMP)
  * điểm bắt đầu, tốc độ của comp con. Dùng để trải precomp và để hiện comp theo thời gian toàn bài trong Editor. `m` đơn vị → trả nguyên widget.
  */
 export function mapWidgetTime(w: WidgetSpec, m: TimeMap): WidgetSpec {
@@ -75,6 +77,7 @@ export function mapWidgetTime(w: WidgetSpec, m: TimeMap): WidgetSpec {
   const out: WidgetSpec = { ...w };
   if (w.animate) out.animate = Object.fromEntries(Object.entries(w.animate).map(([p, a]) => [p, mapAnimation(a, m)]));
   if (w.visibility) out.visibility = mapVisibility(w.visibility, m);
+  if (w.trackRanges) out.trackRanges = mapTrackRanges(w.trackRanges, m);
   const c = compOf(w); if (c) out.properties = mapCompProps(c, m);
   return out;
 }
@@ -99,6 +102,7 @@ export function unmapWidgetTime(orig: WidgetSpec | undefined, edited: WidgetSpec
     out.animate = Object.fromEntries(Object.entries(edited.animate).map(([p, a]) => [p, view.animate && same(view.animate[p], a) && orig.animate ? orig.animate[p] : mapAnimation(a, inv)]));
   }
   if (edited.visibility) out.visibility = view.visibility && same(view.visibility, edited.visibility) && orig.visibility ? orig.visibility : mapVisibility(edited.visibility, inv);
+  if (edited.trackRanges) out.trackRanges = view.trackRanges && same(view.trackRanges, edited.trackRanges) && orig.trackRanges ? orig.trackRanges : mapTrackRanges(edited.trackRanges, inv);
   const c = compOf(edited);
   if (c) { const vc = compOf(view), oc = compOf(orig); out.properties = vc && oc && same(vc, c) ? oc : mapCompProps(c, inv); }
   return out;
