@@ -8,6 +8,7 @@
 // Cơ bản: màu, ẩn/hiện, solo, thông tin track. Kéo tay nắm 6 chấm đổi thứ tự (cả hai chế độ). Nâng cao thêm: độ sáng nền và ngưỡng (REQ-UI-13).
 // Ẩn/hiện, solo và thứ tự là việc của ứng dụng (lọc/sắp danh sách track trước khi đưa cho Render Core), không đổi Render Core.
 import { useEffect, useLayoutEffect, useRef, useState, type DragEvent, type KeyboardEvent, type ReactNode, type RefObject } from 'react';
+import { ColorField } from './ColorField.tsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import { BRIGHTNESS_DB_RANGE, DEFAULT_BRIGHTNESS, pitchName, trackBrightness, type ProjectTrack, type BrightnessConfig, type BrightnessSource, type NoteStyle, type TempoPoint } from '@dawviz/render-core';
 import { SliderField } from './SliderField.tsx';
@@ -204,8 +205,8 @@ function TrackHeader({ tr, i, p, expanded, onExpand, focusRef }: { tr: ProjectTr
           <Grip className="h-3.5 w-3.5" />
         </button>
       )}
-      <input type="color" aria-label={`${i18n.t('web.track.color')}: ${tr.name}`} className="swatch" disabled={lk} title={lk ? i18n.t('web.track.lockedHint') : undefined}
-        value={p.overrides[tr.id]?.customColor ?? tr.color} onChange={(e) => p.onStyle(tr.id, { colorMode: 'custom', customColor: e.target.value })} />
+      <ColorField variant="swatch" label={`${i18n.t('web.track.color')}: ${tr.name}`} disabled={lk} title={lk ? i18n.t('web.track.lockedHint') : undefined}
+        value={p.overrides[tr.id]?.customColor ?? tr.color} onChange={(c) => p.onStyle(tr.id, { colorMode: 'custom', customColor: c })} />
       {onExpand ? (
         <button type="button" data-track-focus aria-expanded={expanded} onClick={onExpand} onKeyDown={onKey} title={tr.name}
           className="flex min-h-[var(--hit)] min-w-0 flex-1 items-center gap-1 rounded-sm py-0.5 focus:outline-none focus-visible:ring-1 focus-visible:ring-focus">

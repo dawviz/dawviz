@@ -4,6 +4,7 @@
 //    đường cong có tên, cách đi tiếp, sau keyframe cuối. Áp cho mọi keyframe đang chọn trong một bước hoàn tác.
 //  • Chọn hàng (không keyframe): cách thay đổi Keyframe | Theo nhạc; form "Theo nhạc" (nguồn, khoảng nguồn, khoảng giá trị, đường cong).
 import { useEffect, useId, useMemo, useState, type ReactNode } from 'react';
+import { ColorField } from './ColorField.tsx';
 import { EASING_NAMES, ExprError, compileExpr, isBinding, isExpr, isKeyAnim, type Animation, type Binding, type BindSource, type EaseSpec, type Key, type KeyAnimation, type KeyValue, type LoopMode, type TempoPoint, type WidgetSpec } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import type { Gesture } from '../lib/storeReact.ts';
@@ -113,7 +114,7 @@ export function AnimationInspector({ n, widget, sel, tempoMap, locked, getTime, 
                 e.f.kind === 'bool' || e.f.kind === 'choice'
                   ? <DiscreteValue key={e.path} f={e.f} value={e.k.value} label={name} disabled={locked} onChange={set} />
                   : e.f.kind === 'color'
-                  ? <input key={e.path} type="color" aria-label={name} value={String(e.k.value)} disabled={locked} onChange={(x) => set(x.target.value)} className="h-6 w-full" />
+                  ? <ColorField key={e.path} label={name} value={String(e.k.value)} disabled={locked} onChange={set} />
                   : <NumberField key={e.path} label={name} value={Number(e.k.value)} spec={{ min: e.f.min, max: e.f.max, step: e.f.step }} range={e.f.range} disabled={locked} onChange={set} />,
               ];
             })}
@@ -276,7 +277,7 @@ function ExprEditor({ f, source, name, disabled, onChange }: { f: AnimField; sou
 function BindEditor({ f, b, name, disabled, lanes, onChange }: { f: AnimField; b: Binding; name: string; disabled: boolean; lanes: readonly LaneChoice[]; onChange(v: Binding, key?: string): void }) {
   const { i18n } = useI18n();
   const value = (v: number | string, set: (v: number | string) => void, lbl: string) => f.kind === 'color'
-    ? <input type="color" aria-label={lbl} value={String(v)} disabled={disabled} onChange={(e) => set(e.target.value)} className="h-6 w-full" />
+    ? <ColorField label={lbl} value={String(v)} disabled={disabled} onChange={set} />
     : <NumberField label={lbl} value={Number(v)} spec={{ min: f.min, max: f.max, step: f.step }} range={f.range} disabled={disabled} onChange={(x) => set(x)} />;
   const setTo = (i: 0 | 1, v: number | string) => onChange({ ...b, to: (i === 0 ? [v, b.to[1]] : [b.to[0], v]) as Binding['to'] }, `to${i}`);
   return (

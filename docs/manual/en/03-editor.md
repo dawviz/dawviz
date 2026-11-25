@@ -176,6 +176,12 @@ A precomp groups several layers into one layer, like a precomp in After Effects.
 - With every precomp opened up, there can be at most 512 layers. If an action would go over, the app tells you and does nothing.
 - On the Preview tab, when the playhead is inside a precomp, clicking a **Video styles** tile applies that style to that precomp instead of the whole video. If the Piano roll is inside a precomp, the per-track colours on the Preview tab change the Piano roll of the precomp shown at the playhead. See [Preview](02-preview.md).
 
+## Colour picker and palettes
+
+Every colour swatch opens the same picker: drag in the colour area and hue bar, or type a code in the input. The input understands `#f80`, `#ff8800`, `#ff880080` (the last two digits are opacity), `rgb(255 136 0)`, `hsl(32 100% 50%)`, `hsv(32 100% 100%)`, `oklch(0.75 0.15 60)`, CSS colour names such as `tomato`, or a number. The **Opacity** bar only appears on swatches that allow transparency; the colour is saved as `#rrggbbaa`, and older presets look the same. The HEX/RGB/HSL/HSV switch changes the display, the copy button copies the code, and the eyedropper picks a colour from the screen (only where the browser supports it, such as Chrome and Edge). **Recent** keeps your last 12 colours. Esc closes the picker.
+
+**Palettes** sit at the top of the **Tracks** section: paste a list of colour codes, a GIMP `.gpl` palette, JSON or CSS variables (`--name: #aabbcc`), or press **Use current track colors**; edit any colour, name it and **Save palette**. **Apply to tracks in order** gives the colours to the tracks in order (cycling when colours run out) as one undo step (Ctrl+Z).
+
 ## Note names
 
 Also with no widget selected, the **Note names** section changes the names of notes and chords in every widget at once (letters, Do Re Mi, German; sharps or flats; C4 or C3). Details in [Analysis widgets](10-analysis-widgets.md#note-names).

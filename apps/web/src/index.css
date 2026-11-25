@@ -174,15 +174,15 @@
   .select-wrap:hover { color: rgb(var(--text)); }
 }
 
-/* Ô màu track tròn 14 px nhìn thấy (Chrome/Safari bọc ô màu trong wrapper có padding và viền vuông). Ô nhận bấm cao/rộng --hit:
-   padding đưa phần nhìn thấy về 14 px, lề âm trả lại chỗ chiếm trong dòng. Vòng viền vẽ trên phần nhìn thấy. */
-input[type='color'].swatch {
-  box-sizing: border-box; width: var(--hit); height: var(--hit); padding: calc((var(--hit) - 0.875rem) / 2); margin: calc((0.875rem - var(--hit)) / 2);
-  border: 0; background: transparent; cursor: pointer; flex-shrink: 0;
+/* Bộ chọn màu (ColorField, T-49). Ô màu: màu phủ trên nền ô cờ để thấy alpha; viền 1 px line-control. */
+:root { --checker: repeating-conic-gradient(rgb(var(--line-control) / 0.55) 0 25%, rgb(var(--surface-raised)) 0 50%) 0 0 / 8px 8px; }
+.color-chip { background: linear-gradient(var(--chip), var(--chip)), var(--checker); box-shadow: inset 0 0 0 1px rgb(var(--line-control)); }
+/* Ô màu track: chấm tròn 14 px nhìn thấy, vùng bấm --hit; lề âm trả lại chỗ chiếm trong dòng như ô 14 px. */
+.color-swatch {
+  box-sizing: border-box; display: grid; place-items: center; width: var(--hit); height: var(--hit); margin: calc((0.875rem - var(--hit)) / 2);
+  border: 0; border-radius: 9999px; background: transparent; cursor: pointer; flex-shrink: 0;
 }
-input[type='color'].swatch::-webkit-color-swatch-wrapper { padding: 0; }
-input[type='color'].swatch::-webkit-color-swatch { border: none; border-radius: 9999px; box-shadow: 0 0 0 1px rgb(var(--line-control)); }
-input[type='color'].swatch::-moz-color-swatch { border: none; border-radius: 9999px; box-shadow: 0 0 0 1px rgb(var(--line-control)); }
+.color-swatch:disabled { cursor: not-allowed; opacity: 0.6; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0ms !important; }

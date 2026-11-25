@@ -27,6 +27,7 @@ import { PACK_LIMITS, PackError } from './lib/projectPack.ts';
 import { Crop, Stage } from './components/Stage.tsx';
 import { Transport } from './components/Transport.tsx';
 import { TrackPanel, TrackLayoutBar, DEFAULT_TRACK_LAYOUT, isShown, type TrackLayout } from './components/TrackPanel.tsx';
+import { PalettePanel } from './components/PalettePanel.tsx';
 import { ADVANCED_STYLE_KEYS, StylePanel } from './components/StylePanel.tsx';
 import { TextPanel } from './components/TextPanel.tsx';
 import { WidgetSettings, hasWidgetSettings } from './components/WidgetSettings.tsx';
@@ -809,6 +810,7 @@ export function App() {
     tracks: (n) => (
       <InspectorSection key="tracks" n={n} id="tracks" title={`${i18n.t('web.section.tracks')} · ${i18n.number(loaded.ast.tracks.length)}`} more={more('tracks', tracksEdited)}>
         <TrackLayoutBar value={trackLayout} onChange={setTrackLayout} count={loaded.ast.tracks.length} reference={TRACK_LAYOUT_DEFAULT} />
+        <PalettePanel tracks={ordered.map((tr) => ({ id: tr.id, name: tr.name, color: style.tracks[tr.id]?.customColor ?? tr.color }))} onApply={(colors) => prun((d) => Cmds.applyTrackPalette(d, colors))} />
         {trackLayout.mode === 'list' ? <TrackPanel {...trackProps} /> : <p className="text-xs text-muted">{i18n.t('web.tracks.gridBelow')}</p>}
       </InspectorSection>
     ),

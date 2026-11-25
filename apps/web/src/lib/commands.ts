@@ -134,6 +134,20 @@ export const patchTrackStyle = (d: Doc, id: TrackId, patch: Partial<NoteStyle> |
     patch === null ? undefined : `track:${id}:${keysChanged(cur ?? {}, next ?? {}).join(',')}`, { track: id });
 };
 
+/**
+ * Áp bảng màu cho track (T-49, REQ-UI-11): `colors` là màu đã gán theo id (lib/palette.ts `assignPalette`). Mỗi track nhận ghi đè
+ * `colorMode: 'custom'` + màu đó, như khi đổi ô màu của track. Cả bảng là MỘT bước hoàn tác.
+ */
+export const applyTrackPalette = (d: Doc, colors: Record<TrackId, string>): Cmd | null => {
+  const piano = pianoOf(d.scene), ids = Object.keys(colors);
+  if (!piano || !ids.length) return null;
+  const cur = piano.properties.noteStyle.tracks;
+  const next = { ...cur };
+  for (const id of ids) next[id] = { ...cur[id], colorMode: 'custom', customColor: colors[id] };
+  return slice(d, 'applyTrackPalette', 'web.cmd.trackPalette', (x) => pianoOf(x.scene)!.properties.noteStyle.tracks,
+    (x, v) => withPiano(x, (p) => ({ ...p, noteStyle: { ...p.noteStyle, tracks: v } })), next, undefined, { n: ids.length });
+};
+
 // ── phong cách video ──
 /** Thay cả scene bằng scene của phong cách `id`, giữ ghi đè theo track (hành vi cũ). Kiểu nốt tay chỉnh và bố cục widget cũ nằm trong lịch sử. */
 export const setVideoStyle = (d: Doc, id: string, working?: SceneDocument): Cmd | null => {

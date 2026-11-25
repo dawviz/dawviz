@@ -268,7 +268,7 @@ describe('Danh sách track: lưới N cột / danh sách gọn (REQ-UI-14 sửa)
     wrap(<TrackPanel tracks={trs} config={cfg} overrides={{}} onChange={() => {}} onStyle={() => {}} layout={{ mode: 'list', columns: 'auto' }} />);
     expect(screen.getByTestId('track-list')).toBeInTheDocument();
     expect(screen.queryByTestId('track-details-t2')).toBeNull();
-    const row = screen.getAllByRole('button', { expanded: false })[2];
+    const row = screen.getAllByRole('button', { expanded: false }).filter((b) => b.hasAttribute('data-track-focus'))[2];
     fireEvent.keyDown(row, { key: 'Enter' });
     expect(screen.getByTestId('track-details-t2')).toBeInTheDocument();
   });

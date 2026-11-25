@@ -66,7 +66,7 @@ const r3 = (x: number) => Math.round(x * 1000) / 1000;
 /** Hoạt hình mới: một keyframe tại `t` giữ đúng giá trị hiện tại (chưa đổi hình gì); người dùng thêm keyframe sau. */
 export const newKeyAnimation = (w: Pick<WidgetSpec, 'layout' | 'properties'>, path: string, t: number): KeyAnimation => {
   const value = staticValue(w, path);
-  const discrete = typeof value === 'boolean' || (typeof value === 'string' && !/^#[0-9a-f]{6}$/i.test(value));
+  const discrete = typeof value === 'boolean' || (typeof value === 'string' && !/^#(?:[0-9a-f]{6}|[0-9a-f]{8})$/i.test(value));
   return { keys: [{ at: { sec: r3(Math.max(0, t)) }, value }], ...(discrete ? { kind: 'discrete' as const } : {}) };
 };
 
