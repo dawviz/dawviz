@@ -364,6 +364,13 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [5. Cách đóng góp](COMMUNITY-CONTENT/5-cach-dong-gop.md) · 356 ký tự
 - [6. Kế hoạch tách repo (T-16)](COMMUNITY-CONTENT/6-ke-hoach-tach-repo-t-16.md) · 823 ký tự
 
+## COMMUNITY-MODERATION.md — Kiểm soát issue, bình luận và đóng góp (T-39)
+
+- [Kiểm soát issue, bình luận và đóng góp (T-39) (mở đầu)](COMMUNITY-MODERATION/kiem-soat-issue-binh-luan-va-dong-gop-t-39-mo-da.md) · 185 ký tự
+- [1. Các lớp phòng thủ (đã có trong repo)](COMMUNITY-MODERATION/1-cac-lop-phong-thu-da-co-trong-repo.md) · 1923 ký tự
+- [2. Khi bị tấn công dồn dập ("nút đỏ")](COMMUNITY-MODERATION/2-khi-bi-tan-cong-don-dap-nut-do.md) · 914 ký tự
+- [3. Việc chỉ làm được trên giao diện GitHub (không nằm trong mã)](COMMUNITY-MODERATION/3-viec-chi-lam-duoc-tren-giao-dien-github-khong.md) · 655 ký tự
+
 ## SPIKE-1-EXPORT.md — Spike 1: Đường ống xuất video (Export Pipeline)
 
 - [Spike 1: Đường ống xuất video (Export Pipeline) (mở đầu)](SPIKE-1-EXPORT/spike-1-duong-ong-xuat-video-export-pipeline-mo.md) · 304 ký tự

@@ -448,6 +448,7 @@ dawviz/
 │  │  ├─ note-style.schema.json
 │  │  ├─ preset-pack.schema.json
 │  │  └─ scene.schema.json
+│  ├─ index.json
 │  └─ README.md
 ├─ references/
 │  └─ README.md
@@ -455,6 +456,12 @@ dawviz/
 ├─ scripts/
 │  ├─ a11y/
 │  │  └─ run.mjs
+│  ├─ community/
+│  │  ├─ antispam.mjs
+│  │  ├─ build-index.mjs
+│  │  ├─ community.test.mjs
+│  │  ├─ dco-check.mjs
+│  │  └─ index.test.mjs
 │  ├─ docs-site/
 │  │  ├─ assets/
 │  │  │  ├─ app.js
@@ -3749,6 +3756,11 @@ type SpectrumOut
 - `scripts/a11y/run.mjs` — Kiểm trợ năng tự động (M5, G8): axe-core (WCAG 2.0/2.1/2.2 mức A–AA, gồm vùng bấm 24 px `target-size`) trên ứng dụng thật (Vite dev + Chromium),
 - `scripts/bundle.mjs` — Bundler ESM tối giản, không phụ thuộc: gộp @dawviz/parser và mọi package con thành MỘT file ES module
 - `scripts/check-i18n.mjs` — Kiểm tra danh mục ngôn ngữ trong locales/ (dùng cho cộng tác viên và CI). Xem docs/I18N.md.
+- `scripts/community/antispam.mjs` — Phân loại issue/comment nghi spam. Hàm thuần, không gọi mạng (workflow tự lấy dữ liệu tài khoản rồi truyền vào).
+- `scripts/community/build-index.mjs` — T-16: sinh `index.json` (danh mục có băm SHA-256) cho presets/ và assets/, kiểm từng preset bằng preset-check (--community).
+- `scripts/community/community.test.mjs` — Test của bộ lọc spam (antispam.mjs) và kiểm DCO (dco-check.mjs), T-39.
+- `scripts/community/dco-check.mjs` — Kiểm DCO (D-42): mọi commit trong khoảng base..head phải có dòng "Signed-off-by: Tên <email>".
+- `scripts/community/index.test.mjs` — Test của build-index.mjs (T-16): preset hiện có hợp lệ, băm đúng; tài nguyên sai quy tắc bị báo.
 - `scripts/docs-site/assets/app.js` — Giao diện trang tài liệu: đổi sáng/tối, mở menu trên di động, tìm kiếm phía máy khách (chỉ mục nằm trong search-index.js).
 - `scripts/docs-site/build.mjs` — Dựng trang web tài liệu tĩnh từ các tệp .md của repo (không phụ thuộc thư viện; chạy offline).
 - `scripts/docs-site/markdown.mjs` — Bộ chuyển Markdown → HTML tối giản, không phụ thuộc thư viện. Hỗ trợ đúng phần tài liệu của dự án dùng:

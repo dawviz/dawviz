@@ -21,7 +21,7 @@ export const SUPPORTED = [
   { format: 'flp', ext: ['.flp'], note: 'FL Studio 12 trở lên: chỉ nốt trong Pattern đặt lên Playlist (schema JSON dựng sẵn, schemas/flp.schema.json)' },
   { format: 'rpp', ext: ['.rpp'], note: 'Reaper; MIDI nhúng hoặc file .mid đi kèm' },
   { format: 'dawproject', ext: ['.dawproject'], note: 'Bitwig Studio, Studio One, Cubase...' },
-  { format: 'mid', ext: ['.mid', '.midi'], note: 'Standard MIDI File (mọi DAW xuất được MIDI)' },
+  { format: 'mid', ext: ['.mid', '.midi', '.kar'], note: 'Standard MIDI File (mọi DAW xuất được MIDI); .kar là MIDI karaoke, cùng định dạng, lời nằm trong sự kiện Text/Lyric' },
   { format: 'binary', ext: ['(theo schema)'], note: 'Binary + JSON schema (ví dụ .bwproject khi đã có schema)' },
 ];
 
@@ -49,7 +49,7 @@ export function detectFormat(name, buffer, options = {}) {
     case 'alp': return kind === 'zip' || kind === 'alp-pack' ? { format: 'alp' } : bad(`.alp phải là gói Ableton "pl-a" hoặc ZIP (nhận dạng: ${kind})`);
     case 'rpp': return kind === 'rpp' ? { format: 'rpp' } : bad(`nội dung không bắt đầu bằng <REAPER_PROJECT (nhận dạng: ${kind})`);
     case 'dawproject': return kind === 'zip' ? { format: 'dawproject' } : bad(`.dawproject phải là ZIP (nhận dạng: ${kind})`);
-    case 'mid': case 'midi': return kind === 'midi' ? { format: 'mid' } : bad(`nội dung không bắt đầu bằng MThd (nhận dạng: ${kind})`);
+    case 'mid': case 'midi': case 'kar': return kind === 'midi' ? { format: 'mid' } : bad(`nội dung không bắt đầu bằng MThd (nhận dạng: ${kind})`);
     default: {
       if (kind === 'zip') { // đuôi lạ: dò nội dung ZIP
         try { const e = readZipDirectory(u8, resolveLimits(options.limits)); if (findEntry(e, 'project.xml')) return { format: 'dawproject' }; if (e.some((x) => /\.als$/i.test(x.name))) return { format: 'alp' }; const f = e.find((x) => !x.isDir && /\.flp$/i.test(x.name)); if (f) return { format: 'flp', zipEntry: f, schema: BUILTIN_SCHEMAS.find((x) => x.id === 'flp') }; } catch { /* rơi xuống lỗi chung */ }
@@ -59,7 +59,7 @@ export function detectFormat(name, buffer, options = {}) {
   }
 }
 
-const KNOWN_EXT = new Set(['als', 'alp', 'rpp', 'flp', 'dawproject', 'mid', 'midi']);
+const KNOWN_EXT = new Set(['als', 'alp', 'rpp', 'flp', 'dawproject', 'mid', 'midi', 'kar']);
 
 /**
  * Dò nhanh xem file cần thêm đầu vào nào để giao diện chỉ hiện ô nạp khi thật sự cần (REQ-UI-08):

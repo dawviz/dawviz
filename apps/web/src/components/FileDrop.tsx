@@ -6,7 +6,7 @@ import { useI18n } from '../i18n/I18nProvider.tsx';
 
 export interface Picked { main: File; extras: File[] }
 
-const FORMATS = ['.als', '.alp', '.rpp', '.flp', '.dawproject', '.mid'];
+const FORMATS = ['.als', '.alp', '.rpp', '.flp', '.dawproject', '.mid', '.kar'];
 
 const UploadIcon = ({ className = '' }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
@@ -24,7 +24,7 @@ export function FileDrop({ onPick, busy, compact = false, slim = false, onSample
     if (!list || !list.length) return;
     const files = [...list];
     // Tệp .mid đi kèm một dự án khác (Reaper tham chiếu .mid ngoài) được coi là tệp phụ; nếu chỉ có một tệp thì nó là tệp chính.
-    const main = files.find((f) => !/\.mid$/i.test(f.name)) ?? files[0];
+    const main = files.find((f) => !/\.(mid|midi|kar)$/i.test(f.name)) ?? files[0];
     onPick({ main, extras: files.filter((f) => f !== main) });
   };
 
@@ -39,7 +39,7 @@ export function FileDrop({ onPick, busy, compact = false, slim = false, onSample
   } as const;
   const fileInput = (
     <input ref={input} type="file" multiple className="hidden" data-testid="file-input"
-      accept=".als,.alp,.rpp,.flp,.dawproject,.mid,.midi" onChange={(e) => { take(e.target.files); e.target.value = ''; }} />
+      accept=".als,.alp,.rpp,.flp,.dawproject,.mid,.midi,.kar" onChange={(e) => { take(e.target.files); e.target.value = ''; }} />
   );
 
   if (compact) {

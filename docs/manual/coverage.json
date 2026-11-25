@@ -36,14 +36,14 @@
         "apps/web/src/components/SchemaPanel.tsx",
         "locales/en.json#web.schema."
       ],
-      "uiHash": "a9d778409ce1",
-      "viHash": "07a8dfd16c88",
-      "enHash": "4aadd4fc25e2",
+      "uiHash": "222cfbf023ec",
+      "viHash": "d1931301683e",
+      "enHash": "5a16b5c18220",
       "coverHashes": {
-        "apps/web/src/components/FileDrop.tsx": "0f2666cc778b",
+        "apps/web/src/components/FileDrop.tsx": "66ecbc42eeb3",
         "apps/web/src/components/MissingMidiPanel.tsx": "e23f856f4d3c",
         "apps/web/src/components/Notices.tsx": "458fa4c2f2ac",
-        "locales/en.json#web.drop.": "643e2f893a72",
+        "locales/en.json#web.drop.": "9aadedc44c4e",
         "locales/en.json#web.missing.": "1fb211bdffa6",
         "locales/en.json#web.notices.": "7eea093650ff",
         "locales/en.json#web.sample": "4febfe1aa8cf",
@@ -197,7 +197,7 @@
         "apps/web/src/lib/presetPack.ts",
         "locales/en.json#web.share."
       ],
-      "uiHash": "548c10ebfb44",
+      "uiHash": "8c9254d92ca5",
       "viHash": "6c296cc958c0",
       "enHash": "61622e7e6611",
       "coverHashes": {
@@ -210,7 +210,7 @@
         "locales/en.json#web.session.": "7d5771692537",
         "apps/web/src/components/DeviceLatency.tsx": "ed2df71b09ac",
         "locales/en.json#web.latency.": "fcb231e3ca77",
-        "apps/web/src/lib/session.ts": "fd06980e3772",
+        "apps/web/src/lib/session.ts": "47a9a04d5209",
         "apps/web/src/lib/assetsRuntime.ts": "1175970574d8",
         "apps/web/src/lib/presetPack.ts": "1b5c1c101deb",
         "locales/en.json#web.share.": "f17d0658590c"

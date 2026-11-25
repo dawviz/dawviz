@@ -1,1 +1,9 @@
-blank_issues_enabled: true
+# Tắt issue trống: mọi issue đi qua form có trường bắt buộc (bot gọi API tạo issue thô sẽ lộ ngay).
+blank_issues_enabled: false
+contact_links:
+  - name: Hỏi đáp và thảo luận
+    url: https://github.com/dawviz/dawviz/discussions
+    about: Câu hỏi cách dùng, ý tưởng chung chung: hỏi ở đây thay vì mở issue.
+  - name: Hướng dẫn sử dụng và bản demo
+    url: https://dawviz.github.io/dawviz/
+    about: Đọc hướng dẫn hoặc thử bản demo trước khi báo lỗi.

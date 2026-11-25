@@ -1,0 +1,51 @@
+# Lọc spam cho issue và bình luận (xem scripts/community/antispam.mjs, docs/COMMUNITY-MODERATION.md).
+# Tín hiệu mạnh (từ khoá spam, liên kết rút gọn/nhắn tin, tệp thực thi): đóng + khoá + nhãn spam.
+# Tín hiệu yếu (tài khoản mới, liên kết ngoài danh sách): chỉ gắn nhãn needs-triage, người thật không bị đóng oan.
+# Khi bị tấn công dồn dập: bật tay Settings → Moderation options → Interaction limits.
+name: Anti-spam
+on:
+  issues: { types: [opened, edited] }
+  issue_comment: { types: [created, edited] }
+permissions: { issues: write, pull-requests: write, contents: read }
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.sender.type != 'Bot' }}
+    steps:
+      - uses: actions/checkout@v7   # sự kiện issues luôn chạy trên nhánh mặc định, không chạy mã của người lạ
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const { classify } = await import(process.cwd() + '/scripts/community/antispam.mjs');
+            const isComment = !!context.payload.comment;
+            const item = isComment ? context.payload.comment : context.payload.issue;
+            const number = context.payload.issue.number;
+            const login = item.user.login;
+            let age = 9999, repos = 1;
+            try {
+              const { data } = await github.rest.users.getByUsername({ username: login });
+              age = (Date.now() - new Date(data.created_at)) / 864e5;
+              repos = data.public_repos;
+            } catch (e) { core.warning('Không đọc được tài khoản ' + login + ': ' + e.message); }
+            const v = classify({
+              association: item.author_association,
+              accountAgeDays: age, publicRepos: repos,
+              title: isComment ? '' : item.title, body: item.body,
+            });
+            core.info(JSON.stringify({ login, ...v }));
+            if (v.action === 'none') return;
+            const { owner, repo } = context.repo;
+            const note = 'Lý do tự động: ' + v.reasons.join('; ');
+            if (v.action === 'spam') {
+              await github.rest.issues.addLabels({ owner, repo, issue_number: number, labels: ['spam'] });
+              if (isComment) {
+                await github.graphql('mutation($id:ID!){minimizeComment(input:{subjectId:$id,classifier:SPAM}){clientMutationId}}', { id: item.node_id });
+              } else {
+                await github.rest.issues.update({ owner, repo, issue_number: number, state: 'closed', state_reason: 'not_planned' });
+                await github.rest.issues.lock({ owner, repo, issue_number: number, lock_reason: 'spam' });
+              }
+              core.warning('Đã xử lý spam #' + number + ' từ ' + login + '. ' + note);
+            } else {
+              await github.rest.issues.addLabels({ owner, repo, issue_number: number, labels: ['needs-triage'] });
+              core.notice('Cần xem #' + number + ' từ ' + login + '. ' + note);
+            }

@@ -1,0 +1,33 @@
+name: Đề cử kiểm duyệt viên (D-43)
+description: Đề cử một người đã có từ 3 đóng góp được merge làm kiểm duyệt viên cộng đồng
+labels: [moderator-nomination, needs-triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Điều kiện: ít nhất **3 đóng góp đã được merge**, và được một reviewer hoặc maintainer đề cử (BRD D-43). Có thể tự đề cử nếu đã đủ điều kiện, maintainer sẽ xác nhận.
+  - type: input
+    id: who
+    attributes:
+      label: Tên người dùng GitHub của người được đề cử
+      placeholder: "không cần thêm dấu @"
+    validations: { required: true }
+  - type: textarea
+    id: merged
+    attributes:
+      label: Liên kết ba (hoặc nhiều hơn) đóng góp đã merge
+    validations: { required: true }
+  - type: textarea
+    id: why
+    attributes:
+      label: Vì sao phù hợp?
+      description: Ví dụ hiểu giấy phép preset, đã duyệt giúp, rành schema hoặc giới hạn biểu thức.
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Xác nhận
+      options:
+        - label: Tôi đã tìm trong các issue có sẵn và chưa thấy trùng.
+          required: true
+        - label: Tôi hiểu issue này công khai, và tôi không đính kèm thứ mình không có quyền chia sẻ.
+          required: true

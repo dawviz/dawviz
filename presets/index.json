@@ -1,0 +1,87 @@
+{
+  "format": "dawviz-community-index",
+  "formatVersion": 1,
+  "entries": [
+    {
+      "path": "presets/note-style/flat.json",
+      "kind": "note-style",
+      "name": "Flat",
+      "author": "DAW Visualizer team",
+      "license": "Apache-2.0",
+      "bytes": 356,
+      "sha256": "671e2be53a70d33f50783953c5d9eba12ed548511500289f0e38703dde7cf662"
+    },
+    {
+      "path": "presets/note-style/neon.json",
+      "kind": "note-style",
+      "name": "Neon",
+      "author": "DAW Visualizer team",
+      "license": "Apache-2.0",
+      "bytes": 371,
+      "sha256": "f17ccf8968eca88dd302629714fd7dd5fb6d36906827774785c7f60fb08cde4f"
+    },
+    {
+      "path": "presets/note-style/outline.json",
+      "kind": "note-style",
+      "name": "Outline",
+      "author": "DAW Visualizer team",
+      "license": "Apache-2.0",
+      "bytes": 345,
+      "sha256": "66d71c473e20cb67be3141fe26cbecf50ce392dcad72056c53a1270d52006ece"
+    },
+    {
+      "path": "presets/note-style/rainbow-pitch.json",
+      "kind": "note-style",
+      "name": "Rainbow pitch",
+      "author": "DAW Visualizer team",
+      "license": "Apache-2.0",
+      "bytes": 346,
+      "sha256": "0266cc1c30d8aef520627f20e24f4feade5a5515d23cb688b59e8b48bcbd6f49"
+    },
+    {
+      "path": "presets/note-style/soft-bars.json",
+      "kind": "note-style",
+      "name": "Soft bars",
+      "author": "DAW Visualizer team",
+      "license": "Apache-2.0",
+      "bytes": 380,
+      "sha256": "66e03e6615cafd218f788c8fdf75a417b00266ed15b393ddbc684494f81fc30c"
+    },
+    {
+      "path": "presets/scene/dark-score-16x9.json",
+      "kind": "scene",
+      "name": "Dark Score",
+      "author": "DAW Visualizer",
+      "license": "Apache-2.0",
+      "bytes": 8917,
+      "sha256": "7b6c233bb969b962f2316e35b6c65a2d2af8ca33835bc367e71ab51605342c4d"
+    },
+    {
+      "path": "presets/scene/paper-16x9.json",
+      "kind": "scene",
+      "name": "Paper",
+      "author": "DAW Visualizer",
+      "license": "Apache-2.0",
+      "bytes": 6493,
+      "sha256": "23fdbb6f755c28aaab40a2ee02cf05d7c5c16b3f3ab52a60151e7ac6c5774a1c"
+    },
+    {
+      "path": "presets/scene/paper-1x1.json",
+      "kind": "scene",
+      "name": "Paper",
+      "author": "DAW Visualizer",
+      "license": "Apache-2.0",
+      "bytes": 5005,
+      "sha256": "31f240603de978c2015990bc8ad9401ca7d04d36d733836e09ddf6371868ed3e"
+    },
+    {
+      "path": "presets/scene/paper-light-1x1.json",
+      "kind": "scene",
+      "name": "Paper Light",
+      "author": "DAW Visualizer",
+      "license": "Apache-2.0",
+      "bytes": 6780,
+      "sha256": "e464550b62c028e86e3d73f13f01cc50c7e4923a5b773845d4f67fbf9842acdc"
+    }
+  ]
+}

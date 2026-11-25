@@ -1,0 +1,20 @@
+# T-16: kiểm nội dung cộng đồng (preset, tài nguyên) và danh mục presets/index.json còn mới. Cùng script chạy ở repo dawviz-community sau khi tách.
+name: Community content
+on:
+  pull_request:
+    paths: ['presets/**', 'assets/**', 'scripts/community/**', 'scripts/preset-check/**']
+  push:
+    branches: [main]
+    paths: ['presets/**', 'assets/**', 'scripts/community/**', 'scripts/preset-check/**']
+permissions: { contents: read }
+jobs:
+  index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with: { node-version: 26, cache: npm }
+      - run: npm ci   # preset-check dùng gói workspace (render-core)
+      - run: node --test scripts/community/*.test.mjs scripts/preset-check/*.test.mjs
+      - name: Mọi preset và tài nguyên hợp lệ, index.json khớp
+        run: node scripts/community/build-index.mjs --out presets/index.json --check

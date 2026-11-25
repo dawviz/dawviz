@@ -29,7 +29,7 @@ export const bytesOf = (f: Blob): Promise<Uint8Array> => {
 };
 
 const SCHEMA_SUFFIX = '.schema.json';
-const MIDI_RE = /\.midi?$/i;
+const MIDI_RE = /\.(midi?|kar)$/i;
 
 export async function blobsOf(p: SessionParts): Promise<StoredBlob[]> {
   const out: StoredBlob[] = [];

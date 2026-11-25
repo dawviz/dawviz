@@ -6500,6 +6500,66 @@
     }
    ]
   },
+  "COMMUNITY-MODERATION.md": {
+   "title": "Kiểm soát issue, bình luận và đóng góp (T-39)",
+   "sha1": "3851679b18",
+   "chunks": [
+    {
+     "n": 0,
+     "file": "COMMUNITY-MODERATION/kiem-soat-issue-binh-luan-va-dong-gop-t-39-mo-da.md",
+     "title": "Kiểm soát issue, bình luận và đóng góp (T-39) (mở đầu)",
+     "path": [],
+     "chars": 185,
+     "lines": [
+      1,
+      4
+     ],
+     "ids": []
+    },
+    {
+     "n": 1,
+     "file": "COMMUNITY-MODERATION/1-cac-lop-phong-thu-da-co-trong-repo.md",
+     "title": "1. Các lớp phòng thủ (đã có trong repo)",
+     "path": [
+      "1. Các lớp phòng thủ (đã có trong repo)"
+     ],
+     "chars": 1923,
+     "lines": [
+      5,
+      20
+     ],
+     "ids": []
+    },
+    {
+     "n": 2,
+     "file": "COMMUNITY-MODERATION/2-khi-bi-tan-cong-don-dap-nut-do.md",
+     "title": "2. Khi bị tấn công dồn dập (\"nút đỏ\")",
+     "path": [
+      "2. Khi bị tấn công dồn dập (\"nút đỏ\")"
+     ],
+     "chars": 914,
+     "lines": [
+      21,
+      29
+     ],
+     "ids": []
+    },
+    {
+     "n": 3,
+     "file": "COMMUNITY-MODERATION/3-viec-chi-lam-duoc-tren-giao-dien-github-khong.md",
+     "title": "3. Việc chỉ làm được trên giao diện GitHub (không nằm trong mã)",
+     "path": [
+      "3. Việc chỉ làm được trên giao diện GitHub (không nằm trong mã)"
+     ],
+     "chars": 655,
+     "lines": [
+      30,
+      36
+     ],
+     "ids": []
+    }
+   ]
+  },
   "SPIKE-1-EXPORT.md": {
    "title": "Spike 1: Đường ống xuất video (Export Pipeline)",
    "sha1": "cbc774f4af",

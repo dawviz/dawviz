@@ -138,6 +138,10 @@
           "title": "Presets và assets cộng đồng"
         },
         {
+          "src": "docs/COMMUNITY-MODERATION.md",
+          "title": "Kiểm soát issue và spam"
+        },
+        {
           "src": "presets/README.md",
           "title": "Bộ kiểu (presets)"
         },
