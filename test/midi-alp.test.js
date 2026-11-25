@@ -128,3 +128,11 @@ test('listAlp: liệt kê các .als trong gói kèm track/nốt/BPM để ngư�
   assert.equal(z.container, 'zip'); assert.equal(z.files[0].tracks.length, 11);
   assert.equal((await parseAlp(zip({ 'One.als': DEMO, 'Two.als': DEMO }), { alsName: 'Two' })).info.alsEntry, 'Two.als');
 });
+
+test('MIDI: đuôi .kar (karaoke) được nhận như .mid; sai nội dung thì báo lỗi', async () => {
+  const b = smf({ ppq: 480, tracks: [[tempoEv(0, 120)], [nameEv('Lead'), on(0, 60), off(480, 60)]] });
+  const r = await parseProject('song.kar', b);
+  assert.equal(r.format, 'mid');
+  assert.equal(r.ast.tracks.find((x) => x.name === 'Lead').notes.length, 1);
+  await assert.rejects(() => parseProject('song.kar', new Uint8Array([1, 2, 3, 4])), (e) => e.code === 'ERR_UNSUPPORTED_FORMAT');
+});

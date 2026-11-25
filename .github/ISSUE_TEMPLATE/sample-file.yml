@@ -1,0 +1,45 @@
+name: Gửi tệp mẫu (chương trình tệp mẫu D-45)
+description: Cho dự án một tệp DAW nhỏ để kiểm chứng parser (automation, nhịp ghép, pan/mute…)
+labels: [sample-file]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Chỉ gửi tệp **bạn có quyền công khai**. Danh sách đang cần nằm ở [CONTRIBUTING](https://github.com/dawviz/dawviz/blob/main/CONTRIBUTING.md). Tệp nhỏ, ghi rõ cách tạo để người khác lặp lại được.
+  - type: input
+    id: daw
+    attributes:
+      label: Phần mềm và phiên bản
+      placeholder: Ableton Live 12.1, Reaper 7.20, FL Studio 24…
+    validations: { required: true }
+  - type: dropdown
+    id: format
+    attributes:
+      label: Định dạng tệp
+      options: [.als, .alp, .rpp, .flp, .dawproject, .mid, Khác]
+    validations: { required: true }
+  - type: textarea
+    id: expect
+    attributes:
+      label: Tệp này chứa gì, và kết quả mong đợi?
+      description: Ví dụ "BPM 128, 3 track, automation âm lượng ở track 2, tổng 412 nốt".
+    validations: { required: true }
+  - type: dropdown
+    id: public
+    attributes:
+      label: Giấy phép chia sẻ
+      options: [Công khai, tôi cho phép đưa vào test/fixtures (CC0), Công khai để xem nhưng không đưa vào repo, Tôi chỉ gửi mô tả, tệp gửi riêng]
+    validations: { required: true }
+  - type: input
+    id: link
+    attributes:
+      label: Liên kết tải tệp (kho của bạn, Release, hoặc kéo tệp .zip vào phần bình luận sau khi tạo)
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Xác nhận
+      options:
+        - label: Tôi đã tìm trong các issue có sẵn và chưa thấy trùng.
+          required: true
+        - label: Tôi hiểu issue này công khai, và tôi không đính kèm thứ mình không có quyền chia sẻ.
+          required: true

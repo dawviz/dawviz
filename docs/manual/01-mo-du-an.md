@@ -14,7 +14,7 @@ Kéo tệp dự án thả vào giữa màn hình, hoặc bấm vào đó để c
 | Reaper | `.rpp` |
 | FL Studio 12 trở lên | `.flp` |
 | Bitwig Studio, Studio One và các phần mềm khác lưu được DAWproject | `.dawproject` |
-| Bất kỳ phần mềm nào xuất được MIDI | `.mid` |
+| Bất kỳ phần mềm nào xuất được MIDI | `.mid`, `.midi`, hoặc `.kar` (MIDI karaoke: cùng định dạng với `.mid`, lời bài hát nằm trong tệp) |
 
 Chưa có tệp nhạc trong tay? Ở màn đầu tiên bấm **Thử với dự án mẫu** để mở một dự án có sẵn.
 

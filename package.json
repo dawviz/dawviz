@@ -24,7 +24,7 @@
     "docs:check": "node scripts/sync-docs.mjs --check",
     "docs:sync": "node scripts/sync-docs.mjs",
     "test:docs-site": "node --test scripts/docs-site/markdown.test.mjs",
-    "test:tools": "node --test scripts/preset-check/*.test.mjs",
+    "test:tools": "node --test scripts/preset-check/*.test.mjs scripts/community/*.test.mjs",
     "preset:check": "node scripts/preset-check/cli.mjs",
     "a11y": "node scripts/a11y/run.mjs",
     "docs:site": "node scripts/docs-site/build.mjs",

@@ -83,7 +83,7 @@ node plugins/dawviz/skills/dawviz/scripts/dawviz.mjs --help   # điều khiển 
 <!-- sync:begin docs-index -->
 <!-- Khối này do scripts/sync-docs.mjs sinh ra; đừng sửa tay. -->
 
-Có 23 tài liệu, 348 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
+Có 24 tài liệu, 352 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
 
 ### BRD.md — TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)
 
@@ -482,6 +482,15 @@ Nguồn: `docs/COMMUNITY-CONTENT.md` · [thứ tự đọc](docs/split/COMMUNITY
 - [4. Quy tắc cho assets](docs/split/COMMUNITY-CONTENT/4-quy-tac-cho-assets.md) · 0.5k
 - [5. Cách đóng góp](docs/split/COMMUNITY-CONTENT/5-cach-dong-gop.md) · 0.4k
 - [6. Kế hoạch tách repo (T-16)](docs/split/COMMUNITY-CONTENT/6-ke-hoach-tach-repo-t-16.md) · 0.8k
+
+### COMMUNITY-MODERATION.md — Kiểm soát issue, bình luận và đóng góp (T-39)
+
+Nguồn: `docs/COMMUNITY-MODERATION.md` · [thứ tự đọc](docs/split/COMMUNITY-MODERATION/_index.md)
+
+- [Kiểm soát issue, bình luận và đóng góp (T-39) (mở đầu)](docs/split/COMMUNITY-MODERATION/kiem-soat-issue-binh-luan-va-dong-gop-t-39-mo-da.md) · 0.2k
+- [1. Các lớp phòng thủ (đã có trong repo)](docs/split/COMMUNITY-MODERATION/1-cac-lop-phong-thu-da-co-trong-repo.md) · 1.9k
+- [2. Khi bị tấn công dồn dập ("nút đỏ")](docs/split/COMMUNITY-MODERATION/2-khi-bi-tan-cong-don-dap-nut-do.md) · 0.9k
+- [3. Việc chỉ làm được trên giao diện GitHub (không nằm trong mã)](docs/split/COMMUNITY-MODERATION/3-viec-chi-lam-duoc-tren-giao-dien-github-khong.md) · 0.7k
 
 ### SPIKE-1-EXPORT.md — Spike 1: Đường ống xuất video (Export Pipeline)
 

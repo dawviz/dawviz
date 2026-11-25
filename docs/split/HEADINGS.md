@@ -723,6 +723,16 @@
 - [6. Kế hoạch tách repo (T-16)](COMMUNITY-CONTENT/6-ke-hoach-tach-repo-t-16.md)
   - [6. Kế hoạch tách repo (T-16)](COMMUNITY-CONTENT/6-ke-hoach-tach-repo-t-16.md#6-kế-hoạch-tách-repo-t-16)
 
+## COMMUNITY-MODERATION.md
+
+- [Kiểm soát issue, bình luận và đóng góp (T-39) (mở đầu)](COMMUNITY-MODERATION/kiem-soat-issue-binh-luan-va-dong-gop-t-39-mo-da.md)
+- [1. Các lớp phòng thủ (đã có trong repo)](COMMUNITY-MODERATION/1-cac-lop-phong-thu-da-co-trong-repo.md)
+  - [1. Các lớp phòng thủ (đã có trong repo)](COMMUNITY-MODERATION/1-cac-lop-phong-thu-da-co-trong-repo.md#1-các-lớp-phòng-thủ-đã-có-trong-repo)
+- [2. Khi bị tấn công dồn dập ("nút đỏ")](COMMUNITY-MODERATION/2-khi-bi-tan-cong-don-dap-nut-do.md)
+  - [2. Khi bị tấn công dồn dập ("nút đỏ")](COMMUNITY-MODERATION/2-khi-bi-tan-cong-don-dap-nut-do.md#2-khi-bị-tấn-công-dồn-dập-nút-đỏ)
+- [3. Việc chỉ làm được trên giao diện GitHub (không nằm trong mã)](COMMUNITY-MODERATION/3-viec-chi-lam-duoc-tren-giao-dien-github-khong.md)
+  - [3. Việc chỉ làm được trên giao diện GitHub (không nằm trong mã)](COMMUNITY-MODERATION/3-viec-chi-lam-duoc-tren-giao-dien-github-khong.md#3-việc-chỉ-làm-được-trên-giao-diện-github-không-nằm-trong-mã)
+
 ## SPIKE-1-EXPORT.md
 
 - [Spike 1: Đường ống xuất video (Export Pipeline) (mở đầu)](SPIKE-1-EXPORT/spike-1-duong-ong-xuat-video-export-pipeline-mo.md)

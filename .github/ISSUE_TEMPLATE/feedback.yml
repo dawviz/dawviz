@@ -27,3 +27,12 @@ body:
     attributes:
       label: Trình duyệt và hệ điều hành
       placeholder: Chrome 140, Windows 11
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Xác nhận
+      options:
+        - label: Tôi đã tìm trong các issue có sẵn và chưa thấy trùng.
+          required: true
+        - label: Tôi hiểu issue này công khai, và tôi không đính kèm thứ mình không có quyền chia sẻ.
+          required: true

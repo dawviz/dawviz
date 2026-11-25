@@ -2,6 +2,7 @@
   "schemaVersion": "0.8.0",
   "presetName": "Paper Light",
   "author": "DAW Visualizer",
+  "license": "Apache-2.0",
   "canvas": {
     "aspectRatio": "1:1",
     "designWidth": 1080,

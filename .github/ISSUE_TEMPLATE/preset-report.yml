@@ -1,0 +1,38 @@
+name: Báo cáo preset
+description: Báo preset hoặc tài nguyên cộng đồng bị lỗi, vi phạm giấy phép, hoặc không an toàn
+labels: [preset-report, needs-triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Với lỗ hổng bảo mật (ví dụ preset thoát được khỏi giới hạn biểu thức), đừng mở issue công khai; xem [SECURITY](https://github.com/dawviz/dawviz/security) nếu có, hoặc nhắn riêng cho maintainer.
+  - type: input
+    id: preset
+    attributes:
+      label: Tên hoặc đường dẫn preset / tài nguyên
+    validations: { required: true }
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Loại vấn đề
+      options: [Không nạp được hoặc báo lỗi, Hiển thị sai, Vi phạm giấy phép hoặc bản quyền, Nội dung không phù hợp, Nghi ngờ không an toàn, Khác]
+    validations: { required: true }
+  - type: textarea
+    id: detail
+    attributes:
+      label: Mô tả
+      description: Ghi các bước tái hiện hoặc bằng chứng (nguồn gốc của tài nguyên, giấy phép gốc…).
+    validations: { required: true }
+  - type: input
+    id: env
+    attributes:
+      label: Phiên bản ứng dụng, trình duyệt và hệ điều hành
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Xác nhận
+      options:
+        - label: Tôi đã tìm trong các issue có sẵn và chưa thấy trùng.
+          required: true
+        - label: Tôi hiểu issue này công khai, và tôi không đính kèm thứ mình không có quyền chia sẻ.
+          required: true

@@ -1,0 +1,8 @@
+# Người duyệt mặc định. Đội `reviewers` (D-43) đã tạo nhưng mới có 1 thành viên: KHI CÓ NGƯỜI THỨ HAI, thêm @dawviz/reviewers vào các dòng bên dưới
+# (ví dụ `/presets/  @sosadsonar @dawviz/reviewers`) và ghi lại ở PROGRESS.md T-39.
+*                       @sosadsonar
+/presets/               @sosadsonar
+/assets/                @sosadsonar
+/packages/expr/         @sosadsonar
+/.github/               @sosadsonar
+/docs/design/EXPRESSIONS.md @sosadsonar

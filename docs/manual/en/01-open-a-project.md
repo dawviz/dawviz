@@ -14,7 +14,7 @@ The app reads:
 | Reaper | `.rpp` |
 | FL Studio 12 or newer | `.flp` |
 | Bitwig Studio, Studio One and other software that saves DAWproject | `.dawproject` |
-| Any software that exports MIDI | `.mid` |
+| Any software that exports MIDI | `.mid`, `.midi`, or `.kar` (karaoke MIDI: the same format as `.mid`, with the lyrics stored in the file) |
 
 Don't have a project at hand? On the first screen click **Try the sample project** to open a ready-made one.
 

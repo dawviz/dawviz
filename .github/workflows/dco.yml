@@ -1,0 +1,18 @@
+# Kiểm DCO (D-42): mọi commit của PR phải có dòng "Signed-off-by: Tên <email>" (git commit -s).
+name: DCO
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+permissions: { contents: read }
+jobs:
+  dco:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: { fetch-depth: 0 }
+      - name: Mọi commit có Signed-off-by
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+          AUTHOR_LOGIN: ${{ github.event.pull_request.user.login }}
+        run: node scripts/community/dco-check.mjs "$BASE" "$HEAD"
