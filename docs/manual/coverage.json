@@ -73,11 +73,11 @@
         "locales/en.json#web.comp.styleApplied",
         "locales/en.json#web.preset.paste"
       ],
-      "uiHash": "f5db846ff4f3",
-      "viHash": "75c1eb3e56e7",
-      "enHash": "fca1c8c0ec0a",
+      "uiHash": "7ef212dea673",
+      "viHash": "c14cd7a0e753",
+      "enHash": "61f2bf1cff66",
       "coverHashes": {
-        "apps/web/src/components/Transport.tsx": "0d46653b61a3",
+        "apps/web/src/components/Transport.tsx": "be55054850a6",
         "apps/web/src/components/VideoStyles.tsx": "dfd16f77e8e8",
         "apps/web/src/components/AudioPanel.tsx": "11547f9d52e7",
         "apps/web/src/components/TrackPanel.tsx": "ae75cba2ca51",
@@ -137,7 +137,7 @@
         "locales/en.json#web.layers.",
         "locales/en.json#web.comp."
       ],
-      "uiHash": "6a0c2f8c6310",
+      "uiHash": "b6b8e82f56ba",
       "viHash": "8c741e3819d7",
       "enHash": "1cea8b44a8af",
       "coverHashes": {
@@ -152,7 +152,7 @@
         "apps/web/src/components/TextPanel.tsx": "dd7fca2212b6",
         "locales/en.json#web.text.": "13dd41db4149",
         "apps/web/src/components/WidgetSettings.tsx": "fd14aef49172",
-        "locales/en.json#web.ws.": "4f06b01f04ef",
+        "locales/en.json#web.ws.": "c2d015e93841",
         "apps/web/src/components/TimeSections.tsx": "aa30f2bb1dd2",
         "apps/web/src/components/TimeField.tsx": "4627c46c0bf7",
         "locales/en.json#web.vis.": "97d170e1550e",
@@ -286,12 +286,12 @@
         "locales/en.json#web.widget.",
         "locales/en.json#web.tonic."
       ],
-      "uiHash": "212ec11efde1",
+      "uiHash": "27cfd5fc527b",
       "viHash": "ae36005a4bf0",
       "enHash": "52d07dcea04a",
       "coverHashes": {
         "apps/web/src/components/WidgetSettings.tsx": "fd14aef49172",
-        "locales/en.json#web.ws.": "4f06b01f04ef",
+        "locales/en.json#web.ws.": "c2d015e93841",
         "locales/en.json#web.widget.": "3a55f23fb070",
         "locales/en.json#web.tonic.": "2b1a6b41c82b"
       }
@@ -348,8 +348,8 @@
         "packages/render-core/src/parenting.ts"
       ],
       "uiHash": "e508e2f1a45d",
-      "viHash": "ac5b7ca3c551",
-      "enHash": "056a7bf40d3c",
+      "viHash": "e060f92fa4f5",
+      "enHash": "8100f4c55d42",
       "coverHashes": {
         "packages/render-core/src/insight.ts": "7279063ea2d7",
         "packages/render-core/src/naming.ts": "9a90045d7e7c",
