@@ -1,6 +1,6 @@
 # Chỉ mục TECHNICAL-DESIGN.md — THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISUALIZER
 
-nguồn: `TECHNICAL-DESIGN.md` (sha1 89904b8414)
+nguồn: `TECHNICAL-DESIGN.md` (sha1 b8f684ea5d)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -20,7 +20,7 @@ nguồn: `TECHNICAL-DESIGN.md` (sha1 89904b8414)
 | 13 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp 🟢 (đã dùng ở T-69) | [5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md](5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md) | 925 | REQ-WIDGET-05 |
 | 14 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.9 Kiểu chữ cho mọi chữ trong video 🟢 (T-72, SRS REQ-GRAPHICS-18, D-58) | [5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md](5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md) | 6552 | D-58, REQ-GRAPHICS-18, REQ-STORAGE-05, WARN_PRESET_FONT_MISSING, WARN_PRESET_VALUE |
 | 15 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.10 Chỗ giữ trong chữ và Ô chữ 🟢 (T-73, SRS REQ-GRAPHICS-19, D-60/OI-18) | [5-10-cho-giu-trong-chu-va-o-chu-t-73-srs-req-gra.md](5-10-cho-giu-trong-chu-va-o-chu-t-73-srs-req-gra.md) | 5437 | D-60, OI-18, REQ-GRAPHICS-19, WARN_PRESET_MIGRATED, WARN_PRESET_VALUE |
-| 16 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.11 Bản nhạc (Notation) 🟢 (T-90…T-95, D-63; SRS REQ-WIDGET-09, REQ-NOTATION-01, REQ-GRAPHICS-20; báo cáo Spike 4) | [5-11-ban-nhac-notation-t-90-t-95-d-63-srs-req-wi.md](5-11-ban-nhac-notation-t-90-t-95-d-63-srs-req-wi.md) | 5709 | D-63, REQ-GRAPHICS-20, REQ-NOTATION-01, REQ-WIDGET-09, WARN_NOTATION_GLYPH |
+| 16 | 5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.11 Bản nhạc (Notation) 🟢 (T-90…T-95, D-63; SRS REQ-WIDGET-09, REQ-NOTATION-01, REQ-GRAPHICS-20; báo cáo Spike 4) | [5-11-ban-nhac-notation-t-90-t-95-d-63-srs-req-wi.md](5-11-ban-nhac-notation-t-90-t-95-d-63-srs-req-wi.md) | 6749 | D-63, REQ-GRAPHICS-20, REQ-NOTATION-01, REQ-WIDGET-09, WARN_NOTATION_GLYPH |
 | 17 | 6. Ứng dụng web và phát lại 🟡 > 6.1 Trạng thái | [6-1-trang-thai.md](6-1-trang-thai.md) | 1256 | REQ-UI-14 |
 | 18 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) | [6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md](6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md) | 233 | NFR-SEC-04, REQ-EXPORT-03, REQ-PARSER-00, REQ-STORAGE-05, REQ-UI-03, REQ-WIDGET-07 |
 | 19 | 6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.1 Nạp tệp âm thanh (mix) | [6-2-1-nap-tep-am-thanh-mix.md](6-2-1-nap-tep-am-thanh-mix.md) | 3263 | ARC-03, ERR_AUDIO_DECODE, ERR_AUDIO_TOO_LONG, ERR_FILE_TOO_LARGE, NFR-PERF-04, REQ-AUDIO-01… |

@@ -135,7 +135,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [5.8 Dữ liệu cho widget Bar.Beat: AST đã có bản đồ nhịp 🟢 (đã dùng ở T-69)](TECHNICAL-DESIGN/5-8-du-lieu-cho-widget-bar-beat-ast-da-co-ban-do.md) · 925 ký tự
 - [5.9 Kiểu chữ cho mọi chữ trong video 🟢 (T-72, SRS REQ-GRAPHICS-18, D-58)](TECHNICAL-DESIGN/5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md) · 6552 ký tự
 - [5.10 Chỗ giữ trong chữ và Ô chữ 🟢 (T-73, SRS REQ-GRAPHICS-19, D-60/OI-18)](TECHNICAL-DESIGN/5-10-cho-giu-trong-chu-va-o-chu-t-73-srs-req-gra.md) · 5437 ký tự
-- [5.11 Bản nhạc (Notation) 🟢 (T-90…T-95, D-63; SRS REQ-WIDGET-09, REQ-NOTATION-01, REQ-GRAPHICS-20; báo cáo Spike 4)](TECHNICAL-DESIGN/5-11-ban-nhac-notation-t-90-t-95-d-63-srs-req-wi.md) · 5709 ký tự
+- [5.11 Bản nhạc (Notation) 🟢 (T-90…T-95, D-63; SRS REQ-WIDGET-09, REQ-NOTATION-01, REQ-GRAPHICS-20; báo cáo Spike 4)](TECHNICAL-DESIGN/5-11-ban-nhac-notation-t-90-t-95-d-63-srs-req-wi.md) · 6749 ký tự
 - [6.1 Trạng thái](TECHNICAL-DESIGN/6-1-trang-thai.md) · 1256 ký tự
 - [6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh)](TECHNICAL-DESIGN/6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md) · 233 ký tự
 - [6.2.1 Nạp tệp âm thanh (mix)](TECHNICAL-DESIGN/6-2-1-nap-tep-am-thanh-mix.md) · 3263 ký tự
@@ -288,7 +288,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [3. Kiểu chữ dùng chung (D-73, T-126)](WIDGET-REVAMP/3-kieu-chu-dung-chung-d-73-t-126.md) · 1489 ký tự
 - [4. Sáng tạo tự do: Hình, Bút, Gắn nhạc nhanh (D-74)](WIDGET-REVAMP/4-sang-tao-tu-do-hinh-but-gan-nhac-nhanh-d-74.md) · 5183 ký tự
 - [5. Gộp widget chữ (D-76, T-138)](WIDGET-REVAMP/5-gop-widget-chu-d-76-t-138.md) · 1150 ký tự
-- [6. Cụm việc nhỏ của đợt này (T-127…T-133)](WIDGET-REVAMP/6-cum-viec-nho-cua-dot-nay-t-127-t-133.md) · 2501 ký tự
+- [6. Cụm việc nhỏ của đợt này (T-127…T-133)](WIDGET-REVAMP/6-cum-viec-nho-cua-dot-nay-t-127-t-133.md) · 2523 ký tự
 - [7. Thứ tự làm và cách chia PR](WIDGET-REVAMP/7-thu-tu-lam-va-cach-chia-pr.md) · 610 ký tự
 - [8. Vấn đề mở](WIDGET-REVAMP/8-van-de-mo.md) · 388 ký tự
 

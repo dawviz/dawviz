@@ -50,7 +50,7 @@ The preset is the whole video design. The app reads it with a forgiving checker:
 | `TIME_BAR` | time / bar.beat | `showBars`, `barColor` |
 | `EVENT_COUNTER` | notes played | `align`, `decimals` |
 | `LIVE_TRIGGER` | notes being played | `mode` `list`/`inline`, `template`, `maxLines` |
-| `NOTATION` | sheet music | `barsPerSystem` [2], `inkColor`, `activeColor` |
+| `NOTATION` | sheet music | `barsPerSystem` [2], `inkColor`, `activeColor`; handwriting `reveal` `NONE`/`WRITE` [`NONE`] with `writeMs` [250] (each note is written left to right when its turn comes); erasing `erase` `NONE`/`AFTER`/`RANDOM` [`NONE`], `eraseAfterBars` [1] (bars after the note ends), `eraseAmount` [0.5] (share erased with `RANDOM`), `eraseMs` [400], `eraseStyle` `FADE`/`WIPE`, `eraseSeed` [1] (picks which notes `RANDOM` erases) |
 | `AUDIO_SPECTRUM` | spectrum (needs audio) | `style` `BARS`/`AREA`/`LINE`/`DOTS`/`SCOPE`/`WAVE`/`METER`, `shape` `LINE`/`CIRCLE`, `bars` [48], `color`, `peakCap` (falling caps, `BARS`/`DOTS`), `peakStyle` `LINE`/`DOT`, `capFall` [0.6], `peakHold` [0] (s), `peakGravity` [0], `peakColor` ['' = bar colour] |
 | `PARTICLES` | particles on notes | `originX` `NOTE` (sparks where notes hit the playhead) |
 | `PANEL` | frame with a number, a title and a bottom row of figures | `number`, `title`, `numberColor`, `frame` [true], `frameColor`, `frameWidth`, `fillColor`, `fillAlpha`, `stats` `[{ "label": "BAR", "value": "{bar}.{beat}" }]` (max 6; `value` takes placeholders) |

@@ -5,7 +5,7 @@ section: "2. Ẩn hẳn thuộc tính không áp dụng (D-72, T-125)"
 path: "2. Ẩn hẳn thuộc tính không áp dụng (D-72, T-125)"
 chunk: 2-an-han-thuoc-tinh-khong-ap-dung-d-72-t-125.md
 source_lines: 71-76
-source_sha1: 5eb561ef37
+source_sha1: f0d5abcfcb
 ids: [D-72]
 ---
 ## 2. Ẩn hẳn thuộc tính không áp dụng (D-72, T-125)

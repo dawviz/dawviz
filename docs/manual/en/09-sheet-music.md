@@ -20,7 +20,7 @@ Under **Tracks**, keep **All showing** or press **Choose** and keep only the mel
 - **Bars per line**: bars on one line; 0 fits them to the width. **Lines per page**: when a page ends the next one appears.
 - **Ink colour**, **Colour of the playing note**. Choose **Track colour** to colour playing notes by track.
 - **Playing note size**: 1 means no growth; 1.35 is a third bigger.
-- **Keyframes for colour and glow**: in the widget's Animation section, pick a drawing property of the score to keyframe: colours (ink, played, playing, playhead, whole-score glow), **Glow**, glow size, opacities, zoom and glow look. When the playing colour changes over time the note glow follows it, so the glow can be multi-coloured. Engraving properties (font, bars per row, quantisation…) cannot be keyframed because changing them forces a re-engrave.
+- **Keyframes for colour and glow**: in the widget's Animation section, pick a drawing property of the score to keyframe: colours (ink, played, playing, playhead, whole-score glow), **Glow**, glow size, opacities, zoom, glow look, writing time and the numbers of the Erase notes group. When the playing colour changes over time the note glow follows it, so the glow can be multi-coloured. Engraving properties (font, bars per row, quantisation…) cannot be keyframed because changing them forces a re-engrave.
 - **Glow**: brightness of the halo around playing notes; 0 turns it off.
 - **Playhead**: **None** (only the notes light up) or a moving **Line**.
 - **Whole-score opacity**: fades everything (notes, staff, glow, playhead); 1 is fully opaque. Use it to make the score a background for other widgets.
@@ -30,6 +30,14 @@ Under **Tracks**, keep **All showing** or press **Choose** and keep only the mel
   - **Pulse on the beat**, **Pulse on the bar**, **Pulse by seconds**: lights up, then goes dark, and repeats with the song's beat or by seconds.
   - **One glow cycle every …** (shown with the pulse modes): beats, bars or seconds per cycle. For example Pulse by seconds with 4 glows and fades every 4 seconds; Pulse on the beat with 0.5 does it every half beat.
   - **Pulse style**: **Breathe** (fades up and down), **Flash** (bright at the start of the beat, then fades out), **On / off** (on for the first half, off for the second).
+- **Write notes by hand**: in the group title, choose **Notes appear**.
+  - **All at once**: every note of the page shows as soon as the page turns.
+  - **Written in turn**: each note (head, stem, flag, accidental, rest, beam) only shows when its turn comes, written from left to right within **Time to write one note**. Writing starts half of that time before the note sounds. Staff, clefs, key signatures and bar lines show from the start. Use it with **Hand-drawn wobble** and the **Handwritten** font to look like live handwriting.
+- **Erase notes**: in the group title, choose when notes are erased.
+  - **Never**: notes stay until the page turns.
+  - **After a few bars**: every note is erased **Erase after … bars** after it stops sounding; 0 erases it as soon as it ends.
+  - **Some notes, at random**: as above, but only a share of the notes is erased, set by **Share of notes erased** (0.3 is about three in ten). Which notes are erased is fixed: playback, seeking and export always match.
+  - **Erase style**: **Fade out** or **Wipe away** (the note disappears from right to left).
 
 ## In Advanced mode
 
@@ -41,6 +49,7 @@ Under **Tracks**, keep **All showing** or press **Choose** and keep only the mel
 - **Size change**: **Pop** (grows, then returns within **Pop length**) or **While held** (stays big while the note sounds).
 - **Glow size**, **Glow look**: **Halo** or **Soft (slower)**. Soft makes export slower, especially in Firefox.
 - Playhead colour and width.
+- **Erase time (ms)** of the Erase notes group, and **Erase seed**: change it to erase a different set of notes.
 - **Wobble changes per second**: 0 keeps the wobble still; 8 to 12 makes the drawing feel alive. **Wobble seed**: change it for a different wobble.
 - **Place on page** (top or middle) and **Page turn fade**.
 - With **Whole-score glow**:
@@ -48,7 +57,7 @@ Under **Tracks**, keep **All showing** or press **Choose** and keep only the mel
   - **Whole-score glow colour**: untick it and each stroke glows in its own colour. On a light background the app picks the playing-note colour, because a glow in dark ink looks like a smudge.
   - Whole-score glow makes export slower: Always on takes about half as long again; the pulse styles cost less.
 
-Settings at the start of the list (music font, bars per line, bar number size, shortest note, triplets, key…) make the app write the score again. Colours, size, glow, playhead and wobble change at once.
+Settings at the start of the list (music font, bars per line, bar number size, shortest note, triplets, key…) make the app write the score again. Colours, size, glow, playhead, wobble, handwriting and erasing change at once.
 
 ## When the score looks wrong
 

@@ -5,7 +5,7 @@ section: "1. Nhóm thuộc tính và quy tắc bật/tắt (D-71, T-124)"
 path: "1. Nhóm thuộc tính và quy tắc bật/tắt (D-71, T-124)"
 chunk: 1-nhom-thuoc-tinh-va-quy-tac-bat-tat-d-71-t-124.md
 source_lines: 19-70
-source_sha1: 5eb561ef37
+source_sha1: f0d5abcfcb
 ids: [D-71, D-72]
 ---
 ## 1. Nhóm thuộc tính và quy tắc bật/tắt (D-71, T-124)

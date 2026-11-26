@@ -20,7 +20,7 @@ Màu mực được chọn theo nền khung: nền sáng thì mực tối, nền
 - **Số ô mỗi hàng**: số ô nhịp trên một hàng; 0 là tự xếp theo bề rộng. **Số hàng mỗi trang**: hết trang thì sang trang mới.
 - **Màu mực**, **Màu nốt đang phát**. Chọn **Màu của track** để nốt đang phát lấy màu của track.
 - **Cỡ nốt đang phát**: 1 là không phóng to; 1,35 là to hơn một phần ba.
-- **Keyframe cho màu và quầng sáng**: ở mục Hoạt hình của widget, chọn một thuộc tính hình vẽ của bản nhạc để đặt keyframe: các màu (mực, đã qua, đang phát, vạch phát, sáng cả bản nhạc), **Phát sáng**, độ rộng quầng, các độ đục, mức phóng to và kiểu sáng. Màu đang phát đổi theo keyframe thì quầng sáng của nốt đổi theo, nên quầng có thể nhiều màu theo thời gian. Thuộc tính dựng bản nhạc (phông, số ô mỗi hàng, lượng tử hoá…) không keyframe được vì đổi là phải dựng lại.
+- **Keyframe cho màu và quầng sáng**: ở mục Hoạt hình của widget, chọn một thuộc tính hình vẽ của bản nhạc để đặt keyframe: các màu (mực, đã qua, đang phát, vạch phát, sáng cả bản nhạc), **Phát sáng**, độ rộng quầng, các độ đục, mức phóng to, kiểu sáng, thời gian viết và các số của nhóm Xoá nốt. Màu đang phát đổi theo keyframe thì quầng sáng của nốt đổi theo, nên quầng có thể nhiều màu theo thời gian. Thuộc tính dựng bản nhạc (phông, số ô mỗi hàng, lượng tử hoá…) không keyframe được vì đổi là phải dựng lại.
 - **Phát sáng**: độ sáng của quầng quanh nốt đang phát; 0 là tắt.
 - **Vạch phát**: **Không** (chỉ nốt sáng) hoặc **Vạch** chạy theo nhạc.
 - **Độ đục cả bản nhạc**: làm mờ toàn bộ (nốt, khuông, quầng sáng, vạch phát); 1 là đục hoàn toàn. Dùng khi muốn bản nhạc làm nền cho widget khác.
@@ -30,6 +30,14 @@ Màu mực được chọn theo nền khung: nền sáng thì mực tối, nền
   - **Nhấp theo phách**, **Nhấp theo ô nhịp**, **Nhấp theo giây**: sáng lên rồi tắt, lặp lại theo nhịp của bài hoặc theo giây.
   - **Cứ mỗi … sáng tắt một lần** (hiện cùng chế độ nhấp): số phách, ô nhịp hoặc giây cho một chu kỳ. Ví dụ Nhấp theo giây với 4 là cứ 4 giây sáng rồi tắt một lần; Nhấp theo phách với 0,5 là mỗi nửa phách.
   - **Kiểu nhấp**: **Thở** (sáng dần rồi tối dần), **Loé** (sáng ngay ở đầu phách rồi tắt dần), **Bật tắt** (nửa đầu sáng, nửa sau tắt).
+- **Viết tay từng nốt**: ở tiêu đề nhóm, chọn **Cách nốt hiện**.
+  - **Hiện sẵn**: mọi nốt của trang hiện ngay khi sang trang.
+  - **Viết khi tới lượt**: mỗi nốt (đầu nốt, thân, cờ, dấu hoá, dấu lặng, gạch nối móc) chỉ hiện khi tới lượt, được viết dần từ trái sang phải trong **Thời gian viết một nốt**. Nốt bắt đầu được viết sớm hơn lúc vang nửa khoảng thời gian đó. Khuông, khoá, hoá biểu và vạch nhịp hiện sẵn. Dùng cùng **Nét run tay** và kiểu chữ **Viết tay** để trông như đang viết tay.
+- **Xoá nốt**: ở tiêu đề nhóm, chọn khi nào nốt bị xoá.
+  - **Không xoá**: nốt ở lại tới khi sang trang.
+  - **Sau vài ô nhịp**: mọi nốt bị xoá sau **Xoá sau … ô nhịp** kể từ khi nốt hết vang; 0 là xoá ngay khi hết vang.
+  - **Ngẫu nhiên một phần**: như trên nhưng chỉ xoá một phần số nốt theo **Tỉ lệ nốt bị xoá** (0,3 là khoảng ba phần mười). Nốt nào bị xoá là cố định: phát lại, tua hay xuất video đều giống nhau.
+  - **Kiểu xoá**: **Mờ dần** hoặc **Lau đi** (nốt biến mất từ phải sang trái).
 
 ## Ở chế độ Nâng cao
 
@@ -41,6 +49,7 @@ Màu mực được chọn theo nền khung: nền sáng thì mực tối, nền
 - **Cách đổi cỡ**: **Nảy** (to lên rồi về cỡ cũ trong **Thời gian nảy**) hoặc **Giữ khi ngân** (to suốt lúc nốt còn vang).
 - **Độ rộng quầng sáng**, **Kiểu sáng**: **Quầng** hoặc **Mềm (chậm hơn)**. Kiểu Mềm làm xuất video chậm hơn, nhất là trên Firefox.
 - Màu và độ dày của vạch phát.
+- **Thời gian xoá (ms)** của nhóm Xoá nốt, và **Hạt giống xoá ngẫu nhiên**: đổi số này để chọn một nhóm nốt khác bị xoá.
 - **Số lần nét đổi mỗi giây**: 0 là nét run đứng yên; 8 đến 12 cho cảm giác hình vẽ tay đang "sống". **Hạt giống nét run**: đổi để có kiểu run khác.
 - **Vị trí trong khung** (trên hoặc giữa) và **Mờ dần khi sang trang**.
 - Với **Sáng cả bản nhạc**:
@@ -48,7 +57,7 @@ Màu mực được chọn theo nền khung: nền sáng thì mực tối, nền
   - **Màu sáng cả bản nhạc**: bỏ chọn thì mỗi nét sáng theo màu của nó. Trên nền sáng, ứng dụng chọn sẵn màu nốt đang phát, vì quầng màu mực tối trông như nét bị nhoè.
   - Sáng cả bản nhạc làm xuất video chậm hơn: Luôn sáng chậm hơn khoảng một nửa; kiểu nhấp tốn ít hơn.
 
-Các thiết lập ở phần đầu danh sách (kiểu chữ nhạc, số ô, cỡ số ô nhịp, nốt ngắn nhất, liên ba, giọng…) làm ứng dụng viết lại bản nhạc. Màu, cỡ, phát sáng, vạch phát và nét run đổi ngay.
+Các thiết lập ở phần đầu danh sách (kiểu chữ nhạc, số ô, cỡ số ô nhịp, nốt ngắn nhất, liên ba, giọng…) làm ứng dụng viết lại bản nhạc. Màu, cỡ, phát sáng, vạch phát, nét run, viết tay và xoá nốt đổi ngay.
 
 ## Khi bản nhạc trông sai
 
