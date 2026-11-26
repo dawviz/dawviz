@@ -51,7 +51,7 @@ The preset is the whole video design. The app reads it with a forgiving checker:
 | `EVENT_COUNTER` | notes played | `align`, `decimals` |
 | `LIVE_TRIGGER` | notes being played | `mode` `list`/`inline`, `template`, `maxLines` |
 | `NOTATION` | sheet music | `barsPerSystem` [2], `inkColor`, `activeColor` |
-| `AUDIO_SPECTRUM` | spectrum (needs audio) | `style` `BARS`/`AREA`/`LINE`/`DOTS`/`SCOPE`/`WAVE`/`METER`, `shape` `LINE`/`CIRCLE`, `bars` [48], `color` |
+| `AUDIO_SPECTRUM` | spectrum (needs audio) | `style` `BARS`/`AREA`/`LINE`/`DOTS`/`SCOPE`/`WAVE`/`METER`, `shape` `LINE`/`CIRCLE`, `bars` [48], `color`, `peakCap` (falling caps, `BARS`/`DOTS`), `peakStyle` `LINE`/`DOT`, `capFall` [0.6], `peakHold` [0] (s), `peakGravity` [0], `peakColor` ['' = bar colour] |
 | `PARTICLES` | particles on notes | `originX` `NOTE` (sparks where notes hit the playhead) |
 | `PANEL` | frame with a number, a title and a bottom row of figures | `number`, `title`, `numberColor`, `frame` [true], `frameColor`, `frameWidth`, `fillColor`, `fillAlpha`, `stats` `[{ "label": "BAR", "value": "{bar}.{beat}" }]` (max 6; `value` takes placeholders) |
 | `DEGREE` | strip of chord blocks as degrees (I, V, vi…) | `windowBars` [8], `resolution` `BAR`/`HALF`/`BEAT`/`CHANGE` [`BAR`], `showDetail`, `showFunction` (T/SD/D strip), `showBars`, `romanStyle` `SUFFIX`/`CASE`, `keyWindowSec` [16], `accentColor`, `blockColor`, `tonicColor`, `subdominantColor`, `dominantColor`, `pastAlpha` |
