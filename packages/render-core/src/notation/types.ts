@@ -6,8 +6,9 @@ export type PathData = number[];
 export const PATH_ARGS = [2, 2, 6, 4, 0, 5] as const;
 
 /** Một phần tử vẽ. `o` = chỉ số chủ (nốt) trong `owners`, −1 = phần tĩnh (khuông, khoá, móc nối…).
- *  k = 0 tô đường, 1 nét đường, 2 dãy glyph (g = [glyph, x, y, size]* với glyph là chỉ số trong `glyphs`). */
-export interface NotationItem { o: number; k: 0 | 1 | 2; d?: PathData; lw?: number; cap?: 0 | 1 | 2; g?: number[] }
+ *  k = 0 tô đường, 1 nét đường, 2 dãy glyph (g = [glyph, x, y, size]* với glyph là chỉ số trong `glyphs`).
+ *  `w` (T-132): phần tĩnh gắn với một nốt về thời gian (gạch nối móc, dấu nối, ngoặc liên ba): chỉ số chủ quyết định lúc viết/xoá; màu vẫn như phần tĩnh. */
+export interface NotationItem { o: number; k: 0 | 1 | 2; d?: PathData; lw?: number; cap?: 0 | 1 | 2; g?: number[]; w?: number }
 /** Chủ của một nhóm phần tử: một hợp âm/nốt của bản nhạc, nối về nốt AST để sáng đúng lúc (giây thật, không lượng tử). */
 export interface NotationOwner {
   notes: string[];
@@ -15,6 +16,8 @@ export interface NotationOwner {
   on: number; off: number;
   /** false = đoạn nối tiếp sau dấu nối (không nhấp phóng to khi vào). */
   head: boolean;
+  /** T-132: dấu lặng (`notes` rỗng). Vẽ như phần tĩnh (không sáng, không đổi màu); chỉ dùng để viết/xoá đúng lúc. */
+  rest?: boolean;
   /** Tâm phóng to (đơn vị trang). */
   cx: number; cy: number;
   /** Chỉ số track (ProjectTrack.index) của nốt đầu tiên: cho màu theo track. */

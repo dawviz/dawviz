@@ -55,6 +55,21 @@ test('buildNotation: chủ nốt truy về nốt AST, giây thật, glyph hợp 
   for (let i = 1; i < sec.at.length; i++) assert.ok(sec.at[i] >= sec.at[i - 1] && sec.ax[i] >= sec.ax[i - 1], 'mốc vạch phát đơn điệu');
 });
 
+test('buildNotation (T-132): dấu lặng có chủ riêng (rest, theo giây của nó); gạch nối móc gắn thời gian với nốt cuối nhóm, màu vẫn tĩnh', () => {
+  const notes = [N(72, 0, 0.5), N(74, 0.5, 0.5), N(76, 1, 0.5), N(77, 1.5, 0.5), N(79, 3, 1)];
+  const a = buildNotation({ notes, tempoMap: T, props: props({ barsPerSystem: 1 }) });
+  const rests = a.owners.filter((o) => o.rest);
+  assert.ok(rests.length >= 2, 'lặng phách 3 ở khuông Sol và lặng cả ô ở khuông Fa');
+  assert.ok(rests.every((r) => r.notes.length === 0 && !r.head && r.off > r.on));
+  assert.ok(rests.some((r) => r.on === 1 && r.off === 1.5), 'lặng đen ở phách 3 (giây 1–1,5)');
+  const items = a.pages[0].items;
+  assert.ok(items.some((it) => it.o >= 0 && a.owners[it.o].rest), 'dấu lặng vẽ với chủ lặng');
+  const beams = items.filter((it) => it.o < 0 && it.w !== undefined);
+  assert.ok(beams.length >= 2, 'hai gạch nối móc');
+  assert.ok(beams.every((it) => [notes[1].id, notes[3].id].some((id) => a.owners[it.w!].notes.includes(id))), 'theo nốt cuối của nhóm');
+  assert.ok(a.owners.filter((o) => !o.rest).every((o) => o.notes.length > 0));
+});
+
 test('độ phủ glyph: mọi giá trị nốt/lặng, chấm, liên ba, dấu hoá, đổi nhịp, cả ba phông, hai chiều hoá biểu: không thiếu glyph', () => {
   const tm: TempoPoint[] = [
     { tick: 0, timeSeconds: 0, bpm: 90, timeSigNumerator: 4, timeSigDenominator: 4 },

@@ -5,7 +5,7 @@ section: "5. Gộp widget chữ (D-76, T-138)"
 path: "5. Gộp widget chữ (D-76, T-138)"
 chunk: 5-gop-widget-chu-d-76-t-138.md
 source_lines: 156-166
-source_sha1: 5eb561ef37
+source_sha1: f0d5abcfcb
 ids: [AD-08, D-76]
 ---
 ## 5. Gộp widget chữ (D-76, T-138)

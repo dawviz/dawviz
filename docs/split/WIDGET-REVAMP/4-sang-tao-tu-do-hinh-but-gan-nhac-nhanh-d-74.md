@@ -5,7 +5,7 @@ section: "4. Sáng tạo tự do: Hình, Bút, Gắn nhạc nhanh (D-74)"
 path: "4. Sáng tạo tự do: Hình, Bút, Gắn nhạc nhanh (D-74)"
 chunk: 4-sang-tao-tu-do-hinh-but-gan-nhac-nhanh-d-74.md
 source_lines: 92-155
-source_sha1: 5eb561ef37
+source_sha1: f0d5abcfcb
 ids: [D-74, D-75, WARN_MATTE_]
 ---
 ## 4. Sáng tạo tự do: Hình, Bút, Gắn nhạc nhanh (D-74)

@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "6.2.7 Dữ liệu giữ lại cho T-09 (xuất video, §7)"
 path: "6. Ứng dụng web và phát lại 🟡 > 6.2 Phát lại và âm thanh 🟢 (T-08, đã duyệt kèm 8 chỉnh) > 6.2.7 Dữ liệu giữ lại cho T-09 (xuất video, §7)"
 chunk: 6-2-7-du-lieu-giu-lai-cho-t-09-xuat-video-7.md
-source_lines: 325-335
-source_sha1: 89904b8414
+source_lines: 326-336
+source_sha1: b8f684ea5d
 ids: [AT-03, REQ-EXPORT-03]
 ---
 #### 6.2.7 Dữ liệu giữ lại cho T-09 (xuất video, §7)

@@ -1471,8 +1471,14 @@ const NOTATION_ENGRAVE_KEYS   // Thuộc tính ảnh hưởng bản dựng: đ�
 function zoomAt(p: Pick<NotationProps, 'zoom' | 'zoomMode' | 'zoomMs'>, head: boolean, on: number, off: number, t: number): number   // Hệ số phóng to của một chủ tại t (1 = bình thường).
 interface MusicPos   // Vị trí nhạc liên tục tại t: số phách và số ô nhịp đã qua kể từ đầu bài (có phần lẻ).
 function auraAt(p: Pick<NotationProps, 'aura' | 'auraShape' | 'auraEvery' | 'auraGlow' | 'auraMin'>, t: number, pos?: MusicPos): number   // Độ sáng cả bản nhạc tại t (0 … auraGlow). Thuần theo (props, t, vị trí nhạc); thiếu vị trí nhạc thì BEAT/BAR …
+const WRITE_LEAD   // Phần sớm của writeMs: nốt bắt đầu được viết trước lúc vang nửa writeMs, nên lúc vang đã viết được một nửa.
+function writeAt(p: Pick<NotationProps, 'reveal' | 'writeMs'>, on: number, t: number): number   // Mức đã viết của một phần tử thuộc nốt bắt đầu lúc `on` (0 = chưa viết, 1 = đủ). reveal NONE luôn 1.
+function erasePicked(p: Pick<NotationProps, 'erase' | 'eraseAmount' | 'eraseSeed'>, o: NotationOwner, index: number): boolean   // Chủ này có bị xoá không: AFTER = mọi chủ; RANDOM = phần eraseAmount số chủ, chọn tất định theo (id nốt, erase…
+function barsAfter(g: BarGrid, t: number, n: number): number   // Giây sau `n` ô nhịp kể từ `t` (có phần lẻ), theo lưới ô nhịp của bài.
+function eraseAt(p: Pick<NotationProps, 'eraseAfterBars' | 'eraseMs'>, off: number, t: number, after?: (t: number, bars: number) => number): number   // Mức đã xoá của một chủ kết thúc lúc `off` (0 = còn nguyên, 1 = đã xoá hết). `after` đổi (giây, số ô) → giây; …
+function itemSpanX(it: NotationItem, glyphs: readonly PathData[]): readonly [number, number]   // Hộp bao theo chiều ngang của một phần tử (đơn vị trang), có lề nhỏ cho bề dày nét. Đệm theo phần tử.
 function notationFit(lay: NotationLayout, W: number, H: number, pageH: number, align: NotationProps['align'])   // Phép đặt trang vào khung widget: tỉ lệ theo bề rộng và chiều cao trang lớn nhất (tỉ lệ không đổi khi lật tran…
-function notationPrims(lay: NotationLayout, p: NotationProps, W: number, H: number, t: number, trackColor: (track: number) => string | undefined, pos?: MusicPos): Primitive[]   // Primitive của một khung: mỗi phần tử của trang hiện tại thành một PathPrim (màu theo trạng thái nốt), nốt đan…
+function notationPrims(lay: NotationLayout, p: NotationProps, W: number, H: number, t: number, trackColor: (track: number) => string | undefined, pos?: MusicPos, after?: (t: number, bars: number) => number): Primitive[]   // Primitive của một khung: mỗi phần tử của trang hiện tại thành một PathPrim (màu theo trạng thái nốt), nốt đan…
 const notationRenderer
 ```
 
@@ -4206,4 +4212,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 11 thư mục src, 1927 ký hiệu công khai -->
+<!-- 11 thư mục src, 1933 ký hiệu công khai -->

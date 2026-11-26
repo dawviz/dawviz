@@ -91,6 +91,7 @@ export function drawPathPrim(g0: RenderCtx, p: PathPrim, devScale: number): void
   g.save();
   g.translate(p.tx, p.ty); g.scale(p.s, p.s);
   if (p.zoom && p.zoom.k !== 1) { g.translate(p.zoom.cx, p.zoom.cy); g.scale(p.zoom.k, p.zoom.k); g.translate(-p.zoom.cx, -p.zoom.cy); }
+  if (p.clipX !== undefined) { g.beginPath(); g.rect(-1e6, -1e6, p.clipX + 1e6, 2e6); g.clip(); } // viết tay / lau (T-132): vùng cắt bên trái clipX
   const r = p.rough, glow = p.glow;
   const fill = (path: P2D | undefined, d: PathData) => { if (path) (g.fill as (x: unknown) => void)(path); else { g.beginPath(); trace(g, d); g.fill(); } };
   const stroke = (path: P2D | undefined, d: PathData) => { if (path) (g.stroke as (x: unknown) => void)(path); else { g.beginPath(); trace(g, d); g.stroke(); } };

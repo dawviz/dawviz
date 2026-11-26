@@ -32,7 +32,25 @@ export class RecordingContext extends RenderContext {
     }
     return -1;
   }
-  private emit(it: Omit<NotationItem, 'o'>) { this.items.push({ o: this.owner(), ...it }); }
+  /**
+   * Phần tĩnh gắn với nốt về thời gian (T-132): gạch nối móc và ngoặc liên ba theo nốt cuối của nhóm, dấu nối theo nốt đầu.
+   * Chỉ dùng để viết tay/xoá đúng lúc; màu vẫn như phần tĩnh. −1 = không gắn (khuông, khoá, vạch nhịp…).
+   */
+  private timeOwner(): number {
+    for (let i = this.frames.length - 1; i >= 0; i--) {
+      const el = this.frames[i] as Element & { getNotes?: () => unknown };
+      if (typeof el.getNotes !== 'function') continue;
+      let ns: unknown = null;
+      try { ns = el.getNotes(); } catch { ns = null; }
+      const list = Array.isArray(ns) ? [...ns].reverse() : ns && typeof ns === 'object' ? [(ns as { firstNote?: unknown }).firstNote, (ns as { lastNote?: unknown }).lastNote] : [];
+      for (const n of list) if (n instanceof StaveNote) { const o = this.ownerOf(n.getAttribute('id')); if (o >= 0) return o; }
+    }
+    return -1;
+  }
+  private emit(it: Omit<NotationItem, 'o'>) {
+    const o = this.owner(), w = o < 0 ? this.timeOwner() : -1;
+    this.items.push(w >= 0 ? { o, ...it, w } : { o, ...it });
+  }
   private glyph(font: string, cp: number): number {
     const k = font + ':' + cp;
     let i = this.glyphIndex.get(k);

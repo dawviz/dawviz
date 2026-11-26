@@ -5,7 +5,7 @@ section: "Tu sửa widget và mở rộng sáng tạo (đợt 2026-11-26) (mở 
 path: "Tu sửa widget và mở rộng sáng tạo (đợt 2026-11-26) (mở đầu)"
 chunk: tu-sua-widget-va-mo-rong-sang-tao-dot-2026-11-26.md
 source_lines: 1-4
-source_sha1: 5eb561ef37
+source_sha1: f0d5abcfcb
 ids: [D-71, D-76]
 ---
 # Tu sửa widget và mở rộng sáng tạo (đợt 2026-11-26)

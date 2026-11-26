@@ -137,7 +137,7 @@
         "locales/en.json#web.layers.",
         "locales/en.json#web.comp."
       ],
-      "uiHash": "0bdb1a1772a9",
+      "uiHash": "29c7afa77d64",
       "viHash": "f440dd884db8",
       "enHash": "d924eb3f4c0f",
       "coverHashes": {
@@ -152,7 +152,7 @@
         "apps/web/src/components/TextPanel.tsx": "dd7fca2212b6",
         "locales/en.json#web.text.": "13dd41db4149",
         "apps/web/src/components/WidgetSettings.tsx": "fd14aef49172",
-        "locales/en.json#web.ws.": "c2d015e93841",
+        "locales/en.json#web.ws.": "4bcd348b7008",
         "apps/web/src/components/TimeSections.tsx": "aa30f2bb1dd2",
         "apps/web/src/components/TimeField.tsx": "4627c46c0bf7",
         "locales/en.json#web.vis.": "97d170e1550e",
@@ -286,12 +286,12 @@
         "locales/en.json#web.widget.",
         "locales/en.json#web.tonic."
       ],
-      "uiHash": "27cfd5fc527b",
+      "uiHash": "541c3e2247e0",
       "viHash": "ae36005a4bf0",
       "enHash": "52d07dcea04a",
       "coverHashes": {
         "apps/web/src/components/WidgetSettings.tsx": "fd14aef49172",
-        "locales/en.json#web.ws.": "c2d015e93841",
+        "locales/en.json#web.ws.": "4bcd348b7008",
         "locales/en.json#web.widget.": "3a55f23fb070",
         "locales/en.json#web.tonic.": "2b1a6b41c82b"
       }
@@ -306,13 +306,13 @@
         "locales/en.json#warn.WARN_NOTATION",
         "locales/en.json#web.export.notationPending"
       ],
-      "uiHash": "befc2afb7969",
-      "viHash": "d350e52dbab3",
-      "enHash": "2af9b2e8dad5",
+      "uiHash": "9c6e3beb0114",
+      "viHash": "5b2b16eea1af",
+      "enHash": "582462037869",
       "coverHashes": {
         "apps/web/src/lib/notation/useNotation.ts": "c065b468240f",
-        "packages/render-core/src/notation/widget.ts": "0873f0ab6e1a",
-        "locales/en.json#web.ws.nt": "10e4c3bfd9db",
+        "packages/render-core/src/notation/widget.ts": "abc744d0489f",
+        "locales/en.json#web.ws.nt": "98770fce8a6d",
         "locales/en.json#warn.WARN_NOTATION": "a54d2c6c5a70",
         "locales/en.json#web.export.notationPending": "8d3b9fd42ea6"
       }
@@ -347,7 +347,7 @@
         "apps/web/src/lib/animateFields.ts",
         "packages/render-core/src/parenting.ts"
       ],
-      "uiHash": "e508e2f1a45d",
+      "uiHash": "249ab9f937c4",
       "viHash": "e060f92fa4f5",
       "enHash": "8100f4c55d42",
       "coverHashes": {
@@ -360,7 +360,7 @@
         "packages/render-core/src/noteTransition.ts": "0ca2c2677905",
         "locales/en.json#web.motion.": "ab9500a2f7bb",
         "locales/en.json#web.ws.pianoTransition": "5f35625be938",
-        "packages/render-core/src/animation.ts": "87753a8a5344",
+        "packages/render-core/src/animation.ts": "ce0b7bdd210a",
         "locales/en.json#web.anim.": "30297b2b6b1e",
         "apps/web/src/components/KeyframeTimeline.tsx": "523d37a825e1",
         "apps/web/src/components/AnimationInspector.tsx": "2994e9d6fe01",

@@ -5,7 +5,7 @@ section: "8. Vấn đề mở"
 path: "8. Vấn đề mở"
 chunk: 8-van-de-mo.md
 source_lines: 191-196
-source_sha1: 5eb561ef37
+source_sha1: f0d5abcfcb
 ids: []
 ---
 ## 8. Vấn đề mở

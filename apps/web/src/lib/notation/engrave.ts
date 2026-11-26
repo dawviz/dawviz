@@ -79,7 +79,12 @@ export function engrave(model: ScoreModel, o: EngraveOptions): NotationLayout {
             sn = new StaveNote({ keys, duration: base + (e.rest ? 'r' : ''), clef: st.clef, autoStem: !twoVoices, ...(twoVoices ? { stemDirection: vi === 0 ? 1 : -1 } : {}) });
             if (e.value.dots) Dot.buildAndAttach([sn], { all: true });
           }
-          if (!e.rest && !e.hidden) {
+          if (e.rest && !e.hidden) { // dấu lặng: chủ riêng chỉ để viết tay/xoá đúng lúc (T-132), vẽ như phần tĩnh
+            const id = 'n' + seq++;
+            sn.setAttribute('id', id);
+            ownerIdx.set(id, owners.length);
+            owners.push({ notes: [], head: false, rest: true, on: o.tickToSec(m.startTick + e.pos), off: o.tickToSec(m.startTick + e.pos + e.dur), cx: 0, cy: 0, track: 0 });
+          } else if (!e.hidden) {
             const id = 'n' + seq++;
             sn.setAttribute('id', id);
             const infos = e.notes.map((n) => o.noteInfo(n.noteId)).filter((x): x is NonNullable<typeof x> => !!x);

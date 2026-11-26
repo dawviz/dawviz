@@ -457,6 +457,13 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['auraEvery'], 'num', 'ntAuraEveryBar', { when: (P) => P.aura === 'BAR', num: { min: 0.25, max: 64, step: 0.25, range: [0.25, 8] } }),
     L(['auraEvery'], 'num', 'ntAuraEveryTime', { when: (P) => P.aura === 'TIME', num: { min: 0.25, max: 64, step: 0.25, range: [0.25, 16] } }),
     L(['auraShape'], 'choice', 'ntAuraShape', { when: (P) => P.aura === 'BEAT' || P.aura === 'BAR' || P.aura === 'TIME', options: ['SMOOTH', 'FLASH', 'BLINK'], prefix: 'web.ws.ntAuraShape.' }),
+    // Viết tay từng nốt và xoá nốt (T-132)
+    L(['reveal'], 'choice', 'ntReveal', { options: ['NONE', 'WRITE'], prefix: 'web.ws.ntReveal.' }),
+    L(['writeMs'], 'num', 'ntWriteMs', { when: (P) => P.reveal === 'WRITE', num: { min: 20, max: 5000, step: 10, range: [50, 1000] } }),
+    L(['erase'], 'select', 'ntErase', { options: ['NONE', 'AFTER', 'RANDOM'], prefix: 'web.ws.ntErase.' }),
+    L(['eraseAmount'], 'num', 'ntEraseAmount', { when: (P) => P.erase === 'RANDOM', num: { min: 0, max: 1, step: 0.05 } }),
+    L(['eraseAfterBars'], 'num', 'ntEraseAfter', { when: (P) => P.erase !== 'NONE', num: { min: 0, max: 64, step: 0.25, range: [0, 8] } }),
+    L(['eraseStyle'], 'choice', 'ntEraseStyle', { when: (P) => P.erase !== 'NONE', options: ['FADE', 'WIPE'], prefix: 'web.ws.ntEraseStyle.' }),
     L(['division'], 'select', 'ntDivision', { adv: true, options: [8, 16, 32], prefix: 'web.ws.ntDivision.' }),
     L(['triplets'], 'check', 'ntTriplets', { adv: true }),
     L(['simplify'], 'num', 'ntSimplify', { adv: true, num: { min: 0.5, max: 4, step: 0.1 } }),
@@ -485,6 +492,8 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['auraGlow'], 'num', 'ntAuraGlow', { adv: true, when: (P) => P.aura !== 'OFF', num: { min: 0, max: 1, step: 0.05 } }),
     L(['auraMin'], 'num', 'ntAuraMin', { adv: true, when: (P) => P.aura === 'BEAT' || P.aura === 'BAR' || P.aura === 'TIME', num: { min: 0, max: 1, step: 0.05 } }),
     L(['auraColor'], 'colorOpt', 'ntAuraColor', { adv: true, when: (P) => P.aura !== 'OFF' }),
+    L(['eraseMs'], 'num', 'ntEraseMs', { adv: true, when: (P) => P.erase !== 'NONE', num: { min: 20, max: 5000, step: 10, range: [50, 2000] } }),
+    L(['eraseSeed'], 'num', 'ntEraseSeed', { adv: true, when: (P) => P.erase === 'RANDOM', num: { min: 0, max: 999999, step: 1 } }),
   ],
 };
 
@@ -530,6 +539,8 @@ export const WIDGET_SECTIONS: Readonly<Partial<Record<WidgetType, readonly Secti
     SEC('glow', ['glow', 'glowSize', 'glowMode']),
     SEC('aura', ['aura', 'auraEvery', 'auraShape', 'auraGlow', 'auraMin', 'auraColor'], { head: 'aura', on: (P) => P.aura !== 'OFF' }),
     SEC('playhead', ['playhead', 'playheadColor', 'playheadWidth'], { head: 'playhead', on: (P) => P.playhead !== 'NONE' }),
+    SEC('reveal', ['reveal', 'writeMs'], { head: 'reveal', on: (P) => P.reveal !== 'NONE' }),
+    SEC('erase', ['erase', 'eraseAmount', 'eraseAfterBars', 'eraseStyle', 'eraseMs', 'eraseSeed'], { head: 'erase', on: (P) => P.erase !== 'NONE' }),
     SEC('rough', ['rough', 'boilFps', 'seed']),
   ],
 };

@@ -5,7 +5,7 @@ section: "7. Thứ tự làm và cách chia PR"
 path: "7. Thứ tự làm và cách chia PR"
 chunk: 7-thu-tu-lam-va-cach-chia-pr.md
 source_lines: 179-190
-source_sha1: 5eb561ef37
+source_sha1: f0d5abcfcb
 ids: []
 ---
 ## 7. Thứ tự làm và cách chia PR

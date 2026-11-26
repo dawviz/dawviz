@@ -887,6 +887,10 @@ const HUD_SANITIZERS = {
       aura: S.oneOf(P.aura, ['OFF', 'STEADY', 'BEAT', 'BAR', 'TIME'] as const, d.aura, `${p}.aura`), auraShape: S.oneOf(P.auraShape, ['SMOOTH', 'FLASH', 'BLINK'] as const, d.auraShape, `${p}.auraShape`),
       auraEvery: S.num(P.auraEvery, d.auraEvery, 0.25, 64, `${p}.auraEvery`), auraGlow: S.num(P.auraGlow, d.auraGlow, 0, 1, `${p}.auraGlow`), auraMin: S.num(P.auraMin, d.auraMin, 0, 1, `${p}.auraMin`),
       auraColor: S.str(P.auraColor, d.auraColor, `${p}.auraColor`, (s) => s === '' || HEX.test(s)),
+      reveal: S.oneOf(P.reveal, ['NONE', 'WRITE'] as const, d.reveal, `${p}.reveal`), writeMs: S.num(P.writeMs, d.writeMs, 20, 5000, `${p}.writeMs`),
+      erase: S.oneOf(P.erase, ['NONE', 'AFTER', 'RANDOM'] as const, d.erase, `${p}.erase`), eraseAfterBars: S.num(P.eraseAfterBars, d.eraseAfterBars, 0, 64, `${p}.eraseAfterBars`),
+      eraseAmount: S.num(P.eraseAmount, d.eraseAmount, 0, 1, `${p}.eraseAmount`), eraseMs: S.num(P.eraseMs, d.eraseMs, 20, 5000, `${p}.eraseMs`),
+      eraseStyle: S.oneOf(P.eraseStyle, ['FADE', 'WIPE'] as const, d.eraseStyle, `${p}.eraseStyle`), eraseSeed: int(P.eraseSeed, d.eraseSeed, 0, 999999, `${p}.eraseSeed`),
     };
   },
   TEMPO_INFO(P: Obj, p: string, S: Sanitizer): TempoInfoProps {
