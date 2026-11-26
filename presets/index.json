@@ -48,6 +48,15 @@
       "sha256": "66e03e6615cafd218f788c8fdf75a417b00266ed15b393ddbc684494f81fc30c"
     },
     {
+      "path": "presets/scene/analysis-dashboard-16x9.json",
+      "kind": "scene",
+      "name": "Analysis Dashboard 16:9",
+      "author": "DAW Visualizer",
+      "license": "CC0-1.0",
+      "bytes": 19097,
+      "sha256": "bf14ad4096a7546882713391b9626f49eb83bd19f8a410bbc431eae5b0258fc0"
+    },
+    {
       "path": "presets/scene/dark-score-16x9.json",
       "kind": "scene",
       "name": "Dark Score",

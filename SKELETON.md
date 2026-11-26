@@ -539,7 +539,6 @@ dawviz/
 ├─ CONTRIBUTING.md
 ├─ CREDITS.md
 ├─ LICENSE
-├─ MANUAL-CHECK.md
 ├─ package.json
 ├─ PRODUCT.md
 ├─ PROGRESS.md
