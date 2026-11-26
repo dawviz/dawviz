@@ -94,8 +94,8 @@ export const PIANO_PATHS: ReadonlyMap<string, AnimKind> = new Map<string, AnimKi
  */
 export const NOTATION_PATHS: ReadonlyMap<string, AnimKind> = new Map<string, AnimKind>([
   ['inkColor', 'color'], ['playedColor', 'color'], ['activeColor', 'color'], ['playheadColor', 'color'], ['auraColor', 'color'],
-  ...['upcomingOpacity', 'playedOpacity', 'staticOpacity', 'zoom', 'glow', 'glowSize', 'playheadWidth', 'auraGlow', 'auraMin'].map((k) => [k, 'number'] as [string, AnimKind]),
-  ['colorMode', 'choice'], ['glowMode', 'choice'],
+  ...['upcomingOpacity', 'playedOpacity', 'staticOpacity', 'zoom', 'glow', 'glowSize', 'playheadWidth', 'auraGlow', 'auraMin', 'writeMs', 'eraseAfterBars', 'eraseAmount', 'eraseMs'].map((k) => [k, 'number'] as [string, AnimKind]),
+  ['colorMode', 'choice'], ['glowMode', 'choice'], ['reveal', 'choice'], ['erase', 'choice'], ['eraseStyle', 'choice'],
 ]);
 const CHOICE_OK: Readonly<Record<string, readonly string[]>> = { 'noteStyle.base.colorMode': ['track', 'custom', 'pitch', 'velocity'] };
 

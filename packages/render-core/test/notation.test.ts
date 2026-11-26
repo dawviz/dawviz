@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  DEFAULT_NOTATION, auraAt, barsOf, drawPrimitives, estimateKey, keyName, layoutFrame, notationInkFor, notationPrims, pageIndexAt, quantize, renderFrame, roughPathData,
+  DEFAULT_NOTATION, auraAt, barsAfter, barsOf, buildBarGrid, eraseAt, erasePicked, itemSpanX, writeAt, drawPrimitives, estimateKey, keyName, layoutFrame, notationInkFor, notationPrims, pageIndexAt, quantize, renderFrame, roughPathData,
   sanitizeScene, SCENE_SCHEMA_VERSION, spellingTable, systemX, validateScore, vexKey, zoomAt,
   type ASTNote, type NotationLayout, type NotationProps, type PathPrim, type TempoPoint,
 } from '../src/index.ts';
@@ -201,6 +201,100 @@ test('nét tay: tất định theo (id, bước, seed), đổi bước thì đ�
   assert.equal(a.step, 0); assert.equal(b.step, 2);
 });
 
+// ───────────────────────── viết tay / xoá (T-132) ─────────────────────────
+/** Layout một trang: dòng kẻ tĩnh, nốt 0 (đầu + thân), nốt 1 (đầu), dấu lặng (chủ 3), gạch nối móc gắn thời gian với nốt 1 (w = 1). */
+function writeLayout(): NotationLayout {
+  const L = fakeLayout();
+  L.owners.push({ notes: [], on: 1.5, off: 2, head: false, rest: true, cx: 500, cy: 60, track: 0 });
+  L.pages[0].items.push({ o: 3, k: 2, g: [0, 500, 60, 40] }, { o: -1, w: 1, k: 0, d: [0, 110, 30, 1, 300, 30, 1, 300, 34, 1, 110, 34, 4] });
+  return L;
+}
+const at = (L: NotationLayout, o: Partial<NotationProps>, t: number, after?: (t: number, n: number) => number) =>
+  paths(notationPrims(L, P({ pageFadeMs: 0, ...o }), 1000, 200, t, () => undefined, undefined, after));
+const ofOwner = (ps: PathPrim[], o: number) => ps.filter((x) => (x.item.o >= 0 ? x.item.o : x.item.w ?? -1) === o);
+
+test('T-132 mặc định: không viết tay, không xoá → chuỗi hình không đổi, không vùng cắt; dấu lặng vẽ như phần tĩnh', () => {
+  const L = writeLayout();
+  for (const t of [0, 0.5, 1.2, 1.7, 1.99]) {
+    const a = notationPrims(L, P(), 1000, 200, t, () => undefined), b = notationPrims(L, P({ writeMs: 900, eraseMs: 30, eraseAmount: 1, eraseSeed: 7 }), 1000, 200, t, () => undefined);
+    assert.equal(JSON.stringify(a), JSON.stringify(b));
+    assert.ok(paths(a).every((x) => x.clipX === undefined));
+    const { ctx, log } = recCtx();
+    drawPrimitives(ctx, a, { scale: 1, rotation: 0 });
+    assert.ok(!log.includes('clip()'), 'không cắt khi tắt viết tay');
+  }
+  const rest = paths(notationPrims(L, P({ pageFadeMs: 0, staticOpacity: 0.4 }), 1000, 200, 1.7, () => undefined)).find((x) => x.item.o === 3)!;
+  assert.equal(rest.color, DEFAULT_NOTATION.inkColor); assert.equal(rest.alpha, 0.4); assert.ok(!rest.zoom && !rest.glow, 'dấu lặng không sáng, không phóng to');
+});
+
+test('T-132 viết tay: trước lượt không vẽ; trong writeMs cắt đúng tỉ lệ trên hộp bao; sau đó vẽ đủ; khuông luôn có', () => {
+  const L = writeLayout(), o = { reveal: 'WRITE' as const, writeMs: 400 };
+  const near = (a: number, b: number) => assert.ok(Math.abs(a - b) < 1e-9, `${a} ≠ ${b}`);
+  assert.equal(writeAt(o, 1, 0.79), 0); near(writeAt(o, 1, 1), 0.5); assert.equal(writeAt(o, 1, 1.2), 1); assert.equal(writeAt({ reveal: 'NONE', writeMs: 400 }, 1, 0), 1);
+  // nốt 1 vang lúc 1 s, viết từ 0,8 s tới 1,2 s
+  assert.equal(ofOwner(at(L, o, 0.79), 1).length, 0, 'chưa tới lượt: cả đầu nốt lẫn gạch nối móc đều chưa vẽ');
+  assert.ok(at(L, o, 0.79).some((x) => x.item.o === -1 && x.item.w === undefined), 'dòng kẻ khuông vẽ như cũ');
+  const mid = ofOwner(at(L, o, 0.9), 1);
+  assert.equal(mid.length, 2);
+  for (const x of mid) { const [x0, x1] = itemSpanX(x.item, L.glyphs); assert.ok(Math.abs(x.clipX! - (x0 + (x1 - x0) * 0.25)) < 1e-9, 'cắt ở 1/4 hộp bao'); }
+  const head = mid.find((x) => x.item.o === 1)!, [hx0, hx1] = itemSpanX(head.item, L.glyphs);
+  assert.ok(hx0 < 300 && hx1 > 300 + 0.3 * 40 - 1e-9, 'hộp bao glyph theo cỡ và vị trí');
+  assert.ok(ofOwner(at(L, o, 1.21), 1).every((x) => x.clipX === undefined), 'viết xong: vẽ đủ');
+  assert.ok(ofOwner(at(L, o, 1.21), 3).length === 0 && ofOwner(at(L, o, 1.31), 3).length === 1, 'dấu lặng viết theo giây của nó');
+  // đang ngân và đang viết: vẫn phóng to, vùng cắt đi theo
+  const act = ofOwner(at(L, o, 1.05), 1).find((x) => x.item.o === 1)!;
+  assert.ok(act.zoom && act.clipX !== undefined);
+  const { ctx, log } = recCtx();
+  drawPrimitives(ctx, at(L, { ...o, rough: 1 }, 0.9), { scale: 1, rotation: 0 });
+  assert.ok(log.includes('clip()') && log.some((l) => l.startsWith('rect(-1000000,')), 'vùng cắt hình chữ nhật, kết hợp nét tay');
+  assert.equal(log.filter((l) => l === 'save()').length, log.filter((l) => l === 'restore()').length);
+});
+
+test('T-132 xoá sau N ô nhịp: mờ dần hoặc lau phải → trái; xoá xong không vẽ; theo lưới ô nhịp của bài', () => {
+  const L = writeLayout(), after = (t: number, n: number) => t + n; // 1 ô = 1 s cho dễ đọc
+  const o = { erase: 'AFTER' as const, eraseAfterBars: 0.5, eraseMs: 200 };
+  // nốt 0 kết thúc 1 s → xoá từ 1,5 s tới 1,7 s
+  const near = (a: number, b: number) => assert.ok(Math.abs(a - b) < 1e-9, `${a} ≠ ${b}`);
+  assert.equal(eraseAt(o, 1, 1.5, after), 0); near(eraseAt(o, 1, 1.6, after), 0.5); assert.equal(eraseAt(o, 1, 1.71, after), 1);
+  assert.equal(eraseAt(o, 1, 1.9), 0, 'thiếu lưới: 2 giây một ô');
+  const full = ofOwner(at(L, o, 1.45, after), 0);
+  assert.equal(full.length, 2); assert.ok(full.every((x) => x.alpha === DEFAULT_NOTATION.playedOpacity));
+  const half = ofOwner(at(L, o, 1.6, after), 0);
+  assert.ok(half.every((x) => Math.abs(x.alpha - DEFAULT_NOTATION.playedOpacity * 0.5) < 1e-9 && x.clipX === undefined), 'FADE: mờ còn một nửa');
+  assert.equal(ofOwner(at(L, o, 1.71, after), 0).length, 0, 'xoá xong');
+  assert.equal(ofOwner(at(L, o, 1.71, after), 1).length, 2, 'nốt chưa tới hạn vẫn còn');
+  const wipe = ofOwner(at(L, { ...o, eraseStyle: 'WIPE' }, 1.6, after), 0);
+  for (const x of wipe) { const [x0, x1] = itemSpanX(x.item, L.glyphs); assert.ok(Math.abs(x.clipX! - (x1 - (x1 - x0) * 0.5)) < 1e-9 && x.alpha === DEFAULT_NOTATION.playedOpacity); }
+  // lưới thật: 120 BPM 4/4 = 2 s một ô; đổi tempo giữa bài
+  const g = buildBarGrid(T44, Q);
+  near(barsAfter(g, 1, 1), 3); near(barsAfter(g, 1, 0.5), 2);
+  const g2 = buildBarGrid([...T44, { tick: 4 * Q, timeSeconds: 2, bpm: 60, timeSigNumerator: 4, timeSigDenominator: 4 }], Q);
+  near(barsAfter(g2, 1, 1), 2 + 2, 'nửa ô đầu ở 120 BPM (1 s), nửa ô sau ở 60 BPM (2 s)');
+});
+
+test('T-132 xoá ngẫu nhiên: đúng tỉ lệ, cùng seed cùng tập nốt, đổi seed đổi tập; 0 không xoá, 1 xoá hết', () => {
+  const owners = Array.from({ length: 400 }, (_, i) => ({ notes: [`note-${i}`], on: i, off: i + 1, head: true, cx: 0, cy: 0, track: 0 }));
+  const pick = (amount: number, seed: number) => owners.map((o, i) => (erasePicked({ erase: 'RANDOM', eraseAmount: amount, eraseSeed: seed }, o, i) ? 1 : 0)).join('');
+  const a = pick(0.3, 1), n = [...a].filter((c) => c === '1').length;
+  assert.ok(n > 400 * 0.3 - 40 && n < 400 * 0.3 + 40, `khoảng 30% (được ${n})`);
+  assert.equal(pick(0.3, 1), a, 'cùng seed cùng tập');
+  assert.notEqual(pick(0.3, 2), a, 'đổi seed đổi tập');
+  assert.ok(!pick(0, 1).includes('1') && !pick(1, 1).includes('0'));
+  assert.ok([...pick(0.2, 1)].every((c, i) => c === '0' || a[i] === '1'), 'tăng tỉ lệ chỉ thêm nốt, không đổi nốt đã chọn');
+  assert.ok(owners.every((o, i) => erasePicked({ erase: 'AFTER', eraseAmount: 0, eraseSeed: 1 }, o, i)));
+  assert.ok(owners.every((o, i) => !erasePicked({ erase: 'NONE', eraseAmount: 1, eraseSeed: 1 }, o, i)));
+  // theo id nốt, không theo vị trí: dàn trang lại (đổi thứ tự chủ) vẫn chọn đúng các nốt đó
+  const rev = [...owners].reverse().map((o, i) => (erasePicked({ erase: 'RANDOM', eraseAmount: 0.3, eraseSeed: 1 }, { ...o }, i) ? 1 : 0)).reverse().join('');
+  assert.equal(rev, a);
+});
+
+test('T-132 tua tới/lui cùng kết quả: hình chỉ phụ thuộc t', () => {
+  const L = writeLayout(), o = { reveal: 'WRITE' as const, writeMs: 300, erase: 'RANDOM' as const, eraseAmount: 0.6, eraseAfterBars: 0.25, eraseMs: 150, eraseStyle: 'WIPE' as const, eraseSeed: 3, rough: 1, boilFps: 8 };
+  const ts = [0, 0.3, 0.85, 0.95, 1.05, 1.3, 1.55, 1.62, 1.8, 1.99];
+  const fwd = ts.map((t) => JSON.stringify(at(L, o, t))), back = [...ts].reverse().map((t) => JSON.stringify(at(writeLayout(), o, t))).reverse();
+  assert.deepEqual(fwd, back);
+});
+
 test('vẽ PathPrim không có Path2D (Node): phát lại lệnh đường lên ctx, trả trạng thái về', () => {
   const L = fakeLayout(), { ctx, log } = recCtx();
   drawPrimitives(ctx, notationPrims(L, P({ rough: 1.5 }), 1000, 200, 0.05, () => undefined), { scale: 1, rotation: 0 });
@@ -228,6 +322,12 @@ test('sanitizeScene NOTATION: giá trị sai về mặc định kèm cảnh báo
   const a = sanitizeScene({ schemaVersion: SCENE_SCHEMA_VERSION, presetName: 'x', author: '', canvas: { aspectRatio: '16:9', designWidth: 1920, designHeight: 1080, backgroundColor: '#000000', backgroundImageData: null, snapping: { gridEnabled: false, gridSize: 8, smartGuidesEnabled: false } },
     widgets: [{ id: 'nt', type: 'NOTATION', zIndex: 1, visible: true, layout: { x: 0, y: 0, width: 100, height: 100, rotation: 0 }, trackMappingMode: 'ALL', assignedTrackIndices: [], properties: { aura: 'X', auraShape: 'FLASH', auraEvery: 0, auraColor: 'blue' } }] }).scene.widgets[0].properties as NotationProps;
   assert.equal(a.aura, 'OFF'); assert.equal(a.auraShape, 'FLASH'); assert.equal(a.auraEvery, 0.25); assert.equal(a.auraColor, '');
+  const w = sanitizeScene({ schemaVersion: SCENE_SCHEMA_VERSION, presetName: 'x', author: '', canvas: { aspectRatio: '16:9', designWidth: 1920, designHeight: 1080, backgroundColor: '#000000', backgroundImageData: null, snapping: { gridEnabled: false, gridSize: 8, smartGuidesEnabled: false } },
+    widgets: [{ id: 'nt', type: 'NOTATION', zIndex: 1, visible: true, layout: { x: 0, y: 0, width: 100, height: 100, rotation: 0 }, trackMappingMode: 'ALL', assignedTrackIndices: [], properties: { reveal: 'TYPE', writeMs: 1, erase: 'RANDOM', eraseAfterBars: -2, eraseAmount: 3, eraseMs: 600, eraseStyle: 'SMUDGE', eraseSeed: 4.6 } }] });
+  const q = w.scene.widgets[0].properties as NotationProps;
+  assert.equal(q.reveal, 'NONE'); assert.equal(q.writeMs, 20); assert.equal(q.erase, 'RANDOM'); assert.equal(q.eraseAfterBars, 0); assert.equal(q.eraseAmount, 1);
+  assert.equal(q.eraseMs, 600); assert.equal(q.eraseStyle, 'FADE'); assert.equal(q.eraseSeed, 5);
+  assert.ok(w.warnings.length >= 5);
   assert.equal(notationInkFor('#ffffff').inkColor, '#16181d'); assert.equal(notationInkFor('#0c0e16').inkColor, DEFAULT_NOTATION.inkColor);
   assert.equal(notationInkFor('#ffffff').auraColor, DEFAULT_NOTATION.activeColor); assert.equal(notationInkFor('#0c0e16').auraColor, '');
 });

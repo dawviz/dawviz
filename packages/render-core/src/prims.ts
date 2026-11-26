@@ -75,6 +75,8 @@ export interface PathPrim {
   zoom?: { k: number; cx: number; cy: number };
   glow?: { mode: 'HALO' | 'SOFT'; color: string; width: number; alpha: number };
   rough?: { amp: number; step: number; seed: number; id: number };
+  /** T-132 (viết tay / xoá kiểu lau): chỉ vẽ phần có x < clipX (đơn vị trang, sau phóng to). Vắng = vẽ đủ. */
+  clipX?: number;
 }
 /** Ảnh của phiên (T-21): vẽ ô nguồn (sx, sy, sw, sh) của bitmap `asset` (Derived.images) vào hộp (x, y, w, h). */
 export interface ImagePrim {
