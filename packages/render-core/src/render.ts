@@ -165,7 +165,7 @@ export function playheadHitAt(tracks: TrackIndex[], t: number, ms: number, pitch
     for (const n of notesInRange(ti, t - win, t)) {
       if (n.startTimeSeconds > t || n.startTimeSeconds <= t - win || n.pitch < pitchMin || n.pitch > pitchMax) continue;
       const k = (1 - (t - n.startTimeSeconds) / win) * Math.min(1, Math.max(0, n.velocity / 127));
-      if (k > best + 1e-12) { best = k; color = noteColor(resolveNoteStyle(style, ti.track.id), ti.track.color, n.pitch, n.velocity); }
+      if (k > best + 1e-12) { best = k; color = noteColor(resolveNoteStyle(style, ti.track.id), ti.track.color, n.pitch, n.velocity, [pitchMin, pitchMax]); }
     }
   }
   return { k: best, color };

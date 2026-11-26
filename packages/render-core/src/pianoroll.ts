@@ -44,7 +44,7 @@ export function layoutPianoRoll(index: TimelineIndex, tempoMap: TempoPoint[], t:
       const s0 = paged ? Math.max(n.startTimeSeconds, t0) : n.startTimeSeconds, e0 = paged ? Math.min(n.endTimeSeconds, t1) : n.endTimeSeconds; // chế độ trang: cắt theo biên trang
       const x = left + (s0 - t0) * pxPerSec, h = Math.max(1, rowH * st.heightScale);
       const active = n.startTimeSeconds <= t && t < n.endTimeSeconds;
-      const color = stateColor(st, noteState(n.startTimeSeconds, n.endTimeSeconds, t), noteColor(st, ti.track.color, n.pitch, n.velocity)), w = Math.max(1, (e0 - s0) * pxPerSec);
+      const color = stateColor(st, noteState(n.startTimeSeconds, n.endTimeSeconds, t), noteColor(st, ti.track.color, n.pitch, n.velocity, [o.pitchMin, o.pitchMax])), w = Math.max(1, (e0 - s0) * pxPerSec);
       const rect: NoteRect = {
         id: n.id, trackId: ti.track.id, x, w, y: (o.pitchMax - n.pitch) * rowH + (rowH - h) / 2, h, color,
         brightness: trackBrightness(ti.track, tempoMap, Math.max(0, n.startTimeSeconds), cfg),
@@ -71,7 +71,7 @@ export function layoutKeyboard(index: TimelineIndex, t: number, o: { height: num
     if (!ti.track.isVisible) continue;
     const st = resolveNoteStyle(o.noteStyle, ti.track.id);
     for (const n of notesInRange(ti, t, t)) if (n.startTimeSeconds <= t && t < n.endTimeSeconds && n.pitch >= o.pitchMin && n.pitch <= o.pitchMax)
-      if (!activeBy.has(n.pitch)) activeBy.set(n.pitch, ks.useTrackColor ? noteColor(st, ti.track.color, n.pitch, n.velocity) : ks.pressedColor);
+      if (!activeBy.has(n.pitch)) activeBy.set(n.pitch, ks.useTrackColor ? noteColor(st, ti.track.color, n.pitch, n.velocity, [o.pitchMin, o.pitchMax]) : ks.pressedColor);
   }
   const keys: KeyRect[] = [];
   for (let p = o.pitchMin; p <= o.pitchMax; p++) {

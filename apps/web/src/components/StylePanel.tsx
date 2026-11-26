@@ -51,6 +51,7 @@ export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], l
         <ResetButton label={i18n.t('web.style.colorMode')} changed={!!reference && (reference.colorMode !== b.colorMode || (b.colorMode === 'custom' && reference.customColor !== b.customColor))}
           onReset={() => set({ colorMode: reference!.colorMode, customColor: reference!.customColor })} />
       </label>
+      {(b.colorMode === 'pitch' || b.colorMode === 'velocity') && <GradientRows b={b} set={set} reference={reference} />}
       <Slider id="st-opacity" label={i18n.t('web.style.opacity')} value={b.opacity} min={0} max={1} step={0.05} reset={ref('opacity')} onChange={(v) => set({ opacity: v })} />
       {advanced && <Slider id="st-inactive" label={i18n.t('web.style.inactiveOpacity')} value={b.inactiveOpacity} min={0} max={1} step={0.05} reset={ref('inactiveOpacity')} onChange={(v) => set({ inactiveOpacity: v })} />}
       <Slider id="st-height" label={i18n.t('web.style.heightScale')} value={b.heightScale} min={0.1} max={1.5} step={0.05} reset={ref('heightScale')} onChange={(v) => set({ heightScale: v })} />
@@ -169,7 +170,34 @@ function GlowSection({ b, set, lanes, laneInfo, advanced, reference }: { b: Note
   );
 }
 
-/** Dải cao độ: "Fit content" (theo nốt của track) hoặc "Custom" (hai ô tên nốt: thấp nhất, cao nhất). */
+/** Hai màu mặc định khi bật dải màu riêng (lạnh → nóng; đọc được trên nền tối lẫn nền sáng). */
+const GRADIENT_DEFAULT = { gradientFrom: '#4f7cff', gradientTo: '#ff5c8a' } as const;
+/** Dải màu hai đầu của chế độ Theo cao độ / Theo cường độ (T-129). Tắt (cả hai rỗng) = cách tô cũ của chế độ đó. */
+function GradientRows({ b, set, reference }: { b: NoteStyle; set(p: Partial<NoteStyle>): void; reference?: NoteStyle }) {
+  const { i18n } = useI18n();
+  const on = !!(b.gradientFrom || b.gradientTo);
+  const refOn = reference ? !!(reference.gradientFrom || reference.gradientTo) : undefined;
+  const mode = b.colorMode === 'velocity' ? 'velocity' : 'pitch';
+  const end = (k: 'gradientFrom' | 'gradientTo', label: string) => (
+    <div className={row}>
+      <span className="min-w-0 break-words leading-tight">{label}</span>
+      <ColorField label={label} alpha={false} value={b[k] || GRADIENT_DEFAULT[k]} onChange={(c) => set({ [k]: c })} testId={`st-${k}`} />
+      <ResetButton label={label} changed={!!reference?.[k] && reference[k] !== b[k]} onReset={() => set({ [k]: reference![k] })} />
+    </div>
+  );
+  return (
+    <div className="space-y-2" data-testid="note-gradient">
+      <TickField label={i18n.t('web.style.gradient')} checked={on} reference={refOn} testId="st-gradient"
+        onChange={(v) => set(v ? { gradientFrom: reference?.gradientFrom || GRADIENT_DEFAULT.gradientFrom, gradientTo: reference?.gradientTo || GRADIENT_DEFAULT.gradientTo } : { gradientFrom: '', gradientTo: '' })} />
+      {on && <>
+        {end('gradientFrom', i18n.t(`web.style.gradientFrom.${mode}`))}
+        {end('gradientTo', i18n.t(`web.style.gradientTo.${mode}`))}
+      </>}
+    </div>
+  );
+}
+
+/** Dải cao độ: "Fit content" (theo nốt của track) hoặc "Custom" (hai ô kéo được, hiện tên nốt: thấp nhất, cao nhất). */
 function PitchRangeRows({ value, reference, onChange }: { value: PitchRange; reference?: PitchRange; onChange(next: PitchRange): void }) {
   const { i18n } = useI18n();
   const custom = value.mode === 'CUSTOM';
@@ -186,12 +214,21 @@ function PitchRangeRows({ value, reference, onChange }: { value: PitchRange; ref
           </button>
         ))}
       </div>
-      {custom && (
+      {custom && <>
         <div className="grid grid-cols-2 gap-2 text-xs text-muted">
           <PitchField id="st-pitch-min" label={i18n.t('web.pitch.min')} value={value.min} onChange={(v) => onChange({ ...value, min: v, max: Math.max(v, value.max) })} />
           <PitchField id="st-pitch-max" label={i18n.t('web.pitch.max')} value={value.max} onChange={(v) => onChange({ ...value, max: v, min: Math.min(v, value.min) })} />
         </div>
-      )}
+        {/* Lựa chọn nhanh: 88 phím đàn piano và toàn dải MIDI; nút đang đúng với dải hiện tại thì tắt. */}
+        <div className="flex flex-wrap gap-1.5">
+          {([[21, 108, 'web.pitch.piano'], [0, 127, 'web.pitch.full']] as const).map(([lo, hi, key]) => (
+            <button key={key} type="button" className="btn-ghost rounded px-1.5 py-0.5 text-xs disabled:cursor-default disabled:opacity-50" disabled={value.min === lo && value.max === hi}
+              onClick={() => onChange({ ...value, min: lo, max: hi })} data-testid={`pitch-preset-${lo}-${hi}`}>
+              {i18n.t(key)}
+            </button>
+          ))}
+        </div>
+      </>}
     </div>
   );
 }

@@ -32,6 +32,11 @@ export interface NoteStyle {
   playedColor: string | null;   // nốt đã phát: end ≤ t
   activeColor: string | null;   // nốt đang phát: start ≤ t < end
   upcomingColor: string | null; // nốt sắp tới: start > t
+  // Dải màu hai đầu cho chế độ 'pitch' / 'velocity' (T-129). '' cả hai = giữ cách tô cũ (bánh xe sắc theo lớp cao độ / màu track sáng tối).
+  // Đặt ít nhất một đầu: nốt trộn từ gradientFrom (nốt thấp nhất của dải cao độ đang hiện / cường độ 0) tới gradientTo (nốt cao nhất / cường độ 127);
+  // đầu còn rỗng lấy màu track.
+  gradientFrom: string;
+  gradientTo: string;
 }
 export interface StyleConfig { base: NoteStyle; tracks: Record<string, Partial<NoteStyle>> }
 export interface KeyboardStyle {
@@ -75,7 +80,7 @@ export const DEFAULT_NOTE_STYLE: Readonly<NoteStyle> = Object.freeze({
   colorMode: 'track', customColor: '#7cc4ff', opacity: 1, inactiveOpacity: 0.85, cornerRadius: 3, heightScale: 0.8,
   glow: 0.5, glowRadius: 12, glowActiveOnly: true, borderWidth: 0, borderColor: '',
   glowMode: 'uniform', glowSource: 'velocity', glowPanMode: 'lr', glowLane: 'volume', glowMin: 0.15, glowMax: 1, glowInvert: false, glowRelease: 0,
-  playedColor: null, activeColor: null, upcomingColor: null,
+  playedColor: null, activeColor: null, upcomingColor: null, gradientFrom: '', gradientTo: '',
 });
 export const DEFAULT_KEYBOARD_STYLE: Readonly<KeyboardStyle> = Object.freeze({
   enabled: true, width: 64, whiteColor: '#e8eaf2', blackColor: '#14161f', useTrackColor: true,
@@ -111,6 +116,7 @@ export function sanitizeStyle(s: NoteStyle): NoteStyle {
     glowMin: clamp(num(s.glowMin, DEFAULT_NOTE_STYLE.glowMin), 0, 1), glowMax: clamp(num(s.glowMax, DEFAULT_NOTE_STYLE.glowMax), 0, 1),
     glowInvert: !!s.glowInvert, glowRelease: clamp(num(s.glowRelease, 0), 0, 4),
     playedColor: optHex(s.playedColor), activeColor: optHex(s.activeColor), upcomingColor: optHex(s.upcomingColor),
+    gradientFrom: isHexColor(s.gradientFrom) ? s.gradientFrom : '', gradientTo: isHexColor(s.gradientTo) ? s.gradientTo : '',
   };
 }
 export const resolveNoteStyle = (cfg: StyleConfig | undefined, trackId: string): NoteStyle =>
@@ -131,12 +137,20 @@ function hslToHex(h: number, s: number, l: number): string {
   const a = s * Math.min(l, 1 - l), f = (n: number) => { const k = (n + h / 30) % 12; return l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)); };
   return toHex(f(0) * 255, f(8) * 255, f(4) * 255);
 }
-/** Màu nốt theo chế độ màu. 'pitch': mỗi lớp cao độ (C..B) một sắc; 'velocity': nốt mạnh sáng hơn. */
-export function noteColor(style: NoteStyle, trackColor: string, pitch: number, velocity: number): string {
+/** Màu nốt theo chế độ màu. 'pitch': mỗi lớp cao độ (C..B) một sắc; 'velocity': nốt mạnh sáng hơn.
+ *  Có dải màu (gradientFrom/gradientTo, T-129) thì hai chế độ đó trộn tuyến tính giữa hai đầu: cao độ theo `range`
+ *  (dải cao độ đang hiện, mặc định 0–127), cường độ theo 0–127. */
+export function noteColor(style: NoteStyle, trackColor: string, pitch: number, velocity: number, range?: readonly [number, number]): string {
+  const grad = (k: number) => mixHex(style.gradientFrom || trackColor, style.gradientTo || trackColor, k);
+  const hasGrad = !!(style.gradientFrom || style.gradientTo);
   switch (style.colorMode) {
     case 'custom': return style.customColor;
-    case 'pitch': return hslToHex(((pitch % 12) + 12) % 12 * 30, 0.8, 0.6);
-    case 'velocity': return shade(trackColor, (clamp(velocity, 0, 127) / 127 - 0.6) * 0.9);
+    case 'pitch': {
+      if (!hasGrad) return hslToHex(((pitch % 12) + 12) % 12 * 30, 0.8, 0.6);
+      const lo = range ? Math.min(range[0], range[1]) : 0, hi = range ? Math.max(range[0], range[1]) : 127;
+      return grad(hi > lo ? (pitch - lo) / (hi - lo) : 1);
+    }
+    case 'velocity': return hasGrad ? grad(clamp(velocity, 0, 127) / 127) : shade(trackColor, (clamp(velocity, 0, 127) / 127 - 0.6) * 0.9);
     default: return trackColor;
   }
 }

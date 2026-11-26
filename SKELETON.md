@@ -264,6 +264,7 @@ dawviz/
 │     │  ├─ app.test.tsx
 │     │  ├─ components.test.tsx
 │     │  ├─ confirmDialog.test.tsx
+│     │  ├─ pianoRollLook.test.tsx
 │     │  └─ setup.ts
 │     ├─ DESIGN.md
 │     ├─ index.html
@@ -411,6 +412,7 @@ dawviz/
 │  │  │  ├─ motion.test.ts
 │  │  │  ├─ musicAnalysis.test.ts
 │  │  │  ├─ notation.test.ts
+│  │  │  ├─ note-gradient.test.ts
 │  │  │  ├─ paper.test.ts
 │  │  │  ├─ parenting.test.ts
 │  │  │  ├─ particles.test.ts
@@ -1753,7 +1755,7 @@ const resolveNoteStyle = (cfg: StyleConfig | undefined, trackId: string) =>
 function parseHex(c: string): [number, number, number]   // `#rrggbb` / `#rrggbbaa` → [r, g, b] (bỏ alpha; lấy alpha bằng `parseHexRgba`). Sai định dạng → trắng.
 const toHex = (r: number, g: number, b: number) =>
 function shade(c: string, k: number): string   // Trộn `c` về phía trắng (k>0) hoặc đen (k<0), |k| ≤ 1. Giữ alpha của `c`.
-function noteColor(style: NoteStyle, trackColor: string, pitch: number, velocity: number): string   // Màu nốt theo chế độ màu. 'pitch': mỗi lớp cao độ (C..B) một sắc; 'velocity': nốt mạnh sáng hơn.
+function noteColor(style: NoteStyle, trackColor: string, pitch: number, velocity: number, range?: readonly [number, number]): string   // Màu nốt theo chế độ màu. 'pitch': mỗi lớp cao độ (C..B) một sắc; 'velocity': nốt mạnh sáng hơn. Có dải màu (g…
 function mixHex(a: string, b: string, k: number): string   // Trộn hai màu #rrggbb, k = 0 → a, 1 → b.
 function scalePitchClasses(tonic: number, minor: boolean): Set<number>   // Tập lớp cao độ của thang trưởng / thứ tự nhiên trên nốt chủ `tonic` (0 = C).
 type NoteState
@@ -2219,7 +2221,7 @@ function Notices({ problems, basic = false }: { problems: Problem[]; basic?: boo
 Ô nhập số dùng chung (REQ-UI-15): gõ giá trị, phép tính, đơn vị, `+=`; ↑/↓ (Shift ×10, Alt ×0,1); Enter/rời ô để áp, Esc huỷ.
 
 ```text
-function NumberField({ id, label, value, onChange, spec, className = '', disabled, describedBy, range, scrub = true }: { id?: string; label: string; value: number; onChange(v: number): void; spec: NumberSpec; className?: string; disabled?: boolean; describedBy?: string; range?: [number, number]; scrub?: boolean })   // `disabled`: ô bị khoá (vd. vạch phát khi bật bàn phím, T-71); `describedBy`: id đoạn chú thích giải thích lý …
+function NumberField({ id, label, value, onChange, spec, className = '', disabled, describedBy, range, scrub = true, format, parse, syntaxErrorKey, testId }: { id?: string; label: string; value: number; onChange(v: number): void; spec: NumberSpec; className?: string; disabled?: boolean; describedBy?: string; range?: [number, number]; scrub?: boolean; format?(v: number): string; parse?(text: string): number | null; /** Khoá i18n thay câu lỗi cú pháp mặc định (câu mặc định nói về số và phép tính). */ syntaxErrorKey?: string; testId?: string })   // `disabled`: ô bị khoá (vd. vạch phát khi bật bàn phím, T-71); `describedBy`: id đoạn chú thích giải thích lý …
 ```
 
 #### `apps/web/src/components/PalettePanel.tsx`
@@ -2242,7 +2244,7 @@ function Rail({ side, label, title, onOpen, testId }: { side: 'left' | 'right'; 
 
 #### `apps/web/src/components/PitchField.tsx`
 
-Ô nhập cao độ theo tên nốt (C1, C#3, Db2) cho dải cao độ. Gõ xong Enter hoặc rời ô để áp; sai cú pháp thì trả về giá trị cũ, Esc huỷ.
+Ô cao độ của dải cao độ Piano Roll (T-129): là ô số (NumberField) theo số MIDI 0–127 nhưng HIỆN tên nốt (C2, C#3).
 
 ```text
 function PitchField({ id, label, value, onChange }: { id: string; label: string; value: number; onChange(v: number): void })
@@ -4132,6 +4134,7 @@ type SpectrumOut
 - `apps/web/test/app.test.tsx`
 - `apps/web/test/components.test.tsx`
 - `apps/web/test/confirmDialog.test.tsx`
+- `apps/web/test/pianoRollLook.test.tsx`
 - `packages/expr/test/expr.test.ts`
 - `packages/render-core/test/animate-scale.test.ts`
 - `packages/render-core/test/animation.test.ts`
@@ -4151,6 +4154,7 @@ type SpectrumOut
 - `packages/render-core/test/motion.test.ts`
 - `packages/render-core/test/musicAnalysis.test.ts`
 - `packages/render-core/test/notation.test.ts`
+- `packages/render-core/test/note-gradient.test.ts`
 - `packages/render-core/test/paper.test.ts`
 - `packages/render-core/test/parenting.test.ts`
 - `packages/render-core/test/particles.test.ts`
