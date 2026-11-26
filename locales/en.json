@@ -1786,7 +1786,7 @@
   "web.layers.fadeInHint": "Fade in: drag right to make it longer",
   "web.layers.fadeOutHint": "Fade out: drag left to make it longer",
   "web.layers.music": "Music",
-  "web.layers.musicHint": "Notes of each track and the chords, to line bars up with the music (view only)",
+  "web.layers.musicHint": "Notes of each track and the chords, to line bars up with the music; reorder, recolour, hide, solo or lock each track as in the Tracks panel",
   "web.layers.chords": "Chords",
   "web.comp.uncompose": "Release precomp",
   "web.comp.uncomposed": "{n, plural, one {Released {name}: # layer is back on this timeline} other {Released {name}: # layers are back on this timeline}}",

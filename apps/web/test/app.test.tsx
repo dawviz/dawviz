@@ -1069,6 +1069,51 @@ describe('thẻ Editor (T-68)', () => {
     expect(undoBtn().title).toMatch(/Release precomp|Gỡ precomp/);
     ctrlZ(); await waitFor(() => expect(screen.getByTestId('layers').textContent).toMatch(/Precomp 1/));
   });
+  it('làn Nhạc (T-127): đổi thứ tự, màu, mắt và S của track ngay trên Timeline, cùng lệnh với Xem trước; mỗi bước hoàn tác được', async () => {
+    await openProject();
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    fireEvent.click(screen.getByTestId('music-toggle'));
+    const ids = () => [...document.querySelectorAll<HTMLElement>('[data-music-track]')].map((e) => e.dataset.musicTrack);
+    await waitFor(() => expect(ids()).toEqual(['t0', 't1']));
+    // Kéo tay nắm của Lead thả lên Chords (jsdom không có clientY: coi như nửa trên → chèn TRƯỚC Chords).
+    const dt = { data: {} as Record<string, string>, types: ['text/x-dawviz-track'], setData(k: string, v: string) { this.data[k] = v; }, getData(k: string) { return this.data[k]; }, effectAllowed: '', dropEffect: '' };
+    fireEvent.dragStart(screen.getByTestId('music-grip-t1'), { dataTransfer: { ...dt, setDragImage() {} } as any });
+    fireEvent.dragOver(screen.getByTestId('music-row-t0'), { dataTransfer: dt });
+    expect(screen.getByTestId('track-drop')).toBeInTheDocument();
+    fireEvent.drop(screen.getByTestId('music-row-t0'), { dataTransfer: dt });
+    await waitFor(() => expect(ids()).toEqual(['t1', 't0']));
+    expect(undoBtn().title).toMatch(/(Move|Dời|Chuyển).*Lead/);
+    // Xem trước đổi theo (cùng Doc): thẻ Track xếp Lead trước.
+    fireEvent.click(screen.getByRole('tab', { name: /Preview|Xem trước/ }));
+    expect([...document.querySelectorAll<HTMLElement>('[data-track-row]')].map((e) => e.dataset.trackRow)).toEqual(['t1', 't0']);
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    ctrlZ(); await waitFor(() => expect(ids()).toEqual(['t0', 't1']));
+    // Alt+↓ trên tay nắm: cùng lệnh, một bước
+    fireEvent.keyDown(screen.getByTestId('music-grip-t0'), { key: 'ArrowDown', altKey: true });
+    await waitFor(() => expect(ids()).toEqual(['t1', 't0']));
+    ctrlZ(); await waitFor(() => expect(ids()).toEqual(['t0', 't1']));
+    // Mắt: track ẩn vẫn còn hàng (bật lại được), gạch ngang tên
+    fireEvent.click(screen.getByTestId('music-hide-t1'));
+    await waitFor(() => expect(screen.getByTestId('music-hide-t1')).toHaveAttribute('aria-pressed', 'true'));
+    expect(undoBtn().title).toMatch(/(Hide|Ẩn) Lead/);
+    expect(screen.getByTestId('music-row-t1').querySelector('.line-through')).not.toBeNull();
+    ctrlZ(); await waitFor(() => expect(screen.getByTestId('music-hide-t1')).toHaveAttribute('aria-pressed', 'false'));
+    // S
+    fireEvent.click(screen.getByTestId('music-solo-t0'));
+    await waitFor(() => expect(screen.getByTestId('music-solo-t0')).toHaveAttribute('aria-pressed', 'true'));
+    expect(undoBtn().title).toMatch(/Solo.*Chords/);
+    ctrlZ(); await waitFor(() => expect(screen.getByTestId('music-solo-t0')).toHaveAttribute('aria-pressed', 'false'));
+    // Màu: chấm màu mở bộ chọn màu dùng chung; gõ mã rồi Enter là một bước
+    fireEvent.click(screen.getByTestId('music-color-t0'));
+    const text = within(screen.getByTestId('color-popover')).getByTestId('color-text');
+    fireEvent.focus(text); fireEvent.change(text, { target: { value: '#00ff00' } }); fireEvent.keyDown(text, { key: 'Enter' });
+    await waitFor(() => expect(screen.getByTestId('music-color-t0').title).toBe('#00FF00'));
+    fireEvent.keyDown(screen.getByTestId('color-popover'), { key: 'Escape' });
+    ctrlZ(); await waitFor(() => expect(screen.getByTestId('music-color-t0').title).toBe('#4488FF'));
+    // Track khoá: tay nắm, màu, mắt, S bị vô hiệu
+    fireEvent.click(screen.getByTestId('track-lock-t0'));
+    for (const k of ['grip', 'color', 'hide', 'solo']) expect(screen.getByTestId(`music-${k}-t0`)).toBeDisabled();
+  });
   it('Dán preset (D-69): dán JSON vào ô ở cột Phong cách video → preset được thêm và áp; JSON hỏng báo lỗi, không đổi gì', async () => {
     await openProject();
     fireEvent.click(screen.getByTestId('preset-paste-open'));

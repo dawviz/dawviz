@@ -27,7 +27,7 @@ import { layerOrder, parentCandidates, type AnimEdit, type Doc, type LayerEdit }
 import { refKey } from '../lib/compLens.ts';
 import { clipsOf, newCompName, precompose, splitLayer, uncompose } from '../lib/layerTimeline.ts';
 import { formatClock } from '../lib/timeFormat.ts';
-import { LayerTimeline } from './LayerTimeline.tsx';
+import { LayerTimeline, type TrackEdit } from './LayerTimeline.tsx';
 import { createPortal } from 'react-dom';
 import { ConfirmDialog } from './ConfirmDialog.tsx';
 import { useMenuPlacement } from '../lib/useMenuPlacement.ts';
@@ -133,6 +133,8 @@ interface Props {
   /** Khoá track ở làn Nhạc của timeline (D-57, T-52): trạng thái phiên do App giữ (bảng Track cũng đọc). */
   trackLocks?: ReadonlySet<string>;
   onLockTrack?(id: string): void;
+  /** Chỉnh track trên làn Nhạc của timeline (T-127): cùng Doc và lệnh với danh sách Track ở Xem trước. */
+  trackEdit?: TrackEdit;
 }
 
 /** Tên hiển thị của widget: tên loại theo ngôn ngữ, đánh số khi có nhiều widget cùng loại. */
@@ -151,7 +153,7 @@ export function useWidgetNames(widgets: readonly WidgetSpec[]): (id: string) => 
   }, [widgets, i18n]);
 }
 
-export function Editor({ proof = true, styleName, scene, root, compPath, onCompPath, flatFull, derived: derived0, ast, playback, fonts, advanced, actions, transport, active, widgetSections, layoutRef, background, trackLocks, onLockTrack }: Props) {
+export function Editor({ proof = true, styleName, scene, root, compPath, onCompPath, flatFull, derived: derived0, ast, playback, fonts, advanced, actions, transport, active, widgetSections, layoutRef, background, trackLocks, onLockTrack, trackEdit }: Props) {
   const { i18n } = useI18n();
   const [selected, setSelected] = useState<string[]>([]);
   const [locked, setLocked] = useState<ReadonlySet<string>>(new Set());
@@ -447,7 +449,7 @@ export function Editor({ proof = true, styleName, scene, root, compPath, onCompP
             <LayerTimeline scene={scene} order={order} duration={duration} tempoMap={ast.tempoMap} playback={playback} phases={root.phases ?? []} onPhases={actions.phases}
               selected={live} onSelect={setSelected} locked={locked} onLock={toggleLock} onLockAll={lockAll} name={name} onVisible={actions.visible} onAllVisible={actions.allVisible} onPaint={paintLayers}
               onMoveLayer={move} onLayers={(kind, next, key) => actions.layers(kind, next, key)} onOpenKeys={openKeys} onOpenComp={openComp} onSplit={splitSel} onPrecompose={precomposeSel}
-              bounds={bounds} music={music} markers={ast.meta.markers} trackLocks={trackLocks} onLockTrack={onLockTrack} tree={r.tree} onTree={(v) => panels.resize('tree', v)} onTreeReset={() => panels.reset('tree')} gesture={gestureCtx} addMenu={<AddMenu onAdd={addWidget} />}
+              bounds={bounds} music={music} markers={ast.meta.markers} trackLocks={trackLocks} onLockTrack={onLockTrack} trackEdit={trackEdit} tree={r.tree} onTree={(v) => panels.resize('tree', v)} onTreeReset={() => panels.reset('tree')} gesture={gestureCtx} addMenu={<AddMenu onAdd={addWidget} />}
               editing={editing} onEdit={setEditing}
               renameInput={(id) => <LayerNameInput initial={scene.widgets.find((w) => w.id === id)?.name ?? name(id)} label={i18n.t('web.editor.nameLabel')} onCommit={(v) => commitName(id, v)} onCancel={() => setEditing(null)} />} />
           )}

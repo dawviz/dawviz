@@ -712,6 +712,9 @@ export function App() {
   };
   const showAdv = (id: string) => advanced || !!ui.more[id] || searching; // đang tìm: hiện cả phần nâng cao để tìm thấy
 
+  // Làn Nhạc của timeline Editor (T-127): cùng track, cùng lệnh với danh sách Track ở trên (một chỗ lưu, hai chỗ sửa).
+  const trackEdit = useMemo(() => (loaded ? { tracks: ordered, view, overrides: style.tracks, onMove, onToggleHidden, onToggleSolo, onStyle: patchTrackStyle } : undefined),
+    [loaded, ordered, view, style.tracks, onMove, onToggleHidden, onToggleSolo, patchTrackStyle]);
   const trackProps = loaded && {
     tracks: ordered, config: brightness, overrides: style.tracks, onChange: patchBrightness, onStyle: patchTrackStyle,
     playback, tempoMap: loaded.ast.tempoMap, layout: trackLayout, advanced: showAdv('tracks'), view,
@@ -946,7 +949,7 @@ export function App() {
         <div role="tabpanel" id="panel-preview" aria-labelledby="tab-preview" hidden={tab !== 'preview'} className="h-full">{preview}</div>
         <div role="tabpanel" id="panel-editor" aria-labelledby="tab-editor" hidden={tab !== 'editor'} className="h-full">
           <Editor proof={ui.proofFrame} styleName={styleLabel} scene={edoc.scene} root={scene} compPath={livePath} onCompPath={setCompPath} flatFull={flatFull} derived={derived} ast={renderAst} playback={playback} fonts={fonts} advanced={advanced} actions={editorActions} active={tab === 'editor'}
-            layoutRef={edoc.layoutRef} trackLocks={trackLocks} onLockTrack={onLockTrack}
+            layoutRef={edoc.layoutRef} trackLocks={trackLocks} onLockTrack={onLockTrack} trackEdit={trackEdit}
             widgetSections={(w, n, lk) => (w.type === 'PIANO_ROLL' ? [w.id === epiano?.id ? lookSection(n) : null, settingsSection(w, n + (w.id === epiano?.id ? 1 : 0), lk)] : hasWidgetSettings(w.type) ? [settingsSection(w, n, lk), textSection(w, n + 1, lk)] : [textSection(w, n, lk)])}
             transport={loaded ? <Transport playback={playback} duration={playDuration} offsetMs={offsetMs} wave={audio && peaks ? { peaks, durationSec: audio.durationSec } : null} /> : undefined} />
         </div>

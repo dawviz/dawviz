@@ -7,7 +7,7 @@
 // Bàn phím (khi timeline có focus): Ctrl+K tách lớp tại vạch phát, Ctrl+G gom thành precomp, [ / ] đưa đầu/cuối thanh tới vạch phát,
 // Alt+[ / Alt+] cắt đầu/cuối tại vạch phát, Alt+←/→ dời 1/30 s (thêm Shift: 1 s), ↑/↓ chọn lớp trên/dưới, Enter mở. Phép thuần ở lib/layerTimeline.ts.
 import { memo, useEffect, useMemo, useRef, useState, type DragEvent, type KeyboardEvent, type PointerEvent as RPointerEvent, type ReactNode } from 'react';
-import { MAX_PHASES, MAX_PHASE_NAME, compOf, isKeyAnim, type ChordSeg, type Phase, type SceneDocument, type TempoPoint, type TrackIndex, type WidgetSpec } from '@dawviz/render-core';
+import { MAX_PHASES, MAX_PHASE_NAME, compOf, isKeyAnim, type ChordSeg, type NoteStyle, type Phase, type ProjectTrack, type SceneDocument, type TempoPoint, type TrackIndex, type WidgetSpec } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import type { Playback } from '../lib/playback.ts';
 import type { Gesture } from '../lib/storeReact.ts';
@@ -18,6 +18,9 @@ import { DRAG_SLOP, ROW_H, RULER_H, beatTimes, clampPps, fitPps, keySecs, rulerL
 import { clipEdges, clipsOf, lengthTargets, markersToPhases, moveLayers, setFade, trimLayer, trimMany, type Clip } from '../lib/layerTimeline.ts';
 import type { LayerEdit } from '../lib/commands.ts';
 import { PANEL_LIMITS } from '../lib/panelLayout.ts';
+import { useFlip } from '../lib/useFlip.ts';
+import { ColorField } from './ColorField.tsx';
+import { isShown, type TrackView } from './TrackPanel.tsx';
 import { Splitter } from './Splitter.tsx';
 import { PAD, PlayheadHead, PlayheadLine } from './KeyframeTimeline.tsx';
 import { ChevronRight, Diamond, Download, Eye, EyeOff, FitWidth, Flag, Grip, Lock, Plus, Precomp, RowsShorter, RowsTaller, Scissors, Unlock, ZoomIn, ZoomOut } from './Icons.tsx';
@@ -27,6 +30,8 @@ const ROW_MIN = 24, ROW_MAX = 64, ROW_STEP = 8;
 /** Bề rộng vùng nắm ở hai mép thanh (px). */
 const EDGE = 6;
 const LAYER_MIME = 'text/x-dawviz-layer';
+/** Cùng loại dữ liệu kéo với tay nắm track của Xem trước (TrackPanel). */
+const TRACK_MIME = 'text/x-dawviz-track';
 /** Độ cao một làn tham chiếu nhạc (px). */
 const MUSIC_H = 20;
 
@@ -65,6 +70,8 @@ export interface LayerTimelineProps {
   /** Khoá track (D-57, T-52): track đã khoá không đổi được ẩn/hiện, solo, màu, thứ tự, độ sáng ở bảng Track. Trạng thái phiên. */
   trackLocks?: ReadonlySet<string>;
   onLockTrack?(id: string): void;
+  /** Chỉnh track ngay trên làn Nhạc (T-127), cùng Doc và cùng lệnh với danh sách Track của Xem trước: sửa ở đây thì Xem trước đổi theo. Vắng: hàng track chỉ có tên và khoá. */
+  trackEdit?: TrackEdit;
   tree: number;
   onTree(px: number): void;
   onTreeReset(): void;
@@ -76,6 +83,22 @@ export interface LayerTimelineProps {
   onEdit(id: string | null): void;
   renameInput(id: string): ReactNode;
 }
+
+/** Track của dự án và các lệnh như danh sách Track ở Xem trước (App.tsx: moveTrack, toggleHidden, toggleSolo, patchTrackStyle). */
+export interface TrackEdit {
+  /** Mọi track theo thứ tự đang dùng, kể cả track đang ẩn. */
+  tracks: readonly ProjectTrack[];
+  view: TrackView;
+  /** Ghi đè kiểu nốt theo track (màu riêng: `customColor`). */
+  overrides: Readonly<Record<string, Partial<NoteStyle>>>;
+  onMove(id: string, to: number): void;
+  onToggleHidden(id: string): void;
+  onToggleSolo(id: string): void;
+  onStyle(id: string, patch: Partial<NoteStyle> | null): void;
+}
+
+/** Một hàng track của làn Nhạc: track, nốt đang vẽ (vắng khi track đang ẩn) và màu đang dùng. */
+interface MusicRow { id: string; name: string; color: string; ti?: TrackIndex; shown: boolean }
 
 type DragState =
   | { kind: 'clip'; mode: 'move' | 'in' | 'out'; id: string; clip: Clip; ids: string[]; snap0: WidgetSpec[]; x0: number; moved: boolean; targets: number[]; lens: { t: number; id: string; len: number }[] }
@@ -91,7 +114,15 @@ export function LayerTimeline(props: LayerTimelineProps) {
   const [rowH, setRowH] = useState(ROW_MIN + ROW_STEP);
   // Nhóm "Nhạc" (làn hợp âm + một làn mỗi track) dưới làn Phase, đóng sẵn; mở thì các lớp lùi xuống.
   const [musicOpen, setMusicOpen] = useState(false);
-  const music = props.music, musicRows = music ? 1 + music.tracks.length : 0;
+  const music = props.music, trackEdit = props.trackEdit;
+  // Hàng track: có trackEdit thì là mọi track theo thứ tự (kể cả track ẩn, để bật lại được), nốt lấy từ chỉ mục của track đang hiện.
+  const trackRows = useMemo<MusicRow[]>(() => {
+    if (!music) return [];
+    if (!trackEdit) return music.tracks.map((ti) => ({ id: ti.track.id, name: ti.track.name, color: ti.track.color, ti, shown: true }));
+    const idx = new Map(music.tracks.map((ti) => [ti.track.id, ti]));
+    return trackEdit.tracks.map((t) => ({ id: t.id, name: t.name, color: trackEdit.overrides[t.id]?.customColor ?? t.color, ti: idx.get(t.id), shown: isShown(t.id, trackEdit.view) }));
+  }, [music, trackEdit]);
+  const musicRows = music ? 1 + trackRows.length : 0;
   const head = ROW_H + (music ? ROW_H + (musicOpen ? musicRows * MUSIC_H : 0) : 0);
 
   // ── kích thước và thu phóng (như KeyframeTimeline) ──
@@ -107,6 +138,10 @@ export function LayerTimeline(props: LayerTimelineProps) {
     const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(read) : null; ro?.observe(el);
     return () => { el.removeEventListener('scroll', onScroll); ro?.disconnect(); cancelAnimationFrame(raf); };
   }, []);
+  // Đổi thứ tự lớp hoặc track: hàng (cột trái) và làn của lớp trượt tới chỗ mới (FLIP 150 ms, lib/useFlip.ts).
+  useFlip(scroller, order.join('\n'), 'data-layer');
+  useFlip(scroller, order.join('\n'), 'data-lane');
+  useFlip(scroller, trackRows.map((r) => r.id).join('\n'), 'data-music-track');
   const laneW = Math.max(120, view.w - tree - 16);
   const fit = fitPps(laneW - PAD, duration);
   const [zoom, setZoom] = useState<number | null>(null);
@@ -340,6 +375,30 @@ export function LayerTimeline(props: LayerTimelineProps) {
     },
   });
 
+  // ── kéo thả đổi thứ tự track (tay nắm ở làn Nhạc, T-127): cùng lệnh với Xem trước (moveTrack), một bước hoàn tác ──
+  const [trackDrop, setTrackDrop] = useState<{ i: number; after: boolean } | null>(null);
+  const trackDragId = useRef<string | null>(null);
+  const trackDrag = (i: number) => (trackEdit ? {
+    onDragOver: (e: DragEvent<HTMLDivElement>) => {
+      if (!e.dataTransfer.types.includes(TRACK_MIME)) return;
+      e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+      const r = e.currentTarget.getBoundingClientRect(), after = e.clientY > r.top + r.height / 2;
+      setTrackDrop((d) => (d && d.i === i && d.after === after ? d : { i, after }));
+    },
+    onDragLeave: (e: DragEvent<HTMLDivElement>) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setTrackDrop((d) => (d?.i === i ? null : d)); },
+    onDrop: (e: DragEvent<HTMLDivElement>) => {
+      const id = e.dataTransfer.getData(TRACK_MIME) || trackDragId.current, d = trackDrop;
+      setTrackDrop(null); trackDragId.current = null;
+      if (!id || !d) return;
+      e.preventDefault();
+      const from = trackRows.findIndex((r) => r.id === id);
+      if (from < 0) return;
+      let to = d.after ? d.i + 1 : d.i;
+      if (from < to) to -= 1;
+      if (to !== from) trackEdit.onMove(id, to);
+    },
+  } : {});
+
   // Kéo trên tên lớp để chọn một dãy lớp (giữ Shift/Ctrl/⌘ để cộng vào vùng chọn đang có). Lần nhấp kèm theo của lần kéo bị bỏ qua.
   const dragged = useRef(false);
   const orderRef = useRef(order); orderRef.current = order;
@@ -431,15 +490,50 @@ export function LayerTimeline(props: LayerTimelineProps) {
                       <span className="ml-auto pr-1 font-normal tabular-nums text-muted">{i18n.number(music.tracks.length)}</span>
                     </button>
                   </div>
-                  {musicOpen && [{ key: 'chords', label: i18n.t('web.layers.chords'), color: '', track: false }, ...music.tracks.map((t) => ({ key: t.track.id, label: t.track.name, color: t.track.color, track: true }))].map((r) => {
-                    const lk = !!props.trackLocks?.has(r.key);
+                  {musicOpen && (
+                    <div className="flex items-center gap-1 border-b border-r border-line/70 pl-2 pr-1 text-[11px] text-muted" style={{ height: MUSIC_H }} data-testid="music-row-chords">
+                      <span aria-hidden className="w-4 shrink-0" /><span aria-hidden className="w-3.5 shrink-0" />
+                      <span className="min-w-0 flex-1 truncate" title={i18n.t('web.layers.chords')}>{i18n.t('web.layers.chords')}</span>
+                    </div>
+                  )}
+                  {musicOpen && trackRows.map((r, i) => {
+                    const lk = !!props.trackLocks?.has(r.id), lockTip = lk ? ` — ${i18n.t('web.track.lockedHint')}` : '';
+                    const hidden = !!trackEdit?.view.hidden.has(r.id), solo = !!trackEdit?.view.solo.has(r.id);
                     return (
-                      <div key={r.key} className="flex items-center gap-1.5 border-b border-r border-line/70 pl-6 pr-1 text-[11px] text-muted" style={{ height: MUSIC_H }} data-testid={`music-row-${r.key}`} data-locked={lk || undefined}>
-                        {r.color && <span aria-hidden className="h-2 w-2 shrink-0 rounded-sm" style={{ background: r.color }} />}
-                        <span className="min-w-0 flex-1 truncate" title={r.label}>{r.label}</span>
-                        {r.track && props.onLockTrack && (
-                          <button type="button" className={`tog h-[18px] w-[18px] ${lk ? 'text-fg' : ''}`} aria-pressed={lk} onClick={() => props.onLockTrack!(r.key)} data-testid={`track-lock-${r.key}`}
-                            aria-label={i18n.t(lk ? 'web.track.unlock' : 'web.track.lock', { name: r.label })} title={i18n.t(lk ? 'web.track.unlock' : 'web.track.lock', { name: r.label })}>
+                      <div key={r.id} className="relative flex items-center gap-1 border-b border-r border-line/70 bg-surface pl-2 pr-1 text-[11px] text-muted" style={{ height: MUSIC_H }}
+                        data-music-track={r.id} data-testid={`music-row-${r.id}`} data-locked={lk || undefined} {...trackDrag(i)}>
+                        {trackDrop?.i === i && <span aria-hidden className={`pointer-events-none absolute inset-x-1 z-10 h-0.5 bg-focus ${trackDrop.after ? '-bottom-px' : '-top-px'}`} data-testid="track-drop" />}
+                        {trackEdit ? (
+                          <button type="button" draggable={!lk} disabled={lk} data-track-grip={r.id} className="hit grid h-4 w-4 shrink-0 cursor-grab place-items-center text-faint hover:text-fg active:cursor-grabbing disabled:cursor-default disabled:opacity-40"
+                            aria-label={i18n.t('web.track.reorder', { name: r.name })} title={i18n.t('web.track.reorder', { name: r.name }) + lockTip} data-testid={`music-grip-${r.id}`}
+                            onDragStart={(e) => { trackDragId.current = r.id; e.dataTransfer.setData(TRACK_MIME, r.id); e.dataTransfer.effectAllowed = 'move'; const row = e.currentTarget.closest('[data-music-track]'); if (row) e.dataTransfer.setDragImage(row, 16, 10); }}
+                            onDragEnd={() => { setTrackDrop(null); trackDragId.current = null; }}
+                            onKeyDown={(e) => {
+                              if (!e.altKey || (e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) return;
+                              e.preventDefault(); e.stopPropagation(); trackEdit.onMove(r.id, i + (e.key === 'ArrowUp' ? -1 : 1));
+                              requestAnimationFrame(() => document.querySelector<HTMLElement>(`[data-music-track="${CSS.escape(r.id)}"] [data-track-grip]`)?.focus());
+                            }}><Grip className="h-3 w-3" /></button>
+                        ) : <span aria-hidden className="w-4 shrink-0" />}
+                        {trackEdit
+                          ? <ColorField variant="swatch" label={`${i18n.t('web.track.color')}: ${r.name}`} disabled={lk} title={lk ? i18n.t('web.track.lockedHint') : undefined} testId={`music-color-${r.id}`}
+                              value={r.color} onChange={(c) => trackEdit.onStyle(r.id, { colorMode: 'custom', customColor: c })} />
+                          : <span aria-hidden className="mx-[3px] h-2 w-2 shrink-0 rounded-sm" style={{ background: r.color }} />}
+                        <span className={`min-w-0 flex-1 truncate ${r.shown ? '' : 'line-through decoration-line-strong/40'}`} title={r.name}>{r.name}</span>
+                        {trackEdit && (
+                          <>
+                            <button type="button" className="tog h-[18px] w-[18px] disabled:opacity-40" disabled={lk} aria-pressed={hidden} onClick={() => trackEdit.onToggleHidden(r.id)} data-testid={`music-hide-${r.id}`}
+                              aria-label={i18n.t('web.track.hide', { name: r.name })} title={i18n.t('web.track.hide', { name: r.name }) + lockTip}>
+                              {hidden ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                            </button>
+                            <button type="button" className={`tog h-[18px] w-[18px] text-[11px] disabled:opacity-40 ${solo ? 'text-fg' : ''}`} disabled={lk} aria-pressed={solo} onClick={() => trackEdit.onToggleSolo(r.id)} data-testid={`music-solo-${r.id}`}
+                              aria-label={i18n.t('web.track.solo', { name: r.name })} title={i18n.t('web.track.solo', { name: r.name }) + lockTip}>
+                              <span aria-hidden>{i18n.t('web.track.soloShort')}</span>
+                            </button>
+                          </>
+                        )}
+                        {props.onLockTrack && (
+                          <button type="button" className={`tog h-[18px] w-[18px] ${lk ? 'text-fg' : ''}`} aria-pressed={lk} onClick={() => props.onLockTrack!(r.id)} data-testid={`track-lock-${r.id}`}
+                            aria-label={i18n.t(lk ? 'web.track.unlock' : 'web.track.lock', { name: r.name })} title={i18n.t(lk ? 'web.track.unlock' : 'web.track.lock', { name: r.name })}>
                             {lk ? <Lock className="h-3 w-3" /> : <Unlock className="h-3 w-3" />}
                           </button>
                         )}
@@ -528,7 +622,7 @@ export function LayerTimeline(props: LayerTimelineProps) {
                 })}
               </div>
               {music && <div aria-hidden className="absolute inset-x-0 border-b border-line bg-page/40" style={{ top: ROW_H, height: ROW_H }} />}
-              {music && musicOpen && <MusicLanes music={music} pps={pps} left={view.left} width={Math.max(0, view.w - tree)} top={2 * ROW_H} duration={duration} />}
+              {music && musicOpen && <MusicLanes chords={music.chords} rows={trackRows} pps={pps} left={view.left} width={Math.max(0, view.w - tree)} top={2 * ROW_H} duration={duration} />}
               {layers.map((w, i) => (
                 <div key={w.id} className={`absolute inset-x-0 border-b border-line/70 ${sel.has(w.id) ? 'bg-raised/60' : ''}`} style={{ top: head + i * rowH, height: rowH }} data-lane={w.id}>
                   <Bars w={w} name={name(w.id)} pps={pps} duration={duration} tempoMap={tempoMap} on={sel.has(w.id)} locked={locked.has(w.id)} rowH={rowH}
@@ -616,9 +710,9 @@ const cssColor = (name: string, alpha = 1) => {
  * Làn tham chiếu nhạc: làn hợp âm (tên hợp âm theo đoạn) rồi một làn mỗi track (nốt như piano roll thu nhỏ, cao độ theo dải của track). Chỉ để nhìn
  * và căn thanh theo nhạc. Vẽ bằng một canvas đúng phần đang thấy (bài dài, phóng to vẫn nhẹ); vẽ lại khi cuộn, thu phóng hoặc đổi theme.
  */
-const MusicLanes = memo(function MusicLanes({ music, pps, left, width, top, duration }: { music: { tracks: readonly TrackIndex[]; chords: readonly ChordSeg[] }; pps: number; left: number; width: number; top: number; duration: number }) {
+const MusicLanes = memo(function MusicLanes({ chords, rows, pps, left, width, top, duration }: { chords: readonly ChordSeg[]; rows: readonly MusicRow[]; pps: number; left: number; width: number; top: number; duration: number }) {
   const ref = useRef<HTMLCanvasElement>(null);
-  const rows = 1 + music.tracks.length, h = rows * MUSIC_H;
+  const h = (1 + rows.length) * MUSIC_H;
   const [theme, setTheme] = useState(0);
   useEffect(() => {
     if (typeof MutationObserver === 'undefined') return;
@@ -637,18 +731,20 @@ const MusicLanes = memo(function MusicLanes({ music, pps, left, width, top, dura
     g.font = '11px "Space Grotesk", sans-serif'; g.textBaseline = 'middle';
     // hợp âm
     let k = 0;
-    for (const ch of music.chords) {
+    for (const ch of chords) {
       if (ch.end < t0 || ch.start > t1 || !ch.name) continue;
       const a = x(ch.start), b = x(ch.end);
       g.fillStyle = k++ % 2 ? raised : 'transparent'; g.fillRect(a, 1, b - a, MUSIC_H - 2);
       g.fillStyle = line; g.fillRect(a, 2, 1, MUSIC_H - 4);
       if (b - a > 18) { g.save(); g.beginPath(); g.rect(a, 0, b - a - 2, MUSIC_H); g.clip(); g.fillStyle = muted; g.fillText(ch.name, a + 4, MUSIC_H / 2); g.restore(); }
     }
-    // nốt của từng track
-    music.tracks.forEach((ti, r) => {
-      const y0 = (r + 1) * MUSIC_H, lo = ti.track.pitchRange.min, span = Math.max(1, ti.track.pitchRange.max - lo);
+    // nốt của từng track (track đang ẩn: làn trống), màu theo màu đang dùng của track (kể cả màu riêng)
+    rows.forEach((row, r) => {
+      const y0 = (r + 1) * MUSIC_H;
       g.fillStyle = line; g.fillRect(0, y0, width, 1);
-      g.fillStyle = ti.track.color || muted;
+      const ti = row.ti; if (!ti) return;
+      const lo = ti.track.pitchRange.min, span = Math.max(1, ti.track.pitchRange.max - lo);
+      g.fillStyle = row.color || muted;
       for (const n of ti.notes) {
         if (n.endTimeSeconds < t0) continue;
         if (n.startTimeSeconds > t1) break; // nốt đã sắp theo thời điểm bắt đầu
@@ -656,7 +752,7 @@ const MusicLanes = memo(function MusicLanes({ music, pps, left, width, top, dura
         g.fillRect(x(n.startTimeSeconds), y, Math.max(1, (n.endTimeSeconds - n.startTimeSeconds) * pps), 2);
       }
     });
-  }, [music, pps, left, width, h, duration, theme]);
+  }, [chords, rows, pps, left, width, h, duration, theme]);
   return <canvas ref={ref} aria-hidden className="pointer-events-none absolute" style={{ left, top, width, height: h }} data-testid="music-lanes" />;
 });
 
