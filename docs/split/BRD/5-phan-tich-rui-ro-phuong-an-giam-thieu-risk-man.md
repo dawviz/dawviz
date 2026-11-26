@@ -5,7 +5,7 @@ section: "5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT
 path: "5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)"
 chunk: 5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md
 source_lines: 174-194
-source_sha1: fd23d2a11f
+source_sha1: 24a6394b24
 ids: [D-01, D-12, D-24, D-25, D-29, KPI-02, REQ-CAP-01, REQ-EXPORT-00, REQ-EXPORT-03, REQ-EXPORT-06, REQ-PARSER-00]
 ---
 ## 5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)

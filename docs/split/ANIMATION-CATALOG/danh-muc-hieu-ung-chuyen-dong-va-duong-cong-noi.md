@@ -5,7 +5,7 @@ section: "Danh mục hiệu ứng chuyển động và đường cong nội suy 
 path: "Danh mục hiệu ứng chuyển động và đường cong nội suy (mở đầu)"
 chunk: danh-muc-hieu-ung-chuyen-dong-va-duong-cong-noi.md
 source_lines: 1-6
-source_sha1: cb8de95b61
+source_sha1: a8563147e6
 ids: [AD-08, AD-12, AD-13, D-40]
 ---
 # Danh mục hiệu ứng chuyển động và đường cong nội suy

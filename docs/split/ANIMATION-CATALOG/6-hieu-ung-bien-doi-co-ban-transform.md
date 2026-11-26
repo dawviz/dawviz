@@ -5,7 +5,7 @@ section: "6. Hiệu ứng biến đổi cơ bản (transform)"
 path: "6. Hiệu ứng biến đổi cơ bản (transform)"
 chunk: 6-hieu-ung-bien-doi-co-ban-transform.md
 source_lines: 106-120
-source_sha1: cb8de95b61
+source_sha1: a8563147e6
 ids: [D-47, D-67, REQ-GRAPHICS-15]
 ---
 ## 6. Hiệu ứng biến đổi cơ bản (transform)

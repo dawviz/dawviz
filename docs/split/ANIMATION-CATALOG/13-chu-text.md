@@ -5,7 +5,7 @@ section: "13. Chữ (text)"
 path: "13. Chữ (text)"
 chunk: 13-chu-text.md
 source_lines: 209-221
-source_sha1: cb8de95b61
+source_sha1: a8563147e6
 ids: []
 ---
 ## 13. Chữ (text)

@@ -5,7 +5,7 @@ section: "11. Vấn đề mở"
 path: "11. Vấn đề mở"
 chunk: 11-van-de-mo.md
 source_lines: 249-254
-source_sha1: a657f5d146
+source_sha1: 32d290c14b
 ids: [D-44, OI-15, OI-16]
 ---
 ## 11. Vấn đề mở

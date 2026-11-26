@@ -128,9 +128,9 @@ Quyết định giá trị thay đổi **thế nào** giữa hai keyframe.
 | Radial / Clock wipe | Lộ theo cung tròn như kim đồng hồ | v1.0 | C2D |
 | Iris / Circle reveal | Lộ từ tâm ra ngoài | v1.0 | C2D |
 | Venetian blinds | Lộ theo dải song song | v1.1 | C2D |
-| Mask animate | Mặt nạ hình học có keyframe, độ mềm viền | v1.0 | C2D |
-| Track matte (alpha/luma) | Lớp này làm mặt nạ cho lớp khác | v1.1 | C2D $ |
-| Trim path / Draw-on | Nét vẽ tự hiện dần (vẽ chữ ký, đường viền) | v1.0 | C2D |
+| Mask animate | Mặt nạ hình học có keyframe, độ mềm viền (thiết kế: lớp Hình làm mặt nạ, [WIDGET-REVAMP §4.4](WIDGET-REVAMP.md), D-75) | v1.0 | C2D |
+| Track matte (alpha/luma) | Lớp này làm mặt nạ cho lớp khác (thiết kế D-75, [WIDGET-REVAMP §4.4](WIDGET-REVAMP.md)) | v1.1 | C2D $ |
+| Trim path / Draw-on | Nét vẽ tự hiện dần (vẽ chữ ký, đường viền); thiết kế: **Cắt nét** của lớp Hình ([WIDGET-REVAMP §4.1](WIDGET-REVAMP.md), D-74) | v1.0 | C2D |
 | Dash offset | Nét đứt chạy dọc đường | v1.0 | C2D |
 
 ## 8. Hình dạng (shape) và biến dạng hình học
