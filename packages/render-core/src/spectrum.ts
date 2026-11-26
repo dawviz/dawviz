@@ -9,6 +9,9 @@ import { mixHexRgb } from './color.ts';
 /** Kiểu hiển thị (REQ-WIDGET-07, T-53): cột, vùng, đường, chấm (phổ tại t); dao động ký (sóng tức thời); sóng âm cả bài; đồng hồ đỉnh/RMS. */
 export type SpectrumStyle = 'BARS' | 'AREA' | 'LINE' | 'DOTS' | 'OSCILLOSCOPE' | 'WAVEFORM' | 'METER';
 export const SPECTRUM_STYLES: readonly SpectrumStyle[] = ['BARS', 'AREA', 'LINE', 'DOTS', 'OSCILLOSCOPE', 'WAVEFORM', 'METER'];
+/** Hình chấm đỉnh (T-130). */
+export type PeakStyle = 'LINE' | 'DOT';
+export const PEAK_STYLES: readonly PeakStyle[] = ['LINE', 'DOT'];
 /** Thang tần số của trục cột. */
 export type FreqScale = 'LOG' | 'LINEAR' | 'MEL';
 export interface SpectrumProps {
@@ -18,6 +21,14 @@ export interface SpectrumProps {
   peakCap: boolean;
   /** Tốc độ rơi của chấm đỉnh (phần thang mỗi giây). */
   capFall: number;
+  /** Hình đỉnh (T-130): vạch mảnh ngang bề rộng cột (mặc định, như trước) hoặc chấm tròn lơ lửng. */
+  peakStyle: PeakStyle;
+  /** Số giây đỉnh đứng yên trước khi rơi (0 = rơi ngay, như trước). */
+  peakHold: number;
+  /** Gia tốc rơi (phần thang mỗi giây²; 0 = rơi đều theo `capFall`, như trước). */
+  peakGravity: number;
+  /** Màu đỉnh; rỗng = theo màu cột. */
+  peakColor: string;
   /** Oscilloscope: cửa sổ thời gian hiển thị (ms). */
   scopeMs: number;
   /** Waveform: màu phần đã phát. */
@@ -55,7 +66,7 @@ export interface SpectrumProps {
   glow: number;
 }
 export const DEFAULT_SPECTRUM: Readonly<SpectrumProps> = Object.freeze({
-  style: 'BARS', scale: 'LOG', peakCap: false, capFall: 0.6, scopeMs: 30, playedColor: '#7aa2ff',
+  style: 'BARS', scale: 'LOG', peakCap: false, capFall: 0.6, peakStyle: 'LINE', peakHold: 0, peakGravity: 0, peakColor: '', scopeMs: 30, playedColor: '#7aa2ff',
   shape: 'LINE', bars: 48, minHz: 40, maxHz: 14000, reverse: false, mirror: false, angle: 0, length: 800, radius: 120, startAngle: 0,
   thickness: 160, minLen: 2, barWidth: 0.6, roundness: 0, attackMs: 15, releaseMs: 180, floorDb: -70, ceilDb: -25,
   colorMode: 'SOLID', color: '#e6e6e6', colorB: '#7aa2ff', opacity: 1, glow: 0,
@@ -175,17 +186,26 @@ function poly(pts: [number, number][], closed: boolean, fill: boolean, color: st
   if (p.glow > 0) prim.glow = { mode: 'SOFT', color, width: p.glow * 24, alpha: 0.8 };
   return prim;
 }
-/** Chấm đỉnh rơi chậm (tất định): đỉnh của từng cột trong ~1,5 s trước, trừ đi tốc độ rơi × thời gian đã qua. Dùng mức thô (không làm mượt) của từng khung. */
+/** Quãng đỉnh đã rơi (phần thang) sau `dt` giây kể từ khi đạt: đứng yên `peakHold` giây, rồi rơi với vận tốc đầu `capFall` và gia tốc `peakGravity`. */
+export function peakDrop(p: Pick<SpectrumProps, 'capFall' | 'peakHold' | 'peakGravity'>, dt: number): number {
+  const s = dt - Math.max(0, p.peakHold || 0);
+  return s <= 0 ? 0 : p.capFall * s + 0.5 * Math.max(0, p.peakGravity || 0) * s * s;
+}
+/** Chấm đỉnh rơi chậm (tất định, không giữ trạng thái giữa các khung): đỉnh của từng cột là lớn nhất của (mức thô tại khung trước đó − quãng đã rơi từ khung đó tới t),
+ *  xét trong cửa sổ ~1,5 s + `peakHold` trước t. Dùng mức thô (không làm mượt) của từng khung. Mặc định (giữ 0, gia tốc 0) đúng như trước T-130. */
 export function peakCaps(p: SpectrumProps, audio: Derived['audio'], t: number): Float64Array {
   const out = new Float64Array(p.bars);
   if (!audio) return out;
   const ft = audio.features, f = frameAt(ft, t - audio.offsetSec);
   if (f < 0) return out;
-  const K = Math.min(f, Math.round(HOLD_SEC / ft.hop)), lo = p.floorDb, hi = Math.max(p.ceilDb, lo + 1), row = new Float64Array(ft.bands);
+  const plain = !(p.peakHold > 0) && !(p.peakGravity > 0);
+  const K = Math.min(f, Math.round((HOLD_SEC + Math.max(0, p.peakHold || 0)) / ft.hop)), lo = p.floorDb, hi = Math.max(p.ceilDb, lo + 1), row = new Float64Array(ft.bands);
   for (let k = 0; k <= K; k++) {
+    const drop = plain ? p.capFall * k * ft.hop : peakDrop(p, k * ft.hop); // rơi đều không giữ: cùng thứ tự phép nhân như trước T-130 (khớp từng bit)
+    if (drop >= 1) break; // mức ≤ 1 nên mọi khung xa hơn chỉ cho giá trị ≤ 0 (quãng rơi tăng dần theo k)
     const g = f - k;
     for (let b = 0; b < ft.bands; b++) row[b] = ft.spectrum[g * ft.bands + b];
-    const pooled = poolBands(row, ft, p.bars, p.minHz, p.maxHz, p.scale), drop = p.capFall * k * ft.hop;
+    const pooled = poolBands(row, ft, p.bars, p.minHz, p.maxHz, p.scale);
     for (let j = 0; j < p.bars; j++) { const v = (pooled[j] <= 0 ? 0 : clamp01((u8ToDb(pooled[j]) - lo) / (hi - lo))) - drop; if (v > out[j]) out[j] = v; }
   }
   return out;
@@ -223,6 +243,21 @@ export function meterLevels(p: SpectrumProps, audio: Derived['audio'], t: number
   return { peak: lv(ft.peak[f]), rms: lv(ft.rms[f]), hold };
 }
 
+/** Chấm đỉnh của kiểu Cột/Chấm (cả hình Thẳng lẫn Tròn): LINE = vạch dày 2 pt ngang bề rộng cột, nằm ngay trên đỉnh;
+ *  DOT = chấm tròn đường kính bằng bề rộng cột, lơ lửng trên đỉnh. Màu `peakColor`, rỗng thì theo màu cột. */
+function capPrims(p: SpectrumProps, audio: Derived['audio'], t: number, at: ReturnType<typeof placer>, lenOf: (v: number) => number, colorOf: (j: number) => string): RectPrim[] {
+  const N = p.bars, caps = peakCaps(p, audio, t), out: RectPrim[] = [];
+  const pitch = p.shape === 'CIRCLE' ? (2 * Math.PI * Math.max(1, p.radius)) / N : p.length / N, w = Math.max(0.5, pitch * p.barWidth), dot = p.peakStyle === 'DOT';
+  const ring = p.shape === 'CIRCLE' && p.mirror && p.style === 'BARS'; // khớp cách spectrumPrims soi gương cột quanh vòng
+  for (let j = 0; j < N; j++) {
+    const f0 = (j + 0.5) / N, idx = ring ? Math.min(N - 1, Math.floor((f0 < 0.5 ? f0 * 2 : (1 - f0) * 2) * N)) : j, k = p.reverse ? N - 1 - idx : idx;
+    if (caps[k] <= 0) continue;
+    const fr = f0, [x, y] = at(fr, lenOf(caps[k]) + (dot ? w / 2 + 2 : 2)), fill = p.peakColor || colorOf(k);
+    out.push(dot ? bar(x, y, w, w, 0, fill, { ...p, roundness: 1 }) : bar(x, y, w, 2, p.shape === 'CIRCLE' ? p.startAngle + fr * 360 : p.angle, fill, { ...p, roundness: 0 }));
+  }
+  return out;
+}
+
 export function styledPrims(p: SpectrumProps, W: number, H: number, audio: Derived['audio'], t: number): Primitive[] {
   const N = p.bars, at = placer(p, W, H), lenOf = (v: number) => p.minLen + v * Math.max(0, p.thickness - p.minLen);
   const colorOf = (j: number) => (p.colorMode === 'GRADIENT' ? mix(p.color, p.colorB, N > 1 ? j / (N - 1) : 0) : p.color);
@@ -236,6 +271,7 @@ export function styledPrims(p: SpectrumProps, W: number, H: number, audio: Deriv
         const pitch = p.shape === 'CIRCLE' ? (2 * Math.PI * Math.max(1, p.radius)) / N : p.length / N, d = Math.max(1, pitch * p.barWidth);
         pts.forEach(([x, y], j) => out.push(bar(x, y, d, d, 0, colorOf(j), { ...p, roundness: 1 })));
         if (p.mirror && p.shape === 'LINE') lv.forEach((v, j) => { const [x, y] = at(frac(j), -lenOf(v)); out.push(bar(x, y, d, d, 0, colorOf(j), { ...p, roundness: 1 })); });
+        if (p.peakCap) out.push(...capPrims(p, audio, t, at, lenOf, colorOf));
       } else if (p.style === 'LINE') {
         out.push(poly(pts, p.shape === 'CIRCLE', false, p.color, p, lw));
         if (p.mirror && p.shape === 'LINE') out.push(poly(Array.from(lv, (v, j) => at(frac(j), -lenOf(v))), false, false, p.color, p, lw));
@@ -283,14 +319,7 @@ export function styledPrims(p: SpectrumProps, W: number, H: number, audio: Deriv
     }
     default: {
       const lv = spectrumLevels(p, audio, t), out = spectrumPrims(p, W, H, lv);
-      if (p.peakCap) {
-        const caps = peakCaps(p, audio, t), pitch = p.shape === 'CIRCLE' ? (2 * Math.PI * Math.max(1, p.radius)) / N : p.length / N, w = Math.max(0.5, pitch * p.barWidth);
-        for (let j = 0; j < N; j++) {
-          if (caps[j] <= 0) continue;
-          const k = p.reverse ? N - 1 - j : j, fr = (j + 0.5) / N, [x, y] = at(fr, lenOf(caps[k]) + 2);
-          out.push(bar(x, y, w, 2, p.shape === 'CIRCLE' ? p.startAngle + fr * 360 : p.angle, colorOf(k), { ...p, roundness: 0 }));
-        }
-      }
+      if (p.peakCap) out.push(...capPrims(p, audio, t, at, lenOf, colorOf));
       return out;
     }
   }
