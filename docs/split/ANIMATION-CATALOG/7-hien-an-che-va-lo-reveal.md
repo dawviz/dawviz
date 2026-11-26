@@ -5,8 +5,8 @@ section: "7. Hiện/ẩn, che và lộ (reveal)"
 path: "7. Hiện/ẩn, che và lộ (reveal)"
 chunk: 7-hien-an-che-va-lo-reveal.md
 source_lines: 121-135
-source_sha1: cb8de95b61
-ids: []
+source_sha1: a8563147e6
+ids: [D-74, D-75]
 ---
 ## 7. Hiện/ẩn, che và lộ (reveal)
 
@@ -18,7 +18,7 @@ ids: []
 | Radial / Clock wipe | Lộ theo cung tròn như kim đồng hồ | v1.0 | C2D |
 | Iris / Circle reveal | Lộ từ tâm ra ngoài | v1.0 | C2D |
 | Venetian blinds | Lộ theo dải song song | v1.1 | C2D |
-| Mask animate | Mặt nạ hình học có keyframe, độ mềm viền | v1.0 | C2D |
-| Track matte (alpha/luma) | Lớp này làm mặt nạ cho lớp khác | v1.1 | C2D $ |
-| Trim path / Draw-on | Nét vẽ tự hiện dần (vẽ chữ ký, đường viền) | v1.0 | C2D |
+| Mask animate | Mặt nạ hình học có keyframe, độ mềm viền (thiết kế: lớp Hình làm mặt nạ, [WIDGET-REVAMP §4.4](../../design/WIDGET-REVAMP.md), D-75) | v1.0 | C2D |
+| Track matte (alpha/luma) | Lớp này làm mặt nạ cho lớp khác (thiết kế D-75, [WIDGET-REVAMP §4.4](../../design/WIDGET-REVAMP.md)) | v1.1 | C2D $ |
+| Trim path / Draw-on | Nét vẽ tự hiện dần (vẽ chữ ký, đường viền); thiết kế: **Cắt nét** của lớp Hình ([WIDGET-REVAMP §4.1](../../design/WIDGET-REVAMP.md), D-74) | v1.0 | C2D |
 | Dash offset | Nét đứt chạy dọc đường | v1.0 | C2D |

@@ -16,7 +16,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1202 ký tự
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4347 ký tự
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](BRD/6-gia-dinh-assumptions.md) · 554 ký tự
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 39798 ký tự
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 43672 ký tự
 - [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](BRD/8-cac-van-de-con-mo-open-issues.md) · 7775 ký tự
 
 ## SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
@@ -185,7 +185,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [Tùy biến tối đa: storyboard, chuyển cảnh nốt, đường cong easing, hạt, tài nguyên và preset cộng đồng (mở đầu)](CUSTOMIZATION/tuy-bien-toi-da-storyboard-chuyen-canh-not-duong.md) · 870 ký tự
 - [1. Mục tiêu và ranh giới](CUSTOMIZATION/1-muc-tieu-va-ranh-gioi.md) · 906 ký tự
 - [2. Nguyên tắc dễ dùng](CUSTOMIZATION/2-nguyen-tac-de-dung.md) · 1605 ký tự
-- [3. Mô hình dữ liệu storyboard (AD-08)](CUSTOMIZATION/3-mo-hinh-du-lieu-storyboard-ad-08.md) · 4930 ký tự
+- [3. Mô hình dữ liệu storyboard (AD-08)](CUSTOMIZATION/3-mo-hinh-du-lieu-storyboard-ad-08.md) · 5115 ký tự
 - [4. Đường cong chuyển động (easing) (AD-09)](CUSTOMIZATION/4-duong-cong-chuyen-dong-easing-ad-09.md) · 1239 ký tự
 - [5. Hạt (particles) không trạng thái (AD-10)](CUSTOMIZATION/5-hat-particles-khong-trang-thai-ad-10.md) · 1397 ký tự
 - [6. Tài nguyên (assets) của phiên và của cộng đồng (AD-12)](CUSTOMIZATION/6-tai-nguyen-assets-cua-phien-va-cua-cong-dong-a.md) · 2250 ký tự
@@ -206,7 +206,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [4. Nội suy không gian và kiểu giá trị](ANIMATION-CATALOG/4-noi-suy-khong-gian-va-kieu-gia-tri.md) · 695 ký tự
 - [5. Ngoại suy, lặp và bộ biến đổi đường cong](ANIMATION-CATALOG/5-ngoai-suy-lap-va-bo-bien-doi-duong-cong.md) · 830 ký tự
 - [6. Hiệu ứng biến đổi cơ bản (transform)](ANIMATION-CATALOG/6-hieu-ung-bien-doi-co-ban-transform.md) · 851 ký tự
-- [7. Hiện/ẩn, che và lộ (reveal)](ANIMATION-CATALOG/7-hien-an-che-va-lo-reveal.md) · 759 ký tự
+- [7. Hiện/ẩn, che và lộ (reveal)](ANIMATION-CATALOG/7-hien-an-che-va-lo-reveal.md) · 976 ký tự
 - [8. Hình dạng (shape) và biến dạng hình học](ANIMATION-CATALOG/8-hinh-dang-shape-va-bien-dang-hinh-hoc.md) · 691 ký tự
 - [9. Chuyển động "có vật lý" (cảm giác tự nhiên)](ANIMATION-CATALOG/9-chuyen-dong-co-vat-ly-cam-giac-tu-nhien.md) · 562 ký tự
 - [10. Hiệu ứng thủ tục (procedural)](ANIMATION-CATALOG/10-hieu-ung-thu-tuc-procedural.md) · 643 ký tự
@@ -278,6 +278,19 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [5. Đã làm (2026-11-18)](FIREFOX-FONT-SLOWDOWN/5-da-lam-2026-11-18.md) · 1295 ký tự
 - [6. Chưa làm](FIREFOX-FONT-SLOWDOWN/6-chua-lam.md) · 834 ký tự
 - [7. Cách đo lại (để khỏi mất thời gian dựng lại)](FIREFOX-FONT-SLOWDOWN/7-cach-do-lai-de-khoi-mat-thoi-gian-dung-lai.md) · 1293 ký tự
+
+## WIDGET-REVAMP.md — Tu sửa widget và mở rộng sáng tạo (đợt 2026-11-26)
+
+- [Tu sửa widget và mở rộng sáng tạo (đợt 2026-11-26) (mở đầu)](WIDGET-REVAMP/tu-sua-widget-va-mo-rong-sang-tao-dot-2026-11-26.md) · 514 ký tự
+- [0. Mục tiêu một câu](WIDGET-REVAMP/0-muc-tieu-mot-cau.md) · 1088 ký tự
+- [1. Nhóm thuộc tính và quy tắc bật/tắt (D-71, T-124)](WIDGET-REVAMP/1-nhom-thuoc-tinh-va-quy-tac-bat-tat-d-71-t-124.md) · 4419 ký tự
+- [2. Ẩn hẳn thuộc tính không áp dụng (D-72, T-125)](WIDGET-REVAMP/2-an-han-thuoc-tinh-khong-ap-dung-d-72-t-125.md) · 574 ký tự
+- [3. Kiểu chữ dùng chung (D-73, T-126)](WIDGET-REVAMP/3-kieu-chu-dung-chung-d-73-t-126.md) · 1489 ký tự
+- [4. Sáng tạo tự do: Hình, Bút, Gắn nhạc nhanh (D-74)](WIDGET-REVAMP/4-sang-tao-tu-do-hinh-but-gan-nhac-nhanh-d-74.md) · 5183 ký tự
+- [5. Gộp widget chữ (D-76, T-138)](WIDGET-REVAMP/5-gop-widget-chu-d-76-t-138.md) · 1150 ký tự
+- [6. Cụm việc nhỏ của đợt này (T-127…T-133)](WIDGET-REVAMP/6-cum-viec-nho-cua-dot-nay-t-127-t-133.md) · 2501 ký tự
+- [7. Thứ tự làm và cách chia PR](WIDGET-REVAMP/7-thu-tu-lam-va-cach-chia-pr.md) · 610 ký tự
+- [8. Vấn đề mở](WIDGET-REVAMP/8-van-de-mo.md) · 388 ký tự
 
 ## PARSER-SRS.md — SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer
 

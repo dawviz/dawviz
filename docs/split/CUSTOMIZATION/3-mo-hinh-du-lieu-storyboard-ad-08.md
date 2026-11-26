@@ -5,8 +5,8 @@ section: "3. Mô hình dữ liệu storyboard (AD-08)"
 path: "3. Mô hình dữ liệu storyboard (AD-08)"
 chunk: 3-mo-hinh-du-lieu-storyboard-ad-08.md
 source_lines: 35-112
-source_sha1: a657f5d146
-ids: [AD-08, AD-11, AD-13, OI-16, REQ-AST-02, REQ-AUDIO-01, REQ-GRAPHICS-06, REQ-GRAPHICS-17]
+source_sha1: 32d290c14b
+ids: [AD-08, AD-11, AD-13, D-74, OI-16, REQ-AST-02, REQ-AUDIO-01, REQ-GRAPHICS-06, REQ-GRAPHICS-17]
 ---
 ## 3. Mô hình dữ liệu storyboard (AD-08)
 
@@ -84,4 +84,4 @@ Thuộc tính có thể **lấy giá trị từ dữ liệu nhạc** thay cho ke
 | `audio.rms` (sau khi có audio, T-08) | Phản ứng theo âm lượng; phải tính trước thành bảng theo thời gian để giữ tất định |
 | `track.audio.rms`, `track.audio.band(lo, hi)` (bản 1.2) | Phản ứng theo âm thanh của **riêng một track**; cần người dùng nạp stem của track đó (SRS REQ-AUDIO-01) |
 
-Dạng khai báo: `{ "bind": "note.velocity", "from": [0, 127], "to": [0.4, 1.2], "ease": "easeInQuad" }`. Khi cần kết hợp nhiều nguồn, điều kiện hay hàm toán học, dùng **biểu thức** (`{ "expr": "…" }`) chạy bằng trình thông dịch an toàn: xem [EXPRESSIONS.md](../../design/EXPRESSIONS.md) (AD-13). Biểu thức vẫn là dữ liệu, nên AD-08 giữ nguyên.
+Dạng khai báo: `{ "bind": "note.velocity", "from": [0, 127], "to": [0.4, 1.2], "ease": "easeInQuad" }`. Khi cần kết hợp nhiều nguồn, điều kiện hay hàm toán học, dùng **biểu thức** (`{ "expr": "…" }`) chạy bằng trình thông dịch an toàn: xem [EXPRESSIONS.md](../../design/EXPRESSIONS.md) (AD-13). Biểu thức vẫn là dữ liệu, nên AD-08 giữ nguyên. Người không muốn tự chọn nguồn/khoảng dùng **Gắn nhạc nhanh** (D-74): menu công thức một cú nhấp sinh ra đúng binding hoặc biểu thức ở trên, xem [WIDGET-REVAMP §4.3](../../design/WIDGET-REVAMP.md).

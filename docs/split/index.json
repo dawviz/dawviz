@@ -4,7 +4,7 @@
  "docs": {
   "BRD.md": {
    "title": "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)",
-   "sha1": "fd23d2a11f",
+   "sha1": "24a6394b24",
    "chunks": [
     {
      "n": 0,
@@ -330,12 +330,13 @@
      "path": [
       "7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)"
      ],
-     "chars": 39798,
+     "chars": 43672,
      "lines": [
       204,
-      283
+      289
      ],
      "ids": [
+      "AD-07",
       "AD-08",
       "AD-12",
       "AD-13",
@@ -413,6 +414,12 @@
       "D-68",
       "D-69",
       "D-70",
+      "D-71",
+      "D-72",
+      "D-73",
+      "D-74",
+      "D-75",
+      "D-76",
       "KPI-04",
       "NFR-ACC-02",
       "NFR-SEC-01",
@@ -446,6 +453,7 @@
       "SOI-17",
       "SOI-19",
       "WARN_FLP_CLIPS_SKIPPED",
+      "WARN_MATTE_",
       "WARN_NOTATION_",
       "WARN_PRESET_VALUE"
      ]
@@ -459,8 +467,8 @@
      ],
      "chars": 7775,
      "lines": [
-      284,
-      307
+      290,
+      313
      ],
      "ids": [
       "D-01",
@@ -3922,7 +3930,7 @@
   },
   "CUSTOMIZATION.md": {
    "title": "Tùy biến tối đa: storyboard, chuyển cảnh nốt, đường cong easing, hạt, tài nguyên và preset cộng đồng",
-   "sha1": "a657f5d146",
+   "sha1": "32d290c14b",
    "chunks": [
     {
      "n": 0,
@@ -3987,7 +3995,7 @@
      "path": [
       "3. Mô hình dữ liệu storyboard (AD-08)"
      ],
-     "chars": 4930,
+     "chars": 5115,
      "lines": [
       35,
       112
@@ -3996,6 +4004,7 @@
       "AD-08",
       "AD-11",
       "AD-13",
+      "D-74",
       "OI-16",
       "REQ-AST-02",
       "REQ-AUDIO-01",
@@ -4176,7 +4185,7 @@
   },
   "ANIMATION-CATALOG.md": {
    "title": "Danh mục hiệu ứng chuyển động và đường cong nội suy",
-   "sha1": "cb8de95b61",
+   "sha1": "a8563147e6",
    "chunks": [
     {
      "n": 0,
@@ -4310,12 +4319,15 @@
      "path": [
       "7. Hiện/ẩn, che và lộ (reveal)"
      ],
-     "chars": 759,
+     "chars": 976,
      "lines": [
       121,
       135
      ],
-     "ids": []
+     "ids": [
+      "D-74",
+      "D-75"
+     ]
     },
     {
      "n": 9,
@@ -5287,6 +5299,174 @@
      "lines": [
       71,
       78
+     ],
+     "ids": []
+    }
+   ]
+  },
+  "WIDGET-REVAMP.md": {
+   "title": "Tu sửa widget và mở rộng sáng tạo (đợt 2026-11-26)",
+   "sha1": "5eb561ef37",
+   "chunks": [
+    {
+     "n": 0,
+     "file": "WIDGET-REVAMP/tu-sua-widget-va-mo-rong-sang-tao-dot-2026-11-26.md",
+     "title": "Tu sửa widget và mở rộng sáng tạo (đợt 2026-11-26) (mở đầu)",
+     "path": [],
+     "chars": 514,
+     "lines": [
+      1,
+      4
+     ],
+     "ids": [
+      "D-71",
+      "D-76"
+     ]
+    },
+    {
+     "n": 1,
+     "file": "WIDGET-REVAMP/0-muc-tieu-mot-cau.md",
+     "title": "0. Mục tiêu một câu",
+     "path": [
+      "0. Mục tiêu một câu"
+     ],
+     "chars": 1088,
+     "lines": [
+      5,
+      18
+     ],
+     "ids": [
+      "AD-07",
+      "AD-08",
+      "D-71",
+      "D-74",
+      "D-75"
+     ]
+    },
+    {
+     "n": 2,
+     "file": "WIDGET-REVAMP/1-nhom-thuoc-tinh-va-quy-tac-bat-tat-d-71-t-124.md",
+     "title": "1. Nhóm thuộc tính và quy tắc bật/tắt (D-71, T-124)",
+     "path": [
+      "1. Nhóm thuộc tính và quy tắc bật/tắt (D-71, T-124)"
+     ],
+     "chars": 4419,
+     "lines": [
+      19,
+      70
+     ],
+     "ids": [
+      "D-71",
+      "D-72"
+     ]
+    },
+    {
+     "n": 3,
+     "file": "WIDGET-REVAMP/2-an-han-thuoc-tinh-khong-ap-dung-d-72-t-125.md",
+     "title": "2. Ẩn hẳn thuộc tính không áp dụng (D-72, T-125)",
+     "path": [
+      "2. Ẩn hẳn thuộc tính không áp dụng (D-72, T-125)"
+     ],
+     "chars": 574,
+     "lines": [
+      71,
+      76
+     ],
+     "ids": [
+      "D-72"
+     ]
+    },
+    {
+     "n": 4,
+     "file": "WIDGET-REVAMP/3-kieu-chu-dung-chung-d-73-t-126.md",
+     "title": "3. Kiểu chữ dùng chung (D-73, T-126)",
+     "path": [
+      "3. Kiểu chữ dùng chung (D-73, T-126)"
+     ],
+     "chars": 1489,
+     "lines": [
+      77,
+      91
+     ],
+     "ids": [
+      "D-73",
+      "REQ-GRAPHICS-18"
+     ]
+    },
+    {
+     "n": 5,
+     "file": "WIDGET-REVAMP/4-sang-tao-tu-do-hinh-but-gan-nhac-nhanh-d-74.md",
+     "title": "4. Sáng tạo tự do: Hình, Bút, Gắn nhạc nhanh (D-74)",
+     "path": [
+      "4. Sáng tạo tự do: Hình, Bút, Gắn nhạc nhanh (D-74)"
+     ],
+     "chars": 5183,
+     "lines": [
+      92,
+      155
+     ],
+     "ids": [
+      "D-74",
+      "D-75",
+      "WARN_MATTE_"
+     ]
+    },
+    {
+     "n": 6,
+     "file": "WIDGET-REVAMP/5-gop-widget-chu-d-76-t-138.md",
+     "title": "5. Gộp widget chữ (D-76, T-138)",
+     "path": [
+      "5. Gộp widget chữ (D-76, T-138)"
+     ],
+     "chars": 1150,
+     "lines": [
+      156,
+      166
+     ],
+     "ids": [
+      "AD-08",
+      "D-76"
+     ]
+    },
+    {
+     "n": 7,
+     "file": "WIDGET-REVAMP/6-cum-viec-nho-cua-dot-nay-t-127-t-133.md",
+     "title": "6. Cụm việc nhỏ của đợt này (T-127…T-133)",
+     "path": [
+      "6. Cụm việc nhỏ của đợt này (T-127…T-133)"
+     ],
+     "chars": 2501,
+     "lines": [
+      167,
+      178
+     ],
+     "ids": []
+    },
+    {
+     "n": 8,
+     "file": "WIDGET-REVAMP/7-thu-tu-lam-va-cach-chia-pr.md",
+     "title": "7. Thứ tự làm và cách chia PR",
+     "path": [
+      "7. Thứ tự làm và cách chia PR"
+     ],
+     "chars": 610,
+     "lines": [
+      179,
+      190
+     ],
+     "ids": []
+    },
+    {
+     "n": 9,
+     "file": "WIDGET-REVAMP/8-van-de-mo.md",
+     "title": "8. Vấn đề mở",
+     "path": [
+      "8. Vấn đề mở"
+     ],
+     "chars": 388,
+     "lines": [
+      191,
+      196
      ],
      "ids": []
     }
@@ -7653,7 +7833,8 @@
    "SRS/req-widget-02-track-info.md",
    "SRS/5-3-yeu-cau-giao-dien.md",
    "TECHNICAL-DESIGN/5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md",
-   "TDD/3-ma-tran-truy-vet.md"
+   "TDD/3-ma-tran-truy-vet.md",
+   "WIDGET-REVAMP/3-kieu-chu-dung-chung-d-73-t-126.md"
   ],
   "BR-01": [
    "BRD/2-muc-tieu-kinh-doanh-chi-so-do-luong-yeu-cau-ng.md",
@@ -8074,6 +8255,18 @@
    "PARSER-SRS/srs-dac-ta-yeu-cau-thu-vien-parser-daw-visualize.md",
    "PARSER-SRS/3-2-gioi-han-va-an-toan-req-parser-00.md"
   ],
+  "AD-07": [
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
+   "SDD/5-quyet-dinh-thiet-ke-cua-ung-dung.md",
+   "ANIMATION/hieu-ung-chuyen-dong-va-xuat-video-so-sanh-cong.md",
+   "ANIMATION/3-quyet-dinh.md",
+   "CUSTOMIZATION/tuy-bien-toi-da-storyboard-chuyen-canh-not-duong.md",
+   "CUSTOMIZATION/1-muc-tieu-va-ranh-gioi.md",
+   "CUSTOMIZATION/12-huong-3d-day-du-sau-1-2-de-xuat-chua-chot.md",
+   "ANIMATION-CATALOG/0-cach-doc-bang.md",
+   "EXPRESSIONS/3-ngon-ngu-bieu-thuc-ad-13.md",
+   "WIDGET-REVAMP/0-muc-tieu-mot-cau.md"
+  ],
   "AD-08": [
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/3-8-tuy-bien-hieu-ung-va-bieu-thuc-d-38-d-39-d-4.md",
@@ -8083,7 +8276,9 @@
    "CUSTOMIZATION/3-mo-hinh-du-lieu-storyboard-ad-08.md",
    "CUSTOMIZATION/8-quyet-dinh-de-xuat.md",
    "ANIMATION-CATALOG/danh-muc-hieu-ung-chuyen-dong-va-duong-cong-noi.md",
-   "EXPRESSIONS/1-nguyen-tac-nen.md"
+   "EXPRESSIONS/1-nguyen-tac-nen.md",
+   "WIDGET-REVAMP/0-muc-tieu-mot-cau.md",
+   "WIDGET-REVAMP/5-gop-widget-chu-d-76-t-138.md"
   ],
   "AD-12": [
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
@@ -8270,6 +8465,39 @@
    "SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md",
    "TDD/5-danh-sach-kiem-thu-cong-cho-at-18-chrome.md"
   ],
+  "D-71": [
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
+   "WIDGET-REVAMP/tu-sua-widget-va-mo-rong-sang-tao-dot-2026-11-26.md",
+   "WIDGET-REVAMP/0-muc-tieu-mot-cau.md",
+   "WIDGET-REVAMP/1-nhom-thuoc-tinh-va-quy-tac-bat-tat-d-71-t-124.md"
+  ],
+  "D-72": [
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
+   "WIDGET-REVAMP/1-nhom-thuoc-tinh-va-quy-tac-bat-tat-d-71-t-124.md",
+   "WIDGET-REVAMP/2-an-han-thuoc-tinh-khong-ap-dung-d-72-t-125.md"
+  ],
+  "D-73": [
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
+   "WIDGET-REVAMP/3-kieu-chu-dung-chung-d-73-t-126.md"
+  ],
+  "D-74": [
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
+   "CUSTOMIZATION/3-mo-hinh-du-lieu-storyboard-ad-08.md",
+   "ANIMATION-CATALOG/7-hien-an-che-va-lo-reveal.md",
+   "WIDGET-REVAMP/0-muc-tieu-mot-cau.md",
+   "WIDGET-REVAMP/4-sang-tao-tu-do-hinh-but-gan-nhac-nhanh-d-74.md"
+  ],
+  "D-75": [
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
+   "ANIMATION-CATALOG/7-hien-an-che-va-lo-reveal.md",
+   "WIDGET-REVAMP/0-muc-tieu-mot-cau.md",
+   "WIDGET-REVAMP/4-sang-tao-tu-do-hinh-but-gan-nhac-nhanh-d-74.md"
+  ],
+  "D-76": [
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
+   "WIDGET-REVAMP/tu-sua-widget-va-mo-rong-sang-tao-dot-2026-11-26.md",
+   "WIDGET-REVAMP/5-gop-widget-chu-d-76-t-138.md"
+  ],
   "NFR-ACC-02": [
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/3-2-cau-truc-du-lieu-chuan-hoa-unified-ast-d-08.md",
@@ -8418,6 +8646,10 @@
    "PARSER-TDD/3-5b-flp-test-js-8-1-tu-bo-qua-khi-thieu-tep-tha.md",
    "SPIKE-3-FLP/3-dieu-json-chua-lam-duoc-va-bon-bo-sung-cho-eng.md",
    "SPIKE-3-FLP/5-gioi-han-da-biet-can-tep-mau-hoac-quyet-dinh-d.md"
+  ],
+  "WARN_MATTE_": [
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
+   "WIDGET-REVAMP/4-sang-tao-tu-do-hinh-but-gan-nhac-nhanh-d-74.md"
   ],
   "WARN_NOTATION_": [
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
@@ -9567,16 +9799,6 @@
   ],
   "AD-06": [
    "SDD/5-quyet-dinh-thiet-ke-cua-ung-dung.md"
-  ],
-  "AD-07": [
-   "SDD/5-quyet-dinh-thiet-ke-cua-ung-dung.md",
-   "ANIMATION/hieu-ung-chuyen-dong-va-xuat-video-so-sanh-cong.md",
-   "ANIMATION/3-quyet-dinh.md",
-   "CUSTOMIZATION/tuy-bien-toi-da-storyboard-chuyen-canh-not-duong.md",
-   "CUSTOMIZATION/1-muc-tieu-va-ranh-gioi.md",
-   "CUSTOMIZATION/12-huong-3d-day-du-sau-1-2-de-xuat-chua-chot.md",
-   "ANIMATION-CATALOG/0-cach-doc-bang.md",
-   "EXPRESSIONS/3-ngon-ngu-bieu-thuc-ad-13.md"
   ],
   "ERR_FONT_LOAD": [
    "TECHNICAL-DESIGN/5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md"

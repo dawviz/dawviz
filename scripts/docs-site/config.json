@@ -210,6 +210,10 @@
         {
           "src": "docs/design/FIREFOX-FONT-SLOWDOWN.md",
           "title": "Firefox xuất chậm dần: điều tra và giảm nhẹ"
+        },
+        {
+          "src": "docs/design/WIDGET-REVAMP.md",
+          "title": "Tu sửa widget và mở rộng sáng tạo"
         }
       ]
     },

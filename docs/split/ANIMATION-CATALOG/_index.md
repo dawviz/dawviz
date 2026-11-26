@@ -1,6 +1,6 @@
 # Chỉ mục ANIMATION-CATALOG.md — Danh mục hiệu ứng chuyển động và đường cong nội suy
 
-nguồn: `ANIMATION-CATALOG.md` (sha1 cb8de95b61)
+nguồn: `ANIMATION-CATALOG.md` (sha1 a8563147e6)
 
 | # | Mục | File | Ký tự | ID |
 |---|---|---|---|---|
@@ -12,7 +12,7 @@ nguồn: `ANIMATION-CATALOG.md` (sha1 cb8de95b61)
 | 5 | 4. Nội suy không gian và kiểu giá trị | [4-noi-suy-khong-gian-va-kieu-gia-tri.md](4-noi-suy-khong-gian-va-kieu-gia-tri.md) | 695 | AD-11 |
 | 6 | 5. Ngoại suy, lặp và bộ biến đổi đường cong | [5-ngoai-suy-lap-va-bo-bien-doi-duong-cong.md](5-ngoai-suy-lap-va-bo-bien-doi-duong-cong.md) | 830 |  |
 | 7 | 6. Hiệu ứng biến đổi cơ bản (transform) | [6-hieu-ung-bien-doi-co-ban-transform.md](6-hieu-ung-bien-doi-co-ban-transform.md) | 851 | D-47, D-67, REQ-GRAPHICS-15 |
-| 8 | 7. Hiện/ẩn, che và lộ (reveal) | [7-hien-an-che-va-lo-reveal.md](7-hien-an-che-va-lo-reveal.md) | 759 |  |
+| 8 | 7. Hiện/ẩn, che và lộ (reveal) | [7-hien-an-che-va-lo-reveal.md](7-hien-an-che-va-lo-reveal.md) | 976 | D-74, D-75 |
 | 9 | 8. Hình dạng (shape) và biến dạng hình học | [8-hinh-dang-shape-va-bien-dang-hinh-hoc.md](8-hinh-dang-shape-va-bien-dang-hinh-hoc.md) | 691 | AD-11, D-44 |
 | 10 | 9. Chuyển động "có vật lý" (cảm giác tự nhiên) | [9-chuyen-dong-co-vat-ly-cam-giac-tu-nhien.md](9-chuyen-dong-co-vat-ly-cam-giac-tu-nhien.md) | 562 |  |
 | 11 | 10. Hiệu ứng thủ tục (procedural) | [10-hieu-ung-thu-tuc-procedural.md](10-hieu-ung-thu-tuc-procedural.md) | 643 |  |
