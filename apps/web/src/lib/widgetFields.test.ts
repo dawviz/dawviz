@@ -129,3 +129,14 @@ test('quy tắc 2 (D-71): ô phụ của phát sáng/phóng to Bản nhạc ẩn
   assert.equal(at('zoomMode').when!({ ...P, zoom: 1 }), false);
   assert.equal(at('zoomMode').when!({ ...P, zoom: 1.4 }), true);
 });
+
+test('T-130 Phổ tần: ô của nhóm Đỉnh chỉ hiện khi kiểu Cột/Chấm và công tắc Chấm đỉnh bật (D-71)', () => {
+  const R = widgetDefaults('AUDIO_SPECTRUM') as Obj, peak = ['capFall', 'peakStyle', 'peakHold', 'peakGravity', 'peakColor'];
+  const shown = (P: Obj) => (WIDGET_FIELDS.AUDIO_SPECTRUM ?? []).filter((f) => f.when?.(P) ?? true).map((f) => f.path[0]);
+  for (const k of peak) {
+    assert.ok(!shown(R).includes(k), `${k} ẩn khi tắt`);
+    assert.ok(shown({ ...R, peakCap: true }).includes(k) && shown({ ...R, style: 'DOTS', peakCap: true }).includes(k), `${k} hiện khi bật`);
+    assert.ok(!shown({ ...R, style: 'AREA', peakCap: true }).includes(k), `${k} ẩn với kiểu Vùng`);
+  }
+  assert.ok(shown(R).includes('peakCap'));
+});

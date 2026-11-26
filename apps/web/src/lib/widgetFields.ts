@@ -2,7 +2,7 @@
 // `WidgetSettings` vẽ điều khiển, nút ↺ và dấu "đã chỉnh nâng cao" từ chính bảng này, nên thêm một thiết lập mới là tự có ↺
 // (test `widgetFields.test.ts` bắt thiết lập có trong mặc định mà thiếu trong bảng). Hàm thuần, không DOM.
 import { NOTE_TRANSITION_NAMES, type WidgetSpec, type WidgetType } from '@dawviz/render-core';
-import { ANIM_EFFECTS, ANIM_ORDERS, ANIM_UNITS, DEFAULT_TEXT_ANIMATOR, EASING_NAMES, SPECTRUM_STYLES } from '@dawviz/render-core';
+import { ANIM_EFFECTS, ANIM_ORDERS, ANIM_UNITS, DEFAULT_TEXT_ANIMATOR, EASING_NAMES, PEAK_STYLES, SPECTRUM_STYLES } from '@dawviz/render-core';
 import { DEFAULT_KEYBOARD_STYLE, DEFAULT_ROLL_GRID, KEYBOARD_SCALES, KEYBOARD_SHAPES, KEY_LABEL_MODES, PLAYHEAD_HITS, PLAYHEAD_STYLES, widgetDefaults } from '@dawviz/render-core';
 
 type Obj = Record<string, unknown>;
@@ -46,6 +46,8 @@ const SEC = (id: string, fields: readonly string[], rest: Omit<SectionDef, 'id' 
 const L = (path: string[], kind: FieldKind, label: string, rest: Partial<FieldDef> = {}): FieldDef => ({ path, kind, label, ...rest });
 /** Kiểu phổ đọc dải tần tại t (cột, vùng, đường, chấm). */
 const spectral = (P: Obj) => P.style === undefined || ['BARS', 'AREA', 'LINE', 'DOTS'].includes(P.style as string);
+/** Phổ tần: nhóm Đỉnh (T-130) chỉ hiện khi kiểu Cột/Chấm và công tắc `peakCap` bật (D-71). */
+const peakOn = (P: Obj) => (P.style === undefined || P.style === 'BARS' || P.style === 'DOTS') && !!P.peakCap;
 const ta = (P: Obj) => (P.animator ?? {}) as Obj;
 const taOn = (P: Obj) => !!ta(P).enabled;
 const taCustom = (P: Obj) => taOn(P) && ta(P).effect === 'custom';
@@ -124,7 +126,11 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['bars'], 'num', 'spBars', { when: (P) => P.style !== 'OSCILLOSCOPE' && P.style !== 'METER', num: { min: 8, max: 256, step: 1 } }),
     L(['scale'], 'choice', 'spScale', { adv: true, when: (P) => spectral(P), options: ['LOG', 'LINEAR', 'MEL'], prefix: 'web.ws.spScale.' }),
     L(['peakCap'], 'check', 'spPeakCap', { when: (P) => P.style === 'BARS' || P.style === 'DOTS' }),
-    L(['capFall'], 'num', 'spCapFall', { adv: true, when: (P) => (P.style === 'BARS' || P.style === 'DOTS') && !!P.peakCap, num: { min: 0.05, max: 10, step: 0.05, range: [0.1, 3] } }),
+    L(['capFall'], 'num', 'spCapFall', { adv: true, when: peakOn, num: { min: 0.05, max: 10, step: 0.05, range: [0.1, 3] } }),
+    L(['peakStyle'], 'choice', 'spPeakStyle', { when: peakOn, options: PEAK_STYLES, prefix: 'web.ws.spPeakStyle.' }),
+    L(['peakHold'], 'num', 'spPeakHold', { adv: true, when: peakOn, num: { min: 0, max: 5, step: 0.05, range: [0, 2] } }),
+    L(['peakGravity'], 'num', 'spPeakGravity', { adv: true, when: peakOn, num: { min: 0, max: 20, step: 0.1, range: [0, 8] } }),
+    L(['peakColor'], 'colorOpt', 'spPeakColor', { adv: true, when: peakOn }),
     L(['scopeMs'], 'num', 'spScopeMs', { when: (P) => P.style === 'OSCILLOSCOPE', num: { min: 5, max: 500, step: 1, range: [5, 100] } }),
     L(['playedColor'], 'color', 'spPlayed', { when: (P) => P.style === 'WAVEFORM' || P.style === 'METER' }),
     L(['angle'], 'num', 'spAngle', { when: (P) => P.shape === 'LINE', num: { min: -360, max: 360, step: 1, range: [-180, 180] } }),
