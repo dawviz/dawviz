@@ -11,12 +11,12 @@
         "locales/en.json#web.mode",
         "locales/en.json#web.number."
       ],
-      "uiHash": "d1ab1edc0563",
+      "uiHash": "110f513f82a4",
       "viHash": "e7445055696b",
       "enHash": "7909edfe6921",
       "coverHashes": {
         "apps/web/src/lib/numberInput.ts": "8e27c53523c3",
-        "apps/web/src/components/NumberField.tsx": "f7668b64f388",
+        "apps/web/src/components/NumberField.tsx": "9f47a24167db",
         "apps/web/src/components/HistoryMenu.tsx": "f00b11a4bfc2",
         "locales/en.json#web.mode": "a1b70d2dfc66",
         "locales/en.json#web.number.": "5ca95d85a4e1"
@@ -137,15 +137,15 @@
         "locales/en.json#web.layers.",
         "locales/en.json#web.comp."
       ],
-      "uiHash": "b6b8e82f56ba",
-      "viHash": "8c741e3819d7",
-      "enHash": "1cea8b44a8af",
+      "uiHash": "4f5bfe82b717",
+      "viHash": "8d7ebaead5ad",
+      "enHash": "d6706a132203",
       "coverHashes": {
         "apps/web/src/components/Editor.tsx": "a4da48506951",
         "apps/web/src/components/EditorOverlay.tsx": "c10a644a5f66",
-        "apps/web/src/components/StylePanel.tsx": "1e6483c4d17c",
+        "apps/web/src/components/StylePanel.tsx": "1a7c05d2bb56",
         "locales/en.json#web.editor.": "315a1a12894d",
-        "locales/en.json#web.style.": "3f579d231537",
+        "locales/en.json#web.style.": "8d0ea4d4a6ca",
         "locales/en.json#web.glow.": "a02382b4889a",
         "locales/en.json#web.keyboard.": "e1b6968f1e6b",
         "locales/en.json#web.playhead.": "a9aab88bc783",
