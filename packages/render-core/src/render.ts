@@ -236,7 +236,7 @@ export const pianoRollRenderer: WidgetRenderer<PianoRollProps> = {
     }
     if (p.playheadVisible && p.playheadWidth > 0) {
       const hit = p.playheadHit !== 'OFF' ? playheadHitAt(tracks, t, p.playheadHitMs, pitchMin, pitchMax, p.noteStyle) : { k: 0, color: null };
-      out.push(...playheadPrims(p, playU, Lh, f.pitchSpan, hit));
+      out.push(...playheadPrims(p, playU, Lh, f.pitchSpan, hit), ...playheadArrowPrims(p, playU, Lh, f.pitchSpan));
     }
     if (kb > 0) {
       const ks = { ...DEFAULT_KEYBOARD_STYLE, ...p.keyboard, width: kb };
@@ -290,14 +290,16 @@ export function playheadPrims(p: Pick<PianoRollProps, 'playheadColor' | 'playhea
     }
     default: out.push(glow(rect(u - w / 2, v0, w, len, color)));
   }
-  if (p.playheadArrows) { // đầu tam giác hai đầu, chỉ vào trong. TODO: dùng primitive `poly` sau khi gộp nhánh có poly; tạm ghép bằng các lát chữ nhật
-    const s = Math.min(40, Math.max(8, w * 3)), n = Math.max(4, Math.min(16, Math.ceil(s / 1.5))), dh = (s * 0.8) / n;
-    for (let j = 0; j < n; j++) {
-      const half = (s / 2) * (1 - (j + 0.5) / n);
-      out.push(rect(u - half, v0 + j * dh, 2 * half, dh + 0.4, color), rect(u - half, v0 + len - (j + 1) * dh - 0.4, 2 * half, dh + 0.4, color));
-    }
-  }
   return out;
+}
+
+/** Đầu mũi tên hai đầu của vạch phát (T-58): hai tam giác đặc chỉ vào trong, nằm gọn trong đoạn vạch. Rỗng khi `playheadArrows` tắt. */
+export function playheadArrowPrims(p: Pick<PianoRollProps, 'playheadColor' | 'playheadWidth' | 'playheadArrows' | 'playheadLength'>, u: number, laneH: number, pitchSpan: number): PolyPrim[] {
+  if (!p.playheadArrows) return [];
+  const len = p.playheadLength >= 0.999 ? laneH : Math.min(laneH, p.playheadLength * pitchSpan), v0 = (laneH - len) / 2;
+  const s = Math.min(40, Math.max(8, p.playheadWidth * 3)), h = Math.min(s * 0.8, len / 2);
+  const tri = (v: number, apex: number): PolyPrim => ({ kind: 'poly', pts: [u - s / 2, v, u + s / 2, v, u, apex], closed: true, fill: p.playheadColor, fillAlpha: 1, stroke: '', width: 0, alpha: 1 });
+  return [tri(v0, v0 + h), tri(v0 + len, v0 + len - h)];
 }
 
 /** Tên nốt trên phím (T-51, P-12). Cỡ chữ theo chiều cao một hàng phím; quá nhỏ (< 5 pt) thì không vẽ. Tâm nhãn ở đầu phím gần vạch phát. */
