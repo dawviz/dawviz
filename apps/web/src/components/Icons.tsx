@@ -61,6 +61,7 @@ export const Trash = (p: P) => <S {...p}><path d="M2.5 4h11M6 4V2.5h4V4M4 4l.7 9
 export const Download = (p: P) => <S {...p}><path d="M8 2.5v8m0 0L5.25 7.75M8 10.5l2.75-2.75" /><path d="M2.5 13.5h11" /></S>;
 /** Ống hút màu (EyeDropper). */
 export const Pipette = (p: P) => <S {...p}><path d="m9.5 4.5 2 2M3 13l1-3 5.5-5.5 2 2L6 12Z" /><path d="M10.5 3.5 12 2a1.4 1.4 0 0 1 2 2l-1.5 1.5" /></S>;
+export const More = ({ className = 'h-4 w-4' }: P) => <svg viewBox="0 0 16 16" className={className} aria-hidden><circle cx="3.5" cy="8" r="1.25" fill="currentColor" /><circle cx="8" cy="8" r="1.25" fill="currentColor" /><circle cx="12.5" cy="8" r="1.25" fill="currentColor" /></svg>;
 export const Close = (p: P) => <S {...p}><path d="m4 4 8 8M12 4l-8 8" /></S>;
 // ── Panel và timeline (Editor) ──
 export const ChevronLeft = (p: P) => <S {...p}><path d="M10 3.5 5.5 8l4.5 4.5" /></S>;

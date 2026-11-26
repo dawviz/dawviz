@@ -579,7 +579,7 @@ describe('TextPanel (T-72)', () => {
     const v = wrap(ui());
     typeIn(screen.getByRole('spinbutton', { name: /^(Size|Cỡ)$/ }), '48');
     expect(calls.at(-1)).toEqual(['nameStyle', { styleId: 'heading', size: 48 }, 'size']);
-    expect(screen.queryByTestId('text-style-actions')).toBeNull(); // Cơ bản: không có phần nâng cao
+    expect(screen.getByTestId('text-style-bar')).toBeTruthy(); // Cơ bản vẫn có thanh Kiểu (T-126)
     w = { ...w, properties: { ...(w.properties as object), nameStyle: { styleId: 'heading', size: 48 } } };
     v.rerender(<I18nProvider>{ui()}</I18nProvider>);
     fireEvent.click(screen.getByTestId('text-size').querySelector('[data-testid="reset"]')!);
@@ -597,6 +597,7 @@ describe('TextPanel (T-72)', () => {
     wrap(<TextPanel widget={w} styles={PAPER_SCENE.textStyles!} advanced onRef={(...a) => calls.push(a)} onStyles={(...a) => saves.push(a)} onProps={() => {}} />);
     fireEvent.click(screen.getByRole('checkbox', { name: /^(Drop shadow|Đổ bóng)$/ }));
     expect(calls.at(-1)).toEqual(['nameStyle', { styleId: 'heading', italic: true, shadow: { enabled: true } }, 'shadow.enabled']);
+    fireEvent.click(screen.getByTestId('text-style-menu'));
     fireEvent.click(screen.getByTestId('text-save-style'));
     fireEvent.change(screen.getByTestId('text-new-name'), { target: { value: 'Hợp âm nghiêng' } });
     fireEvent.keyDown(screen.getByTestId('text-new-name'), { key: 'Enter' });
