@@ -34,6 +34,15 @@ export interface FieldDef {
   testId?: string;
 }
 
+/**
+ * Nhóm thiết lập (D-71, T-124): tiêu đề con gấp được trong mục Thiết lập và nhóm cùng tên trên Timeline keyframe.
+ * `fields`: đường dẫn (nối bằng dấu chấm) của các ô thuộc nhóm, theo thứ tự của bảng WIDGET_FIELDS.
+ * `head`: ô đứng ở tiêu đề nhóm (công tắc bool, hoặc danh sách có giá trị "Tắt"); `on` cho biết nhóm đang bật (mặc định: giá trị của `head` là true).
+ * Nhóm tắt thì ẩn các ô con (giữ giá trị), trừ ô đang có hoạt hình.
+ */
+export interface SectionDef { id: string; fields: readonly string[]; head?: string; on?: (P: Obj) => boolean }
+const SEC = (id: string, fields: readonly string[], rest: Omit<SectionDef, 'id' | 'fields'> = {}): SectionDef => ({ id, fields, ...rest });
+
 const L = (path: string[], kind: FieldKind, label: string, rest: Partial<FieldDef> = {}): FieldDef => ({ path, kind, label, ...rest });
 /** Kiểu phổ đọc dải tần tại t (cột, vùng, đường, chấm). */
 const spectral = (P: Obj) => P.style === undefined || ['BARS', 'AREA', 'LINE', 'DOTS'].includes(P.style as string);
@@ -176,11 +185,11 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
   TEMPO_INFO: [
     L(['template'], 'text', 'template', { text: { max: 200 } }),
     L(['showCurve'], 'check', 'inShowCurve'),
-    L(['curveHeight'], 'num', 'inCurveHeight', { num: { min: 8, max: 400, step: 1, range: [8, 120] } }),
-    L(['curveColor'], 'color', 'inCurveColor'),
+    L(['curveHeight'], 'num', 'inCurveHeight', { when: (P) => !!P.showCurve, num: { min: 8, max: 400, step: 1, range: [8, 120] } }),
+    L(['curveColor'], 'color', 'inCurveColor', { when: (P) => !!P.showCurve }),
     L(['flash'], 'check', 'inFlash'),
-    L(['flashColor'], 'color', 'inFlashColor', { adv: true }),
-    L(['flashMs'], 'num', 'inFlashMs', { adv: true, num: { min: 50, max: 3000, step: 10, range: [50, 1500] } }),
+    L(['flashColor'], 'color', 'inFlashColor', { adv: true, when: (P) => !!P.flash }),
+    L(['flashMs'], 'num', 'inFlashMs', { adv: true, when: (P) => !!P.flash, num: { min: 50, max: 3000, step: 10, range: [50, 1500] } }),
   ],
   BAR_BEAT: [
     L(['format'], 'choice', 'inBarFormat', { options: ['PERCENT', 'SIXTEENTH'], prefix: 'web.ws.inBarFormat.' }),
@@ -455,10 +464,10 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['playedOpacity'], 'num', 'ntPlayedOpacity', { adv: true, num: { min: 0, max: 1, step: 0.05 } }),
     L(['staticOpacity'], 'num', 'ntStaticOpacity', { adv: true, num: { min: 0, max: 1, step: 0.05 } }),
     L(['upcomingOpacity'], 'num', 'ntUpcomingOpacity', { adv: true, num: { min: 0, max: 1, step: 0.05 } }),
-    L(['zoomMode'], 'choice', 'ntZoomMode', { adv: true, options: ['PULSE', 'HOLD'], prefix: 'web.ws.ntZoomMode.' }),
-    L(['zoomMs'], 'num', 'ntZoomMs', { adv: true, when: (P) => P.zoomMode === 'PULSE', num: { min: 20, max: 3000, step: 10, range: [50, 1000] } }),
-    L(['glowSize'], 'num', 'ntGlowSize', { adv: true, num: { min: 0, max: 20, step: 0.5, range: [0, 10] } }),
-    L(['glowMode'], 'choice', 'ntGlowMode', { adv: true, options: ['HALO', 'SOFT'], prefix: 'web.ws.ntGlowMode.' }),
+    L(['zoomMode'], 'choice', 'ntZoomMode', { adv: true, when: (P) => Number(P.zoom) > 1, options: ['PULSE', 'HOLD'], prefix: 'web.ws.ntZoomMode.' }),
+    L(['zoomMs'], 'num', 'ntZoomMs', { adv: true, when: (P) => Number(P.zoom) > 1 && P.zoomMode === 'PULSE', num: { min: 20, max: 3000, step: 10, range: [50, 1000] } }),
+    L(['glowSize'], 'num', 'ntGlowSize', { adv: true, when: (P) => Number(P.glow) > 0, num: { min: 0, max: 20, step: 0.5, range: [0, 10] } }),
+    L(['glowMode'], 'choice', 'ntGlowMode', { adv: true, when: (P) => Number(P.glow) > 0, options: ['HALO', 'SOFT'], prefix: 'web.ws.ntGlowMode.' }),
     L(['playheadColor'], 'color', 'ntPlayheadColor', { adv: true, when: (P) => P.playhead === 'LINE' }),
     L(['playheadWidth'], 'num', 'ntPlayheadWidth', { adv: true, when: (P) => P.playhead === 'LINE', num: { min: 0, max: 40, step: 0.5, range: [0, 8] } }),
     L(['boilFps'], 'num', 'ntBoil', { adv: true, when: (P) => Number(P.rough) > 0, num: { min: 0, max: 24, step: 1 } }),
@@ -470,6 +479,77 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['auraColor'], 'colorOpt', 'ntAuraColor', { adv: true, when: (P) => P.aura !== 'OFF' }),
   ],
 };
+
+
+/** Nhóm thiết lập theo loại widget (D-71). Loại chưa có ở đây: một danh sách phẳng như trước. Ô không thuộc nhóm nào đứng đầu, không tiêu đề. */
+export const WIDGET_SECTIONS: Readonly<Partial<Record<WidgetType, readonly SectionDef[]>>> = {
+  TIME_BAR: [
+    SEC('time', ['time.enabled', 'time.format', 'time.label', 'timeGroups.0', 'timeGroups.1', 'timeGroups.2'], { head: 'time.enabled' }),
+    SEC('beat', ['beat.enabled', 'beat.format', 'beat.label', 'beatGroups.0', 'beatGroups.1', 'beatGroups.2'], { head: 'beat.enabled' }),
+    SEC('bar', ['showBars', 'barLength', 'barThickness', 'barColor', 'barTrackColor'], { head: 'showBars' }),
+  ],
+  PARTICLES: [
+    SEC('emit', ['perNote', 'velocityScale', 'maxParticles', 'seed']),
+    SEC('motion', ['life', 'speed', 'speedSpread', 'angle', 'spread', 'gravity']),
+    SEC('size', ['sizeStart', 'sizeEnd', 'shape']),
+    SEC('colour', ['colorMode', 'color', 'opacity', 'fade', 'glow']),
+    SEC('origin', ['originX', 'originY', 'pitchMin', 'pitchMax']),
+  ],
+  TEMPO_INFO: [
+    SEC('curve', ['showCurve', 'curveHeight', 'curveColor'], { head: 'showCurve' }),
+    SEC('flash', ['flash', 'flashColor', 'flashMs'], { head: 'flash' }),
+  ],
+  BAR_BEAT: [
+    SEC('dots', ['dots', 'pulse', 'dotActiveColor', 'dotColor', 'dotSize'], { head: 'dots' }),
+  ],
+  PITCH_WHEEL: [
+    SEC('ring', ['order', 'nodeShape', 'ring', 'beatMarks']),
+    SEC('labels', ['showNames', 'labels', 'romanStyle', 'windowSec'], { head: 'showNames' }),
+    SEC('chord', ['showChord', 'chordAs'], { head: 'showChord' }),
+    SEC('colour', ['litColor', 'dimColor', 'dimAlpha', 'rootColor', 'outlineColor', 'litTextColor']),
+    SEC('polygon', ['polygon', 'polygonColor', 'polygonAlpha'], { head: 'polygon' }),
+    SEC('progress', ['progress', 'progressColor', 'progressWidth'], { head: 'progress', on: (P) => P.progress !== 'OFF' }),
+  ],
+  TEXT: [
+    SEC('animator', ['animator.enabled', 'animator.effect', 'animator.unit', 'animator.order', 'animator.direction', 'animator.start', 'animator.duration', 'animator.stagger', 'animator.ease',
+      'animator.fromOpacity', 'animator.fromX', 'animator.fromY', 'animator.fromScale', 'animator.fromColor', 'animator.countUp', 'animator.seed'], { head: 'animator.enabled' }),
+  ],
+  NOTATION: [
+    SEC('score', ['musicFont', 'barsPerSystem', 'systemsPerPage', 'division', 'triplets', 'simplify', 'voices', 'splitPitch', 'keyMode', 'keyFifths', 'keyMinor',
+      'measureNumbers', 'measureNumberSize', 'tempoMark', 'align', 'pageFadeMs']),
+    SEC('colour', ['colorMode', 'inkColor', 'activeColor', 'playedColor', 'opacity', 'playedOpacity', 'staticOpacity', 'upcomingOpacity']),
+    SEC('zoom', ['zoom', 'zoomMode', 'zoomMs']),
+    SEC('glow', ['glow', 'glowSize', 'glowMode']),
+    SEC('aura', ['aura', 'auraEvery', 'auraShape', 'auraGlow', 'auraMin', 'auraColor'], { head: 'aura', on: (P) => P.aura !== 'OFF' }),
+    SEC('playhead', ['playhead', 'playheadColor', 'playheadWidth'], { head: 'playhead', on: (P) => P.playhead !== 'NONE' }),
+    SEC('rough', ['rough', 'boilFps', 'seed']),
+  ],
+};
+
+/** Một nhóm khi vẽ: `sec` vắng = các ô không thuộc nhóm nào (đứng đầu, không tiêu đề). */
+export interface FieldGroup { sec?: SectionDef; head?: FieldDef; fields: FieldDef[] }
+/** Chia ô của loại widget thành nhóm theo WIDGET_SECTIONS (ô ngoài nhóm đứng đầu). Thứ tự ô trong nhóm theo WIDGET_FIELDS. */
+export function fieldGroups(type: WidgetType): FieldGroup[] {
+  const fields = WIDGET_FIELDS[type] ?? [], secs = WIDGET_SECTIONS[type] ?? [];
+  const owner = new Map<string, SectionDef>();
+  for (const s of secs) for (const p of s.fields) owner.set(p, s);
+  const loose = fields.filter((f) => !owner.has(f.path.join('.')));
+  const out: FieldGroup[] = loose.length ? [{ fields: loose }] : [];
+  for (const s of secs) {
+    const mine = fields.filter((f) => owner.get(f.path.join('.')) === s);
+    if (!mine.length) continue;
+    const head = s.head ? mine.find((f) => f.path.join('.') === s.head) : undefined;
+    out.push({ sec: s, head, fields: mine.filter((f) => f !== head) });
+  }
+  return out;
+}
+/** Nhóm của một đường dẫn thuộc tính (id nhóm), nếu loại widget có khai báo nhóm. */
+export const sectionOf = (type: WidgetType, path: string): string | undefined => (WIDGET_SECTIONS[type] ?? []).find((s) => s.fields.includes(path))?.id;
+/** Nhóm đang bật theo thuộc tính hiện tại (nhóm không có công tắc luôn bật). */
+export function sectionOn(s: SectionDef, P: Obj): boolean {
+  if (s.on) return s.on(P);
+  return s.head ? !!getIn(P, s.head.split('.')) : true;
+}
 
 /** Thuộc tính KHÔNG nằm ở mục Thiết lập (kiểu chữ, căn lề ở mục Chữ; vài thuộc tính chưa có giao diện). Test dùng để bắt thiết lập bị bỏ sót. */
 export const SETTINGS_EXEMPT: Readonly<Record<string, readonly string[]>> = {

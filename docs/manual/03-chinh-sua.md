@@ -13,6 +13,7 @@ Màn hình có ba phần: khung video ở giữa, **Thuộc tính widget** bên 
 - **Timeline cao hay thấp tuỳ ý:** kéo đường ranh phía trên Timeline lên hoặc xuống; kéo được tới khi khung video còn một dải nhỏ.
 - **Gấp mục:** bấm tiêu đề một mục (ví dụ **Vị trí và kích thước**) để gấp lại khi không dùng tới, bấm lần nữa để mở. Cột bên phải ngắn đi rất nhiều. Ứng dụng nhớ mục nào đang gấp, cả ở thẻ Xem trước.
 - **Tìm thiết lập:** gõ vào ô **Tìm thiết lập…** ở đầu Thuộc tính widget để chỉ giữ các mục và ô có tên khớp, kể cả ô Nâng cao khi đang ở Cơ bản; mục đang gấp tự mở khi có kết quả (xem [Mục lục](README.md)). Esc xoá chữ.
+- **Nhóm trong Thiết lập:** thiết lập của nhiều widget được chia thành nhóm có tên (ví dụ **Đường tempo**, **Chớp theo phách**, **Quầng**, **Vạch phát**); bấm tên nhóm để gấp hoặc mở, máy nhớ theo từng loại widget. Nhóm có ô tick hoặc danh sách ở bên phải tên nhóm là công tắc của cả nhóm: tắt (hoặc chọn **Tắt**/**Không**) thì các ô trong nhóm ẩn đi, giá trị vẫn giữ. Ô mà giá trị 0 đã có nghĩa là tắt (như **Phát sáng**) không có công tắc riêng; các ô phụ của nó chỉ hiện khi giá trị lớn hơn 0. Ô đang có keyframe luôn hiện. Timeline keyframe dùng cùng các nhóm này.
 - Cỡ và trạng thái các panel được nhớ trong trình duyệt này. Màn hình hẹp hơn 1024 điểm thì các panel xếp dọc như cũ.
 
 ## Chọn widget

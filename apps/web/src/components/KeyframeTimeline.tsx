@@ -21,7 +21,7 @@ import {
   DRAG_SLOP, ROW_H, RULER_H, SAME_TIME, beatTimes, copyKeys, keyClipboard, pasteIntoWidget, clampPps, clampShift, fitPps, groupRefs, keyAt, keyRef, keySecs, moveKeys,
   parseKeyRef, removeKeys, rulerLabel, rulerStep, rulerTicks, snapTime, xToTime, zoomAround,
 } from '../lib/timeline.ts';
-import { PROP_GROUPS, rowKeys, timelineRows, type GroupId, type RowDef, type VKey } from '../lib/timelineRows.ts';
+import { groupLabelKey, rowKeys, timelineRows, type GroupId, type RowDef, type VKey } from '../lib/timelineRows.ts';
 import { PANEL_LIMITS } from '../lib/panelLayout.ts';
 import { NumberField } from './NumberField.tsx';
 import { DiscreteValue } from './DiscreteValue.tsx';
@@ -52,7 +52,6 @@ export interface KeyframeTimelineProps {
 const FRAME = 1 / 30;
 /** Lề trái của làn (px): keyframe ở 0:00 không bị cắt nửa ở mép. */
 export const PAD = 10;
-const GROUPS: readonly { id: GroupId; key: string }[] = [{ id: 'transform', key: 'web.timeline.group.transform' }, ...PROP_GROUPS.map((g) => ({ id: `props.${g}`, key: `web.timeline.group.${g}` }))];
 type Mode = 'none' | 'keys' | 'bind';
 type RowItem = { kind: 'row'; row: RowDef; anims: (Animation | undefined)[]; mode: Mode; vkeys: VKey[] };
 type Item = { kind: 'group'; id: GroupId; open: boolean; count: number } | RowItem;
@@ -76,7 +75,8 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
     return m;
   }, [animate, tempoMap]);
   const items: Item[] = [];
-  for (const g of GROUPS) {
+  // Nhóm theo thứ tự xuất hiện trong `rows` (timelineRows đã xếp: Biến đổi, nhóm của mục Thiết lập, nhóm đoán theo đường dẫn).
+  for (const g of [...new Set(rows.map((r) => r.group))].map((id) => ({ id }))) {
     const mine = rows.filter((r) => r.group === g.id).map((row): RowItem => {
       const anims = row.paths.map((p) => animate[p]);
       return { kind: 'row', row, anims, mode: modeOf(anims), vkeys: rowKeys(row, times) };
@@ -423,7 +423,7 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
                   <button type="button" aria-expanded={it.open} className="flex h-full min-w-0 flex-1 items-center gap-1.5 px-1.5 text-left text-xs font-semibold text-fg hover:bg-raised" data-testid={`timeline-group-${it.id}`}
                     onClick={() => setFlipped((s) => { const n = new Set(s); if (n.has(it.id)) n.delete(it.id); else n.add(it.id); return n; })}>
                     <ChevronRight className={`h-3 w-3 shrink-0 text-faint transition-transform duration-150 ${it.open ? 'rotate-90' : ''}`} />
-                    <span className="min-w-0 truncate">{i18n.t(GROUPS.find((g) => g.id === it.id)!.key)}</span>
+                    <span className="min-w-0 truncate">{i18n.t(groupLabelKey(it.id, (k) => i18n.has(k)))}</span>
                     {it.count > 0 && <span className="ml-auto pr-1 font-normal tabular-nums text-muted">{i18n.t('web.timeline.animatedCount', { n: it.count })}</span>}
                   </button>
                 </div>

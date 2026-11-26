@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ADDABLE_WIDGETS } from '@dawviz/render-core';
-import { PROP_GROUPS, propGroup, rowKeys, rowOfPath, timelineRows, visibleKeyCount } from './timelineRows.ts';
+import { groupOrder, propGroup, rowKeys, rowOfPath, timelineRows, visibleKeyCount } from './timelineRows.ts';
 
 test('timelineRows: nhóm Biến đổi = Vị trí (x+y), Tỉ lệ, Xoay, Độ đục; Rộng/Cao chỉ khi đã animate', () => {
   for (const type of [...ADDABLE_WIDGETS, 'PIANO_ROLL' as const]) {
@@ -43,5 +43,16 @@ test('propGroup: gom thuộc tính liên quan thành nhóm thả xuống; mọi 
   assert.equal(propGroup('noteStyle.base.cornerRadius'), 'notes');
   assert.equal(propGroup('animator.duration'), 'animator');
   assert.equal(propGroup('barColor'), 'colour');
-  for (const type of [...ADDABLE_WIDGETS, 'PIANO_ROLL' as const]) for (const r of timelineRows(type).filter((x) => x.group !== 'transform')) assert.ok(PROP_GROUPS.includes(r.group.slice(6) as never), r.id);
+  for (const type of [...ADDABLE_WIDGETS, 'PIANO_ROLL' as const]) for (const r of timelineRows(type).filter((x) => x.group !== 'transform')) assert.ok(groupOrder(type).includes(r.group.slice(6)), `${type}.${r.id}`);
+});
+
+test('Timeline dùng cùng nhóm với mục Thiết lập khi widget có khai báo nhóm (D-71)', async () => {
+  const { groupOrder, groupLabelKey } = await import('./timelineRows.ts');
+  const rows = timelineRows('NOTATION').filter((r) => r.group !== 'transform');
+  assert.equal(rows.find((r) => r.id === 'glowSize')!.group, 'props.glow');
+  assert.equal(rows.find((r) => r.id === 'inkColor')!.group, 'props.colour');
+  const order = groupOrder('NOTATION'), idx = rows.map((r) => order.indexOf(r.group.slice(6)));
+  assert.deepEqual(idx, [...idx].sort((a, b) => a - b), 'dòng xếp theo thứ tự nhóm');
+  assert.equal(groupLabelKey('props.aura', (k) => k === 'web.ws.sec.aura'), 'web.ws.sec.aura');
+  assert.equal(groupLabelKey('props.grid', () => false), 'web.timeline.group.grid');
 });
