@@ -1696,6 +1696,8 @@ Widget Audio Spectrum (T-53, REQ-WIDGET-07): MỘT widget, hai hình dạng — 
 ```text
 type SpectrumStyle   // Kiểu hiển thị (REQ-WIDGET-07, T-53): cột, vùng, đường, chấm (phổ tại t); dao động ký (sóng tức thời); sóng âm…
 const SPECTRUM_STYLES
+type PeakStyle   // Hình chấm đỉnh (T-130).
+const PEAK_STYLES
 type FreqScale   // Thang tần số của trục cột.
 interface SpectrumProps
 const DEFAULT_SPECTRUM
@@ -1705,7 +1707,8 @@ function scaleEdge(scale: FreqScale, minHz: number, maxHz: number, k: number, n:
 function poolBands(bands: Float64Array, ft: Pick<AudioFeatures, 'minHz' | 'maxHz' | 'bands'>, n: number, minHz: number, maxHz: number, scale: FreqScale = 'LOG'): Float64Array
 function spectrumLevels(p: SpectrumProps, audio: Derived['audio'], t: number): Float64Array   // Mức 0..1 của từng cột tại `t` (trục thời gian dự án). Không có âm thanh → toàn 0.
 function spectrumPrims(p: SpectrumProps, W: number, H: number, levels: ArrayLike<number>): Primitive[]
-function peakCaps(p: SpectrumProps, audio: Derived['audio'], t: number): Float64Array   // Chấm đỉnh rơi chậm (tất định): đỉnh của từng cột trong ~1,5 s trước, trừ đi tốc độ rơi × thời gian đã qua. Dù…
+function peakDrop(p: Pick<SpectrumProps, 'capFall' | 'peakHold' | 'peakGravity'>, dt: number): number   // Quãng đỉnh đã rơi (phần thang) sau `dt` giây kể từ khi đạt: đứng yên `peakHold` giây, rồi rơi với vận tốc đầu…
+function peakCaps(p: SpectrumProps, audio: Derived['audio'], t: number): Float64Array   // Chấm đỉnh rơi chậm (tất định, không giữ trạng thái giữa các khung): đỉnh của từng cột là lớn nhất của (mức th…
 function scopeSamples(p: SpectrumProps, audio: Derived['audio'], t: number): Float64Array   // Mẫu dạng sóng (−1…1) trong cửa sổ `scopeMs` kết thúc tại t; bảng cũ không có `scope` → rỗng.
 function waveformColumns(ft: AudioFeatures, n: number): Float64Array   // Bao sóng cả bài chia `n` cột (biên độ tuyến tính 0..1 từ đỉnh mỗi khung), đệm theo bảng đặc trưng.
 function meterLevels(p: SpectrumProps, audio: Derived['audio'], t: number):    // Đồng hồ: đỉnh, RMS (0..1 theo sàn/trần dB) tại t và đỉnh giữ trong ~1,5 s.
@@ -4170,4 +4173,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 11 thư mục src, 1913 ký hiệu công khai -->
+<!-- 11 thư mục src, 1916 ký hiệu công khai -->
