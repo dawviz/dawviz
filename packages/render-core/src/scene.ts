@@ -19,7 +19,7 @@ import {
   INSIGHT_TEMPLATE_KEYS, INSIGHT_TYPES, type ArrangementProps, type AutomationProps, type BarBeatProps, type DensityProps, type DrumPadProps, type KeyScaleProps, type LyricsProps, type PitchWheelProps, type SectionProps, type TempoInfoProps, type VelocityProps,
 } from './insight.ts';
 import { DEFAULT_NOTATION, notationInkFor, type NotationProps } from './notation/widget.ts';
-import { CHORD_RESOLUTIONS, DASHBOARD_TYPES, DEFAULT_DEGREE, DEFAULT_DOTS, DEFAULT_PANEL, DOTS_GRIDS, MAX_PANEL_STATS, type DegreeProps, type DotsProps, type PanelProps } from './dashboard.ts';
+import { CHORD_RESOLUTIONS, DASHBOARD_TYPES, DEFAULT_DEGREE, DEGREE_LABEL_ALIGNS, DEFAULT_DOTS, DEFAULT_PANEL, DOTS_GRIDS, MAX_PANEL_STATS, type DegreeProps, type DotsProps, type PanelProps } from './dashboard.ts';
 import { ROMAN_STYLES } from './degree.ts';
 import { DEFAULT_SPECTRUM, PEAK_STYLES, SPECTRUM_STYLES, type SpectrumProps } from './spectrum.ts';
 import { sanitizeAnimate, type Animation } from './animation.ts';
@@ -958,7 +958,8 @@ const HUD_SANITIZERS = {
       accentColor: c('accentColor'), detailColor: c('detailColor'), blockColor: c('blockColor'), activeTextColor: c('activeTextColor'), pastAlpha: S.num(P.pastAlpha, d.pastAlpha, 0, 1, `${p}.pastAlpha`),
       tonicColor: c('tonicColor'), subdominantColor: c('subdominantColor'), dominantColor: c('dominantColor'), playheadColor: hexOpt(S, P.playheadColor, d.playheadColor, `${p}.playheadColor`),
       radius: S.num(P.radius, d.radius, 0, 40, `${p}.radius`), gap: S.num(P.gap, d.gap, 0, 40, `${p}.gap`),
-      labelStyle: textRef(S, P.labelStyle, d.labelStyle, `${p}.labelStyle`), smallStyle: textRef(S, P.smallStyle, d.smallStyle, `${p}.smallStyle`) };
+      labelStyle: textRef(S, P.labelStyle, d.labelStyle, `${p}.labelStyle`), smallStyle: textRef(S, P.smallStyle, d.smallStyle, `${p}.smallStyle`),
+      labelAlign: S.oneOf(P.labelAlign, DEGREE_LABEL_ALIGNS, d.labelAlign, `${p}.labelAlign`), labelSticky: S.bool(P.labelSticky, d.labelSticky, `${p}.labelSticky`) };
   },
   DOTS(P: Obj, p: string, S: Sanitizer): DotsProps {
     const d = DEFAULT_DOTS;

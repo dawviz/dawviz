@@ -42,7 +42,13 @@ export interface DegreeProps {
   tonicColor: string; subdominantColor: string; dominantColor: string; playheadColor: string;
   radius: number; gap: number;
   labelStyle: TextRef; smallStyle: TextRef;
+  /** Vị trí chữ trong khối hợp âm: đầu / giữa (mặc định, như trước T-131) / cuối khối. */
+  labelAlign: DegreeLabelAlign;
+  /** Khối bị cắt ở mép trái widget: chữ dính mép trái phần đang thấy và đi theo tới cuối khối rồi bị đẩy ra (như tên clip trong DAW). */
+  labelSticky: boolean;
 }
+export type DegreeLabelAlign = 'START' | 'CENTER' | 'END';
+export const DEGREE_LABEL_ALIGNS: readonly DegreeLabelAlign[] = ['START', 'CENTER', 'END'];
 export type ChordResolution = 'BAR' | 'HALF' | 'BEAT' | 'CHANGE';
 export const CHORD_RESOLUTIONS: readonly ChordResolution[] = ['BAR', 'HALF', 'BEAT', 'CHANGE'];
 export interface DotsProps {
@@ -68,7 +74,7 @@ export const DEFAULT_DEGREE: Readonly<DegreeProps> = Object.freeze({
   windowBars: 8, playheadRatio: 0.42, resolution: 'BAR', showDetail: true, showFunction: true, showBars: true, romanStyle: 'SUFFIX', keyWindowSec: 16,
   accentColor: '#ff3d8b', detailColor: '#2ec4b6', blockColor: '#2b2b33', activeTextColor: '#ffffff', pastAlpha: 0.45,
   tonicColor: '#2ec4b6', subdominantColor: '#ffb3cf', dominantColor: '#ff3d8b', playheadColor: '#222222',
-  radius: 6, gap: 4, labelStyle: ts('caption'), smallStyle: ts('label'),
+  radius: 6, gap: 4, labelStyle: ts('caption'), smallStyle: ts('label'), labelAlign: 'CENTER', labelSticky: true,
 });
 export const DEFAULT_DOTS: Readonly<DotsProps> = Object.freeze({
   grid: 16, cols: 64, playheadRatio: 0.96, pitchRangeMode: 'FIT_CONTENT', pitchMin: 36, pitchMax: 96, maxRows: 32, dotSize: 0.6, shape: 'ROUND',
@@ -158,6 +164,21 @@ export function quantizeChords(segs: readonly ChordSeg[], grid: Parameters<typeo
   m.set(key, out); return out;
 }
 const FINER: Record<ChordResolution, ChordResolution> = { BAR: 'BEAT', HALF: 'BEAT', BEAT: 'CHANGE', CHANGE: 'CHANGE' };
+/** Lề chữ trong khối (mỗi bên), như bề rộng tối đa `w - 6` của chữ. */
+const LABEL_PAD = 3;
+/**
+ * Vị trí chữ của một khối [x0, x1] (toạ độ widget, mép trái vùng thấy là 0), chữ rộng `tw`. Không dính: đầu/giữa/cuối khối.
+ * Dính và khối bị cắt bên trái: phần đầu của khối coi như bắt đầu ở mép trái vùng thấy; chữ đi theo cho tới khi chạm cuối khối,
+ * rồi bị đẩy ra cùng khối (giữ nguyên mép phải chữ ở cuối khối). Hàm thuần của vị trí hiện tại nên tua tới/lui cho cùng kết quả.
+ */
+export function degreeLabelPos(align: DegreeLabelAlign, sticky: boolean, x0: number, x1: number, tw: number): { x: number; align: Align } {
+  const b = x1 - LABEL_PAD;
+  if (align === 'END') return { x: b, align: 'right' };
+  const a = sticky ? Math.max(x0 + LABEL_PAD, LABEL_PAD) : x0 + LABEL_PAD;
+  if (align === 'START') return { x: sticky ? Math.min(a, b - tw) : a, align: 'left' };
+  if (!sticky) return { x: x0 + (x1 - x0) / 2, align: 'center' };
+  return { x: Math.min((a + b) / 2, b - tw / 2), align: 'center' };
+}
 const FN_COLOR = (p: DegreeProps, f: HarmonicFunction) => (f === 'T' ? p.tonicColor : f === 'SD' ? p.subdominantColor : p.dominantColor);
 export const degreeRenderer: WidgetRenderer<DegreeProps> = {
   type: 'DEGREE',
@@ -179,7 +200,8 @@ export const degreeRenderer: WidgetRenderer<DegreeProps> = {
         const cur = s.start <= t && t < s.end, past = s.end <= t, alpha = past ? p.pastAlpha : 1;
         if (cur) out.push(rect(x0, y, w, h, active, 1, p.radius));
         else out.push(poly(roundRectPts(x0, y, w, h, p.radius), { closed: true, stroke: p.blockColor, width: 1, alpha }));
-        T.text(out, label, x0 + Math.min(w / 2, Math.max(4, w / 2)), y + h / 2 + st.size * 0.35, cur ? { ...st, color: p.activeTextColor } : st, 'center', Math.max(1, w - 6), cur ? 1 : alpha);
+        const lp = degreeLabelPos(p.labelAlign, p.labelSticky, x0, x1, Math.min(T.width(label, st), Math.max(1, w - 6)));
+        T.text(out, label, lp.x, y + h / 2 + st.size * 0.35, cur ? { ...st, color: p.activeTextColor } : st, lp.align, Math.max(1, w - 6), cur ? 1 : alpha);
         if (withFn && p.showFunction && tonic !== null) {
           const f = chordFunction(s.name, tonic);
           if (f) { const bh = Math.max(4, sst.size * 0.45); out.push(rect(x0, yFn, w, bh, FN_COLOR(p, f), past ? p.pastAlpha : 1, bh / 2)); T.text(out, f, x0 + w / 2, yFn + bh + sst.size * 1.05, sst, 'center', Math.max(1, w), alpha); }

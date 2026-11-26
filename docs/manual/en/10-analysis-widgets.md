@@ -30,6 +30,7 @@ These three build an analysis board. A ready example: the `analysis-dashboard-16
 - **Bars shown** and **Playhead position**.
 - **One chord per**: **Bar**, **Half bar**, **Beat** or **Every change**. Per bar keeps blocks tidy, so busy music does not break into slivers.
 - **Degree style**: `VIm7` or `vi7`.
+- **Text in block**: **Start**, **Middle** or **End** of the block. With **Keep text in view** on, when a block scrolls out past the left edge, its text stops at the left edge and follows the block until the block ends, like clip names in a DAW.
 - **Second row (each strike)**, **Function strip (T, SD, D)** and **Bar numbers** switch each part on or off. The function strip uses **Tonic colour (T)**, **Subdominant colour (SD)** and **Dominant colour (D)**.
 - **Current chord colour**, **Current chord text colour**, **Block colour**, **Second row colour**, **Opacity of played chords**, **Gap between blocks**.
 
