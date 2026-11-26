@@ -5,6 +5,7 @@ import { ASPECTS, DEFAULT_BACKGROUND, hasMotion, widgetDefaults, type Background
 import type { Command } from './store.ts';
 import { clampOffsetMs } from './audioMap.ts';
 import { sceneForStyle, videoStyleBase, videoStyleKeyboard, withTrackOverrides } from './videoScenes.ts';
+import * as TextStyles from './textStyles.ts';
 
 export type TrackId = string;
 export interface Doc {
@@ -249,15 +250,42 @@ export const patchTextRef = (d: Doc, widgetId: string, field: string, next: Text
   const set = (x: Doc, v: TextRef) => withWidget(x, widgetId, (q) => ({ ...q, properties: { ...(q.properties as object), [field]: v } }));
   return slice(d, 'patchTextRef', 'web.cmd.text', get, set, next, `text:${widgetId}:${field}:${path}`, { widget: widgetId, field });
 };
-/** Đổi bộ kiểu chữ của scene ("Lưu thành kiểu mới", "Cập nhật kiểu"), kèm ghi đè mới của chỗ chữ vừa dùng. Một bước, không gộp. */
-export const setTextStyles = (d: Doc, styles: TextStyleSet, widgetId: string, field: string, ref: TextRef, kind: 'save' | 'update'): Cmd | null => {
+/**
+ * Đổi bộ kiểu chữ của scene ("Lưu thành kiểu mới", "Cập nhật kiểu", chọn một kiểu từ Thư viện của tôi: chép vào dự án), kèm ghi đè mới của
+ * chỗ chữ vừa dùng. Một bước, không gộp.
+ */
+export type TextStylesKind = 'save' | 'update' | 'library';
+const TEXT_STYLES_LABEL: Record<TextStylesKind, string> = { save: 'web.cmd.textStyleSave', update: 'web.cmd.textStyleUpdate', library: 'web.cmd.textStyleLibrary' };
+export const setTextStyles = (d: Doc, styles: TextStyleSet, widgetId: string, field: string, ref: TextRef, kind: TextStylesKind): Cmd | null => {
   if (!d.scene.widgets.some((x) => x.id === widgetId)) return null;
   const get = (x: Doc) => ({ styles: x.scene.textStyles, ref: (x.scene.widgets.find((q) => q.id === widgetId)!.properties as Record<string, unknown>)[field] as TextRef });
   const set = (x: Doc, v: { styles: TextStyleSet | undefined; ref: TextRef }) => {
     const y = withWidget(x, widgetId, (q) => ({ ...q, properties: { ...(q.properties as object), [field]: v.ref } }));
     return { ...y, scene: { ...y.scene, textStyles: v.styles } };
   };
-  return slice(d, 'setTextStyles', kind === 'save' ? 'web.cmd.textStyleSave' : 'web.cmd.textStyleUpdate', get, set, { styles, ref }, undefined, { widget: widgetId, field, kind });
+  return slice(d, 'setTextStyles', TEXT_STYLES_LABEL[kind], get, set, { styles, ref }, undefined, { widget: widgetId, field, kind });
+};
+/** Đổi tên một kiểu chữ của dự án (T-126). Chạy trên Doc gốc: kiểu là của cả dự án. */
+export const renameTextStyle = (d: Doc, id: string, name: string): Cmd | null => {
+  const cur = d.scene.textStyles?.[id], next = cur && TextStyles.renameTextStyle(d.scene.textStyles!, id, name);
+  if (!next) return null;
+  return slice(d, 'renameTextStyle', 'web.cmd.textStyleRename', (x) => x.scene.textStyles, (x, v) => ({ ...x, scene: { ...x.scene, textStyles: v } }), next, undefined, { from: cur.name, name: next[id].name });
+};
+/**
+ * Xoá kiểu chữ người dùng tạo (T-126): mọi chỗ chữ đang dùng nó, ở gốc và trong mọi precomp, về kiểu gốc của chỗ đó. Một bước hoàn tác.
+ * Chạy trên Doc gốc (không qua khung nhìn precomp, vì đổi cả widget ở gốc và ở comp khác).
+ */
+export const deleteTextStyle = (d: Doc, id: string): Cmd | null => {
+  const name = d.scene.textStyles?.[id]?.name, next = TextStyles.deleteTextStyle(d.scene, id);
+  if (!next) return null;
+  type V = Pick<SceneDocument, 'textStyles' | 'widgets' | 'comps'>;
+  const get = (x: Doc): V => ({ textStyles: x.scene.textStyles, widgets: x.scene.widgets, comps: x.scene.comps });
+  const set = (x: Doc, v: V): Doc => {
+    const scene = { ...x.scene, textStyles: v.textStyles, widgets: v.widgets as WidgetSpec[], comps: v.comps };
+    if (!v.comps) delete scene.comps;
+    return { ...x, scene };
+  };
+  return slice(d, 'deleteTextStyle', 'web.cmd.textStyleDelete', get, set, next, undefined, { name: name ?? id, n: TextStyles.styleUseCounts(d.scene)[id] ?? 0 });
 };
 /** Thêm widget (T-68). Một bước hoàn tác. */
 export const addWidget = (d: Doc, w: WidgetSpec): Cmd | null => {

@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createI18n } from '@dawviz/i18n';
-import { DEFAULT_BRIGHTNESS, defaultScene } from '@dawviz/render-core';
+import { DEFAULT_BRIGHTNESS, DEFAULT_TEXT_STYLES, defaultScene } from '@dawviz/render-core';
 import { createStore } from './store.ts';
 import * as C from './commands.ts';
 import { describeCommand, historyItems } from './historyLabels.ts';
@@ -46,6 +46,9 @@ test('mọi loại lệnh có nhãn đã dịch (en và vi), không lộ khoá t
   go((d) => C.moveLayer(d, C.layerOrder(d.scene).at(-1)!, 0)); go((d) => C.toggleSolo(d, 'b')); go((d) => C.clearSolo(d));
   go((d) => C.toggleAllWidgetsVisible(d)); go((d) => C.toggleAllWidgetsVisible(d));
   go((d) => C.patchSnapping(d, { gridSize: 16 }));
+  // T-126: kiểu chữ chép từ thư viện, đổi tên, xoá
+  go((d) => C.setTextStyles(d, { ...(d.scene.textStyles ?? DEFAULT_TEXT_STYLES), mine: { ...DEFAULT_TEXT_STYLES.title, name: 'Mine' } }, 'track-info', 'titleStyle', { styleId: 'mine' }, 'library'));
+  go((d) => C.renameTextStyle(d, 'mine', 'Mine 2')); go((d) => C.deleteTextStyle(d, 'mine'));
   const tl = s.state().history.timeline;
   assert.ok(tl.length >= 22);
   const en: string[] = [], vi: string[] = [];

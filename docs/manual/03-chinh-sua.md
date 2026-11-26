@@ -275,7 +275,8 @@ Chọn một widget có chữ (tên bài, bộ đếm nốt, nốt đang phát, 
 Mỗi chữ dùng một **kiểu chữ** có sẵn (Tiêu đề, Phụ đề, Số đếm, Đồng hồ…). Bạn đổi gì thì chỉ thứ đó khác kiểu, phần còn lại vẫn theo kiểu. Cạnh mỗi thứ đã đổi có nút ↺ để quay về giá trị của kiểu.
 
 - **Dòng chữ:** widget có nhiều chữ thì chọn chữ cần sửa ở đây, ví dụ Tên bài hay Nghệ sĩ. Một số mục là một phần của dòng, ví dụ **Con số trong dòng** của bộ đếm nốt hay **Nốt bass sau dấu /** của hợp âm: đổi ở đó thì chỉ phần ấy khác, phần còn lại của dòng giữ nguyên. Chữ đang có chỉnh sửa được đánh dấu • trong danh sách.
-- **Kiểu chữ**, **Phông**, **Cỡ**, **Màu**, **Độ đậm** (Mảnh, Thường, Đậm), **Nghiêng**. Cuối danh sách **Phông** có **Nạp tệp phông…** để dùng phông của bạn (WOFF2, WOFF, TTF, OTF, tối đa 20 MB); phông này đi theo phiên, gói dự án và video xuất. Hãy chỉ dùng phông bạn có quyền dùng.
+- **Kiểu chữ:** chọn kiểu cho chữ này (xem mục **Kiểu chữ dùng chung** bên dưới). Dấu • cạnh ô chọn nghĩa là chữ đang khác kiểu; rê chuột lên để xem đã sửa bao nhiêu thuộc tính.
+- **Phông**, **Cỡ**, **Màu**, **Độ đậm** (Mảnh, Thường, Đậm), **Nghiêng**. Cuối danh sách **Phông** có **Nạp tệp phông…** để dùng phông của bạn (WOFF2, WOFF, TTF, OTF, tối đa 20 MB); phông này đi theo phiên, gói dự án và video xuất. Hãy chỉ dùng phông bạn có quyền dùng.
 - **Căn lề:** trái, giữa hoặc phải trong khung widget.
 
 Ở chế độ Nâng cao (hoặc bấm **Thêm tuỳ chọn**):
@@ -286,12 +287,21 @@ Mỗi chữ dùng một **kiểu chữ** có sẵn (Tiêu đề, Phụ đề, S�
 - **Bóng:** màu, độ đục, khoảng cách, hướng, độ nhoè. Khoảng cách 0 cho chữ một quầng sáng đều quanh nét.
 - **Nền:** hộp màu sau chữ, có đệm và bo góc, giúp chữ dễ đọc trên nền nhiều chi tiết.
 - **Khi chữ quá dài:** cắt và thêm "…", thu nhỏ cho vừa (không nhỏ hơn **Cỡ nhỏ nhất**), hoặc để tràn. Bật **Xuống dòng** để chữ dài chia thành nhiều dòng, với số dòng tối đa và khoảng cách dòng.
-- **Kiểu chữ:**
-  - **Lưu thành kiểu mới…** lưu cách trình bày hiện tại thành một kiểu có tên, dùng lại được cho chữ khác.
-  - **Cập nhật kiểu** đưa các chỉnh sửa của chữ này vào kiểu nó đang dùng. Mọi chữ khác dùng kiểu đó đổi theo.
-  - **Bỏ mọi chỉnh** đưa chữ về đúng kiểu.
+### Kiểu chữ dùng chung
 
-Kiểu chữ được lưu trong preset.
+Kiểu chữ là của cả dự án: mọi widget có chữ, kể cả widget trong precomp, chọn được cùng một kiểu. Sửa kiểu một lần thì mọi chỗ dùng nó đổi theo. Kiểu chữ được lưu trong preset.
+
+Bấm nút **⋯** cạnh ô **Kiểu chữ** (có ở cả Cơ bản và Nâng cao):
+
+- **Lưu thành kiểu mới…** lưu cách trình bày hiện tại thành một kiểu có tên, dùng lại được cho chữ khác.
+- **Cập nhật kiểu "…"** đưa các chỉnh sửa của chữ này vào kiểu nó đang dùng. Dòng này cho biết có bao nhiêu chỗ chữ trong dự án dùng kiểu đó, vì tất cả sẽ đổi theo. Chưa sửa gì so với kiểu thì không bấm được.
+- **Bỏ thay đổi** đưa chữ về đúng kiểu.
+- **Đổi tên…** đặt tên khác cho kiểu.
+- **Xoá kiểu** xoá kiểu bạn đã tạo. Những chỗ đang dùng nó về kiểu gốc của từng chỗ. Kiểu đang được dùng thì phải xác nhận trước. Không xoá được kiểu có sẵn (Tiêu đề, Phụ đề…).
+- **Lưu vào Thư viện của tôi** giữ cách trình bày hiện tại trong trình duyệt này để dùng cho dự án khác (tối đa 64 kiểu; lưu trùng tên thì thay kiểu cũ).
+- **Xoá khỏi thư viện…** chọn một kiểu trong thư viện để bỏ đi. Dự án đã dùng kiểu đó vẫn giữ bản của mình.
+
+Kiểu trong **Thư viện của tôi** hiện thành một nhóm riêng cuối ô **Kiểu chữ**. Chọn một kiểu ở đó thì kiểu được chép vào dự án rồi áp cho chữ, nên preset gửi cho người khác vẫn đủ kiểu. Mọi thao tác trên kiểu (trừ thư viện) hoàn tác được bằng Ctrl+Z.
 
 ## Hình thức nốt
 

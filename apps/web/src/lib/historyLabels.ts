@@ -190,7 +190,9 @@ export function describeCommand(cmd: Cmd, c: LabelCtx): string {
     case 'renameComp': return i18n.t('web.hist.renameComp', { name: String(p.name ?? '') });
     case 'applySceneToComp': return i18n.t('web.hist.styleToComp', { name: String(p.name ?? '') });
     case 'patchTextRef': return i18n.t('web.hist.text', { widget });
-    case 'setTextStyles': return i18n.t(p.kind === 'save' ? 'web.hist.textStyleSave' : 'web.hist.textStyleUpdate', { widget });
+    case 'setTextStyles': return i18n.t(p.kind === 'save' ? 'web.hist.textStyleSave' : p.kind === 'library' ? 'web.hist.textStyleLibrary' : 'web.hist.textStyleUpdate', { widget });
+    case 'renameTextStyle': return i18n.t('web.hist.textStyleRename', { from: String(p.from ?? ''), name: String(p.name ?? '') });
+    case 'deleteTextStyle': return i18n.t('web.hist.textStyleDelete', { name: String(p.name ?? ''), n: Number(p.n ?? 0) });
     default: return i18n.has(cmd.label) ? i18n.t(cmd.label) : cmd.type;
   }
 }

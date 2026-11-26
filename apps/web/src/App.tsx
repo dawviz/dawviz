@@ -22,6 +22,7 @@ import { BackgroundError, loadBackground, type BitmapLike } from './lib/backgrou
 import { DEFAULT_DEVICE_PREFS, activeOffsetMs, sanitizeDevicePrefs, type DevicePrefs } from './lib/latencyCalibration.ts';
 import { AUTOSAVE_DELAY_MS, createDebounced, createSaver, lazyDexieBackend, restoreWorkspace, type Backend } from './lib/workspaceStore.ts';
 import { applyWorkspace, toWorkspaceJson } from './lib/docSnapshot.ts';
+import { styleUseCounts } from './lib/textStyles.ts';
 import { bytesOf, downloadBytes, packOf, sessionFromPack, snapshotOf, type SessionData, type SessionParts } from './lib/session.ts';
 import { PACK_LIMITS, PackError } from './lib/projectPack.ts';
 import { Crop, Stage } from './components/Stage.tsx';
@@ -266,6 +267,8 @@ export function App() {
 
   // T-05: khung hình = renderFrame(scene, derived, ast, t). Scene nằm trong store (T-07): kiểu nốt, bàn phím, bố cục widget đều ở đây.
   const scene: SceneDocument = doc.scene;
+  // Số chỗ dùng mỗi kiểu chữ trong cả dự án (gốc và mọi precomp), cho menu ⋯ của thanh Kiểu (T-126).
+  const styleUses = useMemo(() => styleUseCounts(doc.scene), [doc.scene]);
   const styleEdited = doc.videoStyle !== CUSTOM_STYLE && isEdited(doc.videoStyle, style.base);
   const flat = useMemo(() => flattenScene(scene), [scene]); // precomp (D-69): widget trong comp cũng cần phông, hợp âm, bản nhạc
   const fonts = useFontsStatus(flat); // chưa nạp xong phông thì không vẽ khung có chữ (TECHNICAL-DESIGN 5.7)
@@ -770,7 +773,8 @@ export function App() {
       <InspectorSection key="text" n={n} id="text" title={i18n.t('web.section.text')} more={more('text', advEdited)}>
         <TextPanel widget={w} styles={scene.textStyles ?? DEFAULT_TEXT_STYLES} advanced={showAdv('text')} disabled={locked}
           onRef={(field, next, path) => erun((d) => Cmds.patchTextRef(d, w.id, field, next, path))}
-          onStyles={(set, field, r, kind) => erun((d) => Cmds.setTextStyles(d, set, w.id, field, r, kind))}
+          onStyles={(set, field, r, kind) => erun((d) => Cmds.setTextStyles(d, set, w.id, field, r, kind))} uses={styleUses}
+          onRenameStyle={(id, name) => run((d) => Cmds.renameTextStyle(d, id, name))} onDeleteStyle={(id) => run((d) => Cmds.deleteTextStyle(d, id))}
           onProps={(patch) => erun((d) => Cmds.patchWidgetProps(d, w.id, patch))} reference={edoc.propsRef[w.id] ?? widgetDefaults(w.type)} />
       </InspectorSection>
     );

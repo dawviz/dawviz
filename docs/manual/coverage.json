@@ -137,9 +137,9 @@
         "locales/en.json#web.layers.",
         "locales/en.json#web.comp."
       ],
-      "uiHash": "72caff41b0d3",
-      "viHash": "b8a1148e13f4",
-      "enHash": "a7bb2ed63dc0",
+      "uiHash": "49d8ac92ee5c",
+      "viHash": "a61737767b83",
+      "enHash": "d041f23e7c51",
       "coverHashes": {
         "apps/web/src/components/Editor.tsx": "868f90108786",
         "apps/web/src/components/EditorOverlay.tsx": "c10a644a5f66",
@@ -149,8 +149,8 @@
         "locales/en.json#web.glow.": "a02382b4889a",
         "locales/en.json#web.keyboard.": "e1b6968f1e6b",
         "locales/en.json#web.playhead.": "a9aab88bc783",
-        "apps/web/src/components/TextPanel.tsx": "dd7fca2212b6",
-        "locales/en.json#web.text.": "13dd41db4149",
+        "apps/web/src/components/TextPanel.tsx": "ee6960b9ad6d",
+        "locales/en.json#web.text.": "078c1ecc2e8e",
         "apps/web/src/components/WidgetSettings.tsx": "fd14aef49172",
         "locales/en.json#web.ws.": "7b6f1c5a0d63",
         "apps/web/src/components/TimeSections.tsx": "aa30f2bb1dd2",
