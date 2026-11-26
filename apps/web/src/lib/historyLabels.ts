@@ -16,6 +16,7 @@ const NOTE_FIELD: Record<string, string> = {
   glow: 'web.style.glow', glowRadius: 'web.style.glowRadius', borderWidth: 'web.style.borderWidth', glowActiveOnly: 'web.style.glowActiveOnly',
   colorMode: 'web.style.colorMode', customColor: 'web.style.customColor', glowMode: 'web.glow.mode', glowSource: 'web.glow.source',
   glowPanMode: 'web.glow.panMode', glowLane: 'web.glow.lane', glowMin: 'web.glow.min', glowMax: 'web.glow.max', glowInvert: 'web.glow.invert', glowRelease: 'web.glow.release',
+  gradientFrom: 'web.style.gradient', gradientTo: 'web.style.gradient',
 };
 const KEYBOARD_FIELD: Record<string, string> = { enabled: 'web.keyboard.show' };
 const BRIGHTNESS_FIELD: Record<string, string> = { source: 'web.brightness.source', floorDb: 'web.brightness.floorDb', ceilDb: 'web.brightness.ceilDb', minBrightness: 'web.brightness.min', maxBrightness: 'web.brightness.max', invert: 'web.brightness.invert' };

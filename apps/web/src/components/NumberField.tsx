@@ -15,12 +15,15 @@ type ErrorReason = 'syntax' | 'unit' | 'nan' | 'expr';
 const DRAG_PX = 3;
 
 /** `disabled`: ô bị khoá (vd. vạch phát khi bật bàn phím, T-71); `describedBy`: id đoạn chú thích giải thích lý do.
- *  `range`: phạm vi mềm cho tốc độ kéo (mặc định: một bước mỗi px). `scrub={false}`: tắt kéo (ô chỉ gõ). */
-export function NumberField({ id, label, value, onChange, spec, className = '', disabled, describedBy, range, scrub = true }: { id?: string; label: string; value: number; onChange(v: number): void; spec: NumberSpec; className?: string; disabled?: boolean; describedBy?: string; range?: [number, number]; scrub?: boolean }) {
+ *  `range`: phạm vi mềm cho tốc độ kéo (mặc định: một bước mỗi px). `scrub={false}`: tắt kéo (ô chỉ gõ).
+ *  `format`/`parse`: hiển thị và đọc giá trị theo cách riêng (vd. tên nốt "C#3" cho số MIDI, T-129); `parse` trả null là không đọc được.
+ *  Giá trị đọc được vẫn bị kẹp theo `spec`. Vắng: số theo bước, gõ phép tính/đơn vị như thường. */
+export function NumberField({ id, label, value, onChange, spec, className = '', disabled, describedBy, range, scrub = true, format, parse, syntaxErrorKey, testId }: { id?: string; label: string; value: number; onChange(v: number): void; spec: NumberSpec; className?: string; disabled?: boolean; describedBy?: string; range?: [number, number]; scrub?: boolean; format?(v: number): string; parse?(text: string): number | null; /** Khoá i18n thay câu lỗi cú pháp mặc định (câu mặc định nói về số và phép tính). */ syntaxErrorKey?: string; testId?: string }) {
   const { i18n } = useI18n();
   const msgId = useId();
   const gesture = useContext(GestureContext);
-  const shown = formatNumber(value, spec.step);
+  const fmt = (v: number) => (format ? format(v) : formatNumber(v, spec.step));
+  const shown = fmt(value);
   const [text, setText] = useState(shown);
   const [editing, setEditing] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -32,9 +35,9 @@ export function NumberField({ id, label, value, onChange, spec, className = '', 
 
   /** Áp chuỗi đang gõ; trả lý do lỗi nếu không đọc được. */
   const commit = (): ErrorReason | null => {
-    const r = parseNumberInput(text, value, spec);
+    const r = parse ? parseCustom(text, parse, spec) : parseNumberInput(text, value, spec);
     // Chốt một giá trị gõ vào là MỘT bước hoàn tác (T-07): bọc trong cử chỉ riêng để không gộp với lần kéo vừa làm trước đó.
-    if (r.ok) { setError(null); if (r.value !== value) { gesture.begin(); onChange(r.value); gesture.end(); } setText(formatNumber(r.value, spec.step)); return null; }
+    if (r.ok) { setError(null); if (r.value !== value) { gesture.begin(); onChange(r.value); gesture.end(); } setText(fmt(r.value)); return null; }
     if (r.reason === 'empty') { setError(null); setText(shown); return null; }
     setError({ reason: r.reason, reverted: false });
     return r.reason;
@@ -74,8 +77,8 @@ export function NumberField({ id, label, value, onChange, spec, className = '', 
   const lo = range?.[0] ?? spec.min, hi = range?.[1] ?? spec.max;
   return (
     <span className="relative block w-full min-w-0">
-      <input id={id} type="text" inputMode="decimal" spellCheck={false} autoComplete="off" aria-label={label}
-        role={scrub ? 'spinbutton' : undefined} aria-valuenow={scrub ? value : undefined}
+      <input id={id} type="text" inputMode={parse ? 'text' : 'decimal'} spellCheck={false} autoComplete="off" aria-label={label} data-testid={testId}
+        role={scrub ? 'spinbutton' : undefined} aria-valuenow={scrub ? value : undefined} aria-valuetext={scrub && format ? shown : undefined}
         aria-valuemin={scrub && Number.isFinite(lo) ? lo : undefined} aria-valuemax={scrub && Number.isFinite(hi) ? hi : undefined}
         aria-invalid={error ? true : undefined} aria-describedby={[error ? msgId : '', describedBy ?? ''].filter(Boolean).join(' ') || undefined} disabled={disabled}
         title={canScrub && !editing ? i18n.t('web.number.scrub') : undefined}
@@ -94,7 +97,7 @@ export function NumberField({ id, label, value, onChange, spec, className = '', 
           else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
             e.preventDefault();
             const v = nudge(value, e.key === 'ArrowUp' ? 1 : -1, spec, { shift: e.shiftKey, alt: e.altKey });
-            setError(null); onChange(v); setText(formatNumber(v, spec.step));
+            setError(null); onChange(v); setText(fmt(v));
           }
         }}
         style={canScrub && !editing ? { cursor: 'ns-resize' } : undefined}
@@ -104,9 +107,17 @@ export function NumberField({ id, label, value, onChange, spec, className = '', 
         data-testid="number-error">
         {error && <>
           <StatusIcon kind="error" className="mt-px h-3.5 w-3.5 shrink-0 text-danger" />
-          <span>{i18n.t(`web.number.error.${error.reason}`)}{error.reverted ? ` ${i18n.t('web.number.reverted')}` : ''}</span>
+          <span>{i18n.t(error.reason === 'syntax' && syntaxErrorKey ? syntaxErrorKey : `web.number.error.${error.reason}`)}{error.reverted ? ` ${i18n.t('web.number.reverted')}` : ''}</span>
         </>}
       </span>
     </span>
   );
+}
+
+/** Đọc bằng `parse` riêng của ô (vd. tên nốt), kẹp theo `spec`; rỗng = giữ giá trị cũ. */
+function parseCustom(text: string, parse: (t: string) => number | null, spec: NumberSpec): { ok: true; value: number } | { ok: false; reason: 'empty' | 'syntax' } {
+  if (!text.trim()) return { ok: false, reason: 'empty' };
+  const v = parse(text);
+  if (v === null || !Number.isFinite(v)) return { ok: false, reason: 'syntax' };
+  return { ok: true, value: Math.min(spec.max ?? Infinity, Math.max(spec.min ?? -Infinity, v)) };
 }
