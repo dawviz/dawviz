@@ -275,7 +275,8 @@ Select a widget that has text (title, note counter, live notes, time, chord, pro
 Each piece of text uses a **text style** (Title, Subtitle, Counter, Clock…). Whatever you change differs from the style; everything else keeps following it. Next to each change there is a ↺ button that goes back to the style's value.
 
 - **Text:** when a widget has several pieces of text, pick the one to edit here, for example Title or Artist. Some entries are part of a line, such as **Numbers in the lines** of the note counter or **Bass note after /** of the chord: changes there apply only to that part, the rest of the line stays the same. Text you have changed is marked • in the list.
-- **Text style**, **Font**, **Size**, **Colour**, **Weight** (Light, Regular, Bold), **Italic**. At the end of the **Font** list, **Load a font file…** lets you use your own font (WOFF2, WOFF, TTF, OTF, up to 20 MB); it travels with the session, the project pack and the exported video. Only use fonts you are allowed to use.
+- **Text style:** pick the style for this text (see **Shared text styles** below). A • next to the box means this text differs from its style; hover it to see how many properties you changed.
+- **Font**, **Size**, **Colour**, **Weight** (Light, Regular, Bold), **Italic**. At the end of the **Font** list, **Load a font file…** lets you use your own font (WOFF2, WOFF, TTF, OTF, up to 20 MB); it travels with the session, the project pack and the exported video. Only use fonts you are allowed to use.
 - **Align:** left, centre or right inside the widget box.
 
 In Advanced mode (or after **More options**):
@@ -286,12 +287,21 @@ In Advanced mode (or after **More options**):
 - **Shadow:** colour, opacity, distance, direction, softness. A distance of 0 gives an even glow around the letters.
 - **Background:** a coloured box behind the text, with padding and rounded corners, to keep text readable over busy pictures.
 - **When the text is too long:** cut with "…", shrink to fit (no smaller than **Smallest size**), or let it run over. Turn on **Wrap onto more lines** to split long text, with a maximum number of lines and line spacing.
-- **Text styles:**
-  - **Save as new style…** stores the current look as a named style you can use for other text.
-  - **Update style** pushes this text's changes into the style it uses. Every other text using that style changes too.
-  - **Clear changes** puts the text back to the plain style.
+### Shared text styles
 
-Text styles are saved in the preset.
+Text styles belong to the whole project: every widget with text, including widgets inside a precomp, can use the same style. Change a style once and every place that uses it follows. Text styles are saved in the preset.
+
+Click the **⋯** button next to the **Text style** box (in both Basic and Advanced):
+
+- **Save as new style…** stores the current look as a named style you can use for other text.
+- **Update "…"** pushes this text's changes into the style it uses. The item says how many places in the project use that style, because they all change. It can't be clicked when nothing differs from the style.
+- **Clear changes** puts the text back to the plain style.
+- **Rename…** gives the style another name.
+- **Delete style** deletes a style you made. Places that use it go back to their own default style. If the style is in use you are asked first. Built-in styles (Title, Subtitle…) can't be deleted.
+- **Save to My library** keeps the current look in this browser so you can use it in other projects (up to 64 styles; saving under an existing name replaces it).
+- **Remove from My library…** pick a style in the library to drop. Projects that already use it keep their own copy.
+
+Styles in **My library** appear as their own group at the end of the **Text style** box. Picking one copies it into the project and applies it, so a preset you send to someone else still has every style. Every style action (except the library) can be undone with Ctrl+Z.
 
 ## Note look
 
