@@ -76,6 +76,7 @@ Khi Timeline đang có focus (bấm vào nó trước):
 | Alt+`[` / Alt+`]` | Cắt đầu / cuối thanh tại vạch phát |
 | Alt+Trái / Alt+Phải | Dời lớp đang chọn một khung (thêm Shift: một giây); trên mốc phase: dời phase |
 | Lên / Xuống | Chọn lớp trên / dưới |
+| Alt+Lên / Alt+Xuống (trên tay nắm track ở làn Nhạc) | Đổi thứ tự track (như ở thẻ Xem trước) |
 | Delete (trên mốc phase) | Xoá phase |
 | Nhấp đúp trên làn Phase | Thêm phase tại chỗ nhấp |
 | Ctrl + cuộn chuột | Phóng to / thu nhỏ theo chiều ngang |

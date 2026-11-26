@@ -146,7 +146,13 @@ Bên trái là cột lớp, bên phải là thước thời gian và các thanh.
 - **Hiện dần / ẩn dần:** kéo ô vuông nhỏ ở góc trên đầu hoặc cuối thanh (hiện khi rê chuột hoặc khi lớp đang chọn).
 - **Tên thanh dính mép:** khi cuộn hoặc phóng to Timeline mà đầu thanh đã ra khỏi màn hình, tên lớp vẫn hiện ở mép trái vùng nhìn cho tới hết thanh.
 - **Bắt dính:** khi kéo, thanh bám vào vạch phát, mép các thanh khác, phase, chỗ đổi hợp âm (khi làn Nhạc đang mở) và phách của bài. Khi cắt mép, thanh còn bám vào **độ dài** của thanh khác: nhãn "= Tiến độ (0:12)" nghĩa là lúc đó hai lớp dài bằng nhau. Giữ Alt để tắt.
-- **Làn Nhạc:** bấm **Nhạc** dưới làn Phase để hiện làn hợp âm và một làn nốt cho mỗi track, giúp căn thanh theo nhạc. Làn này chỉ để xem nhạc; thứ duy nhất đổi được ở đây là ổ khoá của từng track.
+- **Làn Nhạc:** bấm **Nhạc** dưới làn Phase để hiện làn hợp âm và một làn nốt cho mỗi track, giúp căn thanh theo nhạc. Mỗi hàng track chỉnh được như danh sách Track ở thẻ Xem trước, và sửa ở đây thì Xem trước đổi theo:
+  - **Đổi thứ tự:** kéo tay nắm sáu chấm lên hoặc xuống, hoặc bấm vào tay nắm rồi Alt+Lên / Alt+Xuống.
+  - **Đổi màu:** bấm chấm màu để mở bộ chọn màu. Nốt của track trên làn đổi màu theo.
+  - **Ẩn / solo:** bấm mắt để ẩn track, bấm **S** để chỉ hiện các track solo. Track đang ẩn vẫn còn hàng (làn trống, tên gạch ngang) để bạn bật lại.
+  - **Khoá:** ổ khoá ở cuối hàng (xem **Khoá track** bên dưới).
+  - **Hoàn tác:** mỗi lần đổi là một bước hoàn tác (Ctrl+Z).
+- **Hàng trượt khi đổi thứ tự:** khi bạn đổi thứ tự lớp hoặc track, các hàng trượt nhẹ tới chỗ mới thay vì nhảy. Nếu máy đặt chế độ giảm chuyển động thì các hàng đổi chỗ ngay.
 - **Tách lớp tại vạch phát:** đặt vạch phát lên thanh, chọn lớp rồi bấm Ctrl+K (hoặc nút kéo cắt ở góc trên bên trái). Lớp thành hai lớp nối nhau: lớp gốc giữ phần trước, bản sao (nằm ngay trên) giữ phần sau. Mỗi lớp có keyframe riêng và chỉnh độc lập.
 - **Đưa thanh tới vạch phát:** `[` đưa đầu thanh tới vạch phát, `]` đưa cuối thanh tới vạch phát (cả thanh dời theo). Alt+`[` và Alt+`]` cắt đầu hoặc cuối thanh tại vạch phát.
 - **Dời từng chút:** Alt+← / Alt+→ dời 1/30 giây, thêm Shift để dời 1 giây.
