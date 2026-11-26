@@ -137,9 +137,9 @@
         "locales/en.json#web.layers.",
         "locales/en.json#web.comp."
       ],
-      "uiHash": "29c7afa77d64",
-      "viHash": "f440dd884db8",
-      "enHash": "d924eb3f4c0f",
+      "uiHash": "72caff41b0d3",
+      "viHash": "b8a1148e13f4",
+      "enHash": "a7bb2ed63dc0",
       "coverHashes": {
         "apps/web/src/components/Editor.tsx": "868f90108786",
         "apps/web/src/components/EditorOverlay.tsx": "c10a644a5f66",
@@ -152,7 +152,7 @@
         "apps/web/src/components/TextPanel.tsx": "dd7fca2212b6",
         "locales/en.json#web.text.": "13dd41db4149",
         "apps/web/src/components/WidgetSettings.tsx": "fd14aef49172",
-        "locales/en.json#web.ws.": "4bcd348b7008",
+        "locales/en.json#web.ws.": "7b6f1c5a0d63",
         "apps/web/src/components/TimeSections.tsx": "aa30f2bb1dd2",
         "apps/web/src/components/TimeField.tsx": "4627c46c0bf7",
         "locales/en.json#web.vis.": "97d170e1550e",
@@ -286,12 +286,12 @@
         "locales/en.json#web.widget.",
         "locales/en.json#web.tonic."
       ],
-      "uiHash": "541c3e2247e0",
+      "uiHash": "c73d6b4c229d",
       "viHash": "ae36005a4bf0",
       "enHash": "52d07dcea04a",
       "coverHashes": {
         "apps/web/src/components/WidgetSettings.tsx": "fd14aef49172",
-        "locales/en.json#web.ws.": "4bcd348b7008",
+        "locales/en.json#web.ws.": "7b6f1c5a0d63",
         "locales/en.json#web.widget.": "3a55f23fb070",
         "locales/en.json#web.tonic.": "2b1a6b41c82b"
       }
@@ -348,8 +348,8 @@
         "packages/render-core/src/parenting.ts"
       ],
       "uiHash": "249ab9f937c4",
-      "viHash": "e060f92fa4f5",
-      "enHash": "8100f4c55d42",
+      "viHash": "792abe86f7dc",
+      "enHash": "125d90afe3bd",
       "coverHashes": {
         "packages/render-core/src/insight.ts": "7279063ea2d7",
         "packages/render-core/src/naming.ts": "9a90045d7e7c",
