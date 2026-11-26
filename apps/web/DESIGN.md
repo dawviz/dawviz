@@ -238,6 +238,7 @@ Mọi component dùng token màu qua lớp Tailwind (`bg-surface`, `text-muted`,
 
 ### Ô nhập
 - **Ô số** (`NumberField`): nền `surface-raised`, viền `line-control`, chữ số đều căn phải, cao 24 px; kéo trên ô để đổi (Shift ×10, Alt ×0,1), gõ phép tính/đơn vị; lỗi hiện chữ + biểu tượng, viền `danger`.
+- **Ô cao độ** (`PitchField`, T-129): chính là `NumberField` với `format`/`parse` riêng: lưu số MIDI 0–127 nhưng hiện và nhận tên nốt (`C#3`), kéo theo nửa cung; dùng mẫu này cho mọi ô số cần hiện giá trị bằng chữ.
 - **Ô thời gian** (`TimeField`): cùng dáng, `m:ss.mmm`, có trạng thái tắt.
 - **Ô chọn** (`Select`): lớp `.field`, mũi tên vẽ bằng SVG.
 - **Ô màu** (`ColorField`, T-49): thay mọi `<input type="color">`. Ô vuông 24 px viền `line-control`, màu phủ trên nền ô cờ để thấy alpha; mở bảng nổi (portal, `surface-raised`, viền `line-strong`) gồm vùng độ bão hoà/độ sáng, thanh sắc màu, thanh alpha (chỉ khi ô nhận alpha), ô nhập mã (HEX 3/4/6/8, rgb, hsl, hsv, oklch, tên CSS), công tắc HEX/RGB/HSL/HSV (`.seg`), sao chép, hút màu (chỉ khi trình duyệt có EyeDropper) và 12 màu gần đây. Màu ra luôn `#rrggbb` hoặc `#rrggbbaa`; một lần kéo là một bước hoàn tác. Bàn phím: ←/→/↑/↓ trên vùng màu và thanh (Shift ×10), Esc đóng và trả tiêu điểm. Mã sai: chữ lỗi + biểu tượng, viền `danger`.
