@@ -117,6 +117,10 @@ test('nhóm có công tắc: sectionOn theo ô tiêu đề; danh sách có "Tắ
   const aura = WIDGET_SECTIONS.NOTATION!.find((s) => s.id === 'aura')!;
   assert.equal(sectionOn(aura, { aura: 'OFF' }), false);
   assert.equal(sectionOn(aura, { aura: 'BEAT' }), true);
+  for (const [id, off, on] of [['reveal', 'NONE', 'WRITE'], ['erase', 'NONE', 'RANDOM']] as const) { // T-132
+    const s = WIDGET_SECTIONS.NOTATION!.find((x) => x.id === id)!;
+    assert.equal(s.head, id); assert.equal(sectionOn(s, { [id]: off }), false); assert.equal(sectionOn(s, { [id]: on }), true);
+  }
   const glow = WIDGET_SECTIONS.NOTATION!.find((s) => s.id === 'glow')!;
   assert.equal(sectionOn(glow, {}), true, 'nhóm không có công tắc luôn bật (0 là tắt nằm ở chính ô số, D-71 quy tắc 1)');
 });
@@ -128,6 +132,10 @@ test('quy tắc 2 (D-71): ô phụ của phát sáng/phóng to Bản nhạc ẩn
   assert.equal(at('glowSize').when!({ ...P, glow: 0.5 }), true);
   assert.equal(at('zoomMode').when!({ ...P, zoom: 1 }), false);
   assert.equal(at('zoomMode').when!({ ...P, zoom: 1.4 }), true);
+  // T-132: ô phụ viết tay/xoá theo lựa chọn ở tiêu đề nhóm; tỉ lệ và seed chỉ cho Ngẫu nhiên
+  assert.equal(at('writeMs').when!({ ...P, reveal: 'NONE' }), false); assert.equal(at('writeMs').when!({ ...P, reveal: 'WRITE' }), true);
+  assert.equal(at('eraseAfterBars').when!({ ...P, erase: 'NONE' }), false); assert.equal(at('eraseAfterBars').when!({ ...P, erase: 'AFTER' }), true);
+  assert.equal(at('eraseAmount').when!({ ...P, erase: 'AFTER' }), false); assert.equal(at('eraseSeed').when!({ ...P, erase: 'RANDOM' }), true);
 });
 
 test('T-130 Phổ tần: ô của nhóm Đỉnh chỉ hiện khi kiểu Cột/Chấm và công tắc Chấm đỉnh bật (D-71)', () => {
