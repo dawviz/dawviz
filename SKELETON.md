@@ -224,6 +224,8 @@ dawviz/
 │     │  │  ├─ tempoRows.ts
 │     │  │  ├─ textRef.test.ts
 │     │  │  ├─ textRef.ts
+│     │  │  ├─ textStyles.test.ts
+│     │  │  ├─ textStyles.ts
 │     │  │  ├─ theme.test.ts
 │     │  │  ├─ theme.ts
 │     │  │  ├─ thumbnails.ts
@@ -268,7 +270,8 @@ dawviz/
 │     │  ├─ components.test.tsx
 │     │  ├─ confirmDialog.test.tsx
 │     │  ├─ pianoRollLook.test.tsx
-│     │  └─ setup.ts
+│     │  ├─ setup.ts
+│     │  └─ textStyles.test.tsx
 │     ├─ DESIGN.md
 │     ├─ index.html
 │     ├─ package.json
@@ -2136,6 +2139,7 @@ const Duplicate = (p: P) =>
 const Trash = (p: P) =>
 const Download = (p: P) =>
 const Pipette = (p: P) =>   // Ống hút màu (EyeDropper).
+const More = ({ className = 'h-4 w-4' }: P) =>
 const Close = (p: P) =>
 const ChevronLeft = (p: P) =>   // ── Panel và timeline (Editor) ──
 const PanelLeft = (p: P) =>   // Panel bên trái / phải / dưới: khung có một dải được tô (nút thu gọn, mở panel).
@@ -2366,7 +2370,7 @@ Mục "Chữ" của bảng Thuộc tính (T-72, SRS REQ-GRAPHICS-18, giao diện
 
 ```text
 interface TextPanelProps
-function TextPanel({ widget, styles, advanced, disabled, onRef, onStyles, onProps, reference }: TextPanelProps)
+function TextPanel({ widget, styles, advanced, disabled, onRef, onStyles, onProps, reference, uses, onRenameStyle, onDeleteStyle }: TextPanelProps)
 ```
 
 #### `apps/web/src/components/ThemeSelect.tsx`
@@ -2769,7 +2773,10 @@ const renameWidget = (d: Doc, widgetId: string, name: string | null) =>   // Đ�
 const setWidgetTracks = (d: Doc, widgetId: string, mode: 'ALL' | 'MANUAL', indices: number[]) =>   // Chọn track cho một widget (T-73): `ALL` = mọi track đang hiện, `MANUAL` = chỉ các track có chỉ số trong `indi…
 const patchWidgetProps = (d: Doc, widgetId: string, patch: Record<string, unknown>) =>   // Đổi một số thuộc tính (`properties`) của widget.
 const patchTextRef = (d: Doc, widgetId: string, field: string, next: TextRef, path: string) =>   // Đổi ghi đè kiểu chữ của một chỗ chữ (T-72). `path` là thuộc tính vừa đổi: kéo/gõ liên tiếp cùng thuộc tính gộ…
-const setTextStyles = (d: Doc, styles: TextStyleSet, widgetId: string, field: string, ref: TextRef, kind: 'save' | 'update') =>   // Đổi bộ kiểu chữ của scene ("Lưu thành kiểu mới", "Cập nhật kiểu"), kèm ghi đè mới của chỗ chữ vừa dùng. Một b…
+type TextStylesKind   // Đổi bộ kiểu chữ của scene ("Lưu thành kiểu mới", "Cập nhật kiểu", chọn một kiểu từ Thư viện của tôi: chép vào…
+const setTextStyles = (d: Doc, styles: TextStyleSet, widgetId: string, field: string, ref: TextRef, kind: TextStylesKind) =>
+const renameTextStyle = (d: Doc, id: string, name: string) =>   // Đổi tên một kiểu chữ của dự án (T-126). Chạy trên Doc gốc: kiểu là của cả dự án.
+const deleteTextStyle = (d: Doc, id: string) =>   // Xoá kiểu chữ người dùng tạo (T-126): mọi chỗ chữ đang dùng nó, ở gốc và trong mọi precomp, về kiểu gốc của ch…
 const addWidget = (d: Doc, w: WidgetSpec) =>   // Thêm widget (T-68). Một bước hoàn tác.
 const addWidgets = (d: Doc, ws: WidgetSpec[], refs: Doc['propsRef'] = {}, comps: Record<string, CompSpec> = {}) =>   // Thêm nhiều widget một lúc (nhân bản vùng chọn).
 const removeWidgets = (d: Doc, ids: readonly string[]) =>   // Xoá widget (T-68). Hoàn tác trả widget về đúng chỗ trong tài liệu (giữ thứ tự và zIndex). Con của widget bị x…
@@ -3719,6 +3726,27 @@ const overrideCount = (ref: TextRef | undefined) =>   // Số thuộc tính đan
 function newStyleId(styles: TextStyleSet, name: string): string   // Id kiểu mới từ tên (chữ Latin, số, gạch), không trùng id có sẵn.
 ```
 
+#### `apps/web/src/lib/textStyles.ts`
+
+Kiểu chữ dùng chung (T-126, D-73, WIDGET-REVAMP §3): đếm chỗ dùng, đổi tên, xoá kiểu, và "Thư viện của tôi" (kiểu mang giữa các dự án,
+
+```text
+const MAX_TEXT_STYLES   // Trần số kiểu chữ của một dự án (render-core bỏ kiểu thứ 65 trở đi khi đọc preset).
+const MAX_LIBRARY   // Trần số kiểu trong Thư viện của tôi.
+const MAX_STYLE_NAME   // Độ dài tên kiểu tối đa (như render-core khi đọc preset).
+const isBuiltinStyle = (id: string) =>   // Kiểu dựng sẵn (không xoá được; đổi tên được).
+function styleUseCounts(scene: SceneDocument): Record<string, number>   // Số chỗ chữ dùng mỗi kiểu trong cả dự án (widget ở gốc và trong mọi precomp). Một dòng chữ dùng kiểu `styleId`…
+function renameTextStyle(set: TextStyleSet, id: string, name: string): TextStyleSet | null   // Đổi tên một kiểu. null = không có kiểu đó, tên rỗng hoặc không đổi.
+function deleteTextStyle(scene: SceneDocument, id: string): Pick<SceneDocument, 'textStyles' | 'widgets' | 'comps'> | null   // Xoá kiểu người dùng tạo: bỏ khỏi `textStyles`; mọi chỗ chữ đang chọn kiểu đó (gốc và precomp) bỏ `styleId`, t…
+interface LibraryStyle   // ── Thư viện của tôi ──
+function sanitizeLibrary(raw: unknown): LibraryStyle[]   // Thư viện hợp lệ từ dữ liệu bất kỳ (tệp hỏng, bản cũ): bỏ mục sai, id trùng, quá MAX_LIBRARY.
+function addToLibrary(lib: readonly LibraryStyle[], name: string, style: TextStyle): LibraryStyle[] | null   // Lưu một kiểu vào thư viện. Đã có kiểu cùng tên thì thay nội dung (giữ id, giữ chỗ); chưa có thì thêm cuối. nu…
+const removeFromLibrary = (lib: readonly LibraryStyle[], id: string) =>
+function copyFromLibrary(set: TextStyleSet, item: LibraryStyle):    // Chép một kiểu từ thư viện vào bộ kiểu của dự án (preset tự đủ, không phụ thuộc máy này): id mới không trùng, …
+const loadLibrary = () =>
+const saveLibrary = (lib: readonly LibraryStyle[]) =>
+```
+
 #### `apps/web/src/lib/theme.ts`
 
 Theme giao diện ứng dụng (REQ-UI-10, D-52): chỉ đổi màu qua bộ token cố định (UI-DIRECTION mục 5.2, 5.4).
@@ -4154,6 +4182,7 @@ type SpectrumOut
 - `apps/web/src/lib/store.test.ts`
 - `apps/web/src/lib/tempoRows.test.ts`
 - `apps/web/src/lib/textRef.test.ts`
+- `apps/web/src/lib/textStyles.test.ts`
 - `apps/web/src/lib/theme.test.ts`
 - `apps/web/src/lib/timeText.test.ts`
 - `apps/web/src/lib/timeline.test.ts`
@@ -4167,6 +4196,7 @@ type SpectrumOut
 - `apps/web/test/components.test.tsx`
 - `apps/web/test/confirmDialog.test.tsx`
 - `apps/web/test/pianoRollLook.test.tsx`
+- `apps/web/test/textStyles.test.tsx`
 - `packages/expr/test/expr.test.ts`
 - `packages/render-core/test/animate-scale.test.ts`
 - `packages/render-core/test/animation.test.ts`
@@ -4214,4 +4244,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 11 thư mục src, 1933 ký hiệu công khai -->
+<!-- 11 thư mục src, 1951 ký hiệu công khai -->
