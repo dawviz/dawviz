@@ -3,6 +3,7 @@
 // (test `widgetFields.test.ts` bắt thiết lập có trong mặc định mà thiếu trong bảng). Hàm thuần, không DOM.
 import { NOTE_TRANSITION_NAMES, type WidgetSpec, type WidgetType } from '@dawviz/render-core';
 import { ANIM_EFFECTS, ANIM_ORDERS, ANIM_UNITS, DEFAULT_TEXT_ANIMATOR, EASING_NAMES, SPECTRUM_STYLES } from '@dawviz/render-core';
+import { DEFAULT_KEYBOARD_STYLE, DEFAULT_ROLL_GRID, KEYBOARD_SCALES, KEYBOARD_SHAPES, KEY_LABEL_MODES, PLAYHEAD_HITS, PLAYHEAD_STYLES, widgetDefaults } from '@dawviz/render-core';
 
 type Obj = Record<string, unknown>;
 export type FieldKind = 'check' | 'num' | 'choice' | 'select' | 'color' | 'colorOpt' | 'text' | 'asset';
@@ -26,6 +27,8 @@ export interface FieldDef {
   prefix?: string;
   /** Lựa chọn hiện đúng giá trị (tên kỹ thuật như tên easing), không dịch qua `prefix`. */
   raw?: boolean;
+  /** kind 'select': thêm các lane automation của dự án đang mở (T-66) vào `options`, gọi theo tên lane. */
+  lanes?: boolean;
   /** kind 'text'. `placeholder`: khoá con của `web.ws.*` khi để trống. */
   text?: { max?: number; multiline?: boolean; placeholder?: string };
   testId?: string;
@@ -38,14 +41,20 @@ const ta = (P: Obj) => (P.animator ?? {}) as Obj;
 const taOn = (P: Obj) => !!ta(P).enabled;
 const taCustom = (P: Obj) => taOn(P) && ta(P).effect === 'custom';
 /** Đối tượng lồng tuỳ chọn và giá trị mặc định của nó: bảng Thiết lập đọc/ghi trên bản đã trộn, nên bật lần đầu ghi đủ trường. */
-const NESTED_DEFAULTS: Partial<Record<WidgetType, Obj>> = { TEXT: { animator: DEFAULT_TEXT_ANIMATOR as unknown as Obj } };
-export function withNestedDefaults(type: WidgetType, P: Obj): Obj {
-  const d = NESTED_DEFAULTS[type]; if (!d) return P;
+const NESTED_DEFAULTS: Partial<Record<WidgetType, Obj>> = { TEXT: { animator: DEFAULT_TEXT_ANIMATOR as unknown as Obj }, PIANO_ROLL: { keyboard: DEFAULT_KEYBOARD_STYLE as unknown as Obj, grid: DEFAULT_ROLL_GRID as unknown as Obj } };
+/** Piano Roll của tài liệu cũ có thể thiếu các trường phẳng mới (T-58/T-59): lấy mặc định của loại. */
+const FLAT_DEFAULTS: Partial<Record<WidgetType, () => Obj>> = { PIANO_ROLL: () => widgetDefaults('PIANO_ROLL') };
+export function withNestedDefaults(type: WidgetType, P0: Obj): Obj {
+  const d = NESTED_DEFAULTS[type]; if (!d) return P0;
+  const flat = FLAT_DEFAULTS[type], P = flat && Object.keys(flat()).some((k) => !(k in P0)) ? { ...flat(), ...P0 } : P0;
   let out = P;
   for (const [k, v] of Object.entries(d)) out = { ...out, [k]: { ...(v as Obj), ...((P[k] as Obj | undefined) ?? {}) } };
   return out;
 }
 const LINES = ['played', 'total', 'progress', 'tempo'] as const;
+const kb = (P: Obj) => (P.keyboard ?? {}) as Obj;
+const kbOn = (P: Obj) => !!kb(P).enabled;
+const gridOn = (P: Obj) => { const g = (P.grid ?? {}) as Obj; return !!(g.bars || g.beats || g.numbers); };
 /** Số chữ số tối thiểu của mỗi nhóm trong kiểu "nhóm số" (001 35 083): 1–8, như lược đồ preset. */
 const DIGITS = { min: 1, max: 8, step: 1 } as const;
 
@@ -223,6 +232,82 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['dimColor'], 'color', 'inDimColor', { adv: true }),
     L(['dimAlpha'], 'num', 'inDimAlpha', { adv: true, num: { min: 0, max: 1, step: 0.05 } }),
     L(['ring'], 'num', 'inRing', { adv: true, num: { min: 0.1, max: 0.5, step: 0.01 } }),
+    // Kiểu bảng phân tích (REFERENCE-VIDEOS video 3): bậc La Mã, nút tròn, đa giác nối nốt, cung tiến độ, số phách.
+    L(['labels'], 'choice', 'inWheelLabels', { when: (P) => !!P.showNames, options: ['NAMES', 'DEGREES'], prefix: 'web.ws.inWheelLabels.' }),
+    L(['nodeShape'], 'choice', 'inNodeShape', { options: ['TILE', 'CIRCLE'], prefix: 'web.ws.inNodeShape.' }),
+    L(['chordAs'], 'choice', 'inChordAs', { when: (P) => !!P.showChord, options: ['NAME', 'DEGREE'], prefix: 'web.ws.inChordAs.' }),
+    L(['subTemplate'], 'text', 'inSubTemplate', { text: { max: 200 } }),
+    L(['polygon'], 'check', 'inPolygon'),
+    L(['progress'], 'choice', 'inProgressRing', { options: ['OFF', 'BAR', 'SONG'], prefix: 'web.ws.inProgressRing.' }),
+    L(['beatMarks'], 'check', 'inBeatMarks'),
+    L(['rootColor'], 'colorOpt', 'inRootColor', { adv: true }),
+    L(['polygonColor'], 'colorOpt', 'inPolygonColor', { adv: true, when: (P) => !!P.polygon }),
+    L(['polygonAlpha'], 'num', 'inPolygonAlpha', { adv: true, when: (P) => !!P.polygon, num: { min: 0, max: 1, step: 0.05 } }),
+    L(['progressColor'], 'colorOpt', 'inProgressColor', { adv: true, when: (P) => P.progress !== 'OFF' }),
+    L(['progressWidth'], 'num', 'inProgressWidth', { adv: true, when: (P) => P.progress !== 'OFF', num: { min: 0.5, max: 40, step: 0.5, range: [1, 12] } }),
+    L(['outlineColor'], 'colorOpt', 'inOutlineColor', { adv: true }),
+    L(['litTextColor'], 'colorOpt', 'inLitTextColor', { adv: true, when: (P) => P.nodeShape === 'CIRCLE' }),
+    L(['romanStyle'], 'choice', 'inRomanStyle', { adv: true, when: (P) => P.labels === 'DEGREES' || P.chordAs === 'DEGREE', options: ['SUFFIX', 'CASE'], prefix: 'web.ws.inRomanStyle.' }),
+    L(['windowSec'], 'num', 'inKeyWindow', { adv: true, when: (P) => P.labels === 'DEGREES' || P.chordAs === 'DEGREE', num: { min: 2, max: 120, step: 1, range: [4, 60] } }),
+  ],
+  // Bảng phân tích (dashboard.ts, T-107/T-109).
+  PANEL: [
+    L(['number'], 'text', 'pnNumber', { text: { max: 8 } }),
+    L(['title'], 'text', 'pnTitle', { text: { max: 60 } }),
+    L(['numberColor'], 'colorOpt', 'pnNumberColor'),
+    L(['frame'], 'check', 'pnFrame'),
+    L(['frameColor'], 'color', 'pnFrameColor', { when: (P) => !!P.frame }),
+    ...[0, 1, 2, 3, 4, 5].flatMap((i) => {
+      const shown = (P: Obj) => i === 0 || (() => { const s = ((P.stats as Obj[] | undefined) ?? [])[i - 1] ?? {}; return !!(s.label || s.value); })();
+      return [
+        L(['stats', String(i), 'label'], 'text', 'pnStatLabel', { group: `pnStat${i + 1}`, when: shown, text: { max: 60 } }),
+        L(['stats', String(i), 'value'], 'text', 'pnStatValue', { group: `pnStat${i + 1}`, when: shown, text: { max: 120 } }),
+      ];
+    }),
+    L(['frameWidth'], 'num', 'pnFrameWidth', { adv: true, when: (P) => !!P.frame, num: { min: 0, max: 20, step: 0.5, range: [0, 4] } }),
+    L(['fillColor'], 'colorOpt', 'pnFillColor', { adv: true, when: (P) => !!P.frame }),
+    L(['fillAlpha'], 'num', 'pnFillAlpha', { adv: true, when: (P) => !!P.frame && !!P.fillColor, num: { min: 0, max: 1, step: 0.05 } }),
+  ],
+  DEGREE: [
+    L(['windowBars'], 'num', 'dgWindowBars', { num: { min: 1, max: 64, step: 1, range: [2, 16] } }),
+    L(['resolution'], 'choice', 'dgResolution', { options: ['BAR', 'HALF', 'BEAT', 'CHANGE'], prefix: 'web.ws.dgResolution.' }),
+    L(['showDetail'], 'check', 'dgShowDetail'),
+    L(['showFunction'], 'check', 'dgShowFunction'),
+    L(['showBars'], 'check', 'dgShowBars'),
+    L(['romanStyle'], 'choice', 'inRomanStyle', { options: ['SUFFIX', 'CASE'], prefix: 'web.ws.inRomanStyle.' }),
+    L(['accentColor'], 'color', 'dgAccent'),
+    L(['playheadRatio'], 'num', 'dgPlayhead', { adv: true, num: { min: 0, max: 1, step: 0.01 } }),
+    L(['detailColor'], 'color', 'dgDetailColor', { adv: true, when: (P) => !!P.showDetail }),
+    L(['blockColor'], 'color', 'dgBlockColor', { adv: true }),
+    L(['activeTextColor'], 'color', 'dgActiveText', { adv: true }),
+    L(['pastAlpha'], 'num', 'dgPastAlpha', { adv: true, num: { min: 0, max: 1, step: 0.05 } }),
+    L(['tonicColor'], 'color', 'dgTonic', { adv: true, when: (P) => !!P.showFunction }),
+    L(['subdominantColor'], 'color', 'dgSubdominant', { adv: true, when: (P) => !!P.showFunction }),
+    L(['dominantColor'], 'color', 'dgDominant', { adv: true, when: (P) => !!P.showFunction }),
+    L(['playheadColor'], 'colorOpt', 'inPlayheadColor', { adv: true }),
+    L(['radius'], 'num', 'radius', { adv: true, num: { min: 0, max: 40, step: 1, range: [0, 16] } }),
+    L(['gap'], 'num', 'dgGap', { adv: true, num: { min: 0, max: 40, step: 1, range: [0, 12] } }),
+    L(['keyWindowSec'], 'num', 'inKeyWindow', { adv: true, num: { min: 2, max: 120, step: 1, range: [4, 60] } }),
+  ],
+  DOTS: [
+    L(['grid'], 'choice', 'dtGrid', { options: [4, 8, 16, 32], prefix: 'web.ws.dtGrid.' }),
+    L(['cols'], 'num', 'dtCols', { num: { min: 8, max: 256, step: 1, range: [16, 128] } }),
+    L(['pitchRangeMode'], 'choice', 'dtRange', { options: ['FIT_CONTENT', 'CUSTOM'], prefix: 'web.ws.dtRange.' }),
+    L(['pitchMin'], 'num', 'dtPitchMin', { when: (P) => P.pitchRangeMode === 'CUSTOM', num: { min: 0, max: 127, step: 1 } }),
+    L(['pitchMax'], 'num', 'dtPitchMax', { when: (P) => P.pitchRangeMode === 'CUSTOM', num: { min: 0, max: 127, step: 1 } }),
+    L(['maxRows'], 'num', 'dtMaxRows', { adv: true, num: { min: 8, max: 128, step: 1, range: [12, 64] } }),
+    L(['shape'], 'choice', 'dtShape', { options: ['ROUND', 'SQUARE'], prefix: 'web.ws.dtShape.' }),
+    L(['dotSize'], 'num', 'dtDotSize', { num: { min: 0.05, max: 1, step: 0.05 } }),
+    L(['colorMode'], 'choice', 'inColorMode', { options: ['TRACK', 'SOLID'], prefix: 'web.ws.inColor.' }),
+    L(['color'], 'color', 'dtColor', { when: (P) => P.colorMode === 'SOLID' }),
+    L(['emptyColor'], 'color', 'dtEmpty'),
+    L(['emptyColorB'], 'colorOpt', 'dtEmptyB', { adv: true }),
+    L(['emptyAlpha'], 'num', 'dtEmptyAlpha', { adv: true, num: { min: 0, max: 1, step: 0.05 } }),
+    L(['upcomingAlpha'], 'num', 'inUpcomingAlpha', { adv: true, num: { min: 0, max: 1, step: 0.05 } }),
+    L(['activeScale'], 'num', 'dtActiveScale', { adv: true, num: { min: 1, max: 3, step: 0.1 } }),
+    L(['playheadRatio'], 'num', 'dgPlayhead', { adv: true, num: { min: 0, max: 1, step: 0.01 } }),
+    L(['playheadColor'], 'colorOpt', 'inPlayheadColor', { adv: true }),
+    L(['playheadWidth'], 'num', 'inPlayheadWidth', { adv: true, num: { min: 0, max: 10, step: 0.5 } }),
   ],
   ARRANGEMENT: [
     L(['cols'], 'num', 'inCols', { num: { min: 16, max: 600, step: 4, range: [32, 300] } }),
@@ -258,7 +343,7 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['gapSec'], 'num', 'inGapSec', { adv: true, num: { min: 0.5, max: 10, step: 0.1 } }),
   ],
   AUTOMATION: [
-    L(['lane'], 'choice', 'inLane', { options: ['volume', 'pan'], prefix: 'web.ws.inLane.' }),
+    L(['lane'], 'select', 'inLane', { options: ['volume', 'pan'], prefix: 'web.ws.inLane.', lanes: true, testId: 'ws-lane' }),
     L(['windowSec'], 'num', 'inAutoWindow', { num: { min: 0, max: 1800, step: 1, range: [0, 120] } }),
     L(['playheadRatio'], 'num', 'inAutoRatio', { when: (P) => Number(P.windowSec) > 0, num: { min: 0, max: 1, step: 0.05 } }),
     L(['colorMode'], 'choice', 'inColorMode', { options: ['TRACK', 'SOLID'], prefix: 'web.ws.inColor.' }),
@@ -271,8 +356,40 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['ceilDb'], 'num', 'inCeilDb', { adv: true, when: (P) => P.lane === 'volume', num: { min: -120, max: 24, step: 1, range: [-24, 12] } }),
     L(['playheadColor'], 'colorOpt', 'inPlayheadColor', { adv: true }),
   ],
+  // Piano Roll: hình thức nốt, dải cao độ, bật bàn phím, vị trí vạch phát ở mục Hình thức (StylePanel); ở đây là phần còn lại (T-58, T-51, T-59, lưới ô nhịp).
   PIANO_ROLL: [
     L(['transition'], 'select', 'pianoTransition', { options: NOTE_TRANSITION_NAMES, prefix: 'web.ws.pianoTransition.' }),
+    // Hướng chảy (T-59)
+    L(['flowAngle'], 'num', 'prFlowAngle', { num: { min: 0, max: 360, step: 1 }, testId: 'ws-pr-angle' }),
+    L(['flowMirror'], 'check', 'prFlowMirror'),
+    L(['labelsUpright'], 'check', 'prLabelsUpright', { adv: true, when: (P) => Number(P.flowAngle) % 360 !== 0 }),
+    // Vạch phát (T-58)
+    L(['playheadStyle'], 'select', 'prPhStyle', { when: (P) => !!P.playheadVisible, options: PLAYHEAD_STYLES, prefix: 'web.ws.prPhStyle.', testId: 'ws-pr-ph-style' }),
+    L(['playheadWidth'], 'num', 'prPhWidth', { when: (P) => !!P.playheadVisible, num: { min: 0, max: 40, step: 0.5, range: [0, 12] } }),
+    L(['playheadColor'], 'color', 'prPhColor', { when: (P) => !!P.playheadVisible }),
+    L(['playheadArrows'], 'check', 'prPhArrows', { when: (P) => !!P.playheadVisible }),
+    L(['playheadHit'], 'choice', 'prPhHit', { when: (P) => !!P.playheadVisible, options: PLAYHEAD_HITS, prefix: 'web.ws.prPhHit.' }),
+    L(['playheadHitMs'], 'num', 'prPhHitMs', { adv: true, when: (P) => !!P.playheadVisible && P.playheadHit !== 'OFF', num: { min: 30, max: 2000, step: 10, range: [50, 800] } }),
+    L(['playheadLength'], 'num', 'prPhLength', { adv: true, when: (P) => !!P.playheadVisible, num: { min: 0.05, max: 1, step: 0.05 } }),
+    L(['playheadGlow'], 'num', 'prPhGlow', { adv: true, when: (P) => !!P.playheadVisible, num: { min: 0, max: 1, step: 0.05 } }),
+    // Bàn phím (T-51)
+    L(['keyboard', 'shape'], 'choice', 'prKbShape', { when: kbOn, options: KEYBOARD_SHAPES, prefix: 'web.ws.prKbShape.' }),
+    L(['keyboard', 'labels'], 'select', 'prKbLabels', { when: kbOn, options: KEY_LABEL_MODES, prefix: 'web.ws.prKbLabels.', testId: 'ws-pr-kb-labels' }),
+    L(['keyboard', 'labelOctave'], 'check', 'prKbLabelOctave', { when: (P) => kbOn(P) && kb(P).labels !== 'NONE' }),
+    L(['keyboard', 'labelColor'], 'colorOpt', 'prKbLabelColor', { adv: true, when: (P) => kbOn(P) && kb(P).labels !== 'NONE' }),
+    L(['keyboard', 'scale'], 'select', 'prKbScale', { when: kbOn, options: KEYBOARD_SCALES, prefix: 'web.ws.prKbScale.' }),
+    L(['keyboard', 'scaleColor'], 'color', 'prKbScaleColor', { when: (P) => kbOn(P) && kb(P).scale !== 'OFF' }),
+    L(['keyboard', 'scaleOpacity'], 'num', 'prKbScaleOpacity', { adv: true, when: (P) => kbOn(P) && kb(P).scale !== 'OFF', num: { min: 0, max: 1, step: 0.05 } }),
+    L(['keyboard', 'useTrackColor'], 'check', 'prKbTrackColor', { when: kbOn }),
+    L(['keyboard', 'pressedColor'], 'color', 'prKbPressed', { when: (P) => kbOn(P) && !kb(P).useTrackColor }),
+    L(['keyboard', 'whiteColor'], 'color', 'prKbWhite', { adv: true, when: kbOn }),
+    L(['keyboard', 'blackColor'], 'color', 'prKbBlack', { adv: true, when: kbOn }),
+    // Lưới ô nhịp
+    L(['grid', 'bars'], 'check', 'prGridBars', { testId: 'ws-pr-grid-bars' }),
+    L(['grid', 'beats'], 'check', 'prGridBeats'),
+    L(['grid', 'numbers'], 'check', 'prGridNumbers'),
+    L(['grid', 'color'], 'color', 'prGridColor', { when: gridOn }),
+    L(['grid', 'opacity'], 'num', 'prGridOpacity', { when: gridOn, num: { min: 0, max: 1, step: 0.05 } }),
   ],
   // Ảnh của phiên (T-21): chọn ảnh/SVG, cách khớp; sprite sheet (lưới, số khung, tốc độ) ở Nâng cao.
   IMAGE: [
@@ -367,7 +484,9 @@ export const SETTINGS_EXEMPT: Readonly<Record<string, readonly string[]>> = {
   BAR_BEAT: ['align', 'style'],
   KEY_SCALE: ['align', 'nameStyle', 'confStyle'],
   DENSITY: ['polyStyle'],
-  PITCH_WHEEL: ['nameStyle', 'chordStyle'],
+  PITCH_WHEEL: ['nameStyle', 'chordStyle', 'subStyle'],
+  PANEL: ['titleStyle', 'labelStyle', 'valueStyle'],
+  DEGREE: ['labelStyle', 'smallStyle'],
   DRUM_PAD: ['labelStyle'],
   SECTION: ['align', 'style', 'nextStyle'],
   LYRICS: ['align', 'style', 'unsungStyle', 'nextStyle'],
@@ -408,4 +527,4 @@ export function advancedEdited(widget: Pick<WidgetSpec, 'type' | 'trackMappingMo
   return adv || (widget.type !== 'TEXT' && widget.type !== 'NOTATION' && TRACK_WIDGETS.includes(widget.type) && widget.trackMappingMode === 'MANUAL');
 }
 /** Widget đọc số liệu từ các track nên có mục chọn track (Ô chữ ở Cơ bản, còn lại ở Nâng cao). */
-export const TRACK_WIDGETS: readonly string[] = ['TEXT', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'CHORD_DETECTION', 'PARTICLES', 'NOTATION', 'KEY_SCALE', 'VELOCITY', 'DENSITY', 'PITCH_WHEEL', 'ARRANGEMENT', 'DRUM_PAD', 'AUTOMATION'];
+export const TRACK_WIDGETS: readonly string[] = ['TEXT', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'CHORD_DETECTION', 'PARTICLES', 'NOTATION', 'KEY_SCALE', 'VELOCITY', 'DENSITY', 'PITCH_WHEEL', 'ARRANGEMENT', 'DRUM_PAD', 'AUTOMATION', 'PANEL', 'DEGREE', 'DOTS'];

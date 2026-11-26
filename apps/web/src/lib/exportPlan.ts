@@ -87,6 +87,46 @@ export function exportDuration(opts: { projectSec: number; audioSec?: number; ra
   return { start: 0, duration: Math.max(opts.projectSec, opts.audioSec ?? 0) + TAIL_SECONDS };
 }
 
+/**
+ * Đoạn xuất Start→End do người dùng nhập (D-10, KPI-05), kẹp trong [0, total] (total = độ dài khi xuất cả bài).
+ * `ok` false khi đoạn rỗng hoặc ngắn hơn một khung (`minSec`): giao diện khoá nút Bắt đầu và báo lý do.
+ */
+export function normalizeRange(r: { start: number; end: number }, total: number, minSec = 0): { start: number; end: number; ok: boolean } {
+  const T = Math.max(0, Number.isFinite(total) ? total : 0);
+  const clamp = (v: number) => Math.min(T, Math.max(0, Number.isFinite(v) ? v : 0));
+  const start = clamp(r.start), end = clamp(r.end);
+  return { start, end, ok: end - start > 0 && end - start >= minSec - 1e-9 };
+}
+
+/** Giây → `1m05s` / `0m45.5s` cho tên tệp (không có `:`, ký tự cấm trên Windows). */
+const fileTime = (sec: number): string => {
+  const ms = Math.round(Math.max(0, sec) * 1000), m = Math.floor(ms / 60000), s = (ms - m * 60000) / 1000;
+  const ss = String(Math.floor(s)).padStart(2, '0') + (Number.isInteger(s) ? '' : (s % 1).toFixed(3).slice(1).replace(/0+$/, ''));
+  return `${m}m${ss}s`;
+};
+/**
+ * Tên tệp xuất (không đuôi), chốt trước khi render (D-26): `tên_1920x1080_30fps`, thêm `_0m45s-1m45s` khi xuất một đoạn.
+ * Chuỗi PNG dùng nó làm tên gốc: `tên_1920x1080_30fps_000001.png` (REQ-EXPORT-08).
+ */
+export function exportBaseName(base: string, o: { width: number; height: number; fps: number; range?: { start: number; end: number } | null }): string {
+  const r = o.range ? `_${fileTime(o.range.start)}-${fileTime(o.range.end)}` : '';
+  return `${base}_${o.width}x${o.height}_${o.fps}fps${r}`;
+}
+
+/**
+ * Đặt khung video (tỉ lệ `designW:designH`) vào kích thước xuất `width × height` khi hai tỉ lệ khác nhau (kích thước tuỳ ý bỏ "giữ tỉ lệ"):
+ * thu nhỏ vừa khít, căn giữa, phần thừa thành viền (letterbox). `fits` true khi tỉ lệ trùng (sai lệch < 1 điểm ảnh): vẽ thẳng, không viền.
+ */
+export function fitRect(designW: number, designH: number, width: number, height: number): { x: number; y: number; w: number; h: number; fits: boolean } {
+  const k = Math.min(width / designW, height / designH);
+  const w = Math.round(designW * k), h = Math.round(designH * k);
+  const fits = Math.abs(w - width) <= 1 && Math.abs(h - height) <= 1;
+  return fits ? { x: 0, y: 0, w: width, h: height, fits } : { x: Math.round((width - w) / 2), y: Math.round((height - h) / 2), w, h, fits };
+}
+/** Cao theo rộng (hoặc ngược lại) khi "giữ tỉ lệ khung video". */
+export const heightForWidth = (w: number, designW: number, designH: number): number => Math.round((w * designH) / designW);
+export const widthForHeight = (h: number, designW: number, designH: number): number => Math.round((h * designW) / designH);
+
 /** N = ceil(Duration × FPS); sai số nhị phân không được làm thừa một khung (0,1 s × 30 = 3,0000000000000004). */
 export const frameCount = (duration: number, fps: number): number => (duration > 0 ? Math.ceil(duration * fps - 1e-6) : 0);
 export const frameTime = (start: number, k: number, fps: number): number => start + k / fps;

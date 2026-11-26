@@ -8,6 +8,7 @@
 // Cơ bản: màu, ẩn/hiện, solo, thông tin track. Kéo tay nắm 6 chấm đổi thứ tự (cả hai chế độ). Nâng cao thêm: độ sáng nền và ngưỡng (REQ-UI-13).
 // Ẩn/hiện, solo và thứ tự là việc của ứng dụng (lọc/sắp danh sách track trước khi đưa cho Render Core), không đổi Render Core.
 import { useEffect, useLayoutEffect, useRef, useState, type DragEvent, type KeyboardEvent, type ReactNode, type RefObject } from 'react';
+import { ColorField } from './ColorField.tsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import { BRIGHTNESS_DB_RANGE, DEFAULT_BRIGHTNESS, pitchName, trackBrightness, type ProjectTrack, type BrightnessConfig, type BrightnessSource, type NoteStyle, type TempoPoint } from '@dawviz/render-core';
 import { SliderField } from './SliderField.tsx';
@@ -56,6 +57,8 @@ interface Props {
   /** Bấm giữ rồi kéo qua các mắt (hoặc S): đặt cùng một giá trị cho từng track đi qua. `gesture` gộp cả lần kéo thành một bước hoàn tác. */
   onPaint?(kind: PaintKind, id: string, on: boolean): void;
   gesture?: { begin(): void; end(): void };
+  /** Track đã khoá ở làn Nhạc của timeline Editor (D-57, T-52): mắt, S, màu, tay nắm và phần chỉnh độ sáng bị vô hiệu. Không có nút khoá ở đây. */
+  locked?: ReadonlySet<string>;
 }
 export type PaintKind = 'hide' | 'solo';
 
@@ -179,7 +182,8 @@ export function TrackColumnsHead({ p, className = '', compact, lead, padRight = 
 function TrackHeader({ tr, i, p, expanded, onExpand, focusRef }: { tr: ProjectTrack; i: number; p: Props; expanded?: boolean; onExpand?(): void; focusRef: RefObject<HTMLElement> }) {
   const { i18n } = useI18n();
   const view = p.view ?? EMPTY_VIEW;
-  const shown = isShown(tr.id, view), hidden = view.hidden.has(tr.id), solo = view.solo.has(tr.id);
+  const shown = isShown(tr.id, view), hidden = view.hidden.has(tr.id), solo = view.solo.has(tr.id), lk = !!p.locked?.has(tr.id);
+  const lockTip = lk ? ` — ${i18n.t('web.track.lockedHint')}` : '';
   const c = p.config[tr.id] ?? DEFAULT_BRIGHTNESS;
   const nameCls = `min-w-0 flex-1 truncate text-left text-[13px] ${shown ? 'text-fg' : 'text-muted line-through decoration-line-strong/40'}`;
   const onKey = (e: KeyboardEvent<HTMLElement>) => {
@@ -188,7 +192,7 @@ function TrackHeader({ tr, i, p, expanded, onExpand, focusRef }: { tr: ProjectTr
   return (
     <div className="flex min-w-0 flex-1 items-center gap-1.5">
       {p.onMove && (
-        <button type="button" draggable data-track-grip={tr.id} aria-label={i18n.t('web.track.reorder', { name: tr.name })} title={i18n.t('web.track.reorder', { name: tr.name })}
+        <button type="button" draggable={!lk} disabled={lk} data-track-grip={tr.id} aria-label={i18n.t('web.track.reorder', { name: tr.name })} title={i18n.t('web.track.reorder', { name: tr.name }) + lockTip}
           className="hit -ml-2 grid h-6 w-6 shrink-0 cursor-grab place-items-center text-faint hover:text-fg active:cursor-grabbing"
           onDragStart={(e) => { e.dataTransfer.setData('text/x-dawviz-track', tr.id); e.dataTransfer.effectAllowed = 'move'; }}
           onKeyDown={(e) => {
@@ -201,8 +205,8 @@ function TrackHeader({ tr, i, p, expanded, onExpand, focusRef }: { tr: ProjectTr
           <Grip className="h-3.5 w-3.5" />
         </button>
       )}
-      <input type="color" aria-label={`${i18n.t('web.track.color')}: ${tr.name}`} className="swatch"
-        value={p.overrides[tr.id]?.customColor ?? tr.color} onChange={(e) => p.onStyle(tr.id, { colorMode: 'custom', customColor: e.target.value })} />
+      <ColorField variant="swatch" label={`${i18n.t('web.track.color')}: ${tr.name}`} disabled={lk} title={lk ? i18n.t('web.track.lockedHint') : undefined}
+        value={p.overrides[tr.id]?.customColor ?? tr.color} onChange={(c) => p.onStyle(tr.id, { colorMode: 'custom', customColor: c })} />
       {onExpand ? (
         <button type="button" data-track-focus aria-expanded={expanded} onClick={onExpand} onKeyDown={onKey} title={tr.name}
           className="flex min-h-[var(--hit)] min-w-0 flex-1 items-center gap-1 rounded-sm py-0.5 focus:outline-none focus-visible:ring-1 focus-visible:ring-focus">
@@ -213,11 +217,11 @@ function TrackHeader({ tr, i, p, expanded, onExpand, focusRef }: { tr: ProjectTr
         <span title={tr.name} className={`${nameCls} font-semibold`}>{tr.name}</span>
       )}
       {p.onToggleHidden && (
-        <button type="button" className="tog touch-none" data-paint={p.onPaint ? 'hide' : undefined} data-paint-id={tr.id} aria-pressed={hidden} aria-label={i18n.t('web.track.hide', { name: tr.name })} title={i18n.t('web.track.hide', { name: tr.name })}
+        <button type="button" className="tog touch-none disabled:opacity-40" disabled={lk} data-paint={p.onPaint ? 'hide' : undefined} data-paint-id={tr.id} aria-pressed={hidden} aria-label={i18n.t('web.track.hide', { name: tr.name })} title={i18n.t('web.track.hide', { name: tr.name }) + lockTip}
           onClick={(e) => { if (!p.onPaint || clickIsKeyboard(e)) p.onToggleHidden!(tr.id); }}>{hidden ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}</button>
       )}
       {p.onToggleSolo && (
-        <button type="button" className="tog touch-none text-xs" data-paint={p.onPaint ? 'solo' : undefined} data-paint-id={tr.id} aria-pressed={solo} aria-label={i18n.t('web.track.solo', { name: tr.name })} title={i18n.t('web.track.solo', { name: tr.name })}
+        <button type="button" className="tog touch-none text-xs disabled:opacity-40" disabled={lk} data-paint={p.onPaint ? 'solo' : undefined} data-paint-id={tr.id} aria-pressed={solo} aria-label={i18n.t('web.track.solo', { name: tr.name })} title={i18n.t('web.track.solo', { name: tr.name }) + lockTip}
           onClick={(e) => { if (!p.onPaint || clickIsKeyboard(e)) p.onToggleSolo!(tr.id); }}><span aria-hidden>{i18n.t('web.track.soloShort')}</span></button>
       )}
       {c.source !== 'off' ? <Brightness tr={tr} c={c} p={p} /> : anyBright(p) && <span aria-hidden className="w-9 shrink-0" />}
@@ -242,12 +246,16 @@ function BrightnessValue({ tr, c, tempoMap, t }: { tr: ProjectTrack; c: Brightne
 /** Phần mở ra của một track: thông tin (Cơ bản) và độ sáng nền (Nâng cao). */
 function TrackBody({ tr, p }: { tr: ProjectTrack; p: Props }) {
   const { i18n } = useI18n();
-  const c = p.config[tr.id] ?? DEFAULT_BRIGHTNESS;
+  const c = p.config[tr.id] ?? DEFAULT_BRIGHTNESS, lk = !!p.locked?.has(tr.id);
   return (
     <div className="space-y-2 text-xs text-muted">
       <TrackInfo tr={tr} />
-      {p.overrides[tr.id] && <button type="button" className="btn-ghost -ml-1.5" onClick={() => p.onStyle(tr.id, null)}>{i18n.t('web.track.colorReset')}</button>}
-      {p.advanced && <BrightnessControls tr={tr} c={c} onChange={(patch) => p.onChange(tr.id, patch)} />}
+      {lk && <p className="text-xs text-muted" data-testid={`track-locked-${tr.id}`}>{i18n.t('web.track.lockedHint')}</p>}
+      {/* Track khoá: fieldset vô hiệu mọi ô chỉnh bên trong (màu, độ sáng) một lần. */}
+      <fieldset disabled={lk} className="m-0 min-w-0 space-y-2 border-0 p-0">
+        {p.overrides[tr.id] && <button type="button" className="btn-ghost -ml-1.5" onClick={() => p.onStyle(tr.id, null)}>{i18n.t('web.track.colorReset')}</button>}
+        {p.advanced && <BrightnessControls tr={tr} c={c} onChange={(patch) => p.onChange(tr.id, patch)} />}
+      </fieldset>
     </div>
   );
 }
@@ -380,7 +388,7 @@ function TrackInfo({ tr }: { tr: ProjectTrack }) {
   const { i18n } = useI18n();
   const lanes = Object.entries(tr.automation ?? {}).filter(([, l]) => l?.points.length).map(([k]) => k);
   const db = (v: number) => `${i18n.number(v, { maximumFractionDigits: 1 })} dB`;
-  const laneName = (k: string) => (i18n.has(`web.glow.lane.${k}`) ? i18n.t(`web.glow.lane.${k}`) : k);
+  const laneName = (k: string) => (i18n.has(`web.glow.lane.${k}`) ? i18n.t(`web.glow.lane.${k}`) : tr.automation?.[k]?.name ?? k); // lane MIDI CC: tên trong dự án (T-66)
   return (
     <dl className="grid grid-cols-[minmax(0,6.5rem)_minmax(0,1fr)] gap-x-2 gap-y-1">
       <dt className="truncate">{i18n.t('web.track.range')}</dt><dd className="truncate text-fg">{tr.notes.length ? `${pitchName(tr.pitchRange.min)} – ${pitchName(tr.pitchRange.max)}` : '—'}</dd>

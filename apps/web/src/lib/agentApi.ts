@@ -22,7 +22,15 @@ export interface AgentStatus {
   history: { canUndo: boolean; canRedo: boolean; undoLabel?: string };
   problems: string[];
 }
-export interface ExportOptions { resolution?: 720 | 1080 | 2160; fps?: 24 | 30 | 60; quality?: 'low' | 'medium' | 'high'; kind?: 'video' | 'png'; download?: boolean }
+export interface ExportOptions {
+  resolution?: 720 | 1080 | 2160; fps?: 24 | 30 | 60; quality?: 'low' | 'medium' | 'high'; kind?: 'video' | 'png'; download?: boolean;
+  /** Kích thước tuỳ ý (D-26; cả hai cùng có thì thay `resolution`): làm chẵn xuống, cạnh ngắn ≥ 128, cạnh dài ≤ 4096; khác tỉ lệ khung thì có viền màu nền. */
+  width?: number; height?: number;
+  /** Chỉ xuất đoạn Start→End (giây dự án). */
+  range?: { start: number; end: number };
+  /** Chỉ đưa các lớp gốc có id này vào lần xuất (T-55); vắng = mọi lớp. */
+  layers?: string[];
+}
 export interface ExportResult { name: string; bytes: number; ms: number; mime: string }
 
 export interface AgentHost {

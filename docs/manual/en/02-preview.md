@@ -66,7 +66,7 @@ The **Tracks** section lists the tracks that have notes. Choose **List** or **Gr
 
 For each track:
 
-- **Colour swatch:** change the track's colour in the video. **Use project colour** goes back to the original.
+- **Colour swatch:** change the track's colour in the video. Click it to open the colour picker: type a colour code, set transparency, pick a colour from the screen or reuse a recent one (see [Editor](03-editor.md)). **Use project colour** goes back to the original.
 - **Eye:** hide or show the track in the video.
 - **S (solo):** only soloed tracks are shown.
 - The top row controls all tracks: the eye hides or shows them all, S clears every solo.

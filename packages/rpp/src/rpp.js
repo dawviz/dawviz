@@ -286,8 +286,8 @@ export async function parseRppText(text, options = {}) {
     built = buildAST({ title: options.title || 'Reaper project', sourceFormat: 'rpp', sourceVersion, sourcePPQ: 960, tempoPoints: merged, tempoSource, tracks, warnings, markers }, { maxNotes: limits.maxNotes, showMuted: options.showMuted });
   } catch (e) {
     const missing = [...new Set(warnings.filter((w) => w.code === 'WARN_RPP_EXTERNAL_MIDI').map((w) => w.details.file))];
-    if (e.code === 'ERR_NO_NOTES' && unsupportedSrc.length && !missing.length) fail('ERR_NO_NOTES', `dự án chỉ có ${unsupportedSrc.length} nguồn MIDI dùng timebase chưa hỗ trợ (${[...new Set(unsupportedSrc.map((u) => `${u.ppq} ${u.unit}`))].join(', ')}): hãy lưu lại dự án bằng Reaper bản mới`, { unsupportedSources: unsupportedSrc });
-    if (e.code === 'ERR_NO_NOTES' && missing.length) fail('ERR_NO_NOTES', `dự án chỉ tham chiếu ${missing.length} file MIDI ngoài chưa được cung cấp (options.files / resolveFile): ${missing.slice(0, 5).join(', ')}${missing.length > 5 ? '...' : ''}`, { missingFiles: missing });
+    if (e.code === 'ERR_NO_NOTES' && unsupportedSrc.length && !missing.length) fail('ERR_NO_NOTES', `dự án chỉ có ${unsupportedSrc.length} nguồn MIDI dùng timebase chưa hỗ trợ (${[...new Set(unsupportedSrc.map((u) => `${u.ppq} ${u.unit}`))].join(', ')}): hãy lưu lại dự án bằng Reaper bản mới`, { reason: 'unsupportedSource', unsupportedSources: unsupportedSrc, units: [...new Set(unsupportedSrc.map((u) => `${u.ppq} ${u.unit}`))].join(', ') });
+    if (e.code === 'ERR_NO_NOTES' && missing.length) fail('ERR_NO_NOTES', `dự án chỉ tham chiếu ${missing.length} file MIDI ngoài chưa được cung cấp (options.files / resolveFile): ${missing.slice(0, 5).join(', ')}${missing.length > 5 ? '...' : ''}`, { reason: 'missingMidi', missingFiles: missing, count: missing.length });
     throw e;
   }
   return { ast: built.ast, warnings, info: { items, tempoEnvelopePoints: env.length } };

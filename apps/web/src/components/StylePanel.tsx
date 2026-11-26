@@ -1,7 +1,9 @@
 // Mục "Hình thức" của inspector: kiểu dáng nốt (toàn cục) và bàn phím. Chỉ sửa dữ liệu StyleConfig; việc vẽ nằm ở Render Core.
 // Phân bổ Cơ bản / Nâng cao theo SRS REQ-UI-13 (dòng "Kiểu nốt", "Bàn phím"). Phong cách dựng sẵn chọn ở cột Video styles.
 import { GLOW_SOURCES, type StyleConfig, type NoteStyle, type ColorMode, type KeyboardStyle, type GlowSource, type GlowPanMode } from '@dawviz/render-core';
+import { ColorField } from './ColorField.tsx';
 import { useI18n } from '../i18n/I18nProvider.tsx';
+import { laneLabel, type LaneChoice } from '../lib/animateFields.ts';
 import { radioKeys, radioTab } from '../lib/a11y.ts';
 import { matchNotePreset } from '../lib/videoScenes.ts';
 import { Select } from './Select.tsx';
@@ -20,7 +22,7 @@ const row = 'grid grid-cols-[minmax(0,1fr)_minmax(0,9.5rem)_1.5rem] items-center
  *  `playhead`: vị trí vạch phát (0..1) và hàm đổi; bàn phím bật thì cả hai ô vạch phát bị ẩn (T-71).
  *  `advanced`: hiện cả dòng nâng cao (chế độ Nâng cao, hoặc "Thêm tuỳ chọn" của mục đang mở).
  *  `reference`: kiểu nốt của bộ dựng sẵn đang chọn; thông số khác nó thì có nút ↺ đưa về (D-57). */
-export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], advanced = true, notePresets, onNotePreset, playhead, reference, keyboardRef, pitchRange }: { /** Dải cao độ Piano Roll: Fit content hoặc Custom (nhập theo tên nốt). */ pitchRange?: { value: PitchRange; reference?: PitchRange; onChange(next: PitchRange): void }; reference?: NoteStyle; /** Bàn phím bật/tắt của bộ dựng sẵn áp gần nhất (đích của ↺ ở ô tick Bàn phím). */ keyboardRef?: boolean; playhead?: { ratio: number; visible: boolean; scrollMode: 'SCROLL' | 'PAGE'; scrollModeRef?: 'SCROLL' | 'PAGE'; onScrollMode(m: 'SCROLL' | 'PAGE'): void; visibleSeconds: number; visibleSecondsRef?: number; onVisibleSeconds(v: number): void; /** Chế độ trang: đơn vị trang, số ô nhịp mỗi trang, thời gian nốt hiện trước (T-84). */ page?: { unit: 'SECONDS' | 'BARS'; bars: number; reveal: number; unitRef?: 'SECONDS' | 'BARS'; barsRef?: number; revealRef?: number; onUnit(u: 'SECONDS' | 'BARS'): void; onBars(n: number): void; onReveal(s: number): void }; /** Vạch phát hiện/ẩn của bộ dựng sẵn áp gần nhất. */ visibleRef?: boolean; reference?: number; onChange(ratio: number): void; onVisible(visible: boolean): void }; notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; advanced?: boolean }) {
+export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], laneInfo = [], advanced = true, notePresets, onNotePreset, playhead, reference, keyboardRef, pitchRange }: { /** Dải cao độ Piano Roll: Fit content hoặc Custom (nhập theo tên nốt). */ pitchRange?: { value: PitchRange; reference?: PitchRange; onChange(next: PitchRange): void }; reference?: NoteStyle; /** Bàn phím bật/tắt của bộ dựng sẵn áp gần nhất (đích của ↺ ở ô tick Bàn phím). */ keyboardRef?: boolean; playhead?: { ratio: number; visible: boolean; scrollMode: 'SCROLL' | 'PAGE'; scrollModeRef?: 'SCROLL' | 'PAGE'; onScrollMode(m: 'SCROLL' | 'PAGE'): void; visibleSeconds: number; visibleSecondsRef?: number; onVisibleSeconds(v: number): void; /** Chế độ trang: đơn vị trang, số ô nhịp mỗi trang, thời gian nốt hiện trước (T-84). */ page?: { unit: 'SECONDS' | 'BARS'; bars: number; reveal: number; unitRef?: 'SECONDS' | 'BARS'; barsRef?: number; revealRef?: number; onUnit(u: 'SECONDS' | 'BARS'): void; onBars(n: number): void; onReveal(s: number): void }; /** Vạch phát hiện/ẩn của bộ dựng sẵn áp gần nhất. */ visibleRef?: boolean; reference?: number; onChange(ratio: number): void; onVisible(visible: boolean): void }; notePresets?: readonly string[]; onNotePreset?(id: string): void; style: StyleConfig; keyboard: KeyboardStyle; onStyle(next: StyleConfig): void; onKeyboard(next: KeyboardStyle): void; lanes?: string[]; /** Tên lane của dự án (T-66): ô chọn lane gọi theo tên ("Mod Wheel (CC1)"). */ laneInfo?: readonly LaneChoice[]; advanced?: boolean }) {
   const { i18n } = useI18n();
   const b = style.base;
   const set = (patch: Partial<NoteStyle>) => onStyle({ ...style, base: { ...b, ...patch } });
@@ -44,7 +46,7 @@ export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], a
           <Select value={b.colorMode} onChange={(e) => set({ colorMode: e.target.value as ColorMode })} className="py-1 pl-2" wrapClassName="min-w-0 flex-1">
             {MODES.map((m) => <option key={m} value={m}>{i18n.t(`web.style.mode.${m}`)}</option>)}
           </Select>
-          {b.colorMode === 'custom' && <input type="color" aria-label={i18n.t('web.style.customColor')} value={b.customColor} onChange={(e) => set({ customColor: e.target.value })} />}
+          {b.colorMode === 'custom' && <ColorField variant="swatch" label={i18n.t('web.style.customColor')} value={b.customColor} onChange={(c) => set({ customColor: c })} />}
         </span>
         <ResetButton label={i18n.t('web.style.colorMode')} changed={!!reference && (reference.colorMode !== b.colorMode || (b.colorMode === 'custom' && reference.customColor !== b.customColor))}
           onReset={() => set({ colorMode: reference!.colorMode, customColor: reference!.customColor })} />
@@ -59,7 +61,7 @@ export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], a
       <h3 className="pt-1 text-xs font-medium text-fg">{i18n.t('web.look.glow')}</h3>
       <Slider id="st-glow" label={i18n.t('web.style.glow')} value={b.glow} min={0} max={1} step={0.05} reset={ref('glow')} onChange={(v) => set({ glow: v })} />
       {advanced && <Slider id="st-glowr" label={i18n.t('web.style.glowRadius')} value={b.glowRadius} min={0} max={40} hardMax={64} step={1} reset={ref('glowRadius')} onChange={(v) => set({ glowRadius: v })} />}
-      <GlowSection b={b} set={set} lanes={lanes} advanced={advanced} reference={reference} />
+      <GlowSection b={b} set={set} lanes={lanes} laneInfo={laneInfo} advanced={advanced} reference={reference} />
       {advanced && <TickField label={i18n.t('web.style.glowActiveOnly')} checked={b.glowActiveOnly} onChange={(v) => set({ glowActiveOnly: v })} reference={reference?.glowActiveOnly} />}
       <div className="space-y-2 border-t border-line pt-2.5">
         <TickField label={i18n.t('web.keyboard.show')} checked={keyboard.enabled} onChange={(v) => onKeyboard({ ...keyboard, enabled: v })} reference={keyboardRef} />
@@ -108,7 +110,7 @@ export function StylePanel({ style, keyboard, onStyle, onKeyboard, lanes = [], a
 }
 
 /** REQ-GRAPHICS-17: đều nhau (mặc định) hoặc phát sáng động khi thanh phát chạm nốt, theo một tiêu chí. */
-function GlowSection({ b, set, lanes, advanced, reference }: { b: NoteStyle; set(p: Partial<NoteStyle>): void; lanes: string[]; advanced: boolean; reference?: NoteStyle }) {
+function GlowSection({ b, set, lanes, laneInfo, advanced, reference }: { b: NoteStyle; set(p: Partial<NoteStyle>): void; lanes: string[]; laneInfo: readonly LaneChoice[]; advanced: boolean; reference?: NoteStyle }) {
   const { i18n } = useI18n();
   const ref = (k: 'glowMin' | 'glowMax' | 'glowRelease') => reference?.[k];
   const dyn = b.glowMode === 'dynamic';
@@ -142,7 +144,7 @@ function GlowSection({ b, set, lanes, advanced, reference }: { b: NoteStyle; set
           <label className={row}>
             <span className="flex min-w-0 items-center gap-1.5"><span className="min-w-0 break-words leading-tight">{i18n.t('web.glow.lane')}</span></span>
             <Select value={b.glowLane} onChange={(e) => set({ glowLane: e.target.value })} className="py-1 pl-2" wrapClassName="min-w-0">
-              {laneList.map((l) => <option key={l} value={l}>{i18n.has(`web.glow.lane.${l}`) ? i18n.t(`web.glow.lane.${l}`) : l}{lanes.includes(l) ? '' : ` (${i18n.t('web.glow.lane.absent')})`}</option>)}
+              {laneList.map((l) => <option key={l} value={l}>{laneLabel(i18n, l, laneInfo)}{lanes.includes(l) ? '' : ` (${i18n.t('web.glow.lane.absent')})`}</option>)}
             </Select>
             <ResetButton label={i18n.t('web.glow.lane')} changed={!!reference && reference.glowLane !== b.glowLane} onReset={() => set({ glowLane: reference!.glowLane })} />
           </label>

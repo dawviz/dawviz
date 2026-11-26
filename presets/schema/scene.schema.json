@@ -66,12 +66,12 @@
   },
   "$defs": {
     "widget": {
-      "description": "Một lớp (widget). Loại COMP (0.8.0, D-69) là lớp precomp: properties = { comp: khoá trong comps, start: giây mà giây 0 của comp bắt đầu, theo comp cha, speed?: tốc độ phát 0,1–10 (vắng = 1) }; không tự vẽ, nội dung comp theo dời/xoay/độ đục/khoảng hiển thị của lớp.",
+      "description": "Một lớp (widget). PIANO_ROLL có thêm các trường tuỳ chọn (vắng = mặc định): flowAngle 0–360, flowMirror, labelsUpright, playheadStyle LINE/DASHED/BAND/GRADIENT, playheadArrows, playheadLength 0,05–1, playheadGlow 0–1, playheadHit OFF/FLASH/SWELL, playheadHitMs 30–2000, grid { bars, beats, numbers, color, opacity }, keyboard.{ shape FLAT/ROUNDED, pressedColor, scale OFF/AUTO/MAJOR/MINOR, scaleColor, scaleOpacity, labels NONE/C/WHITE/ALL/ACTIVE, labelOctave, labelColor }. PITCH_WHEEL thêm: labels NAMES/DEGREES, nodeShape TILE/CIRCLE, litTextColor, polygon, polygonColor, polygonAlpha, rootColor, progress OFF/BAR/SONG, progressColor, progressWidth, beatMarks, outlineColor, chordAs NAME/DEGREE, romanStyle SUFFIX/CASE, subTemplate (chỗ giữ), subStyle, windowSec. PANEL: number, title, numberColor, titleStyle, frame, frameColor, frameWidth, fillColor, fillAlpha, stats [{ label, value }] (tối đa 6; value có chỗ giữ), labelStyle, valueStyle. DEGREE: windowBars, playheadRatio, resolution BAR/HALF/BEAT/CHANGE, showDetail, showFunction, showBars, romanStyle, keyWindowSec, accentColor, detailColor, blockColor, activeTextColor, pastAlpha, tonicColor, subdominantColor, dominantColor, playheadColor, radius, gap, labelStyle, smallStyle. DOTS: grid 4/8/16/32, cols, playheadRatio, pitchRangeMode FIT_CONTENT/CUSTOM, pitchMin, pitchMax, maxRows, dotSize, shape ROUND/SQUARE, emptyColor, emptyColorB, emptyAlpha, colorMode TRACK/SOLID, color, upcomingAlpha, activeScale, playheadColor, playheadWidth. Chữ có thể dùng chỗ giữ {degree} {next_chord} {next_degree} {chord_count} {key} {lows} {mids} {highs} {level} {level_avg} {peak_db}. Loại COMP (0.8.0, D-69) là lớp precomp: properties = { comp: khoá trong comps, start: giây mà giây 0 của comp bắt đầu, theo comp cha, speed?: tốc độ phát 0,1–10 (vắng = 1) }; không tự vẽ, nội dung comp theo dời/xoay/độ đục/khoảng hiển thị của lớp.",
       "type": "object",
       "required": ["type"],
       "properties": {
         "id": { "type": "string", "minLength": 1, "maxLength": 64 },
-        "type": { "enum": ["TRACK_INFO", "PIANO_ROLL", "EVENT_COUNTER", "LIVE_TRIGGER", "TIME_BAR", "CHORD_DETECTION", "AUDIO_SPECTRUM", "PROGRESS_BAR", "TEXT", "PARTICLES", "NOTATION", "TEMPO_INFO", "BAR_BEAT", "KEY_SCALE", "VELOCITY", "DENSITY", "PITCH_WHEEL", "ARRANGEMENT", "DRUM_PAD", "SECTION", "LYRICS", "AUTOMATION", "IMAGE", "COMP"] },
+        "type": { "enum": ["TRACK_INFO", "PIANO_ROLL", "EVENT_COUNTER", "LIVE_TRIGGER", "TIME_BAR", "CHORD_DETECTION", "AUDIO_SPECTRUM", "PROGRESS_BAR", "TEXT", "PARTICLES", "NOTATION", "TEMPO_INFO", "BAR_BEAT", "KEY_SCALE", "VELOCITY", "DENSITY", "PITCH_WHEEL", "ARRANGEMENT", "DRUM_PAD", "SECTION", "LYRICS", "AUTOMATION", "PANEL", "DEGREE", "DOTS", "IMAGE", "COMP"] },
         "name": { "type": "string", "minLength": 1, "maxLength": 60, "description": "Tên lớp do người dùng đặt; không trùng nhau. Vắng thì dùng tên theo loại." },
         "zIndex": { "type": "integer", "minimum": -10000, "maximum": 10000 },
         "visible": { "type": "boolean" },
@@ -81,7 +81,7 @@
             "keys": { "type": "array", "maxItems": 256, "items": { "type": "object", "required": ["at", "value"], "properties": { "at": { "type": "object" }, "value": { "type": ["number", "string", "boolean"] }, "ease": {}, "interp": { "enum": ["linear", "hold", "smooth"] } } } },
             "kind": { "enum": ["number", "angle", "color", "discrete"], "description": "discrete = bật/tắt, lựa chọn, chữ: đổi theo bậc tại keyframe (0.7.0)." },
             "loop": { "enum": ["NONE", "CYCLE", "PINGPONG", "OFFSET"] },
-            "bind": { "enum": ["beat.phase", "bar.phase", "progress", "notes.count", "notes.velocity", "note.hit", "track.volume", "track.pan", "audio.level"] },
+            "bind": { "anyOf": [{ "enum": ["beat.phase", "bar.phase", "progress", "notes.count", "notes.velocity", "note.hit", "track.volume", "track.pan", "audio.level"] }, { "type": "string", "pattern": "^track\\.automation\\.[A-Za-z0-9_.:-]{1,64}$", "description": "Lane automation bất kỳ theo id (T-66): track.automation.cc1, track.automation.pitchBend… Giá trị 0..1 theo loại lane." }] },
             "from": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 }, "to": { "type": "array", "minItems": 2, "maxItems": 2 }, "ease": {},
             "expr": { "type": "string", "maxLength": 2000, "description": "Biểu thức @dawviz/expr (T-29, AD-13); lỗi thì bị bỏ kèm cảnh báo." } } } },
         "motion": { "type": "object", "description": "Chuyển động cấp widget (vào, ra, lặp theo nhịp) cho mọi loại widget. Vắng = không chuyển động.", "additionalProperties": false,
@@ -116,8 +116,12 @@
             }
           }
         },
-        "trackMappingMode": { "enum": ["ALL", "MANUAL", "AUTO_ASSIGN_FIRST_MELODIC"] },
+        "trackMappingMode": { "enum": ["ALL", "MANUAL", "AUTO_ASSIGN_FIRST_MELODIC"], "description": "AUTO_ASSIGN_FIRST_MELODIC: track đang hiện đầu tiên không phải trống; Chord Detection chọn trước track tên piano/keys/guitar (T-06)." },
         "assignedTrackIndices": { "type": "array", "items": { "type": "integer", "minimum": 0 }, "maxItems": 1024 },
+        "trackRanges": { "type": "array", "maxItems": 32, "description": "Đổi tập track theo đoạn (T-52, REQ-GRAPHICS-14; tuỳ chọn). Trong [from, to) widget dùng đúng tracks (chỉ số track); ngoài mọi đoạn theo trackMappingMode; chồng nhau thì đoạn bắt đầu trước thắng. Bản nhạc bỏ qua.",
+          "items": { "type": "object", "required": ["from", "tracks"], "properties": {
+            "from": { "type": "number", "minimum": 0, "maximum": 86400 }, "to": { "type": ["number", "null"], "minimum": 0, "maximum": 86400, "description": "Lớn hơn from; null hoặc vắng = tới hết bài." },
+            "tracks": { "type": "array", "items": { "type": "integer", "minimum": 0, "maximum": 4095 }, "maxItems": 1024 } } } },
         "properties": { "type": "object" }
       }
     },
@@ -139,11 +143,11 @@
         "underline": { "type": "boolean" },
         "strike": { "type": "boolean" },
         "decoThickness": { "type": "number", "minimum": 0, "maximum": 50 },
-        "decoColor": { "type": "string", "pattern": "^(#[0-9a-fA-F]{6})?$" },
+        "decoColor": { "type": "string", "pattern": "^(#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?)?$" },
         "textCase": { "enum": ["none", "upper", "lower", "title", "smallCaps"] },
         "tracking": { "type": "number", "minimum": -500, "maximum": 2000, "description": "phần nghìn em" },
         "leading": { "type": "number", "minimum": 0.5, "maximum": 5 },
-        "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+        "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$" },
         "gradient": {
           "oneOf": [
             { "type": "null" },
@@ -160,7 +164,7 @@
                   "items": {
                     "type": "object",
                     "required": ["at", "color"],
-                    "properties": { "at": { "type": "number", "minimum": 0, "maximum": 1 }, "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" } }
+                    "properties": { "at": { "type": "number", "minimum": 0, "maximum": 1 }, "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$" } }
                   }
                 }
               }
@@ -172,7 +176,7 @@
           "type": "object",
           "properties": {
             "width": { "type": "number", "minimum": 0, "maximum": 50 },
-            "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+            "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$" },
             "position": { "enum": ["center", "outside"] },
             "join": { "enum": ["miter", "round", "bevel"] },
             "over": { "type": "boolean" }
@@ -182,7 +186,7 @@
           "type": "object",
           "properties": {
             "enabled": { "type": "boolean" },
-            "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+            "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$" },
             "opacity": { "type": "number", "minimum": 0, "maximum": 1 },
             "distance": { "type": "number", "minimum": 0, "maximum": 200 },
             "angle": { "type": "number", "minimum": -360, "maximum": 360 },
@@ -193,7 +197,7 @@
           "type": "object",
           "properties": {
             "enabled": { "type": "boolean" },
-            "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+            "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$" },
             "opacity": { "type": "number", "minimum": 0, "maximum": 1 },
             "padX": { "type": "number", "minimum": 0, "maximum": 200 },
             "padY": { "type": "number", "minimum": 0, "maximum": 200 },

@@ -66,7 +66,7 @@ Mục **Track** liệt kê các track có nốt. Có hai cách trình bày, ch�
 
 Trên mỗi track:
 
-- **Ô màu:** đổi màu track trong video. Chọn **Dùng màu của dự án** để quay về màu gốc.
+- **Ô màu:** đổi màu track trong video. Bấm ô để mở bảng chọn màu: gõ mã màu, chỉnh độ trong suốt, hút màu trên màn hình hoặc chọn màu vừa dùng (xem [Chỉnh sửa](03-chinh-sua.md)). Chọn **Dùng màu của dự án** để quay về màu gốc.
 - **Mắt:** ẩn hoặc hiện track trong video.
 - **S (solo):** chỉ hiện các track đang solo.
 - Hàng trên cùng điều khiển mọi track: mắt để ẩn/hiện tất cả, S để bỏ mọi solo.

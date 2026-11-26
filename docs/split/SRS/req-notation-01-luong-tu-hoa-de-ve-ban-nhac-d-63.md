@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-NOTATION-01: Lượng tử hoá để vẽ bản nhạc (D-63; đã làm 2026-11-21)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) > REQ-NOTATION-01: Lượng tử hoá để vẽ bản nhạc (D-63; đã làm 2026-11-21)"
 chunk: req-notation-01-luong-tu-hoa-de-ve-ban-nhac-d-63.md
-source_lines: 682-690
-source_sha1: 879a0e809e
+source_lines: 686-694
+source_sha1: fee32c2554
 ids: [D-63, REQ-NOTATION-01, WARN_NOTATION_EMPTY, WARN_NOTATION_GLYPH, WARN_NOTATION_KEY_GUESS, WARN_NOTATION_OFFGRID]
 ---
 #### REQ-NOTATION-01: Lượng tử hoá để vẽ bản nhạc (D-63; đã làm 2026-11-21)

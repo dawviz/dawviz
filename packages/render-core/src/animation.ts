@@ -10,7 +10,7 @@
 // `scale` (đổi thuộc tính bản nhạc phải dựng lại trong Worker).
 import { activeNotes, notesInRange, type TrackIndex } from './notes.ts';
 import { barPosAt, hudOf, shown } from './hud.ts';
-import { laneUnit } from './glow.ts';
+import { isLaneId, laneUnit } from './glow.ts';
 import { frameAt, u8ToDb } from './audioFeatures.ts';
 import { compileTrack, sampleTrack, mixColor, type CompiledTrack, type Key, type KeyTime, type KeyValue, type LoopMode, type TrackSpec } from './keyframes.ts';
 import { DEFAULT_NOTE_STYLE, sanitizeStyle, type NoteStyle } from './style.ts';
@@ -19,12 +19,19 @@ import { ExprError, colorToHex, compile, isFiniteValue, type Budget, type Compil
 import { keyTimeSec } from './keyframes.ts';
 import { strHash } from './particles.ts';
 import { normalizeAngle } from './snap.ts';
+import { HEX_COLOR } from './color.ts';
 import { widgetDefaults, silentSanitizer, sanitizeWidgetProps, type Sanitizer, type SceneDocument, type WidgetSpec, type WidgetType } from './scene.ts';
 import type { Derived } from './prims.ts';
 import type { UnifiedProjectAST } from './types.ts';
 
 export const BIND_SOURCES = ['beat.phase', 'bar.phase', 'progress', 'notes.count', 'notes.velocity', 'note.hit', 'track.volume', 'track.pan', 'audio.level'] as const;
-export type BindSource = typeof BIND_SOURCES[number];
+/** Nguồn cố định (9 nguồn) hoặc một lane automation bất kỳ theo id: `track.automation.<id>` (T-66, REQ-AST-02), giá trị 0..1 như laneUnit. */
+export type BindSource = typeof BIND_SOURCES[number] | `track.automation.${string}`;
+export const LANE_BIND_PREFIX = 'track.automation.';
+/** Id lane của nguồn `track.automation.<id>`; nguồn khác → null. */
+export const bindLaneId = (src: string): string | null => (src.startsWith(LANE_BIND_PREFIX) && isLaneId(src.slice(LANE_BIND_PREFIX.length)) ? src.slice(LANE_BIND_PREFIX.length) : null);
+export const laneBindSource = (id: string): BindSource => `${LANE_BIND_PREFIX}${id}` as BindSource;
+export const isBindSource = (s: unknown): s is BindSource => typeof s === 'string' && ((BIND_SOURCES as readonly string[]).includes(s) || bindLaneId(s) !== null);
 /** Giá trị = `to[0]` khi nguồn ở `from[0]`, `to[1]` khi ở `from[1]`, nội suy (kẹp ngoài biên) qua `ease`. `to` là hai số hoặc hai màu `#rrggbb`. */
 export interface Binding { bind: BindSource; from: [number, number]; to: [number, number] | [string, string]; ease?: EaseSpec }
 export type KeyAnimation = TrackSpec;
@@ -58,7 +65,7 @@ export interface ExprIssue { widgetId: string; path: string; code: ExprErrorCode
 export const MAX_ANIMATIONS = 24, MAX_ANIM_KEYS = 256;
 /** Giới hạn của `scale` (%): 0 (biến mất) tới 2000. */
 export const MAX_SCALE = 2000;
-const HEX = /^#[0-9a-f]{6}$/i;
+const HEX = HEX_COLOR; // #rrggbb hoặc #rrggbbaa (T-49)
 const LAYOUT_PATHS = ['layout.x', 'layout.y', 'layout.width', 'layout.height', 'layout.rotation'] as const;
 /** Kiểu giá trị của một đường dẫn animate được. `bool`/`choice` animate theo bậc (track `kind: 'discrete'`). */
 export type AnimKind = 'number' | 'color' | 'bool' | 'choice';
@@ -70,12 +77,15 @@ export const MAX_CHOICE_LEN = 200;
  */
 const PIANO_NUM: Readonly<Record<string, [number, number]>> = {
   visibleSeconds: [0.5, 60], playheadPositionRatio: [0.05, 0.95], playheadWidth: [0, 40], 'keyboard.width': [8, 400],
+  // T-58/T-51/T-59 và lưới ô nhịp
+  flowAngle: [0, 360], playheadLength: [0.05, 1], playheadGlow: [0, 1], 'grid.opacity': [0, 1], 'keyboard.scaleOpacity': [0, 1],
 };
 const PIANO_STYLE_NUM = ['opacity', 'inactiveOpacity', 'cornerRadius', 'heightScale', 'glow', 'glowRadius', 'borderWidth', 'glowMin', 'glowMax', 'glowRelease'] as const;
 export const PIANO_PATHS: ReadonlyMap<string, AnimKind> = new Map<string, AnimKind>([
   ...Object.keys(PIANO_NUM).map((p) => [p, 'number'] as [string, AnimKind]),
   ...PIANO_STYLE_NUM.map((k) => [`noteStyle.base.${k}`, 'number'] as [string, AnimKind]),
   ['noteStyle.base.customColor', 'color'], ['playheadColor', 'color'], ['keyboard.whiteColor', 'color'], ['keyboard.blackColor', 'color'],
+  ['keyboard.pressedColor', 'color'], ['keyboard.scaleColor', 'color'], ['grid.color', 'color'], ['grid.bars', 'bool'], ['grid.beats', 'bool'], ['grid.numbers', 'bool'],
   ['noteStyle.base.glowActiveOnly', 'bool'], ['noteStyle.base.colorMode', 'choice'], ['playheadVisible', 'bool'], ['keyboard.enabled', 'bool'], ['keyboard.useTrackColor', 'bool'],
 ]);
 /**
@@ -164,7 +174,7 @@ export function sanitizeAnimate(S: Sanitizer, v: unknown, path: string, type: Wi
     } else if (typeof raw.bind === 'string') {
       if (isDiscreteKind(kind)) { S.warn(p, raw, 'thuộc tính theo bậc chỉ nhận keyframe, không gắn theo nhạc; bỏ'); continue; }
       const from = raw.from, to = raw.to;
-      if (!(BIND_SOURCES as readonly string[]).includes(raw.bind)) { S.warn(`${p}.bind`, raw.bind, `không thuộc ${BIND_SOURCES.join('/')}; bỏ`); continue; }
+      if (!isBindSource(raw.bind)) { S.warn(`${p}.bind`, raw.bind, `không thuộc ${BIND_SOURCES.join('/')} hay ${LANE_BIND_PREFIX}<id>; bỏ`); continue; }
       if (!Array.isArray(from) || from.length !== 2 || !from.every(finite) || from[0] === from[1]) { S.warn(`${p}.from`, from, 'cần hai số khác nhau; bỏ'); continue; }
       if (!Array.isArray(to) || to.length !== 2 || !to.every(okVal)) { S.warn(`${p}.to`, to, kind === 'color' ? 'cần hai màu #rrggbb; bỏ' : 'cần hai số; bỏ'); continue; }
       const b: Binding = { bind: raw.bind as BindSource, from: [from[0], from[1]], to: [to[0], to[1]] as Binding['to'] };
@@ -188,7 +198,12 @@ const HIT_DECAY = 0.6;
 /** Giá trị thô của một nguồn dữ liệu nhạc tại t (thang riêng của từng nguồn; ánh xạ sang thuộc tính bằng `from`/`to`). */
 export function bindSourceValue(src: BindSource, c: BindCtx): number {
   const { ast, derived, t } = c, list = shown(c.tracks);
-  switch (src) {
+  const lane = bindLaneId(src);
+  if (lane !== null) { // lane theo id: track đầu tiên (theo thứ tự của widget) có lane đó; không track nào có → 0
+    for (const ti of list) { const u = laneUnit(ti.track, lane, ast.tempoMap, t); if (u !== undefined) return u; }
+    return 0;
+  }
+  switch (src as typeof BIND_SOURCES[number]) {
     case 'beat.phase': return barPosAt(hudOf(derived, ast).bars, t).beatPhase;
     case 'bar.phase': return barPosAt(hudOf(derived, ast).bars, t).barPhase;
     case 'progress': return derived.index.duration > 0 ? clamp01(t / derived.index.duration) : 0;
@@ -210,6 +225,7 @@ export function bindSourceValue(src: BindSource, c: BindCtx): number {
       return clamp01((u8ToDb(a.features.rms[f]) + 60) / 60);
     }
   }
+  return 0;
 }
 const trackCache = new WeakMap<object, { tm: unknown; ct: CompiledTrack }>();
 const exprCache = new WeakMap<object, { kind: AnimKind; c: Compiled | null }>();
@@ -329,7 +345,7 @@ function cleanPiano(p: Obj, kinds: ReadonlyMap<string, AnimKind>): Obj {
     if (v !== undefined) out = setIn(out, ks, finite(v) ? Math.min(hi, Math.max(lo, v)) : lo);
   }
   for (const [path, kind] of kinds) {
-    if (!path.startsWith('keyboard.') && path !== 'playheadColor' && path !== 'playheadVisible') continue;
+    if (!path.startsWith('keyboard.') && !path.startsWith('grid.') && path !== 'playheadColor' && path !== 'playheadVisible') continue;
     const ks = path.split('.'); let v: unknown = out; for (const k of ks) v = isObj(v) ? v[k] : undefined;
     if (kind === 'color' && !(typeof v === 'string' && HEX.test(v))) out = setIn(out, ks, '#ffffff');
     if (kind === 'bool' && typeof v !== 'boolean') out = setIn(out, ks, !!v);

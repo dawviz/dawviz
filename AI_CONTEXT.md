@@ -132,11 +132,11 @@ Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-00: Độ phân giải thiết kế logic (D-06)](docs/split/SRS/req-graphics-00-do-phan-giai-thiet-ke-logic-d-06.md) · 0.4k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-01: Phân lớp đồ họa (D-07)](docs/split/SRS/req-graphics-01-phan-lop-do-hoa-d-07.md) · 1.4k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-02: Bắt dính thông minh](docs/split/SRS/req-graphics-02-bat-dinh-thong-minh.md) · 1.2k
-- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-16: Thanh phát (playhead) tuỳ chỉnh](docs/split/SRS/req-graphics-16-thanh-phat-playhead-tuy-chinh.md) · 1.5k
+- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-16: Thanh phát (playhead) tuỳ chỉnh](docs/split/SRS/req-graphics-16-thanh-phat-playhead-tuy-chinh.md) · 2.1k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-03: Xoay widget tự do (D-54, thay D-15)](docs/split/SRS/req-graphics-03-xoay-widget-tu-do-d-54-thay-d-15.md) · 2.0k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-04: Preset dựng sẵn và đổi tỉ lệ khung](docs/split/SRS/req-graphics-04-preset-dung-san-va-doi-ti-le-khu.md) · 1.9k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-06: Độ sáng track theo automation (D-33)](docs/split/SRS/req-graphics-06-do-sang-track-theo-automation-d.md) · 2.4k
-- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-07: Kiểu dáng nốt tuỳ chỉnh và bàn phím](docs/split/SRS/req-graphics-07-kieu-dang-not-tuy-chinh-va-ban-p.md) · 3.4k
+- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-07: Kiểu dáng nốt tuỳ chỉnh và bàn phím](docs/split/SRS/req-graphics-07-kieu-dang-not-tuy-chinh-va-ban-p.md) · 4.3k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-08: Hiệu ứng chuyển động tất định (D-37)](docs/split/SRS/req-graphics-08-hieu-ung-chuyen-dong-tat-dinh-d.md) · 0.4k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-05: Render Core dùng chung (ARC-01, D-20)](docs/split/SRS/req-graphics-05-render-core-dung-chung-arc-01-d.md) · 1.0k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-17: Phát sáng động khi chạm (D-50, 1.0)](docs/split/SRS/req-graphics-17-phat-sang-dong-khi-cham-d-50-1-0.md) · 2.8k
@@ -144,7 +144,7 @@ Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-GRAPHICS-19: Ô chữ người dùng thêm và chỗ giữ dùng chung (D-60; đã làm 2026-11-18, T-73)](docs/split/SRS/req-graphics-19-o-chu-nguoi-dung-them-va-cho-giu.md) · 2.9k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) › REQ-AST-02: Automation tổng quát (D-50; 1.0 cho Reaper track + MIDI CC, các nguồn khác theo tệp mẫu)](docs/split/SRS/req-ast-02-automation-tong-quat-d-50-1-0-cho-rea.md) · 2.4k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04)](docs/split/SRS/3-4-dac-ta-8-widget-hud-br-02-br-03-br-04.md) · 0.4k
-- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-WIDGET-01: Piano Roll](docs/split/SRS/req-widget-01-piano-roll.md) · 1.8k
+- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-WIDGET-01: Piano Roll](docs/split/SRS/req-widget-01-piano-roll.md) · 2.8k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-WIDGET-02: Track Info](docs/split/SRS/req-widget-02-track-info.md) · 1.1k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-WIDGET-03: Event Counter](docs/split/SRS/req-widget-03-event-counter.md) · 1.2k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-WIDGET-04: Live Note Trigger](docs/split/SRS/req-widget-04-live-note-trigger.md) · 0.9k
@@ -157,7 +157,7 @@ Nguồn: `docs/product/SRS.md` · [thứ tự đọc](docs/split/SRS/_index.md)
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-WIDGET-09: Bản nhạc (Notation) (D-63; đã làm 2026-11-21, T-90…T-95)](docs/split/SRS/req-widget-09-ban-nhac-notation-d-63-da-lam-2026.md) · 3.4k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-NOTATION-01: Lượng tử hoá để vẽ bản nhạc (D-63; đã làm 2026-11-21)](docs/split/SRS/req-notation-01-luong-tu-hoa-de-ve-ban-nhac-d-63.md) · 1.9k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4. Đặc tả 8 widget HUD (BR-02, BR-03, BR-04) › REQ-GRAPHICS-20: Nét tay tất định cho đường vẽ (D-63; đã làm 2026-11-21 cho bản nhạc)](docs/split/SRS/req-graphics-20-net-tay-tat-dinh-cho-duong-ve-d.md) · 0.6k
-- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4b. Đề xuất widget và dữ liệu hiển thị bổ sung (D-32, OI-11) **[ĐỀ XUẤT, chưa cam kết v1.0]**](docs/split/SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md) · 3.8k
+- [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.4b. Đề xuất widget và dữ liệu hiển thị bổ sung (D-32, OI-11) **[ĐỀ XUẤT, chưa cam kết v1.0]**](docs/split/SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md) · 4.9k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.5. Lưu trữ, cấu hình & đóng gói (BR-05, D-11)](docs/split/SRS/3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md) · 4.7k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) › REQ-CAP-01: Phát hiện khả năng của trình duyệt (R-06, D-05)](docs/split/SRS/req-cap-01-phat-hien-kha-nang-cua-trinh-duyet-r.md) · 0.4k
 - [3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) › 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) › REQ-EXPORT-00: Pre-flight (R-01, D-17)](docs/split/SRS/req-export-00-pre-flight-r-01-d-17.md) · 2.6k
@@ -219,7 +219,7 @@ Nguồn: `docs/design/TECHNICAL-DESIGN.md` · [thứ tự đọc](docs/split/TEC
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.1 Giao diện chính 🟢](docs/split/TECHNICAL-DESIGN/5-1-giao-dien-chinh.md) · 7.3k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.2 Hợp đồng widget 🟢](docs/split/TECHNICAL-DESIGN/5-2-hop-dong-widget.md) · 0.5k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.3 Hệ toạ độ và tỉ lệ 🟡](docs/split/TECHNICAL-DESIGN/5-3-he-toa-do-va-ti-le.md) · 0.4k
-- [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.4 Piano Roll 🟢](docs/split/TECHNICAL-DESIGN/5-4-piano-roll.md) · 0.7k
+- [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.4 Piano Roll 🟢](docs/split/TECHNICAL-DESIGN/5-4-piano-roll.md) · 2.0k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.5 Quy tắc tất định (kiểm bằng test)](docs/split/TECHNICAL-DESIGN/5-5-quy-tac-tat-dinh-kiem-bang-test.md) · 0.6k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.6 Phát sáng động khi chạm 🟢](docs/split/TECHNICAL-DESIGN/5-6-phat-sang-dong-khi-cham.md) · 1.8k
 - [5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại › 5.7 Primitive chữ và nạp phông 🟢 (T-69, SRS REQ-WIDGET-02)](docs/split/TECHNICAL-DESIGN/5-7-primitive-chu-va-nap-phong-t-69-srs-req-widg.md) · 5.6k
@@ -242,7 +242,7 @@ Nguồn: `docs/design/TECHNICAL-DESIGN.md` · [thứ tự đọc](docs/split/TEC
 - [6. Ứng dụng web và phát lại 🟡 › 6.4 Store, lệnh, hoàn tác và chế độ chỉnh sửa 🟢 (T-07; giao diện kéo thả widget ⚪ T-68)](docs/split/TECHNICAL-DESIGN/6-4-store-lenh-hoan-tac-va-che-do-chinh-sua-t-07.md) · 19.1k
 - [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) › 7.1 Trình tự](docs/split/TECHNICAL-DESIGN/7-1-trinh-tu.md) · 1.0k
 - [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) › 7.2 Quyết định kỹ thuật](docs/split/TECHNICAL-DESIGN/7-2-quyet-dinh-ky-thuat.md) · 1.1k
-- [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) › 7.3 Phần lõi thuần đã làm (T-09, 2026-11-14)](docs/split/TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md) · 1.7k
+- [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) › 7.3 Phần lõi thuần đã làm (T-09, 2026-11-14)](docs/split/TECHNICAL-DESIGN/7-3-phan-loi-thuan-da-lam-t-09-2026-11-14.md) · 2.6k
 - [7. Đường ống xuất video ⚪ (M3; Spike 1 là cơ sở) › 7.4 Export Worker và giao diện (T-09, 2026-11-14)](docs/split/TECHNICAL-DESIGN/7-4-export-worker-va-giao-dien-t-09-2026-11-14.md) · 8.2k
 - [8. Lưu trữ 🟢 (M4, T-10)](docs/split/TECHNICAL-DESIGN/8-luu-tru-m4-t-10.md) · 1.7k
 - [9. Đa ngôn ngữ 🟢](docs/split/TECHNICAL-DESIGN/9-da-ngon-ngu.md) · 0.5k
@@ -341,14 +341,14 @@ Nguồn: `docs/design/EXPRESSIONS.md` · [thứ tự đọc](docs/split/EXPRESSI
 
 Nguồn: `docs/design/REFERENCE-VIDEOS.md` · [thứ tự đọc](docs/split/REFERENCE-VIDEOS/_index.md)
 
-- [Video tham chiếu: ý tưởng, mức tái hiện và lộ trình (mở đầu)](docs/split/REFERENCE-VIDEOS/video-tham-chieu-y-tuong-muc-tai-hien-va-lo-trin.md) · 1.3k
+- [Video tham chiếu: ý tưởng, mức tái hiện và lộ trình (mở đầu)](docs/split/REFERENCE-VIDEOS/video-tham-chieu-y-tuong-muc-tai-hien-va-lo-trin.md) · 1.4k
 - [Cách đối chiếu bằng trình duyệt](docs/split/REFERENCE-VIDEOS/cach-doi-chieu-bang-trinh-duyet.md) · 0.6k
-- [Video 1 (Usagin_P): đã làm](docs/split/REFERENCE-VIDEOS/video-1-usagin-p-da-lam.md) · 0.7k
-- [Video 2 (tn-shi): đã làm phần lớn](docs/split/REFERENCE-VIDEOS/video-2-tn-shi-da-lam-phan-lon.md) · 0.9k
-- [Video 3 (Emocute): lộ trình](docs/split/REFERENCE-VIDEOS/video-3-emocute-lo-trinh.md) · 1.4k
+- [Video 1 (Usagin_P): đã làm](docs/split/REFERENCE-VIDEOS/video-1-usagin-p-da-lam.md) · 0.8k
+- [Video 2 (tn-shi): đã làm phần lớn](docs/split/REFERENCE-VIDEOS/video-2-tn-shi-da-lam-phan-lon.md) · 1.0k
+- [Video 3 (Emocute): lộ trình](docs/split/REFERENCE-VIDEOS/video-3-emocute-lo-trinh.md) · 2.2k
 - [Video 4 (Silentroom, từ 1:01 đến hết): lộ trình](docs/split/REFERENCE-VIDEOS/video-4-silentroom-tu-1-01-den-het-lo-trinh.md) · 1.1k
 - [Quyết định: chuỗi cảnh và chia sẻ preset (D-66)](docs/split/REFERENCE-VIDEOS/quyet-dinh-chuoi-canh-va-chia-se-preset-d-66.md) · 1.5k
-- [Task đề xuất (đã vào `PROGRESS`)](docs/split/REFERENCE-VIDEOS/task-de-xuat-da-vao-progress.md) · 0.9k
+- [Task đề xuất (đã vào `PROGRESS`)](docs/split/REFERENCE-VIDEOS/task-de-xuat-da-vao-progress.md) · 1.0k
 
 ### UI-DIRECTION.md — Định hướng hình ảnh: khung preview và giao diện web
 

@@ -4,11 +4,13 @@
 // và Alt+nhấp (Option+nhấp trên Mac) vào nhãn để khôi phục nhanh (làm trong `ResetButton`, dùng chung cho mọi bảng). Mỗi thay đổi là `patchWidgetProps` (gộp bước theo khoá thuộc tính);
 // mỗi lần khôi phục là một bước hoàn tác riêng. Chữ của mẫu chỉ áp khi Enter hoặc rời ô.
 import { useContext, useEffect, useId, useRef, useState } from 'react';
+import { ColorField } from './ColorField.tsx';
 import { GLOBAL_KEYS, INSIGHT_TEMPLATE_KEYS, TEMPLATE_KEYS, type WidgetSpec } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { radioKeys, radioTab } from '../lib/a11y.ts';
 import { clickIsKeyboard, startPaintDrag } from '../lib/paintDrag.ts';
 import { GestureContext } from '../lib/storeReact.ts';
+import { laneLabel, type LaneChoice } from '../lib/animateFields.ts';
 import { TRACK_WIDGETS, WIDGET_FIELDS, fieldChanged, getIn, hasWidgetFields, resetPatch, setIn, withNestedDefaults, type FieldDef } from '../lib/widgetFields.ts';
 import { NumberField } from './NumberField.tsx';
 import { ResetButton } from './Inspector.tsx';
@@ -16,6 +18,8 @@ import { Select } from './Select.tsx';
 import { NotationStatusContext } from '../lib/notation/useNotation.ts';
 import { useAssets } from '../lib/assetsRuntime.ts';
 import { IMAGE_ACCEPT } from '../lib/sessionAssets.ts';
+import { matchesQuery, queryTerms } from '../lib/settingsSearch.ts';
+import { useSettingsSearch } from './SettingsSearch.tsx';
 
 type Obj = Record<string, unknown>;
 const numRow = 'grid grid-cols-[minmax(0,1fr)_4.5rem_1.5rem] items-center gap-2 text-xs text-muted';
@@ -33,18 +37,22 @@ export interface WidgetSettingsProps {
   onProps(patch: Obj): void;
   tracks?: TrackChoice[];
   onTracks?(mode: 'ALL' | 'MANUAL', indices: number[]): void;
+  /** Lane automation của dự án (T-66): ô chọn lane của widget Automation liệt kê theo tên. */
+  lanes?: readonly LaneChoice[];
 }
 
-export function WidgetSettings({ widget, advanced, disabled, reference, onProps, tracks, onTracks }: WidgetSettingsProps) {
+export function WidgetSettings({ widget, advanced, disabled, reference, onProps, tracks, onTracks, lanes = [] }: WidgetSettingsProps) {
   const { i18n } = useI18n();
   const gesture = useContext(GestureContext);
   const P = withNestedDefaults(widget.type, widget.properties as Obj), fields = WIDGET_FIELDS[widget.type] ?? [];
   const T = (k: string) => i18n.t(`web.ws.${k}`);
   const names = placeholderNames(widget.type);
   const hint = i18n.t('web.ws.placeholders', { list: names.map((k) => `{${k}}`).join(' ') });
-  const showTracks = !!tracks?.length && !!onTracks && TRACK_WIDGETS.includes(widget.type) && (widget.type === 'TEXT' || widget.type === 'NOTATION' || advanced);
-
+  // Tìm thiết lập (T-60): đang tìm thì chỉ giữ ô có nhãn khớp, kể cả ô nâng cao (ở Cơ bản cũng hiện, không cần "Thêm tuỳ chọn").
+  const { query } = useSettingsSearch();
+  const q = queryTerms(query).length ? query : '';
   const name = (f: FieldDef) => (f.group ? `${T(f.group)}: ${T(f.label)}` : T(f.label));
+  const showTracks = !!tracks?.length && !!onTracks && TRACK_WIDGETS.includes(widget.type) && (q ? matchesQuery(i18n.t('web.ws.tracks'), q) : widget.type === 'TEXT' || widget.type === 'NOTATION' || advanced);
   const changed = (f: FieldDef) => !disabled && fieldChanged(f, P, reference);
   // Một lần khôi phục là MỘT bước hoàn tác, không gộp với lần kéo/gõ trước đó.
   const reset = (f: FieldDef) => { if (!reference) return; gesture.begin(); onProps(resetPatch(f, P, reference)); gesture.end(); };
@@ -75,14 +83,21 @@ export function WidgetSettings({ widget, advanced, disabled, reference, onProps,
             {f.options!.map((o) => <button key={o} type="button" role="radio" aria-checked={v === o} tabIndex={radioTab(v === o)} className="seg-btn flex-1" disabled={disabled} onClick={() => set(f)(o)}>{i18n.t(`${f.prefix}${o}`)}</button>)}
           </div>
         </div>);
-      case 'select': return (
+      case 'select': {
+        // Lane automation (T-66): lựa chọn cố định + lane của dự án + giá trị đang dùng (đánh dấu khi dự án không có lane đó).
+        const opts = f.lanes ? [...new Set([...f.options!.map(String), ...lanes.map((l) => l.id), String(v)])] : f.options!;
+        const optLabel = (o: string | number) => f.raw ? String(o)
+          : f.lanes && !i18n.has(`${f.prefix}${o}`) ? `${laneLabel(i18n, String(o), lanes)}${lanes.some((l) => l.id === o) ? '' : ` (${i18n.t('web.glow.lane.absent')})`}`
+          : i18n.t(`${f.prefix}${o}`);
+        return (
         <div key={f.path.join('.')} className="grid grid-cols-[minmax(0,1fr)_minmax(0,9.5rem)_1.5rem] items-center gap-2 text-xs text-muted">
           <label>{T(f.label)}</label>
           <Select value={String(v)} disabled={disabled} aria-label={label} onChange={(e) => set(f)(f.options!.find((o) => String(o) === e.target.value) ?? e.target.value)} className="py-1 pl-2" wrapClassName="min-w-0" data-testid={f.testId}>
-            {f.options!.map((o) => <option key={o} value={o}>{f.raw ? String(o) : i18n.t(`${f.prefix}${o}`)}</option>)}
+            {opts.map((o) => <option key={o} value={o}>{optLabel(o)}</option>)}
           </Select>
           {resetBtn(f)}
         </div>);
+      }
       case 'color': case 'colorOpt': {
         const opt = f.kind === 'colorOpt', s = String(v ?? '');
         return (
@@ -90,7 +105,7 @@ export function WidgetSettings({ widget, advanced, disabled, reference, onProps,
             <span className="min-w-0 break-words leading-tight">{T(f.label)}</span>
             <span className="flex items-center gap-1.5">
               {opt && <input type="checkbox" aria-label={i18n.t('web.ws.show', { name: label })} checked={!!s} disabled={disabled} onChange={(e) => set(f)(e.target.checked ? '#E4E4E4' : '')} />}
-              {(!opt || s) && <input type="color" aria-label={label} value={s || '#000000'} disabled={disabled} onChange={(e) => set(f)(e.target.value.toUpperCase())} className="h-6 w-full" />}
+              {(!opt || s) && <ColorField label={label} value={s || '#000000'} disabled={disabled} onChange={set(f)} testId={f.testId} />}
             </span>
             {resetBtn(f)}
           </div>);
@@ -105,8 +120,8 @@ export function WidgetSettings({ widget, advanced, disabled, reference, onProps,
 
   return (
     <div className="space-y-2.5" data-testid="widget-settings">
-      {widget.type === 'NOTATION' && <NotationStatus id={widget.id} />}
-      {fields.filter((f) => (!f.adv || advanced) && (f.when?.(P) ?? true)).map(control)}
+      {widget.type === 'NOTATION' && !q && <NotationStatus id={widget.id} />}
+      {fields.filter((f) => (q ? matchesQuery(name(f), q) : !f.adv || advanced) && (f.when?.(P) ?? true)).map(control)}
       {showTracks && <TrackPicker widget={widget} tracks={tracks!} disabled={disabled} onTracks={onTracks!} />}
     </div>
   );

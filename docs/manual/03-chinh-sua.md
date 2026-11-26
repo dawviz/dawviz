@@ -12,6 +12,7 @@ Màn hình có ba phần: khung video ở giữa, **Thuộc tính widget** bên 
 - **Thu gọn:** bấm nút panel ở góc trên của Thuộc tính widget, hoặc nút ở đầu thanh **Timeline và keyframe**. Panel thu gọn còn một dải mỏng; bấm dải đó để mở lại. Phím tắt: Ctrl+Alt+B (Thuộc tính widget), Ctrl+J (Timeline).
 - **Timeline cao hay thấp tuỳ ý:** kéo đường ranh phía trên Timeline lên hoặc xuống; kéo được tới khi khung video còn một dải nhỏ.
 - **Gấp mục:** bấm tiêu đề một mục (ví dụ **Vị trí và kích thước**) để gấp lại khi không dùng tới, bấm lần nữa để mở. Cột bên phải ngắn đi rất nhiều. Ứng dụng nhớ mục nào đang gấp, cả ở thẻ Xem trước.
+- **Tìm thiết lập:** gõ vào ô **Tìm thiết lập…** ở đầu Thuộc tính widget để chỉ giữ các mục và ô có tên khớp, kể cả ô Nâng cao khi đang ở Cơ bản; mục đang gấp tự mở khi có kết quả (xem [Mục lục](README.md)). Esc xoá chữ.
 - Cỡ và trạng thái các panel được nhớ trong trình duyệt này. Màn hình hẹp hơn 1024 điểm thì các panel xếp dọc như cũ.
 
 ## Chọn widget
@@ -144,7 +145,7 @@ Bên trái là cột lớp, bên phải là thước thời gian và các thanh.
 - **Hiện dần / ẩn dần:** kéo ô vuông nhỏ ở góc trên đầu hoặc cuối thanh (hiện khi rê chuột hoặc khi lớp đang chọn).
 - **Tên thanh dính mép:** khi cuộn hoặc phóng to Timeline mà đầu thanh đã ra khỏi màn hình, tên lớp vẫn hiện ở mép trái vùng nhìn cho tới hết thanh.
 - **Bắt dính:** khi kéo, thanh bám vào vạch phát, mép các thanh khác, phase, chỗ đổi hợp âm (khi làn Nhạc đang mở) và phách của bài. Khi cắt mép, thanh còn bám vào **độ dài** của thanh khác: nhãn "= Tiến độ (0:12)" nghĩa là lúc đó hai lớp dài bằng nhau. Giữ Alt để tắt.
-- **Làn Nhạc:** bấm **Nhạc** dưới làn Phase để hiện làn hợp âm và một làn nốt cho mỗi track, giúp căn thanh theo nhạc. Làn này chỉ để xem.
+- **Làn Nhạc:** bấm **Nhạc** dưới làn Phase để hiện làn hợp âm và một làn nốt cho mỗi track, giúp căn thanh theo nhạc. Làn này chỉ để xem nhạc; thứ duy nhất đổi được ở đây là ổ khoá của từng track.
 - **Tách lớp tại vạch phát:** đặt vạch phát lên thanh, chọn lớp rồi bấm Ctrl+K (hoặc nút kéo cắt ở góc trên bên trái). Lớp thành hai lớp nối nhau: lớp gốc giữ phần trước, bản sao (nằm ngay trên) giữ phần sau. Mỗi lớp có keyframe riêng và chỉnh độc lập.
 - **Đưa thanh tới vạch phát:** `[` đưa đầu thanh tới vạch phát, `]` đưa cuối thanh tới vạch phát (cả thanh dời theo). Alt+`[` và Alt+`]` cắt đầu hoặc cuối thanh tại vạch phát.
 - **Dời từng chút:** Alt+← / Alt+→ dời 1/30 giây, thêm Shift để dời 1 giây.
@@ -176,6 +177,12 @@ Precomp gom nhiều lớp thành một lớp, như precomp của After Effects. 
 - Tổng số lớp khi mở hết các precomp tối đa là 512. Vượt quá thì ứng dụng báo và không làm.
 - Ở thẻ Xem trước, khi vạch phát nằm trong một precomp, bấm một ô **Phong cách video** sẽ áp phong cách đó vào precomp ấy, không thay cả video. Nếu Piano Roll nằm trong precomp, phần chỉnh màu theo track ở thẻ Xem trước chỉnh Piano Roll của precomp đang hiện ở vạch phát. Xem [Xem trước](02-xem-truoc.md).
 
+## Chọn màu và bảng màu
+
+Mọi ô màu đều mở cùng một bộ chọn: kéo trong vùng màu và thanh sắc màu, hoặc gõ mã vào ô nhập. Ô nhập hiểu `#f80`, `#ff8800`, `#ff880080` (hai số cuối là độ đục), `rgb(255 136 0)`, `hsl(32 100% 50%)`, `hsv(32 100% 100%)`, `oklch(0.75 0.15 60)`, tên màu CSS như `tomato`, hoặc một số. Thanh **Độ đục** chỉ hiện ở ô cho phép trong suốt; màu lưu dạng `#rrggbbaa`, preset cũ không đổi hình. Công tắc HEX/RGB/HSL/HSV đổi cách hiển thị, nút sao chép lấy mã, nút ống hút lấy màu từ màn hình (chỉ có khi trình duyệt hỗ trợ, như Chrome và Edge). **Gần đây** giữ 12 màu vừa dùng. Esc đóng bộ chọn.
+
+**Bảng màu** nằm ở đầu mục **Track**: dán danh sách mã màu, một bảng GIMP `.gpl`, JSON hoặc các biến CSS (`--ten: #aabbcc`), hoặc bấm **Lấy màu track hiện tại**; sửa từng màu, đặt tên rồi **Lưu bảng màu**. **Áp lần lượt cho track** gán các màu theo thứ tự track (hết màu thì quay vòng) bằng một bước hoàn tác (Ctrl+Z).
+
 ## Cách ghi tên nốt
 
 Cũng khi không chọn widget nào, mục **Cách ghi tên nốt** đổi tên nốt và hợp âm ở mọi widget cùng lúc (chữ cái, Do Re Mi, kiểu Đức; dấu thăng hay giáng; C4 hay C3). Chi tiết ở [Widget phân tích](10-phan-tich.md#cách-ghi-tên-nốt).
@@ -198,6 +205,8 @@ Phase là các đoạn của bài (verse, chorus…). Phase nằm ở làn **Pha
 - **Dời:** kéo mốc phase (bám vào vạch phát, phách và mép thanh; giữ Alt để tắt), hoặc bấm vào mốc rồi Alt+← / Alt+→ (thêm Shift để dời 1 giây).
 - **Đổi tên:** nhấp đúp vào mốc.
 - **Xoá:** bấm vào mốc rồi nhấn Delete.
+- **Từ marker:** nếu dự án có marker, nút tải xuống ở đầu làn **Phase** tạo phase từ marker (mỗi marker một phase cùng tên). Nếu đã có phase, nút này thay hết chúng.
+- **Khoá track:** ở làn **Nhạc**, mỗi track có ổ khoá. Track khoá không đổi được ẩn/hiện, solo, màu, thứ tự và độ sáng (kể cả ở bảng Track) cho tới khi mở khoá. Khoá chỉ có trong phiên làm việc, không lưu vào preset.
 - Khi kéo thanh lớp, thanh bám vào phase, nên dễ cho một lớp hiện đúng đoạn chorus.
 
 Các số liệu `{phase}`, `{next_phase}`, `{phase_remaining}`… dùng được trong mọi ô chữ (xem [Chỗ giữ](08-cho-giu.md)).
@@ -257,7 +266,7 @@ Chọn một widget có chữ (tên bài, bộ đếm nốt, nốt đang phát, 
 Mỗi chữ dùng một **kiểu chữ** có sẵn (Tiêu đề, Phụ đề, Số đếm, Đồng hồ…). Bạn đổi gì thì chỉ thứ đó khác kiểu, phần còn lại vẫn theo kiểu. Cạnh mỗi thứ đã đổi có nút ↺ để quay về giá trị của kiểu.
 
 - **Dòng chữ:** widget có nhiều chữ thì chọn chữ cần sửa ở đây, ví dụ Tên bài hay Nghệ sĩ. Một số mục là một phần của dòng, ví dụ **Con số trong dòng** của bộ đếm nốt hay **Nốt bass sau dấu /** của hợp âm: đổi ở đó thì chỉ phần ấy khác, phần còn lại của dòng giữ nguyên. Chữ đang có chỉnh sửa được đánh dấu • trong danh sách.
-- **Kiểu chữ**, **Phông**, **Cỡ**, **Màu**, **Đậm**, **Nghiêng**. Cuối danh sách **Phông** có **Nạp tệp phông…** để dùng phông của bạn (WOFF2, WOFF, TTF, OTF, tối đa 20 MB); phông này đi theo phiên, gói dự án và video xuất. Hãy chỉ dùng phông bạn có quyền dùng.
+- **Kiểu chữ**, **Phông**, **Cỡ**, **Màu**, **Độ đậm** (Mảnh, Thường, Đậm), **Nghiêng**. Cuối danh sách **Phông** có **Nạp tệp phông…** để dùng phông của bạn (WOFF2, WOFF, TTF, OTF, tối đa 20 MB); phông này đi theo phiên, gói dự án và video xuất. Hãy chỉ dùng phông bạn có quyền dùng.
 - **Căn lề:** trái, giữa hoặc phải trong khung widget.
 
 Ở chế độ Nâng cao (hoặc bấm **Thêm tuỳ chọn**):
@@ -287,6 +296,10 @@ Chọn widget Piano roll (hoặc bấm **Chỉnh hình thức nốt** khi chưa 
 - **Cách nốt chạy:** **Cuộn** (mặc định) nốt trôi qua vạch phát đứng yên; **Trang** nốt đứng yên theo từng trang, vạch phát chạy từ trái sang phải, hết trang thì về đầu và hiện trang nốt mới (nốt kéo dài qua ranh giới trang bị cắt ở mép trang; nốt đã phát đậm, nốt sắp tới nhạt theo **Độ đục khi chờ**). Ô **Thời gian hiển thị** là tỉ lệ thời gian ở chế độ Cuộn và độ dài một trang ở chế độ Trang. Ở chế độ Trang ô **Vị trí vạch phát** không còn tác dụng nên bị ẩn.
 - **Độ dài trang (chế độ Trang):** **Giây** hoặc **Ô nhịp**. Chọn **Ô nhịp** thì mỗi trang gồm đúng số ô nhịp bạn đặt (**Số ô nhịp mỗi trang**), trang bắt đầu đúng đầu ô nhịp và đổi trang đúng lúc sang ô mới, kể cả khi bài đổi tempo hoặc nhịp (trang dài ngắn khác nhau).
 - **Hiện nốt trước (chế độ Trang):** 0 là hiện cả trang. Đặt một số giây (ví dụ 2) thì nốt chỉ hiện khi còn cách vạch phát chừng ấy thời gian; nốt đã phát ở lại tới hết trang. Giống kiểu trang nhạc "hiện dần" trong nhiều video.
+- **Góc chảy nốt (°):** 0 là nốt chạy từ phải sang trái (mặc định), 90 là nốt rơi từ trên xuống, 180 và 270 theo các hướng còn lại; nhập góc bất kỳ từ 0 đến 360. Nốt, vạch phát, bàn phím và lưới xoay theo trong khung widget (khác với **Xoay** của cả widget). **Lật chiều cao độ** đảo phía nốt cao (90° kèm lật: nốt trầm ở bên trái). **Giữ chữ luôn đứng thẳng** giữ tên nốt và số ô nhịp không bị xoay theo. Ở góc không phải bội của 90°, bàn phím và mũi tên vạch phát có thể nằm ngoài khung.
+- **Vạch phát:** **Kiểu vạch phát** gồm **Vạch liền**, **Nét đứt**, **Dải**, **Dải mờ dần hai bên**; **Độ dày vạch phát**, **Màu vạch phát**, **Độ dài vạch phát** (tỉ lệ chiều cao, căn giữa), **Phát sáng vạch phát** và **Đầu mũi tên**. **Khi nốt chạm vạch**: **Nháy sáng** (vạch ngả về màu nốt vừa chạm) hoặc **Phình to** (vạch dày lên), mạnh theo velocity và tắt dần trong **Thời gian tắt dần (ms)**.
+- **Bàn phím:** ngoài bật/tắt còn có **Hình dạng phím** (**Phẳng**, **Bo góc**), **Phím nhấn theo màu nốt** (tắt thì dùng **Màu phím nhấn**), **Tô thang âm** (**Giọng nhận diện**, **Trưởng của nốt chủ**, **Thứ của nốt chủ**; nốt chủ lấy từ nốt chủ của dự án nếu đã đặt) với **Màu thang âm** và **Độ đậm tô thang âm**, và **Tên nốt trên phím** (**Chỉ phím C**, **Mọi phím trắng**, **Mọi phím**, **Chỉ phím đang nhấn**; thêm **Hiện số quãng tám**, **Màu tên nốt**). Cách ghi tên theo thiết lập tên nốt chung.
+- **Lưới ô nhịp:** **Vạch ô nhịp**, **Vạch phách**, **Số ô nhịp**, **Màu lưới**, **Độ đục lưới**. Lưới theo nhịp và tempo của bài nên đúng cả khi bài đổi tempo hoặc nhịp.
 - **Hiện vạch phát:** ẩn vạch thì nốt vẫn phát ở đúng chỗ đó, chỉ không vẽ vạch. Khi vạch đang ẩn, ô **Vị trí vạch phát** cũng ẩn theo; bật lại vạch để chỉnh vị trí.
 
 ### Phát sáng

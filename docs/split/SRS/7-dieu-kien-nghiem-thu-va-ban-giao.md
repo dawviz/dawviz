@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO"
 path: "7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO"
 chunk: 7-dieu-kien-nghiem-thu-va-ban-giao.md
-source_lines: 1137-1174
-source_sha1: 879a0e809e
+source_lines: 1143-1180
+source_sha1: fee32c2554
 ids: [ARC-01, AT-01, AT-02, AT-03, AT-04, AT-05, AT-06, AT-07, AT-08, AT-09, AT-10, AT-11, AT-12, AT-13, AT-14, AT-15, AT-16, AT-17, AT-18, AT-19, AT-20, AT-21, AT-22, AT-23, AT-24, AT-25, AT-26, AT-27, AT-28, AT-29, BR-01, BR-02, BR-05, BR-08, BR-09, D-11, D-25, D-29, D-63, D-69, D-70, KPI-01, KPI-02, KPI-03, KPI-04, KPI-05, KPI-06, KPI-07, KPI-08, NFR-COMP-02, NFR-PERF-03, OI-01, OI-02, P-01, P-13, REQ-GRAPHICS-05, REQ-GRAPHICS-06, REQ-UI-08]
 ---
 ## 7. ĐIỀU KIỆN NGHIỆM THU VÀ BÀN GIAO

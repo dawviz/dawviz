@@ -268,7 +268,7 @@ describe('Danh sách track: lưới N cột / danh sách gọn (REQ-UI-14 sửa)
     wrap(<TrackPanel tracks={trs} config={cfg} overrides={{}} onChange={() => {}} onStyle={() => {}} layout={{ mode: 'list', columns: 'auto' }} />);
     expect(screen.getByTestId('track-list')).toBeInTheDocument();
     expect(screen.queryByTestId('track-details-t2')).toBeNull();
-    const row = screen.getAllByRole('button', { expanded: false })[2];
+    const row = screen.getAllByRole('button', { expanded: false }).filter((b) => b.hasAttribute('data-track-focus'))[2];
     fireEvent.keyDown(row, { key: 'Enter' });
     expect(screen.getByTestId('track-details-t2')).toBeInTheDocument();
   });
@@ -647,6 +647,63 @@ describe('ExportDialog (T-09)', () => {
     } finally { g.VideoEncoder = old[0]; g.AudioEncoder = old[1]; }
   });
 
+  it('T-09 D-26: kích thước tuỳ ý rộng × cao, giữ tỉ lệ thì ô kia tự tính; tắt giữ tỉ lệ khác tỉ lệ khung thì báo viền; quá nhỏ thì khoá Bắt đầu', async () => {
+    await open();
+    fireEvent.click(screen.getByTestId('export-kind-png')); // không cần WebCodecs
+    fireEvent.change(screen.getByLabelText(/^(Size|Kích thước)$/), { target: { value: 'custom' } });
+    const W = () => screen.getByRole('spinbutton', { name: /^(Width|Rộng)$/ }), H = () => screen.getByRole('spinbutton', { name: /^(Height|Cao)$/ });
+    typeIn(W(), '1280');
+    expect(H()).toHaveAttribute('aria-valuenow', '1280'); // khung vuông (PAPER_SCENE 1:1)
+    expect(screen.getByTestId('export-png-summary').textContent).toMatch(/960/);
+    expect(screen.queryByTestId('export-notes')).toBeNull();
+    fireEvent.click(screen.getByTestId('export-keep-ratio'));
+    typeIn(H(), '721'); // số lẻ làm chẵn xuống
+    expect(W()).toHaveAttribute('aria-valuenow', '1280');
+    expect(screen.getByTestId('export-filename').textContent).toMatch(/Song_1280x720_30fps_000001\.png|Song_1280x720_30fps\.zip/);
+    expect(screen.getByTestId('export-notes').textContent).toMatch(/background colour|màu nền/);
+    expect(screen.getByTestId('export-notes').textContent).toMatch(/even|chẵn/);
+    typeIn(H(), '100');
+    expect(screen.getByTestId('export-blockers').textContent).toMatch(/128/);
+    expect(screen.getByTestId('export-start')).toBeDisabled();
+  });
+
+  it('T-09: xuất một đoạn Start→End — số khung, thời lượng, tên tệp theo đoạn; kết thúc trước bắt đầu thì khoá Bắt đầu', async () => {
+    await open();
+    fireEvent.click(screen.getByTestId('export-kind-png'));
+    expect(screen.queryByTestId('export-range-fields')).toBeNull();
+    fireEvent.click(screen.getByTestId('export-range-part'));
+    const start = screen.getByTestId('export-range-start') as HTMLInputElement, end = screen.getByTestId('export-range-end') as HTMLInputElement;
+    expect(end.value).toBe('0:32'); // mặc định tới hết bài (30 s + 2 s)
+    fireEvent.change(start, { target: { value: '10' } }); fireEvent.blur(start);
+    fireEvent.change(end, { target: { value: '0:20' } }); fireEvent.blur(end);
+    expect(screen.getByTestId('export-png-summary').textContent).toMatch(/^300\b/); // 10 s × 30 fps
+    expect(screen.getByTestId('export-filename').textContent).toMatch(/Song_1080x1080_30fps_0m10s-0m20s/);
+    fireEvent.change(end, { target: { value: '5' } }); fireEvent.blur(end);
+    expect(screen.getByTestId('export-blockers').textContent).toMatch(/after the start|sau điểm bắt đầu/);
+    expect(screen.getByTestId('export-start')).toBeDisabled();
+    fireEvent.click(screen.getByTestId('export-range-all'));
+    expect(screen.queryByTestId('export-blockers')).toBeNull();
+  });
+
+  it('T-55: chọn lớp cho lần xuất — có ở Chuỗi PNG (cả Cơ bản), mặc định mọi lớp; bỏ hết thì khoá Bắt đầu; Video ở Cơ bản không có', async () => {
+    const { createWidget } = await import('@dawviz/render-core');
+    const scene = { ...PAPER_SCENE, widgets: [...PAPER_SCENE.widgets, createWidget(PAPER_SCENE, 'TEXT')] };
+    wrap(<ExportDialog scene={scene} ast={ast} derived={derived} audio={null} offsetMs={0} projectSec={30} fileName="Song.rpp" onClose={() => {}} layerName={(id) => `L:${id}`} />);
+    await act(async () => { await new Promise((res) => setTimeout(res, 0)); });
+    expect(screen.queryByTestId('export-layers')).toBeNull();
+    fireEvent.click(screen.getByTestId('export-kind-png'));
+    const box = screen.getByTestId('export-layers');
+    const ticks = [...box.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')];
+    expect(ticks.length).toBe(scene.widgets.length);
+    expect(ticks.every((t) => t.checked)).toBe(true);
+    expect(box.textContent).toMatch(new RegExp(`L:${scene.widgets[0].id}`));
+    ticks.forEach((t) => fireEvent.click(t));
+    expect(screen.getByTestId('export-blockers').textContent).toMatch(/at least one layer|ít nhất một lớp/);
+    expect(screen.getByTestId('export-start')).toBeDisabled();
+    fireEvent.click(screen.getByTestId('export-layers-all'));
+    expect(screen.queryByTestId('export-blockers')).toBeNull();
+  });
+
   it('Esc đóng hộp thoại khi chưa xuất', async () => {
     let closed = 0;
     wrap(<ExportDialog scene={PAPER_SCENE} ast={ast} derived={derived} audio={null} offsetMs={0} projectSec={30} fileName="a.rpp" onClose={() => { closed++; }} />);
@@ -881,5 +938,56 @@ describe('Tài nguyên của phiên (T-21)', () => {
     expect(row.textContent).toMatch(/logo\.png/); expect(row.textContent).toMatch(/1[.,]2 MB/);
     fireEvent.click(screen.getByRole('button', { name: /Remove logo.png|Bỏ logo.png/ }));
     expect(removed).toEqual([id]);
+  });
+});
+
+describe('Tìm thiết lập (T-60, REQ-UI-13)', () => {
+  const setup = async (advanced: boolean, query: string) => {
+    const { WidgetSettings } = await import('../src/components/WidgetSettings.tsx');
+    const { InspectorSection } = await import('../src/components/Inspector.tsx');
+    const { SettingsSearchContext, SearchEmpty } = await import('../src/components/SettingsSearch.tsx');
+    const { createWidget, defaultScene } = await import('@dawviz/render-core');
+    const w = createWidget(defaultScene('16:9'), 'TIME_BAR');
+    w.properties = { ...(w.properties as Record<string, unknown>), showBars: true } as typeof w.properties;
+    const ui = (q: string) => (
+      <I18nProvider><SettingsSearchContext.Provider value={{ query: q, setQuery: () => {} }}><div>
+        <InspectorSection n={1} id="s-settings" title="Thiết lập" more={advanced ? undefined : { open: false, edited: false, onToggle: () => {} }}>
+          <WidgetSettings widget={w} advanced={advanced} onProps={() => {}} />
+        </InspectorSection>
+        <InspectorSection n={2} id="s-other" title="Mục khác"><p>nội dung khác</p></InspectorSection>
+        <SearchEmpty />
+      </div></SettingsSearchContext.Provider></I18nProvider>
+    );
+    const r = render(ui(query));
+    return { ...r, again: (q: string) => r.rerender(ui(q)) };
+  };
+  const colorRe = /^(Bar colour|Màu vạch)$/;
+
+  for (const advanced of [false, true]) {
+    it(`${advanced ? 'Nâng cao' : 'Cơ bản'}: gõ nhãn ô nâng cao thì hiện đúng ô đó, ẩn ô và mục không khớp; xoá chữ thì về như cũ`, async () => {
+      const { again } = await setup(advanced, '');
+      expect(!!screen.queryByLabelText(colorRe)).toBe(advanced); // Cơ bản: ô nâng cao ẩn
+      expect(screen.getByTestId('section-s-other')).toBeVisible();
+      again('mau vach'); // không dấu vẫn khớp "Màu vạch"
+      const hit = screen.queryByLabelText(/^(Màu vạch)$/) ?? screen.queryByLabelText(colorRe);
+      // nhãn theo ngôn ngữ đang dùng: thử cả câu tìm tiếng Anh
+      if (!hit) again('bar colour');
+      expect(screen.getByLabelText(colorRe)).toBeInTheDocument();
+      expect(screen.queryByRole('checkbox', { name: /^(Show bars|Hiện thanh)/ })).toBeNull(); // ô không khớp bị ẩn
+      expect(screen.getByTestId('section-s-other')).not.toBeVisible(); // mục không khớp bị ẩn
+      expect(screen.queryByRole('button', { name: /More options|Thêm tuỳ chọn/ })).toBeNull(); // đang tìm: không cần nút này
+      again('');
+      expect(!!screen.queryByLabelText(colorRe)).toBe(advanced);
+      expect(screen.getByTestId('section-s-other')).toBeVisible();
+    });
+  }
+
+  it('tên mục khớp thì giữ cả mục; không gì khớp thì báo "không có thiết lập nào khớp"', async () => {
+    const { again } = await setup(false, 'mục khác');
+    expect(screen.getByTestId('section-s-other')).toBeVisible();
+    expect(screen.getByText('nội dung khác')).toBeInTheDocument();
+    again('zzqq');
+    await waitFor(() => expect(screen.getByTestId('settings-search-none')).toBeVisible());
+    expect(screen.getByTestId('settings-search-none').textContent).toMatch(/zzqq/);
   });
 });

@@ -3,16 +3,21 @@
 import type { Ctx2D } from './draw.ts';
 import type { TimelineIndex, TrackIndex } from './notes.ts';
 import type { UnifiedProjectAST } from './types.ts';
-import { layoutPianoRoll, layoutKeyboard } from './pianoroll.ts';
+import { layoutPianoRoll, layoutKeyboard, flowFrame, flowPoint, flowRect, flowLabel, type FlowFrame, type KeyRect } from './pianoroll.ts';
+import { notesInRange } from './notes.ts';
+import { keyAt } from './insight.ts';
+import { DEFAULT_NAMING, noteNameFor, pitchClassNameFor, type NoteNaming } from './naming.ts';
 import { NOTE_TRANSITIONS, rippleAt } from './noteTransition.ts';
-import { barPosAt } from './hud.ts';
-import { DEFAULT_KEYBOARD_STYLE } from './style.ts';
+import { barPosAt, gridLinesIn } from './hud.ts';
+import { DEFAULT_KEYBOARD_STYLE, DEFAULT_ROLL_GRID, mixHex, noteColor, resolveNoteStyle, scalePitchClasses, type KeyboardStyle } from './style.ts';
+import { rgbaOf } from './color.ts';
 import type { PianoRollProps, SceneDocument, WidgetSpec } from './scene.ts';
-import type { Derived, LayoutCtx, Primitive, RectPrim, TextPrim, WidgetRenderer } from './prims.ts';
-import { HUD_RENDERERS, barPageAt, buildHud, hudOf, usesChordPlaceholder, type ChordProps, type HudData } from './hud.ts';
+import type { Derived, LayoutCtx, PolyPrim, Primitive, RectPrim, TextPrim, WidgetRenderer } from './prims.ts';
+import { HUD_RENDERERS, barPageAt, buildHud, hudOf, isDrumTrack, usesChordPlaceholder, type ChordProps, type HudData } from './hud.ts';
 import { INSIGHT_RENDERERS } from './insight.ts';
+import { DASHBOARD_RENDERERS } from './dashboard.ts';
 import { measureText } from './text.ts';
-import { DEFAULT_TEXT_STYLES, TEXT_METRICS, type PlacedRun, type RichText, type TextGradient } from './typography.ts';
+import { DEFAULT_TEXT_STYLES, TEXT_DEFAULT_FONT, TEXT_METRICS, type PlacedRun, type RichText, type TextGradient } from './typography.ts';
 import { normalizeAngle } from './snap.ts';
 import { visibilityAlpha } from './visibility.ts';
 import { flattenScene, rootIdOf } from './comp.ts';
@@ -35,6 +40,9 @@ export interface RenderCtx extends Ctx2D {
   rotate(rad: number): void;
   rect(x: number, y: number, w: number, h: number): void;
   clip(): void;
+  /** Đường gấp khúc / đa giác (PolyPrim). `setLineDash` tuỳ chọn: đích vẽ không có thì nét đứt thành nét liền. */
+  lineTo(x: number, y: number): void;
+  setLineDash?(segments: number[]): void;
   // Chữ tự vẽ (T-72): tỉ lệ/nghiêng run, viền, gradient, đổ bóng.
   scale(x: number, y: number): void;
   transform(a: number, b: number, c: number, d: number, e: number, f: number): void;
@@ -62,15 +70,33 @@ export interface RenderTarget { ctx: RenderCtx; width: number; height: number }
 
 export type { Derived, RectPrim, TextPrim, Primitive, LayoutCtx, WidgetRenderer } from './prims.ts';
 
-/** Chọn track cho widget theo trackMappingMode (SRS REQ-STORAGE-02). */
-export function tracksFor(spec: WidgetSpec<unknown>, index: TimelineIndex): TrackIndex[] {
+/** Tên track nhạc cụ hoà âm (Chord Detection chọn trước, T-06): piano, keys/keyboard, guitar, organ, Rhodes/EP, đàn… */
+export const isHarmonicTrack = (name: string) => /piano|pno|\bkeys?\b|keyboard|guitar|gtr|organ|rhodes|e\.?\s?piano|\bep\b|clav|harpsichord|ukulele|đàn|ghi\s?ta|dương cầm/i.test(name);
+/** Track trống: kênh 10 (GM) chiếm đa số nốt hoặc tên Drums/Percussion… (cùng quy tắc P-09/T-41). */
+export const isDrumTrackIndex = (ti: TrackIndex) => isDrumTrack(ti.track.name) || (ti.notes.length > 0 && ti.notes.filter((n) => n.channel === 9).length * 2 > ti.notes.length);
+/**
+ * AUTO_ASSIGN_FIRST_MELODIC (T-06): track đang hiện có nốt, bỏ track trống. Chord Detection (`harmonic`) chọn trước track có tên piano/keys/guitar…;
+ * không có thì track giai điệu đầu tiên; chỉ có track trống thì track đầu tiên có nốt.
+ */
+export function firstMelodicTrack(tracks: readonly TrackIndex[], harmonic = false): TrackIndex | undefined {
+  const live = tracks.filter((ti) => ti.track.isVisible && ti.notes.length > 0), melodic = live.filter((ti) => !isDrumTrackIndex(ti));
+  return (harmonic ? melodic.find((ti) => isHarmonicTrack(ti.track.name)) : undefined) ?? melodic[0] ?? live[0];
+}
+/** Đoạn đổi track (T-52) đang hiệu lực tại `t`: đoạn đầu tiên (theo `from`) chứa t; không có → undefined. */
+export const trackRangeAt = (spec: Pick<WidgetSpec<unknown>, 'trackRanges'>, t: number) => spec.trackRanges?.find((r) => t >= r.from && (r.to === null || t < r.to));
+/**
+ * Chọn track cho widget theo trackMappingMode (SRS REQ-STORAGE-02). Có `t` và widget có `trackRanges` (T-52): trong một đoạn thì dùng đúng tập track
+ * của đoạn đó. Không có `t` (bước dựng trước như Bản nhạc) → bỏ qua đoạn.
+ */
+export function tracksFor(spec: WidgetSpec<unknown>, index: TimelineIndex, t?: number): TrackIndex[] {
+  const seg = t === undefined ? undefined : trackRangeAt(spec, t);
+  if (seg) { const want = new Set(seg.tracks); return index.tracks.filter((ti) => want.has(ti.track.index)); }
   if (spec.trackMappingMode === 'MANUAL') {
     const want = new Set(spec.assignedTrackIndices);
     return index.tracks.filter((ti) => want.has(ti.track.index));
   }
   if (spec.trackMappingMode === 'AUTO_ASSIGN_FIRST_MELODIC') {
-    // Tạm: track hiện đầu tiên có nốt. Loại track trống (drum) cần nhận diện kênh 10 / tên: làm cùng P-09 (T-41).
-    const first = index.tracks.find((ti) => ti.track.isVisible && ti.notes.length > 0);
+    const first = firstMelodicTrack(index.tracks, spec.type === 'CHORD_DETECTION');
     return first ? [first] : [];
   }
   return index.tracks;
@@ -107,17 +133,92 @@ export function pianoRollGeometry(p: Pick<PianoRollProps, 'keyboard' | 'playhead
   return { kb, playX, pxPerSec, ratio: area > 0 ? (playX - kb) / area : 0, windowSeconds: area / pxPerSec, pageStart: undefined as number | undefined };
 }
 
+/** Thuộc tính Piano Roll đã điền mặc định cho các trường mới (đối tượng dựng tay hoặc tài liệu cũ chưa qua sanitizeScene vẫn vẽ được). */
+function rollProps(p: PianoRollProps): PianoRollProps {
+  return { ...ROLL_EXTRA, ...p, keyboard: { ...DEFAULT_KEYBOARD_STYLE, ...p.keyboard }, grid: { ...DEFAULT_ROLL_GRID, ...(p.grid ?? {}) } };
+}
+const ROLL_EXTRA = { flowAngle: 0, flowMirror: false, labelsUpright: true, playheadStyle: 'LINE', playheadArrows: false, playheadLength: 1, playheadGlow: 0, playheadHit: 'OFF', playheadHitMs: 250 } as const;
+
+/**
+ * Hình học làn của Piano Roll ở góc chảy bất kỳ (T-59): mọi số theo toạ độ LÀN (xem `flowFrame`). Tỉ lệ thời gian và vị trí vạch phát tính trên đoạn
+ * trục thời gian nằm trong khung (`span`), nên ở góc 0 đúng như `pianoRollGeometry` trên bề rộng widget. Bàn phím kéo dài từ mép làn tới vạch phát
+ * (`kbU`) để không lộ góc trống. `left`/`layoutWidth`/`windowSeconds`/`ratio`: tham số đưa thẳng vào layoutPianoRoll.
+ */
+export function pianoRollLane(p: PianoRollProps, width: number, height: number, t: number, page?: { start: number; end: number }) {
+  const f = flowFrame(width, height, p.flowAngle ?? 0, !!p.flowMirror);
+  const g = pianoRollGeometry(p, f.span, t, page);
+  const kbU = g.kb > 0 ? f.u0 + g.kb : 0, playU = f.u0 + g.playX;
+  if (g.pageStart !== undefined) {
+    const left = f.u0 + g.kb;
+    return { f, ...g, kbU, playU, left, layoutWidth: f.u0 + f.span, windowSeconds: g.windowSeconds, ratio: 0 };
+  }
+  const left = kbU, area = f.Lw - left, windowSeconds = area / g.pxPerSec;
+  return { f, ...g, kbU, playU, left, layoutWidth: f.Lw, windowSeconds, ratio: area > 0 ? (playU - left) / area : 0 };
+}
+
+/** Mức phản ứng của vạch phát tại t (0..1): nốt vừa bắt đầu trong `ms` vừa qua, tắt dần tuyến tính, nhân velocity; kèm màu của nốt mạnh nhất. */
+export function playheadHitAt(tracks: TrackIndex[], t: number, ms: number, pitchMin: number, pitchMax: number, style?: PianoRollProps['noteStyle']): { k: number; color: string | null } {
+  const win = Math.max(0.001, ms / 1000);
+  let best = 0, color: string | null = null;
+  for (const ti of tracks) {
+    if (!ti.track.isVisible) continue;
+    for (const n of notesInRange(ti, t - win, t)) {
+      if (n.startTimeSeconds > t || n.startTimeSeconds <= t - win || n.pitch < pitchMin || n.pitch > pitchMax) continue;
+      const k = (1 - (t - n.startTimeSeconds) / win) * Math.min(1, Math.max(0, n.velocity / 127));
+      if (k > best + 1e-12) { best = k; color = noteColor(resolveNoteStyle(style, ti.track.id), ti.track.color, n.pitch, n.velocity); }
+    }
+  }
+  return { k: best, color };
+}
+
+/** Thang âm đánh dấu trên bàn phím tại t (T-51/T-41): tập lớp cao độ và nốt chủ; null = tắt hoặc chưa đủ nốt để nhận diện. */
+export function keyboardScaleAt(mode: KeyboardStyle['scale'], tonic: number | undefined, tracks: TrackIndex[], t: number): { pcs: Set<number>; tonic: number } | null {
+  if (mode === 'OFF') return null;
+  const det = tonic === undefined || mode === 'AUTO' ? keyAt(tracks.filter((ti) => ti.track.isVisible), t, KEY_WINDOW_SEC) : null;
+  if (mode === 'MAJOR' || mode === 'MINOR') {
+    const tn = tonic ?? det?.tonic; if (tn === undefined) return null;
+    return { pcs: scalePitchClasses(tn, mode === 'MINOR'), tonic: tn };
+  }
+  if (tonic === undefined) return det ? { pcs: scalePitchClasses(det.tonic, det.minor), tonic: det.tonic } : null;
+  // Có nốt chủ người dùng đặt: chọn trưởng/thứ của nốt chủ đó trùng nhiều lớp cao độ nhất với giọng nhận diện (hoà: trưởng).
+  const maj = scalePitchClasses(tonic, false), min = scalePitchClasses(tonic, true);
+  if (!det) return { pcs: maj, tonic };
+  const ref = scalePitchClasses(det.tonic, det.minor), hits = (s: Set<number>) => [...s].filter((x) => ref.has(x)).length;
+  return { pcs: hits(min) > hits(maj) ? min : maj, tonic };
+}
+/** Cửa sổ nhận diện giọng cho đánh dấu thang âm (giây), như mặc định widget Giọng. */
+export const KEY_WINDOW_SEC = 16;
+
 export const pianoRollRenderer: WidgetRenderer<PianoRollProps> = {
   type: 'PIANO_ROLL',
   layout({ ast, derived, tracks }, spec, t) {
-    const p = spec.properties, { width, height } = spec.layout;
+    const p = rollProps(spec.properties), { width, height } = spec.layout;
     const [pitchMin, pitchMax] = pianoRollPitchRange(p, tracks);
     const page = p.scrollMode === 'PAGE' && p.pageUnit === 'BARS' ? barPageAt(hudOf(derived, ast).bars, p.pageBars, t) : undefined;
-    const { kb, ratio, playX, windowSeconds, pageStart } = pianoRollGeometry(p, width, t, page);
+    const L = pianoRollLane(p, width, height, t, page), { f, kb, kbU, playU, pageStart } = L, Lh = f.Lh;
     const rects = layoutPianoRoll({ tracks, duration: derived.index.duration }, ast.tempoMap, t,
-      { width, height, windowSeconds, playheadRatio: ratio, pitchMin, pitchMax, brightness: derived.brightness, style: p.noteStyle, left: kb, pageStart, revealAhead: p.scrollMode === 'PAGE' && p.revealAhead > 0 ? p.revealAhead : undefined,
+      { width: L.layoutWidth, height: Lh, windowSeconds: L.windowSeconds, playheadRatio: L.ratio, pitchMin, pitchMax, brightness: derived.brightness, style: p.noteStyle, left: L.left, pageStart, revealAhead: p.scrollMode === 'PAGE' && p.revealAhead > 0 ? p.revealAhead : undefined,
         transition: p.transition && p.transition !== 'none' && NOTE_TRANSITIONS[p.transition] ? { spec: NOTE_TRANSITIONS[p.transition], beatPhase: barPosAt(hudOf(derived, ast).bars, t).beatPhase } : undefined });
-    const out: Primitive[] = [];
+    const out: Primitive[] = []; // toạ độ làn; đổi sang toạ độ khung ở cuối (góc 0: trùng nhau)
+    const labels: TextPrim[] = [];
+    const upright = p.labelsUpright;
+    // Lưới ô nhịp (dưới nốt): vạch đầu ô nhịp, vạch phách mờ, số ô nhịp ở đầu mỗi ô. Lấy lưới từ HudData nên đúng khi đổi tempo/nhịp.
+    const G = p.grid;
+    if ((G.bars || G.beats || G.numbers) && G.opacity > 0) {
+      const pps = (L.layoutWidth - L.left) / L.windowSeconds, t0 = pageStart !== undefined ? pageStart : t - L.windowSeconds * L.ratio;
+      const tA = pageStart !== undefined ? pageStart : t0 - L.left / pps, tB = pageStart !== undefined ? pageStart + L.windowSeconds : t0 + L.windowSeconds;
+      const uMin = kb > 0 ? kbU : 0, size = Math.min(14, Math.max(8, f.pitchSpan * 0.018)), vTop = (Lh - f.pitchSpan) / 2;
+      for (const ln of gridLinesIn(hudOf(derived, ast).bars, tA, tB, G.beats)) {
+        const u = L.left + (ln.sec - t0) * pps;
+        if (u < uMin - 0.5) continue;
+        const head = ln.beat === 1;
+        if (head ? G.bars : G.beats) out.push({ ...rect(u - 0.5, 0, 1, Lh, G.color), alpha: head ? G.opacity : G.opacity * 0.45 });
+        if (head && G.numbers) {
+          const text = String(ln.bar), w = text.length * size * 0.62;
+          labels.push(flowLabel(f, { cu: u + 4 + w / 2, cv: vTop + (f.identity ? 4 + size / 2 : 6 + size), ax: u + 4, align: 'left', text, size, color: G.color, alpha: Math.min(1, G.opacity * 2 + 0.2), font: TEXT_DEFAULT_FONT, weight: 400, upright }));
+        }
+      }
+    }
     for (const r of rects) {
       const alpha = a01(r.brightness * r.opacity);
       if (alpha <= 0.004) continue;
@@ -133,29 +234,104 @@ export const pianoRollRenderer: WidgetRenderer<PianoRollProps> = {
       const alpha = a01(r.brightness * g.alpha); if (alpha <= 0.004) continue;
       out.push({ kind: 'rect', x: r.x - g.r, y: r.y + r.h / 2 - g.r, w: 2 * g.r, h: 2 * g.r, fill: '#00000000', alpha, radius: g.r, glowColor: '', glowBlur: 0, stroke: r.color, strokeWidth: Math.max(1, r.h * 0.12) });
     }
-    if (p.playheadVisible && p.playheadWidth > 0) out.push(rect(playX - p.playheadWidth / 2, 0, p.playheadWidth, height, p.playheadColor));
+    if (p.playheadVisible && p.playheadWidth > 0) {
+      const hit = p.playheadHit !== 'OFF' ? playheadHitAt(tracks, t, p.playheadHitMs, pitchMin, pitchMax, p.noteStyle) : { k: 0, color: null };
+      out.push(...playheadPrims(p, playU, Lh, f.pitchSpan, hit));
+    }
     if (kb > 0) {
       const ks = { ...DEFAULT_KEYBOARD_STYLE, ...p.keyboard, width: kb };
-      const keys = layoutKeyboard({ tracks, duration: derived.index.duration }, t, { height, pitchMin, pitchMax, style: ks, noteStyle: p.noteStyle });
+      const keys = layoutKeyboard({ tracks, duration: derived.index.duration }, t, { height: Lh, pitchMin, pitchMax, style: ks, noteStyle: p.noteStyle, ...(kbU !== kb ? { reach: kbU } : {}) });
+      const sc = keyboardScaleAt(ks.scale, derived.tonic, tracks, t);
+      const round = ks.shape === 'ROUNDED';
+      const keyRect = (x: number, y: number, w: number, h: number, fill: string): RectPrim => {
+        if (!round) return rect(x, y, w, h, fill);
+        const gap = Math.min(1, h * 0.15), r = Math.min(h * 0.45, kb * 0.08, 6);
+        return { ...rect(x, y + gap / 2, w, h - gap, fill), radius: r > 0.5 ? r : 0 };
+      };
+      if (round) out.push(rect(0, 0, kbU, Lh, '#0c0e16')); // khe giữa các phím bo góc
       for (const k of keys) {
-        if (k.black) out.push(rect(0, k.y, kb, k.h, ks.whiteColor)); // hàng phím đen: nền trắng cả hàng rồi phím đen ngắn đè lên
-        out.push(rect(k.x, k.y, k.w, k.h, k.color));
+        if (k.black) out.push(keyRect(0, k.y, kbU, k.h, ks.whiteColor)); // hàng phím đen: nền trắng cả hàng rồi phím đen ngắn đè lên
+        out.push(keyRect(k.x, k.y, k.w, k.h, k.color));
+        if (sc && !k.active && ks.scaleOpacity > 0 && sc.pcs.has(k.pitch % 12))
+          out.push({ ...keyRect(k.x, k.y, k.w, k.h, ks.scaleColor), alpha: Math.min(1, ks.scaleOpacity * (k.pitch % 12 === sc.tonic ? 1.8 : 1)) });
       }
-      out.push(rect(kb - 1, 0, 1, height, '#0c0e16'));
+      out.push(rect(kbU - 1, 0, 1, Lh, '#0c0e16'));
+      if (ks.labels !== 'NONE') labels.push(...keyLabels(f, keys, ks, kb, kbU, Lh / (pitchMax - pitchMin + 1), derived.naming ?? DEFAULT_NAMING, upright));
     }
-    return out;
+    const prims: Primitive[] = f.identity ? out : out.map((q) => (q.kind === 'rect' ? flowRect(f, q) : q));
+    return labels.length ? [...prims, ...labels] : prims;
   },
 };
 const rect = (x: number, y: number, w: number, h: number, fill: string): RectPrim => ({ kind: 'rect', x, y, w, h, fill, alpha: 1, radius: 0, glowColor: '', glowBlur: 0, stroke: '', strokeWidth: 0 });
 
+/**
+ * Vạch phát (T-58) trên làn, vuông góc với hướng chảy, căn giữa theo chiều cao làn. Kiểu LINE mặc định ra đúng một hình chữ nhật như trước.
+ * `hit.k`: mức phản ứng khi nốt chạm (FLASH: màu ngả về màu nốt vừa chạm và sáng hơn; SWELL: dày thêm tới 3 lần).
+ */
+export function playheadPrims(p: Pick<PianoRollProps, 'playheadColor' | 'playheadWidth' | 'playheadStyle' | 'playheadArrows' | 'playheadLength' | 'playheadGlow' | 'playheadHit'>, u: number, laneH: number, pitchSpan: number, hit: { k: number; color: string | null }): RectPrim[] {
+  const k = p.playheadHit === 'OFF' ? 0 : Math.min(1, Math.max(0, hit.k));
+  const w = p.playheadWidth * (p.playheadHit === 'SWELL' ? 1 + 2 * k : 1);
+  const color = p.playheadHit === 'FLASH' && k > 0 ? mixHex(p.playheadColor, mixHex(hit.color ?? p.playheadColor, '#ffffff', 0.35), k) : p.playheadColor;
+  const glowBlur = Math.max(p.playheadGlow * 24, p.playheadHit === 'FLASH' ? k * 28 : 0);
+  const len = p.playheadLength >= 0.999 ? laneH : Math.min(laneH, p.playheadLength * pitchSpan), v0 = (laneH - len) / 2;
+  const glow = (r: RectPrim): RectPrim => (glowBlur > 0 ? { ...r, glowColor: color, glowBlur } : r);
+  const out: RectPrim[] = [];
+  switch (p.playheadStyle) {
+    case 'DASHED': {
+      const dash = Math.max(4, w * 3), gap = dash * 0.75;
+      for (let v = v0; v < v0 + len - 0.01; v += dash + gap) out.push(glow(rect(u - w / 2, v, w, Math.min(dash, v0 + len - v), color)));
+      break;
+    }
+    case 'BAND': out.push(glow({ ...rect(u - w / 2, v0, w, len, color), alpha: 0.35 }), rect(u - 0.5, v0, 1, len, color)); break;
+    case 'GRADIENT': { // dải mờ dần về hai bên: các dải con lồng nhau, tâm đậm nhất
+      const n = 6;
+      for (let i = n; i >= 1; i--) { const ww = (w * i) / n; out.push({ ...(i === n ? glow(rect(u - ww / 2, v0, ww, len, color)) : rect(u - ww / 2, v0, ww, len, color)), alpha: 1 / n + (i === 1 ? 0.2 : 0) }); }
+      break;
+    }
+    default: out.push(glow(rect(u - w / 2, v0, w, len, color)));
+  }
+  if (p.playheadArrows) { // đầu tam giác hai đầu, chỉ vào trong. TODO: dùng primitive `poly` sau khi gộp nhánh có poly; tạm ghép bằng các lát chữ nhật
+    const s = Math.min(40, Math.max(8, w * 3)), n = Math.max(4, Math.min(16, Math.ceil(s / 1.5))), dh = (s * 0.8) / n;
+    for (let j = 0; j < n; j++) {
+      const half = (s / 2) * (1 - (j + 0.5) / n);
+      out.push(rect(u - half, v0 + j * dh, 2 * half, dh + 0.4, color), rect(u - half, v0 + len - (j + 1) * dh - 0.4, 2 * half, dh + 0.4, color));
+    }
+  }
+  return out;
+}
+
+/** Tên nốt trên phím (T-51, P-12). Cỡ chữ theo chiều cao một hàng phím; quá nhỏ (< 5 pt) thì không vẽ. Tâm nhãn ở đầu phím gần vạch phát. */
+export function keyLabels(f: FlowFrame, keys: KeyRect[], ks: KeyboardStyle, kb: number, kbU: number, rowH: number, naming: NoteNaming, upright: boolean): TextPrim[] {
+  const size = Math.min(rowH * (ks.labels === 'C' ? 1.5 : 0.85), kb * 0.22, 24);
+  if (!(size >= 5)) return [];
+  const across = !f.identity && upright && Math.abs(f.s) > 0.5; // chữ đứng thẳng trên làn gần dọc: bề ngang chữ nằm ngang qua các hàng phím
+  const out: TextPrim[] = [];
+  for (const k of keys) {
+    const pc = k.pitch % 12;
+    const show = ks.labels === 'ALL' || (ks.labels === 'WHITE' && !k.black) || (ks.labels === 'C' && pc === 0) || (ks.labels === 'ACTIVE' && k.active);
+    if (!show) continue;
+    const text = ks.labelOctave ? noteNameFor(k.pitch, naming) : pitchClassNameFor(k.pitch, naming);
+    const cu = k.black ? k.x + k.w - kb * 0.16 : kbU - kb * 0.19;
+    out.push(flowLabel(f, { cu, cv: k.y + k.h / 2, ax: cu, align: 'center', text, size, color: ks.labelColor || (k.black ? '#e8eaf2' : '#3a3f52'), alpha: 0.9,
+      font: TEXT_DEFAULT_FONT, weight: 400, maxWidth: across ? rowH * 1.8 : kb * 0.34, upright }));
+  }
+  return out;
+}
+
 /** Bảng renderer theo loại. Widget chưa có renderer được bỏ qua khi vẽ (vẫn giữ trong Scene). */
-export const WIDGET_RENDERERS: Partial<Record<WidgetSpec['type'], WidgetRenderer<any>>> = { IMAGE: imageRenderer, PIANO_ROLL: pianoRollRenderer, AUDIO_SPECTRUM: spectrumRenderer, PARTICLES: particleRenderer, NOTATION: notationRenderer, ...INSIGHT_RENDERERS, ...HUD_RENDERERS };
+export const WIDGET_RENDERERS: Partial<Record<WidgetSpec['type'], WidgetRenderer<any>>> = { IMAGE: imageRenderer, PIANO_ROLL: pianoRollRenderer, AUDIO_SPECTRUM: spectrumRenderer, PARTICLES: particleRenderer, NOTATION: notationRenderer, ...INSIGHT_RENDERERS, ...DASHBOARD_RENDERERS, ...HUD_RENDERERS };
 
 /** Bố cục toàn khung (thuần): danh sách widget đã sắp theo zIndex kèm primitive của từng widget. Dùng để test tất định. */
 /** HudData cho một scene: số đếm, lưới ô nhịp và hợp âm của mọi widget Chord Detection. Gọi ở bước derived (một lần cho mỗi dự án × scene). */
 export const buildSceneHud = (scene: SceneDocument, ast: UnifiedProjectAST, index: TimelineIndex): HudData =>
-  buildHud(ast, index, flattenScene(scene).widgets.filter((w) => w.type === 'CHORD_DETECTION' || usesChordPlaceholder(w))
-    .map((w) => ({ tracks: tracksFor(w, index), mode: (w.properties as ChordProps).mode ?? 'sustained' })));
+  buildHud(ast, index, flattenScene(scene).widgets.flatMap((w) => {
+    // mỗi tập track widget có thể dùng: mặc định + từng đoạn đổi track (T-52)
+    const sets = [tracksFor(w, index), ...(w.trackRanges ?? []).map((r) => tracksFor(w, index, r.from))];
+    if (w.type === 'DEGREE') return sets.flatMap((tracks) => [{ tracks, mode: 'sustained' as const }, { tracks, mode: 'strike' as const }]); // hàng chính + hàng phụ (theo lần dập)
+    if (w.type !== 'CHORD_DETECTION' && !usesChordPlaceholder(w)) return [];
+    const mode = (w.properties as ChordProps).mode ?? 'sustained';
+    return sets.map((tracks) => ({ tracks, mode }));
+  }));
 const hudMemo = new WeakMap<Derived, WeakMap<SceneDocument, HudData>>();
 /** Derived có hud: dùng cái đã dựng; thiếu (gọi trực tiếp, kiểm thử) thì dựng một lần cho (derived, scene) rồi đệm. */
 function withHud(scene: SceneDocument, derived: Derived, ast: UnifiedProjectAST): Derived {
@@ -175,11 +351,12 @@ export function layoutFrame(scene0: SceneDocument, derived0: Derived, ast: Unifi
   // Điểm chạm vạch phát của nốt (hạt `NOTE`): cùng hình học với Piano Roll nên khớp ở Preview và Export.
   const roll = order.map(({ w }) => w).find((w): w is WidgetSpec<PianoRollProps> => w.type === 'PIANO_ROLL');
   const emitter: LayoutCtx['emitter'] | undefined = roll && ((pitch, ts) => {
-    const p = roll.properties, { x, y, width, height } = roll.layout, [lo, hi] = pianoRollPitchRange(p, tracksFor(roll, derived.index));
+    const p = roll.properties, { x, y, width, height } = roll.layout, [lo, hi] = pianoRollPitchRange(p, tracksFor(roll, derived.index, ts));
     if (pitch < lo || pitch > hi) return null;
     const page = p.scrollMode === 'PAGE' && p.pageUnit === 'BARS' ? barPageAt(hudOf(derived, ast).bars, p.pageBars, ts) : undefined;
-    const rowH = height / (hi - lo + 1);
-    return { x: x + pianoRollGeometry(p, width, ts, page).playX, y: y + (hi - pitch) * rowH + rowH / 2 };
+    const L = pianoRollLane(rollProps(p), width, height, ts, page), rowH = L.f.Lh / (hi - lo + 1);
+    const m = flowPoint(L.f, L.playU, (hi - pitch) * rowH + rowH / 2);
+    return { x: x + m.x, y: y + m.y };
   });
   // Ngân sách bước của mọi biểu thức trong khung (T-30, EXPRESSIONS §3.4): hết thì phần tử còn lại dùng giá trị tĩnh và báo qua derived.onExprIssue.
   // Đếm bước (không đo giờ) nên Preview và Export cắt đúng cùng chỗ: tất định.
@@ -190,7 +367,7 @@ export function layoutFrame(scene0: SceneDocument, derived0: Derived, ast: Unifi
   const ownOf = (w: WidgetSpec): Own => {
     let o = owns.get(w.id); if (o) return o;
     let we = w, opacity = 1, sc = 1; // `scale` animate được (%, quanh điểm neo): gộp vào phép co giãn của chuyển động cấp widget
-    if (w.animate) { const r = resolveAnimated(w, { ast, derived, tracks: tracksFor(w, derived.index), t, budget, onExprIssue: derived.onExprIssue }, scene.canvas); we = r.widget; opacity = r.opacity; sc = r.scale; } // hoạt hình thuộc tính (T-22)
+    if (w.animate) { const r = resolveAnimated(w, { ast, derived, tracks: tracksFor(w, derived.index, t), t, budget, onExprIssue: derived.onExprIssue }, scene.canvas); we = r.widget; opacity = r.opacity; sc = r.scale; } // hoạt hình thuộc tính (T-22)
     let fx = hasMotion(w.motion) ? widgetFxAt(w.motion, activeRange(w.visibility, t, dur), t, ast.tempoMap) : undefined;
     if (sc !== 1) fx = { ...(fx ?? NEUTRAL_WFX), sx: (fx?.sx ?? 1) * sc, sy: (fx?.sy ?? 1) * sc };
     if (fx && fx.dx === 0 && fx.dy === 0 && fx.sx === 1 && fx.sy === 1 && fx.rot === 0 && fx.alpha === 1) fx = undefined; // trung tính: chuỗi lệnh vẽ giữ như không có motion
@@ -216,7 +393,7 @@ export function layoutFrame(scene0: SceneDocument, derived0: Derived, ast: Unifi
   for (const { w } of order) {
     let k = visibilityAlpha(w.visibility, t, dur);
     if (k <= 0) continue; // ngoài khoảng hiển thị: không dựng gì
-    const wTracks = tracksFor(w, derived.index);
+    const wTracks = tracksFor(w, derived.index, t);
     const own = ownOf(w), we = own.we, fx = own.fx, par = parentOf(w.id);
     k *= own.opacity * (par ? par.a : 1);
     if (k <= 0 || own.sc <= 0) continue;
@@ -300,6 +477,7 @@ export function drawPrimitives(g: RenderCtx, prims: Primitive[], env0: DrawEnv =
   for (const p of prims) {
     if (p.kind === 'text') { if (p.rich) drawRichText(g, p, p.rich, env); else drawText(g, p, env); continue; }
     if (p.kind === 'path') { drawPathPrim(g, p, env.scale); continue; }
+    if (p.kind === 'poly') { drawPoly(g, p); continue; }
     if (p.kind === 'image') {
       const img = env.images?.get(p.asset);
       if (img && p.alpha > 0 && p.w > 0 && p.h > 0 && p.sw > 0 && p.sh > 0) {
@@ -323,6 +501,21 @@ export function drawPrimitives(g: RenderCtx, prims: Primitive[], env0: DrawEnv =
   g.globalAlpha = 1;
 }
 
+/** Đa giác/đường gấp khúc: tô (nếu có) rồi viền (nếu có). Độ đục tô = alpha × fillAlpha. */
+function drawPoly(g: RenderCtx, p: PolyPrim): void {
+  const n = p.pts.length >> 1; if (n < 2 || !(p.alpha > 0)) return;
+  g.shadowBlur = 0; g.beginPath(); g.moveTo(p.pts[0], p.pts[1]);
+  for (let i = 1; i < n; i++) g.lineTo(p.pts[2 * i], p.pts[2 * i + 1]);
+  if (p.closed) g.closePath();
+  if (p.fill && n >= 3 && p.fillAlpha > 0) { g.globalAlpha = Math.min(1, p.alpha * p.fillAlpha); g.fillStyle = p.fill; g.fill(); }
+  if (p.stroke && p.width > 0) {
+    g.globalAlpha = Math.min(1, p.alpha); g.strokeStyle = p.stroke; g.lineWidth = p.width; g.lineJoin = 'round';
+    if (p.dash?.length) g.setLineDash?.([...p.dash]);
+    g.stroke();
+    if (p.dash?.length) g.setLineDash?.([]);
+  }
+}
+
 /** Gán `g.font` chỉ khi khác giá trị đang đặt (xem DrawEnv.font). */
 function setFont(g: Ctx2D, env: DrawEnv, f: string): void { const st = env.font; if (st) { if (st.v === f) return; st.v = f; } g.font = f; }
 
@@ -331,6 +524,11 @@ function drawText(g: Ctx2D, p: TextPrim, env: DrawEnv): void {
   g.globalAlpha = p.alpha; g.fillStyle = p.color; g.shadowBlur = 0;
   setFont(g, env, `${p.weight} ${p.size}px "${p.font}", sans-serif`);
   g.textAlign = p.align; g.textBaseline = 'alphabetic'; g.fontKerning = 'none'; g.textRendering = 'geometricPrecision'; // không kerning, không làm tròn advance: khớp bảng đo
+  if (p.rotation) { // phông/lề đặt trước save nên còn nguyên sau restore (khớp bộ nhớ phông env.font)
+    const c = g as RenderCtx; c.save(); c.translate(p.x, p.y); c.rotate(p.rotation * Math.PI / 180);
+    if (p.maxWidth !== undefined) g.fillText(p.text, 0, 0, p.maxWidth); else g.fillText(p.text, 0, 0);
+    c.restore(); return;
+  }
   if (p.maxWidth !== undefined) g.fillText(p.text, p.x, p.y, p.maxWidth); else g.fillText(p.text, p.x, p.y);
 }
 
@@ -338,10 +536,7 @@ function drawText(g: Ctx2D, p: TextPrim, env: DrawEnv): void {
 // Vị trí từng run/cụm ký tự đã tính ở layout bằng bảng đo, nên mọi trình duyệt đặt chữ như nhau. Không dùng letterSpacing,
 // fontVariantNumeric hay italic tổng hợp của trình duyệt: tracking/chữ số đều bề rộng là vị trí đã dàn, nghiêng là phép xiên.
 const FAR = 1e5; // bản sao chữ cho bóng nằm ngoài vùng cắt của widget; chỉ bóng của nó rơi vào khung
-const rgba = (hex: string, a: number) => {
-  const n = parseInt(hex.slice(1), 16);
-  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${Math.min(1, Math.max(0, a))})`;
-};
+const rgba = (hex: string, a: number) => rgbaOf(hex, a); // alpha của mã (#rrggbbaa) nhân với độ đục của bóng
 function drawRichText(g: RenderCtx, p: TextPrim, r: RichText, env: DrawEnv): void {
   const alpha = p.alpha * r.opacity;
   if (!(alpha > 0.004)) return;

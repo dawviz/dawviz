@@ -311,6 +311,17 @@ test('toggleAllHidden: còn track ẩn thì hiện hết trước, hiện hết 
   assert.deepEqual(C.toggleAllHidden(none)!.redo(none).hidden, ['a', 'b', 'c']);
 });
 
+test('khoá track (T-52): bật/tắt mắt tất cả và bỏ solo tất cả không đụng track đang khoá', () => {
+  const keep = new Set(['b']);
+  const d = { ...initial(), hidden: ['a', 'b'] };
+  assert.deepEqual(C.toggleAllHidden(d, keep)!.redo(d).hidden, ['b']); // a hiện lại, b (khoá) vẫn ẩn
+  const shown = { ...initial(), hidden: ['b'] };
+  assert.deepEqual(C.toggleAllHidden(shown, keep)!.redo(shown).hidden, ['a', 'b', 'c']); // không còn track ẩn ngoài b: ẩn hết, b giữ nguyên
+  const s = { ...initial(), solo: ['a', 'b'] };
+  assert.deepEqual(C.clearSolo(s, keep)!.redo(s).solo, ['b']);
+  assert.equal(C.clearSolo({ ...initial(), solo: ['b'] }, keep), null); // chỉ còn solo của track khoá: không có gì để bỏ
+});
+
 test('toggleAllWidgetsVisible: còn lớp ẩn thì hiện hết trước, hiện hết rồi mới ẩn hết', () => {
   const d0 = initial(), id = d0.scene.widgets[0].id;
   const one = C.setWidgetVisible(d0, id, false)!.redo(d0);

@@ -7,10 +7,20 @@ Click **Export video** at the top right (open a project first). The export dialo
 ## Choose the settings
 
 - **Size:** 720p, 1080p or 4K, measured on the short side of the frame. A square 1:1 frame gives 1080×1080, a wide 16:9 frame gives 1920×1080. The long side is at most 4096 px; odd numbers are rounded to even ones, and the dialog tells you when that happens.
+- **Custom…** (last item of Size): type any **Width** and **Height** in pixels. While **Keep the video frame's shape** is on, changing one box works out the other from the frame. Turn it off to enter a size with a different shape (for example 1080×1080 from a 16:9 frame): the video frame is centred and the rest is filled with the background colour, and the dialog says so. The short side must be at least 128 px and the long side at most 4096 px; odd numbers are rounded down to even ones. If the size is too small, **Start export** is disabled and the dialog says why.
 - **Frame rate:** 24, 30 or 60.
+- **Export:** **Whole song** (the default) or **A section**. Pick **A section**, then type the **Start** and **End** as `1:05.5` (minutes:seconds) or a number of seconds. The video and the audio cover exactly that section. The end must be at least one frame after the start, otherwise **Start export** is disabled.
 - **Quality:** Low, Medium or High. High gives a larger file.
 
-The summary line shows the real size, the length, the number of frames and the estimated file size. The video runs 2 seconds past the end of the song. If you loaded audio that is longer than the project, the video follows the audio.
+The summary line shows the real size, the length, the number of frames and the estimated file size. For the whole song the video runs 2 seconds past the end; if you loaded audio that is longer than the project, the video follows the audio.
+
+The **File name** line shows the name the file will get: the project name, the size and the frame rate, for example `My-song_1920x1080_30fps.mp4`; a section adds the section, for example `My-song_1920x1080_30fps_0m45s-1m45s.mp4`. The name is fixed before the export starts, so Chrome and Edge suggest the right name when they ask where to save.
+
+## Choose layers
+
+**Layers (5/5)** lists the layers of the frame (top layer first), each with a tick box; all are ticked by default. Untick a layer to leave it out of this export; your project is unchanged. A precomp counts as one layer: ticking it includes the layers inside it. **Select all** ticks every layer again. At least one layer must stay ticked.
+
+This list is there when the frame has two or more layers, for **Transparent PNG sequence** (in both modes) and for video in Advanced mode. A common use: export twice with the same size, frame rate and section, first only the background layer, then the other layers as a transparent PNG sequence, and stack them in your editor.
 
 ## Format
 
@@ -32,7 +42,7 @@ When you change the format, the app keeps your codec if it still fits, otherwise
 
 ## Transparent PNG sequence
 
-To lay DAW Visualizer's graphics over another video (After Effects, Premiere, DaVinci Resolve), choose **Transparent PNG sequence** at the top of the dialog. Each frame becomes a PNG with a transparent background (the frame's background colour and image are not drawn), named `name_000001.png`, `name_000002.png`… at the frame rate you chose.
+To lay DAW Visualizer's graphics over another video (After Effects, Premiere, DaVinci Resolve), choose **Transparent PNG sequence** at the top of the dialog. Each frame becomes a PNG with a transparent background (the frame's background colour and image are not drawn), named `name_1920x1080_30fps_000001.png`, `name_1920x1080_30fps_000002.png`… at the frame rate you chose.
 
 - **Include the audio as a .wav file:** writes the audio of exactly the exported range as a `.wav` next to the images, so it lines up when you put it back together.
 - In Chrome and Edge, press **Start export** and pick a folder: the images are written straight into it without using memory. Other browsers get one `.zip` file, which is kept in memory until it is ready, so the dialog warns when the estimate goes over 1 GB.

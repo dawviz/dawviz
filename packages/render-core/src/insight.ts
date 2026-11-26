@@ -1,13 +1,16 @@
 // Các widget phân tích (P-02…P-13, SRS 3.4b, AT-23): Tempo & nhịp, Bar & Beat, Giọng, Velocity, Mật độ, Vòng cao độ, Tổng quan bản phối,
 // Drum pad, Tên đoạn (marker), Lời, Automation. Mỗi widget là một renderer thuần của (spec, t, AST, derived): không trạng thái, không đồng hồ,
 // nên Preview = Export. Chữ lấy từ MẪU trong thuộc tính widget (như sáu widget chữ ở hud.ts); tên nốt đi qua `derived.naming` (P-12).
-import { sampleLane, secToTick, volumeToUnit } from '@dawviz/parser-core';
+import { sampleLane, secToTick } from '@dawviz/parser-core';
+import { laneNorm } from './glow.ts';
 import { activeNotes, notesInRange, type TrackIndex } from './notes.ts';
 import { barPosAt, base, block, chordName, hudOf, pct, shown, typo, xFor, globalValues, withLocals, isDrumTrack, type Align } from './hud.ts';
 import { chordNameFor, noteNameFor, pitchClassNameFor } from './naming.ts';
 import { pitchName } from './music.ts';
 import { pitchClassName } from './musicAnalysis.ts';
 import { listV, numV, timeV } from './placeholders.ts';
+import { chordDegree, romanAscii, romanOf, type RomanStyle } from './degree.ts';
+import { arcPts, poly } from './prims.ts';
 import { templateSpans, type TextRef, type TextSpan } from './typography.ts';
 import type { ASTNote, AutomationLane } from './types.ts';
 import type { Derived, Primitive, RectPrim, WidgetRenderer } from './prims.ts';
@@ -32,19 +35,48 @@ export interface BarBeatProps { align: Align; style: TextRef; format: 'PERCENT' 
 export interface KeyScaleProps { align: Align; nameStyle: TextRef; confStyle: TextRef; template: string; majorLabel: string; minorLabel: string; noKeyText: string; windowSec: number; minConfidence: number; showConfidence: boolean; confTemplate: string }
 export interface VelocityProps { mode: 'LEVEL' | 'HISTOGRAM'; perTrack: boolean; decayMs: number; windowSec: number; bins: number; gap: number; colorMode: 'TRACK' | 'SOLID'; color: string; trackColor: string; radius: number }
 export interface DensityProps { cols: number; rowGap: number; cellGap: number; colorMode: 'TRACK' | 'SOLID'; color: string; minAlpha: number; playheadColor: string; showPolyphony: boolean; polyTemplate: string; polyStyle: TextRef }
-export interface PitchWheelProps { order: 'CHROMATIC' | 'FIFTHS'; ring: number; litColor: string; dimColor: string; dimAlpha: number; showNames: boolean; nameStyle: TextRef; showChord: boolean; chordStyle: TextRef }
+export interface PitchWheelProps {
+  order: 'CHROMATIC' | 'FIFTHS'; ring: number; litColor: string; dimColor: string; dimAlpha: number; showNames: boolean; nameStyle: TextRef; showChord: boolean; chordStyle: TextRef;
+  /** Nhãn quanh vòng: tên nốt hoặc bậc La Mã so với giọng (scene.tonic, không đặt thì giọng nhận diện trong `windowSec`). */
+  labels: 'NAMES' | 'DEGREES';
+  /** Ô quanh vòng: TILE (thanh cong, như cũ) hoặc CIRCLE (nút tròn có viền, chữ bên trong). */
+  nodeShape: 'TILE' | 'CIRCLE';
+  /** Màu chữ trong nút đang sáng (CIRCLE); rỗng = màu kiểu chữ nhãn. */
+  litTextColor: string;
+  /** Đa giác nối các lớp cao độ đang vang (theo thứ tự quanh vòng). Màu rỗng = màu sáng. */
+  polygon: boolean; polygonColor: string; polygonAlpha: number;
+  /** Vòng đánh dấu nốt bass (nốt thấp nhất đang vang); rỗng = không đánh dấu. */
+  rootColor: string;
+  /** Cung tiến độ quanh vòng: tắt, theo ô nhịp hoặc theo cả bài. Màu rỗng = màu sáng. */
+  progress: 'OFF' | 'BAR' | 'SONG'; progressColor: string; progressWidth: number;
+  /** Số phách quanh vòng (1 ở đỉnh), phách đang chơi tô màu tiến độ. */
+  beatMarks: boolean;
+  /** Đường tròn mảnh ở bán kính các nút; rỗng = không vẽ. */
+  outlineColor: string;
+  /** Chữ ở giữa: tên hợp âm hoặc bậc hợp âm. */
+  chordAs: 'NAME' | 'DEGREE'; romanStyle: RomanStyle;
+  /** Dòng phụ dưới hợp âm (chỗ giữ dùng chung, vd. "BAR {bar}"); rỗng = không có. */
+  subTemplate: string; subStyle: TextRef;
+  /** Cửa sổ (giây) nhận diện giọng khi scene chưa đặt nốt chủ. */
+  windowSec: number;
+}
 export interface ArrangementProps { cols: number; rowGap: number; colorMode: 'TRACK' | 'SOLID'; color: string; upcomingAlpha: number; playheadColor: string; playheadWidth: number }
 export interface DrumPadProps { source: 'DRUMS' | 'ALL'; cols: number; maxPads: number; gap: number; radius: number; padColor: string; hitColor: string; colorMode: 'TRACK' | 'SOLID'; decayMs: number; labels: boolean; labelStyle: TextRef }
 export interface SectionProps { align: Align; style: TextRef; nextStyle: TextRef; template: string; showNext: boolean; nextTemplate: string; fadeMs: number }
 export interface LyricsProps { align: Align; style: TextRef; unsungStyle: TextRef; showNext: boolean; nextStyle: TextRef; maxChars: number; gapSec: number; hideAfterSec: number }
-export interface AutomationProps { lane: 'volume' | 'pan'; windowSec: number; playheadRatio: number; colorMode: 'TRACK' | 'SOLID'; color: string; thickness: number; fill: boolean; fillAlpha: number; floorDb: number; ceilDb: number; playheadColor: string; showValue: boolean; valueStyle: TextRef }
+/** `lane`: id lane của track (`volume`, `pan`, `cc1`, `cc11`, `pitchBend`… — T-66); widget vẽ các track có lane đó. */
+export interface AutomationProps { lane: string; windowSec: number; playheadRatio: number; colorMode: 'TRACK' | 'SOLID'; color: string; thickness: number; fill: boolean; fillAlpha: number; floorDb: number; ceilDb: number; playheadColor: string; showValue: boolean; valueStyle: TextRef }
 
 export const DEFAULT_TEMPO_INFO: Readonly<TempoInfoProps> = Object.freeze({ align: 'left', style: ts('clock'), template: '{bpm} BPM  {sig}', showCurve: true, curveHeight: 36, curveColor: '#8aa4ff', flash: true, flashColor: '#ffd166', flashMs: 600 });
 export const DEFAULT_BAR_BEAT: Readonly<BarBeatProps> = Object.freeze({ align: 'left', style: ts('clock'), format: 'PERCENT', barDigits: 3, dots: true, dotSize: 10, dotColor: '#3a4060', dotActiveColor: '#ffd166', pulse: true });
 export const DEFAULT_KEY_SCALE: Readonly<KeyScaleProps> = Object.freeze({ align: 'left', nameStyle: ts('heading'), confStyle: ts('caption'), template: '{key} {scale}', majorLabel: 'major', minorLabel: 'minor', noKeyText: '—', windowSec: 16, minConfidence: 0.3, showConfidence: true, confTemplate: 'Confidence {confidence}' });
 export const DEFAULT_VELOCITY: Readonly<VelocityProps> = Object.freeze({ mode: 'LEVEL', perTrack: true, decayMs: 500, windowSec: 8, bins: 8, gap: 4, colorMode: 'TRACK', color: '#8aa4ff', trackColor: '', radius: 2 });
 export const DEFAULT_DENSITY: Readonly<DensityProps> = Object.freeze({ cols: 96, rowGap: 2, cellGap: 1, colorMode: 'TRACK', color: '#8aa4ff', minAlpha: 0.08, playheadColor: '#ffffff', showPolyphony: true, polyTemplate: 'Voices: {poly}', polyStyle: ts('caption') });
-export const DEFAULT_PITCH_WHEEL: Readonly<PitchWheelProps> = Object.freeze({ order: 'CHROMATIC', ring: 0.34, litColor: '#ffd166', dimColor: '#3a4060', dimAlpha: 0.55, showNames: true, nameStyle: ts('label'), showChord: true, chordStyle: ts('heading') });
+export const DEFAULT_PITCH_WHEEL: Readonly<PitchWheelProps> = Object.freeze({
+  order: 'CHROMATIC', ring: 0.34, litColor: '#ffd166', dimColor: '#3a4060', dimAlpha: 0.55, showNames: true, nameStyle: ts('label'), showChord: true, chordStyle: ts('heading'),
+  labels: 'NAMES', nodeShape: 'TILE', litTextColor: '#ffffff', polygon: false, polygonColor: '', polygonAlpha: 0.22, rootColor: '', progress: 'OFF', progressColor: '', progressWidth: 4,
+  beatMarks: false, outlineColor: '', chordAs: 'NAME', romanStyle: 'SUFFIX', subTemplate: '', subStyle: ts('label'), windowSec: 16,
+});
 export const DEFAULT_ARRANGEMENT: Readonly<ArrangementProps> = Object.freeze({ cols: 160, rowGap: 2, colorMode: 'TRACK', color: '#8aa4ff', upcomingAlpha: 0.4, playheadColor: '#ffffff', playheadWidth: 2 });
 export const DEFAULT_DRUM_PAD: Readonly<DrumPadProps> = Object.freeze({ source: 'DRUMS', cols: 4, maxPads: 16, gap: 6, radius: 8, padColor: '#2a2f45', hitColor: '#ffb74d', colorMode: 'SOLID', decayMs: 250, labels: true, labelStyle: ts('tiny') });
 export const DEFAULT_SECTION: Readonly<SectionProps> = Object.freeze({ align: 'left', style: ts('heading'), nextStyle: ts('caption'), template: '{section}', showNext: true, nextTemplate: 'Next: {next} in {next_in:m:ss}', fadeMs: 250 });
@@ -110,32 +142,8 @@ export const barBeatRenderer: WidgetRenderer<BarBeatProps> = {
 };
 
 // ───────────────────────────── P-04 Giọng (Krumhansl–Schmuckler) ─────────────────────────────
-const KS_MAJOR = [6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88], KS_MINOR = [6.33, 2.68, 3.52, 5.38, 2.60, 3.53, 2.54, 4.75, 3.98, 2.69, 3.34, 3.17];
-const corr = (a: readonly number[], b: readonly number[]): number => {
-  const ma = a.reduce((x, y) => x + y, 0) / a.length, mb = b.reduce((x, y) => x + y, 0) / b.length; let n = 0, da = 0, db = 0;
-  for (let i = 0; i < a.length; i++) { n += (a[i] - ma) * (b[i] - mb); da += (a[i] - ma) ** 2; db += (b[i] - mb) ** 2; }
-  return da > 0 && db > 0 ? n / Math.sqrt(da * db) : 0;
-};
-/** Giọng tốt nhất của một biểu đồ 12 lớp cao độ (trọng số = độ dài nốt trong cửa sổ). `confidence` = hệ số tương quan Pearson (0–1). null nếu không đủ nốt. */
-export function keyFromHistogram(h: readonly number[]): { tonic: number; minor: boolean; confidence: number } | null {
-  if (h.filter((x) => x > 0).length < 3) return null;
-  let best: { tonic: number; minor: boolean; confidence: number } | null = null;
-  for (let tonic = 0; tonic < 12; tonic++) for (const minor of [false, true]) {
-    const prof = minor ? KS_MINOR : KS_MAJOR, rot = h.map((_, i) => h[(i + tonic) % 12]), r = corr(rot, prof);
-    if (!best || r > best.confidence + 1e-12) best = { tonic, minor, confidence: r };
-  }
-  return best && { ...best, confidence: Math.max(0, Math.min(1, best.confidence)) };
-}
-/** Giọng đang chạy tại t: biểu đồ lớp cao độ của các nốt chạm cửa sổ [t − windowSec, t]. */
-export function keyAt(tracks: readonly TrackIndex[], t: number, windowSec: number) {
-  const h = new Array(12).fill(0), t0 = Math.max(0, t - windowSec);
-  for (const ti of tracks) for (const n of notesInRange(ti, t0, t)) {
-    if (n.startTimeSeconds > t || (n.channel === 9)) continue;
-    const a = Math.max(n.startTimeSeconds, t0), b = Math.min(n.endTimeSeconds, t);
-    if (b > a) h[n.pitch % 12] += b - a;
-  }
-  return keyFromHistogram(h);
-}
+export { keyFromHistogram, keyAt, tonicAt } from './keyDetect.ts';
+import { keyAt, tonicAt } from './keyDetect.ts';
 export const keyScaleRenderer: WidgetRenderer<KeyScaleProps> = {
   type: 'KEY_SCALE',
   layout({ ast, derived, tracks, measure, textStyles, fonts }, spec, t) {
@@ -206,20 +214,73 @@ export const densityRenderer: WidgetRenderer<DensityProps> = {
 // ───────────────────────────── P-07 Vòng cao độ / vòng quãng năm ─────────────────────────────
 export const pitchWheelRenderer: WidgetRenderer<PitchWheelProps> = {
   type: 'PITCH_WHEEL',
-  layout({ derived, tracks, measure, textStyles, fonts }, spec, t) {
-    const p = spec.properties, { width: W, height: H } = spec.layout, out: Primitive[] = [], T = typo(textStyles, measure, fonts), list = shown(tracks);
+  layout({ ast, derived, tracks, measure, textStyles, fonts }, spec, t) {
+    const p = { ...DEFAULT_PITCH_WHEEL, ...spec.properties }, { width: W, height: H } = spec.layout, out: Primitive[] = [], T = typo(textStyles, measure, fonts), list = shown(tracks);
     const active = new Set<number>(), pitches: number[] = [];
-    for (const ti of list) for (const n of activeNotes(ti, t)) { active.add(n.pitch % 12); pitches.push(n.pitch); }
-    const cx = W / 2, cy = H / 2, Rm = Math.min(W, H) / 2, thick = Rm * p.ring * 2, r0 = Rm - thick / 2, tw = (2 * Math.PI * r0 / 12) * 0.86, nst = T.style(p.nameStyle, 'label');
+    for (const ti of list) for (const n of activeNotes(ti, t)) { if (n.channel === 9) continue; active.add(n.pitch % 12); pitches.push(n.pitch); }
+    pitches.sort((x, y) => x - y);
+    const degrees = p.labels === 'DEGREES' || p.chordAs === 'DEGREE', tonic = degrees ? tonicAt(derived, list, t, p.windowSec) : null;
+    const nst = T.style(p.nameStyle, 'label'), lit = p.litColor, accent = p.progressColor || lit, cx = W / 2, cy = H / 2;
+    // Vành ngoài (cung tiến độ + số phách) chiếm phần mép; vòng nút nằm bên trong.
+    const beatPad = p.beatMarks ? nst.size * 1.8 : 0, arcW = p.progress !== 'OFF' ? Math.max(0.5, p.progressWidth) : 0;
+    const Rm = Math.max(4, Math.min(W, H) / 2 - beatPad - (arcW ? arcW / 2 + 1 : 0)), circle = p.nodeShape === 'CIRCLE';
+    const thick = Rm * p.ring * 2, r0 = circle ? Rm * (1 - p.ring * 0.6) : Rm - thick / 2, step = 2 * Math.PI * r0 / 12;
+    const nodeR = circle ? Math.max(2, Math.min(step * 0.24, Rm * p.ring * 0.4)) : 0, tw = step * 0.86;
+    const at = (i: number) => { const th = i * 30 * Math.PI / 180; return { x: cx + r0 * Math.sin(th), y: cy - r0 * Math.cos(th) }; };
+    const slotOf = (pc: number) => (p.order === 'FIFTHS' ? (pc * 7) % 12 : pc); // vị trí quanh vòng của lớp cao độ (7 tự nghịch đảo mod 12)
+    const asc = (s: string) => (derived.naming?.ascii ? romanAscii(s) : s);
+    const labelOf = (pc: number) => (p.labels === 'DEGREES' && tonic !== null ? asc(romanOf(pc, tonic)) : pcName(pc, derived));
+    if (p.outlineColor) out.push(poly(arcPts(cx, cy, r0, 0, 360), { closed: true, stroke: p.outlineColor, width: 1 }));
+    if (arcW) {
+      const outer = Math.min(W, H) / 2 - beatPad - arcW / 2;
+      const k = p.progress === 'BAR' ? barPosAt(hudOf(derived, ast).bars, t).barPhase : clamp01(derived.index.duration > 0 ? t / derived.index.duration : 0);
+      out.push(poly(arcPts(cx, cy, outer, 0, 360), { closed: true, stroke: p.dimColor, width: 1, alpha: p.dimAlpha }));
+      if (k > 0) out.push(poly(arcPts(cx, cy, outer, 0, 360 * k), { stroke: accent, width: arcW }));
+    }
+    if (p.beatMarks) {
+      const pos = barPosAt(hudOf(derived, ast).bars, t), n = Math.max(1, Math.min(16, pos.num)), outer = Math.min(W, H) / 2 - beatPad - arcW / 2, rl = Math.min(W, H) / 2 - beatPad / 2;
+      for (let i = 0; i < n; i++) {
+        const a = i * 360 / n, th = a * Math.PI / 180, on = i === pos.beat - 1, sx = Math.sin(th), sy = -Math.cos(th);
+        out.push(poly([cx + (outer - 5) * sx, cy + (outer - 5) * sy, cx + (outer + 5) * sx, cy + (outer + 5) * sy], { stroke: on ? accent : p.dimColor, width: 1.5 }));
+        T.text(out, String(i + 1), cx + rl * sx, cy + rl * sy + nst.size * 0.35, on ? { ...nst, color: accent } : nst, 'center', nst.size * 3);
+      }
+    }
+    if (p.polygon && active.size >= 2) {
+      const slots = [...active].map(slotOf).sort((x, y) => x - y), pts: number[] = [];
+      for (const s of slots) { const q = at(s); pts.push(q.x, q.y); }
+      const c = p.polygonColor || lit;
+      out.push(poly(pts, { closed: active.size >= 3, fill: c, fillAlpha: p.polygonAlpha, stroke: c, width: 1.5 }));
+    }
+    const bass = pitches.length ? pitches[0] % 12 : -1;
     for (let i = 0; i < 12; i++) {
-      const pc = p.order === 'FIFTHS' ? (i * 7) % 12 : i, th = (i * 30) * Math.PI / 180, x = cx + r0 * Math.sin(th), y = cy - r0 * Math.cos(th), lit = active.has(pc);
-      out.push(rect(x - tw / 2, y - thick / 2, tw, thick, lit ? p.litColor : p.dimColor, lit ? 1 : p.dimAlpha, 6, i * 30));
-      if (p.showNames) T.text(out, pcName(pc, derived), x, y + nst.size * 0.35, nst, 'center', tw * 1.6);
+      const pc = p.order === 'FIFTHS' ? (i * 7) % 12 : i, { x, y } = at(i), on = active.has(pc);
+      if (circle) {
+        out.push(poly(arcPts(x, y, nodeR, 0, 360, 40), { closed: true, fill: on ? lit : p.dimColor, fillAlpha: on ? 1 : 0.12, stroke: on ? lit : p.dimColor, width: 1, alpha: on ? 1 : p.dimAlpha }));
+        if (pc === bass && p.rootColor) out.push(poly(arcPts(x, y, nodeR * 1.4, 0, 360, 48), { closed: true, stroke: p.rootColor, width: 2 }));
+        if (p.showNames) T.text(out, labelOf(pc), x, y + nst.size * 0.35, on && p.litTextColor ? { ...nst, color: p.litTextColor } : nst, 'center', nodeR * 2.4);
+      } else {
+        out.push(rect(x - tw / 2, y - thick / 2, tw, thick, on ? lit : p.dimColor, on ? 1 : p.dimAlpha, 6, i * 30));
+        if (pc === bass && p.rootColor) { // khung quanh thanh (đã xoay theo vị trí trên vòng)
+          const th = i * 30 * Math.PI / 180, ux = Math.cos(th), uy = Math.sin(th), hw = tw / 2 + 3, hh = thick / 2 + 3;
+          out.push(poly([x - ux * hw + uy * hh, y - uy * hw - ux * hh, x + ux * hw + uy * hh, y + uy * hw - ux * hh, x + ux * hw - uy * hh, y + uy * hw + ux * hh, x - ux * hw - uy * hh, y - uy * hw + ux * hh], { closed: true, stroke: p.rootColor, width: 2 }));
+        }
+        if (p.showNames) T.text(out, labelOf(pc), x, y + nst.size * 0.35, nst, 'center', tw * 1.6);
+      }
     }
+    const inner = circle ? r0 - nodeR * 1.6 : Rm - thick;
+    let cyText = cy;
+    const sub = p.subTemplate ? templateSpans(p.subTemplate, globalValues({ ast, derived, tracks }, t)) : null, sst = T.style(p.subStyle, 'label');
     if (p.showChord && pitches.length >= 2) {
-      const nm = chordName([...pitches].sort((a, b) => a - b)), st = T.style(p.chordStyle, 'heading');
-      if (nm) T.text(out, chordLabel(nm, derived), cx, cy + st.size * 0.35, st, 'center', Math.max(10, (Rm - thick) * 1.6));
+      const nm = chordName(pitches), st = T.style(p.chordStyle, 'heading');
+      if (nm) {
+        const label = p.chordAs === 'DEGREE' && tonic !== null ? asc(chordDegree(nm, tonic, p.romanStyle)) : chordLabel(nm, derived);
+        if (sub) cyText = cy - sst.size * 0.7;
+        T.text(out, label, cx, cyText + st.size * 0.35, st, 'center', Math.max(10, inner * 1.7));
+        if (sub) T.text(out, sub, cx, cyText + st.size * 0.35 + sst.size * 1.6, sst, 'center', Math.max(10, inner * 1.7));
+        return out;
+      }
     }
+    if (sub) T.text(out, sub, cx, cy + sst.size * 0.35, sst, 'center', Math.max(10, inner * 1.7));
     return out;
   },
 };
@@ -331,8 +392,18 @@ export const lyricsRenderer: WidgetRenderer<LyricsProps> = {
 // ───────────────────────────── P-13 Automation lane ─────────────────────────────
 const laneValue = (lane: AutomationLane, tick: number, p: AutomationProps): number => {
   const v = sampleLane(lane as never, tick) as number | undefined; if (v === undefined) return 0;
-  return lane.kind === 'volume' ? volumeToUnit(v, { floorDb: p.floorDb, ceilDb: p.ceilDb }) : clamp01((v + 1) / 2);
+  return laneNorm(lane, v, { floorDb: p.floorDb, ceilDb: p.ceilDb });
 };
+/** Chữ giá trị hiện tại của lane theo loại: dB (âm lượng), L/C/R (pan), số thô 0–127 (CC), ±1 (pitch bend), % theo `range` (loại khác). */
+export function laneValueText(lane: Pick<AutomationLane, 'kind' | 'range'>, v: number): string {
+  switch (lane.kind) {
+    case 'volume': { const db = v > 1e-6 ? 20 * Math.log10(v) : -Infinity; return db <= -120 ? '-∞ dB' : `${db.toFixed(1)} dB`; }
+    case 'pan': return Math.abs(v) < 0.005 ? 'C' : `${v < 0 ? 'L' : 'R'}${Math.round(Math.abs(v) * 100)}`;
+    case 'midi-cc': return String(Math.round(v));
+    case 'pitch-bend': { const n = v / (v < 0 ? 8192 : 8191); return Math.abs(n) < 0.005 ? '0' : `${n > 0 ? '+' : '−'}${Math.abs(n).toFixed(2)}`; }
+    default: return lane.range && lane.range.max !== lane.range.min ? `${Math.round(laneNorm(lane, v) * 100)}%` : v.toFixed(2);
+  }
+}
 export const automationRenderer: WidgetRenderer<AutomationProps> = {
   type: 'AUTOMATION',
   layout({ ast, derived, tracks, measure, textStyles, fonts }, spec, t) {
@@ -355,7 +426,7 @@ export const automationRenderer: WidgetRenderer<AutomationProps> = {
     if (p.showValue) {
       const ti = withLane[0], lane = ti.track.automation![p.lane]!, v = sampleLane(lane as never, secToTick(ast.tempoMap as never, t)) as number | undefined;
       if (v !== undefined) {
-        const text = p.lane === 'volume' ? `${(v > 1e-6 ? 20 * Math.log10(v) : -Infinity) <= -120 ? '-∞' : (20 * Math.log10(v)).toFixed(1)} dB` : Math.abs(v) < 0.005 ? 'C' : `${v < 0 ? 'L' : 'R'}${Math.round(Math.abs(v) * 100)}`;
+        const text = laneValueText(lane, v);
         T.text(out, text, W - 2, vst.size * 1.1, vst, 'right', W);
       }
     }

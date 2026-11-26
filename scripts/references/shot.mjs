@@ -20,7 +20,7 @@ if (args.includes('--serve')) {
 fs.mkdirSync(out, { recursive: true });
 const b = await chromium.launch();
 const ctx = await b.newContext({ viewport: { width: 1600, height: 1000 }, locale: 'vi-VN' });
-await ctx.addInitScript(() => localStorage.setItem('dawviz.lang', 'vi'));
+await ctx.addInitScript(() => { localStorage.setItem('dawviz.lang', 'vi'); if (!localStorage.getItem('dawviz.prefs.v1.ui')) localStorage.setItem('dawviz.prefs.v1.ui', JSON.stringify({ modeChosen: true })); }); // ui: bỏ qua hộp chọn chế độ lần đầu (T-60)
 const pg = await ctx.newPage();
 pg.on('pageerror', (e) => console.error('pageerror:', e.message));
 await pg.goto(`http://localhost:${port}/`, { timeout: 120000 });

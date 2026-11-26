@@ -16,7 +16,7 @@ Hướng dẫn cho AI nằm ở skill `dawviz` trong repo (`plugins/dawviz/skill
 
 Mở ứng dụng bằng địa chỉ có thêm `?agent=1`: với bản công khai là `https://dawviz.github.io/dawviz/app/?agent=1` (bản chạy từ mã nguồn: `http://localhost:5173/?agent=1`). Một dải ở trên cùng báo rằng AI có thể điều khiển cửa sổ này. AI sẽ bấm nút như bạn, hoặc gọi thẳng ứng dụng; mọi thao tác đều hiện ra trước mắt bạn và hoàn tác được bằng Ctrl+Z. Bạn vẫn là người chọn tệp dự án trong hộp thoại **Mở tệp**.
 
-Không có `?agent=1` thì ứng dụng không mở đường điều khiển nào cho AI.
+Không có `?agent=1` thì ứng dụng không mở đường điều khiển nào cho AI. Khi có `?agent=1`, hộp chọn Cơ bản/Nâng cao lần đầu không hiện, để AI không bị chặn. Khi xuất, AI có thể chọn kích thước tuỳ ý, một đoạn Start→End và các lớp đưa vào, như các ô trong hộp thoại [Xuất video](06-xuat-video.md).
 
 ## Cách 3: AI có terminal (ví dụ Claude Code)
 

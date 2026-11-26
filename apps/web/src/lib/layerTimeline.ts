@@ -1,7 +1,7 @@
 // Timeline lớp (tầng 1, D-69, T-112): mỗi lớp (widget) là một hàng, mỗi khoảng hiển thị là một thanh. Phép thuần trên danh sách widget của khung
 // nhìn đang mở (lib/compLens.ts): dời thanh (keyframe đi theo, như After Effects), cắt mép (keyframe đứng yên), tách lớp tại vạch phát (Ctrl+K: thành
 // hai lớp, mỗi lớp giữ keyframe riêng), gom các lớp đang chọn thành precomp. Không DOM; test ở layerTimeline.test.ts.
-import { COMP_SEP, DEFAULT_ANCHOR, MAX_FADE, MAX_RANGES, apply, compOf, compTimeMap, deltaMatrix, invertTime, isKeyAnim, mapWidgetTime, newWidgetId, normalizeAngle, shiftWidgetTime, widgetMatrix, widgetNameKey, type CompSpec, type SceneDocument, type TimeMap, type TimeRange, type TempoPoint, type WidgetSpec, type WidgetVisibility } from '@dawviz/render-core';
+import { COMP_SEP, DEFAULT_ANCHOR, MAX_FADE, MAX_PHASES, MAX_PHASE_NAME, MAX_RANGES, apply, compOf, compTimeMap, deltaMatrix, invertTime, isKeyAnim, mapWidgetTime, newWidgetId, normalizeAngle, shiftWidgetTime, widgetMatrix, widgetNameKey, type CompSpec, type Phase, type SceneDocument, type TimeMap, type TimeRange, type TempoPoint, type WidgetSpec, type WidgetVisibility } from '@dawviz/render-core';
 import { layerOrder } from './commands.ts';
 import { keySecs } from './timeline.ts';
 
@@ -244,4 +244,21 @@ export function uncompose(scene: SceneDocument, layerId: string, duration: numbe
   const first = scene.widgets.findIndex((w) => w.id === layerId);
   const widgets = [...rest.slice(0, first), ...kids, ...rest.slice(first)].map((w) => (w.zIndex === z.get(w.id) ? w : { ...w, zIndex: z.get(w.id)! }));
   return { widgets, added: kids.map((w) => w.id), refs: spec.widgets.map((w) => [`${c.comp}${COMP_SEP}${w.id}`, idMap.get(w.id)!]), lost };
+}
+
+/**
+ * Phase từ marker của dự án (T-52, REQ-GRAPHICS-14): mỗi marker một phase cùng tên, bắt đầu tại thời điểm của marker (làm tròn mili giây,
+ * kẹp trong [0, duration]). Tên rỗng bỏ; tên dài cắt còn MAX_PHASE_NAME; hai marker trùng mốc giữ cái đầu; tối đa MAX_PHASES. Đã sắp theo thời gian.
+ */
+export function markersToPhases(markers: readonly { name: string; timeSeconds: number }[], duration: number): Phase[] {
+  const out: Phase[] = [];
+  const sorted = [...markers].filter((m) => Number.isFinite(m.timeSeconds)).sort((a, b) => a.timeSeconds - b.timeSeconds);
+  for (const m of sorted) {
+    const name = m.name.replace(/\s+/g, ' ').trim().slice(0, MAX_PHASE_NAME);
+    const start = Math.round(Math.min(Math.max(0, duration), Math.max(0, m.timeSeconds)) * 1000) / 1000;
+    if (!name || out.some((p) => Math.abs(p.start - start) < 1e-3)) continue;
+    out.push({ name, start });
+    if (out.length >= MAX_PHASES) break;
+  }
+  return out;
 }

@@ -1,6 +1,6 @@
 # Analysis widgets
 
-Besides the Piano roll and the text widgets, the Editor has eleven widgets that show what is going on in the song. Add them with **Add** at the top left of the Timeline; adjust them in the widget's **Settings**.
+Besides the Piano roll and the text widgets, the Editor has fourteen widgets that show what is going on in the song. Add them with **Add** at the top left of the Timeline; adjust them in the widget's **Settings**.
 
 | Widget | Shows |
 |---|---|
@@ -9,19 +9,52 @@ Besides the Piano roll and the text widgets, the Editor has eleven widgets that 
 | **Key** | The key now playing (for example "C major") and how sure the guess is, from the notes of the last few seconds. |
 | **Velocity** | A level bar per track (jumps on each note, then fades), or a histogram of velocities. |
 | **Note density** | One row per track, darker cells where there are more notes, plus the number of notes sounding. |
-| **Pitch wheel** | 12 cells for the 12 notes; the cells of the sounding notes light up; the chord shows in the middle. Order them by semitone or as the circle of fifths. |
+| **Pitch wheel** | 12 cells for the 12 notes; the cells of the sounding notes light up; the chord shows in the middle. Order them by semitone or as the circle of fifths. See [Pitch wheel: more options](#pitch-wheel-more-options). |
 | **Arrangement overview** | A small map of the tracks over time, the played part darker, with a playhead. |
 | **Drum pads** | A grid of pads for the drum track: a pad lights when a note hits, labelled with GM drum names (Kick, Snare, HH Closed…). |
 | **Section name** | The current section (Intro, Verse…) and the next one. |
 | **Lyrics** | The line being sung, the syllables already sung brighter; the next line small underneath. |
-| **Automation** | The volume or pan line of a track over time, with its current value. |
+| **Automation** | The automation line of one lane (volume, pan, or MIDI CC and pitch bend) over time, with its current value. |
+| **Panel frame** | A frame with a number, a title and a small row of figures at the bottom, for building other widgets into one board. |
+| **Chord degrees** | A strip of chord blocks shown as degrees (I, V, vi…), the block being played shown bold. |
+| **Dot grid** | A grid of dots over time and pitch; a dot lights where there is a note. |
+
+## Panel frame, Chord degrees, Dot grid
+
+These three build an analysis board. A ready example: the `analysis-dashboard-16x9` preset.
+
+**Panel frame.** In **Settings**: **Number**, **Title**, **Number colour**; turn on **Frame around the content**, then set **Frame colour**, **Frame width**, **Fill colour** and **Fill opacity**. The bottom row has up to six columns (**Column 1** to **Column 6**), each with a **Label** and a **Value**; **Value** accepts [placeholders](08-placeholders.md), for example `{bpm}`. A column with both boxes empty is not shown.
+
+**Chord degrees.** The key comes from the tonic you set in the Editor; if none is set, the widget finds the key in **Look-back window (s)**. Settings:
+
+- **Bars shown** and **Playhead position**.
+- **One chord per**: **Bar**, **Half bar**, **Beat** or **Every change**. Per bar keeps blocks tidy, so busy music does not break into slivers.
+- **Degree style**: `VIm7` or `vi7`.
+- **Second row (each strike)**, **Function strip (T, SD, D)** and **Bar numbers** switch each part on or off. The function strip uses **Tonic colour (T)**, **Subdominant colour (SD)** and **Dominant colour (D)**.
+- **Current chord colour**, **Current chord text colour**, **Block colour**, **Second row colour**, **Opacity of played chords**, **Gap between blocks**.
+
+**Dot grid.** Each column is one step of the **Grid** (1/4, 1/8, 1/16, 1/32); each row is a pitch. Set **Columns**, **Pitch range** (**Fit notes** or **Custom** with **Lowest note (MIDI)** and **Highest note (MIDI)**), **Most rows** (with a wider range, several notes share a row), **Dot shape**, **Dot size**, **Note colour**, **Empty dot colour**, **Empty dot colour at the bottom**, **Empty dot opacity** and **Size of notes at the playhead**.
+
+## Pitch wheel: more options
+
+In the Pitch wheel's **Settings**:
+
+- **Labels**: **Note names** or **Degrees (I, V…)** relative to the key. **Degree style** switches `VIm7` to `vi7`.
+- **Shape**: **Tiles** (as before) or **Circles**.
+- **Join sounding notes**: draws a shape joining the sounding notes; set **Shape colour** and **Shape fill opacity**.
+- **Progress ring**: **Off**, **Bar** or **Whole song**; set **Progress colour** and **Progress width**.
+- **Beat numbers around the ring**: shows the beat numbers, the current beat in the progress colour.
+- **Bass note ring colour**: circles the lowest sounding note; leave empty for no ring.
+- **Middle shows**: **Chord name** or **Chord degree**.
+- **Line under the chord**: small text under the chord; placeholders work, for example `BAR {bar}`.
 
 ## Where the data comes from
 
 - **Section name** uses the project's markers: Reaper (`MARKER` and regions), Ableton (Locators), DAWproject (Markers), MIDI (Marker). With no markers the widget uses the **Phases** you set in the Editor when no widget is selected.
 - **Lyrics** come from MIDI (Lyric events, or karaoke-style Text events from a `.kar`). A new line starts at `/` or `\`, after a long pause, or when a line gets too long. With no lyrics the widget shows nothing.
-- **Automation** comes from Reaper volume and pan envelopes, Ableton track volume and pan automation, and DAWproject Points. FL Studio gives channel volume and pan. A track without automation draws nothing.
+- **Automation** comes from Reaper volume and pan envelopes, Ableton track volume and pan automation, and DAWproject Points. FL Studio gives channel volume and pan. In a MIDI file, every Control Change (Mod Wheel, Expression, Sustain, Cutoff…) and Pitch Bend becomes its own lane, named like "Mod Wheel (CC1)" or "Pitch Bend". In the widget's **Settings**, the **Lane** box lists the project's lanes by name; a lane the project lacks is kept and marked "not in this project". A track without that lane draws nothing. The same lanes work in **Follow the music** (source "Lane: …") to drive any widget's property.
 - **Drum pads** takes only tracks with notes on MIDI channel 10 or a name with "Drums"; set **Tracks** to "All chosen tracks" to include others.
+- **Chord:** when **Tracks** is "First melodic track" (the Chord widget's default), the widget prefers a track named Piano, Keys/Keyboard or Guitar; otherwise it takes the first melodic track. To use another, pick tracks by hand under **Advanced**.
 - The widgets that read notes (Key, Velocity, Note density, Pitch wheel, Arrangement, Drum pads, Automation) have a track picker under **Advanced**.
 
 ## Note names
@@ -38,6 +71,7 @@ Leave it on "Default" to keep the names as before.
 ## Tips
 
 - The text in these widgets is a template with placeholders, as in [Inserting live values into text](08-placeholders.md). For example Key uses `{key}`, `{scale}`, `{confidence}`; Section name uses `{section}`, `{next}`, `{next_in}`, `{section_no}`, `{section_elapsed}`; Note density uses `{poly}`.
+- Level placeholders (`{level}`…) need an audio file; with no audio they show "—".
 - The words "major" and "minor" in the Key widget are text you can edit (Advanced), so you can change them to your own language.
 - Preview and the exported video are identical: these widgets depend only on the moment being shown.
 
@@ -53,7 +87,7 @@ You can combine them: for example the entrance "Slide from the left" with the re
 
 ## Per-note animation
 
-The Piano roll also has **Note animation** under **Settings**: each note goes through four phases (arriving, hit, sounding, just ended) in the style you pick: pop in, fade and scale, drop and bounce, rise up, morph (dot to bar), burst when it ends, pulse on hit, ripple on hit (a ring spreading from the start of the note). Choose **None** and notes just scroll as before. To make notes fall from above or rise from below, rotate the whole Piano roll widget.
+The Piano roll also has **Note animation** under **Settings**: each note goes through four phases (arriving, hit, sounding, just ended) in the style you pick: pop in, fade and scale, drop and bounce, rise up, morph (dot to bar), burst when it ends, pulse on hit, ripple on hit (a ring spreading from the start of the note). Choose **None** and notes just scroll as before. To make notes fall from above, set the Piano roll's **Note flow angle** (see [Editor](03-editor.md#note-look)).
 
 ## Animate properties
 
@@ -70,7 +104,7 @@ To make a property **change over time or with the music** instead of staying sti
 
 **On/off and choices:** checkboxes (e.g. Show the time), choice boxes and text have a stopwatch too. Their value doesn't glide; it **switches exactly at each keyframe** (holding until the next one). They can't follow the music and have no curve.
 
-**Piano roll:** besides position, rotation, scale and opacity, the piano roll can animate the seconds across the roll, the playhead's position, width, colour and visibility, the keyboard, and the shared note style (opacity, corners, height, glow, colour).
+**Piano roll:** besides position, rotation, scale and opacity, the piano roll can animate the seconds across the roll, the playhead's position, width, length, glow, colour and visibility, the note flow angle, the keyboard (pressed key colour, scale highlight strength), the bar grid (opacity, colour), and the shared note style (opacity, corners, height, glow, colour).
 
 **Copy and paste:** select keyframes and press Ctrl+C; move the playhead (or select another widget) and press Ctrl+V. The earliest keyframe lands on the playhead and the others keep their spacing. Properties the target widget doesn't have are skipped.
 

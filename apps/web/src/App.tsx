@@ -27,6 +27,7 @@ import { PACK_LIMITS, PackError } from './lib/projectPack.ts';
 import { Crop, Stage } from './components/Stage.tsx';
 import { Transport } from './components/Transport.tsx';
 import { TrackPanel, TrackLayoutBar, DEFAULT_TRACK_LAYOUT, isShown, type TrackLayout } from './components/TrackPanel.tsx';
+import { PalettePanel } from './components/PalettePanel.tsx';
 import { ADVANCED_STYLE_KEYS, StylePanel } from './components/StylePanel.tsx';
 import { TextPanel } from './components/TextPanel.tsx';
 import { WidgetSettings, hasWidgetSettings } from './components/WidgetSettings.tsx';
@@ -36,6 +37,7 @@ import { VideoStyles, isEdited } from './components/VideoStyles.tsx';
 import { NOTE_PRESETS, VIDEO_STYLES, noteStylePreset, pristineScene, sceneForStyle, videoStyleBase, videoStyleKeyboard, withoutTrackOverrides } from './lib/videoScenes.ts';
 import { createStore, type History } from './lib/store.ts';
 import * as Cmds from './lib/commands.ts';
+import { projectLanes } from './lib/animateFields.ts';
 import { AudioPanel } from './components/AudioPanel.tsx';
 // Hộp thoại xuất chỉ cần khi bấm Xuất video: tách thành mảnh tải sau để bản đầu nhẹ hơn.
 // Tải ExportDialog sớm khi rê/focus/chạm nút Xuất video (không tải export.worker: chỉ nạp khi hộp thoại mở).
@@ -67,6 +69,8 @@ import { describeCommand, historyItems, type LabelCtx } from './lib/historyLabel
 import { mergeExtras, missingMidiLevel, type ExternalMidiInfo } from './lib/externalMidi.ts';
 import { loadPref, savePref } from './lib/prefs.ts';
 import { usePref, DEFAULT_UI, sanitizeUi, type UiMode, type UiPrefs } from './lib/usePref.ts';
+import { ConfirmDialog } from './components/ConfirmDialog.tsx';
+import { SearchEmpty, SettingsSearchBox, SettingsSearchContext } from './components/SettingsSearch.tsx';
 import { createPlayback, usePlayback } from './lib/playback.ts';
 import { radioKeys, radioTab } from './lib/a11y.ts';
 import { bindTransportKeys } from './lib/transportKeys.ts';
@@ -154,6 +158,10 @@ export function App() {
   const [tab, setTab] = useState<Tab>('preview');
   const [exporting, setExporting] = useState(false);
   const advanced = ui.mode === 'advanced';
+  // Tìm thiết lập (T-60): câu tìm dùng chung inspector Xem trước và bảng Thuộc tính Editor; không lưu.
+  const [settingsQuery, setSettingsQuery] = useState('');
+  const searchCtx = useMemo(() => ({ query: settingsQuery, setQuery: setSettingsQuery }), [settingsQuery]);
+  const searching = settingsQuery.trim() !== '';
 
   // Đồng hồ phát ngoài React state (PROGRESS T-70): chỉ canvas, thanh phát và số đo đăng ký theo dõi.
   const deviceOffset = activeOffsetMs(device);
@@ -240,13 +248,20 @@ export function App() {
     const byId = new Map(loaded.ast.tracks.map((t) => [t.id, t]));
     return doc.order.map((id) => byId.get(id)!).filter(Boolean);
   }, [loaded, doc.order]);
-  const renderAst = useMemo(() => (loaded ? { ...loaded.ast, tracks: ordered.filter((t) => isShown(t.id, view)) } : null), [loaded, ordered, view]);
-  const onToggleHidden = useCallback((id: string) => run((d) => Cmds.toggleHidden(d, id)), [run]);
-  const onPaint = useCallback((kind: 'hide' | 'solo', id: string, on: boolean) => run((d) => (kind === 'hide' ? Cmds.setHiddenOf(d, id, on) : Cmds.setSoloOf(d, id, on))), [run]);
-  const onToggleSolo = useCallback((id: string) => run((d) => Cmds.toggleSolo(d, id)), [run]);
-  const onMove = useCallback((id: string, to: number) => run((d) => Cmds.moveTrack(d, id, to)), [run]);
-  const onToggleAllHidden = useCallback(() => run((d) => Cmds.toggleAllHidden(d)), [run]);
-  const onClearSolo = useCallback(() => run((d) => Cmds.clearSolo(d)), [run]);
+  // T-50: ẩn/hiện chỉ do Doc.hidden/solo quyết định. Track tắt tiếng trong DAW (isVisible=false từ parser) được đưa vào Doc.hidden khi nạp,
+  // nên track nào đã qua lọc ở đây là hiện: đặt lại isVisible=true để widget vẽ nó (người dùng bật mắt cho track tắt tiếng thì track hiện).
+  const renderAst = useMemo(() => (loaded ? { ...loaded.ast, tracks: ordered.filter((t) => isShown(t.id, view)).map((t) => (t.isVisible ? t : { ...t, isVisible: true })) } : null), [loaded, ordered, view]);
+  // Khoá track (D-57, T-52): đặt ở làn Nhạc của timeline Editor; track khoá không đổi được ẩn/hiện, solo, màu, thứ tự, độ sáng. Trạng thái phiên (không vào preset, không hoàn tác).
+  const [trackLocks, setTrackLocks] = useState<ReadonlySet<string>>(new Set());
+  const locksRef = useRef(trackLocks); locksRef.current = trackLocks;
+  const onLockTrack = useCallback((id: string) => setTrackLocks((s) => { const n = new Set(s); if (n.has(id)) n.delete(id); else n.add(id); return n; }), []);
+  const free = (id: string) => !locksRef.current.has(id);
+  const onToggleHidden = useCallback((id: string) => run((d) => (free(id) ? Cmds.toggleHidden(d, id) : null)), [run]);
+  const onPaint = useCallback((kind: 'hide' | 'solo', id: string, on: boolean) => run((d) => (!free(id) ? null : kind === 'hide' ? Cmds.setHiddenOf(d, id, on) : Cmds.setSoloOf(d, id, on))), [run]);
+  const onToggleSolo = useCallback((id: string) => run((d) => (free(id) ? Cmds.toggleSolo(d, id) : null)), [run]);
+  const onMove = useCallback((id: string, to: number) => run((d) => (free(id) ? Cmds.moveTrack(d, id, to) : null)), [run]);
+  const onToggleAllHidden = useCallback(() => run((d) => Cmds.toggleAllHidden(d, locksRef.current)), [run]);
+  const onClearSolo = useCallback(() => run((d) => Cmds.clearSolo(d, locksRef.current)), [run]);
   const brightness = doc.brightness;
 
   // T-05: khung hình = renderFrame(scene, derived, ast, t). Scene nằm trong store (T-07): kiểu nốt, bàn phím, bố cục widget đều ở đây.
@@ -256,7 +271,7 @@ export function App() {
   const fonts = useFontsStatus(flat); // chưa nạp xong phông thì không vẽ khung có chữ (TECHNICAL-DESIGN 5.7)
   const index = useMemo(() => (renderAst ? buildIndex(renderAst.tracks, renderAst.meta.totalDurationSeconds) : null), [renderAst]);
   // Dò hợp âm là việc nặng của bước derived: dựng lại chỉ khi đổi dự án/track hiển thị/widget Chord (không phải mỗi lần kéo thanh trượt kiểu nốt).
-  const chordSig = JSON.stringify(flat.widgets.filter((w) => w.type === 'CHORD_DETECTION' || usesChordPlaceholder(w)).map((w) => [w.id, w.trackMappingMode, w.assignedTrackIndices, (w.properties as { mode?: string }).mode, usesChordPlaceholder(w)]));
+  const chordSig = JSON.stringify(flat.widgets.filter((w) => w.type === 'CHORD_DETECTION' || usesChordPlaceholder(w)).map((w) => [w.id, w.trackMappingMode, w.assignedTrackIndices, w.trackRanges, (w.properties as { mode?: string }).mode, usesChordPlaceholder(w)]));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const hud = useMemo(() => (renderAst && index ? buildSceneHud(scene, renderAst, index) : undefined), [renderAst, index, chordSig]);
   // Bản nhạc (D-63): dựng trong Worker, theo widget; đổi màu/phóng to không dựng lại.
@@ -312,7 +327,9 @@ export function App() {
       // Nạp dự án mới: lịch sử hoàn tác bắt đầu trống (id track đổi nên lệnh cũ hết nghĩa). Scene và thiết lập đã lưu giữ nguyên trong store.
       dropAudio();
       if (opts?.restore) opts.restore(r.ast);
-      else store.reset({ ...store.get(), audioOffsetMs: 0, brightness: Object.fromEntries(r.ast.tracks.map((t) => [t.id, { ...DEFAULT_BRIGHTNESS } as BrightnessConfig])), order: r.ast.tracks.map((t) => t.id), hidden: [], solo: [] });
+      // Track tắt tiếng trong DAW (isVisible=false) bắt đầu ở trạng thái ẩn; bật mắt ở bảng Track để hiện (T-50, REQ-UI-12).
+      else store.reset({ ...store.get(), audioOffsetMs: 0, brightness: Object.fromEntries(r.ast.tracks.map((t) => [t.id, { ...DEFAULT_BRIGHTNESS } as BrightnessConfig])), order: r.ast.tracks.map((t) => t.id), hidden: r.ast.tracks.filter((t) => !t.isVisible).map((t) => t.id), solo: [] });
+      setTrackLocks(new Set());
       playback.reset(r.ast.meta.totalDurationSeconds);
       setTab('preview');
     } catch (e) {
@@ -454,11 +471,12 @@ export function App() {
   }, [failure, loaded, i18n, midi, presetProblems, sessionProblems, audioError, audio, duration, offsetMs]);
 
   const patchBrightness = useCallback((id: string, patch: Partial<BrightnessConfig>) => run((d) => {
+    if (locksRef.current.has(id)) return null; // track đang khoá
     // Một trường được sửa thì giữ trường đó, đẩy trường đối diện (sàn/trần dB, min/max độ sáng).
     const keys = Object.keys(patch) as (keyof BrightnessConfig)[];
     return Cmds.patchBrightness(d, id, sanitizeBrightness({ ...d.brightness[id], ...patch }, keys.length === 1 ? keys[0] : undefined));
   }), [run]);
-  const patchTrackStyle = useCallback((id: string, patch: Partial<NoteStyle> | null) => prun((d) => Cmds.patchTrackStyle(d, id, patch)), [prun]);
+  const patchTrackStyle = useCallback((id: string, patch: Partial<NoteStyle> | null) => prun((d) => (locksRef.current.has(id) ? null : Cmds.patchTrackStyle(d, id, patch))), [prun]);
   // Đổi phong cách là một lệnh hoàn tác được. Nếu nó làm mất chỉnh tay (kiểu nốt hoặc bố cục) thì báo nhỏ, không chặn, cho tới khi tài liệu đổi tiếp.
   const shortcuts = useMemo(() => shortcutLabels(), []);
   // Nhãn lịch sử dựng lúc hiển thị (đổi ngôn ngữ thì đổi theo) và thông báo cho trình đọc màn hình sau mỗi lần hoàn tác/làm lại/nhảy bước.
@@ -680,7 +698,8 @@ export function App() {
   }), [run, erun, eget, onBackground, dropBackground]);
 
   // Lane automation có trong dự án (nguồn phát sáng "automation", REQ-GRAPHICS-17).
-  const lanes = useMemo(() => [...new Set((loaded?.ast.tracks ?? []).flatMap((tr) => Object.entries(tr.automation ?? {}).filter(([, l]) => l?.points.length).map(([k]) => k)))], [loaded]);
+  const laneChoices = useMemo(() => projectLanes(loaded?.ast.tracks ?? []), [loaded]);
+  const lanes = useMemo(() => laneChoices.map((l) => l.id), [laneChoices]);
 
   // REQ-UI-13: ở Cơ bản, mục có phần nâng cao có nút "Thêm tuỳ chọn" (nhớ theo mục); chấm báo khi phần ẩn đang khác mặc định.
   // Tham chiếu của "đã chỉnh" và nút ↺: kiểu nốt của bộ dựng sẵn áp gần nhất (D-57).
@@ -691,12 +710,12 @@ export function App() {
   const more = (id: string, edited: boolean) => advanced ? undefined : {
     open: !!ui.more[id], edited, onToggle: () => setUi((u) => ({ ...u, more: { ...u.more, [id]: !u.more[id] } })),
   };
-  const showAdv = (id: string) => advanced || !!ui.more[id];
+  const showAdv = (id: string) => advanced || !!ui.more[id] || searching; // đang tìm: hiện cả phần nâng cao để tìm thấy
 
   const trackProps = loaded && {
     tracks: ordered, config: brightness, overrides: style.tracks, onChange: patchBrightness, onStyle: patchTrackStyle,
     playback, tempoMap: loaded.ast.tempoMap, layout: trackLayout, advanced: showAdv('tracks'), view,
-    onToggleHidden, onToggleSolo, onMove, onToggleAllHidden, onClearSolo, onPaint, gesture,
+    onToggleHidden, onToggleSolo, onMove, onToggleAllHidden, onClearSolo, onPaint, gesture, locked: trackLocks,
   };
   const tempoSource = (loaded?.ast.meta.tempoSource ?? 'file');
   const tempoText = (() => {
@@ -730,7 +749,7 @@ export function App() {
   const lookSection = (n: number) => (
     <InspectorSection key="look" n={n} id="look" title={i18n.t('web.section.look')} more={more('look', elookEdited)}>
       {epiano
-        ? <StylePanel style={estyle} keyboard={ekeyboard} onStyle={(n2) => erun((d) => Cmds.patchNoteStyle(d, n2.base))} onKeyboard={(n2) => erun((d) => Cmds.patchKeyboard(d, n2))} lanes={lanes} advanced={showAdv('look')} notePresets={NOTE_PRESETS} onNotePreset={(id) => erun((d) => Cmds.applyNotePreset(d, noteStylePreset(id), id))}
+        ? <StylePanel style={estyle} keyboard={ekeyboard} onStyle={(n2) => erun((d) => Cmds.patchNoteStyle(d, n2.base))} onKeyboard={(n2) => erun((d) => Cmds.patchKeyboard(d, n2))} lanes={lanes} laneInfo={laneChoices} advanced={showAdv('look')} notePresets={NOTE_PRESETS} onNotePreset={(id) => erun((d) => Cmds.applyNotePreset(d, noteStylePreset(id), id))}
             pitchRange={{ value: Cmds.pitchRangeOf(epiano.properties), reference: epianoRef && typeof epianoRef.pitchRangeMode === 'string' ? { mode: epianoRef.pitchRangeMode as 'FIT_CONTENT' | 'CUSTOM', min: Number(epianoRef.pitchMin), max: Number(epianoRef.pitchMax) } : undefined, onChange: (v) => erun((d) => Cmds.setPitchRange(d, v)) }}
             reference={ref} keyboardRef={(edoc.propsRef[epiano.id] as { keyboard?: { enabled?: boolean } } | undefined)?.keyboard?.enabled}
             playhead={{ scrollMode: epiano.properties.scrollMode, scrollModeRef: epianoRef?.scrollMode as 'SCROLL' | 'PAGE' | undefined, onScrollMode: (m) => erun((d) => Cmds.setScrollMode(d, m)), visibleSeconds: epiano.properties.visibleSeconds, visibleSecondsRef: typeof epianoRef?.visibleSeconds === 'number' ? epianoRef.visibleSeconds : undefined, onVisibleSeconds: (v) => erun((d) => Cmds.setVisibleSeconds(d, v)), page: { unit: epiano.properties.pageUnit, bars: epiano.properties.pageBars, reveal: epiano.properties.revealAhead, unitRef: epianoRef?.pageUnit as 'SECONDS' | 'BARS' | undefined, barsRef: typeof epianoRef?.pageBars === 'number' ? epianoRef.pageBars : undefined, revealRef: typeof epianoRef?.revealAhead === 'number' ? epianoRef.revealAhead : undefined, onUnit: (u) => erun((d) => Cmds.setPageProp(d, 'pageUnit', u)), onBars: (n) => erun((d) => Cmds.setPageProp(d, 'pageBars', n)), onReveal: (s) => erun((d) => Cmds.setPageProp(d, 'revealAhead', s)) }, ratio: epiano.properties.playheadPositionRatio, visible: epiano.properties.playheadVisible, visibleRef: (edoc.propsRef[epiano.id] as { playheadVisible?: boolean } | undefined)?.playheadVisible, reference: playheadRef, onChange: (r) => erun((d) => Cmds.setPlayheadRatio(d, r)), onVisible: (v) => erun((d) => Cmds.setPlayheadVisible(d, v)) }} />
@@ -761,7 +780,7 @@ export function App() {
     return (
       <InspectorSection key="settings" n={n} id="settings" title={i18n.t('web.section.settings')} more={more('settings', edited)}>
         <WidgetSettings widget={w} advanced={showAdv('settings')} disabled={locked} reference={reference} onProps={(patch) => erun((d) => Cmds.patchWidgetProps(d, w.id, patch))}
-          tracks={loaded?.ast.tracks.map((t) => ({ index: t.index, name: t.name }))} onTracks={(mode, idx) => erun((d) => Cmds.setWidgetTracks(d, w.id, mode, idx))} />
+          tracks={loaded?.ast.tracks.map((t) => ({ index: t.index, name: t.name }))} onTracks={(mode, idx) => erun((d) => Cmds.setWidgetTracks(d, w.id, mode, idx))} lanes={laneChoices} />
       </InspectorSection>
     );
   };
@@ -797,6 +816,7 @@ export function App() {
     tracks: (n) => (
       <InspectorSection key="tracks" n={n} id="tracks" title={`${i18n.t('web.section.tracks')} · ${i18n.number(loaded.ast.tracks.length)}`} more={more('tracks', tracksEdited)}>
         <TrackLayoutBar value={trackLayout} onChange={setTrackLayout} count={loaded.ast.tracks.length} reference={TRACK_LAYOUT_DEFAULT} />
+        <PalettePanel tracks={ordered.map((tr) => ({ id: tr.id, name: tr.name, color: style.tracks[tr.id]?.customColor ?? tr.color }))} onApply={(colors) => prun((d) => Cmds.applyTrackPalette(d, colors))} />
         {trackLayout.mode === 'list' ? <TrackPanel {...trackProps} /> : <p className="text-xs text-muted">{i18n.t('web.tracks.gridBelow')}</p>}
       </InspectorSection>
     ),
@@ -857,8 +877,10 @@ export function App() {
                 <span className="truncate text-xs text-muted">{i18n.t('web.inspector')}</span>
                 <PanelCollapse label={pvHint(i18n.t('web.inspector'), true, 'Ctrl+Alt+B')} icon={<PanelRight className="h-3.5 w-3.5" />} onClick={() => pv.setOpen('props', false)} testId="collapse-inspector" />
               </div>
-              <div className="min-h-0 flex-1 overflow-y-auto max-lg:flex-none max-lg:overflow-visible">
+              <SettingsSearchBox />
+              <div className="relative min-h-0 flex-1 overflow-y-auto max-lg:flex-none max-lg:overflow-visible">
                 {sectionOrder.map((id, i) => sections[id](i + 1))}
+                <SearchEmpty />
               </div>
             </aside>
             <Splitter axis="x" grow={-1} label={i18n.t('web.panel.resize', { name: i18n.t('web.inspector') })} title={i18n.t('web.panel.resizeHint')} controls="preview-inspector"
@@ -914,17 +936,17 @@ export function App() {
   }, [agent]);
 
   return (
-    <GestureContext.Provider value={gesture}><NotationStatusContext.Provider value={notation}><AssetsContext.Provider value={assetsApi}><MotionConfig reducedMotion="user"><LayoutGroup>
+    <SettingsSearchContext.Provider value={searchCtx}><GestureContext.Provider value={gesture}><NotationStatusContext.Provider value={notation}><AssetsContext.Provider value={assetsApi}><MotionConfig reducedMotion="user"><LayoutGroup>
     <div className="flex h-screen min-h-0 flex-col">
       {agent && <div role="status" className="shrink-0 border-b border-guide/60 bg-guide/10 px-4 py-1 text-xs text-fg" data-testid="agent-banner">{i18n.t('web.agent.banner')}</div>}
-      <TopBar tab={tab} onTab={setTab} fileName={loaded?.name} onExport={derived && renderAst ? () => setExporting(true) : undefined} mode={ui.mode} onMode={(mode) => setUi((u) => ({ ...u, mode }))}
+      <TopBar tab={tab} onTab={setTab} fileName={loaded?.name} onExport={derived && renderAst ? () => setExporting(true) : undefined} mode={ui.mode} onMode={(mode) => setUi((u) => ({ ...u, mode, modeChosen: true }))}
         history={history} shortcuts={shortcuts} onUndo={doUndo} onRedo={doRedo} onJump={doJump} stepLabel={stepLabel} announce={announce}
         file={<FileDrop onPick={onPick} busy={busy} compact />} theme={<ThemeToggle pref={theme} onChange={setTheme} />} />
       <main className="min-h-0 flex-1">
         <div role="tabpanel" id="panel-preview" aria-labelledby="tab-preview" hidden={tab !== 'preview'} className="h-full">{preview}</div>
         <div role="tabpanel" id="panel-editor" aria-labelledby="tab-editor" hidden={tab !== 'editor'} className="h-full">
           <Editor proof={ui.proofFrame} styleName={styleLabel} scene={edoc.scene} root={scene} compPath={livePath} onCompPath={setCompPath} flatFull={flatFull} derived={derived} ast={renderAst} playback={playback} fonts={fonts} advanced={advanced} actions={editorActions} active={tab === 'editor'}
-            layoutRef={edoc.layoutRef}
+            layoutRef={edoc.layoutRef} trackLocks={trackLocks} onLockTrack={onLockTrack}
             widgetSections={(w, n, lk) => (w.type === 'PIANO_ROLL' ? [w.id === epiano?.id ? lookSection(n) : null, settingsSection(w, n + (w.id === epiano?.id ? 1 : 0), lk)] : hasWidgetSettings(w.type) ? [settingsSection(w, n, lk), textSection(w, n + 1, lk)] : [textSection(w, n, lk)])}
             transport={loaded ? <Transport playback={playback} duration={playDuration} offsetMs={offsetMs} wave={audio && peaks ? { peaks, durationSec: audio.durationSec } : null} /> : undefined} />
         </div>
@@ -951,9 +973,13 @@ export function App() {
         </div>
       </main>
     </div>
-    {exporting && derived && renderAst && <Suspense fallback={null}><ExportDialog scene={scene} ast={renderAst} derived={derived} audio={audio} offsetMs={offsetMs} projectSec={duration} fileName={loaded?.name ?? 'dawviz'} advanced={advanced} styleId={doc.videoStyle} styleName={VIDEO_STYLES.includes(doc.videoStyle) ? i18n.t(`web.style.video.${doc.videoStyle}`) : undefined} onClose={() => setExporting(false)} /></Suspense>}
-    {agentExport && derived && renderAst && <Suspense fallback={null}><ExportDialog scene={scene} ast={renderAst} derived={derived} audio={audio} offsetMs={offsetMs} projectSec={duration} fileName={loaded?.name ?? 'dawviz'} advanced={advanced} styleId={doc.videoStyle} styleName={VIDEO_STYLES.includes(doc.videoStyle) ? i18n.t(`web.style.video.${doc.videoStyle}`) : undefined} onClose={() => agentExport.onFinish({ error: 'closed' })} auto={agentExport} /></Suspense>}
-    </LayoutGroup></MotionConfig></AssetsContext.Provider></NotationStatusContext.Provider></GestureContext.Provider>
+    {exporting && derived && renderAst && <Suspense fallback={null}><ExportDialog scene={scene} ast={renderAst} derived={derived} audio={audio} offsetMs={offsetMs} projectSec={duration} fileName={loaded?.name ?? 'dawviz'} advanced={advanced} layerName={widgetName} styleId={doc.videoStyle} styleName={VIDEO_STYLES.includes(doc.videoStyle) ? i18n.t(`web.style.video.${doc.videoStyle}`) : undefined} onClose={() => setExporting(false)} /></Suspense>}
+    {agentExport && derived && renderAst && <Suspense fallback={null}><ExportDialog scene={scene} ast={renderAst} derived={derived} audio={audio} offsetMs={offsetMs} projectSec={duration} fileName={loaded?.name ?? 'dawviz'} advanced={advanced} layerName={widgetName} styleId={doc.videoStyle} styleName={VIDEO_STYLES.includes(doc.videoStyle) ? i18n.t(`web.style.video.${doc.videoStyle}`) : undefined} onClose={() => agentExport.onFinish({ error: 'closed' })} auto={agentExport} /></Suspense>}
+    {/* REQ-UI-13: lần đầu mở app thì hỏi Cơ bản hay Nâng cao (nhớ theo trình duyệt, không hỏi lại). Esc = Cơ bản. Không hỏi khi agent điều khiển (?agent=1). */}
+    {!agent && !ui.modeChosen && <ConfirmDialog testId="mode-choice" title={i18n.t('web.modeChoice.title')} message={i18n.t('web.modeChoice.message')}
+      cancelLabel={i18n.t('web.modeChoice.basic')} confirmLabel={i18n.t('web.modeChoice.advanced')}
+      onCancel={() => setUi((u) => ({ ...u, mode: 'basic', modeChosen: true }))} onConfirm={() => setUi((u) => ({ ...u, mode: 'advanced', modeChosen: true }))} />}
+    </LayoutGroup></MotionConfig></AssetsContext.Provider></NotationStatusContext.Provider></GestureContext.Provider></SettingsSearchContext.Provider>
   );
 }
 

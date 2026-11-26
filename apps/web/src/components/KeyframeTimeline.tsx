@@ -9,13 +9,14 @@
 // ←/→ trên hình thoi đi qua keyframe cùng hàng, ↑/↓ sang hàng khác, Enter đưa vạch phát tới keyframe.
 // Logic thuần ở lib/timeline.ts và lib/timelineRows.ts; hình dạng hình thoi cho biết cách đi tiếp: thoi = đều, vuông = giữ rồi nhảy, tròn = cong mượt.
 import { memo, useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent as RPointerEvent } from 'react';
+import { ColorField } from './ColorField.tsx';
 import { MAX_ANIMATIONS, MAX_ANIM_KEYS, compileTrack, isBinding, isExpr, isKeyAnim, sampleTrack, type Animation, type Binding, type ExprAnimation, type KeyAnimation, type KeyValue, type TempoPoint, type WidgetSpec } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { usePlayback, type Playback } from '../lib/playback.ts';
 import type { Gesture } from '../lib/storeReact.ts';
 import { isTextEntry } from '../lib/a11y.ts';
 import { formatClock } from '../lib/timeFormat.ts';
-import { addKey, newKeyAnimation, setKey, staticValue, type AnimField } from '../lib/animateFields.ts';
+import { addKey, newKeyAnimation, setKey, sourceLabel, staticValue, type AnimField } from '../lib/animateFields.ts';
 import {
   DRAG_SLOP, ROW_H, RULER_H, SAME_TIME, beatTimes, copyKeys, keyClipboard, pasteIntoWidget, clampPps, clampShift, fitPps, groupRefs, keyAt, keyRef, keySecs, moveKeys,
   parseKeyRef, removeKeys, rulerLabel, rulerStep, rulerTicks, snapTime, xToTime, zoomAround,
@@ -453,7 +454,7 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
                   <div className="absolute inset-y-0 right-0" style={{ left: PAD }}>
                   {it.mode === 'bind' && (
                     <div className="absolute inset-y-1.5 left-0 flex items-center overflow-hidden rounded-sm border border-control bg-raised px-2 text-[11px] text-muted" style={{ width: duration * pps }}>
-                      <span className="sticky left-2 truncate">{(() => { const b = it.anims.find((a): a is Binding => !!a && isBinding(a)); const ex = it.anims.find((a): a is ExprAnimation => !!a && isExpr(a)); return b ? i18n.t('web.timeline.bound', { source: i18n.t(`web.anim.src.${b.bind}`) }) : i18n.t('web.timeline.expr', { expr: ex?.expr.replace(/\s+/g, ' ').slice(0, 80) ?? '' }); })()}</span>
+                      <span className="sticky left-2 truncate">{(() => { const b = it.anims.find((a): a is Binding => !!a && isBinding(a)); const ex = it.anims.find((a): a is ExprAnimation => !!a && isExpr(a)); return b ? i18n.t('web.timeline.bound', { source: sourceLabel(i18n, b.bind) }) : i18n.t('web.timeline.expr', { expr: ex?.expr.replace(/\s+/g, ' ').slice(0, 80) ?? '' }); })()}</span>
                     </div>
                   )}
                   {it.vkeys.length > 0 && (
@@ -543,8 +544,8 @@ function TreeRow({ it, name, widget, tempoMap, playback, locked, selected, full,
     if (f.kind === 'bool' || f.kind === 'choice') return c
       ? <DiscreteValue key={f.path} f={f} value={value} label={lbl} disabled={locked} compact onChange={(v) => onValue(f.path, v)} />
       : <span key={f.path} className="block min-w-0 flex-1 truncate text-right text-[11px] text-muted" title={i18n.t('web.timeline.staticHint')}>{String(value)}</span>;
-    if (f.kind === 'color') return <input key={f.path} type="color" aria-label={lbl} value={String(value).slice(0, 7)} disabled={!c || locked} onChange={(e) => onValue(f.path, e.target.value)}
-      className="h-5 min-w-0 flex-1 cursor-pointer rounded-sm border border-control bg-raised disabled:cursor-default" title={c ? undefined : i18n.t('web.timeline.staticHint')} />;
+    if (f.kind === 'color') return <ColorField key={f.path} variant="compact" label={lbl} value={String(value)} disabled={!c || locked} onChange={(v) => onValue(f.path, v)}
+      title={c ? undefined : i18n.t('web.timeline.staticHint')} />;
     if (c) return <div key={f.path} className="min-w-0 flex-1"><NumberField label={lbl} value={Number(value)} spec={{ min: f.min, max: f.max, step: f.step }} range={f.range} disabled={locked} onChange={(v) => onValue(f.path, v)} className="!min-h-5 !py-0 text-[11px]" /></div>;
     return <span key={f.path} className="block min-w-0 flex-1 truncate text-right text-[11px] tabular-nums text-muted" title={i18n.t('web.timeline.staticHint')}>{fmt(Number(value))}</span>;
   };

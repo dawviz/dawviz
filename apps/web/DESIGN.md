@@ -240,9 +240,20 @@ Mọi component dùng token màu qua lớp Tailwind (`bg-surface`, `text-muted`,
 - **Ô số** (`NumberField`): nền `surface-raised`, viền `line-control`, chữ số đều căn phải, cao 24 px; kéo trên ô để đổi (Shift ×10, Alt ×0,1), gõ phép tính/đơn vị; lỗi hiện chữ + biểu tượng, viền `danger`.
 - **Ô thời gian** (`TimeField`): cùng dáng, `m:ss.mmm`, có trạng thái tắt.
 - **Ô chọn** (`Select`): lớp `.field`, mũi tên vẽ bằng SVG.
+- **Ô màu** (`ColorField`, T-49): thay mọi `<input type="color">`. Ô vuông 24 px viền `line-control`, màu phủ trên nền ô cờ để thấy alpha; mở bảng nổi (portal, `surface-raised`, viền `line-strong`) gồm vùng độ bão hoà/độ sáng, thanh sắc màu, thanh alpha (chỉ khi ô nhận alpha), ô nhập mã (HEX 3/4/6/8, rgb, hsl, hsv, oklch, tên CSS), công tắc HEX/RGB/HSL/HSV (`.seg`), sao chép, hút màu (chỉ khi trình duyệt có EyeDropper) và 12 màu gần đây. Màu ra luôn `#rrggbb` hoặc `#rrggbbaa`; một lần kéo là một bước hoàn tác. Bàn phím: ←/→/↑/↓ trên vùng màu và thanh (Shift ×10), Esc đóng và trả tiêu điểm. Mã sai: chữ lỗi + biểu tượng, viền `danger`.
+- **Bảng màu** (`PalettePanel`, đầu mục Track): dán danh sách, mở tệp `.gpl`/JSON/biến CSS, hoặc lấy màu track hiện tại; sửa từng ô bằng `ColorField`, lưu theo tên (localStorage), "Áp lần lượt cho track" là một bước hoàn tác.
 
 ### Mục inspector (`InspectorSection`)
 Tiêu đề là một nút gấp/mở: mũi tên 12 px `text-faint` (xoay 90° khi mở) · số mục `01` 12 px `text-muted` · tên 15 px đậm 600, xuống dòng được. Gấp thì thân mục không vẽ; trạng thái nhớ theo id (`lib/sectionState.ts`), dùng chung Xem trước và Editor. Ngăn bằng kẻ `line` 1 px dưới mỗi mục.
+
+### Tìm thiết lập (`SettingsSearchBox`, `SearchEmpty`, T-60)
+Một dải ngay dưới thanh tiêu đề của inspector Xem trước và bảng Thuộc tính Editor: kẻ `line` dưới, lề ngang 16 px, ô `.field` cao 24 px chữ 12 px. Câu tìm ở `SettingsSearchContext` (App giữ, không lưu). Khi đang tìm: `InspectorSection` mở thân (không đổi trạng thái gấp đã nhớ), ẩn cả mục (`hidden`) nếu tên mục và chữ trong thân không khớp, ẩn nút "Thêm tuỳ chọn"; tên mục khớp thì giữ cả mục. Mục Thiết lập widget lọc từng ô theo nhãn của `WIDGET_FIELDS`. Không tô màu nhấn cho kết quả (One Signal); không có gì khớp thì một dòng `text-muted` cuối bảng. So khớp bỏ dấu, không phân biệt hoa/thường (`lib/settingsSearch.ts`).
+
+### Hộp chọn chế độ lần đầu (T-60)
+Dùng lại `ConfirmDialog` (testId `mode-choice`): nút Huỷ = **Tôi mới dùng** (Cơ bản, nhận tiêu điểm, Esc), nút chính = **Tôi đã quen phần mềm dựng hình** (Nâng cao). Không hiện khi `?agent=1`.
+
+### Hộp thoại Xuất: kích thước tuỳ ý, đoạn, lớp (T-09, T-55)
+Cùng lưới nhãn 7 rem · ô của hộp thoại. Tuỳ chỉnh: hai `NumberField` Rộng × Cao + ô tick "Giữ tỉ lệ khung video". Đoạn xuất: `.seg` Cả bài / Một đoạn, rồi hai `TimeField` Bắt đầu → Kết thúc. Lớp: `<details>` "Lớp (n/N)" với danh sách ô tick (cao tối đa 10 rem, cuộn). Lỗi chặn xuất (`text-danger`, `role=alert`) nằm trên ghi chú (`text-warning`); dòng Tên tệp `text-muted`, ngắt được ở mọi ký tự.
 
 ### Thanh chia panel (`Splitter`)
 Vô hình khi nghỉ (đường kẻ `line` của panel là đủ); vùng bấm 8 px; rê hoặc đang kéo hiện vạch `line-strong` 2 px, focus bàn phím hiện vạch `focus`. `role="separator"` có `aria-valuenow/min/max`; mũi tên 8 px (Shift 32), Home/End, Enter thu gọn, nhấp đúp về mặc định.

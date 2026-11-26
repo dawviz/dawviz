@@ -12,6 +12,7 @@ The screen has three parts: the frame in the middle, **Widget properties** on th
 - **Collapse:** press the panel button at the top corner of Widget properties, or the button at the start of the **Timeline & keyframes** bar. A collapsed panel leaves a thin strip; click the strip to open it again. Shortcuts: Ctrl+Alt+B (Widget properties), Ctrl+J (Timeline).
 - **Make the Timeline as tall as you like:** drag the border above the Timeline up or down; it goes up until only a small strip of the frame is left.
 - **Fold sections:** click a section title (for example **Position and size**) to fold it away when you don't need it, click again to open it. The right column gets much shorter. The app remembers which sections are folded, on the Preview tab too.
+- **Find a setting:** type in the **Find a setting…** box at the top of Widget properties to keep only the sections and boxes whose names match, Advanced ones included while in Basic mode; folded sections open when they have a match (see [Contents](README.md)). Esc clears the text.
 - Panel sizes and states are remembered in this browser. On screens narrower than 1024 points the panels stack as before.
 
 ## Selecting
@@ -144,7 +145,7 @@ The layer column is on the left, the time ruler and the bars on the right. Each 
 - **Fade in / fade out:** drag the small squares at the top corners of a bar (they show on hover or when the layer is selected).
 - **Bar names stay in view:** when you scroll or zoom the Timeline and a bar's start is off screen, the layer's name stays at the left edge of the view until the bar ends.
 - **Snapping:** while you drag, bars stick to the playhead, the edges of other bars, phases, chord changes (while the Music lanes are open) and the beats of the song. When you trim, a bar also sticks to the **length** of other bars: the label "= Progress (0:12)" means both layers are the same length at that point. Hold Alt to turn it off.
-- **Music lanes:** press **Music** under the Phases lane to show a chord lane and one note lane per track, to line bars up with the music. These lanes are view only.
+- **Music lanes:** press **Music** under the Phases lane to show a chord lane and one note lane per track, to line bars up with the music. These lanes only show the music; the lock on each track is the one thing you can change here.
 - **Split a layer at the playhead:** put the playhead over the bar, select the layer and press Ctrl+K (or the scissors button at the top left). The layer becomes two layers that meet there: the original keeps the part before, the copy (just above it) keeps the part after. Each has its own keyframes and is edited on its own.
 - **Move a bar to the playhead:** `[` moves the bar so it starts at the playhead, `]` so it ends there. Alt+`[` and Alt+`]` trim the start or end at the playhead.
 - **Nudge:** Alt+← / Alt+→ moves by 1/30 second; add Shift for 1 second.
@@ -176,6 +177,12 @@ A precomp groups several layers into one layer, like a precomp in After Effects.
 - With every precomp opened up, there can be at most 512 layers. If an action would go over, the app tells you and does nothing.
 - On the Preview tab, when the playhead is inside a precomp, clicking a **Video styles** tile applies that style to that precomp instead of the whole video. If the Piano roll is inside a precomp, the per-track colours on the Preview tab change the Piano roll of the precomp shown at the playhead. See [Preview](02-preview.md).
 
+## Colour picker and palettes
+
+Every colour swatch opens the same picker: drag in the colour area and hue bar, or type a code in the input. The input understands `#f80`, `#ff8800`, `#ff880080` (the last two digits are opacity), `rgb(255 136 0)`, `hsl(32 100% 50%)`, `hsv(32 100% 100%)`, `oklch(0.75 0.15 60)`, CSS colour names such as `tomato`, or a number. The **Opacity** bar only appears on swatches that allow transparency; the colour is saved as `#rrggbbaa`, and older presets look the same. The HEX/RGB/HSL/HSV switch changes the display, the copy button copies the code, and the eyedropper picks a colour from the screen (only where the browser supports it, such as Chrome and Edge). **Recent** keeps your last 12 colours. Esc closes the picker.
+
+**Palettes** sit at the top of the **Tracks** section: paste a list of colour codes, a GIMP `.gpl` palette, JSON or CSS variables (`--name: #aabbcc`), or press **Use current track colors**; edit any colour, name it and **Save palette**. **Apply to tracks in order** gives the colours to the tracks in order (cycling when colours run out) as one undo step (Ctrl+Z).
+
 ## Note names
 
 Also with no widget selected, the **Note names** section changes the names of notes and chords in every widget at once (letters, Do Re Mi, German; sharps or flats; C4 or C3). Details in [Analysis widgets](10-analysis-widgets.md#note-names).
@@ -198,6 +205,8 @@ Phases are the parts of a song (verse, chorus…). They live on the **Phases** l
 - **Move:** drag the phase marker (it sticks to the playhead, beats and bar edges; hold Alt to turn it off), or click the marker and press Alt+← / Alt+→ (add Shift for 1 second).
 - **Rename:** double-click the marker.
 - **Remove:** click the marker and press Delete.
+- **From markers:** if the project has markers, the download button at the start of the **Phases** lane creates phases from them (one phase per marker, same name). If phases already exist, it replaces them all.
+- **Lock a track:** in the **Music** lanes each track has a lock. A locked track cannot change its show/hide, solo, color, order or brightness (also in the Tracks panel) until unlocked. Locks last for the session and are not saved in the preset.
 - When you drag a layer's bar it sticks to phases, so it is easy to show a layer exactly during the chorus.
 
 The values `{phase}`, `{next_phase}`, `{phase_remaining}`… work in any text (see [Placeholders](08-placeholders.md)).
@@ -257,7 +266,7 @@ Select a widget that has text (title, note counter, live notes, time, chord, pro
 Each piece of text uses a **text style** (Title, Subtitle, Counter, Clock…). Whatever you change differs from the style; everything else keeps following it. Next to each change there is a ↺ button that goes back to the style's value.
 
 - **Text:** when a widget has several pieces of text, pick the one to edit here, for example Title or Artist. Some entries are part of a line, such as **Numbers in the lines** of the note counter or **Bass note after /** of the chord: changes there apply only to that part, the rest of the line stays the same. Text you have changed is marked • in the list.
-- **Text style**, **Font**, **Size**, **Colour**, **Bold**, **Italic**. At the end of the **Font** list, **Load a font file…** lets you use your own font (WOFF2, WOFF, TTF, OTF, up to 20 MB); it travels with the session, the project pack and the exported video. Only use fonts you are allowed to use.
+- **Text style**, **Font**, **Size**, **Colour**, **Weight** (Light, Regular, Bold), **Italic**. At the end of the **Font** list, **Load a font file…** lets you use your own font (WOFF2, WOFF, TTF, OTF, up to 20 MB); it travels with the session, the project pack and the exported video. Only use fonts you are allowed to use.
 - **Align:** left, centre or right inside the widget box.
 
 In Advanced mode (or after **More options**):
@@ -287,6 +296,10 @@ Select the Piano roll widget (or click **Edit note look** when nothing is select
 - **Note motion:** **Scroll** (default) notes flow past a fixed playhead; **Page** notes stay still page by page, the playhead sweeps left to right, and at the end of the page it returns to the start and shows the next page of notes (notes that cross a page boundary are cut at the page edge; played notes are solid, upcoming notes are faded by **Idle opacity**). **Visible time** is the time scale in Scroll mode and the length of one page in Page mode. In Page mode the **Playhead position** field has no effect, so it is hidden.
 - **Page length (Page mode):** **Seconds** or **Bars**. With **Bars**, each page holds exactly the number of bars you set (**Bars per page**); pages start on the first beat of a bar and turn exactly when a new bar begins, even when the song changes tempo or time signature (pages then differ in length).
 - **Show notes ahead (Page mode):** 0 shows the whole page. Set some seconds (for example 2) and a note only appears when it is that close to the playhead; played notes stay until the end of the page. This gives the "notes appear as you go" look of many videos.
+- **Note flow angle (°):** 0 makes notes run right to left (default), 90 makes them fall from the top, 180 and 270 the other directions; type any angle from 0 to 360. Notes, playhead, keyboard and grid turn inside the widget frame (unlike **Rotation** of the whole widget). **Flip pitch direction** swaps which side holds the high notes (90° with flip: low notes on the left). **Keep labels upright** stops note names and bar numbers from turning with the lane. At angles that are not a multiple of 90°, the keyboard and the playhead arrows may fall outside the frame.
+- **Playhead:** **Playhead style** has **Solid line**, **Dashed**, **Band**, **Soft band (fades out)**; **Playhead thickness**, **Playhead colour**, **Playhead length** (a share of the lane height, centred), **Playhead glow** and **Arrow heads**. **When a note hits**: **Flash** (the line leans toward the colour of the note that just hit) or **Swell** (the line gets thicker), stronger with velocity and fading over **Hit fade time (ms)**.
+- **Keyboard:** besides on/off there are **Key shape** (**Flat**, **Rounded**), **Pressed keys use note colour** (off uses **Pressed key colour**), **Highlight scale** (**Detected key**, **Major of the key note**, **Minor of the key note**; the key note comes from the project's key note when set) with **Scale colour** and **Scale highlight strength**, and **Note names on keys** (**C keys only**, **All white keys**, **All keys**, **Pressed keys only**; plus **Show octave number**, **Note name colour**). Names follow the shared note-name setting.
+- **Bar grid:** **Bar lines**, **Beat lines**, **Bar numbers**, **Grid colour**, **Grid opacity**. The grid follows the song's metre and tempo, so it stays right when they change.
 - **Show playhead:** when hidden, notes still play at the same place; the line just isn't drawn. While the line is hidden, **Playhead position** is hidden too; show the line again to adjust it.
 
 ### Glow

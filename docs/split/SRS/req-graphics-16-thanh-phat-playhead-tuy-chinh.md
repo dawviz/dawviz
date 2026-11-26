@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-GRAPHICS-16: Thanh phát (playhead) tuỳ chỉnh"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-16: Thanh phát (playhead) tuỳ chỉnh"
 chunk: req-graphics-16-thanh-phat-playhead-tuy-chinh.md
-source_lines: 442-451
-source_sha1: 879a0e809e
+source_lines: 442-452
+source_sha1: fee32c2554
 ids: [REQ-GRAPHICS-09, REQ-GRAPHICS-11, REQ-GRAPHICS-16, REQ-STORAGE-05, REQ-UI-11, REQ-WIDGET-01]
 ---
 #### REQ-GRAPHICS-16: Thanh phát (playhead) tuỳ chỉnh
@@ -17,3 +17,4 @@ Vạch đánh dấu thời điểm đang phát trên Piano Roll (và các widget
   * **Phản ứng khi nốt chạm vạch:** nhấp sáng hoặc phình độ dày trong một khoảng ngắn (ms), mức theo velocity; có thể tắt.
   * Thứ tự lớp: trên hoặc dưới nốt. Vạch luôn vuông góc với hướng chảy (kể cả góc tự do của REQ-WIDGET-01).
 * **1.1:** vạch là **ảnh/sprite** người dùng nạp (REQ-STORAGE-05); mọi thuộc tính gắn keyframe, binding, biểu thức (REQ-GRAPHICS-09…13), ví dụ độ dày đập theo kick; bộ phát hạt đặt tại vạch (REQ-GRAPHICS-11); preset `playhead` chia sẻ được.
+* **Đã làm (T-58, 2026-11-25):** `playheadStyle` `LINE`/`DASHED`/`BAND`/`GRADIENT`, `playheadArrows` (tam giác hai đầu chỉ vào trong), `playheadWidth` 0–40, `playheadLength` 0,05–1 (tỉ lệ chiều cao làn, căn giữa), `playheadColor`, `playheadGlow` 0–1, `playheadHit` `OFF`/`FLASH` (màu ngả về màu nốt vừa chạm, sáng thêm)/`SWELL` (dày tới ×3), mức = velocity, tắt dần tuyến tính trong `playheadHitMs`. Mặc định ra đúng một vạch liền như trước. Độ dài, phát sáng, màu animate được bằng keyframe. **Chưa làm:** kiểu chấm, vạch đôi, căn đầu/cuối, màu liên tục theo track đang chạm, bo đầu, thứ tự lớp dưới nốt, alpha riêng của màu.

@@ -28,6 +28,7 @@ const TAG = process.env.TAG ?? '';
 try {
   const ctx = await b.newContext({ viewport: { width: 1600, height: 1000 }, locale: 'vi-VN', acceptDownloads: true });
   await ctx.addInitScript(() => { try { delete Window.prototype.showSaveFilePicker; delete window.showSaveFilePicker; } catch {} }); // tải xuống thay vì hộp chọn nơi lưu
+  await ctx.addInitScript(() => { if (!localStorage.getItem('dawviz.prefs.v1.ui')) localStorage.setItem('dawviz.prefs.v1.ui', JSON.stringify({ modeChosen: true })); }); // bỏ qua hộp chọn chế độ lần đầu (T-60)
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));

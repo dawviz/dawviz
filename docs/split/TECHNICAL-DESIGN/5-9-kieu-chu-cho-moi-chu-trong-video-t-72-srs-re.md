@@ -4,8 +4,8 @@ doc_title: "THIẾT KẾ KỸ THUẬT CHI TIẾT (TECHNICAL DESIGN) — DAW VISU
 section: "5.9 Kiểu chữ cho mọi chữ trong video 🟢 (T-72, SRS REQ-GRAPHICS-18, D-58)"
 path: "5. Render Core (chi tiết) 🟢 Scene, Piano Roll; ⚪ widget còn lại > 5.9 Kiểu chữ cho mọi chữ trong video 🟢 (T-72, SRS REQ-GRAPHICS-18, D-58)"
 chunk: 5-9-kieu-chu-cho-moi-chu-trong-video-t-72-srs-re.md
-source_lines: 198-212
-source_sha1: 8cbe7fce2c
+source_lines: 200-214
+source_sha1: 89904b8414
 ids: [D-58, REQ-GRAPHICS-18, REQ-STORAGE-05, WARN_PRESET_FONT_MISSING, WARN_PRESET_VALUE]
 ---
 ### 5.9 Kiểu chữ cho mọi chữ trong video 🟢 (T-72, SRS REQ-GRAPHICS-18, D-58)

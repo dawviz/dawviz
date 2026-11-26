@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { SCENE_SCHEMA_VERSION, compView, flattenScene, sanitizeScene, shiftWidgetTime, type SceneDocument, type WidgetSpec } from '@dawviz/render-core';
-import { clipAt, clipsOf, lengthTargets, moveLayers, newCompName, precompose, setFade, splitLayer, trimLayer, trimMany, uncompose } from './layerTimeline.ts';
+import { clipAt, clipsOf, lengthTargets, markersToPhases, moveLayers, newCompName, precompose, setFade, splitLayer, trimLayer, trimMany, uncompose } from './layerTimeline.ts';
 import { compAt, liftCmd, putView, refKey, viewDoc } from './compLens.ts';
 import { createStore } from './store.ts';
 import * as C from './commands.ts';
@@ -180,4 +180,12 @@ test('pianoPathAt: Piano Roll ở gốc → []; không có thì precomp trên c�
   assert.deepEqual(pianoPathAt(s1, 2), ['A']);
   assert.deepEqual(pianoPathAt(s1, 6), ['B', 'N'], 'B ở trên; giây 1 của B nằm trong N');
   assert.deepEqual(pianoPathAt(s1, 12), [], 'B không còn Piano Roll ở giây 7 của nó, A đã hết');
+});
+
+test('markersToPhases (T-52): marker thành phase cùng tên, sắp theo thời gian, bỏ trùng mốc/tên rỗng, kẹp trong bài, tối đa MAX_PHASES', () => {
+  const ps = markersToPhases([{ name: 'Chorus', timeSeconds: 30.12345 }, { name: '  Verse   1 ', timeSeconds: 10 }, { name: 'Dup', timeSeconds: 10.0004 }, { name: '', timeSeconds: 20 }, { name: 'Outro', timeSeconds: 999 }, { name: 'x'.repeat(80), timeSeconds: -5 }], 120);
+  assert.deepEqual(ps, [{ name: 'x'.repeat(60), start: 0 }, { name: 'Verse 1', start: 10 }, { name: 'Chorus', start: 30.123 }, { name: 'Outro', start: 120 }]);
+  const many = markersToPhases(Array.from({ length: 100 }, (_, i) => ({ name: `M${i}`, timeSeconds: i })), 200);
+  assert.equal(many.length, 64);
+  assert.deepEqual(markersToPhases([], 10), []);
 });

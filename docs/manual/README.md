@@ -22,7 +22,8 @@ Hướng dẫn này viết dần theo ứng dụng. Phần nào chưa có trong 
 
 ## Vài điều nên biết trước
 
-- **Cơ bản và Nâng cao.** Nút chuyển ở góc trên bên phải. Cơ bản chỉ hiện những thứ hay dùng. Nâng cao hiện đủ mọi tuỳ chọn. Đổi qua lại lúc nào cũng được, thiết lập của bạn không mất.
+- **Cơ bản và Nâng cao.** Lần đầu mở ứng dụng, một hộp thoại hỏi bạn muốn bắt đầu thế nào: **Tôi mới dùng** (vào Cơ bản) hoặc **Tôi đã quen phần mềm dựng hình** (vào Nâng cao); bấm Esc là Cơ bản. Ứng dụng nhớ lựa chọn và không hỏi lại. Sau đó dùng nút chuyển **Cơ bản · Nâng cao** ở góc trên bên phải. Cơ bản chỉ hiện những thứ hay dùng. Nâng cao hiện đủ mọi tuỳ chọn. Đổi qua lại lúc nào cũng được, thiết lập của bạn không mất.
+- **Tìm thiết lập.** Ô **Tìm thiết lập…** ở đầu bảng bên phải (inspector của Xem trước, Thuộc tính widget của Chỉnh sửa). Gõ một phần tên thiết lập, có dấu hay không dấu đều được (`mau vach` tìm ra **Màu vạch**): chỉ còn các mục và ô khớp. Ở Cơ bản, ô chỉ có ở Nâng cao vẫn hiện ra nếu khớp, không cần bấm **Thêm tuỳ chọn**. Gõ đúng tên mục (ví dụ `Thiết lập`) thì cả mục hiện ra. Bấm Esc hoặc xoá chữ để về như cũ.
 - **Hoàn tác.** Hầu hết mọi thay đổi đều hoàn tác được bằng Ctrl+Z (⌘Z trên Mac). Nút đồng hồ cạnh Hoàn tác/Làm lại mở danh sách các bước đã làm; bấm vào một bước để quay về đúng lúc đó.
 - **Nút ↺.** Cạnh một thiết lập đã đổi sẽ có nút ↺, ở mọi mục (Vị trí, Thiết lập, Chữ, hình thức nốt…). Bấm để đưa thiết lập đó về giá trị gốc của phong cách video hoặc preset vừa áp; widget mới thêm thì về giá trị mặc định của loại đó. Cách nhanh hơn: giữ Alt (Option trên Mac) rồi bấm vào **chữ nhãn** của thiết lập (không bấm vào ô nhập). Mỗi lần khôi phục là một bước hoàn tác riêng.
 - **Rê chuột lên nút** để xem tên và phím tắt của nút.

@@ -7,10 +7,20 @@ Bấm **Xuất video** ở góc trên bên phải (cần mở dự án trước)
 ## Chọn cấu hình
 
 - **Kích thước:** 720p, 1080p hoặc 4K, tính theo cạnh ngắn của khung. Khung vuông 1:1 ra 1080×1080, khung ngang 16:9 ra 1920×1080. Cạnh dài tối đa 4096 px; số lẻ được làm tròn thành số chẵn, và hộp thoại báo khi có làm tròn.
+- **Tuỳ chỉnh…** (cuối ô Kích thước): gõ **Rộng** và **Cao** tuỳ ý, bằng điểm ảnh. Khi **Giữ tỉ lệ khung video** đang bật, sửa một ô thì ô kia tự tính theo khung. Tắt nó để nhập cỡ khác hình khung (ví dụ khung 16:9 xuất 1080×1080): khung video được đặt giữa, phần còn lại tô màu nền, và hộp thoại báo điều này. Cạnh ngắn phải từ 128 px, cạnh dài tối đa 4096 px; số lẻ làm tròn xuống số chẵn. Cỡ quá nhỏ thì nút **Bắt đầu xuất** bị khoá và hộp thoại nói lý do.
 - **Số khung hình/giây:** 24, 30 hoặc 60.
+- **Xuất:** **Cả bài** (mặc định) hoặc **Một đoạn**. Chọn **Một đoạn** rồi gõ **Bắt đầu** và **Kết thúc** theo dạng `1:05.5` (phút:giây) hoặc số giây. Video và âm thanh chỉ lấy đúng đoạn đó. Kết thúc phải sau bắt đầu ít nhất một khung hình, không thì nút **Bắt đầu xuất** bị khoá.
 - **Chất lượng:** Thấp, Vừa hoặc Cao. Cao cho tệp lớn hơn.
 
-Dòng tóm tắt bên dưới cho biết kích thước thực, thời lượng, số khung và dung lượng ước tính. Video dài hơn bài nhạc 2 giây ở cuối. Nếu đã nạp âm thanh dài hơn dự án thì video dài theo âm thanh.
+Dòng tóm tắt bên dưới cho biết kích thước thực, thời lượng, số khung và dung lượng ước tính. Khi xuất cả bài, video dài hơn bài nhạc 2 giây ở cuối; nếu đã nạp âm thanh dài hơn dự án thì video dài theo âm thanh.
+
+Dòng **Tên tệp** cho biết tên sẽ lưu, gồm tên dự án, kích thước và số khung hình/giây, ví dụ `Bai-hat_1920x1080_30fps.mp4`; xuất một đoạn thì thêm đoạn, ví dụ `Bai-hat_1920x1080_30fps_0m45s-1m45s.mp4`. Tên này có sẵn trước khi xuất, nên khi Chrome hoặc Edge hỏi nơi lưu bạn thấy đúng tên.
+
+## Chọn lớp
+
+Mục **Lớp (5/5)** là danh sách các lớp của khung (lớp trên cùng đứng đầu), mỗi lớp một ô đánh dấu, mặc định chọn tất cả. Bỏ đánh dấu một lớp thì lớp đó không có trong lần xuất này; dự án không đổi. Precomp tính là một lớp: chọn nó là chọn cả các lớp bên trong. **Chọn tất cả** đánh dấu lại mọi lớp. Phải chọn ít nhất một lớp.
+
+Mục này có khi khung có từ hai lớp trở lên, lúc xuất **Chuỗi PNG trong suốt** (ở cả hai chế độ) và lúc xuất video ở chế độ Nâng cao. Cách dùng hay gặp: xuất hai lần cùng kích thước, số khung hình/giây và đoạn: lần 1 chỉ lớp nền, lần 2 các lớp còn lại thành chuỗi PNG trong suốt, rồi đặt chồng lên nhau trong phần mềm dựng.
 
 ## Định dạng
 
@@ -32,7 +42,7 @@ Nếu không cái nào được, ứng dụng nói rõ và gợi ý thử kích 
 
 ## Chuỗi PNG trong suốt
 
-Muốn ghép phần hình của DAW Visualizer lên video khác (After Effects, Premiere, DaVinci Resolve), chọn **Chuỗi PNG trong suốt** ở đầu hộp thoại. Mỗi khung thành một ảnh PNG có nền trong suốt (màu nền và ảnh nền của khung không được vẽ), đặt tên `tên_000001.png`, `tên_000002.png`… theo đúng số khung hình/giây đã chọn.
+Muốn ghép phần hình của DAW Visualizer lên video khác (After Effects, Premiere, DaVinci Resolve), chọn **Chuỗi PNG trong suốt** ở đầu hộp thoại. Mỗi khung thành một ảnh PNG có nền trong suốt (màu nền và ảnh nền của khung không được vẽ), đặt tên `tên_1920x1080_30fps_000001.png`, `tên_1920x1080_30fps_000002.png`… theo đúng số khung hình/giây đã chọn.
 
 - **Kèm âm thanh thành tệp .wav:** ghi âm thanh của đúng đoạn xuất thành một tệp `.wav` cùng chỗ, để ghép lại khớp hình.
 - Trên Chrome và Edge, bấm **Bắt đầu xuất** rồi chọn một thư mục: ảnh được ghi thẳng vào đó, không chiếm bộ nhớ. Trình duyệt khác nhận một tệp `.zip`; tệp này được giữ trong bộ nhớ tới khi xong, nên hộp thoại cảnh báo khi ước tính vượt 1 GB.

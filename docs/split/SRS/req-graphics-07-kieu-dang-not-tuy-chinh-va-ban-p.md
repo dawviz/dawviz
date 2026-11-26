@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-GRAPHICS-07: Kiểu dáng nốt tuỳ chỉnh và bàn phím"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.3. Đồ họa Canvas, hệ tọa độ & bắt dính (BR-02) > REQ-GRAPHICS-07: Kiểu dáng nốt tuỳ chỉnh và bàn phím"
 chunk: req-graphics-07-kieu-dang-not-tuy-chinh-va-ban-p.md
-source_lines: 481-500
-source_sha1: 879a0e809e
+source_lines: 482-502
+source_sha1: fee32c2554
 ids: [P-01, P-04, P-12, REQ-GRAPHICS-05, REQ-GRAPHICS-06, REQ-GRAPHICS-07, REQ-STORAGE-02, REQ-STORAGE-05]
 ---
 #### REQ-GRAPHICS-07: Kiểu dáng nốt tuỳ chỉnh và bàn phím
@@ -26,4 +26,5 @@ ids: [P-01, P-04, P-12, REQ-GRAPHICS-05, REQ-GRAPHICS-06, REQ-GRAPHICS-07, REQ-S
   * **Cách ghi tên:** dùng thiết lập chung P-12 / REQ-I18N-08 (`C D E`, `Do Re Mi`, `H` thay `B`, `ハニホ`…); thăng/giáng hiển thị `♯`/`♭` hoặc `#`/`b`.
   * **Số quãng tám:** chọn quy ước Đô giữa (MIDI 60) là **C4** (mặc định, theo chuẩn khoa học) hay **C3** (kiểu Yamaha/Ableton) để khớp DAW người dùng; tuỳ chọn ẩn số.
   * **Kiểu chữ:** phông (gồm phông người dùng nạp, REQ-STORAGE-05), cỡ, màu, vị trí (đáy phím / giữa), xoay theo hướng bàn phím.
+* **Đã làm (T-51, 2026-11-25):** `keyboard.shape` `FLAT`/`ROUNDED` (bo góc, khe giữa phím); phím nhấn theo màu nốt (`useTrackColor`) hoặc `pressedColor`; `keyboard.scale` `OFF`/`AUTO`/`MAJOR`/`MINOR` tô `scaleColor` với `scaleOpacity` (phím nốt chủ đậm ×1,8): AUTO = giọng nhận diện `keyAt` (cửa sổ 16 s), có `scene.tonic` thì giữ nốt chủ đó và chọn trưởng/thứ trùng nhiều lớp cao độ hơn với giọng nhận diện; MAJOR/MINOR dùng `scene.tonic` (chưa đặt thì nốt chủ nhận diện); `keyboard.labels` `NONE`/`C`/`WHITE`/`ALL`/`ACTIVE`, `labelOctave`, `labelColor`; tên theo `scene.noteNaming` (hệ ghi tên, dấu hoá, quy ước C3/C4). Cỡ chữ theo chiều cao hàng phím, dưới 5 pt thì không vẽ. Phạm vi phím = dải cao độ của Piano Roll (Vừa nội dung / Tuỳ chọn). **Chưa làm:** nút chọn nhanh 88/76/61… phím, tỉ lệ dài phím đen, bóng nổi, viền, độ lún theo velocity, nhả dần, phông/cỡ/vị trí nhãn riêng.
 * Mọi kiểu dáng vẽ qua Render Core nên Preview và Export giống nhau (REQ-GRAPHICS-05). Phát sáng dùng `shadowBlur`; chi phí khi xuất độ phân giải cao cần đo (T-09).
