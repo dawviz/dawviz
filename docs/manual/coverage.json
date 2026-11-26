@@ -137,11 +137,11 @@
         "locales/en.json#web.layers.",
         "locales/en.json#web.comp."
       ],
-      "uiHash": "4f5bfe82b717",
-      "viHash": "8d7ebaead5ad",
-      "enHash": "d6706a132203",
+      "uiHash": "0bdb1a1772a9",
+      "viHash": "f440dd884db8",
+      "enHash": "d924eb3f4c0f",
       "coverHashes": {
-        "apps/web/src/components/Editor.tsx": "a4da48506951",
+        "apps/web/src/components/Editor.tsx": "868f90108786",
         "apps/web/src/components/EditorOverlay.tsx": "c10a644a5f66",
         "apps/web/src/components/StylePanel.tsx": "1a7c05d2bb56",
         "locales/en.json#web.editor.": "315a1a12894d",
@@ -173,9 +173,9 @@
         "packages/render-core/src/image.ts": "314b9694a52b",
         "apps/web/src/lib/sessionAssets.ts": "281ce11cbc11",
         "locales/en.json#web.asset.": "dffd9c37b639",
-        "apps/web/src/components/LayerTimeline.tsx": "f7357ed71384",
+        "apps/web/src/components/LayerTimeline.tsx": "665c6911839d",
         "apps/web/src/lib/layerTimeline.ts": "d310694f5b96",
-        "locales/en.json#web.layers.": "0f5945486fb1",
+        "locales/en.json#web.layers.": "4a4eda2648f1",
         "locales/en.json#web.comp.": "f60606069e72"
       }
     },
@@ -229,18 +229,18 @@
         "apps/web/src/components/Splitter.tsx",
         "apps/web/src/components/LayerTimeline.tsx"
       ],
-      "uiHash": "63eb2e9c74e5",
-      "viHash": "223e75903e10",
-      "enHash": "0a26cf6d99e9",
+      "uiHash": "df2a4b4eab8c",
+      "viHash": "f22f1daba73f",
+      "enHash": "fb2e4cf49876",
       "coverHashes": {
         "apps/web/src/lib/transportKeys.ts": "3c74099d457e",
         "apps/web/src/lib/undoKeys.ts": "07c2c99f5cf4",
         "apps/web/src/components/EditorOverlay.tsx": "c10a644a5f66",
         "apps/web/src/lib/numberInput.ts": "8e27c53523c3",
-        "apps/web/src/components/Editor.tsx": "a4da48506951",
+        "apps/web/src/components/Editor.tsx": "868f90108786",
         "apps/web/src/components/KeyframeTimeline.tsx": "523d37a825e1",
         "apps/web/src/components/Splitter.tsx": "7ae82f8548cb",
-        "apps/web/src/components/LayerTimeline.tsx": "f7357ed71384"
+        "apps/web/src/components/LayerTimeline.tsx": "665c6911839d"
       }
     },
     "06-xuat-video": {
