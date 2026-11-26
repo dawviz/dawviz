@@ -137,9 +137,9 @@
         "locales/en.json#web.layers.",
         "locales/en.json#web.comp."
       ],
-      "uiHash": "443b48f3ca31",
-      "viHash": "7a46d038eff4",
-      "enHash": "c66747692ba0",
+      "uiHash": "6a0c2f8c6310",
+      "viHash": "8c741e3819d7",
+      "enHash": "1cea8b44a8af",
       "coverHashes": {
         "apps/web/src/components/Editor.tsx": "a4da48506951",
         "apps/web/src/components/EditorOverlay.tsx": "c10a644a5f66",
@@ -152,7 +152,7 @@
         "apps/web/src/components/TextPanel.tsx": "dd7fca2212b6",
         "locales/en.json#web.text.": "13dd41db4149",
         "apps/web/src/components/WidgetSettings.tsx": "fd14aef49172",
-        "locales/en.json#web.ws.": "b8e6cff91157",
+        "locales/en.json#web.ws.": "4f06b01f04ef",
         "apps/web/src/components/TimeSections.tsx": "aa30f2bb1dd2",
         "apps/web/src/components/TimeField.tsx": "4627c46c0bf7",
         "locales/en.json#web.vis.": "97d170e1550e",
@@ -168,7 +168,7 @@
         "locales/en.json#web.section.": "8001c069c069",
         "apps/web/src/components/PanelChrome.tsx": "c223c6acc992",
         "apps/web/src/components/LiveLayout.tsx": "bbb99682cb91",
-        "packages/render-core/src/spectrum.ts": "8345b2ca9bd1",
+        "packages/render-core/src/spectrum.ts": "6a857180db47",
         "packages/render-core/src/textAnimator.ts": "def4ac5b78f2",
         "packages/render-core/src/image.ts": "314b9694a52b",
         "apps/web/src/lib/sessionAssets.ts": "281ce11cbc11",
@@ -286,12 +286,12 @@
         "locales/en.json#web.widget.",
         "locales/en.json#web.tonic."
       ],
-      "uiHash": "6701cfb1ab89",
+      "uiHash": "212ec11efde1",
       "viHash": "ae36005a4bf0",
       "enHash": "52d07dcea04a",
       "coverHashes": {
         "apps/web/src/components/WidgetSettings.tsx": "fd14aef49172",
-        "locales/en.json#web.ws.": "b8e6cff91157",
+        "locales/en.json#web.ws.": "4f06b01f04ef",
         "locales/en.json#web.widget.": "3a55f23fb070",
         "locales/en.json#web.tonic.": "2b1a6b41c82b"
       }

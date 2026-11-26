@@ -21,7 +21,7 @@ import {
 import { DEFAULT_NOTATION, notationInkFor, type NotationProps } from './notation/widget.ts';
 import { CHORD_RESOLUTIONS, DASHBOARD_TYPES, DEFAULT_DEGREE, DEFAULT_DOTS, DEFAULT_PANEL, DOTS_GRIDS, MAX_PANEL_STATS, type DegreeProps, type DotsProps, type PanelProps } from './dashboard.ts';
 import { ROMAN_STYLES } from './degree.ts';
-import { DEFAULT_SPECTRUM, SPECTRUM_STYLES, type SpectrumProps } from './spectrum.ts';
+import { DEFAULT_SPECTRUM, PEAK_STYLES, SPECTRUM_STYLES, type SpectrumProps } from './spectrum.ts';
 import { sanitizeAnimate, type Animation } from './animation.ts';
 import { DEFAULT_LOOP, DEFAULT_PHASE, LOOP_EFFECT_NAMES, WIDGET_EFFECT_NAMES, hasMotion, type MotionLoop, type MotionPhase, type WidgetMotion } from './widgetMotion.ts';
 import { parseEase } from './motion.ts';
@@ -838,7 +838,9 @@ const HUD_SANITIZERS = {
     let fl = S.num(P.floorDb, d.floorDb, -80, -10, `${p}.floorDb`), ce = S.num(P.ceilDb, d.ceilDb, -60, 0, `${p}.ceilDb`);
     if (ce <= fl) { S.warn(`${p}.ceilDb`, ce, 'ceilDb phải lớn hơn floorDb; dùng mặc định'); fl = d.floorDb; ce = d.ceilDb; }
     return { style: S.oneOf(P.style, SPECTRUM_STYLES, d.style, `${p}.style`), scale: S.oneOf(P.scale, ['LOG', 'LINEAR', 'MEL'] as const, d.scale, `${p}.scale`),
-      peakCap: S.bool(P.peakCap, d.peakCap, `${p}.peakCap`), capFall: S.num(P.capFall, d.capFall, 0.05, 10, `${p}.capFall`), scopeMs: S.num(P.scopeMs, d.scopeMs, 5, 500, `${p}.scopeMs`),
+      peakCap: S.bool(P.peakCap, d.peakCap, `${p}.peakCap`), capFall: S.num(P.capFall, d.capFall, 0.05, 10, `${p}.capFall`),
+      peakStyle: S.oneOf(P.peakStyle, PEAK_STYLES, d.peakStyle, `${p}.peakStyle`), peakHold: S.num(P.peakHold, d.peakHold, 0, 5, `${p}.peakHold`),
+      peakGravity: S.num(P.peakGravity, d.peakGravity, 0, 20, `${p}.peakGravity`), peakColor: S.str(P.peakColor, d.peakColor, `${p}.peakColor`, (s) => s === '' || HEX.test(s)), scopeMs: S.num(P.scopeMs, d.scopeMs, 5, 500, `${p}.scopeMs`),
       playedColor: col(P.playedColor, d.playedColor, `${p}.playedColor`),
       shape: S.oneOf(P.shape, ['LINE', 'CIRCLE'] as const, d.shape, `${p}.shape`), bars: Math.round(S.num(P.bars, d.bars, 8, 256, `${p}.bars`)), minHz: lo, maxHz: hi,
       reverse: S.bool(P.reverse, d.reverse, `${p}.reverse`), mirror: S.bool(P.mirror, d.mirror, `${p}.mirror`), angle: normalizeAngle(S.num(P.angle, d.angle, -360, 360, `${p}.angle`)),
