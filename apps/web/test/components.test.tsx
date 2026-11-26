@@ -1,6 +1,6 @@
 // Kiểm thử thành phần bằng Vitest + Testing Library (chạy: npm run test:components -w @dawviz/web; cần đã `npm install`).
 import { describe, it, expect } from 'vitest';
-import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, act, waitFor, within } from '@testing-library/react';
 import { I18nProvider } from '../src/i18n/I18nProvider.tsx';
 import { Transport } from '../src/components/Transport.tsx';
 import { Notices } from '../src/components/Notices.tsx';
@@ -989,5 +989,42 @@ describe('Tìm thiết lập (T-60, REQ-UI-13)', () => {
     again('zzqq');
     await waitFor(() => expect(screen.getByTestId('settings-search-none')).toBeVisible());
     expect(screen.getByTestId('settings-search-none').textContent).toMatch(/zzqq/);
+  });
+});
+
+describe('Nhóm thiết lập (D-71, T-124)', () => {
+  const setup = async (props: Record<string, unknown>, animate?: Record<string, unknown>) => {
+    const { WidgetSettings } = await import('../src/components/WidgetSettings.tsx');
+    const { createWidget, defaultScene } = await import('@dawviz/render-core');
+    const w = createWidget(defaultScene('16:9'), 'TEMPO_INFO');
+    w.properties = { ...(w.properties as Record<string, unknown>), ...props } as typeof w.properties;
+    if (animate) (w as { animate?: unknown }).animate = animate;
+    const patches: Record<string, unknown>[] = [];
+    wrap(<WidgetSettings widget={w} advanced onProps={(p) => patches.push(p)} />);
+    return patches;
+  };
+  const heightRe = /^(Curve height|Chiều cao đường cong)$/;
+
+  it('nhóm có công tắc ở tiêu đề: tắt thì ẩn ô con, bấm công tắc thì bật lại', async () => {
+    const patches = await setup({ showCurve: false });
+    expect(screen.getByTestId('ws-sec-curve')).toBeInTheDocument();
+    expect(screen.queryByLabelText(heightRe)).toBeNull();
+    fireEvent.click(screen.getByTestId('ws-sec-toggle-showCurve'));
+    expect(patches.at(-1)).toEqual({ showCurve: true });
+  });
+
+  it('bật thì hiện ô con; gấp nhóm thì ẩn, mở lại thì hiện', async () => {
+    await setup({ showCurve: true });
+    expect(screen.getByLabelText(heightRe)).toBeInTheDocument();
+    const toggle = within(screen.getByTestId('ws-sec-curve')).getByRole('button', { expanded: true });
+    fireEvent.click(toggle);
+    expect(screen.queryByLabelText(heightRe)).toBeNull();
+    fireEvent.click(within(screen.getByTestId('ws-sec-curve')).getByRole('button', { expanded: false }));
+    expect(screen.getByLabelText(heightRe)).toBeInTheDocument();
+  });
+
+  it('ô đang có hoạt hình vẫn hiện khi nhóm tắt (không giấu hoạt hình của người dùng)', async () => {
+    await setup({ showCurve: false }, { curveHeight: { keys: [{ at: { sec: 0 }, value: 20 }] } });
+    expect(screen.getByLabelText(heightRe)).toBeInTheDocument();
   });
 });

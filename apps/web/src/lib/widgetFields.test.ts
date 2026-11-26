@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ADDABLE_WIDGETS, widgetDefaults, sanitizeScene, SCENE_SCHEMA_VERSION } from '@dawviz/render-core';
-import { SETTINGS_EXEMPT, WIDGET_FIELDS, advancedEdited, fieldChanged, getIn, resetPatch, setIn, withNestedDefaults, type FieldDef } from './widgetFields.ts';
+import { SETTINGS_EXEMPT, WIDGET_FIELDS, WIDGET_SECTIONS, fieldGroups, sectionOn, advancedEdited, fieldChanged, getIn, resetPatch, setIn, withNestedDefaults, type FieldDef } from './widgetFields.ts';
 
 type Obj = Record<string, unknown>;
 const types = ADDABLE_WIDGETS.filter((t) => t !== 'PIANO_ROLL');
@@ -90,4 +90,42 @@ test('mặc định của loại qua lược đồ không cảnh báo (mốc ↺
     const { warnings } = sanitizeScene({ schemaVersion: SCENE_SCHEMA_VERSION, canvas: {}, widgets: [{ id: 'w', type, properties: widgetDefaults(type), layout: { x: 0, y: 0, width: 100, height: 50 } }] });
     assert.deepEqual(warnings, [], type);
   }
+});
+
+test('nhóm thiết lập (D-71): đường dẫn của nhóm có thật, không ô nào ở hai nhóm, ô tiêu đề là công tắc hoặc danh sách', () => {
+  for (const [type, secs] of Object.entries(WIDGET_SECTIONS)) {
+    const paths = new Set((WIDGET_FIELDS[type as keyof typeof WIDGET_FIELDS] ?? []).map((f) => f.path.join('.')));
+    const seen = new Set<string>();
+    for (const s of secs ?? []) {
+      for (const p of s.fields) { assert.ok(paths.has(p), `${type}.${s.id}: "${p}" không có trong WIDGET_FIELDS`); assert.ok(!seen.has(p), `${type}: "${p}" ở hai nhóm`); seen.add(p); }
+      if (s.head) {
+        assert.ok(s.fields.includes(s.head), `${type}.${s.id}: ô tiêu đề phải thuộc nhóm`);
+        const f = WIDGET_FIELDS[type as keyof typeof WIDGET_FIELDS]!.find((x) => x.path.join('.') === s.head)!;
+        assert.ok(f.kind === 'check' || f.kind === 'choice' || f.kind === 'select', `${type}.${s.id}: ô tiêu đề là ${f.kind}`);
+        assert.ok(f.kind === 'check' || !!s.on, `${type}.${s.id}: danh sách ở tiêu đề cần \`on\` (giá trị nào là tắt)`);
+      }
+    }
+    const groups = fieldGroups(type as keyof typeof WIDGET_FIELDS);
+    assert.equal(groups.reduce((n, g) => n + g.fields.length + (g.head ? 1 : 0), 0), paths.size + (WIDGET_FIELDS[type as keyof typeof WIDGET_FIELDS]!.length - paths.size), `${type}: chia nhóm làm mất hoặc lặp ô`);
+  }
+});
+
+test('nhóm có công tắc: sectionOn theo ô tiêu đề; danh sách có "Tắt" theo \`on\`', () => {
+  const curve = WIDGET_SECTIONS.TEMPO_INFO!.find((s) => s.id === 'curve')!;
+  assert.equal(sectionOn(curve, { showCurve: true }), true);
+  assert.equal(sectionOn(curve, { showCurve: false }), false);
+  const aura = WIDGET_SECTIONS.NOTATION!.find((s) => s.id === 'aura')!;
+  assert.equal(sectionOn(aura, { aura: 'OFF' }), false);
+  assert.equal(sectionOn(aura, { aura: 'BEAT' }), true);
+  const glow = WIDGET_SECTIONS.NOTATION!.find((s) => s.id === 'glow')!;
+  assert.equal(sectionOn(glow, {}), true, 'nhóm không có công tắc luôn bật (0 là tắt nằm ở chính ô số, D-71 quy tắc 1)');
+});
+
+test('quy tắc 2 (D-71): ô phụ của phát sáng/phóng to Bản nhạc ẩn khi ô chính là 0 hoặc 1', () => {
+  const nt = WIDGET_FIELDS.NOTATION!, at = (p: string) => nt.find((f) => f.path.join('.') === p)!;
+  const P = withNestedDefaults('NOTATION', widgetDefaults('NOTATION') as Obj);
+  assert.equal(at('glowSize').when!({ ...P, glow: 0 }), false);
+  assert.equal(at('glowSize').when!({ ...P, glow: 0.5 }), true);
+  assert.equal(at('zoomMode').when!({ ...P, zoom: 1 }), false);
+  assert.equal(at('zoomMode').when!({ ...P, zoom: 1.4 }), true);
 });

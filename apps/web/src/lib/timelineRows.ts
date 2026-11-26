@@ -3,6 +3,7 @@
 // khi đã animate (preset cũ). Nhóm "Thuộc tính widget": mỗi thuộc tính số/màu một dòng. Không DOM; test ở timelineRows.test.ts.
 import type { Animation, WidgetType } from '@dawviz/render-core';
 import { animFields, type AnimField } from './animateFields.ts';
+import { WIDGET_SECTIONS, sectionOf } from './widgetFields.ts';
 import { SAME_TIME, keyRef } from './timeline.ts';
 
 /** `transform` hoặc `props.<nhóm>` (nhóm thuộc tính widget, xem `propGroup`). */
@@ -54,9 +55,23 @@ export function timelineRows(type: WidgetType, animate: Readonly<Record<string, 
     if (r.legacy && !r.paths.some((p) => animate[p])) continue;
     out.push({ id: r.id, group: 'transform', labelKey: r.labelKey, paths: r.paths, fields: r.paths.map((p) => by.get(p)!) });
   }
-  for (const f of fields) if (!IN_TRANSFORM.has(f.path)) out.push({ id: f.path, group: `props.${propGroup(f.path)}`, labelKey: f.labelKey, paths: [f.path], fields: [f] });
+  // Nhóm: theo khai báo nhóm của mục Thiết lập (D-71) nếu có, không thì đoán theo đường dẫn. Thứ tự nhóm: như mục Thiết lập, rồi PROP_GROUPS.
+  const props = fields.filter((f) => !IN_TRANSFORM.has(f.path)).map((f) => ({ f, g: sectionOf(type, f.path) ?? propGroup(f.path) }));
+  const order = groupOrder(type);
+  props.sort((a, b) => order.indexOf(a.g) - order.indexOf(b.g));
+  for (const { f, g } of props) out.push({ id: f.path, group: `props.${g}`, labelKey: f.labelKey, paths: [f.path], fields: [f] });
   return out;
 }
+/** Thứ tự nhóm thuộc tính của loại widget: nhóm của mục Thiết lập trước (D-71), rồi các nhóm đoán theo đường dẫn. */
+export function groupOrder(type: WidgetType): string[] {
+  const own = (WIDGET_SECTIONS[type] ?? []).map((s) => s.id);
+  return [...own, ...PROP_GROUPS.filter((g) => !own.includes(g))];
+}
+/** Khoá i18n của tên nhóm: tên nhóm của mục Thiết lập (`web.ws.sec.*`) nếu có, không thì tên nhóm của Timeline. */
+export const groupLabelKey = (id: string, has: (k: string) => boolean): string => {
+  const g = id.startsWith('props.') ? id.slice(6) : id;
+  return id === 'transform' ? 'web.timeline.group.transform' : has(`web.ws.sec.${g}`) ? `web.ws.sec.${g}` : `web.timeline.group.${g}`;
+};
 /** Dòng chứa đường dẫn `path` (vd. layout.y → dòng Vị trí). */
 export const rowOfPath = (rows: readonly RowDef[], path: string): RowDef | undefined => rows.find((r) => r.paths.includes(path));
 

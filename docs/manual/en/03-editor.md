@@ -13,6 +13,7 @@ The screen has three parts: the frame in the middle, **Widget properties** on th
 - **Make the Timeline as tall as you like:** drag the border above the Timeline up or down; it goes up until only a small strip of the frame is left.
 - **Fold sections:** click a section title (for example **Position and size**) to fold it away when you don't need it, click again to open it. The right column gets much shorter. The app remembers which sections are folded, on the Preview tab too.
 - **Find a setting:** type in the **Find a setting…** box at the top of Widget properties to keep only the sections and boxes whose names match, Advanced ones included while in Basic mode; folded sections open when they have a match (see [Contents](README.md)). Esc clears the text.
+- **Groups in Settings:** the settings of many widgets are split into named groups (for example **Tempo curve**, **Beat flash**, **Aura**, **Playhead**); click a group name to fold or unfold it, remembered per widget type. A tick box or list to the right of a group name switches the whole group: turn it off (or choose **Off**/**None**) and the boxes in the group hide, keeping their values. A box where 0 already means off (such as **Glow**) has no separate switch; its extra boxes show only when the value is above 0. A box with keyframes always shows. The keyframe Timeline uses the same groups.
 - Panel sizes and states are remembered in this browser. On screens narrower than 1024 points the panels stack as before.
 
 ## Selecting

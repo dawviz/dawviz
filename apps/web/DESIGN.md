@@ -246,6 +246,10 @@ Mọi component dùng token màu qua lớp Tailwind (`bg-surface`, `text-muted`,
 ### Mục inspector (`InspectorSection`)
 Tiêu đề là một nút gấp/mở: mũi tên 12 px `text-faint` (xoay 90° khi mở) · số mục `01` 12 px `text-muted` · tên 15 px đậm 600, xuống dòng được. Gấp thì thân mục không vẽ; trạng thái nhớ theo id (`lib/sectionState.ts`), dùng chung Xem trước và Editor. Ngăn bằng kẻ `line` 1 px dưới mỗi mục.
 
+### Nhóm thiết lập (`FieldSection` trong `WidgetSettings.tsx`, D-71)
+
+Tiêu đề con trong mục Thiết lập: kẻ `line` 1 px phía trên, chữ 12 px `font-medium` `fg`, mũi tên gấp như `InspectorSection` (nhớ theo `<loại widget>.<nhóm>` bằng `sectionState`). Điều khiển của cả nhóm đứng bên phải tiêu đề: ô tick (bool) hoặc `Select` gọn tối đa 8.5rem (danh sách có giá trị Tắt), kèm ↺. Nhóm tắt hoặc không còn ô hiện: chỉ còn dòng tiêu đề, không mũi tên. Khai báo ở `WIDGET_SECTIONS` (`lib/widgetFields.ts`); Timeline keyframe dùng cùng nhóm.
+
 ### Tìm thiết lập (`SettingsSearchBox`, `SearchEmpty`, T-60)
 Một dải ngay dưới thanh tiêu đề của inspector Xem trước và bảng Thuộc tính Editor: kẻ `line` dưới, lề ngang 16 px, ô `.field` cao 24 px chữ 12 px. Câu tìm ở `SettingsSearchContext` (App giữ, không lưu). Khi đang tìm: `InspectorSection` mở thân (không đổi trạng thái gấp đã nhớ), ẩn cả mục (`hidden`) nếu tên mục và chữ trong thân không khớp, ẩn nút "Thêm tuỳ chọn"; tên mục khớp thì giữ cả mục. Mục Thiết lập widget lọc từng ô theo nhãn của `WIDGET_FIELDS`. Không tô màu nhấn cho kết quả (One Signal); không có gì khớp thì một dòng `text-muted` cuối bảng. So khớp bỏ dấu, không phân biệt hoa/thường (`lib/settingsSearch.ts`).
 

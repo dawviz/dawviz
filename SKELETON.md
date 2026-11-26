@@ -3787,6 +3787,8 @@ const PROP_GROUPS   // Nhóm thuộc tính widget theo thứ tự hiện trong T
 type PropGroup
 function propGroup(path: string): PropGroup   // Nhóm của một đường dẫn thuộc tính: theo tiền tố (keyboard.*, grid.*, animator.*…) rồi theo từ khoá ở tên cuối…
 function timelineRows(type: WidgetType, animate: Readonly<Record<string, Animation>> = {}): RowDef[]   // Dòng của một loại widget theo thứ tự hiện; `animate` để quyết định có hiện dòng Rộng/Cao (chỉ khi đã animate).
+function groupOrder(type: WidgetType): string[]   // Thứ tự nhóm thuộc tính của loại widget: nhóm của mục Thiết lập trước (D-71), rồi các nhóm đoán theo đường dẫn.
+const groupLabelKey = (id: string, has: (k: string) => boolean) =>   // Khoá i18n của tên nhóm: tên nhóm của mục Thiết lập (`web.ws.sec.*`) nếu có, không thì tên nhóm của Timeline.
 const rowOfPath = (rows: readonly RowDef[], path: string) =>   // Dòng chứa đường dẫn `path` (vd. layout.y → dòng Vị trí).
 interface VKey
 function rowKeys(row: RowDef, times: ReadonlyMap<string, readonly number[]>): VKey[]   // Gộp keyframe của các đường dẫn trong một dòng thành hình thoi: keyframe cách nhau ≤ SAME_TIME là một hình tho…
@@ -3921,8 +3923,14 @@ Bảng khai báo mục Thiết lập của từng loại widget (T-73 bổ sung,
 ```text
 type FieldKind
 interface FieldDef
+interface SectionDef   // Nhóm thiết lập (D-71, T-124): tiêu đề con gấp được trong mục Thiết lập và nhóm cùng tên trên Timeline keyfram…
 function withNestedDefaults(type: WidgetType, P0: Obj): Obj
 const WIDGET_FIELDS   // Thiết lập của từng loại, theo thứ tự hiển thị. Loại không có thiết lập: không có mặt.
+const WIDGET_SECTIONS   // Nhóm thiết lập theo loại widget (D-71). Loại chưa có ở đây: một danh sách phẳng như trước. Ô không thuộc nhóm…
+interface FieldGroup   // Một nhóm khi vẽ: `sec` vắng = các ô không thuộc nhóm nào (đứng đầu, không tiêu đề).
+function fieldGroups(type: WidgetType): FieldGroup[]   // Chia ô của loại widget thành nhóm theo WIDGET_SECTIONS (ô ngoài nhóm đứng đầu). Thứ tự ô trong nhóm theo WIDG…
+const sectionOf = (type: WidgetType, path: string) =>   // Nhóm của một đường dẫn thuộc tính (id nhóm), nếu loại widget có khai báo nhóm.
+function sectionOn(s: SectionDef, P: Obj): boolean   // Nhóm đang bật theo thuộc tính hiện tại (nhóm không có công tắc luôn bật).
 const SETTINGS_EXEMPT   // Thuộc tính KHÔNG nằm ở mục Thiết lập (kiểu chữ, căn lề ở mục Chữ; vài thuộc tính chưa có giao diện). Test dùn…
 const hasWidgetFields = (type: string) =>
 function getIn(o: unknown, path: readonly string[]): unknown
@@ -4162,4 +4170,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 11 thư mục src, 1905 ký hiệu công khai -->
+<!-- 11 thư mục src, 1913 ký hiệu công khai -->

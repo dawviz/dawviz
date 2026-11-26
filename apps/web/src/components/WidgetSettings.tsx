@@ -11,7 +11,9 @@ import { radioKeys, radioTab } from '../lib/a11y.ts';
 import { clickIsKeyboard, startPaintDrag } from '../lib/paintDrag.ts';
 import { GestureContext } from '../lib/storeReact.ts';
 import { laneLabel, type LaneChoice } from '../lib/animateFields.ts';
-import { TRACK_WIDGETS, WIDGET_FIELDS, fieldChanged, getIn, hasWidgetFields, resetPatch, setIn, withNestedDefaults, type FieldDef } from '../lib/widgetFields.ts';
+import { TRACK_WIDGETS, fieldChanged, fieldGroups, getIn, hasWidgetFields, resetPatch, sectionOn, setIn, withNestedDefaults, type FieldDef, type FieldGroup } from '../lib/widgetFields.ts';
+import { useSectionOpen } from '../lib/sectionState.ts';
+import { ChevronRight } from './Icons.tsx';
 import { NumberField } from './NumberField.tsx';
 import { ResetButton } from './Inspector.tsx';
 import { Select } from './Select.tsx';
@@ -44,7 +46,10 @@ export interface WidgetSettingsProps {
 export function WidgetSettings({ widget, advanced, disabled, reference, onProps, tracks, onTracks, lanes = [] }: WidgetSettingsProps) {
   const { i18n } = useI18n();
   const gesture = useContext(GestureContext);
-  const P = withNestedDefaults(widget.type, widget.properties as Obj), fields = WIDGET_FIELDS[widget.type] ?? [];
+  const P = withNestedDefaults(widget.type, widget.properties as Obj), groups = fieldGroups(widget.type);
+  // Ô đang có keyframe/binding/biểu thức luôn hiện, kể cả khi điều kiện hiện hay công tắc nhóm đang tắt (D-71 quy tắc 5): không giấu hoạt hình của người dùng.
+  const animated = new Set(Object.keys(widget.animate ?? {}));
+  const isAnim = (f: FieldDef) => animated.has(f.path.join('.'));
   const T = (k: string) => i18n.t(`web.ws.${k}`);
   const names = placeholderNames(widget.type);
   const hint = i18n.t('web.ws.placeholders', { list: names.map((k) => `{${k}}`).join(' ') });
@@ -118,10 +123,44 @@ export function WidgetSettings({ widget, advanced, disabled, reference, onProps,
     }
   };
 
+  /** Ô hiện được: khớp câu tìm (đang tìm) hoặc đúng chế độ Cơ bản/Nâng cao; điều kiện `when` đúng hoặc ô đang có hoạt hình. */
+  const shown = (f: FieldDef, all = false) => (all || (q ? matchesQuery(name(f), q) : !f.adv || advanced)) && ((f.when?.(P) ?? true) || isAnim(f));
+  /** Ô đứng ở tiêu đề nhóm: ô tick gọn hoặc danh sách thả xuống, kèm ↺. */
+  const headControl = (f: FieldDef, title: string) => {
+    const v = getIn(P, f.path);
+    if (f.kind === 'check') return (
+      <span className="flex items-center gap-1">
+        <input type="checkbox" checked={!!v} disabled={disabled} aria-label={i18n.t('web.ws.secToggle', { name: title })} onChange={(e) => set(f)(e.target.checked)} data-testid={f.testId ?? `ws-sec-toggle-${f.path.join('.')}`} />
+        {resetBtn(f)}
+      </span>);
+    return (
+      <span className="flex items-center gap-1">
+        <Select value={String(v)} disabled={disabled} aria-label={name(f)} onChange={(e) => set(f)(f.options!.find((o) => String(o) === e.target.value) ?? e.target.value)} className="py-0.5 pl-2 text-xs" wrapClassName="min-w-0 max-w-[8.5rem]" data-testid={f.testId ?? `ws-sec-head-${f.path.join('.')}`}>
+          {f.options!.map((o) => <option key={o} value={o}>{f.raw ? String(o) : i18n.t(`${f.prefix}${o}`)}</option>)}
+        </Select>
+        {resetBtn(f)}
+      </span>);
+  };
+  const group = (g: FieldGroup) => {
+    if (!g.sec) return g.fields.filter((f) => shown(f)).map(control);
+    const title = i18n.t(`web.ws.sec.${g.sec.id}`);
+    const titleHit = !!q && matchesQuery(title, q); // khớp tên nhóm: hiện cả nhóm
+    const on = sectionOn(g.sec, P);
+    const body = g.fields.filter((f) => (on || isAnim(f)) && shown(f, titleHit));
+    const headShown = !!g.head && (titleHit || shown(g.head));
+    if (!body.length && !headShown) return null;
+    return (
+      <FieldSection key={g.sec.id} id={`ws.${widget.type}.${g.sec.id}`} title={title} forceOpen={!!q} hasBody={body.length > 0}
+        head={g.head && headShown ? headControl(g.head, title) : null}>
+        {body.map(control)}
+      </FieldSection>
+    );
+  };
+
   return (
     <div className="space-y-2.5" data-testid="widget-settings">
       {widget.type === 'NOTATION' && !q && <NotationStatus id={widget.id} />}
-      {fields.filter((f) => (q ? matchesQuery(name(f), q) : !f.adv || advanced) && (f.when?.(P) ?? true)).map(control)}
+      {groups.map(group)}
       {showTracks && <TrackPicker widget={widget} tracks={tracks!} disabled={disabled} onTracks={onTracks!} />}
     </div>
   );
@@ -282,6 +321,33 @@ function AssetField({ label, value, disabled, onChange, testId, reset }: { label
       <button type="button" className="btn-ghost border border-control" disabled={disabled || busy} onClick={() => input.current?.click()} data-testid="ws-asset-pick">{busy ? i18n.t('web.asset.loading') : i18n.t('web.asset.pick')}</button>
       {err && <p role="alert" className="text-xs leading-snug text-danger" data-testid="ws-asset-error">{i18n.t(`errors.${err}`)}</p>}
       {!known && <p className="text-xs leading-snug text-warning">{i18n.t('web.asset.missingHint')}</p>}
+    </div>
+  );
+}
+
+/**
+ * Một nhóm thiết lập (D-71): tiêu đề con gấp được (nhớ theo `<loại widget>.<nhóm>`), điều khiển ở tiêu đề (công tắc hoặc danh sách có "Tắt") đứng bên phải.
+ * Nhóm tắt (hoặc không còn ô nào hiện) chỉ còn dòng tiêu đề, không có mũi tên gấp. Đang tìm thiết lập thì luôn mở.
+ */
+function FieldSection({ id, title, head, hasBody, forceOpen, children }: { id: string; title: string; head: React.ReactNode; hasBody: boolean; forceOpen: boolean; children: React.ReactNode }) {
+  const { i18n } = useI18n();
+  const [open0, setOpen] = useSectionOpen(id);
+  const open = (open0 || forceOpen) && hasBody;
+  const bodyId = useId();
+  return (
+    <div className="space-y-2 border-t border-line pt-2" data-testid={`ws-sec-${id.split('.').pop()}`} data-collapsed={open ? undefined : true}>
+      <div className="flex min-h-[var(--hit)] items-center gap-2">
+        {hasBody ? (
+          <button type="button" aria-expanded={open} aria-controls={bodyId} onClick={() => setOpen(!open0)}
+            title={i18n.t(open ? 'web.section.collapse' : 'web.section.expand', { name: title })}
+            className="group -mx-1 flex min-h-[var(--hit)] min-w-0 flex-1 items-center gap-1.5 rounded px-1 text-left text-xs font-medium text-fg transition hover:bg-raised">
+            <ChevronRight className={`h-3 w-3 shrink-0 text-faint transition-transform duration-150 group-hover:text-fg ${open ? 'rotate-90' : ''}`} />
+            <span className="min-w-0 flex-1 break-words leading-tight">{title}</span>
+          </button>
+        ) : <span className="min-w-0 flex-1 break-words pl-[1.125rem] text-xs font-medium leading-tight text-fg">{title}</span>}
+        {head}
+      </div>
+      {open && <div id={bodyId} className="space-y-2.5">{children}</div>}
     </div>
   );
 }
