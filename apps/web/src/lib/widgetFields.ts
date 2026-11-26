@@ -44,10 +44,19 @@ export interface SectionDef { id: string; fields: readonly string[]; head?: stri
 const SEC = (id: string, fields: readonly string[], rest: Omit<SectionDef, 'id' | 'fields'> = {}): SectionDef => ({ id, fields, ...rest });
 
 const L = (path: string[], kind: FieldKind, label: string, rest: Partial<FieldDef> = {}): FieldDef => ({ path, kind, label, ...rest });
-/** Kiểu phổ đọc dải tần tại t (cột, vùng, đường, chấm). */
-const spectral = (P: Obj) => P.style === undefined || ['BARS', 'AREA', 'LINE', 'DOTS'].includes(P.style as string);
+/** Kiểu của Phổ tần (vắng = Cột). */
+const spStyle = (P: Obj) => String(P.style ?? 'BARS');
+/** Kiểu phổ đọc dải tần tại t (cột, vùng, đường, chấm): dùng thang, dải Hz, attack/release, đảo chiều. */
+const spectral = (P: Obj) => ['BARS', 'AREA', 'LINE', 'DOTS'].includes(spStyle(P));
 /** Phổ tần: nhóm Đỉnh (T-130) chỉ hiện khi kiểu Cột/Chấm và công tắc `peakCap` bật (D-71). */
-const peakOn = (P: Obj) => (P.style === undefined || P.style === 'BARS' || P.style === 'DOTS') && !!P.peakCap;
+const peakOn = (P: Obj) => (spStyle(P) === 'BARS' || spStyle(P) === 'DOTS') && !!P.peakCap;
+/** Đồng hồ luôn vẽ theo đường thẳng (bỏ qua hình dạng): góc và chiều dài dùng được, bán kính/góc bắt đầu thì không. */
+const spOnCircle = (P: Obj) => P.shape === 'CIRCLE' && spStyle(P) !== 'METER';
+const spOnLine = (P: Obj) => !spOnCircle(P);
+/** Kiểu tô theo dải màu hai đầu (Vùng, Đường, Dao động ký, Sóng âm chỉ dùng một màu). */
+const spGradient = (P: Obj) => ['BARS', 'DOTS', 'METER'].includes(spStyle(P));
+/** Kiểu đọc mức theo sàn/trần dB. */
+const spLevels = (P: Obj) => spectral(P) || spStyle(P) === 'METER';
 const ta = (P: Obj) => (P.animator ?? {}) as Obj;
 const taOn = (P: Obj) => !!ta(P).enabled;
 const taCustom = (P: Obj) => taOn(P) && ta(P).effect === 'custom';
@@ -81,7 +90,8 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
       L(['lines', k, 'template'], 'text', 'template', { group: `line.${k}`, adv: true, when: (P) => !!((P.lines as Obj)[k] as Obj).enabled }),
     ]),
     L(['decimals'], 'num', 'decimals', { adv: true, num: { min: 0, max: 4, step: 1 } }),
-    L(['lineHeight'], 'num', 'lineHeight', { adv: true, num: { min: 1, max: 3, step: 0.05 } }),
+    // Khoảng cách dòng chỉ có tác dụng khi bật từ hai dòng trở lên (D-72).
+    L(['lineHeight'], 'num', 'lineHeight', { adv: true, when: (P) => LINES.filter((k) => !!(((P.lines as Obj | undefined)?.[k] ?? {}) as Obj).enabled).length >= 2, num: { min: 1, max: 3, step: 0.05 } }),
   ],
   LIVE_TRIGGER: [
     L(['mode'], 'choice', 'layout', { options: ['list', 'inline'], prefix: 'web.ws.mode.' }),
@@ -118,42 +128,44 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['alwaysShowNotes'], 'check', 'alwaysShowNotes', { testId: 'ws-always-notes' }),
     L(['unrecognized'], 'select', 'unrecognized', { options: ['nc', 'notes'], prefix: 'web.ws.unrecognized.' }),
     L(['noChordText'], 'text', 'noChordText', { adv: true, when: (P) => P.unrecognized === 'nc', text: { max: 20 } }),
-    L(['notesTemplate'], 'text', 'notesTemplate', { adv: true }),
+    L(['notesTemplate'], 'text', 'notesTemplate', { adv: true, when: (P) => !!P.alwaysShowNotes || P.unrecognized === 'notes' }),
   ],
+  // Phổ tần (T-53, T-130): nhóm Kiểu, Hình học, Cột, Đỉnh, Màu, Phản hồi (D-71). Ô không có tác dụng với kiểu/hình đang chọn thì ẩn hẳn (D-72);
+  // mỗi điều kiện có test trong packages/render-core/test/inert-props.test.ts (đổi giá trị không đổi chuỗi hình).
   AUDIO_SPECTRUM: [
     L(['style'], 'select', 'spStyle', { options: SPECTRUM_STYLES, prefix: 'web.ws.spStyle.', testId: 'ws-sp-style' }),
-    L(['shape'], 'choice', 'spShape', { options: ['LINE', 'CIRCLE'], prefix: 'web.ws.shape.', testId: 'ws-sp-shape' }),
-    L(['bars'], 'num', 'spBars', { when: (P) => P.style !== 'OSCILLOSCOPE' && P.style !== 'METER', num: { min: 8, max: 256, step: 1 } }),
-    L(['scale'], 'choice', 'spScale', { adv: true, when: (P) => spectral(P), options: ['LOG', 'LINEAR', 'MEL'], prefix: 'web.ws.spScale.' }),
-    L(['peakCap'], 'check', 'spPeakCap', { when: (P) => P.style === 'BARS' || P.style === 'DOTS' }),
+    L(['bars'], 'num', 'spBars', { when: (P) => spStyle(P) !== 'OSCILLOSCOPE' && spStyle(P) !== 'METER', num: { min: 8, max: 256, step: 1 } }),
+    L(['scale'], 'choice', 'spScale', { adv: true, when: spectral, options: ['LOG', 'LINEAR', 'MEL'], prefix: 'web.ws.spScale.' }),
+    L(['scopeMs'], 'num', 'spScopeMs', { when: (P) => spStyle(P) === 'OSCILLOSCOPE', num: { min: 5, max: 500, step: 1, range: [5, 100] } }),
+    L(['shape'], 'choice', 'spShape', { when: (P) => spStyle(P) !== 'METER', options: ['LINE', 'CIRCLE'], prefix: 'web.ws.shape.', testId: 'ws-sp-shape' }),
+    L(['angle'], 'num', 'spAngle', { when: spOnLine, num: { min: -360, max: 360, step: 1, range: [-180, 180] } }),
+    L(['length'], 'num', 'spLength', { when: spOnLine, num: { min: 16, max: 8192, step: 1, range: [100, 1920] } }),
+    L(['radius'], 'num', 'spRadius', { when: spOnCircle, num: { min: 0, max: 4096, step: 1, range: [20, 600] } }),
+    L(['startAngle'], 'num', 'spStartAngle', { adv: true, when: spOnCircle, num: { min: -360, max: 360, step: 1, range: [-180, 180] } }),
+    L(['thickness'], 'num', 'spThickness', { num: { min: 1, max: 4096, step: 1, range: [10, 600] } }),
+    L(['mirror'], 'check', 'spMirror', { adv: true, when: (P) => spStyle(P) !== 'METER' && (!spOnCircle(P) || spStyle(P) === 'BARS') }),
+    L(['reverse'], 'check', 'spReverse', { adv: true, when: spectral }),
+    L(['barWidth'], 'num', 'spBarWidth', { adv: true, when: (P) => spStyle(P) !== 'AREA' && spStyle(P) !== 'METER', num: { min: 0.1, max: 1, step: 0.05 } }),
+    L(['roundness'], 'num', 'spRoundness', { adv: true, when: (P) => ['BARS', 'WAVEFORM', 'METER'].includes(spStyle(P)), num: { min: 0, max: 1, step: 0.05 } }),
+    L(['minLen'], 'num', 'spMinLen', { adv: true, when: (P) => spStyle(P) !== 'OSCILLOSCOPE' && spStyle(P) !== 'METER', num: { min: 0, max: 100, step: 1, range: [0, 20] } }),
+    L(['peakCap'], 'check', 'spPeakCap', { when: (P) => spStyle(P) === 'BARS' || spStyle(P) === 'DOTS' }),
     L(['capFall'], 'num', 'spCapFall', { adv: true, when: peakOn, num: { min: 0.05, max: 10, step: 0.05, range: [0.1, 3] } }),
     L(['peakStyle'], 'choice', 'spPeakStyle', { when: peakOn, options: PEAK_STYLES, prefix: 'web.ws.spPeakStyle.' }),
     L(['peakHold'], 'num', 'spPeakHold', { adv: true, when: peakOn, num: { min: 0, max: 5, step: 0.05, range: [0, 2] } }),
     L(['peakGravity'], 'num', 'spPeakGravity', { adv: true, when: peakOn, num: { min: 0, max: 20, step: 0.1, range: [0, 8] } }),
     L(['peakColor'], 'colorOpt', 'spPeakColor', { adv: true, when: peakOn }),
-    L(['scopeMs'], 'num', 'spScopeMs', { when: (P) => P.style === 'OSCILLOSCOPE', num: { min: 5, max: 500, step: 1, range: [5, 100] } }),
-    L(['playedColor'], 'color', 'spPlayed', { when: (P) => P.style === 'WAVEFORM' || P.style === 'METER' }),
-    L(['angle'], 'num', 'spAngle', { when: (P) => P.shape === 'LINE', num: { min: -360, max: 360, step: 1, range: [-180, 180] } }),
-    L(['length'], 'num', 'spLength', { when: (P) => P.shape === 'LINE', num: { min: 16, max: 8192, step: 1, range: [100, 1920] } }),
-    L(['radius'], 'num', 'spRadius', { when: (P) => P.shape === 'CIRCLE', num: { min: 0, max: 4096, step: 1, range: [20, 600] } }),
-    L(['thickness'], 'num', 'spThickness', { num: { min: 1, max: 4096, step: 1, range: [10, 600] } }),
     L(['color'], 'color', 'spColor'),
-    L(['mirror'], 'check', 'spMirror', { adv: true }),
-    L(['reverse'], 'check', 'spReverse', { adv: true }),
-    L(['startAngle'], 'num', 'spStartAngle', { adv: true, when: (P) => P.shape === 'CIRCLE', num: { min: -360, max: 360, step: 1, range: [-180, 180] } }),
-    L(['colorMode'], 'choice', 'spColorMode', { adv: true, options: ['SOLID', 'GRADIENT'], prefix: 'web.ws.colorMode.' }),
-    L(['colorB'], 'color', 'spColorB', { adv: true, when: (P) => P.colorMode === 'GRADIENT' }),
-    L(['barWidth'], 'num', 'spBarWidth', { adv: true, num: { min: 0.1, max: 1, step: 0.05 } }),
-    L(['roundness'], 'num', 'spRoundness', { adv: true, num: { min: 0, max: 1, step: 0.05 } }),
-    L(['minLen'], 'num', 'spMinLen', { adv: true, num: { min: 0, max: 100, step: 1, range: [0, 20] } }),
-    L(['minHz'], 'num', 'spMinHz', { adv: true, num: { min: 20, max: 20000, step: 10, range: [20, 2000] } }),
-    L(['maxHz'], 'num', 'spMaxHz', { adv: true, num: { min: 20, max: 20000, step: 100, range: [1000, 20000] } }),
-    L(['attackMs'], 'num', 'spAttack', { adv: true, num: { min: 0, max: 1000, step: 5, range: [0, 300] } }),
-    L(['releaseMs'], 'num', 'spRelease', { adv: true, num: { min: 0, max: 3000, step: 10, range: [0, 1000] } }),
-    L(['floorDb'], 'num', 'spFloorDb', { adv: true, num: { min: -80, max: -10, step: 1 } }),
-    L(['ceilDb'], 'num', 'spCeilDb', { adv: true, num: { min: -60, max: 0, step: 1 } }),
+    L(['colorMode'], 'choice', 'spColorMode', { adv: true, when: spGradient, options: ['SOLID', 'GRADIENT'], prefix: 'web.ws.colorMode.' }),
+    L(['colorB'], 'color', 'spColorB', { adv: true, when: (P) => spGradient(P) && P.colorMode === 'GRADIENT' }),
+    L(['playedColor'], 'color', 'spPlayed', { when: (P) => spStyle(P) === 'WAVEFORM' || spStyle(P) === 'METER' }),
     L(['opacity'], 'num', 'spOpacity', { adv: true, num: { min: 0, max: 1, step: 0.05 } }),
     L(['glow'], 'num', 'spGlow', { adv: true, num: { min: 0, max: 1, step: 0.05 } }),
+    L(['attackMs'], 'num', 'spAttack', { adv: true, when: spectral, num: { min: 0, max: 1000, step: 5, range: [0, 300] } }),
+    L(['releaseMs'], 'num', 'spRelease', { adv: true, when: spectral, num: { min: 0, max: 3000, step: 10, range: [0, 1000] } }),
+    L(['floorDb'], 'num', 'spFloorDb', { adv: true, when: spLevels, num: { min: -80, max: -10, step: 1 } }),
+    L(['ceilDb'], 'num', 'spCeilDb', { adv: true, when: spLevels, num: { min: -60, max: 0, step: 1 } }),
+    L(['minHz'], 'num', 'spMinHz', { adv: true, when: spectral, num: { min: 20, max: 20000, step: 10, range: [20, 2000] } }),
+    L(['maxHz'], 'num', 'spMaxHz', { adv: true, when: spectral, num: { min: 20, max: 20000, step: 100, range: [1000, 20000] } }),
   ],
   PARTICLES: [
     L(['perNote'], 'num', 'ptPerNote', { num: { min: 1, max: 24, step: 1 } }),
@@ -221,10 +233,11 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['perTrack'], 'check', 'inPerTrack', { when: (P) => P.mode === 'LEVEL' }),
     L(['decayMs'], 'num', 'inDecay', { when: (P) => P.mode === 'LEVEL', num: { min: 50, max: 5000, step: 10, range: [100, 2000] } }),
     L(['windowSec'], 'num', 'inVelWindow', { when: (P) => P.mode === 'HISTOGRAM', num: { min: 1, max: 120, step: 1, range: [2, 30] } }),
-    L(['colorMode'], 'choice', 'inColorMode', { options: ['TRACK', 'SOLID'], prefix: 'web.ws.inColor.' }),
-    L(['color'], 'color', 'inColor', { when: (P) => P.colorMode === 'SOLID' || P.mode === 'HISTOGRAM' }),
+    // Biểu đồ phân bố chỉ dùng một màu; một cột chung (không tách track) dùng màu riêng trừ khi chỉ có một track, nên vẫn hiện cả hai.
+    L(['colorMode'], 'choice', 'inColorMode', { when: (P) => P.mode !== 'HISTOGRAM', options: ['TRACK', 'SOLID'], prefix: 'web.ws.inColor.' }),
+    L(['color'], 'color', 'inColor', { when: (P) => P.colorMode === 'SOLID' || P.mode === 'HISTOGRAM' || !P.perTrack }),
     L(['bins'], 'num', 'inBins', { adv: true, when: (P) => P.mode === 'HISTOGRAM', num: { min: 4, max: 16, step: 1 } }),
-    L(['gap'], 'num', 'inGap', { adv: true, num: { min: 0, max: 40, step: 1, range: [0, 16] } }),
+    L(['gap'], 'num', 'inGap', { adv: true, when: (P) => P.mode === 'HISTOGRAM' || !!P.perTrack, num: { min: 0, max: 40, step: 1, range: [0, 16] } }),
     L(['trackColor'], 'colorOpt', 'inBackColor', { adv: true }),
     L(['radius'], 'num', 'radius', { adv: true, num: { min: 0, max: 50, step: 1, range: [0, 12] } }),
   ],
@@ -291,7 +304,7 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['showBars'], 'check', 'dgShowBars'),
     L(['romanStyle'], 'choice', 'inRomanStyle', { options: ['SUFFIX', 'CASE'], prefix: 'web.ws.inRomanStyle.' }),
     L(['labelAlign'], 'choice', 'dgLabelAlign', { options: ['START', 'CENTER', 'END'], prefix: 'web.ws.dgLabelAlign.' }),
-    L(['labelSticky'], 'check', 'dgLabelSticky'),
+    L(['labelSticky'], 'check', 'dgLabelSticky', { when: (P) => P.labelAlign !== 'END' }),
     L(['accentColor'], 'color', 'dgAccent'),
     L(['playheadRatio'], 'num', 'dgPlayhead', { adv: true, num: { min: 0, max: 1, step: 0.01 } }),
     L(['detailColor'], 'color', 'dgDetailColor', { adv: true, when: (P) => !!P.showDetail }),
@@ -324,7 +337,7 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['activeScale'], 'num', 'dtActiveScale', { adv: true, num: { min: 1, max: 3, step: 0.1 } }),
     L(['playheadRatio'], 'num', 'dgPlayhead', { adv: true, num: { min: 0, max: 1, step: 0.01 } }),
     L(['playheadColor'], 'colorOpt', 'inPlayheadColor', { adv: true }),
-    L(['playheadWidth'], 'num', 'inPlayheadWidth', { adv: true, num: { min: 0, max: 10, step: 0.5 } }),
+    L(['playheadWidth'], 'num', 'inPlayheadWidth', { adv: true, when: (P) => !!P.playheadColor, num: { min: 0, max: 10, step: 0.5 } }),
   ],
   ARRANGEMENT: [
     L(['cols'], 'num', 'inCols', { num: { min: 16, max: 600, step: 4, range: [32, 300] } }),
@@ -332,15 +345,15 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['color'], 'color', 'inColor', { when: (P) => P.colorMode === 'SOLID' }),
     L(['playheadColor'], 'colorOpt', 'inPlayheadColor'),
     L(['upcomingAlpha'], 'num', 'inUpcomingAlpha', { adv: true, num: { min: 0, max: 1, step: 0.05 } }),
-    L(['playheadWidth'], 'num', 'inPlayheadWidth', { adv: true, num: { min: 0, max: 20, step: 0.5 } }),
+    L(['playheadWidth'], 'num', 'inPlayheadWidth', { adv: true, when: (P) => !!P.playheadColor, num: { min: 0, max: 20, step: 0.5 } }),
     L(['rowGap'], 'num', 'inRowGap', { adv: true, num: { min: 0, max: 20, step: 1 } }),
   ],
   DRUM_PAD: [
     L(['source'], 'choice', 'inPadSource', { options: ['DRUMS', 'ALL'], prefix: 'web.ws.inPadSource.' }),
     L(['cols'], 'num', 'inPadCols', { num: { min: 1, max: 8, step: 1 } }),
     L(['labels'], 'check', 'inPadLabels'),
-    L(['hitColor'], 'color', 'inHitColor', { when: (P) => P.colorMode === 'SOLID' }),
     L(['colorMode'], 'choice', 'inColorMode', { options: ['TRACK', 'SOLID'], prefix: 'web.ws.inColor.' }),
+    L(['hitColor'], 'color', 'inHitColor', { when: (P) => P.colorMode === 'SOLID' }),
     L(['padColor'], 'color', 'inPadColor', { adv: true }),
     L(['decayMs'], 'num', 'inDecay', { adv: true, num: { min: 50, max: 3000, step: 10, range: [100, 1000] } }),
     L(['maxPads'], 'num', 'inMaxPads', { adv: true, num: { min: 4, max: 32, step: 1 } }),
@@ -374,13 +387,15 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['playheadColor'], 'colorOpt', 'inPlayheadColor', { adv: true }),
   ],
   // Piano Roll: hình thức nốt, dải cao độ, bật bàn phím, vị trí vạch phát ở mục Hình thức (StylePanel); ở đây là phần còn lại (T-58, T-51, T-59, lưới ô nhịp).
+  // Hiện vạch phát và bàn phím còn là công tắc ở tiêu đề nhóm Vạch phát/Bàn phím (D-71), cùng thuộc tính với ô tick ở Hình thức.
   PIANO_ROLL: [
     L(['transition'], 'select', 'pianoTransition', { options: NOTE_TRANSITION_NAMES, prefix: 'web.ws.pianoTransition.' }),
     // Hướng chảy (T-59)
     L(['flowAngle'], 'num', 'prFlowAngle', { num: { min: 0, max: 360, step: 1 }, testId: 'ws-pr-angle' }),
     L(['flowMirror'], 'check', 'prFlowMirror'),
     L(['labelsUpright'], 'check', 'prLabelsUpright', { adv: true, when: (P) => Number(P.flowAngle) % 360 !== 0 }),
-    // Vạch phát (T-58)
+    // Vạch phát (T-58): công tắc ở tiêu đề nhóm (D-71)
+    L(['playheadVisible'], 'check', 'prPhVisible'),
     L(['playheadStyle'], 'select', 'prPhStyle', { when: (P) => !!P.playheadVisible, options: PLAYHEAD_STYLES, prefix: 'web.ws.prPhStyle.', testId: 'ws-pr-ph-style' }),
     L(['playheadWidth'], 'num', 'prPhWidth', { when: (P) => !!P.playheadVisible, num: { min: 0, max: 40, step: 0.5, range: [0, 12] } }),
     L(['playheadColor'], 'color', 'prPhColor', { when: (P) => !!P.playheadVisible }),
@@ -389,7 +404,8 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['playheadHitMs'], 'num', 'prPhHitMs', { adv: true, when: (P) => !!P.playheadVisible && P.playheadHit !== 'OFF', num: { min: 30, max: 2000, step: 10, range: [50, 800] } }),
     L(['playheadLength'], 'num', 'prPhLength', { adv: true, when: (P) => !!P.playheadVisible, num: { min: 0.05, max: 1, step: 0.05 } }),
     L(['playheadGlow'], 'num', 'prPhGlow', { adv: true, when: (P) => !!P.playheadVisible, num: { min: 0, max: 1, step: 0.05 } }),
-    // Bàn phím (T-51)
+    // Bàn phím (T-51): công tắc ở tiêu đề nhóm (D-71)
+    L(['keyboard', 'enabled'], 'check', 'prKbOn'),
     L(['keyboard', 'shape'], 'choice', 'prKbShape', { when: kbOn, options: KEYBOARD_SHAPES, prefix: 'web.ws.prKbShape.' }),
     L(['keyboard', 'labels'], 'select', 'prKbLabels', { when: kbOn, options: KEY_LABEL_MODES, prefix: 'web.ws.prKbLabels.', testId: 'ws-pr-kb-labels' }),
     L(['keyboard', 'labelOctave'], 'check', 'prKbLabelOctave', { when: (P) => kbOn(P) && kb(P).labels !== 'NONE' }),
@@ -515,6 +531,72 @@ export const WIDGET_SECTIONS: Readonly<Partial<Record<WidgetType, readonly Secti
   TEMPO_INFO: [
     SEC('curve', ['showCurve', 'curveHeight', 'curveColor'], { head: 'showCurve' }),
     SEC('flash', ['flash', 'flashColor', 'flashMs'], { head: 'flash' }),
+  ],
+  AUDIO_SPECTRUM: [
+    SEC('style', ['style', 'bars', 'scale', 'scopeMs']),
+    SEC('geometry', ['shape', 'angle', 'length', 'radius', 'startAngle', 'thickness', 'mirror', 'reverse']),
+    SEC('columns', ['barWidth', 'roundness', 'minLen']),
+    SEC('peaks', ['peakCap', 'capFall', 'peakStyle', 'peakHold', 'peakGravity', 'peakColor'], { head: 'peakCap' }),
+    SEC('colour', ['color', 'colorMode', 'colorB', 'playedColor', 'opacity', 'glow']),
+    SEC('response', ['attackMs', 'releaseMs', 'floorDb', 'ceilDb', 'minHz', 'maxHz']),
+  ],
+  PIANO_ROLL: [
+    SEC('flow', ['flowAngle', 'flowMirror', 'labelsUpright']),
+    SEC('playhead', ['playheadVisible', 'playheadStyle', 'playheadWidth', 'playheadColor', 'playheadArrows', 'playheadHit', 'playheadHitMs', 'playheadLength', 'playheadGlow'], { head: 'playheadVisible' }),
+    SEC('keyboard', ['keyboard.enabled', 'keyboard.shape', 'keyboard.labels', 'keyboard.labelOctave', 'keyboard.labelColor', 'keyboard.scale', 'keyboard.scaleColor', 'keyboard.scaleOpacity',
+      'keyboard.useTrackColor', 'keyboard.pressedColor', 'keyboard.whiteColor', 'keyboard.blackColor'], { head: 'keyboard.enabled' }),
+    SEC('grid', ['grid.bars', 'grid.beats', 'grid.numbers', 'grid.color', 'grid.opacity']),
+  ],
+  DEGREE: [
+    SEC('labels', ['labelAlign', 'labelSticky']),
+    SEC('detail', ['showDetail', 'detailColor'], { head: 'showDetail' }),
+    SEC('function', ['showFunction', 'tonicColor', 'subdominantColor', 'dominantColor'], { head: 'showFunction' }),
+    SEC('colour', ['accentColor', 'blockColor', 'activeTextColor', 'pastAlpha']),
+    SEC('blocks', ['radius', 'gap']),
+    SEC('playhead', ['playheadRatio', 'playheadColor']),
+  ],
+  DOTS: [
+    SEC('range', ['pitchRangeMode', 'pitchMin', 'pitchMax']),
+    SEC('cells', ['shape', 'dotSize', 'activeScale']),
+    SEC('colour', ['colorMode', 'color', 'emptyColor', 'emptyColorB', 'emptyAlpha', 'upcomingAlpha']),
+    SEC('playhead', ['playheadRatio', 'playheadColor', 'playheadWidth']),
+  ],
+  PANEL: [
+    SEC('frame', ['frame', 'frameColor', 'frameWidth', 'fillColor', 'fillAlpha'], { head: 'frame' }),
+    SEC('stats', [0, 1, 2, 3, 4, 5].flatMap((i) => [`stats.${i}.label`, `stats.${i}.value`])),
+  ],
+  VELOCITY: [
+    SEC('colour', ['colorMode', 'color', 'trackColor']),
+    SEC('columns', ['gap', 'radius']),
+  ],
+  DENSITY: [
+    SEC('colour', ['colorMode', 'color', 'minAlpha', 'playheadColor']),
+    SEC('polyphony', ['showPolyphony', 'polyTemplate'], { head: 'showPolyphony' }),
+  ],
+  ARRANGEMENT: [
+    SEC('colour', ['colorMode', 'color', 'upcomingAlpha']),
+    SEC('playhead', ['playheadColor', 'playheadWidth']),
+  ],
+  DRUM_PAD: [
+    SEC('colour', ['colorMode', 'hitColor', 'padColor']),
+    SEC('pads', ['gap', 'radius']),
+  ],
+  AUTOMATION: [
+    SEC('colour', ['colorMode', 'color', 'playheadColor']),
+    SEC('fill', ['fill', 'fillAlpha'], { head: 'fill' }),
+  ],
+  KEY_SCALE: [
+    SEC('confidence', ['showConfidence', 'confTemplate'], { head: 'showConfidence' }),
+  ],
+  LIVE_TRIGGER: [
+    SEC('trackName', ['showTrack', 'trackTemplate'], { head: 'showTrack' }),
+  ],
+  EVENT_COUNTER: [
+    ...LINES.map((k) => SEC(`line${k[0].toUpperCase()}${k.slice(1)}`, [`lines.${k}.enabled`, `lines.${k}.template`], { head: `lines.${k}.enabled` })),
+    SEC('format', ['decimals', 'lineHeight']),
+  ],
+  IMAGE: [
+    SEC('sprite', ['cols', 'rows', 'frames', 'fps', 'loop']),
   ],
   BAR_BEAT: [
     SEC('dots', ['dots', 'pulse', 'dotActiveColor', 'dotColor', 'dotSize'], { head: 'dots' }),

@@ -1041,6 +1041,46 @@ describe('Nhóm thiết lập (D-71, T-124)', () => {
   });
 });
 
+describe('Rà nhóm từng widget (T-125, D-71/D-72)', () => {
+  const setup = async (type: string, props: Record<string, unknown>) => {
+    const { WidgetSettings } = await import('../src/components/WidgetSettings.tsx');
+    const { createWidget, defaultScene } = await import('@dawviz/render-core');
+    const w = createWidget(defaultScene('16:9'), type as Parameters<typeof createWidget>[1]);
+    w.properties = { ...(w.properties as Record<string, unknown>), ...props } as typeof w.properties;
+    const patches: Record<string, unknown>[] = [];
+    wrap(<WidgetSettings widget={w} advanced onProps={(p) => patches.push(p)} />);
+    return patches;
+  };
+  const shapeRe = /^(Shape|Hình dạng)$/, radiusRe = /^(Circle radius|Bán kính vòng)$/, lengthRe = /^(Line length|Chiều dài đường)$/;
+
+  it('Phổ tần: nhóm Kiểu, Hình học, Cột, Đỉnh (công tắc), Màu, Phản hồi; hình Tròn có bán kính, không có chiều dài đường', async () => {
+    const patches = await setup('AUDIO_SPECTRUM', { style: 'BARS', shape: 'CIRCLE', peakCap: false });
+    for (const id of ['style', 'geometry', 'columns', 'peaks', 'colour', 'response']) expect(screen.getByTestId(`ws-sec-${id}`)).toBeInTheDocument();
+    expect(screen.getByRole('spinbutton', { name: radiusRe })).toBeInTheDocument();
+    expect(screen.queryByRole('spinbutton', { name: lengthRe })).toBeNull();
+    fireEvent.click(screen.getByTestId('ws-sec-toggle-peakCap'));
+    expect(patches.at(-1)).toEqual({ peakCap: true });
+  });
+
+  it('Phổ tần kiểu Đồng hồ: không có ô Hình dạng và bán kính (kể cả khi đang chọn Tròn), không có nhóm Đỉnh và Phản hồi chỉ còn sàn/trần dB', async () => {
+    await setup('AUDIO_SPECTRUM', { style: 'METER', shape: 'CIRCLE' });
+    expect(screen.queryByRole('radiogroup', { name: shapeRe })).toBeNull();
+    expect(screen.queryByRole('spinbutton', { name: radiusRe })).toBeNull();
+    expect(screen.getByRole('spinbutton', { name: lengthRe })).toBeInTheDocument(); // đồng hồ luôn vẽ theo đường thẳng
+    expect(screen.queryByTestId('ws-sec-peaks')).toBeNull();
+    expect(within(screen.getByTestId('ws-sec-response')).getAllByRole('spinbutton')).toHaveLength(2);
+  });
+
+  it('Piano Roll: tắt bàn phím ở tiêu đề nhóm thì ẩn ô của bàn phím; công tắc ghi keyboard.enabled', async () => {
+    const patches = await setup('PIANO_ROLL', {});
+    const kb = () => within(screen.getByTestId('ws-sec-keyboard'));
+    expect(kb().getAllByRole('combobox').length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByTestId('ws-sec-toggle-keyboard.enabled'));
+    expect((patches.at(-1)!.keyboard as { enabled: boolean }).enabled).toBe(false);
+    expect(screen.getByTestId('ws-sec-playhead')).toBeInTheDocument();
+  });
+});
+
 describe('useFlip (T-127): hàng trượt khi đổi thứ tự', () => {
   function List({ order }: { order: string[] }) {
     const ref = useRef<HTMLUListElement>(null);
