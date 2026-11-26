@@ -148,3 +148,61 @@ test('T-130 Phổ tần: ô của nhóm Đỉnh chỉ hiện khi kiểu Cột/Ch
   }
   assert.ok(shown(R).includes('peakCap'));
 });
+
+test('T-125: mọi loại có hơn 6 ô đều chia nhóm (D-71); loại ít ô để phẳng', () => {
+  // Thanh tiến độ: 7 ô, Cơ bản chỉ thấy 5, một cặp bật/tắt (Hiện thời gian + mẫu, ô mẫu đã ẩn khi tắt): để phẳng.
+  const FLAT = new Set(['PROGRESS_BAR']);
+  for (const [type, fields] of Object.entries(WIDGET_FIELDS)) {
+    if ((fields ?? []).length > 6 && !FLAT.has(type)) assert.ok(WIDGET_SECTIONS[type as keyof typeof WIDGET_SECTIONS]?.length, `${type}: ${fields!.length} ô mà chưa có nhóm`);
+  }
+});
+
+test('T-125: Piano Roll có công tắc Vạch phát và Bàn phím ở tiêu đề nhóm (ghi đúng thuộc tính bool sẵn có)', () => {
+  const secs = WIDGET_SECTIONS.PIANO_ROLL!, R = widgetDefaults('PIANO_ROLL') as Obj;
+  assert.equal(secs.find((s) => s.id === 'playhead')!.head, 'playheadVisible');
+  assert.equal(secs.find((s) => s.id === 'keyboard')!.head, 'keyboard.enabled');
+  const kb = secs.find((s) => s.id === 'keyboard')!;
+  assert.equal(sectionOn(kb, R), true);
+  assert.equal(sectionOn(kb, { ...R, keyboard: { ...(R.keyboard as Obj), enabled: false } }), false);
+  const groups = fieldGroups('PIANO_ROLL');
+  assert.equal(groups.find((g) => g.sec?.id === 'playhead')!.head!.path.join('.'), 'playheadVisible');
+});
+
+/** Ô hiện theo điều kiện `when` với thuộc tính mặc định + phần ghi đè (D-72; chứng minh không đổi hình ở packages/render-core/test/inert-props.test.ts). */
+const visible = (type: keyof typeof WIDGET_FIELDS, path: string, over: Obj): boolean => {
+  const f = WIDGET_FIELDS[type]!.find((x) => x.path.join('.') === path)!;
+  const P = { ...(withNestedDefaults(type, widgetDefaults(type) as Obj)), ...over };
+  return f.when?.(P) ?? true;
+};
+test('T-125 (D-72): ô không có tác dụng với kiểu đang chọn thì ẩn, có tác dụng thì hiện', () => {
+  const cases: [keyof typeof WIDGET_FIELDS, string, Obj[], Obj[]][] = [
+    ['AUDIO_SPECTRUM', 'shape', [{ style: 'METER' }], [{}]],
+    ['AUDIO_SPECTRUM', 'radius', [{ style: 'METER', shape: 'CIRCLE' }, { shape: 'LINE' }], [{ shape: 'CIRCLE' }]],
+    ['AUDIO_SPECTRUM', 'startAngle', [{ style: 'METER', shape: 'CIRCLE' }], [{ shape: 'CIRCLE' }]],
+    ['AUDIO_SPECTRUM', 'angle', [{ shape: 'CIRCLE' }], [{}, { style: 'METER', shape: 'CIRCLE' }]],
+    ['AUDIO_SPECTRUM', 'length', [{ shape: 'CIRCLE' }], [{}, { style: 'METER', shape: 'CIRCLE' }]],
+    ['AUDIO_SPECTRUM', 'mirror', [{ style: 'METER' }, { style: 'DOTS', shape: 'CIRCLE' }, { style: 'WAVEFORM', shape: 'CIRCLE' }], [{ shape: 'CIRCLE' }, { style: 'AREA' }]],
+    ['AUDIO_SPECTRUM', 'reverse', [{ style: 'OSCILLOSCOPE' }, { style: 'WAVEFORM' }, { style: 'METER' }], [{}, { style: 'LINE' }]],
+    ['AUDIO_SPECTRUM', 'colorMode', [{ style: 'AREA' }, { style: 'LINE' }, { style: 'OSCILLOSCOPE' }, { style: 'WAVEFORM' }], [{}, { style: 'DOTS' }, { style: 'METER' }]],
+    ['AUDIO_SPECTRUM', 'colorB', [{ style: 'AREA', colorMode: 'GRADIENT' }, { colorMode: 'SOLID' }], [{ colorMode: 'GRADIENT' }]],
+    ['AUDIO_SPECTRUM', 'barWidth', [{ style: 'AREA' }, { style: 'METER' }], [{}, { style: 'LINE' }]],
+    ['AUDIO_SPECTRUM', 'roundness', [{ style: 'AREA' }, { style: 'LINE' }, { style: 'DOTS' }, { style: 'OSCILLOSCOPE' }], [{}, { style: 'WAVEFORM' }, { style: 'METER' }]],
+    ['AUDIO_SPECTRUM', 'minLen', [{ style: 'OSCILLOSCOPE' }, { style: 'METER' }], [{}]],
+    ...(['attackMs', 'releaseMs', 'minHz', 'maxHz'] as const).map((p): [keyof typeof WIDGET_FIELDS, string, Obj[], Obj[]] => ['AUDIO_SPECTRUM', p, [{ style: 'OSCILLOSCOPE' }, { style: 'WAVEFORM' }, { style: 'METER' }], [{}]]),
+    ['AUDIO_SPECTRUM', 'floorDb', [{ style: 'OSCILLOSCOPE' }, { style: 'WAVEFORM' }], [{}, { style: 'METER' }]],
+    ['AUDIO_SPECTRUM', 'ceilDb', [{ style: 'OSCILLOSCOPE' }, { style: 'WAVEFORM' }], [{}, { style: 'METER' }]],
+    ['VELOCITY', 'colorMode', [{ mode: 'HISTOGRAM' }], [{ mode: 'LEVEL' }]],
+    ['VELOCITY', 'gap', [{ mode: 'LEVEL', perTrack: false }], [{ mode: 'LEVEL', perTrack: true }, { mode: 'HISTOGRAM' }]],
+    ['VELOCITY', 'color', [{ mode: 'LEVEL', perTrack: true, colorMode: 'TRACK' }], [{ mode: 'LEVEL', perTrack: false, colorMode: 'TRACK' }, { mode: 'HISTOGRAM' }]],
+    ['DEGREE', 'labelSticky', [{ labelAlign: 'END' }], [{ labelAlign: 'START' }, { labelAlign: 'CENTER' }]],
+    ['CHORD_DETECTION', 'notesTemplate', [{ alwaysShowNotes: false, unrecognized: 'nc' }], [{ alwaysShowNotes: true }, { alwaysShowNotes: false, unrecognized: 'notes' }]],
+    ['EVENT_COUNTER', 'lineHeight', [{ lines: { played: { enabled: true }, total: { enabled: false }, progress: { enabled: false }, tempo: { enabled: false } } }],
+      [{ lines: { played: { enabled: true }, total: { enabled: true }, progress: { enabled: false }, tempo: { enabled: false } } }]],
+    ['DOTS', 'playheadWidth', [{ playheadColor: '' }], [{ playheadColor: '#ffffff' }]],
+    ['ARRANGEMENT', 'playheadWidth', [{ playheadColor: '' }], [{ playheadColor: '#ffffff' }]],
+  ];
+  for (const [type, path, hidden, shown] of cases) {
+    for (const h of hidden) assert.equal(visible(type, path, h), false, `${type}.${path} phải ẩn khi ${JSON.stringify(h)}`);
+    for (const s of shown) assert.equal(visible(type, path, s), true, `${type}.${path} phải hiện khi ${JSON.stringify(s)}`);
+  }
+});
