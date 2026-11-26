@@ -146,7 +146,13 @@ The layer column is on the left, the time ruler and the bars on the right. Each 
 - **Fade in / fade out:** drag the small squares at the top corners of a bar (they show on hover or when the layer is selected).
 - **Bar names stay in view:** when you scroll or zoom the Timeline and a bar's start is off screen, the layer's name stays at the left edge of the view until the bar ends.
 - **Snapping:** while you drag, bars stick to the playhead, the edges of other bars, phases, chord changes (while the Music lanes are open) and the beats of the song. When you trim, a bar also sticks to the **length** of other bars: the label "= Progress (0:12)" means both layers are the same length at that point. Hold Alt to turn it off.
-- **Music lanes:** press **Music** under the Phases lane to show a chord lane and one note lane per track, to line bars up with the music. These lanes only show the music; the lock on each track is the one thing you can change here.
+- **Music lanes:** press **Music** under the Phases lane to show a chord lane and one note lane per track, to line bars up with the music. Each track row works like the track list on the Preview tab, and changes here show up in Preview too:
+  - **Reorder:** drag the six-dot handle up or down, or click the handle and press Alt+Up / Alt+Down.
+  - **Change the color:** click the color dot to open the color picker. The track's notes in the lane change color too.
+  - **Hide / solo:** click the eye to hide the track, click **S** to show only soloed tracks. A hidden track keeps its row (empty lane, name crossed out) so you can turn it back on.
+  - **Lock:** the lock at the end of the row (see **Lock a track** below).
+  - **Undo:** each change is one undo step (Ctrl+Z).
+- **Rows slide when reordered:** when you reorder layers or tracks, the rows slide to their new place instead of jumping. If your system is set to reduce motion, rows switch places at once.
 - **Split a layer at the playhead:** put the playhead over the bar, select the layer and press Ctrl+K (or the scissors button at the top left). The layer becomes two layers that meet there: the original keeps the part before, the copy (just above it) keeps the part after. Each has its own keyframes and is edited on its own.
 - **Move a bar to the playhead:** `[` moves the bar so it starts at the playhead, `]` so it ends there. Alt+`[` and Alt+`]` trim the start or end at the playhead.
 - **Nudge:** Alt+← / Alt+→ moves by 1/30 second; add Shift for 1 second.

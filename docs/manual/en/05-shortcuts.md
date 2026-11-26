@@ -76,6 +76,7 @@ When the Timeline has focus (click it first):
 | Alt+`[` / Alt+`]` | Trim the start / end at the playhead |
 | Alt+Left / Alt+Right | Move the selected layers one frame (add Shift: one second); on a phase marker: move the phase |
 | Up / Down | Select the layer above / below |
+| Alt+Up / Alt+Down (on a track handle in the Music lanes) | Reorder tracks (as on the Preview tab) |
 | Delete (on a phase marker) | Remove the phase |
 | Double-click the Phases lane | Add a phase there |
 | Ctrl + scroll | Zoom in / out horizontally |

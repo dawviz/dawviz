@@ -164,6 +164,8 @@ dawviz/
 │     │  │  ├─ exportWorker.ts
 │     │  │  ├─ externalMidi.test.ts
 │     │  │  ├─ externalMidi.ts
+│     │  │  ├─ flip.test.ts
+│     │  │  ├─ flip.ts
 │     │  │  ├─ fonts.ts
 │     │  │  ├─ graphEditor.test.ts
 │     │  │  ├─ graphEditor.ts
@@ -236,6 +238,7 @@ dawviz/
 │     │  │  ├─ trustedTypes.ts
 │     │  │  ├─ undoKeys.test.ts
 │     │  │  ├─ undoKeys.ts
+│     │  │  ├─ useFlip.ts
 │     │  │  ├─ useMenuPlacement.ts
 │     │  │  ├─ usePanelLayout.ts
 │     │  │  ├─ usePref.ts
@@ -2035,7 +2038,7 @@ Thẻ Editor (T-68, UI-DIRECTION 5.3 mục 3, SRS 5.3 Edit Mode): bố cục wid
 ```text
 interface EditorActions
 function useWidgetNames(widgets: readonly WidgetSpec[]): (id: string) => string   // Tên hiển thị của widget: tên loại theo ngôn ngữ, đánh số khi có nhiều widget cùng loại.
-function Editor({ proof = true, styleName, scene, root, compPath, onCompPath, flatFull, derived: derived0, ast, playback, fonts, advanced, actions, transport, active, widgetSections, layoutRef, background, trackLocks, onLockTrack }: Props)
+function Editor({ proof = true, styleName, scene, root, compPath, onCompPath, flatFull, derived: derived0, ast, playback, fonts, advanced, actions, transport, active, widgetSections, layoutRef, background, trackLocks, onLockTrack, trackEdit }: Props)
 ```
 
 #### `apps/web/src/components/EditorOverlay.tsx`
@@ -2185,6 +2188,7 @@ Timeline lớp (tầng 1, D-69, T-112; UI-DIRECTION 5.3, DESIGN.md "Timeline l�
 
 ```text
 interface LayerTimelineProps
+interface TrackEdit   // Track của dự án và các lệnh như danh sách Track ở Xem trước (App.tsx: moveTrack, toggleHidden, toggleSolo, pa…
 function LayerTimeline(props: LayerTimelineProps)
 ```
 
@@ -3057,6 +3061,17 @@ function mergeExtras<T extends { name: string }>(old: T[], added: T[]): T[]   //
 function missingMidiLevel(info: ExternalMidiInfo | undefined, failed: boolean): 'error' | 'warning' | null   // Có cần hiện bảng "thiếu file .mid" không, và mức độ (lỗi: không có nốt nào; cảnh báo: chỉ vài track trống).
 ```
 
+#### `apps/web/src/lib/flip.ts`
+
+Hàng trượt khi đổi thứ tự (FLIP: First, Last, Invert, Play), phần thuần. Hook React ở lib/useFlip.ts.
+
+```text
+const FLIP_MS   // Thời gian trượt (ms), như các chuyển động nhỏ khác của giao diện (mũi tên gấp/mở 150 ms).
+const FLIP_EASING   // Đường cong trượt: nhanh lúc đầu, êm lúc cuối (ease-out).
+function flipDeltas(before: ReadonlyMap<string, number>, after: ReadonlyMap<string, number>): Map<string, number>   // Độ dời cần bù cho từng hàng: vị trí cũ trừ vị trí mới (px). Bỏ hàng mới xuất hiện (không có vị trí cũ), hàng …
+const flipFrames = (dy: number) =>   // Khung hình của hoạt hình trượt một hàng: từ chỗ cũ (dịch `dy` px) về chỗ mới.
+```
+
 #### `apps/web/src/lib/fonts.ts`
 
 Nạp phông cho khung video ở Preview (TECHNICAL-DESIGN 5.7): FontFace + document.fonts, tự host cùng origin (CSP font-src 'self').
@@ -3842,6 +3857,15 @@ const isMac = () =>   // macOS dùng Cmd, nơi khác dùng Ctrl (chỉ để hi�
 function shortcutLabels(mac = isMac()): 
 ```
 
+#### `apps/web/src/lib/useFlip.ts`
+
+Hook FLIP (lib/flip.ts): các hàng trượt từ chỗ cũ tới chỗ mới khi đổi thứ tự, thay vì nhảy. Dùng ở Timeline lớp (hàng lớp, làn của lớp,
+
+```text
+const prefersReducedMotion = () =>   // Người dùng chọn giảm chuyển động (prefers-reduced-motion: reduce).
+function useFlip(root: RefObject<HTMLElement | null>, order: string, attr: string): void   // Các phần tử `[attr="<id>"]` trong `root` trượt khi `order` (chuỗi đại diện thứ tự, vd. id nối nhau) đổi. Vị t…
+```
+
 #### `apps/web/src/lib/useMenuPlacement.ts`
 
 Vị trí menu thả xuống (T-114): mặc định mở xuống dưới nút; thiếu chỗ phía dưới mà phía trên rộng hơn thì lật lên, và luôn giới hạn chiều cao
@@ -4095,6 +4119,7 @@ type SpectrumOut
 - `apps/web/src/lib/exportPlan.test.ts`
 - `apps/web/src/lib/exportStats.test.ts`
 - `apps/web/src/lib/externalMidi.test.ts`
+- `apps/web/src/lib/flip.test.ts`
 - `apps/web/src/lib/graphEditor.test.ts`
 - `apps/web/src/lib/historyLabels.test.ts`
 - `apps/web/src/lib/latencyCalibration.test.ts`
@@ -4181,4 +4206,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 11 thư mục src, 1920 ký hiệu công khai -->
+<!-- 11 thư mục src, 1927 ký hiệu công khai -->

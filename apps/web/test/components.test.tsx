@@ -10,6 +10,7 @@ import { AspectSwitch } from '../src/components/AspectSwitch.tsx';
 import { VideoStyles } from '../src/components/VideoStyles.tsx';
 import { NOTE_PRESETS, PAPER_SCENE } from '../src/lib/videoScenes.ts';
 import { createPlayback } from '../src/lib/playback.ts';
+import { useFlip } from '../src/lib/useFlip.ts';
 import { NumberField } from '../src/components/NumberField.tsx';
 import { StylePanel } from '../src/components/StylePanel.tsx';
 import { TextPanel } from '../src/components/TextPanel.tsx';
@@ -1037,5 +1038,45 @@ describe('Nhóm thiết lập (D-71, T-124)', () => {
   it('ô đang có hoạt hình vẫn hiện khi nhóm tắt (không giấu hoạt hình của người dùng)', async () => {
     await setup({ showCurve: false }, { curveHeight: { keys: [{ at: { sec: 0 }, value: 20 }] } });
     expect(screen.getByLabelText(heightRe)).toBeInTheDocument();
+  });
+});
+
+describe('useFlip (T-127): hàng trượt khi đổi thứ tự', () => {
+  function List({ order }: { order: string[] }) {
+    const ref = useRef<HTMLUListElement>(null);
+    useFlip(ref, order.join(), 'data-row');
+    return <ul ref={ref}>{order.map((id) => <li key={id} data-row={id}>{id}</li>)}</ul>;
+  }
+  const setup = (reduce: boolean) => {
+    const calls: { id: string; frames: Keyframe[]; ms: unknown }[] = [];
+    const proto = HTMLElement.prototype as unknown as Record<string, unknown>;
+    const old = { rect: proto.getBoundingClientRect, animate: proto.animate, mm: window.matchMedia };
+    // Vị trí theo thứ tự trong DOM: hàng thứ i ở y = 20·i.
+    proto.getBoundingClientRect = function (this: HTMLElement) { const i = this.parentElement ? [...this.parentElement.children].indexOf(this) : 0; return { top: this.tagName === 'LI' ? i * 20 : 0 } as DOMRect; };
+    proto.animate = function (this: HTMLElement, frames: Keyframe[], o: KeyframeAnimationOptions) { calls.push({ id: this.dataset.row!, frames, ms: o.duration }); return { cancel() {}, onfinish: null } as unknown as Animation; };
+    window.matchMedia = ((q: string) => ({ matches: reduce && q.includes('reduce'), media: q })) as unknown as typeof window.matchMedia;
+    return { calls, restore: () => { proto.getBoundingClientRect = old.rect; proto.animate = old.animate; window.matchMedia = old.mm; } };
+  };
+  it('đổi thứ tự: hàng dời chỗ được dịch về chỗ cũ rồi trượt về 0 trong 150 ms; thứ tự giữ nguyên thì không trượt', () => {
+    const { calls, restore } = setup(false);
+    try {
+      const { rerender } = render(<List order={['a', 'b', 'c']} />);
+      rerender(<List order={['a', 'b', 'c']} />);
+      expect(calls).toHaveLength(0);
+      rerender(<List order={['c', 'a', 'b']} />);
+      const by = Object.fromEntries(calls.map((c) => [c.id, c]));
+      expect(Object.keys(by).sort()).toEqual(['a', 'b', 'c']);
+      expect(by.c.frames).toEqual([{ transform: 'translateY(40px)' }, { transform: 'translateY(0)' }]);
+      expect(by.a.frames[0]).toEqual({ transform: 'translateY(-20px)' });
+      expect(by.a.ms).toBe(150);
+    } finally { restore(); }
+  });
+  it('người dùng bật giảm chuyển động: không trượt', () => {
+    const { calls, restore } = setup(true);
+    try {
+      const { rerender } = render(<List order={['a', 'b']} />);
+      rerender(<List order={['b', 'a']} />);
+      expect(calls).toHaveLength(0);
+    } finally { restore(); }
   });
 });

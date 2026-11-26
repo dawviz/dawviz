@@ -1786,7 +1786,7 @@
   "web.layers.fadeInHint": "Hiện dần: kéo sang phải để dài hơn",
   "web.layers.fadeOutHint": "Ẩn dần: kéo sang trái để dài hơn",
   "web.layers.music": "Nhạc",
-  "web.layers.musicHint": "Nốt của từng track và hợp âm, để căn thanh theo nhạc (chỉ để xem)",
+  "web.layers.musicHint": "Nốt của từng track và hợp âm, để căn thanh theo nhạc; mỗi track đổi được thứ tự, màu, ẩn, solo, khoá như bảng Track",
   "web.layers.chords": "Hợp âm",
   "web.comp.uncompose": "Gỡ precomp",
   "web.comp.uncomposed": "{n, plural, other {Đã gỡ {name}: # lớp về lại timeline này}}",
