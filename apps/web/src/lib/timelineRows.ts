@@ -5,7 +5,8 @@ import type { Animation, WidgetType } from '@dawviz/render-core';
 import { animFields, type AnimField } from './animateFields.ts';
 import { SAME_TIME, keyRef } from './timeline.ts';
 
-export type GroupId = 'transform' | 'props';
+/** `transform` hoặc `props.<nhóm>` (nhóm thuộc tính widget, xem `propGroup`). */
+export type GroupId = string;
 export interface RowDef {
   /** Khoá ổn định của dòng (vùng chọn `sel.row` lưu khoá này). Dòng một đường dẫn: chính đường dẫn đó. */
   id: string;
@@ -24,6 +25,24 @@ const TRANSFORM: { id: string; labelKey: string; paths: string[]; legacy?: boole
   { id: 'layout.width', labelKey: 'web.timeline.row.width', paths: ['layout.width'], legacy: true },
   { id: 'layout.height', labelKey: 'web.timeline.row.height', paths: ['layout.height'], legacy: true },
 ];
+/** Nhóm thuộc tính widget theo thứ tự hiện trong Timeline (kiểu nhóm thả xuống của After Effects). */
+export const PROP_GROUPS = ['playhead', 'keyboard', 'grid', 'notes', 'glow', 'colour', 'frame', 'timing', 'animator', 'text', 'general'] as const;
+export type PropGroup = typeof PROP_GROUPS[number];
+/** Nhóm của một đường dẫn thuộc tính: theo tiền tố (keyboard.*, grid.*, animator.*…) rồi theo từ khoá ở tên cuối (glow, color, alpha, sec/ms…). */
+export function propGroup(path: string): PropGroup {
+  const seg = path.split('.'), last = seg[seg.length - 1], head = seg[0];
+  if (head === 'keyboard') return 'keyboard';
+  if (head === 'grid') return 'grid';
+  if (head === 'animator') return 'animator';
+  if (/^playhead/i.test(last)) return 'playhead';
+  if (/glow|aura/i.test(last)) return 'glow';
+  if (head === 'noteStyle') return /opacity|colo/i.test(last) ? 'colour' : 'notes';
+  if (/^frame/i.test(last)) return 'frame';
+  if (/colo|alpha|opacity|fill|gradient|ink/i.test(last)) return 'colour';
+  if (/template|text|title|label|format|lines|artist|name|unrecognized|separator/i.test(last) || head === 'lines' || head === 'time' || head === 'beat') return 'text';
+  if (/sec|ms$|ms[A-Z]|attack|release|decay|fade|speed|life|window|fps|stagger|duration/i.test(last)) return 'timing';
+  return 'general';
+}
 const IN_TRANSFORM = new Set(TRANSFORM.flatMap((r) => r.paths));
 
 /** Dòng của một loại widget theo thứ tự hiện; `animate` để quyết định có hiện dòng Rộng/Cao (chỉ khi đã animate). */
@@ -35,7 +54,7 @@ export function timelineRows(type: WidgetType, animate: Readonly<Record<string, 
     if (r.legacy && !r.paths.some((p) => animate[p])) continue;
     out.push({ id: r.id, group: 'transform', labelKey: r.labelKey, paths: r.paths, fields: r.paths.map((p) => by.get(p)!) });
   }
-  for (const f of fields) if (!IN_TRANSFORM.has(f.path)) out.push({ id: f.path, group: 'props', labelKey: f.labelKey, paths: [f.path], fields: [f] });
+  for (const f of fields) if (!IN_TRANSFORM.has(f.path)) out.push({ id: f.path, group: `props.${propGroup(f.path)}`, labelKey: f.labelKey, paths: [f.path], fields: [f] });
   return out;
 }
 /** Dòng chứa đường dẫn `path` (vd. layout.y → dòng Vị trí). */

@@ -91,7 +91,7 @@ Piano Roll còn có mục **Hoạt hình của nốt** trong **Thiết lập**: 
 
 ## Hoạt hình thuộc tính
 
-Muốn một thuộc tính **đổi theo thời gian hoặc theo nhạc** thay vì đứng yên, dùng tầng keyframe của panel **Timeline và keyframe** ở đáy thẻ Chỉnh sửa: nhấp đúp thanh của widget trên Timeline, hoặc bấm **Keyframe** ở đầu bảng bên phải. Thuộc tính nào là số hoặc màu cũng animate được. Nhóm **Biến đổi** có **Vị trí** (X và Y chung một dòng, một keyframe cho cả hai), **Tỉ lệ** (phần trăm, 100 là nguyên cỡ; phóng to/thu nhỏ cả widget quanh điểm neo), **Xoay** và **Độ đục**. Nhóm **Thuộc tính widget** có mọi ô số hay ô màu trong **Thiết lập** của widget (ví dụ màu cột, độ dày vạch, độ phát sáng). Preset cũ có animate Rộng/Cao thì hai dòng đó cũng hiện.
+Muốn một thuộc tính **đổi theo thời gian hoặc theo nhạc** thay vì đứng yên, dùng tầng keyframe của panel **Timeline và keyframe** ở đáy thẻ Chỉnh sửa: nhấp đúp thanh của widget trên Timeline, hoặc bấm **Keyframe** ở đầu bảng bên phải. Thuộc tính nào là số hoặc màu cũng animate được. Nhóm **Biến đổi** có **Vị trí** (X và Y chung một dòng, một keyframe cho cả hai), **Tỉ lệ** (phần trăm, 100 là nguyên cỡ; phóng to/thu nhỏ cả widget quanh điểm neo), **Xoay** và **Độ đục**. Các thuộc tính còn lại (mọi ô số hay ô màu trong **Thiết lập** của widget) được gom thành nhóm gấp được theo loại: **Vạch phát**, **Bàn phím**, **Lưới**, **Nốt**, **Phát sáng**, **Màu**, **Khung**, **Thời gian**, **Hiệu ứng chữ**, **Chữ**, **Chung**. Preset cũ có animate Rộng/Cao thì hai dòng đó cũng hiện.
 
 ### Đặt keyframe
 

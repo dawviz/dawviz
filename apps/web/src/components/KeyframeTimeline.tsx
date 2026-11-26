@@ -21,7 +21,7 @@ import {
   DRAG_SLOP, ROW_H, RULER_H, SAME_TIME, beatTimes, copyKeys, keyClipboard, pasteIntoWidget, clampPps, clampShift, fitPps, groupRefs, keyAt, keyRef, keySecs, moveKeys,
   parseKeyRef, removeKeys, rulerLabel, rulerStep, rulerTicks, snapTime, xToTime, zoomAround,
 } from '../lib/timeline.ts';
-import { rowKeys, timelineRows, type GroupId, type RowDef, type VKey } from '../lib/timelineRows.ts';
+import { PROP_GROUPS, rowKeys, timelineRows, type GroupId, type RowDef, type VKey } from '../lib/timelineRows.ts';
 import { PANEL_LIMITS } from '../lib/panelLayout.ts';
 import { NumberField } from './NumberField.tsx';
 import { DiscreteValue } from './DiscreteValue.tsx';
@@ -52,7 +52,7 @@ export interface KeyframeTimelineProps {
 const FRAME = 1 / 30;
 /** Lề trái của làn (px): keyframe ở 0:00 không bị cắt nửa ở mép. */
 export const PAD = 10;
-const GROUPS: readonly { id: GroupId; key: string }[] = [{ id: 'transform', key: 'web.timeline.group.transform' }, { id: 'props', key: 'web.timeline.group.props' }];
+const GROUPS: readonly { id: GroupId; key: string }[] = [{ id: 'transform', key: 'web.timeline.group.transform' }, ...PROP_GROUPS.map((g) => ({ id: `props.${g}`, key: `web.timeline.group.${g}` }))];
 type Mode = 'none' | 'keys' | 'bind';
 type RowItem = { kind: 'row'; row: RowDef; anims: (Animation | undefined)[]; mode: Mode; vkeys: VKey[] };
 type Item = { kind: 'group'; id: GroupId; open: boolean; count: number } | RowItem;
@@ -65,8 +65,9 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
   const label = (r: RowDef) => (i18n.has(r.labelKey) ? i18n.t(r.labelKey) : r.id);
   const used = Object.keys(animate).length;
   const [onlyAnimated, setOnlyAnimated] = useState(false);
-  // Nhóm "Thuộc tính widget" thường dài: đóng sẵn khi chưa có thuộc tính nào trong đó đang animate.
-  const [closed, setClosed] = useState<ReadonlySet<GroupId>>(() => new Set(rows.some((r) => r.group === 'props' && r.paths.some((p) => animate[p])) ? [] : ['props']));
+  // Nhóm thuộc tính widget đóng sẵn khi chưa có thuộc tính nào trong đó đang animate; `flipped` là các nhóm người dùng đã đảo so với mặc định.
+  const [flipped, setFlipped] = useState<ReadonlySet<GroupId>>(() => new Set());
+  const openByDefault = (g: GroupId) => g === 'transform' || rows.some((r) => r.group === g && r.paths.some((p) => animate[p]));
 
   // ── hàng hiển thị ──
   const times = useMemo(() => {
@@ -81,7 +82,7 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
       return { kind: 'row', row, anims, mode: modeOf(anims), vkeys: rowKeys(row, times) };
     }).filter((x) => !onlyAnimated || x.mode !== 'none');
     if (!mine.length) continue;
-    const open = !closed.has(g.id);
+    const open = openByDefault(g.id) !== flipped.has(g.id);
     items.push({ kind: 'group', id: g.id, open, count: mine.filter((x) => x.mode !== 'none').length });
     if (open) items.push(...mine);
   }
@@ -420,7 +421,7 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
               {items.map((it) => it.kind === 'group' ? (
                 <div key={it.id} className="flex items-center border-b border-r border-line bg-page/40" style={{ height: ROW_H }}>
                   <button type="button" aria-expanded={it.open} className="flex h-full min-w-0 flex-1 items-center gap-1.5 px-1.5 text-left text-xs font-semibold text-fg hover:bg-raised" data-testid={`timeline-group-${it.id}`}
-                    onClick={() => setClosed((s) => { const n = new Set(s); if (n.has(it.id)) n.delete(it.id); else n.add(it.id); return n; })}>
+                    onClick={() => setFlipped((s) => { const n = new Set(s); if (n.has(it.id)) n.delete(it.id); else n.add(it.id); return n; })}>
                     <ChevronRight className={`h-3 w-3 shrink-0 text-faint transition-transform duration-150 ${it.open ? 'rotate-90' : ''}`} />
                     <span className="min-w-0 truncate">{i18n.t(GROUPS.find((g) => g.id === it.id)!.key)}</span>
                     {it.count > 0 && <span className="ml-auto pr-1 font-normal tabular-nums text-muted">{i18n.t('web.timeline.animatedCount', { n: it.count })}</span>}
