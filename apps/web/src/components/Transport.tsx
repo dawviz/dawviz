@@ -40,7 +40,7 @@ export function Transport({ playback, duration, wave, offsetMs = 0 }: { playback
         {/* Thời gian hiện tại, thanh tua, độ dài bài luôn đi cùng nhau; khung hẹp thì cả cụm xuống hàng hai (index.css, .tp). */}
         <div className="tp-seek">
           <ClockField t={t} duration={duration} playing={playing} label={i18n.t('web.seekTo')} onSeek={(v) => playback.seek(v)} />
-          <div className="relative min-w-[6rem] flex-1">
+          <div className="tp-bar relative min-w-[4rem] flex-1">
             <input aria-label={i18n.t('web.seek')} aria-valuetext={formatClock(t)} type="range" min={0} max={duration} step={0.01} value={t}
               style={{ '--p': `${pct}%` } as React.CSSProperties}
               onChange={(e) => playback.seek(Number(e.target.value))} className="block w-full min-w-0" />
@@ -56,7 +56,7 @@ export function Transport({ playback, duration, wave, offsetMs = 0 }: { playback
               </svg>
             )}
           </div>
-          <span className="w-[4.75rem] shrink-0 text-right text-[13px] tabular-nums text-muted" data-testid="transport-duration">{formatClock(duration)}</span>
+          <span className="tp-dur shrink-0 whitespace-nowrap text-right text-[13px] tabular-nums text-muted" data-testid="transport-duration">{formatClock(duration)}</span>
         </div>
         <button type="button" className={`${iconBtn} btn-toggle tp-loop`} aria-pressed={looping} aria-label={i18n.t('web.loop')} title={loopLabel}
           onClick={() => playback.setLoop(looping ? null : 'all')} data-testid="loop"><Repeat /></button>
@@ -83,6 +83,9 @@ function ClockField({ t, duration, playing, label, onSeek }: { t: number; durati
     setText(null); setBad(false); onSeek(v); return true;
   };
   const cancel = () => { setText(null); setBad(false); };
+  // Ô rộng theo nội dung: số ký tự của độ dài bài (đồng hồ không dài hơn nó) × 1ch (chữ số đều bề rộng = ô chữ số "0"; ":" và "." hẹp hơn),
+  // cộng lề trong px-1 và viền. Không cố định rem, nên bài dài hơn 10 phút hay cỡ chữ khác vẫn không bị cắt (T-128).
+  const chars = Math.max(formatClock(duration).length, formatClock(t).length, text?.length ?? 0);
   return (
     <input type="text" inputMode="decimal" autoComplete="off" spellCheck={false} aria-label={label} title={label} aria-invalid={bad || undefined} data-testid="transport-time"
       value={text ?? formatClock(t)}
@@ -95,6 +98,7 @@ function ClockField({ t, duration, playing, label, onSeek }: { t: number; durati
         if (e.key === 'Enter') { e.preventDefault(); if (commit()) e.currentTarget.blur(); }
         else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); cancel(); e.currentTarget.blur(); }
       }}
-      className={`w-[5.25rem] shrink-0 rounded border bg-transparent px-1 py-0.5 text-[13px] font-medium tabular-nums outline-none transition hover:border-control focus:border-focus focus:bg-raised ${bad ? 'border-danger' : 'border-transparent'} ${playing && text === null ? 'text-accent' : 'text-fg'}`} />
+      style={{ width: `calc(${chars}ch + 0.5rem + 2px)` }}
+      className={`tp-clock shrink-0 rounded border bg-transparent px-1 py-0.5 text-[13px] font-medium tabular-nums outline-none transition hover:border-control focus:border-focus focus:bg-raised ${bad ? 'border-danger' : 'border-transparent'} ${playing && text === null ? 'text-accent' : 'text-fg'}`} />
   );
 }

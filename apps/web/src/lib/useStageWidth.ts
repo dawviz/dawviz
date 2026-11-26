@@ -8,6 +8,8 @@ export const STAGE_CHROME = { proof: 135, plain: 134, editor: 88 } as const;
 const MIN_WIDTH = 280;
 /** Thanh phát xuống hai hàng khi khung hẹp hơn `below` px (container query 34 rem trong index.css); hàng thêm cao `extra` px. */
 export const TRANSPORT_WRAP = { below: 546, extra: 32 } as const;
+/** Hẹp hơn nữa (container query 22,5 rem): độ dài bài xuống thêm một dòng dưới thanh tua (T-128), cao thêm `extra` px. */
+export const TRANSPORT_WRAP_DURATION = { below: 362, extra: 14 } as const;
 
 /** Hàm thuần: rộng nhất sao cho khối sân khấu vừa cả chiều ngang lẫn chiều dọc. */
 export function fitStageWidth(o: { availW: number; availH: number; aspect: number; chrome: number; extra: number }): number {
@@ -15,7 +17,8 @@ export function fitStageWidth(o: { availW: number; availH: number; aspect: numbe
   const fit = (chrome: number) => Math.floor(Math.min(byWidth, (o.availH - chrome) * o.aspect));
   const w = fit(o.chrome);
   // Khung hẹp → thanh phát hai hàng, cao thêm: tính lại với phần cao đó (chỉ thu nhỏ, không bao giờ phóng to).
-  return Math.max(MIN_WIDTH, w < TRANSPORT_WRAP.below ? Math.min(w, fit(o.chrome + TRANSPORT_WRAP.extra)) : w);
+  const w2 = w < TRANSPORT_WRAP.below ? Math.min(w, fit(o.chrome + TRANSPORT_WRAP.extra)) : w;
+  return Math.max(MIN_WIDTH, w2 < TRANSPORT_WRAP_DURATION.below ? Math.min(w2, fit(o.chrome + TRANSPORT_WRAP.extra + TRANSPORT_WRAP_DURATION.extra)) : w2);
 }
 
 /** `stage` là phần tử bọc khối sân khấu; chỗ còn lại theo chiều dọc = phần vùng cuộn dưới mép trên của nó

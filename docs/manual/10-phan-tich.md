@@ -30,6 +30,7 @@ Ba widget này dùng để dựng bảng phân tích. Mẫu có sẵn: preset `a
 - **Số ô nhịp hiện** và **Vị trí vạch phát**.
 - **Mỗi khối một hợp âm theo**: **Ô nhịp**, **Nửa ô nhịp**, **Phách** hoặc **Mỗi lần đổi**. Chọn theo ô nhịp thì khối gọn, nhạc nhiều nốt không bị vụn.
 - **Cách viết bậc**: `VIm7` hoặc `vi7`.
+- **Chữ trong khối**: **Đầu**, **Giữa** hoặc **Cuối** khối. Bật **Giữ chữ trong khung** thì khi khối trôi ra mép trái, chữ dừng ở mép trái và đi theo khối tới hết khối, như tên clip trong DAW.
 - **Hàng thứ hai (theo từng lần dập)**, **Dải chức năng (T, SD, D)** và **Số ô nhịp** bật hoặc tắt từng phần. Dải chức năng tô màu theo **Màu chủ (T)**, **Màu hạ át (SD)**, **Màu át (D)**.
 - **Màu hợp âm đang chơi**, **Màu chữ hợp âm đang chơi**, **Màu khối**, **Màu hàng thứ hai**, **Độ đục hợp âm đã qua**, **Khoảng cách giữa các khối**.
 

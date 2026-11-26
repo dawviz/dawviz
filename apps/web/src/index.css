@@ -148,12 +148,20 @@
   .tp { container-type: inline-size; }
   .tp-in { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; }
   .tp-btns { display: flex; flex-shrink: 0; align-items: center; gap: 0.5rem; }
+  /* Cột thời gian rộng theo nội dung (không co, không cắt); chỉ thanh tua co lại. Dưới 22,5 rem (360 px) độ dài bài xuống dòng dưới thanh tua (T-128). */
   .tp-seek { display: flex; min-width: 0; flex: 1; align-items: center; gap: 0.5rem; }
+  .tp-dur { min-width: max-content; }
   @container (max-width: 34rem) {
     .tp-in { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 'btns loop' 'seek seek'; row-gap: 0.25rem; }
     .tp-btns { grid-area: btns; }
     .tp-seek { grid-area: seek; }
     .tp-loop { grid-area: loop; }
+  }
+  @container (max-width: 22.5rem) {
+    .tp-seek { display: grid; grid-template-columns: max-content minmax(0, 1fr); grid-template-areas: 'clock bar' '. dur'; row-gap: 0; }
+    .tp-clock { grid-area: clock; }
+    .tp-bar { grid-area: bar; min-width: 0; }
+    .tp-dur { grid-area: dur; justify-self: end; line-height: 1; }
   }
   .disclosure { @apply flex min-h-[var(--hit)] cursor-pointer select-none items-center gap-1 text-muted transition hover:text-fg hover:underline hover:underline-offset-2; }
   .disclosure::before {

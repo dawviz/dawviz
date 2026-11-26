@@ -290,6 +290,8 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['showFunction'], 'check', 'dgShowFunction'),
     L(['showBars'], 'check', 'dgShowBars'),
     L(['romanStyle'], 'choice', 'inRomanStyle', { options: ['SUFFIX', 'CASE'], prefix: 'web.ws.inRomanStyle.' }),
+    L(['labelAlign'], 'choice', 'dgLabelAlign', { options: ['START', 'CENTER', 'END'], prefix: 'web.ws.dgLabelAlign.' }),
+    L(['labelSticky'], 'check', 'dgLabelSticky'),
     L(['accentColor'], 'color', 'dgAccent'),
     L(['playheadRatio'], 'num', 'dgPlayhead', { adv: true, num: { min: 0, max: 1, step: 0.01 } }),
     L(['detailColor'], 'color', 'dgDetailColor', { adv: true, when: (P) => !!P.showDetail }),

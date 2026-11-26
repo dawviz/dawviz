@@ -2,7 +2,7 @@
 // Khung ô, Degree, Dots, chỗ giữ mới và primitive poly. Kết quả khớp tính tay, tất định, không NaN.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { layoutFrame, renderFrame, sanitizeScene, SCENE_SCHEMA_VERSION, chordDegree, chordFunction, parseChordName, romanOf, levelsAt, bandShareAt, arcPts, DEFAULT_PITCH_WHEEL, DEFAULT_PANEL,
+import { layoutFrame, renderFrame, sanitizeScene, SCENE_SCHEMA_VERSION, degreeLabelPos, DEFAULT_DEGREE, chordDegree, chordFunction, parseChordName, romanOf, levelsAt, bandShareAt, arcPts, DEFAULT_PITCH_WHEEL, DEFAULT_PANEL,
   type SceneDocument, type TextPrim, type RectPrim, type PolyPrim, type Primitive, type UnifiedProjectAST, type AudioFeatures } from '../src/index.ts';
 import { synthAst, derivedOf, recCtx } from './helpers.ts';
 
@@ -78,6 +78,57 @@ test('Degree: khối bậc theo hợp âm, khối hiện tại tô màu nhấn, 
   assert.ok(tx.split('|').includes('1') && tx.split('|').includes('2'));
   assert.ok(polys(p).some((q) => q.closed && q.fill === '#222222'));  // mũi tên vạch phát
   assert.deepEqual(prims(sc, 0.6, ast, { tonic: 9 }), p);
+});
+
+test('Degree: chữ trong khối căn Đầu/Giữa/Cuối; dính mép trái khi khối bị cắt; bị đẩy ra ở cuối khối (T-131)', () => {
+  assert.equal(DEFAULT_DEGREE.labelAlign, 'CENTER'); assert.equal(DEFAULT_DEGREE.labelSticky, true);
+  // Hàm thuần: khối [10, 110], chữ rộng 20, lề 3.
+  assert.deepEqual(degreeLabelPos('START', false, 10, 110, 20), { x: 13, align: 'left' });
+  assert.deepEqual(degreeLabelPos('CENTER', false, 10, 110, 20), { x: 60, align: 'center' });
+  assert.deepEqual(degreeLabelPos('END', false, 10, 110, 20), { x: 107, align: 'right' });
+  for (const a of ['START', 'CENTER', 'END'] as const) assert.deepEqual(degreeLabelPos(a, true, 10, 110, 20), degreeLabelPos(a, false, 10, 110, 20), a); // không bị cắt: dính không đổi gì
+  // Bị cắt bên trái (khối [-50, 50]): dính mép trái vùng thấy; Giữa = giữa phần đang thấy; Cuối không đổi.
+  assert.deepEqual(degreeLabelPos('START', true, -50, 50, 20), { x: 3, align: 'left' });
+  assert.deepEqual(degreeLabelPos('START', false, -50, 50, 20), { x: -47, align: 'left' });
+  assert.deepEqual(degreeLabelPos('CENTER', true, -50, 50, 20), { x: 25, align: 'center' });
+  assert.deepEqual(degreeLabelPos('CENTER', false, -50, 50, 20), { x: 0, align: 'center' });
+  assert.deepEqual(degreeLabelPos('END', true, -50, 50, 20), { x: 47, align: 'right' });
+  // Gần cuối khối (còn thấy 16 px < chữ): chữ bị đẩy ra, mép phải chữ nằm ở cuối khối trừ lề.
+  assert.deepEqual(degreeLabelPos('START', true, -84, 16, 20), { x: -7, align: 'left' });
+  assert.deepEqual(degreeLabelPos('CENTER', true, -84, 16, 20), { x: 3, align: 'center' });
+
+  // Qua renderer: một hàng chính, 1 ô nhịp trên 200 px, vạch phát gần mép trái nên khối hiện tại bị cắt bên trái.
+  const ast = synthAst({ duration: 6 }), lay = { x: 0, y: 0, width: 200, height: 80 }, measure = (s: string, _f: string, size: number) => s.length * size * 0.6;
+  const base = { windowBars: 1, showDetail: false, showFunction: false, showBars: false, playheadColor: '' };
+  const raw = (props: object, t: number) => layoutFrame(sceneWith('DEGREE', { ...base, ...props }, { tonic: 9 }, lay), derivedOf(ast, { tonic: 9, measure }), ast, t)[0]?.prims ?? [];
+  const at = (props: object, t: number) => {
+    const p = raw(props, t);
+    const r = rects(p).find((x) => x.fill === DEFAULT_DEGREE.accentColor)!, tx = textsOf(p).find((x) => x.text === 'V7')!;
+    assert.ok(r && tx, texts(p)); return { x0: r.x, x1: r.x + r.w, tx, p };
+  };
+  // Không bị cắt: ba kiểu căn đúng chỗ.
+  const s = at({ playheadRatio: 0.9, labelAlign: 'START' }, 0.4), c = at({ playheadRatio: 0.9 }, 0.4), e = at({ playheadRatio: 0.9, labelAlign: 'END' }, 0.4);
+  assert.ok(s.x0 > 0);
+  assert.equal(s.tx.align, 'left'); assert.ok(Math.abs(s.tx.x - (s.x0 + 3)) < 1e-9);
+  assert.equal(c.tx.align, 'center'); assert.ok(Math.abs(c.tx.x - (c.x0 + c.x1) / 2) < 1e-9);
+  assert.equal(e.tx.align, 'right'); assert.ok(Math.abs(e.tx.x - (e.x1 - 3)) < 1e-9);
+  // Bị cắt bên trái: dính ở x = 3; tắt dính thì chữ ra ngoài cùng khối.
+  const st = at({ playheadRatio: 0.5, labelAlign: 'START' }, 1.6), off = at({ playheadRatio: 0.5, labelAlign: 'START', labelSticky: false }, 1.6);
+  assert.ok(st.x0 < 0); assert.ok(Math.abs(st.tx.x - 3) < 1e-9); assert.ok(Math.abs(off.tx.x - (off.x0 + 3)) < 1e-9);
+  const cs = at({ playheadRatio: 0.5 }, 1.6);
+  assert.ok(Math.abs(cs.tx.x - (3 + cs.x1 - 3) / 2) < 1e-9);
+  // Gần cuối khối: bị đẩy ra cùng khối (khoảng cách mép phải khối → chữ không đổi giữa hai khung).
+  const p1 = at({ playheadRatio: 0.05, labelAlign: 'START' }, 1.96), p2 = at({ playheadRatio: 0.05, labelAlign: 'START' }, 1.98);
+  assert.ok(p1.tx.x < 3 && p2.tx.x < p1.tx.x, `${p1.tx.x} ${p2.tx.x}`);
+  assert.ok(Math.abs((p1.x1 - p1.tx.x) - (p2.x1 - p2.tx.x)) < 1e-9);
+  // Tua tới/lui: cùng t cho cùng kết quả, không phụ thuộc khung trước.
+  const props = { playheadRatio: 0.05, labelAlign: 'START' };
+  const first = raw(props, 1.96); raw(props, 0.2); raw(props, 5); raw(props, 1.98);
+  assert.deepEqual(raw(props, 1.96), first);
+  // Lược đồ: giá trị lạ bị thay bằng mặc định kèm cảnh báo.
+  const bad = sanitizeScene({ schemaVersion: SCENE_SCHEMA_VERSION, canvas: {}, widgets: [{ id: 'w', type: 'DEGREE', layout: lay, properties: { labelAlign: 'LEFT', labelSticky: 'yes' } }] });
+  const bp = bad.scene.widgets[0].properties as { labelAlign: string; labelSticky: boolean };
+  assert.equal(bp.labelAlign, 'CENTER'); assert.equal(bp.labelSticky, true); assert.equal(bad.warnings.length, 2);
 });
 
 test('Dots: lưới cột × hàng, chấm có nốt sáng, nốt sắp tới mờ, khung vạch phát; ngoài dải cao độ bỏ qua', () => {

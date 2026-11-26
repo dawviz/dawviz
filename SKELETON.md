@@ -1010,6 +1010,8 @@ Widget cho bảng phân tích nhạc kiểu "dashboard" (tham chiếu REFERENCE-
 interface PanelStat   // ───────────────────────────── thuộc tính ─────────────────────────────
 interface PanelProps
 interface DegreeProps
+type DegreeLabelAlign
+const DEGREE_LABEL_ALIGNS
 type ChordResolution
 const CHORD_RESOLUTIONS
 interface DotsProps
@@ -1022,6 +1024,7 @@ const MAX_PANEL_STATS
 const DOTS_GRIDS
 const panelRenderer   // ───────────────────────────── Khung ô ─────────────────────────────
 function quantizeChords(segs: readonly ChordSeg[], grid: Parameters<typeof barStartSec>[0], dur: number, res: ChordResolution): readonly ChordSeg[]
+function degreeLabelPos(align: DegreeLabelAlign, sticky: boolean, x0: number, x1: number, tw: number):    // Vị trí chữ của một khối [x0, x1] (toạ độ widget, mép trái vùng thấy là 0), chữ rộng `tw`. Không dính: đầu/giữ…
 const degreeRenderer
 function roundRectPts(x: number, y: number, w: number, h: number, r: number): number[]   // Điểm của hình chữ nhật bo góc (đa giác): dùng cho khung chỉ có viền.
 function dotsPitchRange(p: DotsProps, tracks: readonly TrackIndex[]): [number, number]   // Dải cao độ của lưới chấm: theo nốt có trong các track (FIT_CONTENT) hoặc tự đặt.
@@ -3896,6 +3899,7 @@ Chiều rộng khung xem trước (px), tính theo chỗ còn lại thực sự 
 ```text
 const STAGE_CHROME   // `proof`: Xem trước có khung bản in thử; `plain`: không có (dòng bộ chọn tỉ lệ riêng); `editor`: thẻ Chỉnh sửa…
 const TRANSPORT_WRAP   // Thanh phát xuống hai hàng khi khung hẹp hơn `below` px (container query 34 rem trong index.css); hàng thêm ca…
+const TRANSPORT_WRAP_DURATION   // Hẹp hơn nữa (container query 22,5 rem): độ dài bài xuống thêm một dòng dưới thanh tua (T-128), cao thêm `extr…
 function fitStageWidth(o: { availW: number; availH: number; aspect: number; chrome: number; extra: number }): number   // Hàm thuần: rộng nhất sao cho khối sân khấu vừa cả chiều ngang lẫn chiều dọc.
 function useStageWidth(scroller: RefObject<HTMLElement>, stage: RefObject<HTMLElement>, o: { aspect: number; chrome: number; extra: number; active: boolean; fallback?: number }): number   // `stage` là phần tử bọc khối sân khấu; chỗ còn lại theo chiều dọc = phần vùng cuộn dưới mép trên của nó (tự tí…
 ```
@@ -4173,4 +4177,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 11 thư mục src, 1916 ký hiệu công khai -->
+<!-- 11 thư mục src, 1920 ký hiệu công khai -->
