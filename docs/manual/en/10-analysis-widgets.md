@@ -91,7 +91,7 @@ The Piano roll also has **Note animation** under **Settings**: each note goes th
 
 ## Animate properties
 
-To make a property **change over time or with the music** instead of staying still, use the keyframe level of the **Timeline & keyframes** panel at the bottom of the Editor tab: double-click the widget's bar in the Timeline, or press **Keyframes** at the top of the right-hand panel. Any number or colour can be animated. The **Transform** group has **Position** (X and Y on one row, one keyframe for both), **Scale** (percent, 100 is full size; grows or shrinks the whole widget around its anchor), **Rotation** and **Opacity**. The **Widget properties** group has every number or colour field in the widget's **Settings** (for example bar colour, line thickness, glow). Older presets that animate Width/Height show those two rows as well.
+To make a property **change over time or with the music** instead of staying still, use the keyframe level of the **Timeline & keyframes** panel at the bottom of the Editor tab: double-click the widget's bar in the Timeline, or press **Keyframes** at the top of the right-hand panel. Any number or colour can be animated. The **Transform** group has **Position** (X and Y on one row, one keyframe for both), **Scale** (percent, 100 is full size; grows or shrinks the whole widget around its anchor), **Rotation** and **Opacity**. The remaining properties (every number or colour field in the widget's **Settings**) are collected into collapsible groups by kind: **Playhead**, **Keyboard**, **Grid**, **Notes**, **Glow**, **Colour**, **Frame**, **Timing**, **Text animator**, **Text**, **General**. Older presets that animate Width/Height show those two rows as well.
 
 ### Setting keyframes
 

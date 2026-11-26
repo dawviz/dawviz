@@ -786,7 +786,7 @@ export function App() {
   };
   const sections: Record<'song' | 'tracks', (n: number) => React.ReactNode> = loaded && trackProps ? {
     song: (n) => (
-      <InspectorSection key="song" n={n} id="song" title={i18n.t('web.section.song')} more={more('song', offsetMs !== 0)}>
+      <InspectorSection key="song" n={n} id="song" title={i18n.t('web.section.song')} more={audio ? more('song', offsetMs !== 0) : undefined}>
         <Facts rows={[
           [i18n.t('web.song.file'), <span title={loaded.name}>{loaded.name}</span>],
           ...(advanced ? [[i18n.t('web.song.format'), loaded.format] as [string, React.ReactNode]] : []),

@@ -3,9 +3,9 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { synthAst, derivedOf } from './helpers.ts';
 import {
-  pianoRollRenderer, pianoRollWidget, pianoRollLane, playheadPrims, keyboardScaleAt, flowFrame, flowPoint, flowRect, gridLinesIn, buildBarGrid,
+  pianoRollRenderer, pianoRollWidget, pianoRollLane, playheadPrims, playheadArrowPrims, keyboardScaleAt, flowFrame, flowPoint, flowRect, gridLinesIn, buildBarGrid,
   sanitizeScene, SCENE_SCHEMA_VERSION, DEFAULT_PIANO_ROLL, layoutFrame, scalePitchClasses, buildIndex,
-  type PianoRollProps, type Primitive, type RectPrim, type TextPrim, type WidgetSpec,
+  type PianoRollProps, type PolyPrim, type Primitive, type RectPrim, type TextPrim, type WidgetSpec,
 } from '../src/index.ts';
 import { measureText } from '../src/text.ts';
 
@@ -76,9 +76,11 @@ test('vạch phát (T-58): nét đứt, dải, gradient, mũi tên, độ dài; 
   const grad = playheadPrims({ ...base, playheadStyle: 'GRADIENT' }, 100, 400, 400, { k: 0, color: null });
   assert.equal(grad.length, 6); assert.ok(grad[0].w > grad[5].w); assert.ok(grad.every((r) => Math.abs(r.x + r.w / 2 - 100) < 1e-9));
   const half = playheadPrims({ ...base, playheadStyle: 'LINE', playheadLength: 0.5, playheadArrows: true }, 100, 400, 400, { k: 0, color: null });
-  assert.deepEqual([half[0].y, half[0].h], [100, 200]);
-  const arrows = half.slice(1); assert.ok(arrows.length >= 8);
-  assert.ok(arrows.every((r) => r.y >= 100 - 1e-9 && r.y + r.h <= 300 + 1e-9), 'mũi tên nằm trong đoạn vạch, chỉ vào trong');
+  assert.deepEqual([half[0].y, half[0].h], [100, 200]); assert.equal(half.length, 1, 'mũi tên không còn ghép bằng lát chữ nhật');
+  const arrows = playheadArrowPrims({ ...base, playheadArrows: true, playheadLength: 0.5 }, 100, 400, 400);
+  assert.equal(arrows.length, 2); assert.ok(arrows.every((a) => a.kind === 'poly' && a.closed && a.pts.length === 6));
+  assert.ok(arrows.every((a) => a.pts.filter((_, j) => j % 2 === 1).every((y) => y >= 100 - 1e-9 && y <= 300 + 1e-9)), 'mũi tên nằm trong đoạn vạch, chỉ vào trong');
+  assert.deepEqual(playheadArrowPrims({ ...base, playheadArrows: false }, 100, 400, 400), []);
   const glow = playheadPrims({ ...base, playheadStyle: 'LINE', playheadGlow: 0.5 }, 100, 400, 400, { k: 0, color: null });
   assert.equal(glow[0].glowBlur, 12);
   const swell = playheadPrims({ ...base, playheadStyle: 'LINE', playheadHit: 'SWELL' }, 100, 400, 400, { k: 0.5, color: '#ff0000' });

@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ADDABLE_WIDGETS } from '@dawviz/render-core';
-import { rowKeys, rowOfPath, timelineRows, visibleKeyCount } from './timelineRows.ts';
+import { PROP_GROUPS, propGroup, rowKeys, rowOfPath, timelineRows, visibleKeyCount } from './timelineRows.ts';
 
 test('timelineRows: nhóm Biến đổi = Vị trí (x+y), Tỉ lệ, Xoay, Độ đục; Rộng/Cao chỉ khi đã animate', () => {
   for (const type of [...ADDABLE_WIDGETS, 'PIANO_ROLL' as const]) {
@@ -11,9 +11,9 @@ test('timelineRows: nhóm Biến đổi = Vị trí (x+y), Tỉ lệ, Xoay, Đ�
   }
   const legacy = timelineRows('TIME_BAR', { 'layout.width': { keys: [{ at: { sec: 0 }, value: 10 }] } });
   assert.ok(legacy.some((x) => x.id === 'layout.width') && !legacy.some((x) => x.id === 'layout.height'));
-  const props = timelineRows('TIME_BAR').filter((x) => x.group === 'props');
+  const props = timelineRows('TIME_BAR').filter((x) => x.group.startsWith('props.'));
   assert.ok(props.length > 0 && props.every((x) => x.paths.length === 1 && x.id === x.paths[0]));
-  const pr = timelineRows('PIANO_ROLL').filter((x) => x.group === 'props').map((x) => x.id);
+  const pr = timelineRows('PIANO_ROLL').filter((x) => x.group.startsWith('props.')).map((x) => x.id);
   assert.ok(pr.includes('visibleSeconds') && pr.includes('noteStyle.base.glow') && !pr.includes('pitchMin')); // Piano Roll: danh sách đường dẫn riêng
   assert.equal(rowOfPath(timelineRows('TIME_BAR'), 'layout.y')!.id, 'position');
 });
@@ -34,4 +34,14 @@ test('visibleKeyCount: đếm hình thoi thấy được, không đếm x và y 
   const picked = [{ path: 'layout.x', t: 0 }, { path: 'layout.y', t: 0 }, { path: 'scale', t: 0 }, { path: 'layout.rotation', t: 0 }, { path: 'opacity', t: 0 }];
   assert.equal(visibleKeyCount(rows, picked), 4);
   assert.equal(visibleKeyCount(rows, [{ path: 'layout.x', t: 0 }, { path: 'layout.y', t: 2 }]), 2);
+});
+
+test('propGroup: gom thuộc tính liên quan thành nhóm thả xuống; mọi thuộc tính của mọi widget có nhóm hợp lệ', () => {
+  assert.equal(propGroup('noteStyle.base.glowRadius'), 'glow');
+  assert.equal(propGroup('playheadColor'), 'playhead');
+  assert.equal(propGroup('keyboard.whiteColor'), 'keyboard');
+  assert.equal(propGroup('noteStyle.base.cornerRadius'), 'notes');
+  assert.equal(propGroup('animator.duration'), 'animator');
+  assert.equal(propGroup('barColor'), 'colour');
+  for (const type of [...ADDABLE_WIDGETS, 'PIANO_ROLL' as const]) for (const r of timelineRows(type).filter((x) => x.group !== 'transform')) assert.ok(PROP_GROUPS.includes(r.group.slice(6) as never), r.id);
 });

@@ -1611,6 +1611,7 @@ function keyboardScaleAt(mode: KeyboardStyle['scale'], tonic: number | undefined
 const KEY_WINDOW_SEC   // Cửa sổ nhận diện giọng cho đánh dấu thang âm (giây), như mặc định widget Giọng.
 const pianoRollRenderer
 function playheadPrims(p: Pick<PianoRollProps, 'playheadColor' | 'playheadWidth' | 'playheadStyle' | 'playheadArrows' | 'playheadLength' | 'playheadGlow' | 'playheadHit'>, u: number, laneH: number, pitchSpan: number, hit: { k: number; color: string | null }): RectPrim[]   // Vạch phát (T-58) trên làn, vuông góc với hướng chảy, căn giữa theo chiều cao làn. Kiểu LINE mặc định ra đúng …
+function playheadArrowPrims(p: Pick<PianoRollProps, 'playheadColor' | 'playheadWidth' | 'playheadArrows' | 'playheadLength'>, u: number, laneH: number, pitchSpan: number): PolyPrim[]   // Đầu mũi tên hai đầu của vạch phát (T-58): hai tam giác đặc chỉ vào trong, nằm gọn trong đoạn vạch. Rỗng khi `…
 function keyLabels(f: FlowFrame, keys: KeyRect[], ks: KeyboardStyle, kb: number, kbU: number, rowH: number, naming: NoteNaming, upright: boolean): TextPrim[]   // Tên nốt trên phím (T-51, P-12). Cỡ chữ theo chiều cao một hàng phím; quá nhỏ (< 5 pt) thì không vẽ. Tâm nhãn …
 const WIDGET_RENDERERS   // Bảng renderer theo loại. Widget chưa có renderer được bỏ qua khi vẽ (vẫn giữ trong Scene).
 const buildSceneHud = (scene: SceneDocument, ast: UnifiedProjectAST, index: TimelineIndex) =>   // HudData cho một scene: số đếm, lưới ô nhịp và hợp âm của mọi widget Chord Detection. Gọi ở bước derived (một …
@@ -3780,8 +3781,11 @@ function pasteIntoWidget(w: Pick<WidgetSpec, 'type' | 'animate'>, clip: KeyClip,
 Các dòng của Timeline (DESIGN.md "Timeline"): một dòng có thể gắn nhiều đường dẫn hoạt hình (Vị trí = layout.x + layout.y, như After Effects),
 
 ```text
-type GroupId
+type GroupId   // `transform` hoặc `props.<nhóm>` (nhóm thuộc tính widget, xem `propGroup`).
 interface RowDef
+const PROP_GROUPS   // Nhóm thuộc tính widget theo thứ tự hiện trong Timeline (kiểu nhóm thả xuống của After Effects).
+type PropGroup
+function propGroup(path: string): PropGroup   // Nhóm của một đường dẫn thuộc tính: theo tiền tố (keyboard.*, grid.*, animator.*…) rồi theo từ khoá ở tên cuối…
 function timelineRows(type: WidgetType, animate: Readonly<Record<string, Animation>> = {}): RowDef[]   // Dòng của một loại widget theo thứ tự hiện; `animate` để quyết định có hiện dòng Rộng/Cao (chỉ khi đã animate).
 const rowOfPath = (rows: readonly RowDef[], path: string) =>   // Dòng chứa đường dẫn `path` (vd. layout.y → dòng Vị trí).
 interface VKey
@@ -4158,4 +4162,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 11 thư mục src, 1901 ký hiệu công khai -->
+<!-- 11 thư mục src, 1905 ký hiệu công khai -->
