@@ -52,6 +52,17 @@ describe('Transport', () => {
     fireEvent.focus(box); fireEvent.change(box, { target: { value: '7' } }); fireEvent.blur(box);
     expect(pb.get().t).toBe(7);
   });
+  // T-128: jsdom không dàn trang nên chỉ kiểm cấu trúc (luật CSS kiểm ở lib/useStageWidth.test.ts); đo thật (không chữ số nào tràn khung ở 260–700 px) cần kiểm tay trên trình duyệt.
+  it('cột thời gian rộng theo nội dung (không bề rộng cố định), thanh tua là phần co; khung hẹp thì độ dài bài xuống dòng', () => {
+    const pb = createPlayback({ request: () => 1, cancel: () => {}, now: () => 0 }); pb.reset(754.5);
+    wrap(<Transport playback={pb} duration={754.5} />);
+    const dur = screen.getByTestId('transport-duration'), clock = screen.getByTestId('transport-time') as HTMLInputElement;
+    expect(dur.textContent).toBe('12:34.500');
+    expect(dur.className).not.toMatch(/\bw-\[/); expect(dur.className).toMatch(/\bshrink-0\b/); expect(dur.className).toMatch(/\bwhitespace-nowrap\b/); expect(dur.className).toMatch(/\btabular-nums\b/);
+    expect(clock.className).not.toMatch(/\bw-\[/); expect(clock.style.width).toMatch(/^calc\(9ch \+/); // "12:34.500" = 9 ký tự
+    const bar = screen.getByRole('slider').parentElement!;
+    expect(bar.className).toMatch(/\btp-bar\b/); expect(bar.className).toMatch(/\bflex-1\b/);
+  });
 });
 describe('Notices', () => {
   it('hiện văn bản đã dịch và chi tiết kỹ thuật', () => {
