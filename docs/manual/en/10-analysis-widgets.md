@@ -23,15 +23,15 @@ Besides the Piano roll and the text widgets, the Editor has fourteen widgets tha
 
 These three build an analysis board. A ready example: the `analysis-dashboard-16x9` preset.
 
-**Panel frame.** In **Settings**: **Number**, **Title**, **Number colour**; turn on **Frame around the content**, then set **Frame colour**, **Frame width**, **Fill colour** and **Fill opacity**. The bottom row has up to six columns (**Column 1** to **Column 6**), each with a **Label** and a **Value**; **Value** accepts [placeholders](08-placeholders.md), for example `{bpm}`. A column with both boxes empty is not shown.
+**Panel frame.** In **Settings**: **Number**, **Title**, **Number colour**; turn on the tick box in the **Frame** group title, then set **Frame colour**, **Frame width**, **Fill colour** and **Fill opacity**. The bottom row has up to six columns (**Column 1** to **Column 6**), each with a **Label** and a **Value**; **Value** accepts [placeholders](08-placeholders.md), for example `{bpm}`. A column with both boxes empty is not shown.
 
 **Chord degrees.** The key comes from the tonic you set in the Editor; if none is set, the widget finds the key in **Look-back window (s)**. Settings:
 
 - **Bars shown** and **Playhead position**.
 - **One chord per**: **Bar**, **Half bar**, **Beat** or **Every change**. Per bar keeps blocks tidy, so busy music does not break into slivers.
 - **Degree style**: `VIm7` or `vi7`.
-- **Text in block**: **Start**, **Middle** or **End** of the block. With **Keep text in view** on, when a block scrolls out past the left edge, its text stops at the left edge and follows the block until the block ends, like clip names in a DAW.
-- **Second row (each strike)**, **Function strip (T, SD, D)** and **Bar numbers** switch each part on or off. The function strip uses **Tonic colour (T)**, **Subdominant colour (SD)** and **Dominant colour (D)**.
+- **Text in block**: **Start**, **Middle** or **End** of the block. With **Keep text in view** on, when a block scrolls out past the left edge, its text stops at the left edge and follows the block until the block ends, like clip names in a DAW. With **End** chosen this box hides, since the text already sticks to the block's right edge.
+- **Second row** and **Function strip** are groups with a tick box in their title; together with **Bar numbers** they switch each part on or off. The function strip uses **Tonic colour (T)**, **Subdominant colour (SD)** and **Dominant colour (D)**.
 - **Current chord colour**, **Current chord text colour**, **Block colour**, **Second row colour**, **Opacity of played chords**, **Gap between blocks**.
 
 **Dot grid.** Each column is one step of the **Grid** (1/4, 1/8, 1/16, 1/32); each row is a pitch. Set **Columns**, **Pitch range** (**Fit notes** or **Custom** with **Lowest note (MIDI)** and **Highest note (MIDI)**), **Most rows** (with a wider range, several notes share a row), **Dot shape**, **Dot size**, **Note colour**, **Empty dot colour**, **Empty dot colour at the bottom**, **Empty dot opacity** and **Size of notes at the playhead**.

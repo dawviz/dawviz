@@ -410,6 +410,7 @@ dawviz/
 │  │  │  ├─ glow.test.ts
 │  │  │  ├─ helpers.ts
 │  │  │  ├─ hud.test.ts
+│  │  │  ├─ inert-props.test.ts
 │  │  │  ├─ insight.test.ts
 │  │  │  ├─ legacy.test.ts
 │  │  │  ├─ motion.test.ts
@@ -4180,6 +4181,7 @@ type SpectrumOut
 - `packages/render-core/test/fonts.test.ts`
 - `packages/render-core/test/glow.test.ts`
 - `packages/render-core/test/hud.test.ts`
+- `packages/render-core/test/inert-props.test.ts`
 - `packages/render-core/test/insight.test.ts`
 - `packages/render-core/test/legacy.test.ts`
 - `packages/render-core/test/motion.test.ts`
