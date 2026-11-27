@@ -288,12 +288,13 @@ export const deleteTextStyle = (d: Doc, id: string): Cmd | null => {
   return slice(d, 'deleteTextStyle', 'web.cmd.textStyleDelete', get, set, next, undefined, { name: name ?? id, n: TextStyles.styleUseCounts(d.scene)[id] ?? 0 });
 };
 /** Thêm widget (T-68). Một bước hoàn tác. */
-export const addWidget = (d: Doc, w: WidgetSpec): Cmd | null => {
+export const addWidget = (d: Doc, w: WidgetSpec, ref?: Record<string, unknown>): Cmd | null => {
   if (d.scene.widgets.some((x) => x.id === w.id)) return null;
-  // Cùng lệnh ghi mốc ↺ của widget mới = thuộc tính mặc định của nó (id từng dùng cho widget đã xoá không được thừa mốc cũ).
+  // Cùng lệnh ghi mốc ↺ của widget mới = thuộc tính mặc định của nó, hoặc `ref` (thuộc tính của mẫu trong hộp thoại Chữ: ↺ về mẫu).
+  // Id từng dùng cho widget đã xoá không được thừa mốc cũ.
   const get = (x: Doc) => ({ widgets: x.scene.widgets, propsRef: x.propsRef });
   const set = (x: Doc, v: { widgets: WidgetSpec[]; propsRef: Doc['propsRef'] }): Doc => ({ ...x, scene: { ...x.scene, widgets: v.widgets }, propsRef: v.propsRef });
-  return slice(d, 'addWidget', 'web.cmd.addWidget', get, set, { widgets: [...d.scene.widgets, w], propsRef: { ...d.propsRef, [w.id]: widgetDefaults(w.type) } }, undefined, { widget: w.id, type: w.type });
+  return slice(d, 'addWidget', 'web.cmd.addWidget', get, set, { widgets: [...d.scene.widgets, w], propsRef: { ...d.propsRef, [w.id]: ref ?? widgetDefaults(w.type) } }, undefined, { widget: w.id, type: w.type });
 };
 /** Thêm nhiều widget một lúc (nhân bản vùng chọn). */
 export const addWidgets = (d: Doc, ws: WidgetSpec[], refs: Doc['propsRef'] = {}, comps: Record<string, CompSpec> = {}): Cmd | null => {

@@ -30,6 +30,8 @@ const field = (re: RegExp) => { toLook(); return screen.getAllByRole('spinbutton
 const val = (re: RegExp) => String(Number(field(re).getAttribute('aria-valuenow'))); // giá trị đã chốt (không phải chữ đang gõ)
 const setVal = (re: RegExp, v: string) => { const el = field(re); fireEvent.focus(el); fireEvent.change(el, { target: { value: v } }); fireEvent.keyDown(el, { key: 'Enter' }); fireEvent.blur(el); };
 const OPACITY = /^(Opacity|Độ đục(?! khi))/, RADIUS = /^(Corner radius|Bo góc)/, GLOW = /^(Glow|Phát sáng)$/;
+/** Thêm chữ qua hộp thoại Chữ (D-78): menu Thêm → Chữ… → bấm mẫu. */
+const addText = (id = 'blank') => { fireEvent.click(screen.getByTestId('layers-add')); fireEvent.click(screen.getByTestId('add-text')); fireEvent.click(screen.getByTestId(`text-tpl-${id}`)); };
 /** jsdom không có elementFromPoint: giả lập theo toạ độ y. Trả hàm gỡ. */
 const fakePoint = (at: (y: number) => Element) => { Object.defineProperty(document, 'elementFromPoint', { configurable: true, writable: true, value: (_x: number, y: number) => at(y) }); return () => { delete (document as unknown as Record<string, unknown>).elementFromPoint; }; };
 const undoBtn = () => screen.getByTestId('undo-button') as HTMLButtonElement;
@@ -635,8 +637,7 @@ describe('thẻ Editor (T-68)', () => {
     fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
     const count = () => screen.getByTestId('layers').querySelectorAll('li').length;
     const n0 = count();
-    fireEvent.click(screen.getByTestId('layers-add'));
-    fireEvent.click(screen.getByRole('menuitem', { name: /^(Chord|Hợp âm)$/ }));
+    addText('CHORD_DETECTION');
     expect(count()).toBe(n0 + 1);
     expect(screen.getByTestId('editor-selected').textContent).toMatch(/(Chord|Hợp âm) 2/);
     const ids = [...screen.getByTestId('editor-props').querySelectorAll('section')].map((x) => x.getAttribute('data-testid'));
@@ -682,8 +683,7 @@ describe('thẻ Editor (T-68)', () => {
   it('Timeline keyframe: bật đồng hồ, thêm keyframe tại vạch phát, chỉnh đường cong ở Inspector, xoá bằng Delete; hoàn tác được', async () => {
     await openProject();
     fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
-    fireEvent.click(screen.getByTestId('layers-add'));
-    fireEvent.click(screen.getByRole('menuitem', { name: /^(Text box|Ô chữ)$/ }));
+    addText();
     await waitFor(() => expect(screen.getByTestId('editor-selected').textContent).toMatch(/(Text box|Ô chữ)/));
     // D-69: Timeline mở sẵn ở timeline lớp (tầng 1); nút Keyframe ở bảng Thuộc tính mở tầng 2 của lớp đang chọn.
     expect(screen.getByTestId('timeline-panel')).toHaveAttribute('data-open');
@@ -728,8 +728,7 @@ describe('thẻ Editor (T-68)', () => {
   it('Timeline: chọn hàng thuộc tính để đổi sang Theo nhạc ở Inspector, làn hiện thanh Theo nhạc; bỏ hoạt hình, hoàn tác', async () => {
     await openProject();
     fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
-    fireEvent.click(screen.getByTestId('layers-add'));
-    fireEvent.click(screen.getByRole('menuitem', { name: /^(Text box|Ô chữ)$/ }));
+    addText();
     await waitFor(() => expect(screen.getByTestId('editor-selected').textContent).toMatch(/(Text box|Ô chữ)/));
     fireEvent.click(screen.getByTestId('props-open-keys'));
     fireEvent.click(await screen.findByTestId('tl-row-opacity'));
@@ -745,8 +744,7 @@ describe('thẻ Editor (T-68)', () => {
   it('Timeline: nhấn ◆ rồi kéo qua các dòng khác đặt keyframe tại vạch phát cho cả dòng đi qua, một bước hoàn tác', async () => {
     await openProject();
     fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
-    fireEvent.click(screen.getByTestId('layers-add'));
-    fireEvent.click(screen.getByRole('menuitem', { name: /^(Text box|Ô chữ)$/ }));
+    addText();
     await waitFor(() => expect(screen.getByTestId('editor-selected').textContent).toMatch(/(Text box|Ô chữ)/));
     fireEvent.click(screen.getByTestId('props-open-keys'));
     await screen.findByTestId('keyframe-timeline');
@@ -799,8 +797,7 @@ describe('thẻ Editor (T-68)', () => {
   it('T-73: thêm Ô chữ, gõ { hiện gợi ý chỗ giữ, bấm gợi ý điền {tên}; Enter ở ô nhiều dòng không áp, rời ô mới áp (một bước hoàn tác)', async () => {
     await openProject();
     fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
-    fireEvent.click(screen.getByTestId('layers-add'));
-    fireEvent.click(screen.getByRole('menuitem', { name: /^(Text box|Ô chữ)$/ }));
+    addText();
     const box = within(screen.getByTestId('widget-settings')).getByRole('textbox') as HTMLTextAreaElement;
     expect(box.tagName).toBe('TEXTAREA');
     expect(screen.queryByTestId('placeholder-hints')).toBeNull();
@@ -818,8 +815,7 @@ describe('thẻ Editor (T-68)', () => {
   it('T-73: nút {bpm}/{title} dưới ô chữ chèn tên tại con trỏ trong một bước hoàn tác', async () => {
     await openProject();
     fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
-    fireEvent.click(screen.getByTestId('layers-add'));
-    fireEvent.click(screen.getByRole('menuitem', { name: /^(Text box|Ô chữ)$/ }));
+    addText();
     const quick = screen.getByTestId('placeholder-quick');
     expect(quick.textContent).toBe('{bpm}{title}');
     const box = within(screen.getByTestId('widget-settings')).getByRole('textbox') as HTMLTextAreaElement;
@@ -831,8 +827,7 @@ describe('thẻ Editor (T-68)', () => {
   it('T-73: Ô chữ chọn track riêng (Cơ bản): Chọn track hiện danh sách; bấm một dòng, Bỏ chọn/Chọn tất cả, kéo qua nhiều dòng là MỘT bước hoàn tác', async () => {
     await openProject();
     fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
-    fireEvent.click(screen.getByTestId('layers-add'));
-    fireEvent.click(screen.getByRole('menuitem', { name: /^(Text box|Ô chữ)$/ }));
+    addText();
     const boxes = () => within(screen.getByTestId('widget-tracks')).queryAllByRole('checkbox');
     const on = () => boxes().map((b) => b.getAttribute('aria-checked') === 'true');
     expect(boxes()).toHaveLength(0);
@@ -972,8 +967,7 @@ describe('thẻ Editor (T-68)', () => {
   it('mốc ↺ của widget mới là mặc định của loại; Ô chữ: Chọn track có ↺ về "Mọi track đang hiện"', async () => {
     await openProject();
     fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
-    fireEvent.click(screen.getByTestId('layers-add'));
-    fireEvent.click(screen.getByRole('menuitem', { name: /^(Text box|Ô chữ)$/ }));
+    addText();
     const picker = () => within(screen.getByTestId('widget-tracks'));
     expect(picker().queryAllByTestId('reset')).toHaveLength(0);
     fireEvent.click(picker().getByRole('radio', { name: /^(Choose|Chọn track)$/ }));
@@ -1145,6 +1139,29 @@ describe('thẻ Editor (T-68)', () => {
     await waitFor(() => { for (const id of ['t0', 't1']) expect(screen.getByTestId(`music-hide-${id}`)).toBeDisabled(); });
     fireEvent.click(lockAll);
     await waitFor(() => { for (const id of ['t0', 't1']) expect(screen.getByTestId(`music-hide-${id}`)).not.toBeDisabled(); });
+  });
+  it('hộp thoại Chữ (D-78): menu Thêm chỉ còn một mục Chữ; rê chuột đổi ảnh xem trước; Esc không thêm gì; bấm một lần thêm mẫu, ↺ về mẫu, hoàn tác một bước', async () => {
+    await openProject();
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    const layers = () => screen.getByTestId('layers').querySelectorAll('li').length, n0 = layers();
+    fireEvent.click(screen.getByTestId('layers-add'));
+    const items = screen.getAllByRole('menuitem').map((b) => b.textContent);
+    expect(items[0]).toMatch(/^(Text…|Chữ…)$/);
+    for (const name of [/^(Text box|Ô chữ)$/, /^(Chord|Hợp âm)$/, /^(Lyrics|Lời bài hát)$/, /^(Song info|Tên bài và nghệ sĩ)$/]) expect(items.some((x) => name.test(x ?? ''))).toBe(false);
+    expect(screen.getByTestId('add-PANEL')).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('add-text'));
+    const dlg = screen.getByTestId('text-dialog');
+    expect(within(dlg).getByTestId('scene-canvas')).toBeInTheDocument();
+    fireEvent.mouseEnter(within(dlg).getByTestId('text-tpl-LYRICS'));
+    expect(within(dlg).getByTestId('text-dialog-preview').textContent).toMatch(/Lyrics|Lời bài hát/);
+    fireEvent.keyDown(dlg, { key: 'Escape' });
+    expect(screen.queryByTestId('text-dialog')).toBeNull();
+    expect(layers()).toBe(n0);
+    addText('titleArtist');
+    expect(screen.queryByTestId('text-dialog')).toBeNull();
+    await waitFor(() => expect(layers()).toBe(n0 + 1));
+    expect(undoBtn().title).toMatch(/Add|Thêm/);
+    ctrlZ(); await waitFor(() => expect(layers()).toBe(n0));
   });
   it('Dán preset (D-69): dán JSON vào ô ở cột Phong cách video → preset được thêm và áp; JSON hỏng báo lỗi, không đổi gì', async () => {
     await openProject();

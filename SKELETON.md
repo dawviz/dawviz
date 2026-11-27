@@ -85,6 +85,7 @@ dawviz/
 │     │  │  ├─ StatusIcon.tsx
 │     │  │  ├─ StylePanel.tsx
 │     │  │  ├─ TempoPanel.tsx
+│     │  │  ├─ TextDialog.tsx
 │     │  │  ├─ TextPanel.tsx
 │     │  │  ├─ ThemeSelect.tsx
 │     │  │  ├─ TimeField.tsx
@@ -226,6 +227,8 @@ dawviz/
 │     │  │  ├─ textRef.ts
 │     │  │  ├─ textStyles.test.ts
 │     │  │  ├─ textStyles.ts
+│     │  │  ├─ textTemplates.test.ts
+│     │  │  ├─ textTemplates.ts
 │     │  │  ├─ theme.test.ts
 │     │  │  ├─ theme.ts
 │     │  │  ├─ thumbnails.ts
@@ -2382,6 +2385,15 @@ Ghi đè tempo (T-10, REQ-PARSER-07, D-24). Cơ bản: một ô BPM. Nâng cao: 
 function TempoPanel({ source, draft, overridden, busy, advanced, onApply, onClear }: { source: string; draft: TempoDraft | null; overridden: boolean; busy: boolean; advanced: boolean; onApply(override: TempoOverride, draft: TempoDraft): void; onClear(): void; })
 ```
 
+#### `apps/web/src/components/TextDialog.tsx`
+
+Hộp thoại Chữ (D-78, T-138): mục **Chữ** của menu Thêm mở hộp thoại này. Bên trái là các mẫu (Ô chữ điền sẵn chỗ giữ; widget chữ có phần vẽ riêng),
+
+```text
+const templateLabelKey = (tpl: TextTemplate) =>   // Tên hiện của một mẫu: mẫu Ô chữ có khoá riêng, widget có phần vẽ riêng dùng tên mô tả phần vẽ đó.
+function TextDialog({ scene, fontsReady, onPick, onClose }: { scene: SceneDocument; fontsReady: boolean; onPick(tpl: TextTemplate): void; onClose(): void })
+```
+
 #### `apps/web/src/components/TextPanel.tsx`
 
 Mục "Chữ" của bảng Thuộc tính (T-72, SRS REQ-GRAPHICS-18, giao diện): sửa kiểu chữ của từng chỗ chữ trong widget.
@@ -2795,7 +2807,7 @@ type TextStylesKind   // Đổi bộ kiểu chữ của scene ("Lưu thành ki�
 const setTextStyles = (d: Doc, styles: TextStyleSet, widgetId: string, field: string, ref: TextRef, kind: TextStylesKind) =>
 const renameTextStyle = (d: Doc, id: string, name: string) =>   // Đổi tên một kiểu chữ của dự án (T-126). Chạy trên Doc gốc: kiểu là của cả dự án.
 const deleteTextStyle = (d: Doc, id: string) =>   // Xoá kiểu chữ người dùng tạo (T-126): mọi chỗ chữ đang dùng nó, ở gốc và trong mọi precomp, về kiểu gốc của ch…
-const addWidget = (d: Doc, w: WidgetSpec) =>   // Thêm widget (T-68). Một bước hoàn tác.
+const addWidget = (d: Doc, w: WidgetSpec, ref?: Record<string, unknown>) =>   // Thêm widget (T-68). Một bước hoàn tác.
 const addWidgets = (d: Doc, ws: WidgetSpec[], refs: Doc['propsRef'] = {}, comps: Record<string, CompSpec> = {}) =>   // Thêm nhiều widget một lúc (nhân bản vùng chọn).
 const removeWidgets = (d: Doc, ids: readonly string[]) =>   // Xoá widget (T-68). Hoàn tác trả widget về đúng chỗ trong tài liệu (giữ thứ tự và zIndex). Con của widget bị x…
 function parentCandidates(scene: SceneDocument, id: string): string[]   // Widget có thể làm cha của `id`: mọi widget khác trừ chính nó và con cháu của nó (tránh vòng lặp).
@@ -3765,6 +3777,21 @@ const loadLibrary = () =>
 const saveLibrary = (lib: readonly LibraryStyle[]) =>
 ```
 
+#### `apps/web/src/lib/textTemplates.ts`
+
+Mẫu của hộp thoại Chữ (D-78, T-138): menu Thêm chỉ còn một mục Chữ; hộp thoại liệt kê Ô chữ điền sẵn chỗ giữ và các widget chữ có
+
+```text
+interface TextTemplate   // `box`: Ô chữ (`TEXT`) điền sẵn; `drawn`: widget chữ có phần vẽ riêng (vẫn là loại riêng, đọc preset cũ như tr…
+const TEXT_TEMPLATES
+const TEXT_WIDGET_TYPES   // Loại widget chữ: không hiện riêng ở menu Thêm nữa mà đi qua hộp thoại Chữ. Tên bài và nghệ sĩ (TRACK_INFO) và…
+const menuWidgets = (all: readonly WidgetType[]) =>   // Các loại còn lại của menu Thêm, theo thứ tự cũ.
+function widgetFromTemplate(scene: SceneDocument, tpl: TextTemplate, center?: { x: number; y: number }): WidgetSpec   // Widget mới theo mẫu: như `createWidget` rồi ghi đè thuộc tính của mẫu (sâu một tầng cho kiểu chữ).
+function demoAst(): UnifiedProjectAST   // Bốn ô nhịp C – Am – F – G, giai điệu đen, hai marker và một dòng lời. Tất định, dựng một lần.
+const PREVIEW_T   // Thời điểm của ảnh xem trước: ô nhịp 2 (Am), phách 2, giữa một nốt giai điệu và một âm tiết.
+function previewOf(tpl: TextTemplate, base: SceneDocument):    // Scene của ảnh xem trước: chỉ một widget theo mẫu, cỡ như khi thêm vào khung `base` (bề rộng tối đa 720 pt để …
+```
+
 #### `apps/web/src/lib/theme.ts`
 
 Theme giao diện ứng dụng (REQ-UI-10, D-52): chỉ đổi màu qua bộ token cố định (UI-DIRECTION mục 5.2, 5.4).
@@ -4201,6 +4228,7 @@ type SpectrumOut
 - `apps/web/src/lib/tempoRows.test.ts`
 - `apps/web/src/lib/textRef.test.ts`
 - `apps/web/src/lib/textStyles.test.ts`
+- `apps/web/src/lib/textTemplates.test.ts`
 - `apps/web/src/lib/theme.test.ts`
 - `apps/web/src/lib/timeText.test.ts`
 - `apps/web/src/lib/timeline.test.ts`
@@ -4263,4 +4291,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 11 thư mục src, 1960 ký hiệu công khai -->
+<!-- 11 thư mục src, 1970 ký hiệu công khai -->

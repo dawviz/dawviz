@@ -28,6 +28,8 @@ Khi đang gõ trong một ô nhập, các phím này dùng cho ô đó.
 | Shift + mũi tên | Dịch 10 điểm |
 | Esc | Bỏ chọn; không chọn gì thì ra khỏi precomp đang mở |
 | Esc (trong ô **Tìm thiết lập…**) | Xoá chữ tìm, không bỏ chọn widget |
+| ↑ / ↓ (trong hộp thoại **Thêm chữ**) | Đi giữa các mẫu, ảnh xem trước đổi theo; Enter thêm mẫu đang chọn |
+| Esc (trong hộp thoại **Thêm chữ**) | Đóng, không thêm gì |
 | Delete | Xoá widget đang chọn |
 | Ctrl+D | Nhân bản widget đang chọn (lớp precomp thành một bản độc lập; lớp đã khoá không nhân bản) |
 | Ctrl+A (⌘A) | Chọn tất cả các lớp |
