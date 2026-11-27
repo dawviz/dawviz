@@ -963,7 +963,7 @@ const HUD_SANITIZERS = {
       tonicColor: c('tonicColor'), subdominantColor: c('subdominantColor'), dominantColor: c('dominantColor'), playheadColor: hexOpt(S, P.playheadColor, d.playheadColor, `${p}.playheadColor`),
       radius: S.num(P.radius, d.radius, 0, 40, `${p}.radius`), gap: S.num(P.gap, d.gap, 0, 40, `${p}.gap`),
       labelStyle: textRef(S, P.labelStyle, d.labelStyle, `${p}.labelStyle`), smallStyle: textRef(S, P.smallStyle, d.smallStyle, `${p}.smallStyle`),
-      labelAlign: S.oneOf(P.labelAlign, DEGREE_LABEL_ALIGNS, d.labelAlign, `${p}.labelAlign`), labelSticky: S.bool(P.labelSticky, d.labelSticky, `${p}.labelSticky`) };
+      labelAlign: S.oneOf(P.labelAlign, DEGREE_LABEL_ALIGNS, d.labelAlign, `${p}.labelAlign`), labelSticky: S.bool(P.labelSticky, d.labelSticky, `${p}.labelSticky`), showChordName: S.bool(P.showChordName, d.showChordName, `${p}.showChordName`) };
   },
   DOTS(P: Obj, p: string, S: Sanitizer): DotsProps {
     const d = DEFAULT_DOTS;
@@ -974,7 +974,9 @@ const HUD_SANITIZERS = {
       emptyColor: hexp(S, P.emptyColor, d.emptyColor, `${p}.emptyColor`), emptyColorB: hexOpt(S, P.emptyColorB, d.emptyColorB, `${p}.emptyColorB`), emptyAlpha: S.num(P.emptyAlpha, d.emptyAlpha, 0, 1, `${p}.emptyAlpha`),
       colorMode: S.oneOf(P.colorMode, ['TRACK', 'SOLID'] as const, d.colorMode, `${p}.colorMode`), color: hexp(S, P.color, d.color, `${p}.color`),
       upcomingAlpha: S.num(P.upcomingAlpha, d.upcomingAlpha, 0, 1, `${p}.upcomingAlpha`), activeScale: S.num(P.activeScale, d.activeScale, 1, 3, `${p}.activeScale`),
-      playheadColor: hexOpt(S, P.playheadColor, d.playheadColor, `${p}.playheadColor`), playheadWidth: S.num(P.playheadWidth, d.playheadWidth, 0, 10, `${p}.playheadWidth`) };
+      playheadColor: hexOpt(S, P.playheadColor, d.playheadColor, `${p}.playheadColor`), playheadWidth: S.num(P.playheadWidth, d.playheadWidth, 0, 10, `${p}.playheadWidth`),
+      velocitySize: S.bool(P.velocitySize, d.velocitySize, `${p}.velocitySize`), velocityMin: S.num(P.velocityMin, d.velocityMin, 0.05, 1, `${p}.velocityMin`),
+      beatLines: S.bool(P.beatLines, d.beatLines, `${p}.beatLines`), rowLabels: S.bool(P.rowLabels, d.rowLabels, `${p}.rowLabels`), labelStyle: textRef(S, P.labelStyle, d.labelStyle, `${p}.labelStyle`) };
   },
   ARRANGEMENT(P: Obj, p: string, S: Sanitizer): ArrangementProps {
     const d = DEFAULT_ARRANGEMENT;

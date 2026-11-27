@@ -67,6 +67,8 @@ const CASES: Case[] = [
     shown: { lines: { played: { enabled: true }, total: { enabled: true }, progress: { enabled: false }, tempo: { enabled: false } } } },
   // Lưới chấm, Bố cục bài: không có vạch phát (màu rỗng) thì độ dày vạch không có tác dụng
   { type: 'DOTS', prop: 'playheadWidth', values: NUM(1, 4), hidden: [{ playheadColor: '' }], shown: { playheadColor: '#ffffff' } },
+  // Lưới chấm: cỡ tối thiểu chỉ dùng khi chấm co theo cường độ
+  { type: 'DOTS', prop: 'velocityMin', values: NUM(0.2, 0.6), hidden: [{ velocitySize: false }], shown: { velocitySize: true } },
   { type: 'ARRANGEMENT', prop: 'playheadWidth', values: NUM(1, 6), hidden: [{ playheadColor: '' }], shown: { playheadColor: '#ffffff' } },
 ];
 

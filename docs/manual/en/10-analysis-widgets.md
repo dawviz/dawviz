@@ -31,10 +31,11 @@ These three build an analysis board. A ready example: the `analysis-dashboard-16
 - **One chord per**: **Bar**, **Half bar**, **Beat** or **Every change**. Per bar keeps blocks tidy, so busy music does not break into slivers.
 - **Degree style**: `VIm7` or `vi7`.
 - **Text in block**: **Start**, **Middle** or **End** of the block. With **Keep text in view** on, when a block scrolls out past the left edge, its text stops at the left edge and follows the block until the block ends, like clip names in a DAW. With **End** chosen this box hides, since the text already sticks to the block's right edge.
+- **Chord name under the degree**: each block of the main row gets two tiers, the degree large and the chord name small below it (once the key is known and the block is tall enough).
 - **Second row** and **Function strip** are groups with a tick box in their title; together with **Bar numbers** they switch each part on or off. The function strip uses **Tonic colour (T)**, **Subdominant colour (SD)** and **Dominant colour (D)**.
 - **Current chord colour**, **Current chord text colour**, **Block colour**, **Second row colour**, **Opacity of played chords**, **Gap between blocks**.
 
-**Dot grid.** Each column is one step of the **Grid** (1/4, 1/8, 1/16, 1/32); each row is a pitch. Set **Columns**, **Pitch range** (**Fit notes** or **Custom** with **Lowest note (MIDI)** and **Highest note (MIDI)**), **Most rows** (with a wider range, several notes share a row), **Dot shape**, **Dot size**, **Note colour**, **Empty dot colour**, **Empty dot colour at the bottom**, **Empty dot opacity** and **Size of notes at the playhead**.
+**Dot grid.** Each column is one step of the **Grid** (1/4, 1/8, 1/16, 1/32); each row is a pitch. Set **Columns**, **Pitch range** (**Fit notes** or **Custom** with **Lowest note (MIDI)** and **Highest note (MIDI)**), **Most rows** (with a wider range, several notes share a row), **Dot shape**, **Dot size**, **Note colour**, **Empty dot colour**, **Empty dot colour at the bottom**, **Empty dot opacity** and **Size of notes at the playhead**. Extra touches: **Dot size by velocity** (louder notes get bigger dots, down to **Dot size at lowest velocity**), the **Beat lines** group (thin lines on every beat, heavier every four beats) and the **Labels** group (**C note names on the left**, in a column outside the dot grid).
 
 ## Pitch wheel: more options
 

@@ -31,10 +31,11 @@ Ba widget này dùng để dựng bảng phân tích. Mẫu có sẵn: preset `a
 - **Mỗi khối một hợp âm theo**: **Ô nhịp**, **Nửa ô nhịp**, **Phách** hoặc **Mỗi lần đổi**. Chọn theo ô nhịp thì khối gọn, nhạc nhiều nốt không bị vụn.
 - **Cách viết bậc**: `VIm7` hoặc `vi7`.
 - **Chữ trong khối**: **Đầu**, **Giữa** hoặc **Cuối** khối. Bật **Giữ chữ trong khung** thì khi khối trôi ra mép trái, chữ dừng ở mép trái và đi theo khối tới hết khối, như tên clip trong DAW. Chọn **Cuối** thì ô này ẩn, vì chữ đã luôn bám mép phải của khối.
+- **Tên hợp âm nhỏ dưới bậc**: mỗi khối ở hàng chính có hai tầng, bậc to ở trên, tên hợp âm nhỏ ngay dưới (khi đã biết giọng và khối đủ cao).
 - **Hàng thứ hai** và **Dải chức năng** là hai nhóm có ô tick ở tiêu đề; cùng với **Số ô nhịp**, chúng bật hoặc tắt từng phần. Dải chức năng tô màu theo **Màu chủ (T)**, **Màu hạ át (SD)**, **Màu át (D)**.
 - **Màu hợp âm đang chơi**, **Màu chữ hợp âm đang chơi**, **Màu khối**, **Màu hàng thứ hai**, **Độ đục hợp âm đã qua**, **Khoảng cách giữa các khối**.
 
-**Lưới chấm.** Mỗi cột là một bước của **Lưới** (1/4, 1/8, 1/16, 1/32), mỗi hàng là một cao độ. Chỉnh **Số cột**, **Dải cao độ** (**Vừa các nốt** hoặc **Tự đặt** với **Nốt thấp nhất (MIDI)** và **Nốt cao nhất (MIDI)**), **Số hàng tối đa** (dải rộng hơn thì nhiều nốt chung một hàng), **Hình chấm**, **Cỡ chấm**, **Màu nốt**, **Màu chấm trống**, **Màu chấm trống ở đáy**, **Độ đục chấm trống** và **Cỡ nốt tại vạch phát**.
+**Lưới chấm.** Mỗi cột là một bước của **Lưới** (1/4, 1/8, 1/16, 1/32), mỗi hàng là một cao độ. Chỉnh **Số cột**, **Dải cao độ** (**Vừa các nốt** hoặc **Tự đặt** với **Nốt thấp nhất (MIDI)** và **Nốt cao nhất (MIDI)**), **Số hàng tối đa** (dải rộng hơn thì nhiều nốt chung một hàng), **Hình chấm**, **Cỡ chấm**, **Màu nốt**, **Màu chấm trống**, **Màu chấm trống ở đáy**, **Độ đục chấm trống** và **Cỡ nốt tại vạch phát**. Thêm: **Cỡ chấm theo cường độ** (nốt mạnh chấm to hơn, nhỏ nhất tới **Cỡ chấm ở cường độ nhỏ nhất**), nhóm **Vạch phách** (vạch mảnh mỗi phách, đậm hơn mỗi bốn phách) và nhóm **Nhãn** (**Tên nốt C ở cột trái**, nằm ở cột riêng ngoài lưới chấm).
 
 ## Vòng cao độ: tuỳ chọn thêm
 
