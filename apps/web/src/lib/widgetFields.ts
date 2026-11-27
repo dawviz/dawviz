@@ -333,6 +333,7 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['activeScale'], 'num', 'dtActiveScale', { adv: true, when: dotShape, num: { min: 1, max: 3, step: 0.1 } }),
     L(['velocitySize'], 'check', 'dtVelocitySize', { when: dotShape }),
     L(['velocityMin'], 'num', 'dtVelocityMin', { when: (P) => dotShape(P) && !!P.velocitySize, num: { min: 0.05, max: 1, step: 0.05 } }),
+    L(['smooth'], 'check', 'ngSmooth', { when: win }),
     L(['beatLines'], 'check', 'dtBeatLines', { when: win }),
     L(['rowLabels'], 'check', 'ngRowLabels'),
     L(['colorMode'], 'choice', 'inColorMode', { options: ['TRACK', 'SOLID'], prefix: 'web.ws.inColor.' }),
@@ -568,7 +569,7 @@ export const WIDGET_SECTIONS: Readonly<Partial<Record<WidgetType, readonly Secti
   NOTE_GRID: [
     SEC('range', ['pitchRangeMode', 'pitchMin', 'pitchMax']),
     SEC('cells', ['shape', 'dotSize', 'cellGap', 'rowGap', 'activeScale', 'velocitySize', 'velocityMin']),
-    SEC('grid', ['beatLines'], { head: 'beatLines' }),
+    SEC('grid', ['smooth', 'beatLines']),
     SEC('labels', ['rowLabels'], { head: 'rowLabels' }),
     SEC('colour', ['colorMode', 'color', 'minAlpha', 'upcomingAlpha', 'emptyColor', 'emptyColorB', 'emptyAlpha']),
     SEC('playhead', ['playheadRatio', 'playheadColor', 'playheadMark', 'playheadWidth']),

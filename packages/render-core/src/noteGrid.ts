@@ -62,6 +62,8 @@ export interface NoteGridProps {
   beatLines: boolean;
   /** Cột nhãn bên trái lưới: tên track, hoặc tên nốt C khi hàng theo cao độ. */
   rowLabels: boolean; labelStyle: TextRef;
+  /** Quanh vạch phát: lưới trôi liên tục từng pixel (như Piano Roll) thay vì nhảy nguyên cột; vạch phát và khung cột đứng yên. */
+  smooth: boolean;
   /** Vạch phát: vạch dọc hoặc khung quanh cột đang phát; màu rỗng = không vẽ. */
   playheadMark: GridMark; playheadColor: string; playheadWidth: number;
   /** Dòng chữ phía trên lưới (chỗ giữ `{poly}` = số nốt đang vang). */
@@ -73,7 +75,7 @@ export const DEFAULT_NOTE_GRID: Readonly<NoteGridProps> = Object.freeze({
   pitchRangeMode: 'FIT_CONTENT', pitchMin: 36, pitchMax: 96, maxRows: 32, rowGap: 2, cellGap: 0.5, dotSize: 0.6, activeScale: 1.5,
   colorMode: 'TRACK', color: '#8aa4ff', minAlpha: 0.08, upcomingAlpha: 0.4, emptyColor: '', emptyColorB: '', emptyAlpha: 0,
   velocitySize: false, velocityMin: 0.4, beatLines: false, rowLabels: false, labelStyle: ts('label'),
-  playheadMark: 'LINE', playheadColor: '#ffffff', playheadWidth: 2, showPolyphony: false, polyTemplate: 'Voices: {poly}', polyStyle: ts('caption'),
+  smooth: true, playheadMark: 'LINE', playheadColor: '#ffffff', playheadWidth: 2, showPolyphony: false, polyTemplate: 'Voices: {poly}', polyStyle: ts('caption'),
 }) as Readonly<NoteGridProps>;
 
 // ───────────────────────────── preset cũ ─────────────────────────────
@@ -103,7 +105,7 @@ const LEGACY: Record<LegacyGridType, { d: Obj; cols: [number, number]; set: (P: 
       emptyColor: '#c7a3bb', emptyColorB: '#8fd3cb', emptyAlpha: 0.45, colorMode: 'SOLID', color: '#ff3d8b', upcomingAlpha: 0.3, activeScale: 1.5,
       playheadColor: '#333344', playheadWidth: 1.5, velocitySize: false, velocityMin: 0.4, beatLines: false, rowLabels: false, labelStyle: ts('label') },
     cols: [8, 256],
-    set: () => ({ rows: 'PITCH', span: 'WINDOW', light: 'NOTES', rowGap: 0, cellGap: 0, playheadMark: 'COLUMN', showPolyphony: false }),
+    set: () => ({ rows: 'PITCH', span: 'WINDOW', light: 'NOTES', smooth: false, rowGap: 0, cellGap: 0, playheadMark: 'COLUMN', showPolyphony: false }),
   },
 };
 /** Thuộc tính thô của một widget loại cũ → thuộc tính thô của NOTE_GRID (còn qua bộ kiểm). Chỉ lấy các khoá loại cũ có; khoá vắng lấy mặc định cũ. */
@@ -145,20 +147,22 @@ export const noteGridRenderer: WidgetRenderer<NoteGridProps> = {
     const gx = !p.rowLabels ? 0 : byPitch ? Math.round(lst.size * 2.8) : Math.min(Math.round(W * 0.4), Math.ceil(Math.max(0, ...list.map((ti) => T.width(ti.track.name, lst)))) + 8);
     const cw = (W - gx) / cols, rh = Math.max(1, (H - top - p.rowGap * (rows - 1)) / rows), rowY = (r: number) => top + r * (rh + p.rowGap);
     // Ô: 0 trống, 1 có nốt đã/đang phát, 2 có nốt chưa phát; số nốt, cường độ lớn nhất, màu.
-    const N = rows * cols, state = new Int8Array(N), cnt = new Int32Array(N), vel = new Uint8Array(N), color: string[] = new Array(N);
+    const sm = win && p.smooth, nc = sm ? cols + 1 : cols; // cột thừa ở mép phải để lấp chỗ trống khi trôi
+    const N = rows * nc, state = new Int8Array(N), cnt = new Int32Array(N), vel = new Uint8Array(N), color: string[] = new Array(N);
     const colorOf = (ti: TrackIndex) => (p.colorMode === 'TRACK' ? ti.track.color : p.color);
-    let cur: number, s0 = 0, nowStep = 0;
+    let cur: number, s0 = 0, nowStep = 0, off = 0;
     if (win) {
       const ppq = ast.meta.internalPPQ || 960, stepT = ppq * 4 / Math.max(1, p.grid), map = ast.tempoMap as never;
       nowStep = secToTick(map, Math.max(0, t)) / stepT;
-      cur = Math.min(cols - 1, Math.max(0, Math.round(p.playheadRatio * cols))); s0 = Math.floor(nowStep) - cur; // cột vạch phát cố định, lưới cuộn nguyên cột
-      const t0 = tickToSec(map, Math.max(0, s0 * stepT)), t1 = tickToSec(map, Math.max(0, (s0 + cols) * stepT)), now = Math.floor(nowStep);
+      cur = Math.min(cols - 1, Math.max(0, Math.round(p.playheadRatio * cols))); s0 = Math.floor(nowStep) - cur; // cột vạch phát cố định
+      if (sm) off = nowStep - Math.floor(nowStep); // trôi mượt: dời lưới sang trái một phần cột
+      const t0 = tickToSec(map, Math.max(0, s0 * stepT)), t1 = tickToSec(map, Math.max(0, (s0 + nc) * stepT)), now = Math.floor(nowStep);
       list.forEach((ti, ri) => {
         for (const n of notesInRange(ti, t0, t1)) {
           if (byPitch && (n.channel === 9 || n.pitch < lo || n.pitch > hi)) continue;
-          const a = Math.max(0, Math.floor(n.startTick / stepT) - s0), b = Math.min(cols - 1, Math.ceil(n.endTick / stepT) - 1 - s0), r = byPitch ? rowOf(n.pitch) : ri;
+          const a = Math.max(0, Math.floor(n.startTick / stepT) - s0), b = Math.min(nc - 1, Math.ceil(n.endTick / stepT) - 1 - s0), r = byPitch ? rowOf(n.pitch) : ri;
           for (let c = a; c <= b; c++) {
-            const i = r * cols + c; cnt[i]++; vel[i] = Math.max(vel[i], n.velocity);
+            const i = r * nc + c; cnt[i]++; vel[i] = Math.max(vel[i], n.velocity);
             if (state[i] !== 1) { state[i] = s0 + c <= now ? 1 : 2; color[i] = colorOf(ti); }
           }
         }
@@ -185,9 +189,10 @@ export const noteGridRenderer: WidgetRenderer<NoteGridProps> = {
     }
     if (win && p.beatLines && cw >= 2) {
       const per = Math.max(1, p.grid / 4), mod = (n: number, m: number) => ((n % m) + m) % m;
-      for (let c = 0; c <= cols; c++) {
+      for (let c = 0; c <= nc; c++) {
         const s = s0 + c; if (mod(s, per) !== 0) continue;
-        out.push(rect(gx + c * cw - 0.4, top, 0.8, H - top, p.emptyColor || '#888888', mod(s, p.grid) === 0 ? 0.55 : 0.25));
+        const bx = gx + (c - off) * cw; if (bx < gx || bx > W) continue;
+        out.push(rect(bx - 0.4, top, 0.8, H - top, p.emptyColor || '#888888', mod(s, p.grid) === 0 ? 0.55 : 0.25));
       }
     }
     if (p.rowLabels) {
@@ -199,39 +204,43 @@ export const noteGridRenderer: WidgetRenderer<NoteGridProps> = {
         }
       } else list.forEach((ti, r) => T.text(out, ti.track.name, gx - 5, rowY(r) + rh / 2 + lst.size * 0.35, lst, 'right', Math.max(1, gx - 5), 1));
     }
+    // Trôi mượt: ô nhô ra ngoài vùng lưới [gx, W] bị cắt thay vì tràn (không có vùng cắt trong primitive).
+    const clipX = (x: number, w: number): [number, number] | null => { const a = Math.max(x, gx), b = Math.min(x + w, W); return b - a > 0.01 ? [a, b - a] : null; };
     const dot = p.shape === 'SQUARE' || p.shape === 'ROUND', round = p.shape === 'ROUND';
     const d = Math.max(0.5, Math.min(cw, rh) * Math.min(1, Math.max(0.05, p.dotSize))), bh = Math.max(0.5, rh * Math.min(1, Math.max(0.05, p.dotSize)));
     for (let r = 0; r < rows; r++) {
       const y = rowY(r), rowColor = byPitch ? p.color : colorOf(list[r]);
       const empty = !p.emptyColor ? rowColor : p.emptyColorB ? mixHex(p.emptyColor, p.emptyColorB, rows > 1 ? r / (rows - 1) : 0) : p.emptyColor;
-      let mx = 0; if (p.light === 'DENSITY') for (let c = 0; c < cols; c++) mx = Math.max(mx, cnt[r * cols + c]);
+      let mx = 0; if (p.light === 'DENSITY') for (let c = 0; c < nc; c++) mx = Math.max(mx, cnt[r * nc + c]);
       const fillOf = (i: number) => (state[i] ? color[i] : empty);
       const alphaOf = (i: number) => {
         const v = state[i]; if (!v) return p.emptyAlpha;
         const a = p.light === 'NOTES' ? 1 : p.minAlpha + (1 - p.minAlpha) * (p.light === 'DENSITY' ? cnt[i] / Math.max(1, mx) : Math.min(1, vel[i] / 127));
         return v === 2 ? a * p.upcomingAlpha : a;
       };
-      for (let c = 0; c < cols; c++) {
-        const i = r * cols + c, v = state[i];
+      for (let c = 0; c < nc; c++) {
+        const i = r * nc + c, v = state[i];
         if (v === 0 && p.emptyAlpha <= 0) continue;
-        if (p.shape === 'FILL') { out.push(rect(gx + c * cw, y, Math.max(0.5, cw - p.cellGap), rh, fillOf(i), alphaOf(i))); continue; }
+        if (p.shape === 'FILL') { const q = clipX(gx + (c - off) * cw, Math.max(0.5, cw - p.cellGap)); if (q) out.push(rect(q[0], y, q[1], rh, fillOf(i), alphaOf(i))); continue; }
         if (dot) {
-          const cx = gx + c * cw + cw / 2, cy = y + rh / 2;
+          const cx = gx + (c - off) * cw + cw / 2, cy = y + rh / 2;
+          if (sm && (cx < gx || cx > W)) continue;
           const k = v !== 0 && c === cur ? p.activeScale : 1, s = d * k * (p.velocitySize && v ? p.velocityMin + (1 - p.velocityMin) * Math.min(1, vel[i] / 127) : 1);
           out.push(rect(cx - s / 2, cy - s / 2, s, s, fillOf(i), alphaOf(i), round ? s / 2 : 0));
           continue;
         }
         // Thanh liền: gom các ô liền nhau cùng màu, cùng độ đục.
         const f = fillOf(i), a = alphaOf(i); let c1 = c;
-        while (c1 + 1 < cols) { const j = i + (c1 + 1 - c); if ((state[j] === 0 && p.emptyAlpha <= 0) || fillOf(j) !== f || alphaOf(j) !== a) break; c1++; }
-        out.push(rect(gx + c * cw, y + (rh - bh) / 2, Math.max(0.5, (c1 - c + 1) * cw - p.cellGap), bh, f, a, Math.min(bh / 2, Math.max(1, cw)))); // bo theo cỡ cột: hàng cao không thành viên thuốc
+        while (c1 + 1 < nc) { const j = i + (c1 + 1 - c); if ((state[j] === 0 && p.emptyAlpha <= 0) || fillOf(j) !== f || alphaOf(j) !== a) break; c1++; }
+        const q = clipX(gx + (c - off) * cw, Math.max(0.5, (c1 - c + 1) * cw - p.cellGap));
+        if (q) out.push(rect(q[0], y + (rh - bh) / 2, q[1], bh, f, a, Math.min(bh / 2, Math.max(1, cw)))); // bo theo cỡ cột: hàng cao không thành viên thuốc
         c = c1;
       }
     }
     if (p.playheadColor && p.playheadWidth > 0) {
       const pw = p.playheadWidth;
       if (p.playheadMark === 'COLUMN') { const x = gx + cur * cw, hw = pw / 2; out.push(outline(x + hw, top + hw, Math.max(1, cw - pw), H - top - pw, p.playheadColor, pw)); }
-      else { const pos = win ? gx + (nowStep - s0) * cw : gx + (t / dur) * (W - gx); out.push(rect(Math.min(W - pw, pos), top, pw, H - top, p.playheadColor, 0.95)); }
+      else { const pos = win ? gx + (sm ? cur : nowStep - s0) * cw : gx + (t / dur) * (W - gx); out.push(rect(Math.min(W - pw, pos), top, pw, H - top, p.playheadColor, 0.95)); }
     }
     return out;
   },

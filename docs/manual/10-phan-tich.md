@@ -47,7 +47,7 @@ Nhóm **Ô**: **Hình ô** là **Ô đầy**, **Chấm vuông**, **Chấm tròn*
 
 Nhóm **Màu**: tô theo **Màu track** hoặc **Một màu**, **Độ đục phần sắp tới**, **Màu ô trống** (để trống thì dùng màu của hàng), **Màu ô trống ở đáy** (dải màu từ trên xuống), **Độ đục ô trống** (0 là không vẽ ô trống).
 
-Thêm: nhóm **Vạch phách** (chỉ khi **Quanh vạch phát**), nhóm **Nhãn** (**Nhãn hàng ở cột trái**: tên track, hoặc tên nốt C khi hàng theo cao độ), nhóm **Vạch phát** (**Màu vạch phát**, **Kiểu vạch phát** là **Vạch** hoặc **Khung cột**, **Độ dày vạch phát**) và nhóm **Số nốt đang vang** (dòng chữ phía trên lưới, mặc định `Voices: {poly}`). Ô nào không có tác dụng với lựa chọn đang chọn thì ẩn.
+Thêm: nhóm **Lưới** (chỉ khi **Quanh vạch phát**: **Trôi mượt** cho lưới trượt liên tục như Piano Roll, tắt thì lưới nhảy từng cột; **Vạch phách**), nhóm **Nhãn** (**Nhãn hàng ở cột trái**: tên track, hoặc tên nốt C khi hàng theo cao độ), nhóm **Vạch phát** (**Màu vạch phát**, **Kiểu vạch phát** là **Vạch** hoặc **Khung cột**, **Độ dày vạch phát**) và nhóm **Số nốt đang vang** (dòng chữ phía trên lưới, mặc định `Voices: {poly}`). Ô nào không có tác dụng với lựa chọn đang chọn thì ẩn.
 
 Muốn có hình như widget cũ:
 

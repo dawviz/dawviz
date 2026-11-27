@@ -199,7 +199,7 @@ test('T-125 (D-72): ô không có tác dụng với kiểu đang chọn thì ẩ
     ['EVENT_COUNTER', 'lineHeight', [{ lines: { played: { enabled: true }, total: { enabled: false }, progress: { enabled: false }, tempo: { enabled: false } } }],
       [{ lines: { played: { enabled: true }, total: { enabled: true }, progress: { enabled: false }, tempo: { enabled: false } } }]],
     // Lưới nốt (D-77)
-    ...(['grid', 'playheadRatio', 'beatLines'] as const).map((p): [keyof typeof WIDGET_FIELDS, string, Obj[], Obj[]] => ['NOTE_GRID', p, [{ span: 'SONG' }], [{ span: 'WINDOW' }]]),
+    ...(['grid', 'playheadRatio', 'beatLines', 'smooth'] as const).map((p): [keyof typeof WIDGET_FIELDS, string, Obj[], Obj[]] => ['NOTE_GRID', p, [{ span: 'SONG' }], [{ span: 'WINDOW' }]]),
     ['NOTE_GRID', 'pitchRangeMode', [{ rows: 'TRACK' }], [{ rows: 'PITCH' }]],
     ...(['pitchMin', 'pitchMax'] as const).map((p): [keyof typeof WIDGET_FIELDS, string, Obj[], Obj[]] => ['NOTE_GRID', p, [{ rows: 'TRACK', pitchRangeMode: 'CUSTOM' }, { rows: 'PITCH', pitchRangeMode: 'FIT_CONTENT' }], [{ rows: 'PITCH', pitchRangeMode: 'CUSTOM' }]]),
     ['NOTE_GRID', 'dotSize', [{ shape: 'FILL' }], [{ shape: 'ROUND' }, { shape: 'SQUARE' }, { shape: 'BAR' }]],
