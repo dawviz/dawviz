@@ -137,12 +137,12 @@
         "locales/en.json#web.layers.",
         "locales/en.json#web.comp."
       ],
-      "uiHash": "760d114bc3b9",
+      "uiHash": "12b1bdeeea74",
       "viHash": "2e289e2d353c",
       "enHash": "5c7836343d27",
       "coverHashes": {
         "apps/web/src/components/Editor.tsx": "ec97b4dc4bf7",
-        "apps/web/src/components/EditorOverlay.tsx": "8b401ebfdd96",
+        "apps/web/src/components/EditorOverlay.tsx": "04ec8c01c587",
         "apps/web/src/components/StylePanel.tsx": "1a7c05d2bb56",
         "locales/en.json#web.editor.": "d19edd6798fb",
         "locales/en.json#web.style.": "8d0ea4d4a6ca",
@@ -229,13 +229,13 @@
         "apps/web/src/components/Splitter.tsx",
         "apps/web/src/components/LayerTimeline.tsx"
       ],
-      "uiHash": "436888799a3c",
-      "viHash": "bb02b324949a",
-      "enHash": "51091aa6bf37",
+      "uiHash": "47723b3761b5",
+      "viHash": "042d62c4befa",
+      "enHash": "16cf1409e9b4",
       "coverHashes": {
         "apps/web/src/lib/transportKeys.ts": "3c74099d457e",
         "apps/web/src/lib/undoKeys.ts": "07c2c99f5cf4",
-        "apps/web/src/components/EditorOverlay.tsx": "8b401ebfdd96",
+        "apps/web/src/components/EditorOverlay.tsx": "04ec8c01c587",
         "apps/web/src/lib/numberInput.ts": "8e27c53523c3",
         "apps/web/src/components/Editor.tsx": "ec97b4dc4bf7",
         "apps/web/src/components/KeyframeTimeline.tsx": "82277bf7d57f",

@@ -35,8 +35,8 @@ While you're typing in a field, these keys go to the field.
 | Ctrl+A (⌘A) | Select all layers |
 | F2 | Rename the selected layer |
 | Alt+click (Option+click on Mac) on a setting's label | Reset that setting to its original value (when it has been changed) |
-| Drag on an empty spot | Select with a box (hold Shift to add) |
-| Shift-click | Add a widget to the selection |
+| Drag on an empty spot | Select with a box (hold Shift or Ctrl/⌘ to add) |
+| Shift-click or Ctrl/⌘-click | Add a widget to the selection (click a selected widget again to remove it) |
 | Ctrl+] / Ctrl+[ | Bring forward / send backward |
 | Ctrl+Shift+] / Ctrl+Shift+[ | Bring to front / send to back |
 | Alt+Up / Alt+Down (on a layer name in the Timeline) | Reorder layers |

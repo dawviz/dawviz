@@ -35,8 +35,8 @@ Khi đang gõ trong một ô nhập, các phím này dùng cho ô đó.
 | Ctrl+A (⌘A) | Chọn tất cả các lớp |
 | F2 | Đổi tên lớp đang chọn |
 | Alt+nhấp (Option+nhấp trên Mac) vào nhãn của một thiết lập | Khôi phục thiết lập đó về giá trị gốc (khi nó đã đổi) |
-| Kéo trên chỗ trống | Chọn bằng khung (giữ Shift để cộng thêm) |
-| Shift + bấm | Chọn thêm widget |
+| Kéo trên chỗ trống | Chọn bằng khung (giữ Shift hoặc Ctrl/⌘ để cộng thêm) |
+| Shift + bấm, hoặc Ctrl/⌘ + bấm | Chọn thêm widget (bấm lại widget đã chọn thì bỏ chọn) |
 | Ctrl+] / Ctrl+[ | Lên một bậc / xuống một bậc |
 | Ctrl+Shift+] / Ctrl+Shift+[ | Lên trên cùng / xuống dưới cùng |
 | Alt+Lên / Alt+Xuống (trên tên lớp ở Timeline) | Đổi thứ tự lớp |
