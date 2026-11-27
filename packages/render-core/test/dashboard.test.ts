@@ -215,3 +215,15 @@ test('Vòng quãng năm: Glow chỉ đổ vào nút đang sáng (TILE và CIRCLE
     assert.ok(custom.every((r) => r.glowColor === '#ff0000'), nodeShape);
   }
 });
+
+const DEFAULT_DOTS_PLAYHEAD = '#333344';
+test('Dots: khung vạch phát đứng yên một cột khi nhạc chạy (không nhảy qua lại ở mép phải), chấm đang phát luôn ở trong khung', () => {
+  const ast = synthAst({ duration: 30 }), lay = { x: 0, y: 0, width: 640, height: 160 };
+  const sc = sceneWith('DOTS', { cols: 64, playheadRatio: 0.96, grid: 16 }, {}, lay);
+  const xs = new Set<number>();
+  for (let t = 4; t < 12; t += 0.013) {
+    const frame = polys(prims(sc, t, ast)).filter((x) => x.closed && x.stroke === DEFAULT_DOTS_PLAYHEAD);
+    assert.equal(frame.length, 1, String(t)); xs.add(Math.round(frame[0].pts[0] * 1000));
+  }
+  assert.equal(xs.size, 1, [...xs].join(','));
+});

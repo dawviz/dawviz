@@ -269,7 +269,7 @@ export const dotsRenderer: WidgetRenderer<DotsProps> = {
     const [lo, hi] = dotsPitchRange(p, list), rows0 = hi - lo + 1, cols = Math.max(4, Math.min(Math.round(p.cols), Math.floor(MAX_DOTS / Math.max(1, Math.min(rows0, Math.round(p.maxRows))))));
     const rows = Math.max(1, Math.min(rows0, Math.round(p.maxRows))), rowOf = (pitch: number) => Math.min(rows - 1, Math.floor((hi - pitch) * rows / rows0)), gx = p.rowLabels ? Math.round(lst.size * 2.8) : 0, cw = (W - gx) / cols, rh = H / rows, d = Math.max(0.5, Math.min(cw, rh) * Math.min(1, Math.max(0.05, p.dotSize)));
     const ppq = ast.meta.internalPPQ || 960, stepT = ppq * 4 / Math.max(1, p.grid), map = ast.tempoMap as never;
-    const nowStep = secToTick(map, Math.max(0, t)) / stepT, s0 = Math.floor(nowStep - p.playheadRatio * cols), cur = Math.floor(nowStep) - s0;
+    const nowStep = secToTick(map, Math.max(0, t)) / stepT, curCol = Math.min(cols - 1, Math.max(0, Math.round(p.playheadRatio * cols))), s0 = Math.floor(nowStep) - curCol, cur = curCol; // cột vạch phát cố định, lưới cuộn nguyên cột (trước đây cột nhảy qua lại một ô mỗi bước)
     const grid = new Int8Array(cols * rows), vel = new Uint8Array(cols * rows), color: string[] = new Array(cols * rows); // 0 rỗng, 1 có nốt (đã/đang phát), 2 nốt sắp tới
     const t0 = tickToSec(map, Math.max(0, s0 * stepT)), t1 = tickToSec(map, Math.max(0, (s0 + cols) * stepT));
     for (const ti of list) for (const n of notesInRange(ti, t0, t1)) {
