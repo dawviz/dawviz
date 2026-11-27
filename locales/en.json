@@ -1345,6 +1345,8 @@
   "web.ws.inPolygonAlpha": "Shape fill opacity",
   "web.ws.inProgressColor": "Progress colour",
   "web.ws.inProgressWidth": "Progress width",
+  "web.ws.inWheelGlow": "Strength",
+  "web.ws.inWheelGlowColor": "Glow colour",
   "web.ws.inOutlineColor": "Circle line colour",
   "web.ws.inLitTextColor": "Text colour on sounding notes",
   "web.ws.inRomanStyle": "Degree style",

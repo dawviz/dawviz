@@ -137,7 +137,7 @@
         "locales/en.json#web.layers.",
         "locales/en.json#web.comp."
       ],
-      "uiHash": "8492486e8a27",
+      "uiHash": "e13c16d3ab73",
       "viHash": "d07562493424",
       "enHash": "5061117be30a",
       "coverHashes": {
@@ -152,7 +152,7 @@
         "apps/web/src/components/TextPanel.tsx": "ee6960b9ad6d",
         "locales/en.json#web.text.": "078c1ecc2e8e",
         "apps/web/src/components/WidgetSettings.tsx": "fd14aef49172",
-        "locales/en.json#web.ws.": "d6418d09138d",
+        "locales/en.json#web.ws.": "f4b2f0c845df",
         "apps/web/src/components/TimeSections.tsx": "aa30f2bb1dd2",
         "apps/web/src/components/TimeField.tsx": "4627c46c0bf7",
         "locales/en.json#web.vis.": "97d170e1550e",
@@ -286,12 +286,12 @@
         "locales/en.json#web.widget.",
         "locales/en.json#web.tonic."
       ],
-      "uiHash": "7077755a999b",
+      "uiHash": "bee185ccfd9b",
       "viHash": "ae36005a4bf0",
       "enHash": "52d07dcea04a",
       "coverHashes": {
         "apps/web/src/components/WidgetSettings.tsx": "fd14aef49172",
-        "locales/en.json#web.ws.": "d6418d09138d",
+        "locales/en.json#web.ws.": "f4b2f0c845df",
         "locales/en.json#web.widget.": "3a55f23fb070",
         "locales/en.json#web.tonic.": "2b1a6b41c82b"
       }
@@ -347,15 +347,15 @@
         "apps/web/src/lib/animateFields.ts",
         "packages/render-core/src/parenting.ts"
       ],
-      "uiHash": "f36a80ded0be",
-      "viHash": "49c8880c7bf6",
-      "enHash": "d7bfde52bc4d",
+      "uiHash": "6f41646ed393",
+      "viHash": "57174eeb383c",
+      "enHash": "ff6b2925c125",
       "coverHashes": {
-        "packages/render-core/src/insight.ts": "7279063ea2d7",
+        "packages/render-core/src/insight.ts": "d27f7f51e42f",
         "packages/render-core/src/naming.ts": "9a90045d7e7c",
         "apps/web/src/components/TimeSections.tsx": "aa30f2bb1dd2",
         "locales/en.json#web.naming.": "2386cbe2d200",
-        "locales/en.json#web.ws.in": "e50c1d9823eb",
+        "locales/en.json#web.ws.in": "0337f352031d",
         "packages/render-core/src/widgetMotion.ts": "a1e4bd858cf0",
         "packages/render-core/src/noteTransition.ts": "0ca2c2677905",
         "locales/en.json#web.motion.": "ab9500a2f7bb",

@@ -69,6 +69,8 @@ const CASES: Case[] = [
   { type: 'DOTS', prop: 'playheadWidth', values: NUM(1, 4), hidden: [{ playheadColor: '' }], shown: { playheadColor: '#ffffff' } },
   // Lưới chấm: cỡ tối thiểu chỉ dùng khi chấm co theo cường độ
   { type: 'DOTS', prop: 'velocityMin', values: NUM(0.2, 0.6), hidden: [{ velocitySize: false }], shown: { velocitySize: true } },
+  // Vòng quãng năm: màu phát sáng chỉ dùng khi có phát sáng
+  { type: 'PITCH_WHEEL', prop: 'glowColor', values: ['#ff0000', '#00ff00'], hidden: [{ glow: 0 }], shown: { glow: 0.5 } },
   { type: 'ARRANGEMENT', prop: 'playheadWidth', values: NUM(1, 6), hidden: [{ playheadColor: '' }], shown: { playheadColor: '#ffffff' } },
 ];
 

@@ -1345,6 +1345,8 @@
   "web.ws.inPolygonAlpha": "Độ đục phần tô",
   "web.ws.inProgressColor": "Màu tiến độ",
   "web.ws.inProgressWidth": "Độ dày tiến độ",
+  "web.ws.inWheelGlow": "Độ mạnh",
+  "web.ws.inWheelGlowColor": "Màu phát sáng",
   "web.ws.inOutlineColor": "Màu đường tròn",
   "web.ws.inLitTextColor": "Màu chữ trên nốt đang vang",
   "web.ws.inRomanStyle": "Cách viết bậc",

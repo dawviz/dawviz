@@ -49,6 +49,7 @@ Trong **Thiết lập** của Vòng cao độ:
 - **Màu vòng nốt bass**: khoanh nốt thấp nhất đang vang; để trống thì không khoanh.
 - **Ở giữa hiện**: **Tên hợp âm** hoặc **Bậc hợp âm**.
 - **Dòng dưới hợp âm**: chữ nhỏ dưới hợp âm, dùng được chỗ giữ, ví dụ `BAR {bar}`.
+- **Phát sáng**: mục **Độ mạnh** làm các nút đang sáng toả sáng (0 là tắt); **Màu phát sáng** để trống thì dùng màu sáng. Hình nối và vòng tiến độ không phát sáng.
 
 ## Dữ liệu lấy từ đâu
 
