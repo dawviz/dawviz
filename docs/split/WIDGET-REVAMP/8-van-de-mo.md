@@ -4,8 +4,8 @@ doc_title: "Tu sửa widget và mở rộng sáng tạo (đợt 2026-11-26)"
 section: "8. Vấn đề mở"
 path: "8. Vấn đề mở"
 chunk: 8-van-de-mo.md
-source_lines: 191-196
-source_sha1: f0d5abcfcb
+source_lines: 219-224
+source_sha1: 878ee1f0a2
 ids: []
 ---
 ## 8. Vấn đề mở

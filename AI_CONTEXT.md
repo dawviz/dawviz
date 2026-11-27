@@ -49,7 +49,7 @@ DAW Visualizer: trình duyệt đọc tệp dự án DAW (Ableton `.als/.alp`, R
 | Biểu thức người dùng, bảo mật, kiểm duyệt preset cộng đồng | [EXPRESSIONS](docs/design/EXPRESSIONS.md) (đề xuất, AD-13…AD-15) · [ANIMATION-CATALOG](docs/design/ANIMATION-CATALOG.md) · SRS NFR-SEC | `packages/expr/src/` (T-29), `packages/render-core/src/animation.ts` (`{expr}`, `EXPR_VARS`, ngân sách khung T-30), `scripts/preset-check/` (T-31) |
 | Bản nhạc (notation), lượng tử hoá, nét tay (D-63) | [Technical Design §5.11](docs/design/TECHNICAL-DESIGN.md) · SRS REQ-WIDGET-09 / REQ-NOTATION-01 / REQ-GRAPHICS-20 · [SPIKE-4](docs/spikes/SPIKE-4-NOTATION.md) (số đo, giới hạn) | `packages/render-core/src/notation/`, `apps/web/src/lib/notation/`, `apps/web/src/workers/notation.worker.ts`, `scripts/gen-notation-fonts.mjs` (sinh bảng glyph), `scripts/notation/` (công cụ đo, e2e xuất video) |
 | Widget phân tích P-02…P-13, cách ghi tên nốt (P-12), marker/lời/automation | [SRS 3.4b](docs/split/SRS/3-4-dac-ta-8-widget-hud-br-02-br-03-br-04.md) · [hướng dẫn](docs/manual/10-phan-tich.md) · PROGRESS T-37/38/41/42/97 | `packages/render-core/src/insight.ts`, `naming.ts`; parser: `meta.markers/lyrics` ở `packages/core/src/ast.js`, `rpp.js`, `als.js`, `dawproject.js`, `midi.js`; `test/cues-automation.test.js`, `packages/render-core/test/insight.test.ts` |
-| Tu sửa widget: nhóm thuộc tính, bật/tắt, kiểu chữ dùng chung, Hình/Bút/Mặt nạ, Gắn nhạc nhanh, gộp widget chữ | [WIDGET-REVAMP](docs/design/WIDGET-REVAMP.md) (D-71…D-76, T-124…T-138) | `apps/web/src/lib/widgetFields.ts`, `components/WidgetSettings.tsx`, `lib/timelineRows.ts`, `components/TextPanel.tsx` |
+| Tu sửa widget: nhóm thuộc tính, bật/tắt, kiểu chữ dùng chung, Hình/Bút/Mặt nạ, Gắn nhạc nhanh, gộp widget chữ, Lưới nốt | [WIDGET-REVAMP](docs/design/WIDGET-REVAMP.md) (D-71…D-78, T-124…T-139) | `apps/web/src/lib/widgetFields.ts`, `components/WidgetSettings.tsx`, `lib/timelineRows.ts`, `components/TextPanel.tsx` |
 | Xuất video | [Technical Design §7](docs/split/TECHNICAL-DESIGN/7-1-trinh-tu.md) · [REQ-EXPORT-00](docs/split/SRS/req-export-00-pre-flight-r-01-d-17.md#req-export-00-pre-flight-r-01-d-17)…[07](docs/split/SRS/req-export-07-thuc-thi-trong-worker-arc-02-d-21.md#req-export-07-thực-thi-trong-worker-arc-02-d-21) | `apps/web/src/lib/exportPlan.ts` (phần lõi thuần, T-09); Export Worker: chưa có — M3 |
 | Lưu trữ, Preset, Project Pack | [Technical Design §8](docs/split/TECHNICAL-DESIGN/8-luu-tru-m4-t-10.md) · [SRS §3.5](docs/split/SRS/3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md#35-lưu-trữ-cấu-hình--đóng-gói-br-05-d-11) | `apps/web/src/lib/workspaceStore.ts`, `projectPack.ts`, `docSnapshot.ts`, `session.ts`, `tempoRows.ts` (T-10) |
 | Đa ngôn ngữ / dịch | [I18N §1](docs/split/I18N/1-them-mot-ngon-ngu-moi-how-to-add-a-language.md#1-thêm-một-ngôn-ngữ-mới-how-to-add-a-language) · [§4](docs/split/I18N/4-quy-uoc-cho-nha-phat-trien-developer-rules.md#4-quy-ước-cho-nhà-phát-triển-developer-rules) · [SRS §3.7](docs/split/SRS/3-7-da-ngon-ngu-va-cong-dong-dich-br-09-d-30-kpi.md#37-đa-ngôn-ngữ-và-cộng-đồng-dịch-br-09-d-30-kpi-08) | `packages/i18n`, `locales/` |
@@ -84,7 +84,7 @@ node plugins/dawviz/skills/dawviz/scripts/dawviz.mjs --help   # điều khiển 
 <!-- sync:begin docs-index -->
 <!-- Khối này do scripts/sync-docs.mjs sinh ra; đừng sửa tay. -->
 
-Có 25 tài liệu, 362 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
+Có 25 tài liệu, 363 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
 
 ### BRD.md — TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)
 
@@ -102,7 +102,7 @@ Nguồn: `docs/product/BRD.md` · [thứ tự đọc](docs/split/BRD/_index.md)
 - [4. PHẠM VI DỰ ÁN (PROJECT SCOPE) › 4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](docs/split/BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1.2k
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](docs/split/BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4.3k
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](docs/split/BRD/6-gia-dinh-assumptions.md) · 0.6k
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 43.7k
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](docs/split/BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 45.6k
 - [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](docs/split/BRD/8-cac-van-de-con-mo-open-issues.md) · 7.8k
 
 ### SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
@@ -397,9 +397,10 @@ Nguồn: `docs/design/WIDGET-REVAMP.md` · [thứ tự đọc](docs/split/WIDGET
 - [2. Ẩn hẳn thuộc tính không áp dụng (D-72, T-125)](docs/split/WIDGET-REVAMP/2-an-han-thuoc-tinh-khong-ap-dung-d-72-t-125.md) · 0.6k
 - [3. Kiểu chữ dùng chung (D-73, T-126)](docs/split/WIDGET-REVAMP/3-kieu-chu-dung-chung-d-73-t-126.md) · 1.5k
 - [4. Sáng tạo tự do: Hình, Bút, Gắn nhạc nhanh (D-74)](docs/split/WIDGET-REVAMP/4-sang-tao-tu-do-hinh-but-gan-nhac-nhanh-d-74.md) · 5.2k
-- [5. Gộp widget chữ (D-76, T-138)](docs/split/WIDGET-REVAMP/5-gop-widget-chu-d-76-t-138.md) · 1.1k
+- [5. Gộp widget chữ (D-76, T-138)](docs/split/WIDGET-REVAMP/5-gop-widget-chu-d-76-t-138.md) · 1.9k
+- [5b. Lưới nốt: gộp Mật độ nốt, Tổng quan bản phối, Lưới chấm (D-77, T-139)](docs/split/WIDGET-REVAMP/5b-luoi-not-gop-mat-do-not-tong-quan-ban-phoi-lu.md) · 3.0k
 - [6. Cụm việc nhỏ của đợt này (T-127…T-133)](docs/split/WIDGET-REVAMP/6-cum-viec-nho-cua-dot-nay-t-127-t-133.md) · 2.5k
-- [7. Thứ tự làm và cách chia PR](docs/split/WIDGET-REVAMP/7-thu-tu-lam-va-cach-chia-pr.md) · 0.6k
+- [7. Thứ tự làm và cách chia PR](docs/split/WIDGET-REVAMP/7-thu-tu-lam-va-cach-chia-pr.md) · 0.8k
 - [8. Vấn đề mở](docs/split/WIDGET-REVAMP/8-van-de-mo.md) · 0.4k
 
 ### PARSER-SRS.md — SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer
