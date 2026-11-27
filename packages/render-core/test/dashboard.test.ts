@@ -167,3 +167,31 @@ test('mức âm và tỉ lệ dải: đọc từ bảng đặc trưng, tất đ�
   assert.ok(s.low > s.high && s.mid === 0 && Math.abs(s.low + s.high - 1) < 1e-9);
   assert.equal(levelsAt(undefined, 1), null);
 });
+
+test('T-133 Degree: khối hai tầng (bậc to, tên hợp âm nhỏ) chỉ khi bật; mặc định không đổi', () => {
+  const ast = synthAst({ duration: 6 }), lay = { x: 0, y: 0, width: 800, height: 150 };
+  const off = prims(sceneWith('DEGREE', {}, { tonic: 9 }, lay), 0.6, ast, { tonic: 9 });
+  const on = prims(sceneWith('DEGREE', { showChordName: true }, { tonic: 9 }, lay), 0.6, ast, { tonic: 9 }); finite(on);
+  assert.ok(texts(on).split('|').includes('V7') && texts(on).split('|').includes('E7'), texts(on));
+  assert.ok(!texts(off).split('|').includes('E7'));
+  const deg = textsOf(on).find((x) => x.text === 'V7')!, nm = textsOf(on).find((x) => x.text === 'E7')!;
+  assert.ok(nm.y > deg.y, 'tên hợp âm nằm dưới bậc');
+});
+
+test('T-133 Dots: cỡ chấm theo cường độ, vạch phách mảnh, nhãn hàng ngoài khung; mặc định không đổi', () => {
+  const ast = synthAst(), lay = { x: 0, y: 0, width: 320, height: 130 };
+  const base = { cols: 16, pitchRangeMode: 'CUSTOM', pitchMin: 72, pitchMax: 84, playheadRatio: 0.5 };
+  const plain = prims(sceneWith('DOTS', base, {}, lay), 1, ast);
+  assert.deepEqual(prims(sceneWith('DOTS', { ...base, velocitySize: false, beatLines: false, rowLabels: false }, {}, lay), 1, ast), plain);
+  const vs = prims(sceneWith('DOTS', { ...base, velocitySize: true, velocityMin: 0.2 }, {}, lay), 1, ast); finite(vs);
+  const sizes = (p: Primitive[]) => rects(p).filter((r) => r.fill === '#ff3d8b').map((r) => r.w);
+  assert.equal(vs.length, plain.length);
+  assert.ok(sizes(vs).every((s, i) => s <= sizes(plain)[i] + 1e-9) && sizes(vs).some((s, i) => s < sizes(plain)[i]), 'ít nhất một chấm nhỏ đi theo cường độ');
+  const bl = prims(sceneWith('DOTS', { ...base, beatLines: true }, {}, lay), 1, ast);
+  assert.ok(bl.length > plain.length && rects(bl).some((r) => r.h === 130 && r.w < 1));
+  const rl = prims(sceneWith('DOTS', { ...base, rowLabels: true }, {}, lay), 1, ast); finite(rl);
+  const lab = textsOf(rl); assert.ok(lab.some((x) => x.text.startsWith('C')), lab.map((x) => x.text).join('|'));
+  const gx = Math.min(...rects(rl).filter((r) => r.w < 20).map((r) => r.x)); assert.ok(gx > 10, 'lưới chấm bắt đầu sau cột nhãn');
+  assert.ok(lab.every((x) => x.x < gx), 'nhãn nằm ngoài khung chấm');
+  assert.deepEqual(prims(sceneWith('DOTS', { ...base, velocitySize: true, beatLines: true, rowLabels: true }, {}, lay), 1, ast), prims(sceneWith('DOTS', { ...base, velocitySize: true, beatLines: true, rowLabels: true }, {}, lay), 1, ast));
+});

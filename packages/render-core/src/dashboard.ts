@@ -7,6 +7,8 @@ import { barPosAt, barStartSec, base, chordTimeline, globalValues, hudOf, shown,
 import { tonicAt } from './keyDetect.ts';
 import { chordDegree, chordFunction, romanAscii, type HarmonicFunction, type RomanStyle } from './degree.ts';
 import { templateSpans, type TextRef } from './typography.ts';
+import { chordNameFor, noteNameFor } from './naming.ts';
+import { pitchName } from './music.ts';
 import { poly, type Derived, type Primitive, type RectPrim, type WidgetRenderer } from './prims.ts';
 
 const ts = (styleId: string): TextRef => ({ styleId });
@@ -44,6 +46,8 @@ export interface DegreeProps {
   labelStyle: TextRef; smallStyle: TextRef;
   /** Vị trí chữ trong khối hợp âm: đầu / giữa (mặc định, như trước T-131) / cuối khối. */
   labelAlign: DegreeLabelAlign;
+  /** Khối hai tầng: bậc La Mã to ở trên, tên hợp âm nhỏ ngay dưới (chỉ hàng chính, khi đã biết giọng và khối đủ cao). */
+  showChordName: boolean;
   /** Khối bị cắt ở mép trái widget: chữ dính mép trái phần đang thấy và đi theo tới cuối khối rồi bị đẩy ra (như tên clip trong DAW). */
   labelSticky: boolean;
 }
@@ -62,6 +66,12 @@ export interface DotsProps {
   emptyColor: string; emptyColorB: string; emptyAlpha: number;
   colorMode: 'TRACK' | 'SOLID'; color: string; upcomingAlpha: number; activeScale: number;
   playheadColor: string; playheadWidth: number;
+  /** Cỡ chấm theo cường độ nốt: cường độ 127 = cỡ đầy đủ, cường độ nhỏ nhất co về `velocityMin` (tỉ lệ cỡ). */
+  velocitySize: boolean; velocityMin: number;
+  /** Vạch mảnh theo phách (đậm hơn ở đầu mỗi 4 phách) dưới các chấm. */
+  beatLines: boolean;
+  /** Nhãn hàng (tên nốt C) ở cột riêng bên trái lưới, ngoài khung chấm. */
+  rowLabels: boolean; labelStyle: TextRef;
 }
 
 export const DEFAULT_PANEL: Readonly<PanelProps> = Object.freeze({
@@ -74,16 +84,16 @@ export const DEFAULT_DEGREE: Readonly<DegreeProps> = Object.freeze({
   windowBars: 8, playheadRatio: 0.42, resolution: 'BAR', showDetail: true, showFunction: true, showBars: true, romanStyle: 'SUFFIX', keyWindowSec: 16,
   accentColor: '#ff3d8b', detailColor: '#2ec4b6', blockColor: '#2b2b33', activeTextColor: '#ffffff', pastAlpha: 0.45,
   tonicColor: '#2ec4b6', subdominantColor: '#ffb3cf', dominantColor: '#ff3d8b', playheadColor: '#222222',
-  radius: 6, gap: 4, labelStyle: ts('caption'), smallStyle: ts('label'), labelAlign: 'CENTER', labelSticky: true,
+  radius: 6, gap: 4, labelStyle: ts('caption'), smallStyle: ts('label'), labelAlign: 'CENTER', labelSticky: true, showChordName: false,
 });
 export const DEFAULT_DOTS: Readonly<DotsProps> = Object.freeze({
   grid: 16, cols: 64, playheadRatio: 0.96, pitchRangeMode: 'FIT_CONTENT', pitchMin: 36, pitchMax: 96, maxRows: 32, dotSize: 0.6, shape: 'ROUND',
   emptyColor: '#c7a3bb', emptyColorB: '#8fd3cb', emptyAlpha: 0.45, colorMode: 'SOLID', color: '#ff3d8b', upcomingAlpha: 0.3, activeScale: 1.5,
-  playheadColor: '#333344', playheadWidth: 1.5,
+  playheadColor: '#333344', playheadWidth: 1.5, velocitySize: false, velocityMin: 0.4, beatLines: false, rowLabels: false, labelStyle: ts('label'),
 });
 export const DASHBOARD_TYPES = ['PANEL', 'DEGREE', 'DOTS'] as const;
 export const DASHBOARD_TEXT_FIELDS = {
-  PANEL: { titleStyle: 'label', labelStyle: 'label', valueStyle: 'body' }, DEGREE: { labelStyle: 'caption', smallStyle: 'label' },
+  PANEL: { titleStyle: 'label', labelStyle: 'label', valueStyle: 'body' }, DEGREE: { labelStyle: 'caption', smallStyle: 'label' }, DOTS: { labelStyle: 'label' },
 } as const;
 export const MAX_PANEL_STATS = 6;
 export const DOTS_GRIDS = [4, 8, 16, 32] as const;
@@ -201,7 +211,12 @@ export const degreeRenderer: WidgetRenderer<DegreeProps> = {
         if (cur) out.push(rect(x0, y, w, h, active, 1, p.radius));
         else out.push(poly(roundRectPts(x0, y, w, h, p.radius), { closed: true, stroke: p.blockColor, width: 1, alpha }));
         const lp = degreeLabelPos(p.labelAlign, p.labelSticky, x0, x1, Math.min(T.width(label, st), Math.max(1, w - 6)));
-        T.text(out, label, lp.x, y + h / 2 + st.size * 0.35, cur ? { ...st, color: p.activeTextColor } : st, lp.align, Math.max(1, w - 6), cur ? 1 : alpha);
+        const two = withFn && p.showChordName && tonic !== null && h >= st.size * 1.1 + sst.size * 1.6, yL = y + h / 2 + st.size * 0.35 - (two ? sst.size * 0.6 : 0);
+        T.text(out, label, lp.x, yL, cur ? { ...st, color: p.activeTextColor } : st, lp.align, Math.max(1, w - 6), cur ? 1 : alpha);
+        if (two) {
+          const nm = derived.naming ? chordNameFor(s.name, derived.naming) : s.name, np = degreeLabelPos(p.labelAlign, p.labelSticky, x0, x1, Math.min(T.width(nm, sst), Math.max(1, w - 6)));
+          T.text(out, nm, np.x, yL + sst.size * 1.3, cur ? { ...sst, color: p.activeTextColor } : sst, np.align, Math.max(1, w - 6), (cur ? 1 : alpha) * 0.8);
+        }
         if (withFn && p.showFunction && tonic !== null) {
           const f = chordFunction(s.name, tonic);
           if (f) { const bh = Math.max(4, sst.size * 0.45); out.push(rect(x0, yFn, w, bh, FN_COLOR(p, f), past ? p.pastAlpha : 1, bh / 2)); T.text(out, f, x0 + w / 2, yFn + bh + sst.size * 1.05, sst, 'center', Math.max(1, w), alpha); }
@@ -249,31 +264,45 @@ export function dotsPitchRange(p: DotsProps, tracks: readonly TrackIndex[]): [nu
 export const MAX_DOTS = 6000;
 export const dotsRenderer: WidgetRenderer<DotsProps> = {
   type: 'DOTS',
-  layout({ ast, derived, tracks }, spec, t) {
-    const p = spec.properties, { width: W, height: H } = spec.layout, out: Primitive[] = [], list = shown(tracks).filter((ti) => ti.notes.some((n) => n.channel !== 9));
+  layout({ ast, derived, tracks, measure, textStyles, fonts }, spec, t) {
+    const p = spec.properties, { width: W, height: H } = spec.layout, out: Primitive[] = [], T = typo(textStyles, measure, fonts), lst = T.style(p.labelStyle, 'label'), list = shown(tracks).filter((ti) => ti.notes.some((n) => n.channel !== 9));
     const [lo, hi] = dotsPitchRange(p, list), rows0 = hi - lo + 1, cols = Math.max(4, Math.min(Math.round(p.cols), Math.floor(MAX_DOTS / Math.max(1, Math.min(rows0, Math.round(p.maxRows))))));
-    const rows = Math.max(1, Math.min(rows0, Math.round(p.maxRows))), rowOf = (pitch: number) => Math.min(rows - 1, Math.floor((hi - pitch) * rows / rows0)), cw = W / cols, rh = H / rows, d = Math.max(0.5, Math.min(cw, rh) * Math.min(1, Math.max(0.05, p.dotSize)));
+    const rows = Math.max(1, Math.min(rows0, Math.round(p.maxRows))), rowOf = (pitch: number) => Math.min(rows - 1, Math.floor((hi - pitch) * rows / rows0)), gx = p.rowLabels ? Math.round(lst.size * 2.8) : 0, cw = (W - gx) / cols, rh = H / rows, d = Math.max(0.5, Math.min(cw, rh) * Math.min(1, Math.max(0.05, p.dotSize)));
     const ppq = ast.meta.internalPPQ || 960, stepT = ppq * 4 / Math.max(1, p.grid), map = ast.tempoMap as never;
     const nowStep = secToTick(map, Math.max(0, t)) / stepT, s0 = Math.floor(nowStep - p.playheadRatio * cols), cur = Math.floor(nowStep) - s0;
-    const grid = new Int8Array(cols * rows), color: string[] = new Array(cols * rows); // 0 rỗng, 1 có nốt (đã/đang phát), 2 nốt sắp tới
+    const grid = new Int8Array(cols * rows), vel = new Uint8Array(cols * rows), color: string[] = new Array(cols * rows); // 0 rỗng, 1 có nốt (đã/đang phát), 2 nốt sắp tới
     const t0 = tickToSec(map, Math.max(0, s0 * stepT)), t1 = tickToSec(map, Math.max(0, (s0 + cols) * stepT));
     for (const ti of list) for (const n of notesInRange(ti, t0, t1)) {
       if (n.channel === 9 || n.pitch < lo || n.pitch > hi) continue;
       const a = Math.max(0, Math.floor(n.startTick / stepT) - s0), b = Math.min(cols - 1, Math.ceil(n.endTick / stepT) - 1 - s0), r = rowOf(n.pitch);
-      for (let c = a; c <= b; c++) { const i = r * cols + c, v = s0 + c <= Math.floor(nowStep) ? 1 : 2; if (grid[i] !== 1) { grid[i] = v; color[i] = p.colorMode === 'TRACK' ? ti.track.color : p.color; } }
+      for (let c = a; c <= b; c++) { const i = r * cols + c, v = s0 + c <= Math.floor(nowStep) ? 1 : 2; vel[i] = Math.max(vel[i], n.velocity); if (grid[i] !== 1) { grid[i] = v; color[i] = p.colorMode === 'TRACK' ? ti.track.color : p.color; } }
     }
     const round = p.shape === 'ROUND';
+    if (p.beatLines && cw >= 2) {
+      const per = Math.max(1, p.grid / 4), mod = (n: number, m: number) => ((n % m) + m) % m;
+      for (let c = 0; c <= cols; c++) {
+        const s = s0 + c; if (mod(s, per) !== 0) continue;
+        out.push(rect(gx + c * cw - 0.4, 0, 0.8, H, p.emptyColor, mod(s, p.grid) === 0 ? 0.55 : 0.25));
+      }
+    }
+    if (p.rowLabels) {
+      for (let r = 0; r < rows; r++) {
+        const top = hi - Math.floor(r * rows0 / rows), bot = hi - Math.floor((r + 1) * rows0 / rows) + 1, c0 = top - (((top % 12) + 12) % 12);
+        if (c0 < bot || c0 < 0) continue;
+        T.text(out, derived.naming ? noteNameFor(c0, derived.naming) : pitchName(c0), gx - 5, r * rh + rh / 2 + lst.size * 0.35, lst, 'right', Math.max(1, gx - 5), 1);
+      }
+    }
     for (let r = 0; r < rows; r++) {
       const empty = p.emptyColorB ? mixHex(p.emptyColor, p.emptyColorB, rows > 1 ? r / (rows - 1) : 0) : p.emptyColor;
       for (let c = 0; c < cols; c++) {
-        const i = r * cols + c, v = grid[i], cx = c * cw + cw / 2, cy = r * rh + rh / 2;
-        const k = v === 1 && c === cur ? p.activeScale : 1, s = d * k;
+        const i = r * cols + c, v = grid[i], cx = gx + c * cw + cw / 2, cy = r * rh + rh / 2;
+        const k = v === 1 && c === cur ? p.activeScale : 1, s = d * k * (p.velocitySize && v ? p.velocityMin + (1 - p.velocityMin) * Math.min(1, vel[i] / 127) : 1);
         if (v === 0 && p.emptyAlpha <= 0) continue;
         out.push(rect(cx - s / 2, cy - s / 2, s, s, v ? color[i] : empty, v === 1 ? 1 : v === 2 ? p.upcomingAlpha : p.emptyAlpha, round ? s / 2 : 0));
       }
     }
     if (p.playheadColor && p.playheadWidth > 0) {
-      const x = cur * cw, hw = p.playheadWidth / 2;
+      const x = gx + cur * cw, hw = p.playheadWidth / 2;
       out.push(outline(x + hw, hw, Math.max(1, cw - p.playheadWidth), H - p.playheadWidth, p.playheadColor, p.playheadWidth));
     }
     return out;

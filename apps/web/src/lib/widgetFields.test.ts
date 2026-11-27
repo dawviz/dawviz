@@ -194,6 +194,7 @@ test('T-125 (D-72): ô không có tác dụng với kiểu đang chọn thì ẩ
     ['VELOCITY', 'colorMode', [{ mode: 'HISTOGRAM' }], [{ mode: 'LEVEL' }]],
     ['VELOCITY', 'gap', [{ mode: 'LEVEL', perTrack: false }], [{ mode: 'LEVEL', perTrack: true }, { mode: 'HISTOGRAM' }]],
     ['VELOCITY', 'color', [{ mode: 'LEVEL', perTrack: true, colorMode: 'TRACK' }], [{ mode: 'LEVEL', perTrack: false, colorMode: 'TRACK' }, { mode: 'HISTOGRAM' }]],
+    ['DOTS', 'velocityMin', [{ velocitySize: false }], [{ velocitySize: true }]],
     ['DEGREE', 'labelSticky', [{ labelAlign: 'END' }], [{ labelAlign: 'START' }, { labelAlign: 'CENTER' }]],
     ['CHORD_DETECTION', 'notesTemplate', [{ alwaysShowNotes: false, unrecognized: 'nc' }], [{ alwaysShowNotes: true }, { alwaysShowNotes: false, unrecognized: 'notes' }]],
     ['EVENT_COUNTER', 'lineHeight', [{ lines: { played: { enabled: true }, total: { enabled: false }, progress: { enabled: false }, tempo: { enabled: false } } }],
