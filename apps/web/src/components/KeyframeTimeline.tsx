@@ -384,9 +384,9 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
   return (
     <div className="relative h-full min-h-0 outline-none" tabIndex={-1} onKeyDown={onKeys} data-testid="keyframe-timeline">
       <div ref={scroller} id="timeline-scroller" className="tl-scroll relative h-full overflow-auto overscroll-contain" data-testid="timeline-scroller">
-        <div className="relative" style={{ width: tree + contentW, minHeight: '100%', height }}>
+        <div className="relative flex flex-col" style={{ width: tree + contentW, minHeight: '100%', height }}>
           {/* Hàng thước: góc trái chứa công cụ (lọc, thu phóng), bên phải là thước kéo để tua. */}
-          <div className="sticky top-0 z-30 flex" style={{ height: RULER_H }}>
+          <div className="sticky top-0 z-30 flex shrink-0" style={{ height: RULER_H }}>
             <div className="sticky left-0 z-40 flex shrink-0 items-center gap-0.5 border-b border-r border-line bg-surface px-1.5" style={{ width: tree }}>
               <button type="button" className="tog" aria-pressed={onlyAnimated} onClick={() => setOnlyAnimated((v) => !v)} data-testid="timeline-filter"
                 aria-label={i18n.t('web.timeline.onlyAnimated')} title={`${i18n.t('web.timeline.onlyAnimated')} (U)`}><Filter className="h-3.5 w-3.5" /></button>
@@ -416,8 +416,8 @@ export function KeyframeTimeline({ widget, tempoMap, duration, playback, locked,
           </div>
 
           {/* Các hàng: cột cây dính trái + làn keyframe. Làn nhận kéo chọn hộp và nhấp đúp thêm keyframe. */}
-          <div className="relative flex">
-            <div className="sticky left-0 z-20 shrink-0 bg-surface" style={{ width: tree }} role="group" aria-label={i18n.t('web.timeline.props')}>
+          <div className="relative flex flex-1">
+            <div className="sticky left-0 z-20 shrink-0 bg-surface after:pointer-events-none after:absolute after:inset-y-0 after:right-0 after:w-px after:bg-line" style={{ width: tree }} role="group" aria-label={i18n.t('web.timeline.props')}>
               {items.map((it) => it.kind === 'group' ? (
                 <div key={it.id} className="flex items-center border-b border-r border-line bg-page/40" style={{ height: ROW_H }}>
                   <button type="button" aria-expanded={it.open} className="flex h-full min-w-0 flex-1 items-center gap-1.5 px-1.5 text-left text-xs font-semibold text-fg hover:bg-raised" data-testid={`timeline-group-${it.id}`}
