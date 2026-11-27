@@ -5,7 +5,7 @@ section: "0. Mục tiêu một câu"
 path: "0. Mục tiêu một câu"
 chunk: 0-muc-tieu-mot-cau.md
 source_lines: 5-18
-source_sha1: f0d5abcfcb
+source_sha1: 878ee1f0a2
 ids: [AD-07, AD-08, D-71, D-74, D-75]
 ---
 ## 0. Mục tiêu một câu

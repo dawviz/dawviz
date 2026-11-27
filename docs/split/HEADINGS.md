@@ -589,6 +589,8 @@
     - [4.5 Không làm trong DawViz (dùng phần mềm dựng hình)](WIDGET-REVAMP/4-sang-tao-tu-do-hinh-but-gan-nhac-nhanh-d-74.md#45-không-làm-trong-dawviz-dùng-phần-mềm-dựng-hình)
 - [5. Gộp widget chữ (D-76, T-138)](WIDGET-REVAMP/5-gop-widget-chu-d-76-t-138.md)
   - [5. Gộp widget chữ (D-76, T-138)](WIDGET-REVAMP/5-gop-widget-chu-d-76-t-138.md#5-gộp-widget-chữ-d-76-t-138)
+- [5b. Lưới nốt: gộp Mật độ nốt, Tổng quan bản phối, Lưới chấm (D-77, T-139)](WIDGET-REVAMP/5b-luoi-not-gop-mat-do-not-tong-quan-ban-phoi-lu.md)
+  - [5b. Lưới nốt: gộp Mật độ nốt, Tổng quan bản phối, Lưới chấm (D-77, T-139)](WIDGET-REVAMP/5b-luoi-not-gop-mat-do-not-tong-quan-ban-phoi-lu.md#5b-lưới-nốt-gộp-mật-độ-nốt-tổng-quan-bản-phối-lưới-chấm-d-77-t-139)
 - [6. Cụm việc nhỏ của đợt này (T-127…T-133)](WIDGET-REVAMP/6-cum-viec-nho-cua-dot-nay-t-127-t-133.md)
   - [6. Cụm việc nhỏ của đợt này (T-127…T-133)](WIDGET-REVAMP/6-cum-viec-nho-cua-dot-nay-t-127-t-133.md#6-cụm-việc-nhỏ-của-đợt-này-t-127t-133)
 - [7. Thứ tự làm và cách chia PR](WIDGET-REVAMP/7-thu-tu-lam-va-cach-chia-pr.md)

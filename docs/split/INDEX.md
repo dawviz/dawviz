@@ -16,7 +16,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [4.2. Ngoài phạm vi phiên bản 1.0 (Out-of-Scope)](BRD/4-2-ngoai-pham-vi-phien-ban-1-0-out-of-scope.md) · 1202 ký tự
 - [5. PHÂN TÍCH RỦI RO & PHƯƠNG ÁN GIẢM THIỂU (RISK MANAGEMENT)](BRD/5-phan-tich-rui-ro-phuong-an-giam-thieu-risk-man.md) · 4347 ký tự
 - [6. GIẢ ĐỊNH (ASSUMPTIONS)](BRD/6-gia-dinh-assumptions.md) · 554 ký tự
-- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 43672 ký tự
+- [7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)](BRD/7-nhat-ky-quyet-dinh-decision-log.md) · 45580 ký tự
 - [8. CÁC VẤN ĐỀ CÒN MỞ (OPEN ISSUES)](BRD/8-cac-van-de-con-mo-open-issues.md) · 7775 ký tự
 
 ## SRS.md — ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
@@ -287,9 +287,10 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [2. Ẩn hẳn thuộc tính không áp dụng (D-72, T-125)](WIDGET-REVAMP/2-an-han-thuoc-tinh-khong-ap-dung-d-72-t-125.md) · 574 ký tự
 - [3. Kiểu chữ dùng chung (D-73, T-126)](WIDGET-REVAMP/3-kieu-chu-dung-chung-d-73-t-126.md) · 1489 ký tự
 - [4. Sáng tạo tự do: Hình, Bút, Gắn nhạc nhanh (D-74)](WIDGET-REVAMP/4-sang-tao-tu-do-hinh-but-gan-nhac-nhanh-d-74.md) · 5183 ký tự
-- [5. Gộp widget chữ (D-76, T-138)](WIDGET-REVAMP/5-gop-widget-chu-d-76-t-138.md) · 1150 ký tự
+- [5. Gộp widget chữ (D-76, T-138)](WIDGET-REVAMP/5-gop-widget-chu-d-76-t-138.md) · 1852 ký tự
+- [5b. Lưới nốt: gộp Mật độ nốt, Tổng quan bản phối, Lưới chấm (D-77, T-139)](WIDGET-REVAMP/5b-luoi-not-gop-mat-do-not-tong-quan-ban-phoi-lu.md) · 3016 ký tự
 - [6. Cụm việc nhỏ của đợt này (T-127…T-133)](WIDGET-REVAMP/6-cum-viec-nho-cua-dot-nay-t-127-t-133.md) · 2523 ký tự
-- [7. Thứ tự làm và cách chia PR](WIDGET-REVAMP/7-thu-tu-lam-va-cach-chia-pr.md) · 610 ký tự
+- [7. Thứ tự làm và cách chia PR](WIDGET-REVAMP/7-thu-tu-lam-va-cach-chia-pr.md) · 768 ký tự
 - [8. Vấn đề mở](WIDGET-REVAMP/8-van-de-mo.md) · 388 ký tự
 
 ## PARSER-SRS.md — SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer

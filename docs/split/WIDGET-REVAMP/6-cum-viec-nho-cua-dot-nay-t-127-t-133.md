@@ -4,8 +4,8 @@ doc_title: "Tu sửa widget và mở rộng sáng tạo (đợt 2026-11-26)"
 section: "6. Cụm việc nhỏ của đợt này (T-127…T-133)"
 path: "6. Cụm việc nhỏ của đợt này (T-127…T-133)"
 chunk: 6-cum-viec-nho-cua-dot-nay-t-127-t-133.md
-source_lines: 167-178
-source_sha1: f0d5abcfcb
+source_lines: 194-205
+source_sha1: 878ee1f0a2
 ids: []
 ---
 ## 6. Cụm việc nhỏ của đợt này (T-127…T-133)

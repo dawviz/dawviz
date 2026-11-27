@@ -4,7 +4,7 @@
  "docs": {
   "BRD.md": {
    "title": "TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)",
-   "sha1": "24a6394b24",
+   "sha1": "8a4bb92bff",
    "chunks": [
     {
      "n": 0,
@@ -330,10 +330,10 @@
      "path": [
       "7. NHẬT KÝ QUYẾT ĐỊNH (DECISION LOG)"
      ],
-     "chars": 43672,
+     "chars": 45580,
      "lines": [
       204,
-      289
+      291
      ],
      "ids": [
       "AD-07",
@@ -420,6 +420,8 @@
       "D-74",
       "D-75",
       "D-76",
+      "D-77",
+      "D-78",
       "KPI-04",
       "NFR-ACC-02",
       "NFR-SEC-01",
@@ -467,8 +469,8 @@
      ],
      "chars": 7775,
      "lines": [
-      290,
-      313
+      292,
+      315
      ],
      "ids": [
       "D-01",
@@ -5306,7 +5308,7 @@
   },
   "WIDGET-REVAMP.md": {
    "title": "Tu sửa widget và mở rộng sáng tạo (đợt 2026-11-26)",
-   "sha1": "f0d5abcfcb",
+   "sha1": "878ee1f0a2",
    "chunks": [
     {
      "n": 0,
@@ -5320,7 +5322,7 @@
      ],
      "ids": [
       "D-71",
-      "D-76"
+      "D-78"
      ]
     },
     {
@@ -5418,18 +5420,35 @@
      "path": [
       "5. Gộp widget chữ (D-76, T-138)"
      ],
-     "chars": 1150,
+     "chars": 1852,
      "lines": [
       156,
-      166
+      168
      ],
      "ids": [
       "AD-08",
-      "D-76"
+      "D-76",
+      "D-78"
      ]
     },
     {
      "n": 7,
+     "file": "WIDGET-REVAMP/5b-luoi-not-gop-mat-do-not-tong-quan-ban-phoi-lu.md",
+     "title": "5b. Lưới nốt: gộp Mật độ nốt, Tổng quan bản phối, Lưới chấm (D-77, T-139)",
+     "path": [
+      "5b. Lưới nốt: gộp Mật độ nốt, Tổng quan bản phối, Lưới chấm (D-77, T-139)"
+     ],
+     "chars": 3016,
+     "lines": [
+      169,
+      193
+     ],
+     "ids": [
+      "D-77"
+     ]
+    },
+    {
+     "n": 8,
      "file": "WIDGET-REVAMP/6-cum-viec-nho-cua-dot-nay-t-127-t-133.md",
      "title": "6. Cụm việc nhỏ của đợt này (T-127…T-133)",
      "path": [
@@ -5437,27 +5456,30 @@
      ],
      "chars": 2523,
      "lines": [
-      167,
-      178
-     ],
-     "ids": []
-    },
-    {
-     "n": 8,
-     "file": "WIDGET-REVAMP/7-thu-tu-lam-va-cach-chia-pr.md",
-     "title": "7. Thứ tự làm và cách chia PR",
-     "path": [
-      "7. Thứ tự làm và cách chia PR"
-     ],
-     "chars": 610,
-     "lines": [
-      179,
-      190
+      194,
+      205
      ],
      "ids": []
     },
     {
      "n": 9,
+     "file": "WIDGET-REVAMP/7-thu-tu-lam-va-cach-chia-pr.md",
+     "title": "7. Thứ tự làm và cách chia PR",
+     "path": [
+      "7. Thứ tự làm và cách chia PR"
+     ],
+     "chars": 768,
+     "lines": [
+      206,
+      218
+     ],
+     "ids": [
+      "D-77",
+      "D-78"
+     ]
+    },
+    {
+     "n": 10,
      "file": "WIDGET-REVAMP/8-van-de-mo.md",
      "title": "8. Vấn đề mở",
      "path": [
@@ -5465,8 +5487,8 @@
      ],
      "chars": 388,
      "lines": [
-      191,
-      196
+      219,
+      224
      ],
      "ids": []
     }
@@ -8495,8 +8517,18 @@
   ],
   "D-76": [
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
-   "WIDGET-REVAMP/tu-sua-widget-va-mo-rong-sang-tao-dot-2026-11-26.md",
    "WIDGET-REVAMP/5-gop-widget-chu-d-76-t-138.md"
+  ],
+  "D-77": [
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
+   "WIDGET-REVAMP/5b-luoi-not-gop-mat-do-not-tong-quan-ban-phoi-lu.md",
+   "WIDGET-REVAMP/7-thu-tu-lam-va-cach-chia-pr.md"
+  ],
+  "D-78": [
+   "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
+   "WIDGET-REVAMP/tu-sua-widget-va-mo-rong-sang-tao-dot-2026-11-26.md",
+   "WIDGET-REVAMP/5-gop-widget-chu-d-76-t-138.md",
+   "WIDGET-REVAMP/7-thu-tu-lam-va-cach-chia-pr.md"
   ],
   "NFR-ACC-02": [
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
