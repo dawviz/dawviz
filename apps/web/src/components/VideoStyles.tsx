@@ -247,7 +247,7 @@ function PastePreset({ onAdd }: { onAdd(f: File): void }) {
     <div className="space-y-1.5" data-testid="preset-paste">
       <label className="block text-xs text-muted" htmlFor="preset-paste-text">{i18n.t('web.preset.pasteLabel')}</label>
       <textarea id="preset-paste-text" value={text} onChange={(e) => setText(e.target.value)} rows={5} spellCheck={false} autoFocus
-        className="field w-full resize-y font-mono text-[11px]" placeholder='{ "schemaVersion": "0.8.0", … }' data-testid="preset-paste-text"
+        className="field w-full resize-y font-mono text-[11px]" placeholder='{ "schemaVersion": "0.9.0", … }' data-testid="preset-paste-text"
         onKeyDown={(e) => { if (e.key === 'Escape') { e.stopPropagation(); setOpen(false); } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); submit(); } }} />
       <div className="flex gap-1.5">
         <button type="button" className="btn-ghost flex-1 border border-control" disabled={!text.trim()} onClick={submit} data-testid="preset-paste-add">{i18n.t('web.preset.pasteAdd')}</button>

@@ -65,13 +65,22 @@ const CASES: Case[] = [
   { type: 'EVENT_COUNTER', prop: 'lineHeight', values: NUM(1.2, 2.5),
     hidden: [{ lines: { played: { enabled: true }, total: { enabled: false }, progress: { enabled: false }, tempo: { enabled: false } } }, { lines: { played: { enabled: false }, total: { enabled: false }, progress: { enabled: true }, tempo: { enabled: false } } }],
     shown: { lines: { played: { enabled: true }, total: { enabled: true }, progress: { enabled: false }, tempo: { enabled: false } } } },
-  // Lưới chấm, Bố cục bài: không có vạch phát (màu rỗng) thì độ dày vạch không có tác dụng
-  { type: 'DOTS', prop: 'playheadWidth', values: NUM(1, 4), hidden: [{ playheadColor: '' }], shown: { playheadColor: '#ffffff' } },
-  // Lưới chấm: cỡ tối thiểu chỉ dùng khi chấm co theo cường độ
-  { type: 'DOTS', prop: 'velocityMin', values: NUM(0.2, 0.6), hidden: [{ velocitySize: false }], shown: { velocitySize: true } },
+  // Lưới nốt (D-77): ô của Quanh vạch phát, của hàng theo cao độ, của chấm, của thanh/ô đầy; màu khi tô theo track; vạch phát rỗng; dòng số giọng tắt
+  ...(['grid', 'playheadRatio', 'beatLines'] as const).map((prop): Case => ({ type: 'NOTE_GRID', prop, values: prop === 'grid' ? [8, 16] : prop === 'beatLines' ? [false, true] : NUM(0.3, 0.9), hidden: [{ span: 'SONG' }, { span: 'SONG', rows: 'PITCH', shape: 'ROUND' }], shown: { span: 'WINDOW' } })),
+  { type: 'NOTE_GRID', prop: 'pitchRangeMode', values: ['FIT_CONTENT', 'CUSTOM'], hidden: [{ rows: 'TRACK' }, { rows: 'TRACK', span: 'WINDOW' }], shown: { rows: 'PITCH' } },
+  ...(['pitchMin', 'pitchMax'] as const).map((prop): Case => ({ type: 'NOTE_GRID', prop, values: prop === 'pitchMin' ? NUM(30, 60) : NUM(80, 100), hidden: [{ rows: 'TRACK', pitchRangeMode: 'CUSTOM' }, { rows: 'PITCH', pitchRangeMode: 'FIT_CONTENT' }], shown: { rows: 'PITCH', pitchRangeMode: 'CUSTOM' } })),
+  { type: 'NOTE_GRID', prop: 'dotSize', values: NUM(0.3, 0.8), hidden: [{ shape: 'FILL' }, { shape: 'FILL', span: 'WINDOW', rows: 'PITCH' }], shown: { shape: 'ROUND' } },
+  { type: 'NOTE_GRID', prop: 'cellGap', values: NUM(0, 3), hidden: [{ shape: 'ROUND' }, { shape: 'SQUARE', span: 'WINDOW' }], shown: { shape: 'FILL' } },
+  { type: 'NOTE_GRID', prop: 'activeScale', values: NUM(1, 2.5), hidden: [{ shape: 'FILL', span: 'WINDOW' }, { shape: 'BAR', span: 'WINDOW' }], shown: { shape: 'ROUND', span: 'WINDOW' } },
+  { type: 'NOTE_GRID', prop: 'velocitySize', values: [false, true], hidden: [{ shape: 'FILL' }, { shape: 'BAR' }], shown: { shape: 'ROUND' } },
+  { type: 'NOTE_GRID', prop: 'velocityMin', values: NUM(0.2, 0.6), hidden: [{ shape: 'ROUND', velocitySize: false }, { shape: 'FILL', velocitySize: true }], shown: { shape: 'ROUND', velocitySize: true } },
+  { type: 'NOTE_GRID', prop: 'color', values: ['#ff0000', '#00ff00'], hidden: [{ rows: 'TRACK', colorMode: 'TRACK', emptyAlpha: 0.5 }, { rows: 'TRACK', colorMode: 'TRACK', span: 'WINDOW', beatLines: true, emptyAlpha: 0.5 }], shown: { colorMode: 'SOLID' } },
+  { type: 'NOTE_GRID', prop: 'minAlpha', values: NUM(0.1, 0.5), hidden: [{ light: 'NOTES', emptyAlpha: 0.3 }, { light: 'NOTES', span: 'WINDOW', rows: 'PITCH' }], shown: { light: 'VELOCITY' } },
+  { type: 'NOTE_GRID', prop: 'emptyColorB', values: ['#ff0000', '#00ff00'], hidden: [{ emptyColor: '', emptyAlpha: 0.5 }, { emptyColor: '', emptyAlpha: 0.5, rows: 'PITCH', span: 'WINDOW' }], shown: { emptyColor: '#123456', emptyAlpha: 0.5 } },
+  ...(['playheadMark', 'playheadWidth'] as const).map((prop): Case => ({ type: 'NOTE_GRID', prop, values: prop === 'playheadMark' ? ['LINE', 'COLUMN'] : NUM(1, 4), hidden: [{ playheadColor: '' }, { playheadColor: '', span: 'WINDOW' }], shown: {} })),
+  { type: 'NOTE_GRID', prop: 'polyTemplate', values: ['A {poly}', 'B {poly}'], hidden: [{ showPolyphony: false }], shown: { showPolyphony: true } },
   // Vòng quãng năm: màu phát sáng chỉ dùng khi có phát sáng
   { type: 'PITCH_WHEEL', prop: 'glowColor', values: ['#ff0000', '#00ff00'], hidden: [{ glow: 0 }], shown: { glow: 0.5 } },
-  { type: 'ARRANGEMENT', prop: 'playheadWidth', values: NUM(1, 6), hidden: [{ playheadColor: '' }], shown: { playheadColor: '#ffffff' } },
 ];
 
 for (const c of CASES) {

@@ -12,19 +12,13 @@ import { listV, numV, timeV } from './placeholders.ts';
 import { chordDegree, romanAscii, romanOf, type RomanStyle } from './degree.ts';
 import { arcPts, poly } from './prims.ts';
 import { templateSpans, type TextRef, type TextSpan } from './typography.ts';
-import type { ASTNote, AutomationLane } from './types.ts';
+import type { AutomationLane } from './types.ts';
 import type { Derived, Primitive, RectPrim, WidgetRenderer } from './prims.ts';
 
 const ts = (styleId: string): TextRef => ({ styleId });
 const rect = (x: number, y: number, w: number, h: number, fill: string, alpha = 1, radius = 0, rotation = 0): RectPrim =>
   ({ kind: 'rect', x, y, w, h, fill, alpha, radius: Math.max(0, Math.min(radius, h / 2, w / 2)), glowColor: '', glowBlur: 0, stroke: '', strokeWidth: 0, ...(rotation ? { rotation } : {}) });
 const clamp01 = pct;
-/** Số nốt có start ≤ t (nốt đã sắp theo start). */
-const startsUpTo = (notes: readonly ASTNote[], t: number): number => {
-  let lo = 0, hi = notes.length;
-  while (lo < hi) { const m = (lo + hi) >> 1; if (notes[m].startTimeSeconds <= t) lo = m + 1; else hi = m; }
-  return lo;
-};
 const pcName = (pc: number, d: Derived) => (d.naming ? pitchClassNameFor(pc, d.naming) : pitchClassName(pc));
 const noteName = (p: number, d: Derived) => (d.naming ? noteNameFor(p, d.naming) : pitchName(p));
 const chordLabel = (name: string, d: Derived) => (d.naming ? chordNameFor(name, d.naming) : name);
@@ -34,7 +28,6 @@ export interface TempoInfoProps { align: Align; style: TextRef; template: string
 export interface BarBeatProps { align: Align; style: TextRef; format: 'PERCENT' | 'SIXTEENTH'; barDigits: number; dots: boolean; dotSize: number; dotColor: string; dotActiveColor: string; pulse: boolean }
 export interface KeyScaleProps { align: Align; nameStyle: TextRef; confStyle: TextRef; template: string; majorLabel: string; minorLabel: string; noKeyText: string; windowSec: number; minConfidence: number; showConfidence: boolean; confTemplate: string }
 export interface VelocityProps { mode: 'LEVEL' | 'HISTOGRAM'; perTrack: boolean; decayMs: number; windowSec: number; bins: number; gap: number; colorMode: 'TRACK' | 'SOLID'; color: string; trackColor: string; radius: number }
-export interface DensityProps { cols: number; rowGap: number; cellGap: number; colorMode: 'TRACK' | 'SOLID'; color: string; minAlpha: number; playheadColor: string; showPolyphony: boolean; polyTemplate: string; polyStyle: TextRef }
 export interface PitchWheelProps {
   order: 'CHROMATIC' | 'FIFTHS'; ring: number; litColor: string; dimColor: string; dimAlpha: number; showNames: boolean; nameStyle: TextRef; showChord: boolean; chordStyle: TextRef;
   /** Nhãn quanh vòng: tên nốt hoặc bậc La Mã so với giọng (scene.tonic, không đặt thì giọng nhận diện trong `windowSec`). */
@@ -62,7 +55,6 @@ export interface PitchWheelProps {
   /** Phát sáng quanh các nút đang sáng (0 = tắt); màu rỗng = màu sáng. Chỉ nút, không áp cho đa giác và cung tiến độ. */
   glow: number; glowColor: string;
 }
-export interface ArrangementProps { cols: number; rowGap: number; colorMode: 'TRACK' | 'SOLID'; color: string; upcomingAlpha: number; playheadColor: string; playheadWidth: number }
 export interface DrumPadProps { source: 'DRUMS' | 'ALL'; cols: number; maxPads: number; gap: number; radius: number; padColor: string; hitColor: string; colorMode: 'TRACK' | 'SOLID'; decayMs: number; labels: boolean; labelStyle: TextRef }
 export interface SectionProps { align: Align; style: TextRef; nextStyle: TextRef; template: string; showNext: boolean; nextTemplate: string; fadeMs: number }
 export interface LyricsProps { align: Align; style: TextRef; unsungStyle: TextRef; showNext: boolean; nextStyle: TextRef; maxChars: number; gapSec: number; hideAfterSec: number }
@@ -73,13 +65,11 @@ export const DEFAULT_TEMPO_INFO: Readonly<TempoInfoProps> = Object.freeze({ alig
 export const DEFAULT_BAR_BEAT: Readonly<BarBeatProps> = Object.freeze({ align: 'left', style: ts('clock'), format: 'PERCENT', barDigits: 3, dots: true, dotSize: 10, dotColor: '#3a4060', dotActiveColor: '#ffd166', pulse: true });
 export const DEFAULT_KEY_SCALE: Readonly<KeyScaleProps> = Object.freeze({ align: 'left', nameStyle: ts('heading'), confStyle: ts('caption'), template: '{key} {scale}', majorLabel: 'major', minorLabel: 'minor', noKeyText: '—', windowSec: 16, minConfidence: 0.3, showConfidence: true, confTemplate: 'Confidence {confidence}' });
 export const DEFAULT_VELOCITY: Readonly<VelocityProps> = Object.freeze({ mode: 'LEVEL', perTrack: true, decayMs: 500, windowSec: 8, bins: 8, gap: 4, colorMode: 'TRACK', color: '#8aa4ff', trackColor: '', radius: 2 });
-export const DEFAULT_DENSITY: Readonly<DensityProps> = Object.freeze({ cols: 96, rowGap: 2, cellGap: 1, colorMode: 'TRACK', color: '#8aa4ff', minAlpha: 0.08, playheadColor: '#ffffff', showPolyphony: true, polyTemplate: 'Voices: {poly}', polyStyle: ts('caption') });
 export const DEFAULT_PITCH_WHEEL: Readonly<PitchWheelProps> = Object.freeze({
   order: 'CHROMATIC', ring: 0.34, litColor: '#ffd166', dimColor: '#3a4060', dimAlpha: 0.55, showNames: true, nameStyle: ts('label'), showChord: true, chordStyle: ts('heading'),
   labels: 'NAMES', nodeShape: 'TILE', litTextColor: '#ffffff', polygon: false, polygonColor: '', polygonAlpha: 0.22, rootColor: '', progress: 'OFF', progressColor: '', progressWidth: 4,
   beatMarks: false, outlineColor: '', chordAs: 'NAME', romanStyle: 'SUFFIX', subTemplate: '', subStyle: ts('label'), windowSec: 16, glow: 0, glowColor: '',
 });
-export const DEFAULT_ARRANGEMENT: Readonly<ArrangementProps> = Object.freeze({ cols: 160, rowGap: 2, colorMode: 'TRACK', color: '#8aa4ff', upcomingAlpha: 0.4, playheadColor: '#ffffff', playheadWidth: 2 });
 export const DEFAULT_DRUM_PAD: Readonly<DrumPadProps> = Object.freeze({ source: 'DRUMS', cols: 4, maxPads: 16, gap: 6, radius: 8, padColor: '#2a2f45', hitColor: '#ffb74d', colorMode: 'SOLID', decayMs: 250, labels: true, labelStyle: ts('tiny') });
 export const DEFAULT_SECTION: Readonly<SectionProps> = Object.freeze({ align: 'left', style: ts('heading'), nextStyle: ts('caption'), template: '{section}', showNext: true, nextTemplate: 'Next: {next} in {next_in:m:ss}', fadeMs: 250 });
 export const DEFAULT_LYRICS: Readonly<LyricsProps> = Object.freeze({ align: 'center', style: ts('body'), unsungStyle: { opacity: 0.5 }, showNext: true, nextStyle: ts('caption'), maxChars: 60, gapSec: 2.5, hideAfterSec: 4 });
@@ -87,10 +77,10 @@ export const DEFAULT_AUTOMATION: Readonly<AutomationProps> = Object.freeze({ lan
 
 /** Chỗ giữ riêng của từng widget phân tích (ngoài chỗ giữ chung). */
 export const INSIGHT_TEMPLATE_KEYS = {
-  TEMPO_INFO: [], BAR_BEAT: [], KEY_SCALE: ['key', 'scale', 'confidence'], VELOCITY: [], DENSITY: ['poly'], PITCH_WHEEL: [], ARRANGEMENT: [], DRUM_PAD: [],
+  TEMPO_INFO: [], BAR_BEAT: [], KEY_SCALE: ['key', 'scale', 'confidence'], VELOCITY: [], PITCH_WHEEL: [], DRUM_PAD: [], NOTE_GRID: ['poly'],
   SECTION: ['section', 'next', 'next_in', 'section_no', 'section_elapsed'], LYRICS: [], AUTOMATION: [],
 } as const;
-export const INSIGHT_TYPES = ['TEMPO_INFO', 'BAR_BEAT', 'KEY_SCALE', 'VELOCITY', 'DENSITY', 'PITCH_WHEEL', 'ARRANGEMENT', 'DRUM_PAD', 'SECTION', 'LYRICS', 'AUTOMATION'] as const;
+export const INSIGHT_TYPES = ['TEMPO_INFO', 'BAR_BEAT', 'KEY_SCALE', 'VELOCITY', 'PITCH_WHEEL', 'DRUM_PAD', 'SECTION', 'LYRICS', 'AUTOMATION'] as const;
 
 // ───────────────────────────── P-02 Tempo & nhịp ─────────────────────────────
 export const tempoInfoRenderer: WidgetRenderer<TempoInfoProps> = {
@@ -189,30 +179,6 @@ export const velocityRenderer: WidgetRenderer<VelocityProps> = {
   },
 };
 
-// ───────────────────────────── P-06 Mật độ nốt / polyphony ─────────────────────────────
-const cellCount = (ti: TrackIndex, a: number, b: number) => Math.max(0, startsUpTo(ti.notes, b) - startsUpTo(ti.notes, a));
-export const densityRenderer: WidgetRenderer<DensityProps> = {
-  type: 'DENSITY',
-  layout({ ast, derived, tracks, measure, textStyles, fonts }, spec, t) {
-    const p = spec.properties, { width: W, height: H } = spec.layout, out: Primitive[] = [], T = typo(textStyles, measure, fonts), list = shown(tracks).slice(0, 24), dur = derived.index.duration;
-    let top = 0;
-    if (p.showPolyphony) {
-      const st = T.style(p.polyStyle, 'caption'); let poly = 0; for (const ti of list) poly += activeNotes(ti, t).length;
-      T.text(out, templateSpans(p.polyTemplate, withLocals(globalValues({ ast, derived, tracks }, t), { poly })), 0, base(st.size), st, 'left', W); top = st.size * 1.6;
-    }
-    if (!list.length || dur <= 0) return out;
-    const cols = Math.round(p.cols), rows = list.length, rh = Math.max(1, (H - top - p.rowGap * (rows - 1)) / rows), cw = W / cols;
-    list.forEach((ti, r) => {
-      const counts: number[] = []; let mx = 0;
-      for (let c = 0; c < cols; c++) { const n = cellCount(ti, (c / cols) * dur - 1e-9, ((c + 1) / cols) * dur - 1e-9); counts.push(n); if (n > mx) mx = n; }
-      const col = p.colorMode === 'TRACK' ? ti.track.color : p.color, y = top + r * (rh + p.rowGap);
-      counts.forEach((n, c) => out.push(rect(c * cw, y, Math.max(0.5, cw - p.cellGap), rh, col, n ? p.minAlpha + (1 - p.minAlpha) * (n / mx) : p.minAlpha * 0.5)));
-    });
-    if (p.playheadColor) out.push(rect(Math.min(W - 1, (t / dur) * W), top, 1.5, H - top, p.playheadColor, 0.9));
-    return out;
-  },
-};
-
 // ───────────────────────────── P-07 Vòng cao độ / vòng quãng năm ─────────────────────────────
 export const pitchWheelRenderer: WidgetRenderer<PitchWheelProps> = {
   type: 'PITCH_WHEEL',
@@ -286,22 +252,6 @@ export const pitchWheelRenderer: WidgetRenderer<PitchWheelProps> = {
       }
     }
     if (sub) T.text(out, sub, cx, cy + sst.size * 0.35, sst, 'center', Math.max(10, inner * 1.7));
-    return out;
-  },
-};
-
-// ───────────────────────────── P-08 Tổng quan bản phối ─────────────────────────────
-export const arrangementRenderer: WidgetRenderer<ArrangementProps> = {
-  type: 'ARRANGEMENT',
-  layout({ derived, tracks }, spec, t) {
-    const p = spec.properties, { width: W, height: H } = spec.layout, out: Primitive[] = [], list = shown(tracks).slice(0, 32), dur = derived.index.duration;
-    if (!list.length || dur <= 0) return out;
-    const cols = Math.round(p.cols), rows = list.length, rh = Math.max(1, (H - p.rowGap * (rows - 1)) / rows), cw = W / cols, played = t / dur * cols;
-    list.forEach((ti, r) => {
-      const col = p.colorMode === 'TRACK' ? ti.track.color : p.color, y = r * (rh + p.rowGap);
-      for (let c = 0; c < cols; c++) if (cellCount(ti, (c / cols) * dur - 1e-9, ((c + 1) / cols) * dur - 1e-9) > 0) out.push(rect(c * cw, y, Math.max(0.5, cw - 0.5), rh, col, c + 1 <= played ? 1 : p.upcomingAlpha));
-    });
-    if (p.playheadColor && p.playheadWidth > 0) out.push(rect(Math.min(W - p.playheadWidth, (t / dur) * W), 0, p.playheadWidth, H, p.playheadColor, 0.95));
     return out;
   },
 };
@@ -440,7 +390,7 @@ export const automationRenderer: WidgetRenderer<AutomationProps> = {
 };
 
 export const INSIGHT_RENDERERS = {
-  TEMPO_INFO: tempoInfoRenderer, BAR_BEAT: barBeatRenderer, KEY_SCALE: keyScaleRenderer, VELOCITY: velocityRenderer, DENSITY: densityRenderer, PITCH_WHEEL: pitchWheelRenderer,
-  ARRANGEMENT: arrangementRenderer, DRUM_PAD: drumPadRenderer, SECTION: sectionRenderer, LYRICS: lyricsRenderer, AUTOMATION: automationRenderer,
+  TEMPO_INFO: tempoInfoRenderer, BAR_BEAT: barBeatRenderer, KEY_SCALE: keyScaleRenderer, VELOCITY: velocityRenderer, PITCH_WHEEL: pitchWheelRenderer,
+  DRUM_PAD: drumPadRenderer, SECTION: sectionRenderer, LYRICS: lyricsRenderer, AUTOMATION: automationRenderer,
 } as const;
 void listV; void block;

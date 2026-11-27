@@ -1,6 +1,6 @@
 # Analysis widgets
 
-Besides the Piano roll and the text widgets, the Editor has fourteen widgets that show what is going on in the song. Add them with **Add** at the top left of the Timeline; adjust them in the widget's **Settings**.
+Besides the Piano roll and the text widgets, the Editor has twelve widgets that show what is going on in the song. Add them with **Add** at the top left of the Timeline; adjust them in the widget's **Settings**.
 
 | Widget | Shows |
 |---|---|
@@ -8,20 +8,18 @@ Besides the Piano roll and the text widgets, the Editor has fourteen widgets tha
 | **Bar & beat** | The position as `002.2.50` (bar.beat.hundredths) or `002.2.3` (sixteenths), with a dot for each beat. |
 | **Key** | The key now playing (for example "C major") and how sure the guess is, from the notes of the last few seconds. |
 | **Velocity** | A level bar per track (jumps on each note, then fades), or a histogram of velocities. |
-| **Note density** | One row per track, darker cells where there are more notes, plus the number of notes sounding. |
 | **Pitch wheel** | 12 cells for the 12 notes; the cells of the sounding notes light up; the chord shows in the middle. Order them by semitone or as the circle of fifths. See [Pitch wheel: more options](#pitch-wheel-more-options). |
-| **Arrangement overview** | A small map of the tracks over time, the played part darker, with a playhead. |
 | **Drum pads** | A grid of pads for the drum track: a pad lights when a note hits, labelled with GM drum names (Kick, Snare, HH Closed…). |
 | **Section name** | The current section (Intro, Verse…) and the next one. |
 | **Lyrics** | The line being sung, the syllables already sung brighter; the next line small underneath. |
 | **Automation** | The automation line of one lane (volume, pan, or MIDI CC and pitch bend) over time, with its current value. |
 | **Panel frame** | A frame with a number, a title and a small row of figures at the bottom, for building other widgets into one board. |
 | **Chord degrees** | A strip of chord blocks shown as degrees (I, V, vi…), the block being played shown bold. |
-| **Dot grid** | A grid of dots over time and pitch; a dot lights where there is a note. |
+| **Note grid** | A grid over time: each row is a track or a pitch, a cell lights where there is a note, darker by density or velocity; shows the whole song or the part around the playhead. See [Note grid](#note-grid). |
 
-## Panel frame, Chord degrees, Dot grid
+## Panel frame, Chord degrees
 
-These three build an analysis board. A ready example: the `analysis-dashboard-16x9` preset.
+These two, with the Note grid, build an analysis board. A ready example: the `analysis-dashboard-16x9` preset.
 
 **Panel frame.** In **Settings**: **Number**, **Title**, **Number colour**; turn on the tick box in the **Frame** group title, then set **Frame colour**, **Frame width**, **Fill colour** and **Fill opacity**. The bottom row has up to six columns (**Column 1** to **Column 6**), each with a **Label** and a **Value**; **Value** accepts [placeholders](08-placeholders.md), for example `{bpm}`. A column with both boxes empty is not shown.
 
@@ -35,7 +33,29 @@ These three build an analysis board. A ready example: the `analysis-dashboard-16
 - **Second row** and **Function strip** are groups with a tick box in their title; together with **Bar numbers** they switch each part on or off. The function strip uses **Tonic colour (T)**, **Subdominant colour (SD)** and **Dominant colour (D)**.
 - **Current chord colour**, **Current chord text colour**, **Block colour**, **Second row colour**, **Opacity of played chords**, **Gap between blocks**.
 
-**Dot grid.** Each column is one step of the **Grid** (1/4, 1/8, 1/16, 1/32); each row is a pitch. Set **Columns**, **Pitch range** (**Fit notes** or **Custom** with **Lowest note (MIDI)** and **Highest note (MIDI)**), **Most rows** (with a wider range, several notes share a row), **Dot shape**, **Dot size**, **Note colour**, **Empty dot colour**, **Empty dot colour at the bottom**, **Empty dot opacity** and **Size of notes at the playhead**. Extra touches: **Dot size by velocity** (louder notes get bigger dots, down to **Dot size at lowest velocity**), the **Beat lines** group (thin lines on every beat, heavier every four beats) and the **Labels** group (**C note names on the left**, in a column outside the dot grid).
+## Note grid
+
+The Note grid draws a grid: each row is a track or a pitch, each column a stretch of time, and a cell lights where there is a note. It replaces the three older widgets **Note density**, **Arrangement overview** and **Dot grid**: presets that use them still open, turn into a Note grid and look the same as before.
+
+The three main choices in **Settings**:
+
+- **Rows by**: **Track** (one row per track, up to **Most rows** tracks) or **Pitch** (one row per pitch, drum tracks left out). With **Pitch**, the **Pitch range** group offers **Fit notes** or **Custom** (**Lowest note (MIDI)**, **Highest note (MIDI)**); with a range wider than **Most rows**, several pitches share a row.
+- **Shows**: **Whole song** (**Columns** split the song evenly; a cell lights when a note starts in its column) or **Around the playhead** (each column is one step of the **Grid**, 1/4, 1/8, 1/16 or 1/32; the grid scrolls with the music while the playhead stays at **Playhead position**; a cell stays lit for the whole note).
+- **Cells light by**: **Any note** (all the same), **Density** (cells with more notes are darker) or **Velocity** (louder notes are darker). The last two go from **Faintest cell** to full.
+
+The **Cells** group: **Cell shape** is **Filled cell**, **Square dot**, **Round dot** or **Joined bar** (lit cells next to each other join into one bar); **Dot size, bar thickness**; dots also have **Size of notes at the playhead** and **Dot size by velocity** (the softest note shrinks to **Dot size at lowest velocity**).
+
+The **Colour** group: **Track colour** or **One colour**, **Opacity of the part to come**, **Empty cell colour** (leave empty to use the row's colour), **Empty cell colour at the bottom** (a top-to-bottom blend), **Empty cell opacity** (0 draws no empty cells).
+
+Also: the **Beat lines** group (only **Around the playhead**), the **Labels** group (**Row labels on the left**: track names, or C note names when rows are by pitch), the **Playhead** group (**Playhead colour**, **Playhead style** **Line** or **Column box**, **Playhead width**) and the **Notes sounding** group (a line of text above the grid, `Voices: {poly}` by default). Boxes that have no effect with the current choices are hidden.
+
+To get the look of an older widget:
+
+| Like | Set |
+|---|---|
+| Note density | **Track**, **Whole song**, **Density**, **Filled cell**, **Notes sounding** on |
+| Arrangement overview | **Track**, **Whole song**, **Any note**, **Filled cell** |
+| Dot grid | **Pitch**, **Around the playhead**, **Any note**, **Round dot**, **Playhead style** **Column box** |
 
 ## Pitch wheel: more options
 
@@ -58,7 +78,7 @@ In the Pitch wheel's **Settings**:
 - **Automation** comes from Reaper volume and pan envelopes, Ableton track volume and pan automation, and DAWproject Points. FL Studio gives channel volume and pan. In a MIDI file, every Control Change (Mod Wheel, Expression, Sustain, Cutoff…) and Pitch Bend becomes its own lane, named like "Mod Wheel (CC1)" or "Pitch Bend". In the widget's **Settings**, the **Lane** box lists the project's lanes by name; a lane the project lacks is kept and marked "not in this project". A track without that lane draws nothing. The same lanes work in **Follow the music** (source "Lane: …") to drive any widget's property.
 - **Drum pads** takes only tracks with notes on MIDI channel 10 or a name with "Drums"; set **Tracks** to "All chosen tracks" to include others.
 - **Chord:** when **Tracks** is "First melodic track" (the Chord widget's default), the widget prefers a track named Piano, Keys/Keyboard or Guitar; otherwise it takes the first melodic track. To use another, pick tracks by hand under **Advanced**.
-- The widgets that read notes (Key, Velocity, Note density, Pitch wheel, Arrangement, Drum pads, Automation) have a track picker under **Advanced**.
+- The widgets that read notes (Key, Velocity, Pitch wheel, Note grid, Drum pads, Automation) have a track picker under **Advanced**.
 
 ## Note names
 
@@ -73,7 +93,7 @@ Leave it on "Default" to keep the names as before.
 
 ## Tips
 
-- The text in these widgets is a template with placeholders, as in [Inserting live values into text](08-placeholders.md). For example Key uses `{key}`, `{scale}`, `{confidence}`; Section name uses `{section}`, `{next}`, `{next_in}`, `{section_no}`, `{section_elapsed}`; Note density uses `{poly}`.
+- The text in these widgets is a template with placeholders, as in [Inserting live values into text](08-placeholders.md). For example Key uses `{key}`, `{scale}`, `{confidence}`; Section name uses `{section}`, `{next}`, `{next_in}`, `{section_no}`, `{section_elapsed}`; the Note grid's notes-sounding line uses `{poly}`.
 - Level placeholders (`{level}`…) need an audio file; with no audio they show "—".
 - The words "major" and "minor" in the Key widget are text you can edit (Advanced), so you can change them to your own language.
 - Preview and the exported video are identical: these widgets depend only on the moment being shown.

@@ -5,7 +5,7 @@ section: "3. Kiểu chữ dùng chung (D-73, T-126)"
 path: "3. Kiểu chữ dùng chung (D-73, T-126)"
 chunk: 3-kieu-chu-dung-chung-d-73-t-126.md
 source_lines: 77-91
-source_sha1: 878ee1f0a2
+source_sha1: faa5b53b06
 ids: [D-73, REQ-GRAPHICS-18]
 ---
 ## 3. Kiểu chữ dùng chung (D-73, T-126)

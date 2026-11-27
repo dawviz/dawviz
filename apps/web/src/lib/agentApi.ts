@@ -94,7 +94,7 @@ export function createAgentApi(host: () => AgentHost) {
     loadProject: async (main: FileLike, ...extras: FileLike[]) => { await host().loadProject([toFile(main), ...extras.map(toFile)]); await waitIdle(); return host().status(); },
     /** Nạp tệp âm thanh trộn sẵn (WAV, MP3, FLAC, OGG, M4A). */
     loadAudio: async (f: FileLike) => { await host().loadAudio(toFile(f)); return host().status(); },
-    /** Scene đang dùng (JSON preset 0.8.0: lớp, precomp, keyframe, phase). */
+    /** Scene đang dùng (JSON preset 0.9.0: lớp, precomp, keyframe, phase). */
     getScene: async () => JSON.parse(JSON.stringify(host().scene())) as SceneDocument,
     /** Kiểm một preset mà không áp. */
     validate: async (json: unknown) => validateScene(json),

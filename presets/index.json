@@ -53,8 +53,8 @@
       "name": "Analysis Dashboard 16:9",
       "author": "DAW Visualizer",
       "license": "CC0-1.0",
-      "bytes": 19097,
-      "sha256": "bf14ad4096a7546882713391b9626f49eb83bd19f8a410bbc431eae5b0258fc0"
+      "bytes": 19230,
+      "sha256": "5424e65c9c66da908e43b3189bed0591bac1416266f6c00515be512e6ef65d7a"
     },
     {
       "path": "presets/scene/dark-score-16x9.json",
@@ -63,7 +63,7 @@
       "author": "DAW Visualizer",
       "license": "Apache-2.0",
       "bytes": 8917,
-      "sha256": "7b6c233bb969b962f2316e35b6c65a2d2af8ca33835bc367e71ab51605342c4d"
+      "sha256": "f52730151de01c52d1eb84b4eacc11620a17f85f23ba862012b1e6ee24414e36"
     },
     {
       "path": "presets/scene/paper-16x9.json",
@@ -72,7 +72,7 @@
       "author": "DAW Visualizer",
       "license": "Apache-2.0",
       "bytes": 6493,
-      "sha256": "23fdbb6f755c28aaab40a2ee02cf05d7c5c16b3f3ab52a60151e7ac6c5774a1c"
+      "sha256": "f409e098bc1beaa0d0afa103202b321df9658c06467cf006307a8eee57de1403"
     },
     {
       "path": "presets/scene/paper-1x1.json",
@@ -81,7 +81,7 @@
       "author": "DAW Visualizer",
       "license": "Apache-2.0",
       "bytes": 5005,
-      "sha256": "31f240603de978c2015990bc8ad9401ca7d04d36d733836e09ddf6371868ed3e"
+      "sha256": "c74cb510cd24ae83d7dd47db68253747d59079fab57e8111a73057f05933fafb"
     },
     {
       "path": "presets/scene/paper-light-1x1.json",
@@ -90,7 +90,7 @@
       "author": "DAW Visualizer",
       "license": "Apache-2.0",
       "bytes": 6780,
-      "sha256": "e464550b62c028e86e3d73f13f01cc50c7e4923a5b773845d4f67fbf9842acdc"
+      "sha256": "9466e58dbcfbfa586debdbadf13e871cd5ae1974871bd2299f886f22dea128d3"
     }
   ]
 }

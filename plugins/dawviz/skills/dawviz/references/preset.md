@@ -1,4 +1,4 @@
-# Writing a DawViz preset (scene JSON, schemaVersion 0.8.0)
+# Writing a DawViz preset (scene JSON, schemaVersion 0.9.0)
 
 The preset is the whole video design. The app reads it with a forgiving checker: wrong values fall back to defaults **with a warning**, unknown fields are dropped, and only broken structure is an error. Your goal is a preset with **no warnings**. The full JSON Schema is `presets/schema/scene.schema.json` in the repo; the examples in `../examples/` pass the repo's checker (`npm run preset:check -- --community file.json`).
 
@@ -6,7 +6,7 @@ The preset is the whole video design. The app reads it with a forgiving checker:
 
 ```json
 {
-  "schemaVersion": "0.8.0",
+  "schemaVersion": "0.9.0",
   "presetName": "My video",
   "author": "",
   "canvas": { "aspectRatio": "9:16", "designWidth": 1080, "designHeight": 1920, "backgroundColor": "#0c0e16", "backgroundImageData": null,
@@ -55,9 +55,9 @@ The preset is the whole video design. The app reads it with a forgiving checker:
 | `PARTICLES` | particles on notes | `originX` `NOTE` (sparks where notes hit the playhead) |
 | `PANEL` | frame with a number, a title and a bottom row of figures | `number`, `title`, `numberColor`, `frame` [true], `frameColor`, `frameWidth`, `fillColor`, `fillAlpha`, `stats` `[{ "label": "BAR", "value": "{bar}.{beat}" }]` (max 6; `value` takes placeholders) |
 | `DEGREE` | strip of chord blocks as degrees (I, V, vi…) | `windowBars` [8], `resolution` `BAR`/`HALF`/`BEAT`/`CHANGE` [`BAR`], `showDetail`, `showFunction` (T/SD/D strip), `showBars`, `romanStyle` `SUFFIX`/`CASE`, `keyWindowSec` [16], `labelAlign` `START`/`CENTER`/`END` [`CENTER`] (text position in the block), `labelSticky` [true] (text sticks to the left edge while a block scrolls out), `showChordName` [false] (two-tier block: degree large, chord name small below), `accentColor`, `blockColor`, `tonicColor`, `subdominantColor`, `dominantColor`, `pastAlpha` |
-| `DOTS` | dot grid, time × pitch | `grid` `4`/`8`/`16`/`32` [16], `cols` [64], `maxRows` [32], `pitchRangeMode` `FIT_CONTENT`/`CUSTOM` with `pitchMin`/`pitchMax`, `shape` `ROUND`/`SQUARE`, `dotSize`, `color`, `emptyColor`, `emptyColorB`, `emptyAlpha`, `activeScale`, `velocitySize` [false] with `velocityMin` [0.4] (dot size follows note velocity), `beatLines` [false] (thin beat lines), `rowLabels` [false] (C note names in a column left of the grid), `labelStyle` |
+| `NOTE_GRID` | note grid: rows × time (replaces the old `DENSITY`, `ARRANGEMENT`, `DOTS`, which still load and are converted) | `rows` `TRACK`/`PITCH` [TRACK], `span` `SONG` (whole song, cells light where a note starts)/`WINDOW` (scrolls around the playhead, cells light for the whole note) [SONG], `light` `NOTES`/`DENSITY`/`VELOCITY` [NOTES] (the last two go from `minAlpha` to full), `shape` `FILL`/`SQUARE`/`ROUND`/`BAR` [FILL], `cols` [160], `grid` `4`/`8`/`16`/`32` and `playheadRatio` (WINDOW), `maxRows` [32], `pitchRangeMode` `FIT_CONTENT`/`CUSTOM` with `pitchMin`/`pitchMax` (PITCH), `dotSize`, `cellGap`, `rowGap`, `activeScale`, `colorMode` `TRACK`/`SOLID`, `color`, `upcomingAlpha`, `emptyColor` (empty = row colour), `emptyColorB`, `emptyAlpha` [0], `velocitySize`/`velocityMin`, `beatLines`, `rowLabels` (track names or C note names), `playheadMark` `LINE`/`COLUMN`, `playheadColor`, `playheadWidth`, `showPolyphony` with `polyTemplate` (`{poly}`). Old look: dot grid = `rows: "PITCH", span: "WINDOW", shape: "ROUND", playheadMark: "COLUMN", rowGap: 0` |
 | `PITCH_WHEEL` extras | the wheel can show degrees, circles, a progress ring | `labels` `NAMES`/`DEGREES`, `nodeShape` `TILE`/`CIRCLE`, `polygon` (join sounding notes) with `polygonColor`/`polygonAlpha`, `progress` `OFF`/`BAR`/`SONG` with `progressColor`/`progressWidth`, `beatMarks`, `rootColor` (ring on the bass note), `glow` 0–1 (halo on lit cells; not the polygon or ring) with `glowColor` (empty = lit colour), `chordAs` `NAME`/`DEGREE`, `romanStyle`, `subTemplate` (line under the chord, placeholders ok, e.g. `"BAR {bar}"`) |
-| `AUTOMATION` property `lane` takes a lane id (`volume`, `pan`, `cc1`, `pitchBend`…); see below. | `SECTION`, `LYRICS`, `TEMPO_INFO`, `BAR_BEAT`, `KEY_SCALE`, `VELOCITY`, `DENSITY`, `PITCH_WHEEL`, `ARRANGEMENT`, `DRUM_PAD`, `AUTOMATION` | analysis widgets | leave properties out at first |
+| `AUTOMATION` property `lane` takes a lane id (`volume`, `pan`, `cc1`, `pitchBend`…); see below. | `SECTION`, `LYRICS`, `TEMPO_INFO`, `BAR_BEAT`, `KEY_SCALE`, `VELOCITY`, `PITCH_WHEEL`, `DRUM_PAD`, `AUTOMATION` | analysis widgets | leave properties out at first |
 
 `IMAGE` needs an image file the user adds in the app; do not use it in a preset you write. Text styles available as `styleId`: `title`, `subtitle`, `heading`, `body`, `caption`, `label`, `counter`, `clock`, `tiny`. On a dark background always set a light `color`.
 
@@ -126,7 +126,7 @@ A precomp is a list of layers stored once in `comps` and placed on the timeline 
 
 ## Checklist before handing over
 
-1. `schemaVersion` is `"0.8.0"`, `canvas` matches the shape the user wants.
+1. `schemaVersion` is `"0.9.0"`, `canvas` matches the shape the user wants.
 2. Every `id` is unique in its list and has no `/`; every `parent` and every COMP `properties.comp` exists.
 3. Every layer box is inside the canvas (unless it slides in on purpose); nothing important overlaps.
 4. Text has a size and a colour that reads on the background; placeholders are from the list above.

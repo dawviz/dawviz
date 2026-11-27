@@ -52,11 +52,12 @@ export const TEXT_FIELDS = {
   PROGRESS_BAR: { timeStyle: 'tiny', timeValueStyle: null },
   TEXT: { style: 'body', valueStyle: null },
   // widget phân tích (insight.ts)
-  TEMPO_INFO: { style: 'clock' }, BAR_BEAT: { style: 'clock' }, KEY_SCALE: { nameStyle: 'heading', confStyle: 'caption' }, DENSITY: { polyStyle: 'caption' },
+  TEMPO_INFO: { style: 'clock' }, BAR_BEAT: { style: 'clock' }, KEY_SCALE: { nameStyle: 'heading', confStyle: 'caption' },
   PITCH_WHEEL: { nameStyle: 'label', chordStyle: 'heading', subStyle: 'label' }, DRUM_PAD: { labelStyle: 'tiny' }, SECTION: { style: 'heading', nextStyle: 'caption' },
   LYRICS: { style: 'body', nextStyle: 'caption' }, AUTOMATION: { valueStyle: 'tiny' },
   // bảng phân tích (dashboard.ts)
-  PANEL: { titleStyle: 'label', labelStyle: 'label', valueStyle: 'body' }, DEGREE: { labelStyle: 'caption', smallStyle: 'label' }, DOTS: { labelStyle: 'label' },
+  PANEL: { titleStyle: 'label', labelStyle: 'label', valueStyle: 'body' }, DEGREE: { labelStyle: 'caption', smallStyle: 'label' },
+  NOTE_GRID: { labelStyle: 'label', polyStyle: 'caption' },
 } as const satisfies Record<string, Record<string, keyof typeof DEFAULT_TEXT_STYLES | null>>;
 /** Ghi đè một đoạn → trường của dòng chứa nó (kiểu gốc của đoạn là kiểu thật của dòng đó). */
 export const TEXT_SPAN_OF = {

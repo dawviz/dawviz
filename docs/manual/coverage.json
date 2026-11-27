@@ -73,12 +73,12 @@
         "locales/en.json#web.comp.styleApplied",
         "locales/en.json#web.preset.paste"
       ],
-      "uiHash": "cdb70cffb8e6",
+      "uiHash": "df07da4b7d5c",
       "viHash": "c14cd7a0e753",
       "enHash": "61f2bf1cff66",
       "coverHashes": {
         "apps/web/src/components/Transport.tsx": "be55054850a6",
-        "apps/web/src/components/VideoStyles.tsx": "dfd16f77e8e8",
+        "apps/web/src/components/VideoStyles.tsx": "4ca7e0bf8b91",
         "apps/web/src/components/AudioPanel.tsx": "11547f9d52e7",
         "apps/web/src/components/TrackPanel.tsx": "ae75cba2ca51",
         "apps/web/src/components/Stage.tsx": "6b8d74b8cb33",
@@ -137,7 +137,7 @@
         "locales/en.json#web.layers.",
         "locales/en.json#web.comp."
       ],
-      "uiHash": "e13c16d3ab73",
+      "uiHash": "ac1fa705d26b",
       "viHash": "d07562493424",
       "enHash": "5061117be30a",
       "coverHashes": {
@@ -152,7 +152,7 @@
         "apps/web/src/components/TextPanel.tsx": "ee6960b9ad6d",
         "locales/en.json#web.text.": "078c1ecc2e8e",
         "apps/web/src/components/WidgetSettings.tsx": "fd14aef49172",
-        "locales/en.json#web.ws.": "f4b2f0c845df",
+        "locales/en.json#web.ws.": "b4e89d0baa54",
         "apps/web/src/components/TimeSections.tsx": "aa30f2bb1dd2",
         "apps/web/src/components/TimeField.tsx": "4627c46c0bf7",
         "locales/en.json#web.vis.": "97d170e1550e",
@@ -197,12 +197,12 @@
         "apps/web/src/lib/presetPack.ts",
         "locales/en.json#web.share."
       ],
-      "uiHash": "8c9254d92ca5",
+      "uiHash": "b86805cc2c13",
       "viHash": "c5b104223af3",
       "enHash": "68dd039fb5a1",
       "coverHashes": {
         "apps/web/src/components/ThemeSelect.tsx": "59f8201a72ab",
-        "apps/web/src/components/VideoStyles.tsx": "dfd16f77e8e8",
+        "apps/web/src/components/VideoStyles.tsx": "4ca7e0bf8b91",
         "locales/en.json#web.settings.": "abc072e87d51",
         "locales/en.json#web.theme.": "05a823a18b7d",
         "locales/en.json#web.preset.": "e1d1d39254ad",
@@ -286,13 +286,13 @@
         "locales/en.json#web.widget.",
         "locales/en.json#web.tonic."
       ],
-      "uiHash": "bee185ccfd9b",
-      "viHash": "ae36005a4bf0",
-      "enHash": "52d07dcea04a",
+      "uiHash": "b736c02f8794",
+      "viHash": "520e25c819a5",
+      "enHash": "9056fbae1c66",
       "coverHashes": {
         "apps/web/src/components/WidgetSettings.tsx": "fd14aef49172",
-        "locales/en.json#web.ws.": "f4b2f0c845df",
-        "locales/en.json#web.widget.": "3a55f23fb070",
+        "locales/en.json#web.ws.": "b4e89d0baa54",
+        "locales/en.json#web.widget.": "5ec8a3c2834c",
         "locales/en.json#web.tonic.": "2b1a6b41c82b"
       }
     },
@@ -347,15 +347,15 @@
         "apps/web/src/lib/animateFields.ts",
         "packages/render-core/src/parenting.ts"
       ],
-      "uiHash": "6f41646ed393",
-      "viHash": "57174eeb383c",
-      "enHash": "ff6b2925c125",
+      "uiHash": "ffbacf2b3ee3",
+      "viHash": "97c3e115c1eb",
+      "enHash": "c3df2ef57ab5",
       "coverHashes": {
-        "packages/render-core/src/insight.ts": "d27f7f51e42f",
+        "packages/render-core/src/insight.ts": "88f5abf8b663",
         "packages/render-core/src/naming.ts": "9a90045d7e7c",
         "apps/web/src/components/TimeSections.tsx": "aa30f2bb1dd2",
         "locales/en.json#web.naming.": "2386cbe2d200",
-        "locales/en.json#web.ws.in": "0337f352031d",
+        "locales/en.json#web.ws.in": "2f3c720cd774",
         "packages/render-core/src/widgetMotion.ts": "a1e4bd858cf0",
         "packages/render-core/src/noteTransition.ts": "0ca2c2677905",
         "locales/en.json#web.motion.": "ab9500a2f7bb",
@@ -386,13 +386,13 @@
         "locales/en.json#web.agent.",
         "plugins/dawviz/skills/dawviz/SKILL.md"
       ],
-      "uiHash": "8d0a9d72423d",
+      "uiHash": "c4461466324d",
       "viHash": "5aca07ea9075",
       "enHash": "dd16522553ee",
       "coverHashes": {
-        "apps/web/src/lib/agentApi.ts": "32900641e5f4",
+        "apps/web/src/lib/agentApi.ts": "481eba5091a9",
         "locales/en.json#web.agent.": "f45a58e74448",
-        "plugins/dawviz/skills/dawviz/SKILL.md": "8939fbbe4e55"
+        "plugins/dawviz/skills/dawviz/SKILL.md": "fd493837b9ef"
       }
     }
   }

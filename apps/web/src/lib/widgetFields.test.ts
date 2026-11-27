@@ -194,13 +194,23 @@ test('T-125 (D-72): ô không có tác dụng với kiểu đang chọn thì ẩ
     ['VELOCITY', 'colorMode', [{ mode: 'HISTOGRAM' }], [{ mode: 'LEVEL' }]],
     ['VELOCITY', 'gap', [{ mode: 'LEVEL', perTrack: false }], [{ mode: 'LEVEL', perTrack: true }, { mode: 'HISTOGRAM' }]],
     ['VELOCITY', 'color', [{ mode: 'LEVEL', perTrack: true, colorMode: 'TRACK' }], [{ mode: 'LEVEL', perTrack: false, colorMode: 'TRACK' }, { mode: 'HISTOGRAM' }]],
-    ['DOTS', 'velocityMin', [{ velocitySize: false }], [{ velocitySize: true }]],
     ['DEGREE', 'labelSticky', [{ labelAlign: 'END' }], [{ labelAlign: 'START' }, { labelAlign: 'CENTER' }]],
     ['CHORD_DETECTION', 'notesTemplate', [{ alwaysShowNotes: false, unrecognized: 'nc' }], [{ alwaysShowNotes: true }, { alwaysShowNotes: false, unrecognized: 'notes' }]],
     ['EVENT_COUNTER', 'lineHeight', [{ lines: { played: { enabled: true }, total: { enabled: false }, progress: { enabled: false }, tempo: { enabled: false } } }],
       [{ lines: { played: { enabled: true }, total: { enabled: true }, progress: { enabled: false }, tempo: { enabled: false } } }]],
-    ['DOTS', 'playheadWidth', [{ playheadColor: '' }], [{ playheadColor: '#ffffff' }]],
-    ['ARRANGEMENT', 'playheadWidth', [{ playheadColor: '' }], [{ playheadColor: '#ffffff' }]],
+    // Lưới nốt (D-77)
+    ...(['grid', 'playheadRatio', 'beatLines'] as const).map((p): [keyof typeof WIDGET_FIELDS, string, Obj[], Obj[]] => ['NOTE_GRID', p, [{ span: 'SONG' }], [{ span: 'WINDOW' }]]),
+    ['NOTE_GRID', 'pitchRangeMode', [{ rows: 'TRACK' }], [{ rows: 'PITCH' }]],
+    ...(['pitchMin', 'pitchMax'] as const).map((p): [keyof typeof WIDGET_FIELDS, string, Obj[], Obj[]] => ['NOTE_GRID', p, [{ rows: 'TRACK', pitchRangeMode: 'CUSTOM' }, { rows: 'PITCH', pitchRangeMode: 'FIT_CONTENT' }], [{ rows: 'PITCH', pitchRangeMode: 'CUSTOM' }]]),
+    ['NOTE_GRID', 'dotSize', [{ shape: 'FILL' }], [{ shape: 'ROUND' }, { shape: 'SQUARE' }, { shape: 'BAR' }]],
+    ['NOTE_GRID', 'cellGap', [{ shape: 'ROUND' }, { shape: 'SQUARE' }], [{ shape: 'FILL' }, { shape: 'BAR' }]],
+    ...(['activeScale', 'velocitySize'] as const).map((p): [keyof typeof WIDGET_FIELDS, string, Obj[], Obj[]] => ['NOTE_GRID', p, [{ shape: 'FILL' }, { shape: 'BAR' }], [{ shape: 'ROUND' }, { shape: 'SQUARE' }]]),
+    ['NOTE_GRID', 'velocityMin', [{ shape: 'ROUND', velocitySize: false }, { shape: 'FILL', velocitySize: true }], [{ shape: 'ROUND', velocitySize: true }]],
+    ['NOTE_GRID', 'color', [{ rows: 'TRACK', colorMode: 'TRACK' }], [{ colorMode: 'SOLID' }, { rows: 'PITCH', colorMode: 'TRACK' }]],
+    ['NOTE_GRID', 'minAlpha', [{ light: 'NOTES' }], [{ light: 'DENSITY' }, { light: 'VELOCITY' }]],
+    ['NOTE_GRID', 'emptyColorB', [{ emptyColor: '' }], [{ emptyColor: '#123456' }]],
+    ...(['playheadMark', 'playheadWidth'] as const).map((p): [keyof typeof WIDGET_FIELDS, string, Obj[], Obj[]] => ['NOTE_GRID', p, [{ playheadColor: '' }], [{ playheadColor: '#ffffff' }]]),
+    ['NOTE_GRID', 'polyTemplate', [{ showPolyphony: false }], [{ showPolyphony: true }]],
   ];
   for (const [type, path, hidden, shown] of cases) {
     for (const h of hidden) assert.equal(visible(type, path, h), false, `${type}.${path} phải ẩn khi ${JSON.stringify(h)}`);

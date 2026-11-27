@@ -70,7 +70,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [REQ-WIDGET-09: Bản nhạc (Notation) (D-63; đã làm 2026-11-21, T-90…T-95)](SRS/req-widget-09-ban-nhac-notation-d-63-da-lam-2026.md) · 3392 ký tự
 - [REQ-NOTATION-01: Lượng tử hoá để vẽ bản nhạc (D-63; đã làm 2026-11-21)](SRS/req-notation-01-luong-tu-hoa-de-ve-ban-nhac-d-63.md) · 1936 ký tự
 - [REQ-GRAPHICS-20: Nét tay tất định cho đường vẽ (D-63; đã làm 2026-11-21 cho bản nhạc)](SRS/req-graphics-20-net-tay-tat-dinh-cho-duong-ve-d.md) · 602 ký tự
-- [3.4b. Đề xuất widget và dữ liệu hiển thị bổ sung (D-32, OI-11) **[ĐỀ XUẤT, chưa cam kết v1.0]**](SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md) · 4862 ký tự
+- [3.4b. Đề xuất widget và dữ liệu hiển thị bổ sung (D-32, OI-11) **[ĐỀ XUẤT, chưa cam kết v1.0]**](SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md) · 5339 ký tự
 - [3.5. Lưu trữ, cấu hình & đóng gói (BR-05, D-11)](SRS/3-5-luu-tru-cau-hinh-dong-goi-br-05-d-11.md) · 4696 ký tự
 - [REQ-CAP-01: Phát hiện khả năng của trình duyệt (R-06, D-05)](SRS/req-cap-01-phat-hien-kha-nang-cua-trinh-duyet-r.md) · 413 ký tự
 - [REQ-EXPORT-00: Pre-flight (R-01, D-17)](SRS/req-export-00-pre-flight-r-01-d-17.md) · 2606 ký tự
@@ -288,7 +288,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [3. Kiểu chữ dùng chung (D-73, T-126)](WIDGET-REVAMP/3-kieu-chu-dung-chung-d-73-t-126.md) · 1489 ký tự
 - [4. Sáng tạo tự do: Hình, Bút, Gắn nhạc nhanh (D-74)](WIDGET-REVAMP/4-sang-tao-tu-do-hinh-but-gan-nhac-nhanh-d-74.md) · 5183 ký tự
 - [5. Gộp widget chữ (D-76, T-138)](WIDGET-REVAMP/5-gop-widget-chu-d-76-t-138.md) · 1852 ký tự
-- [5b. Lưới nốt: gộp Mật độ nốt, Tổng quan bản phối, Lưới chấm (D-77, T-139)](WIDGET-REVAMP/5b-luoi-not-gop-mat-do-not-tong-quan-ban-phoi-lu.md) · 3016 ký tự
+- [5b. Lưới nốt: gộp Mật độ nốt, Tổng quan bản phối, Lưới chấm (D-77, T-139)](WIDGET-REVAMP/5b-luoi-not-gop-mat-do-not-tong-quan-ban-phoi-lu.md) · 3044 ký tự
 - [6. Cụm việc nhỏ của đợt này (T-127…T-133)](WIDGET-REVAMP/6-cum-viec-nho-cua-dot-nay-t-127-t-133.md) · 2523 ký tự
 - [7. Thứ tự làm và cách chia PR](WIDGET-REVAMP/7-thu-tu-lam-va-cach-chia-pr.md) · 768 ký tự
 - [8. Vấn đề mở](WIDGET-REVAMP/8-van-de-mo.md) · 388 ký tự

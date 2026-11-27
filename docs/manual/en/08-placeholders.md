@@ -54,7 +54,7 @@ Built-in widgets look the same as before. In **Advanced** mode, the text of ever
 
 Values follow the tracks that are showing (see the [Preview tab](02-preview.md) to hide or solo tracks). To make one widget read only some tracks, use **Tracks** in its **Settings**: **Choose** and click the tracks you want. Press and hold, then drag over several rows to select or clear them quickly (the whole drag is one undo step); **Select all** and **Clear all** sit above the list. The ↺ button beside **Tracks** (or Alt+click on that word) goes back to **All showing**. The text box has it in Basic mode; the note counter, live notes and chord have it in Advanced.
 
-Note and chord names in the placeholders (`{notes}`, `{chord}`, `{bass}`, `{pitch_classes}`, `{name}`) follow the project-wide **Note names** setting. The [analysis widgets](10-analysis-widgets.md) have names of their own: Key (`{key}`, `{scale}`, `{confidence}`), Section name (`{section}`, `{next}`, `{next_in}`, `{section_no}`, `{section_elapsed}`), Note density (`{poly}`).
+Note and chord names in the placeholders (`{notes}`, `{chord}`, `{bass}`, `{pitch_classes}`, `{name}`) follow the project-wide **Note names** setting. The [analysis widgets](10-analysis-widgets.md) have names of their own: Key (`{key}`, `{scale}`, `{confidence}`), Section name (`{section}`, `{next}`, `{next_in}`, `{section_no}`, `{section_elapsed}`), the Note grid's notes-sounding line (`{poly}`).
 
 Some widgets have names of their own, and those win over the general ones: live notes has `{name}`, `{velocity}`, `{track}`, `{pitch}`; the progress bar has `{elapsed}`, `{total}`, `{remaining}`, `{pct}` for the song's time (there `{total}` is the song length, not the note count).
 

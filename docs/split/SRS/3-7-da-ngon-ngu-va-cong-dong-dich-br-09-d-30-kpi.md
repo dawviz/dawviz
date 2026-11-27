@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "3.7. Đa ngôn ngữ và cộng đồng dịch (BR-09, D-30, KPI-08)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.7. Đa ngôn ngữ và cộng đồng dịch (BR-09, D-30, KPI-08)"
 chunk: 3-7-da-ngon-ngu-va-cong-dong-dich-br-09-d-30-kpi.md
-source_lines: 901-915
-source_sha1: fee32c2554
+source_lines: 903-917
+source_sha1: 73016ec8ed
 ids: [BR-09, D-30, KPI-08, OI-13]
 ---
 ### 3.7. Đa ngôn ngữ và cộng đồng dịch (BR-09, D-30, KPI-08)

@@ -1,14 +1,13 @@
 // Widget cho bảng phân tích nhạc kiểu "dashboard" (tham chiếu REFERENCE-VIDEOS video 3, T-107; video 2 dải lớp cao độ, T-109):
-// Khung ô (PANEL), Bậc hợp âm (DEGREE), Lưới chấm (DOTS). Như insight.ts: mỗi renderer là hàm thuần của
+// Khung ô (PANEL), Bậc hợp âm (DEGREE); Lưới nốt (NOTE_GRID) ở noteGrid.ts. Như insight.ts: mỗi renderer là hàm thuần của
 // (spec, t, AST, derived), không trạng thái, không đồng hồ, nên Preview = Export. Chữ lấy từ mẫu/thuộc tính, không từ locales/ của app.
-import { secToTick, tickToSec } from '@dawviz/parser-core';
-import { notesInRange, type TrackIndex } from './notes.ts';
+import type { TrackIndex } from './notes.ts';
 import { barPosAt, barStartSec, base, chordTimeline, globalValues, hudOf, shown, typo, xFor, type Align, type ChordSeg } from './hud.ts';
 import { tonicAt } from './keyDetect.ts';
 import { chordDegree, chordFunction, romanAscii, type HarmonicFunction, type RomanStyle } from './degree.ts';
 import { templateSpans, type TextRef } from './typography.ts';
-import { chordNameFor, noteNameFor } from './naming.ts';
-import { pitchName } from './music.ts';
+import { chordNameFor } from './naming.ts';
+import { noteGridRenderer } from './noteGrid.ts';
 import { poly, type Derived, type Primitive, type RectPrim, type WidgetRenderer } from './prims.ts';
 
 const ts = (styleId: string): TextRef => ({ styleId });
@@ -55,25 +54,6 @@ export type DegreeLabelAlign = 'START' | 'CENTER' | 'END';
 export const DEGREE_LABEL_ALIGNS: readonly DegreeLabelAlign[] = ['START', 'CENTER', 'END'];
 export type ChordResolution = 'BAR' | 'HALF' | 'BEAT' | 'CHANGE';
 export const CHORD_RESOLUTIONS: readonly ChordResolution[] = ['BAR', 'HALF', 'BEAT', 'CHANGE'];
-export interface DotsProps {
-  /** Số ô mỗi nốt tròn (4, 8, 16, 32): 16 = mỗi cột một móc kép. */
-  grid: number; cols: number; playheadRatio: number;
-  pitchRangeMode: 'FIT_CONTENT' | 'CUSTOM'; pitchMin: number; pitchMax: number;
-  /** Số hàng tối đa: dải cao độ rộng hơn thì nhiều nốt chung một hàng (chấm không bé quá mức nhìn được). */
-  maxRows: number;
-  dotSize: number; shape: 'ROUND' | 'SQUARE';
-  /** Chấm rỗng: màu trên → dưới (màu dưới rỗng = một màu). */
-  emptyColor: string; emptyColorB: string; emptyAlpha: number;
-  colorMode: 'TRACK' | 'SOLID'; color: string; upcomingAlpha: number; activeScale: number;
-  playheadColor: string; playheadWidth: number;
-  /** Cỡ chấm theo cường độ nốt: cường độ 127 = cỡ đầy đủ, cường độ nhỏ nhất co về `velocityMin` (tỉ lệ cỡ). */
-  velocitySize: boolean; velocityMin: number;
-  /** Vạch mảnh theo phách (đậm hơn ở đầu mỗi 4 phách) dưới các chấm. */
-  beatLines: boolean;
-  /** Nhãn hàng (tên nốt C) ở cột riêng bên trái lưới, ngoài khung chấm. */
-  rowLabels: boolean; labelStyle: TextRef;
-}
-
 export const DEFAULT_PANEL: Readonly<PanelProps> = Object.freeze({
   number: '01', title: 'PANEL', numberColor: '#ff3d8b', titleStyle: { styleId: 'label', weight: 700, tracking: 120, color: '#222222', size: 13 },
   frame: true, frameColor: '#d8c6d1', frameWidth: 1, fillColor: '', fillAlpha: 1,
@@ -86,17 +66,11 @@ export const DEFAULT_DEGREE: Readonly<DegreeProps> = Object.freeze({
   tonicColor: '#2ec4b6', subdominantColor: '#ffb3cf', dominantColor: '#ff3d8b', playheadColor: '#222222',
   radius: 6, gap: 4, labelStyle: ts('caption'), smallStyle: ts('label'), labelAlign: 'CENTER', labelSticky: true, showChordName: false,
 });
-export const DEFAULT_DOTS: Readonly<DotsProps> = Object.freeze({
-  grid: 16, cols: 64, playheadRatio: 0.96, pitchRangeMode: 'FIT_CONTENT', pitchMin: 36, pitchMax: 96, maxRows: 32, dotSize: 0.6, shape: 'ROUND',
-  emptyColor: '#c7a3bb', emptyColorB: '#8fd3cb', emptyAlpha: 0.45, colorMode: 'SOLID', color: '#ff3d8b', upcomingAlpha: 0.3, activeScale: 1.5,
-  playheadColor: '#333344', playheadWidth: 1.5, velocitySize: false, velocityMin: 0.4, beatLines: false, rowLabels: false, labelStyle: ts('label'),
-});
-export const DASHBOARD_TYPES = ['PANEL', 'DEGREE', 'DOTS'] as const;
+export const DASHBOARD_TYPES = ['PANEL', 'DEGREE', 'NOTE_GRID'] as const;
 export const DASHBOARD_TEXT_FIELDS = {
-  PANEL: { titleStyle: 'label', labelStyle: 'label', valueStyle: 'body' }, DEGREE: { labelStyle: 'caption', smallStyle: 'label' }, DOTS: { labelStyle: 'label' },
+  PANEL: { titleStyle: 'label', labelStyle: 'label', valueStyle: 'body' }, DEGREE: { labelStyle: 'caption', smallStyle: 'label' }, NOTE_GRID: { labelStyle: 'label', polyStyle: 'caption' },
 } as const;
 export const MAX_PANEL_STATS = 6;
-export const DOTS_GRIDS = [4, 8, 16, 32] as const;
 
 // ───────────────────────────── Khung ô ─────────────────────────────
 export const panelRenderer: WidgetRenderer<PanelProps> = {
@@ -250,65 +224,6 @@ export function roundRectPts(x: number, y: number, w: number, h: number, r: numb
   return out;
 }
 
-// ───────────────────────────── Lưới chấm ─────────────────────────────
-const hex = (h: string) => { const n = parseInt(h.slice(1, 7), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; };
-const mixHex = (a: string, b: string, k: number) => { const A = hex(a), B = hex(b); return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * k).toString(16).padStart(2, '0')).join(''); };
-/** Dải cao độ của lưới chấm: theo nốt có trong các track (FIT_CONTENT) hoặc tự đặt. */
-export function dotsPitchRange(p: DotsProps, tracks: readonly TrackIndex[]): [number, number] {
-  if (p.pitchRangeMode === 'CUSTOM') return [Math.min(p.pitchMin, p.pitchMax), Math.max(p.pitchMin, p.pitchMax)];
-  let lo = 127, hi = 0;
-  for (const ti of tracks) for (const n of ti.notes) { if (n.channel === 9) continue; if (n.pitch < lo) lo = n.pitch; if (n.pitch > hi) hi = n.pitch; }
-  return lo > hi ? [48, 72] : [lo, hi];
-}
-/** Trần số chấm mỗi khung (cột × hàng), để lưới dày không làm chậm khung hình. */
-export const MAX_DOTS = 6000;
-export const dotsRenderer: WidgetRenderer<DotsProps> = {
-  type: 'DOTS',
-  layout({ ast, derived, tracks, measure, textStyles, fonts }, spec, t) {
-    const p = spec.properties, { width: W, height: H } = spec.layout, out: Primitive[] = [], T = typo(textStyles, measure, fonts), lst = T.style(p.labelStyle, 'label'), list = shown(tracks).filter((ti) => ti.notes.some((n) => n.channel !== 9));
-    const [lo, hi] = dotsPitchRange(p, list), rows0 = hi - lo + 1, cols = Math.max(4, Math.min(Math.round(p.cols), Math.floor(MAX_DOTS / Math.max(1, Math.min(rows0, Math.round(p.maxRows))))));
-    const rows = Math.max(1, Math.min(rows0, Math.round(p.maxRows))), rowOf = (pitch: number) => Math.min(rows - 1, Math.floor((hi - pitch) * rows / rows0)), gx = p.rowLabels ? Math.round(lst.size * 2.8) : 0, cw = (W - gx) / cols, rh = H / rows, d = Math.max(0.5, Math.min(cw, rh) * Math.min(1, Math.max(0.05, p.dotSize)));
-    const ppq = ast.meta.internalPPQ || 960, stepT = ppq * 4 / Math.max(1, p.grid), map = ast.tempoMap as never;
-    const nowStep = secToTick(map, Math.max(0, t)) / stepT, curCol = Math.min(cols - 1, Math.max(0, Math.round(p.playheadRatio * cols))), s0 = Math.floor(nowStep) - curCol, cur = curCol; // cột vạch phát cố định, lưới cuộn nguyên cột (trước đây cột nhảy qua lại một ô mỗi bước)
-    const grid = new Int8Array(cols * rows), vel = new Uint8Array(cols * rows), color: string[] = new Array(cols * rows); // 0 rỗng, 1 có nốt (đã/đang phát), 2 nốt sắp tới
-    const t0 = tickToSec(map, Math.max(0, s0 * stepT)), t1 = tickToSec(map, Math.max(0, (s0 + cols) * stepT));
-    for (const ti of list) for (const n of notesInRange(ti, t0, t1)) {
-      if (n.channel === 9 || n.pitch < lo || n.pitch > hi) continue;
-      const a = Math.max(0, Math.floor(n.startTick / stepT) - s0), b = Math.min(cols - 1, Math.ceil(n.endTick / stepT) - 1 - s0), r = rowOf(n.pitch);
-      for (let c = a; c <= b; c++) { const i = r * cols + c, v = s0 + c <= Math.floor(nowStep) ? 1 : 2; vel[i] = Math.max(vel[i], n.velocity); if (grid[i] !== 1) { grid[i] = v; color[i] = p.colorMode === 'TRACK' ? ti.track.color : p.color; } }
-    }
-    const round = p.shape === 'ROUND';
-    if (p.beatLines && cw >= 2) {
-      const per = Math.max(1, p.grid / 4), mod = (n: number, m: number) => ((n % m) + m) % m;
-      for (let c = 0; c <= cols; c++) {
-        const s = s0 + c; if (mod(s, per) !== 0) continue;
-        out.push(rect(gx + c * cw - 0.4, 0, 0.8, H, p.emptyColor, mod(s, p.grid) === 0 ? 0.55 : 0.25));
-      }
-    }
-    if (p.rowLabels) {
-      for (let r = 0; r < rows; r++) {
-        const top = hi - Math.floor(r * rows0 / rows), bot = hi - Math.floor((r + 1) * rows0 / rows) + 1, c0 = top - (((top % 12) + 12) % 12);
-        if (c0 < bot || c0 < 0) continue;
-        T.text(out, derived.naming ? noteNameFor(c0, derived.naming) : pitchName(c0), gx - 5, r * rh + rh / 2 + lst.size * 0.35, lst, 'right', Math.max(1, gx - 5), 1);
-      }
-    }
-    for (let r = 0; r < rows; r++) {
-      const empty = p.emptyColorB ? mixHex(p.emptyColor, p.emptyColorB, rows > 1 ? r / (rows - 1) : 0) : p.emptyColor;
-      for (let c = 0; c < cols; c++) {
-        const i = r * cols + c, v = grid[i], cx = gx + c * cw + cw / 2, cy = r * rh + rh / 2;
-        const k = v === 1 && c === cur ? p.activeScale : 1, s = d * k * (p.velocitySize && v ? p.velocityMin + (1 - p.velocityMin) * Math.min(1, vel[i] / 127) : 1);
-        if (v === 0 && p.emptyAlpha <= 0) continue;
-        out.push(rect(cx - s / 2, cy - s / 2, s, s, v ? color[i] : empty, v === 1 ? 1 : v === 2 ? p.upcomingAlpha : p.emptyAlpha, round ? s / 2 : 0));
-      }
-    }
-    if (p.playheadColor && p.playheadWidth > 0) {
-      const x = gx + cur * cw, hw = p.playheadWidth / 2;
-      out.push(outline(x + hw, hw, Math.max(1, cw - p.playheadWidth), H - p.playheadWidth, p.playheadColor, p.playheadWidth));
-    }
-    return out;
-  },
-};
-
-export const DASHBOARD_RENDERERS = { PANEL: panelRenderer, DEGREE: degreeRenderer, DOTS: dotsRenderer } as const;
+export const DASHBOARD_RENDERERS = { PANEL: panelRenderer, DEGREE: degreeRenderer, NOTE_GRID: noteGridRenderer } as const;
 void xFor; void clamp01;
 export type { Align };
