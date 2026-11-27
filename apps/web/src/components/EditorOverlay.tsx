@@ -89,13 +89,13 @@ export function EditorOverlay({ scene, cssWidth, selected, locked, onSelect, onL
     }
     if (handle === 'anchor' && single && advanced) { begin({ kind: 'anchor', id: single.id, start: single.layout }, e); return; }
     if (handle && single && single.type !== 'COMP') { begin({ kind: 'resize', handle: handle as Handle, id: single.id, start: single.layout }, e); return; }
-    const hit = hitTest(framed, p, locked);
+    const hit = hitTest(framed, p, locked), add = e.shiftKey || e.ctrlKey || e.metaKey; // Shift hoặc Ctrl/⌘: cộng/bớt khỏi vùng chọn
     if (!hit) {
-      if (!e.shiftKey) onSelect([]);
-      drag.current = { kind: 'marquee', p0: p, base: e.shiftKey ? [...selected] : [] }; setActive('marquee'); setBox(null);
+      if (!add) onSelect([]);
+      drag.current = { kind: 'marquee', p0: p, base: add ? [...selected] : [] }; setActive('marquee'); setBox(null);
       svg.current?.setPointerCapture(e.pointerId); return;
     }
-    if (e.shiftKey) { onSelect(selected.includes(hit.id) ? selected.filter((x) => x !== hit.id) : [...selected, hit.id]); return; }
+    if (add) { onSelect(selected.includes(hit.id) ? selected.filter((x) => x !== hit.id) : [...selected, hit.id]); return; }
     const ids = selected.includes(hit.id) ? selected.filter((id) => !locked.has(id)) : [hit.id];
     if (!selected.includes(hit.id)) onSelect(ids);
     begin({ kind: 'move', p0: p, primary: hit.id, starts: Object.fromEntries(ids.map((id) => [id, byId.get(id)!.layout])), moved: false }, e);
