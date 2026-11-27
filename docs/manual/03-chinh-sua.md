@@ -28,6 +28,7 @@ Màn hình có ba phần: khung video ở giữa, **Thuộc tính widget** bên 
 ## Thêm, nhân bản, xoá
 
 - **Thêm:** bấm **Thêm** ở góc trên bên trái Timeline rồi chọn loại widget. Widget mới nằm giữa khung, trên cùng các lớp, và được chọn sẵn.
+- **Thêm chữ:** mục đầu tiên của menu **Thêm** là **Chữ…**. Nó mở hộp thoại **Thêm chữ** gồm hai nhóm: **Ô chữ** điền sẵn chữ có [chỗ giữ](08-cho-giu.md) (ô trống, tên bài và nghệ sĩ, đếm nốt, thời gian, tempo, giọng, tên hợp âm) và **Chữ có phần vẽ riêng** (thời gian có thanh tiến độ, nốt đang phát, hợp âm và dòng nốt, lời bài hát, tên đoạn, ô nhịp và phách, giọng và độ tin cậy, tempo có đường cong). Rê chuột lên một mẫu để xem ảnh trước, bấm một lần là thêm. Esc đóng hộp thoại mà không thêm gì. Với Ô chữ theo mẫu, nút ↺ đưa chữ về như lúc vừa thêm.
 - **Nhân bản:** nút nhân bản ở mục **Sắp xếp**, hoặc Ctrl+D (⌘D trên Mac). Bản sao dời xuống một chút để bạn thấy nó.
 - **Xoá:** nút thùng rác, hoặc phím Delete. Widget đang khoá không xoá được.
 

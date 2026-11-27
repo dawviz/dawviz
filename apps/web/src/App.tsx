@@ -674,7 +674,10 @@ export function App() {
     tonic: (t) => run((d) => Cmds.setTonic(d, t)),
     noteNaming: (n) => run((d) => Cmds.setNoteNaming(d, n)),
     background: { pick: (f) => void onBackground(f), remove: dropBackground, spec: (p) => run((d) => Cmds.setBackgroundSpec(d, p)) },
-    add: (type) => { const w = createWidget(eget().scene, type); erun((d) => Cmds.addWidget(d, w)); return w.id; },
+    add: (type, props) => {
+      const w0 = createWidget(eget().scene, type), w = props ? { ...w0, properties: { ...(w0.properties as Record<string, unknown>), ...JSON.parse(JSON.stringify(props)) } } : w0;
+      erun((d) => Cmds.addWidget(d, w, props ? JSON.parse(JSON.stringify(w.properties)) : undefined)); return w.id;
+    },
     duplicate: (ids) => {
       let sc = eget().scene; const out: WidgetSpec[] = [], from: string[] = [];
       let comps: Record<string, CompSpec> = {};

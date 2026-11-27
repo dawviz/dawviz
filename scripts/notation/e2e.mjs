@@ -38,7 +38,7 @@ try {
   await page.waitForTimeout(2500);
   await page.locator('#tab-editor').click();
   await page.locator('[data-testid="layers-add"]').click();
-  await page.locator('[data-testid="add-menu"] [role="menuitem"]').nth(8).click(); // ADDABLE_WIDGETS[8] = NOTATION
+  await page.locator('[data-testid="add-NOTATION"]').click();
   const status = page.locator('[data-testid="notation-status"]');
   await status.waitFor({ timeout: 20000 });
   await page.waitForFunction(() => /trang|pages/.test(document.querySelector('[data-testid="notation-status"]')?.textContent ?? ''), null, { timeout: 30000 });

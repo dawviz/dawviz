@@ -10,6 +10,8 @@ import { ADDABLE_WIDGETS, COMP_SEP, IDENTITY_TIME, buildHud, chordTimeline, MAX_
 import { startPaintDrag } from '../lib/paintDrag.ts';
 import { GestureContext } from '../lib/storeReact.ts';
 import { useI18n } from '../i18n/I18nProvider.tsx';
+import { menuWidgets, type TextTemplate } from '../lib/textTemplates.ts';
+import { TextDialog, templateLabelKey } from './TextDialog.tsx';
 import { projectLanes } from '../lib/animateFields.ts';
 import type { Playback } from '../lib/playback.ts';
 import type { FontsStatus } from '../lib/fonts.ts';
@@ -92,8 +94,8 @@ export interface EditorActions {
   noteNaming(n: NoteNaming | null): void;
   /** Ảnh nền của phiên (T-21): nạp, bỏ, đổi cách đặt. */
   background: { pick(f: File): void; remove(): void; spec(p: Partial<BackgroundImageSpec>): void };
-  /** Thêm widget loại `type` (T-68); trả id mới để chọn ngay. */
-  add(type: WidgetType): string;
+  /** Thêm widget loại `type` (T-68); `props` ghi đè thuộc tính mặc định (mẫu của hộp thoại Chữ, cũng là mốc ↺ của widget mới). Trả id mới để chọn ngay. */
+  add(type: WidgetType, props?: Record<string, unknown>): string;
   /** Nhân bản; trả id các bản sao. */
   duplicate(ids: string[]): string[];
   remove(ids: string[]): void;
@@ -250,6 +252,9 @@ export function Editor({ proof = true, styleName, scene, root, compPath, onCompP
     setSay(i18n.t(r.value === null ? 'web.editor.nameReset' : 'web.editor.renamed', { name: r.value ?? '' }));
   };
   const addWidget = (type: WidgetType) => { setSelected([actions.add(type)]); setSay(i18n.t('web.editor.added', { name: i18n.t(`web.widget.${type}`) })); };
+  // Hộp thoại Chữ (D-78, T-138): mọi widget chữ thêm qua đây.
+  const [textDlg, setTextDlg] = useState(false);
+  const addTemplate = (tpl: TextTemplate) => { setTextDlg(false); setSelected([actions.add(tpl.type, tpl.props)]); setSay(i18n.t('web.editor.added', { name: i18n.t(templateLabelKey(tpl)) })); };
 
   // ── tách lớp và gom precomp (D-69) ──
   const [tlNote, setTlNote] = useState('');
@@ -387,6 +392,7 @@ export function Editor({ proof = true, styleName, scene, root, compPath, onCompP
         <ConfirmDialog title={i18n.t('web.comp.uncomposeAskTitle')} message={i18n.t('web.comp.uncomposeAsk', { name: name(askUncompose) })} confirmLabel={i18n.t('web.comp.uncomposeAskOk')} cancelLabel={i18n.t('web.confirm.cancel')} testId="uncompose-confirm"
           onCancel={() => setAskUncompose(null)} onConfirm={() => { const id = askUncompose; setAskUncompose(null); doUncompose(id); }} />
       )}
+      {textDlg && <TextDialog scene={scene} fontsReady={fonts === 'ready'} onPick={addTemplate} onClose={() => setTextDlg(false)} />}
 
       <div ref={scrollerRef} className="relative min-h-0 min-w-0 overflow-y-auto bg-page p-3 max-lg:order-1 max-lg:h-[75svh] lg:col-start-1 lg:row-start-1 lg:p-6"
         onPointerDown={(e) => { if (live.length && !(e.target as HTMLElement).closest('figure, button, [role="radiogroup"], input, select, [data-testid="editor-transport"]')) setSelected([]); }}>
@@ -458,7 +464,7 @@ export function Editor({ proof = true, styleName, scene, root, compPath, onCompP
             <LayerTimeline scene={scene} order={order} duration={duration} tempoMap={ast.tempoMap} playback={playback} phases={root.phases ?? []} onPhases={actions.phases}
               selected={live} onSelect={setSelected} locked={locked} onLock={toggleLock} onLockAll={lockAll} name={name} onVisible={actions.visible} onAllVisible={actions.allVisible} onPaint={paintLayers}
               onMoveLayer={move} onLayers={(kind, next, key) => actions.layers(kind, next, key)} onOpenKeys={openKeys} onOpenComp={openComp} onSplit={splitSel} onPrecompose={precomposeSel}
-              bounds={bounds} music={music} markers={ast.meta.markers} trackLocks={trackLocks} onLockTrack={onLockTrack} trackEdit={trackEdit} tree={r.tree} onTree={(v) => panels.resize('tree', v)} onTreeReset={() => panels.reset('tree')} gesture={gestureCtx} addMenu={<AddMenu onAdd={addWidget} />}
+              bounds={bounds} music={music} markers={ast.meta.markers} trackLocks={trackLocks} onLockTrack={onLockTrack} trackEdit={trackEdit} tree={r.tree} onTree={(v) => panels.resize('tree', v)} onTreeReset={() => panels.reset('tree')} gesture={gestureCtx} addMenu={<AddMenu onAdd={addWidget} onText={() => setTextDlg(true)} />}
               editing={editing} onEdit={setEditing}
               renameInput={(id) => <LayerNameInput initial={scene.widgets.find((w) => w.id === id)?.name ?? name(id)} label={i18n.t('web.editor.nameLabel')} onCommit={(v) => commitName(id, v)} onCancel={() => setEditing(null)} />} />
           )}
@@ -493,7 +499,8 @@ function LayerNameInput({ initial, label, onCommit, onCancel }: { initial: strin
 }
 
 /** Nút "Thêm" ở đầu danh sách Lớp: mở danh sách loại widget (T-68). Phím: Enter/Space mở, ↑/↓ chọn, Esc đóng. */
-function AddMenu({ onAdd }: { onAdd(type: WidgetType): void }) {
+const MENU_WIDGETS = menuWidgets(ADDABLE_WIDGETS);
+function AddMenu({ onAdd, onText }: { onAdd(type: WidgetType): void; onText(): void }) {
   const { i18n } = useI18n();
   const [open, setOpen] = useState(false);
   const box = useRef<HTMLDivElement>(null), menuEl = useRef<HTMLDivElement>(null);
@@ -511,8 +518,12 @@ function AddMenu({ onAdd }: { onAdd(type: WidgetType): void }) {
         data-testid="layers-add"><Plus className="h-3.5 w-3.5" />{i18n.t('web.editor.add')}</button>
       {open && createPortal(
         <div ref={menuEl} role="menu" aria-label={i18n.t('web.editor.add')} style={place.style ?? { position: 'fixed', visibility: 'hidden' }} className={`z-50 min-w-[11rem] max-h-[calc(10*2rem+0.5rem)] overflow-y-auto border border-line bg-surface py-1 shadow-sm`} data-testid="add-menu">
-          {ADDABLE_WIDGETS.map((t) => (
-            <button key={t} type="button" role="menuitem" className="block w-full px-3 py-1.5 text-left text-xs text-fg hover:bg-raised focus:bg-raised focus:outline-none" onClick={() => pick(t)}>
+          {/* Mục đầu: Chữ… mở hộp thoại mẫu (D-78); các loại chữ không còn mục riêng. */}
+          <button type="button" role="menuitem" className="block w-full px-3 py-1.5 text-left text-xs text-fg hover:bg-raised focus:bg-raised focus:outline-none" onClick={() => { setOpen(false); onText(); }} data-testid="add-text">
+            {i18n.t('web.editor.addText')}
+          </button>
+          {MENU_WIDGETS.map((t) => (
+            <button key={t} type="button" role="menuitem" className="block w-full px-3 py-1.5 text-left text-xs text-fg hover:bg-raised focus:bg-raised focus:outline-none" onClick={() => pick(t)} data-testid={`add-${t}`}>
               {i18n.t(`web.widget.${t}`)}
             </button>
           ))}

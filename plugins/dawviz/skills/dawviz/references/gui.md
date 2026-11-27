@@ -28,7 +28,7 @@ The right-hand panel of Preview and Editor starts with **Find a setting… / Tì
 
 - Frame in the middle (drag widgets; arrows nudge), **Widget properties / Thuộc tính widget** on the right (`editor-props`), **Timeline & keyframes / Timeline và keyframe** under the frame (`timeline-panel`, breadcrumb `timeline-crumbs`).
 - Timeline level 1 (`layer-timeline`): layer column (`layers`, one `li[data-layer=<id>]` per layer) and bars (`[data-clip-of=<id>]`).
-  - **Add / Thêm** (`layers-add`) adds a widget. Scissors (`layers-split`, Ctrl+K) splits the selected layers at the playhead. Two frames (`layers-precompose`, Ctrl+G) groups them into a precomp.
+  - **Add / Thêm** (`layers-add`) adds a widget; menu items are `add-<TYPE>` (for example `add-NOTATION`, `add-NOTE_GRID`). Text widgets go through the first item **Text… / Chữ…** (`add-text`): a dialog (`text-dialog`) of templates, one click adds (`text-tpl-<id>`, ids `blank`, `titleArtist`, `noteCount`, `CHORD_DETECTION`, `LYRICS`…). Scissors (`layers-split`, Ctrl+K) splits the selected layers at the playhead. Two frames (`layers-precompose`, Ctrl+G) groups them into a precomp.
   - Drag a bar to move it, its edges to trim, the small squares at its top corners (`fade-in-<id>`, `fade-out-<id>`) to fade.
   - **Phases / Phase** lane: + (`phase-add`) adds a phase at the playhead; markers are `phase-<n>`.
   - **Music / Nhạc** (`music-toggle`) shows note and chord lanes for lining bars up.

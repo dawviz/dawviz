@@ -28,6 +28,7 @@ The screen has three parts: the frame in the middle, **Widget properties** on th
 ## Add, duplicate, delete
 
 - **Add:** click **Add** at the top left of the Timeline and pick a widget type. The new widget sits in the middle of the frame, on top of the other layers, and is selected.
+- **Add text:** the first item of the **Add** menu is **Text…**. It opens the **Add text** dialog with two groups: **Text boxes** filled in with [placeholders](08-placeholders.md) (empty box, title and artist, note count, time, tempo, key, chord name) and **Text with its own drawing** (time with progress bar, notes playing, chord with note line, lyrics, section name, bar and beat, key with confidence, tempo with curve). Hover a template to see a preview, click once to add it. Esc closes the dialog without adding anything. For a text box from a template, ↺ puts the text back the way it was when added.
 - **Duplicate:** the duplicate button in **Arrange**, or Ctrl+D (⌘D on Mac). The copy is moved down a little so you can see it.
 - **Delete:** the bin button, or the Delete key. Locked widgets can't be deleted.
 
