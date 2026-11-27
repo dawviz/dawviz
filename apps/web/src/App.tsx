@@ -261,6 +261,7 @@ export function App() {
   const onPaint = useCallback((kind: 'hide' | 'solo', id: string, on: boolean) => run((d) => (!free(id) ? null : kind === 'hide' ? Cmds.setHiddenOf(d, id, on) : Cmds.setSoloOf(d, id, on))), [run]);
   const onToggleSolo = useCallback((id: string) => run((d) => (free(id) ? Cmds.toggleSolo(d, id) : null)), [run]);
   const onMove = useCallback((id: string, to: number) => run((d) => (free(id) ? Cmds.moveTrack(d, id, to) : null)), [run]);
+  const onSetTrackLock = useCallback((id: string, on: boolean) => setTrackLocks((s) => { if (s.has(id) === on) return s; const n = new Set(s); if (on) n.add(id); else n.delete(id); return n; }), []);
   const onToggleAllHidden = useCallback(() => run((d) => Cmds.toggleAllHidden(d, locksRef.current)), [run]);
   const onClearSolo = useCallback(() => run((d) => Cmds.clearSolo(d, locksRef.current)), [run]);
   const brightness = doc.brightness;
@@ -716,8 +717,10 @@ export function App() {
   const showAdv = (id: string) => advanced || !!ui.more[id] || searching; // đang tìm: hiện cả phần nâng cao để tìm thấy
 
   // Làn Nhạc của timeline Editor (T-127): cùng track, cùng lệnh với danh sách Track ở trên (một chỗ lưu, hai chỗ sửa).
-  const trackEdit = useMemo(() => (loaded ? { tracks: ordered, view, overrides: style.tracks, onMove, onToggleHidden, onToggleSolo, onStyle: patchTrackStyle } : undefined),
-    [loaded, ordered, view, style.tracks, onMove, onToggleHidden, onToggleSolo, patchTrackStyle]);
+  // Ô khoá tổng của hàng "Tất cả track": còn track chưa khoá thì khoá hết, đã khoá hết thì mở hết (cùng quy tắc với ô mắt của lớp).
+  const onLockAllTracks = useCallback(() => setTrackLocks((s) => (ordered.length && ordered.every((t) => s.has(t.id)) ? new Set<string>() : new Set(ordered.map((t) => t.id)))), [ordered]);
+  const trackEdit = useMemo(() => (loaded ? { tracks: ordered, view, overrides: style.tracks, onMove, onToggleHidden, onToggleSolo, onPaint, onToggleAllHidden, onClearSolo, onSetLock: onSetTrackLock, onLockAll: onLockAllTracks, onStyle: patchTrackStyle } : undefined),
+    [loaded, ordered, view, style.tracks, onMove, onToggleHidden, onToggleSolo, onPaint, onToggleAllHidden, onClearSolo, onSetTrackLock, onLockAllTracks, patchTrackStyle]);
   const trackProps = loaded && {
     tracks: ordered, config: brightness, overrides: style.tracks, onChange: patchBrightness, onStyle: patchTrackStyle,
     playback, tempoMap: loaded.ast.tempoMap, layout: trackLayout, advanced: showAdv('tracks'), view,

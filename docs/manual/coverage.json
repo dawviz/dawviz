@@ -73,7 +73,7 @@
         "locales/en.json#web.comp.styleApplied",
         "locales/en.json#web.preset.paste"
       ],
-      "uiHash": "7ef212dea673",
+      "uiHash": "cdb70cffb8e6",
       "viHash": "c14cd7a0e753",
       "enHash": "61f2bf1cff66",
       "coverHashes": {
@@ -83,7 +83,7 @@
         "apps/web/src/components/TrackPanel.tsx": "ae75cba2ca51",
         "apps/web/src/components/Stage.tsx": "6b8d74b8cb33",
         "locales/en.json#web.audio.": "833abe622053",
-        "locales/en.json#web.track": "46682aaa4f90",
+        "locales/en.json#web.track": "679422632b29",
         "locales/en.json#web.brightness.": "0cf9c6022fb9",
         "locales/en.json#web.styles.": "30148f821b5e",
         "locales/en.json#web.song.": "450cd586901d",
@@ -137,11 +137,11 @@
         "locales/en.json#web.layers.",
         "locales/en.json#web.comp."
       ],
-      "uiHash": "636f3f5fb4b4",
-      "viHash": "a61737767b83",
-      "enHash": "d041f23e7c51",
+      "uiHash": "8492486e8a27",
+      "viHash": "d07562493424",
+      "enHash": "5061117be30a",
       "coverHashes": {
-        "apps/web/src/components/Editor.tsx": "868f90108786",
+        "apps/web/src/components/Editor.tsx": "dc7aacbd6bac",
         "apps/web/src/components/EditorOverlay.tsx": "c10a644a5f66",
         "apps/web/src/components/StylePanel.tsx": "1a7c05d2bb56",
         "locales/en.json#web.editor.": "315a1a12894d",
@@ -173,7 +173,7 @@
         "packages/render-core/src/image.ts": "314b9694a52b",
         "apps/web/src/lib/sessionAssets.ts": "281ce11cbc11",
         "locales/en.json#web.asset.": "dffd9c37b639",
-        "apps/web/src/components/LayerTimeline.tsx": "f48d79613a3e",
+        "apps/web/src/components/LayerTimeline.tsx": "7ab2276816da",
         "apps/web/src/lib/layerTimeline.ts": "d310694f5b96",
         "locales/en.json#web.layers.": "4a4eda2648f1",
         "locales/en.json#web.comp.": "f60606069e72"
@@ -229,7 +229,7 @@
         "apps/web/src/components/Splitter.tsx",
         "apps/web/src/components/LayerTimeline.tsx"
       ],
-      "uiHash": "5695fd8bf7a1",
+      "uiHash": "d9cb98f786bb",
       "viHash": "f22f1daba73f",
       "enHash": "fb2e4cf49876",
       "coverHashes": {
@@ -237,10 +237,10 @@
         "apps/web/src/lib/undoKeys.ts": "07c2c99f5cf4",
         "apps/web/src/components/EditorOverlay.tsx": "c10a644a5f66",
         "apps/web/src/lib/numberInput.ts": "8e27c53523c3",
-        "apps/web/src/components/Editor.tsx": "868f90108786",
+        "apps/web/src/components/Editor.tsx": "dc7aacbd6bac",
         "apps/web/src/components/KeyframeTimeline.tsx": "82277bf7d57f",
         "apps/web/src/components/Splitter.tsx": "7ae82f8548cb",
-        "apps/web/src/components/LayerTimeline.tsx": "f48d79613a3e"
+        "apps/web/src/components/LayerTimeline.tsx": "7ab2276816da"
       }
     },
     "06-xuat-video": {
