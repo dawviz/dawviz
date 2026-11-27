@@ -1114,6 +1114,38 @@ describe('thẻ Editor (T-68)', () => {
     fireEvent.click(screen.getByTestId('track-lock-t0'));
     for (const k of ['grip', 'color', 'hide', 'solo']) expect(screen.getByTestId(`music-${k}-t0`)).toBeDisabled();
   });
+  it('làn Nhạc: hàng Tất cả track (mắt, S, khoá) và kéo chuột qua cột mắt/khoá; mỗi cử chỉ một bước hoàn tác', async () => {
+    await openProject();
+    fireEvent.click(screen.getByRole('tab', { name: /Editor|Chỉnh sửa/ }));
+    fireEvent.click(screen.getByTestId('music-toggle'));
+    await waitFor(() => expect(screen.getByTestId('music-row-all')).toBeInTheDocument());
+    const eyes = () => ['t0', 't1'].map((id) => screen.getByTestId(`music-hide-${id}`).getAttribute('aria-pressed') === 'true');
+    const all = screen.getByTestId('music-all-hidden'), soloAll = screen.getByTestId('music-all-solo');
+    expect(soloAll).toBeDisabled();                                  // chưa có solo: nút S tổng mờ đi
+    // mắt tổng: ẩn hết → (còn ẩn) hiện hết
+    fireEvent.click(all); await waitFor(() => expect(eyes()).toEqual([true, true]));
+    fireEvent.click(all); await waitFor(() => expect(eyes()).toEqual([false, false]));
+    // kéo từ mắt của track đầu xuống track cuối: ẩn cả hai, một lần hoàn tác trả cả dãy
+    const rows = ['t0', 't1'].map((id) => screen.getByTestId(`music-hide-${id}`)), restore = fakePoint((y) => rows[Math.min(rows.length - 1, Math.max(0, Math.round(y / 10)))]);
+    fireEvent.pointerDown(rows[0], { button: 0, isPrimary: true, clientX: 0, clientY: 0 });
+    fireEvent(window, Object.assign(new Event('pointermove'), { clientX: 0, clientY: 10 }));
+    fireEvent(window, new Event('pointerup'));
+    restore();
+    expect(eyes()).toEqual([true, true]);
+    ctrlZ(); await waitFor(() => expect(eyes()).toEqual([false, false]));
+    // S: chỉ track đang solo thì S tổng bấm được và bỏ hết solo
+    fireEvent.click(screen.getByTestId('music-solo-t0'));
+    await waitFor(() => expect(soloAll).not.toBeDisabled());
+    fireEvent.click(soloAll);
+    await waitFor(() => expect(screen.getByTestId('music-solo-t0')).toHaveAttribute('aria-pressed', 'false'));
+    expect(soloAll).toBeDisabled();
+    // khoá tổng: khoá hết (mắt và S của mọi track bị vô hiệu), bấm nữa thì mở hết
+    const lockAll = screen.getByTestId('music-all-lock');
+    fireEvent.click(lockAll);
+    await waitFor(() => { for (const id of ['t0', 't1']) expect(screen.getByTestId(`music-hide-${id}`)).toBeDisabled(); });
+    fireEvent.click(lockAll);
+    await waitFor(() => { for (const id of ['t0', 't1']) expect(screen.getByTestId(`music-hide-${id}`)).not.toBeDisabled(); });
+  });
   it('Dán preset (D-69): dán JSON vào ô ở cột Phong cách video → preset được thêm và áp; JSON hỏng báo lỗi, không đổi gì', async () => {
     await openProject();
     fireEvent.click(screen.getByTestId('preset-paste-open'));

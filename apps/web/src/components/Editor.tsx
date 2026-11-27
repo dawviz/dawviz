@@ -166,11 +166,20 @@ export function Editor({ proof = true, styleName, scene, root, compPath, onCompP
   const { designWidth: W, designHeight: H } = scene.canvas;
   // Kéo qua các mắt/khoá của cột lớp để ẩn hoặc khoá nhanh (lib/paintDrag.ts). Cả lần kéo là một bước hoàn tác (mắt); khoá không vào lịch sử.
   const gestureCtx = useContext(GestureContext);
-  const paintRef = useRef({ scene, locked, actions }); paintRef.current = { scene, locked, actions };
+  // Cùng cử chỉ cho làn Nhạc: mắt ('hide'), S ('solo') và khoá ('tlock') của track, đặt qua lệnh của App (một bước hoàn tác cho cả lần kéo).
+  const paintRef = useRef({ scene, locked, actions, trackEdit, trackLocks }); paintRef.current = { scene, locked, actions, trackEdit, trackLocks };
   const paintLayers = (e: React.PointerEvent<HTMLElement>) => startPaintDrag(e, {
-    current: (kind, id) => (kind === 'eye' ? !paintRef.current.scene.widgets.find((w) => w.id === id)?.visible : paintRef.current.locked.has(id)),
+    current: (kind, id) => {
+      const r = paintRef.current;
+      if (kind === 'hide') return !!r.trackEdit?.view.hidden.has(id);
+      if (kind === 'solo') return !!r.trackEdit?.view.solo.has(id);
+      if (kind === 'tlock') return !!r.trackLocks?.has(id);
+      return kind === 'eye' ? !r.scene.widgets.find((w) => w.id === id)?.visible : r.locked.has(id);
+    },
     apply: (kind, id, on) => {
-      if (kind === 'eye') paintRef.current.actions.paintVisible(id, !on);
+      if (kind === 'hide' || kind === 'solo') paintRef.current.trackEdit?.onPaint(kind, id, on);
+      else if (kind === 'tlock') paintRef.current.trackEdit?.onSetLock(id, on);
+      else if (kind === 'eye') paintRef.current.actions.paintVisible(id, !on);
       else setLocked((s) => { if (s.has(id) === on) return s; const n = new Set(s); if (on) n.add(id); else n.delete(id); return n; });
     },
     gesture: gestureCtx ?? undefined,

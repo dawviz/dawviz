@@ -94,6 +94,14 @@ export interface TrackEdit {
   onMove(id: string, to: number): void;
   onToggleHidden(id: string): void;
   onToggleSolo(id: string): void;
+  /** Kéo qua cột mắt hoặc S để đặt cùng một giá trị cho nhiều track (một bước hoàn tác cho cả lần kéo). */
+  onPaint(kind: 'hide' | 'solo', id: string, on: boolean): void;
+  /** Hàng "Tất cả track": mắt (hiện hết trước rồi mới ẩn hết), S (bỏ mọi solo), khoá (khoá hết rồi mở hết). Track đã khoá đứng yên. */
+  onToggleAllHidden(): void;
+  onClearSolo(): void;
+  /** Đặt khoá cho một track (kéo qua cột khoá) và khoá/mở khoá tất cả. */
+  onSetLock(id: string, on: boolean): void;
+  onLockAll(): void;
   onStyle(id: string, patch: Partial<NoteStyle> | null): void;
 }
 
@@ -122,7 +130,11 @@ export function LayerTimeline(props: LayerTimelineProps) {
     const idx = new Map(music.tracks.map((ti) => [ti.track.id, ti]));
     return trackEdit.tracks.map((t) => ({ id: t.id, name: t.name, color: trackEdit.overrides[t.id]?.customColor ?? t.color, ti: idx.get(t.id), shown: isShown(t.id, trackEdit.view) }));
   }, [music, trackEdit]);
-  const musicRows = music ? 1 + trackRows.length : 0;
+  const musicRows = music ? 1 + (trackEdit ? 1 : 0) + trackRows.length : 0; // hợp âm + (hàng Tất cả track) + mỗi track một làn
+  const allRow = musicOpen && !!trackEdit;
+  const tHidden = trackEdit ? trackRows.filter((r) => trackEdit.view.hidden.has(r.id)).length : 0, tLocked = props.trackLocks ? trackRows.filter((r) => props.trackLocks!.has(r.id)).length : 0;
+  const tAllHidden = tHidden > 0 && tHidden === trackRows.length, tAllLocked = tLocked > 0 && tLocked === trackRows.length, tSolo = (trackEdit?.view.solo.size ?? 0) > 0;
+  const tEyeLabel = i18n.t(tHidden ? 'web.tracks.allShow' : 'web.tracks.allHide'), tSoloLabel = i18n.t(tSolo ? 'web.tracks.soloClear' : 'web.tracks.soloNone'), tLockLabel = i18n.t(tAllLocked ? 'web.tracks.allUnlock' : 'web.tracks.allLock');
   const head = ROW_H + (music ? ROW_H + (musicOpen ? musicRows * MUSIC_H : 0) : 0);
 
   // ── kích thước và thu phóng (như KeyframeTimeline) ──
@@ -490,6 +502,23 @@ export function LayerTimeline(props: LayerTimelineProps) {
                       <span className="ml-auto pr-1 font-normal tabular-nums text-muted">{i18n.number(music.tracks.length)}</span>
                     </button>
                   </div>
+                  {allRow && trackEdit && (
+                    <div className="flex items-center gap-1 border-b border-r border-line/70 bg-page/40 pl-2 pr-1 text-[11px] text-muted" style={{ height: MUSIC_H }} data-testid="music-row-all">
+                      <span aria-hidden className="w-4 shrink-0" /><span aria-hidden className="w-3.5 shrink-0" />
+                      <span className="min-w-0 flex-1 truncate">{i18n.t('web.tracks.all')}</span>
+                      <button type="button" className="tog h-[18px] w-[18px]" aria-pressed={tAllHidden ? true : tHidden ? 'mixed' : false} aria-label={tEyeLabel} title={tEyeLabel} onClick={trackEdit.onToggleAllHidden} data-testid="music-all-hidden">
+                        {tAllHidden ? <EyeOff className="h-3 w-3" /> : <Eye className={`h-3 w-3 ${tHidden ? 'opacity-50' : ''}`} />}
+                      </button>
+                      <button type="button" className="tog h-[18px] w-[18px] text-[11px] disabled:cursor-default disabled:opacity-40" aria-pressed={tSolo} disabled={!tSolo} aria-label={tSoloLabel} title={tSoloLabel} onClick={trackEdit.onClearSolo} data-testid="music-all-solo">
+                        <span aria-hidden>{i18n.t('web.track.soloShort')}</span>
+                      </button>
+                      {props.onLockTrack && (
+                        <button type="button" className={`tog h-[18px] w-[18px] ${tAllLocked ? 'text-fg' : ''}`} aria-pressed={tAllLocked ? true : tLocked ? 'mixed' : false} aria-label={tLockLabel} title={tLockLabel} onClick={trackEdit.onLockAll} data-testid="music-all-lock">
+                          {tAllLocked ? <Lock className="h-3 w-3" /> : <Unlock className={`h-3 w-3 ${tLocked ? 'opacity-50' : ''}`} />}
+                        </button>
+                      )}
+                    </div>
+                  )}
                   {musicOpen && (
                     <div className="flex items-center gap-1 border-b border-r border-line/70 pl-2 pr-1 text-[11px] text-muted" style={{ height: MUSIC_H }} data-testid="music-row-chords">
                       <span aria-hidden className="w-4 shrink-0" /><span aria-hidden className="w-3.5 shrink-0" />
@@ -521,18 +550,18 @@ export function LayerTimeline(props: LayerTimelineProps) {
                         <span className={`min-w-0 flex-1 truncate ${r.shown ? '' : 'line-through decoration-line-strong/40'}`} title={r.name}>{r.name}</span>
                         {trackEdit && (
                           <>
-                            <button type="button" className="tog h-[18px] w-[18px] disabled:opacity-40" disabled={lk} aria-pressed={hidden} onClick={() => trackEdit.onToggleHidden(r.id)} data-testid={`music-hide-${r.id}`}
+                            <button type="button" className="tog h-[18px] w-[18px] touch-none disabled:opacity-40" disabled={lk} aria-pressed={hidden} data-paint="hide" data-paint-id={r.id} onClick={(e) => { if (clickIsKeyboard(e)) trackEdit.onToggleHidden(r.id); }} data-testid={`music-hide-${r.id}`}
                               aria-label={i18n.t('web.track.hide', { name: r.name })} title={i18n.t('web.track.hide', { name: r.name }) + lockTip}>
                               {hidden ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
                             </button>
-                            <button type="button" className={`tog h-[18px] w-[18px] text-[11px] disabled:opacity-40 ${solo ? 'text-fg' : ''}`} disabled={lk} aria-pressed={solo} onClick={() => trackEdit.onToggleSolo(r.id)} data-testid={`music-solo-${r.id}`}
+                            <button type="button" className={`tog h-[18px] w-[18px] touch-none text-[11px] disabled:opacity-40 ${solo ? 'text-fg' : ''}`} disabled={lk} aria-pressed={solo} data-paint="solo" data-paint-id={r.id} onClick={(e) => { if (clickIsKeyboard(e)) trackEdit.onToggleSolo(r.id); }} data-testid={`music-solo-${r.id}`}
                               aria-label={i18n.t('web.track.solo', { name: r.name })} title={i18n.t('web.track.solo', { name: r.name }) + lockTip}>
                               <span aria-hidden>{i18n.t('web.track.soloShort')}</span>
                             </button>
                           </>
                         )}
                         {props.onLockTrack && (
-                          <button type="button" className={`tog h-[18px] w-[18px] ${lk ? 'text-fg' : ''}`} aria-pressed={lk} onClick={() => props.onLockTrack!(r.id)} data-testid={`track-lock-${r.id}`}
+                          <button type="button" className={`tog h-[18px] w-[18px] touch-none ${lk ? 'text-fg' : ''}`} aria-pressed={lk} data-paint="tlock" data-paint-id={r.id} onClick={(e) => { if (clickIsKeyboard(e)) props.onLockTrack!(r.id); }} data-testid={`track-lock-${r.id}`}
                             aria-label={i18n.t(lk ? 'web.track.unlock' : 'web.track.lock', { name: r.name })} title={i18n.t(lk ? 'web.track.unlock' : 'web.track.lock', { name: r.name })}>
                             {lk ? <Lock className="h-3 w-3" /> : <Unlock className="h-3 w-3" />}
                           </button>
@@ -622,7 +651,7 @@ export function LayerTimeline(props: LayerTimelineProps) {
                 })}
               </div>
               {music && <div aria-hidden className="absolute inset-x-0 border-b border-line bg-page/40" style={{ top: ROW_H, height: ROW_H }} />}
-              {music && musicOpen && <MusicLanes chords={music.chords} rows={trackRows} pps={pps} left={view.left} width={Math.max(0, view.w - tree)} top={2 * ROW_H} duration={duration} />}
+              {music && musicOpen && <MusicLanes chords={music.chords} rows={trackRows} pps={pps} left={view.left} width={Math.max(0, view.w - tree)} top={2 * ROW_H} duration={duration} skip={allRow ? 1 : 0} />}
               {layers.map((w, i) => (
                 <div key={w.id} className={`absolute inset-x-0 border-b border-line/70 ${sel.has(w.id) ? 'bg-raised/60' : ''}`} style={{ top: head + i * rowH, height: rowH }} data-lane={w.id}>
                   <Bars w={w} name={name(w.id)} pps={pps} duration={duration} tempoMap={tempoMap} on={sel.has(w.id)} locked={locked.has(w.id)} rowH={rowH}
@@ -710,9 +739,9 @@ const cssColor = (name: string, alpha = 1) => {
  * Làn tham chiếu nhạc: làn hợp âm (tên hợp âm theo đoạn) rồi một làn mỗi track (nốt như piano roll thu nhỏ, cao độ theo dải của track). Chỉ để nhìn
  * và căn thanh theo nhạc. Vẽ bằng một canvas đúng phần đang thấy (bài dài, phóng to vẫn nhẹ); vẽ lại khi cuộn, thu phóng hoặc đổi theme.
  */
-const MusicLanes = memo(function MusicLanes({ chords, rows, pps, left, width, top, duration }: { chords: readonly ChordSeg[]; rows: readonly MusicRow[]; pps: number; left: number; width: number; top: number; duration: number }) {
+const MusicLanes = memo(function MusicLanes({ chords, rows, pps, left, width, top, duration, skip }: { chords: readonly ChordSeg[]; rows: readonly MusicRow[]; pps: number; left: number; width: number; top: number; duration: number; skip: number }) {
   const ref = useRef<HTMLCanvasElement>(null);
-  const h = (1 + rows.length) * MUSIC_H;
+  const h = (skip + 1 + rows.length) * MUSIC_H; // `skip` hàng đầu (Tất cả track) để trống
   const [theme, setTheme] = useState(0);
   useEffect(() => {
     if (typeof MutationObserver === 'undefined') return;
@@ -724,7 +753,7 @@ const MusicLanes = memo(function MusicLanes({ chords, rows, pps, left, width, to
     const c = ref.current, g = c?.getContext?.('2d'); if (!c || !g || width <= 0) return;
     const dpr = window.devicePixelRatio || 1;
     c.width = Math.round(width * dpr); c.height = Math.round(h * dpr);
-    g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, width, h);
+    g.setTransform(dpr, 0, 0, dpr, 0, skip * MUSIC_H * dpr); g.clearRect(0, -skip * MUSIC_H, width, h);
     const t0 = Math.max(0, (left - PAD) / pps), t1 = Math.min(duration, (left + width) / pps);
     const x = (t: number) => PAD + t * pps - left;
     const line = cssColor('--line', 0.7), muted = cssColor('--text-muted'), raised = cssColor('--surface-raised');
@@ -752,7 +781,7 @@ const MusicLanes = memo(function MusicLanes({ chords, rows, pps, left, width, to
         g.fillRect(x(n.startTimeSeconds), y, Math.max(1, (n.endTimeSeconds - n.startTimeSeconds) * pps), 2);
       }
     });
-  }, [chords, rows, pps, left, width, h, duration, theme]);
+  }, [chords, rows, pps, left, width, h, duration, theme, skip]);
   return <canvas ref={ref} aria-hidden className="pointer-events-none absolute" style={{ left, top, width, height: h }} data-testid="music-lanes" />;
 });
 

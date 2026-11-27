@@ -153,6 +153,8 @@ Bên trái là cột lớp, bên phải là thước thời gian và các thanh.
   - **Đổi màu:** bấm chấm màu để mở bộ chọn màu. Nốt của track trên làn đổi màu theo.
   - **Ẩn / solo:** bấm mắt để ẩn track, bấm **S** để chỉ hiện các track solo. Track đang ẩn vẫn còn hàng (làn trống, tên gạch ngang) để bạn bật lại.
   - **Khoá:** ổ khoá ở cuối hàng (xem **Khoá track** bên dưới).
+  - **Kéo qua nhiều track:** bấm giữ rồi kéo dọc qua cột mắt, cột **S** hoặc cột khoá để đổi nhiều track cùng lúc. Cả lần kéo là một bước hoàn tác.
+  - **Hàng Tất cả track** (ngay dưới tiêu đề **Nhạc**): mắt hiện hết trước rồi mới ẩn hết; **S** bỏ hết solo (mờ đi khi chưa có track nào solo); ổ khoá khoá hoặc mở khoá mọi track. Track đang khoá đứng yên.
   - **Hoàn tác:** mỗi lần đổi là một bước hoàn tác (Ctrl+Z).
 - **Hàng trượt khi đổi thứ tự:** khi bạn đổi thứ tự lớp hoặc track, các hàng trượt nhẹ tới chỗ mới thay vì nhảy. Nếu máy đặt chế độ giảm chuyển động thì các hàng đổi chỗ ngay.
 - **Tách lớp tại vạch phát:** đặt vạch phát lên thanh, chọn lớp rồi bấm Ctrl+K (hoặc nút kéo cắt ở góc trên bên trái). Lớp thành hai lớp nối nhau: lớp gốc giữ phần trước, bản sao (nằm ngay trên) giữ phần sau. Mỗi lớp có keyframe riêng và chỉnh độc lập.

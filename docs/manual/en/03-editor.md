@@ -153,6 +153,8 @@ The layer column is on the left, the time ruler and the bars on the right. Each 
   - **Change the color:** click the color dot to open the color picker. The track's notes in the lane change color too.
   - **Hide / solo:** click the eye to hide the track, click **S** to show only soloed tracks. A hidden track keeps its row (empty lane, name crossed out) so you can turn it back on.
   - **Lock:** the lock at the end of the row (see **Lock a track** below).
+  - **Drag across tracks:** press and drag down the eye, **S** or lock column to change several tracks at once. The whole drag is one undo step.
+  - **All tracks row** (right under the **Music** title): the eye shows everything first, then hides everything; **S** clears every solo (dimmed when nothing is soloed); the lock locks or unlocks every track. Locked tracks stay as they are.
   - **Undo:** each change is one undo step (Ctrl+Z).
 - **Rows slide when reordered:** when you reorder layers or tracks, the rows slide to their new place instead of jumping. If your system is set to reduce motion, rows switch places at once.
 - **Split a layer at the playhead:** put the playhead over the bar, select the layer and press Ctrl+K (or the scissors button at the top left). The layer becomes two layers that meet there: the original keeps the part before, the copy (just above it) keeps the part after. Each has its own keyframes and is edited on its own.
