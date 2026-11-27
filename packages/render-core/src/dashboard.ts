@@ -230,7 +230,7 @@ export const degreeRenderer: WidgetRenderer<DegreeProps> = {
       for (let b = Math.ceil(b0); b <= Math.floor(b1); b++) {
         const x = xOf(b); if (x < 0 || x > W) continue;
         out.push(rect(x, yBars, 1, sst.size * 0.8, p.blockColor, 0.5));
-        T.text(out, String(b + 1), x + 3, yBars + sst.size * 1.25, sst, 'left', W / win);
+        if (b >= 0) T.text(out, String(b + 1), x + 3, yBars + sst.size * 1.25, sst, 'left', W / win); // trước đầu bài (số ≤ 0) chỉ còn vạch, không có số
       }
     }
     if (p.playheadColor) {

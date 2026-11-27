@@ -195,3 +195,11 @@ test('T-133 Dots: cỡ chấm theo cường độ, vạch phách mảnh, nhãn h
   assert.ok(lab.every((x) => x.x < gx), 'nhãn nằm ngoài khung chấm');
   assert.deepEqual(prims(sceneWith('DOTS', { ...base, velocitySize: true, beatLines: true, rowLabels: true }, {}, lay), 1, ast), prims(sceneWith('DOTS', { ...base, velocitySize: true, beatLines: true, rowLabels: true }, {}, lay), 1, ast));
 });
+
+test('bậc hợp âm: số ô nhịp chỉ hiện từ 1 trở lên (trước đầu bài chỉ còn vạch)', () => {
+  const ast = synthAst({ duration: 8 }), lay = { x: 0, y: 0, width: 400, height: 80 }, measure = (s: string, _f: string, size: number) => s.length * size * 0.6;
+  const nums = (t: number) => textsOf(layoutFrame(sceneWith('DEGREE', { windowBars: 4, playheadRatio: 0.75, showDetail: false, showFunction: false, showBars: true, playheadColor: '' }, { tonic: 9 }, lay), derivedOf(ast, { tonic: 9, measure }), ast, t)[0]?.prims ?? [])
+    .map((x) => x.text).filter((s) => /^-?\d+$/.test(s));
+  assert.deepEqual(nums(0), ['1', '2']); // ô nhịp -2, -1, 0 nằm trước đầu bài: không có số
+  assert.ok(!nums(0.3).some((s) => Number(s) < 1));
+});
