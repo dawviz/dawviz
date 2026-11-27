@@ -1448,6 +1448,7 @@
   "web.ws.ngRowLabels": "Row labels on the left",
   "web.ws.ngEmpty": "Empty cell colour",
   "web.ws.ngEmptyAlpha": "Empty cell opacity",
+  "web.ws.ngSmooth": "Scroll smoothly (no column steps)",
   "web.ws.ngMark": "Playhead style",
   "web.ws.ngMark.LINE": "Line",
   "web.ws.ngMark.COLUMN": "Column box",

@@ -978,7 +978,7 @@ const HUD_SANITIZERS = {
       emptyColor: hexOpt(S, P.emptyColor, d.emptyColor, `${p}.emptyColor`), emptyColorB: hexOpt(S, P.emptyColorB, d.emptyColorB, `${p}.emptyColorB`), emptyAlpha: n('emptyAlpha', 0, 1),
       velocitySize: S.bool(P.velocitySize, d.velocitySize, `${p}.velocitySize`), velocityMin: n('velocityMin', 0.05, 1),
       beatLines: S.bool(P.beatLines, d.beatLines, `${p}.beatLines`), rowLabels: S.bool(P.rowLabels, d.rowLabels, `${p}.rowLabels`), labelStyle: textRef(S, P.labelStyle, d.labelStyle, `${p}.labelStyle`),
-      playheadMark: S.oneOf(P.playheadMark, GRID_MARKS, d.playheadMark, `${p}.playheadMark`), playheadColor: hexOpt(S, P.playheadColor, d.playheadColor, `${p}.playheadColor`), playheadWidth: n('playheadWidth', 0, 20),
+      smooth: S.bool(P.smooth, d.smooth, `${p}.smooth`), playheadMark: S.oneOf(P.playheadMark, GRID_MARKS, d.playheadMark, `${p}.playheadMark`), playheadColor: hexOpt(S, P.playheadColor, d.playheadColor, `${p}.playheadColor`), playheadWidth: n('playheadWidth', 0, 20),
       showPolyphony: S.bool(P.showPolyphony, d.showPolyphony, `${p}.showPolyphony`), polyTemplate: tpl(S, P.polyTemplate, d.polyTemplate, `${p}.polyTemplate`, INSIGHT_TEMPLATE_KEYS.NOTE_GRID),
       polyStyle: textRef(S, P.polyStyle, d.polyStyle, `${p}.polyStyle`) };
   },

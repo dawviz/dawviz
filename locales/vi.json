@@ -1448,6 +1448,7 @@
   "web.ws.ngRowLabels": "Nhãn hàng ở cột trái",
   "web.ws.ngEmpty": "Màu ô trống",
   "web.ws.ngEmptyAlpha": "Độ đục ô trống",
+  "web.ws.ngSmooth": "Trôi mượt (không nhảy từng cột)",
   "web.ws.ngMark": "Kiểu vạch phát",
   "web.ws.ngMark.LINE": "Vạch",
   "web.ws.ngMark.COLUMN": "Khung cột",

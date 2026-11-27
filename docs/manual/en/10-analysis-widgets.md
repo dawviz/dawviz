@@ -47,7 +47,7 @@ The **Cells** group: **Cell shape** is **Filled cell**, **Square dot**, **Round 
 
 The **Colour** group: **Track colour** or **One colour**, **Opacity of the part to come**, **Empty cell colour** (leave empty to use the row's colour), **Empty cell colour at the bottom** (a top-to-bottom blend), **Empty cell opacity** (0 draws no empty cells).
 
-Also: the **Beat lines** group (only **Around the playhead**), the **Labels** group (**Row labels on the left**: track names, or C note names when rows are by pitch), the **Playhead** group (**Playhead colour**, **Playhead style** **Line** or **Column box**, **Playhead width**) and the **Notes sounding** group (a line of text above the grid, `Voices: {poly}` by default). Boxes that have no effect with the current choices are hidden.
+Also: the **Grid** group (only **Around the playhead**: **Scroll smoothly** makes the grid glide like the Piano roll, off makes it step one column at a time; **Beat lines**), the **Labels** group (**Row labels on the left**: track names, or C note names when rows are by pitch), the **Playhead** group (**Playhead colour**, **Playhead style** **Line** or **Column box**, **Playhead width**) and the **Notes sounding** group (a line of text above the grid, `Voices: {poly}` by default). Boxes that have no effect with the current choices are hidden.
 
 To get the look of an older widget:
 
