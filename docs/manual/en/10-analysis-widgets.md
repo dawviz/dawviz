@@ -49,6 +49,7 @@ In the Pitch wheel's **Settings**:
 - **Bass note ring colour**: circles the lowest sounding note; leave empty for no ring.
 - **Middle shows**: **Chord name** or **Chord degree**.
 - **Line under the chord**: small text under the chord; placeholders work, for example `BAR {bar}`.
+- **Glow**: **Strength** makes the lit cells glow (0 is off); leave **Glow colour** empty to use the lit colour. The joining shape and the progress ring do not glow.
 
 ## Where the data comes from
 

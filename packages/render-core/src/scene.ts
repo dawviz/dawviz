@@ -938,7 +938,8 @@ const HUD_SANITIZERS = {
       beatMarks: S.bool(P.beatMarks, d.beatMarks, `${p}.beatMarks`), outlineColor: hexOpt(S, P.outlineColor, d.outlineColor, `${p}.outlineColor`),
       chordAs: S.oneOf(P.chordAs, ['NAME', 'DEGREE'] as const, d.chordAs, `${p}.chordAs`), romanStyle: S.oneOf(P.romanStyle, ROMAN_STYLES, d.romanStyle, `${p}.romanStyle`),
       subTemplate: tpl(S, P.subTemplate, d.subTemplate, `${p}.subTemplate`, []), subStyle: textRef(S, P.subStyle, d.subStyle, `${p}.subStyle`),
-      windowSec: S.num(P.windowSec, d.windowSec, 2, 120, `${p}.windowSec`) };
+      windowSec: S.num(P.windowSec, d.windowSec, 2, 120, `${p}.windowSec`),
+      glow: S.num(P.glow, d.glow, 0, 1, `${p}.glow`), glowColor: hexOpt(S, P.glowColor, d.glowColor, `${p}.glowColor`) };
   },
   PANEL(P: Obj, p: string, S: Sanitizer): PanelProps {
     const d = DEFAULT_PANEL, raw = Array.isArray(P.stats) ? P.stats : (P.stats === undefined ? d.stats : (S.warn(`${p}.stats`, P.stats, 'không phải mảng; dùng mặc định'), d.stats));

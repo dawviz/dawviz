@@ -59,6 +59,8 @@ export interface PitchWheelProps {
   subTemplate: string; subStyle: TextRef;
   /** Cửa sổ (giây) nhận diện giọng khi scene chưa đặt nốt chủ. */
   windowSec: number;
+  /** Phát sáng quanh các nút đang sáng (0 = tắt); màu rỗng = màu sáng. Chỉ nút, không áp cho đa giác và cung tiến độ. */
+  glow: number; glowColor: string;
 }
 export interface ArrangementProps { cols: number; rowGap: number; colorMode: 'TRACK' | 'SOLID'; color: string; upcomingAlpha: number; playheadColor: string; playheadWidth: number }
 export interface DrumPadProps { source: 'DRUMS' | 'ALL'; cols: number; maxPads: number; gap: number; radius: number; padColor: string; hitColor: string; colorMode: 'TRACK' | 'SOLID'; decayMs: number; labels: boolean; labelStyle: TextRef }
@@ -75,7 +77,7 @@ export const DEFAULT_DENSITY: Readonly<DensityProps> = Object.freeze({ cols: 96,
 export const DEFAULT_PITCH_WHEEL: Readonly<PitchWheelProps> = Object.freeze({
   order: 'CHROMATIC', ring: 0.34, litColor: '#ffd166', dimColor: '#3a4060', dimAlpha: 0.55, showNames: true, nameStyle: ts('label'), showChord: true, chordStyle: ts('heading'),
   labels: 'NAMES', nodeShape: 'TILE', litTextColor: '#ffffff', polygon: false, polygonColor: '', polygonAlpha: 0.22, rootColor: '', progress: 'OFF', progressColor: '', progressWidth: 4,
-  beatMarks: false, outlineColor: '', chordAs: 'NAME', romanStyle: 'SUFFIX', subTemplate: '', subStyle: ts('label'), windowSec: 16,
+  beatMarks: false, outlineColor: '', chordAs: 'NAME', romanStyle: 'SUFFIX', subTemplate: '', subStyle: ts('label'), windowSec: 16, glow: 0, glowColor: '',
 });
 export const DEFAULT_ARRANGEMENT: Readonly<ArrangementProps> = Object.freeze({ cols: 160, rowGap: 2, colorMode: 'TRACK', color: '#8aa4ff', upcomingAlpha: 0.4, playheadColor: '#ffffff', playheadWidth: 2 });
 export const DEFAULT_DRUM_PAD: Readonly<DrumPadProps> = Object.freeze({ source: 'DRUMS', cols: 4, maxPads: 16, gap: 6, radius: 8, padColor: '#2a2f45', hitColor: '#ffb74d', colorMode: 'SOLID', decayMs: 250, labels: true, labelStyle: ts('tiny') });
@@ -251,15 +253,18 @@ export const pitchWheelRenderer: WidgetRenderer<PitchWheelProps> = {
       const c = p.polygonColor || lit;
       out.push(poly(pts, { closed: active.size >= 3, fill: c, fillAlpha: p.polygonAlpha, stroke: c, width: 1.5 }));
     }
-    const bass = pitches.length ? pitches[0] % 12 : -1;
+    const bass = pitches.length ? pitches[0] % 12 : -1, glowBlur = p.glow * 24, glowCol = p.glowColor || lit;
     for (let i = 0; i < 12; i++) {
-      const pc = p.order === 'FIFTHS' ? (i * 7) % 12 : i, { x, y } = at(i), on = active.has(pc);
+      const pc = p.order === 'FIFTHS' ? (i * 7) % 12 : i, { x, y } = at(i), on = active.has(pc), halo = on && glowBlur > 0;
       if (circle) {
-        out.push(poly(arcPts(x, y, nodeR, 0, 360, 40), { closed: true, fill: on ? lit : p.dimColor, fillAlpha: on ? 1 : 0.12, stroke: on ? lit : p.dimColor, width: 1, alpha: on ? 1 : p.dimAlpha }));
+        // Đa giác (poly) chưa có phát sáng: nút sáng có glow vẽ bằng hình chữ nhật bo tròn hết cỡ, cùng màu, cùng viền.
+        if (halo) out.push({ ...rect(x - nodeR, y - nodeR, 2 * nodeR, 2 * nodeR, lit, 1, nodeR), glowColor: glowCol, glowBlur, stroke: lit, strokeWidth: 1 });
+        else out.push(poly(arcPts(x, y, nodeR, 0, 360, 40), { closed: true, fill: on ? lit : p.dimColor, fillAlpha: on ? 1 : 0.12, stroke: on ? lit : p.dimColor, width: 1, alpha: on ? 1 : p.dimAlpha }));
         if (pc === bass && p.rootColor) out.push(poly(arcPts(x, y, nodeR * 1.4, 0, 360, 48), { closed: true, stroke: p.rootColor, width: 2 }));
         if (p.showNames) T.text(out, labelOf(pc), x, y + nst.size * 0.35, on && p.litTextColor ? { ...nst, color: p.litTextColor } : nst, 'center', nodeR * 2.4);
       } else {
-        out.push(rect(x - tw / 2, y - thick / 2, tw, thick, on ? lit : p.dimColor, on ? 1 : p.dimAlpha, 6, i * 30));
+        const tile = rect(x - tw / 2, y - thick / 2, tw, thick, on ? lit : p.dimColor, on ? 1 : p.dimAlpha, 6, i * 30);
+        out.push(halo ? { ...tile, glowColor: glowCol, glowBlur } : tile);
         if (pc === bass && p.rootColor) { // khung quanh thanh (đã xoay theo vị trí trên vòng)
           const th = i * 30 * Math.PI / 180, ux = Math.cos(th), uy = Math.sin(th), hw = tw / 2 + 3, hh = thick / 2 + 3;
           out.push(poly([x - ux * hw + uy * hh, y - uy * hw - ux * hh, x + ux * hw + uy * hh, y + uy * hw - ux * hh, x + ux * hw - uy * hh, y + uy * hw + ux * hh, x - ux * hw - uy * hh, y - uy * hw + ux * hh], { closed: true, stroke: p.rootColor, width: 2 }));

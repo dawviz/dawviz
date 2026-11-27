@@ -203,3 +203,15 @@ test('bậc hợp âm: số ô nhịp chỉ hiện từ 1 trở lên (trước �
   assert.deepEqual(nums(0), ['1', '2']); // ô nhịp -2, -1, 0 nằm trước đầu bài: không có số
   assert.ok(!nums(0.3).some((s) => Number(s) < 1));
 });
+
+test('Vòng quãng năm: Glow chỉ đổ vào nút đang sáng (TILE và CIRCLE), màu glow rỗng = màu sáng; mặc định không đổi', () => {
+  const ast = synthAst(), lay = { x: 0, y: 0, width: 320, height: 320 };
+  for (const nodeShape of ['TILE', 'CIRCLE']) {
+    const rectsGlow = (props: object) => rects(prims(sceneWith('PITCH_WHEEL', { nodeShape, ...props }, {}, lay), 0.6, ast)).filter((r) => r.glowBlur > 0);
+    assert.equal(rectsGlow({}).length, 0, nodeShape);
+    const on = rectsGlow({ glow: 0.5, litColor: '#ffd166' }), custom = rectsGlow({ glow: 0.5, glowColor: '#ff0000' });
+    assert.ok(on.length > 0 && on.length < 12, nodeShape);
+    assert.ok(on.every((r) => r.glowColor === '#ffd166' && Math.abs(r.glowBlur - 12) < 1e-9 && r.fill === '#ffd166'), nodeShape);
+    assert.ok(custom.every((r) => r.glowColor === '#ff0000'), nodeShape);
+  }
+});

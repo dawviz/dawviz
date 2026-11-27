@@ -277,6 +277,8 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['litTextColor'], 'colorOpt', 'inLitTextColor', { adv: true, when: (P) => P.nodeShape === 'CIRCLE' }),
     L(['romanStyle'], 'choice', 'inRomanStyle', { adv: true, when: (P) => P.labels === 'DEGREES' || P.chordAs === 'DEGREE', options: ['SUFFIX', 'CASE'], prefix: 'web.ws.inRomanStyle.' }),
     L(['windowSec'], 'num', 'inKeyWindow', { adv: true, when: (P) => P.labels === 'DEGREES' || P.chordAs === 'DEGREE', num: { min: 2, max: 120, step: 1, range: [4, 60] } }),
+    L(['glow'], 'num', 'inWheelGlow', { num: { min: 0, max: 1, step: 0.05 } }),
+    L(['glowColor'], 'colorOpt', 'inWheelGlowColor', { adv: true, when: (P) => Number(P.glow) > 0 }),
   ],
   // Bảng phân tích (dashboard.ts, T-107/T-109).
   PANEL: [
@@ -613,6 +615,7 @@ export const WIDGET_SECTIONS: Readonly<Partial<Record<WidgetType, readonly Secti
     SEC('labels', ['showNames', 'labels', 'romanStyle', 'windowSec'], { head: 'showNames' }),
     SEC('chord', ['showChord', 'chordAs'], { head: 'showChord' }),
     SEC('colour', ['litColor', 'dimColor', 'dimAlpha', 'rootColor', 'outlineColor', 'litTextColor']),
+    SEC('glow', ['glow', 'glowColor']),
     SEC('polygon', ['polygon', 'polygonColor', 'polygonAlpha'], { head: 'polygon' }),
     SEC('progress', ['progress', 'progressColor', 'progressWidth'], { head: 'progress', on: (P) => P.progress !== 'OFF' }),
   ],
