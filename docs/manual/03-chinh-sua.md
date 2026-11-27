@@ -43,7 +43,8 @@ Bộ chọn **9:16 · 1:1 · 16:9** nằm phía trên khung, cùng bộ chọn v
 ## Di chuyển, đổi cỡ, xoay
 
 - **Di chuyển:** kéo widget. Hoặc dùng phím mũi tên để dịch 1 điểm, Shift + mũi tên để dịch 10 điểm.
-- **Đổi cỡ:** kéo các ô vuông ở góc và cạnh. Giữ Alt để đổi cỡ đều quanh tâm.
+- **Đổi cỡ:** kéo các ô vuông ở góc và cạnh. Giữ Alt để đổi cỡ đều quanh tâm. Khi đổi cỡ, cạnh hút vào mép và nửa khung video, và vào mép, tâm các widget khác.
+- **Kéo cạnh chung:** chọn hai widget có cạnh chạm nhau (xếp cạnh nhau hoặc chồng lên nhau theo chiều dọc), trên cạnh chung hiện một tay nắm nhỏ. Kéo nó thì widget này to ra còn widget kia nhỏ lại, tổng kích thước giữ nguyên. Cạnh cũng hút vào mép và nửa khung video; giữ Ctrl (⌘ trên Mac) để tắt hút. Chỉ áp cho widget chưa xoay và chưa khoá. Cả lần kéo là một bước hoàn tác.
 - **Xoay:** kéo ô tròn phía trên khung chọn. Góc tự nhảy theo bước 15°; giữ Shift để xoay tự do. Nhấp đúp ô tròn để về 0°.
 - **Gõ số chính xác:** ở mục **Vị trí và kích thước**, ô X, Y là toạ độ góc trên bên trái, W và H là chiều rộng, chiều cao. Đơn vị là điểm trên khung thiết kế (khung 1080 điểm rộng thì 540 là chính giữa), không phụ thuộc cỡ màn hình hay độ phân giải video.
 

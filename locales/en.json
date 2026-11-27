@@ -514,6 +514,7 @@
   "web.editor.anchorPt.7": "Bottom centre",
   "web.editor.anchorPt.8": "Bottom right",
   "web.editor.rotateHandle": "Rotate (Shift: free angle, double-click: reset)",
+  "web.editor.sharedEdge": "Drag the shared edge: both widgets resize",
   "web.editor.rotateGroup": "Rotate selection around its centre",
   "web.editor.anchorHandle": "Anchor: drag to change the pivot (Alt: no snapping)",
   "web.editor.arrange": "Arrange",
