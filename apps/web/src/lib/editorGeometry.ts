@@ -120,6 +120,42 @@ export function snapResize(start: L, handle: Handle, p: { x: number; y: number }
   return { layout, guides };
 }
 
+/**
+ * Cạnh chung (D-79): hai widget không xoay trong vùng chọn có cạnh chạm nhau (lệch ≤ `tol` pt, đoạn chạm dài > 0).
+ * Kéo cạnh chung thì một bên to ra, bên kia nhỏ lại. `a` là bên trước (trái hoặc trên), `b` bên sau; `from`/`to`: đoạn chạm dọc theo cạnh.
+ */
+export interface SharedEdge { axis: 'x' | 'y'; a: string; b: string; pos: number; from: number; to: number }
+export function sharedEdges(items: readonly { id: string; layout: WidgetLayout }[], tol = 1): SharedEdge[] {
+  const out: SharedEdge[] = [], ok = items.filter((w) => normalizeAngle(w.layout.rotation) === 0);
+  for (const A of ok) for (const B of ok) {
+    if (A === B) continue;
+    const a = A.layout, b = B.layout;
+    const oy = Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y), ox = Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x);
+    if (Math.abs(a.x + a.width - b.x) <= tol && oy > 0 && a.x < b.x) out.push({ axis: 'x', a: A.id, b: B.id, pos: b.x, from: Math.max(a.y, b.y), to: Math.min(a.y + a.height, b.y + b.height) });
+    if (Math.abs(a.y + a.height - b.y) <= tol && ox > 0 && a.y < b.y) out.push({ axis: 'y', a: A.id, b: B.id, pos: b.y, from: Math.max(a.x, b.x), to: Math.min(a.x + a.width, b.x + b.width) });
+  }
+  return out;
+}
+/** Kéo cạnh chung tới `target`: bên trước đổi cỡ, bên sau dời mép và đổi cỡ; mỗi bên còn ít nhất MIN_SIZE. Trả phần thay đổi của từng bên. */
+export function resizeShared(axis: 'x' | 'y', a: L, b: L, target: number): { a: Partial<L>; b: Partial<L> } {
+  const [a0, b1] = axis === 'x' ? [a.x, b.x + b.width] : [a.y, b.y + b.height];
+  const pos = Math.round(Math.min(b1 - MIN_SIZE, Math.max(a0 + MIN_SIZE, target)));
+  return axis === 'x' ? { a: { width: pos - a.x }, b: { x: pos, width: b1 - pos } } : { a: { height: pos - a.y }, b: { y: pos, height: b1 - pos } };
+}
+/**
+ * Hút vị trí cạnh chung vào mép và tâm khung video (nửa khung), mép/tâm các widget khác, rồi lưới. `guides` tắt thì chỉ còn lưới.
+ * Trả vị trí đã hút và đường gióng (nếu có) cho đoạn `from`–`to`.
+ */
+export function snapEdge(axis: 'x' | 'y', pos: number, span: [number, number], o: Pick<ResizeSnap, 'others' | 'canvas' | 'grid' | 'guides' | 'threshold' | 'off'>): { pos: number; guide: Guide | null } {
+  if (o.off) return { pos, guide: null };
+  const rects = [{ x: 0, y: 0, width: o.canvas.width, height: o.canvas.height }, ...o.others.map((w) => rotatedBounds(w))];
+  let best: { t: number; i: number } | null = null;
+  if (o.guides) rects.forEach((b, i) => { for (const t of axis === 'x' ? [b.x, b.x + b.width / 2, b.x + b.width] : [b.y, b.y + b.height / 2, b.y + b.height]) { if (Math.abs(t - pos) <= o.threshold && (!best || Math.abs(t - pos) < Math.abs(best.t - pos))) best = { t, i }; } });
+  if (best) { const { t, i } = best as { t: number; i: number }; return { pos: t, guide: { axis, pos: t, from: span[0], to: span[1], kind: 'edge', with: i === 0 ? 'canvas' : i - 1 } }; }
+  if (o.grid.enabled && o.grid.size > 0) return { pos: Math.round(pos / o.grid.size) * o.grid.size, guide: null };
+  return { pos, guide: null };
+}
+
 /** Đổi điểm neo mà widget không nhảy chỗ trên khung. */
 export function setAnchor(l: L, anchor: { x: number; y: number }): L {
   const a = { x: Math.min(1, Math.max(0, anchor.x)), y: Math.min(1, Math.max(0, anchor.y)) };

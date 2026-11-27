@@ -514,6 +514,7 @@
   "web.editor.anchorPt.7": "Dưới giữa",
   "web.editor.anchorPt.8": "Dưới phải",
   "web.editor.rotateHandle": "Xoay (Shift: góc tự do, nhấp đúp: về 0°)",
+  "web.editor.sharedEdge": "Kéo cạnh chung: hai widget cùng đổi cỡ",
   "web.editor.rotateGroup": "Xoay vùng chọn quanh tâm của nó",
   "web.editor.anchorHandle": "Điểm neo: kéo để đổi tâm xoay (Alt: không bắt dính)",
   "web.editor.arrange": "Sắp xếp",

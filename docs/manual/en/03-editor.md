@@ -43,7 +43,8 @@ In Advanced, with nothing selected, the **Frame size** part lets you type any **
 ## Move, resize, rotate
 
 - **Move:** drag the widget. Or use the arrow keys for 1 point, Shift + arrow for 10 points.
-- **Resize:** drag the square handles on the corners and edges. Hold Alt to resize evenly around the centre.
+- **Resize:** drag the square handles on the corners and edges. Hold Alt to resize evenly around the centre. While resizing, the edge snaps to the edges and middle of the video frame, and to the edges and centres of other widgets.
+- **Drag a shared edge:** select two widgets whose edges touch (side by side, or one above the other) and a small handle appears on the shared edge. Drag it and one widget grows while the other shrinks, so their combined size stays the same. The edge also snaps to the video frame's edges and middle; hold Ctrl (⌘ on Mac) to turn snapping off. It only works for widgets that are not rotated or locked. The whole drag is one undo step.
 - **Rotate:** drag the round handle above the selection box. The angle steps by 15°; hold Shift to rotate freely. Double-click the round handle to go back to 0°.
 - **Exact numbers:** in **Position and size**, X and Y are the top-left corner, W and H the width and height. Units are points on the design frame (on a frame 1,080 points wide, 540 is the middle), whatever your screen size or video resolution.
 

@@ -1,7 +1,7 @@
 // T-68: hình học của Editor. Đổi cỡ/đổi neo widget đã xoay giữ đứng yên phần không bị kéo; chọn đúng widget trên cùng.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { resizeLayout, snapResize, setAnchor, toCanvas, pointerAngle, hitTest, MIN_SIZE, HANDLES, type Handle } from './editorGeometry.ts';
+import { resizeLayout, snapResize, setAnchor, toCanvas, pointerAngle, hitTest, MIN_SIZE, HANDLES, type Handle, resizeShared, sharedEdges, snapEdge } from './editorGeometry.ts';
 import type { WidgetLayout } from '@dawviz/render-core';
 
 const near = (a: number, b: number, m = '', eps = 1) => assert.ok(Math.abs(a - b) <= eps, `${m}: ${a} ≠ ${b}`);
@@ -149,4 +149,29 @@ test('khung theo scale: co giãn quanh điểm neo; dời/đổi cỡ trên khun
   assert.equal(r.width, 300); assert.equal(r.x, 150); assert.ok(!('height' in r)); // mép trái khung đang thấy giữ ở 0: scaledLayout(gốc mới).x = 0
   assert.equal(scaledLayout({ ...L, x: r.x!, width: r.width! }, 2).x, 0);
   assert.deepEqual(unscalePatch(L, { x: 5 }, 1), { x: 5 });
+});
+
+const lay = (x: number, y: number, width: number, height: number, rotation = 0) => ({ x, y, width, height, rotation, anchor: { x: 0.5, y: 0.5 } });
+test('D-79 cạnh chung: tìm cạnh chạm nhau giữa các widget không xoay (cả ngang lẫn dọc), bỏ widget xoay và cạnh không chạm', () => {
+  const e = sharedEdges([{ id: 'a', layout: lay(0, 0, 100, 50) }, { id: 'b', layout: lay(100, 10, 80, 100) }, { id: 'c', layout: lay(0, 50, 100, 60) }, { id: 'd', layout: lay(300, 0, 10, 10) }, { id: 'r', layout: lay(180, 0, 10, 10, 30) }]);
+  assert.deepEqual(e.map((x) => [x.axis, x.a, x.b, x.pos, x.from, x.to]), [['x', 'a', 'b', 100, 10, 50], ['y', 'a', 'c', 50, 0, 100], ['x', 'c', 'b', 100, 50, 110]]);
+  assert.equal(sharedEdges([{ id: 'a', layout: lay(0, 0, 100, 50) }, { id: 'b', layout: lay(103, 0, 50, 50) }]).length, 0); // cách 3 pt: không chung
+});
+test('D-79 kéo cạnh chung: bên trước đổi cỡ, bên sau dời mép; tổng bề rộng giữ nguyên; mỗi bên còn ít nhất MIN_SIZE', () => {
+  const a = lay(0, 0, 100, 50), b = lay(100, 0, 80, 50);
+  assert.deepEqual(resizeShared('x', a, b, 130), { a: { width: 130 }, b: { x: 130, width: 50 } });
+  assert.deepEqual(resizeShared('x', a, b, -500), { a: { width: 8 }, b: { x: 8, width: 172 } });
+  assert.deepEqual(resizeShared('x', a, b, 9999), { a: { width: 172 }, b: { x: 172, width: 8 } });
+  const c = lay(0, 50, 100, 60);
+  assert.deepEqual(resizeShared('y', a, c, 70.4), { a: { height: 70 }, b: { y: 70, height: 40 } });
+});
+test('D-79 hút cạnh chung: nửa và mép khung video, mép widget khác (gióng), rồi lưới; Ctrl tắt', () => {
+  const o = { others: [lay(500, 0, 50, 50)], canvas: { width: 1000, height: 600 }, grid: { enabled: false, size: 8 }, guides: true, threshold: 5 };
+  assert.equal(snapEdge('x', 497, [0, 50], o).pos, 500);          // nửa khung (cũng là mép widget khác)
+  assert.equal(snapEdge('x', 3, [0, 50], o).pos, 0);              // mép khung
+  assert.equal(snapEdge('y', 303, [0, 50], o).pos, 300);          // nửa chiều cao
+  assert.equal(snapEdge('x', 200, [0, 50], o).guide, null);       // xa mọi đích
+  assert.equal(snapEdge('x', 497, [0, 50], { ...o, off: true }).pos, 497);
+  assert.equal(snapEdge('x', 203, [0, 50], { ...o, guides: false, grid: { enabled: true, size: 8 } }).pos, 200);
+  assert.deepEqual(snapEdge('x', 497, [10, 40], o).guide, { axis: 'x', pos: 500, from: 10, to: 40, kind: 'edge', with: 'canvas' });
 });

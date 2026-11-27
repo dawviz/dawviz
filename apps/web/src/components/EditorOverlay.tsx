@@ -6,7 +6,7 @@ import { useContext, useMemo, useRef, useState, type KeyboardEvent, type Pointer
 import { rotateGroup, rotatedBounds, snap, snapAngle, toWidgetLocal, type Guide, type SceneDocument, type Spacing, type WidgetLayout } from '@dawviz/render-core';
 import { useI18n } from '../i18n/I18nProvider.tsx';
 import { GestureContext } from '../lib/storeReact.ts';
-import { HANDLES, hasCanvasFrame, hitTest, marqueeHits, pointerAngle, round, setAnchor, snapResize, toCanvas, type Handle } from '../lib/editorGeometry.ts';
+import { HANDLES, hasCanvasFrame, hitTest, marqueeHits, pointerAngle, resizeShared, round, setAnchor, sharedEdges, snapEdge, snapResize, toCanvas, type Handle, type SharedEdge } from '../lib/editorGeometry.ts';
 
 type Patches = Record<string, Partial<WidgetLayout>>;
 interface Props {
@@ -28,6 +28,8 @@ type Drag =
   | { kind: 'resize'; handle: Handle; id: string; start: WidgetLayout }
   | { kind: 'rotate'; ids: string[]; starts: Record<string, WidgetLayout>; pivot: [number, number]; a0: number }
   | { kind: 'anchor'; id: string; start: WidgetLayout }
+  /** Cạnh chung của hai widget đang chọn (D-79): kéo thì bên này to ra, bên kia nhỏ lại. */
+  | { kind: 'edge'; edge: SharedEdge; a: WidgetLayout; b: WidgetLayout }
   /** Khung chọn (T-68): kéo trên chỗ trống; Shift cộng thêm vào vùng chọn đang có. Chỉ đổi vùng chọn, không vào lịch sử. */
   | { kind: 'marquee'; p0: Pt; base: string[] };
 type Pt = { x: number; y: number };
@@ -81,6 +83,10 @@ export function EditorOverlay({ scene, cssWidth, selected, locked, onSelect, onL
       const pivot: [number, number] = single ? toCanvas(single.layout, single.layout.anchor.x * single.layout.width, single.layout.anchor.y * single.layout.height) : groupCenter(sel.map((w) => w.layout));
       begin({ kind: 'rotate', ids, starts, pivot, a0: pointerAngle(pivot, p) }, e); return;
     }
+    if (handle?.startsWith('edge:')) {
+      const edge = shared[Number(handle.slice(5))], a = edge && byId.get(edge.a), b = edge && byId.get(edge.b);
+      if (a && b) { begin({ kind: 'edge', edge, a: a.layout, b: b.layout }, e); return; }
+    }
     if (handle === 'anchor' && single && advanced) { begin({ kind: 'anchor', id: single.id, start: single.layout }, e); return; }
     if (handle && single && single.type !== 'COMP') { begin({ kind: 'resize', handle: handle as Handle, id: single.id, start: single.layout }, e); return; }
     const hit = hitTest(framed, p, locked);
@@ -127,6 +133,14 @@ export function EditorOverlay({ scene, cssWidth, selected, locked, onSelect, onL
       });
       setGuides({ g: r.guides, s: [] });
       onLayouts({ [d.id]: r.layout });
+    } else if (d.kind === 'edge') {
+      // Hút vào mép/nửa khung video và widget khác (Ctrl/⌘ tắt tạm), như đổi cỡ một widget.
+      const others = framed.filter((w) => w.visible && w.id !== d.edge.a && w.id !== d.edge.b).map((w) => w.layout);
+      const raw = d.edge.axis === 'x' ? p.x : p.y;
+      const s = snapEdge(d.edge.axis, raw, [d.edge.from, d.edge.to], { others, canvas: { width: W, height: H }, grid: { enabled: snapping.gridEnabled, size: snapping.gridSize }, guides: snapping.smartGuidesEnabled, threshold: 5 * k, off: e.ctrlKey || e.metaKey });
+      const r = resizeShared(d.edge.axis, d.a, d.b, s.pos);
+      setGuides({ g: s.guide ? [s.guide] : [], s: [] });
+      onLayouts({ [d.edge.a]: r.a, [d.edge.b]: r.b });
     } else if (d.kind === 'rotate') {
       const raw = pointerAngle(d.pivot, p) - d.a0;
       if (d.ids.length === 1) {
@@ -166,6 +180,7 @@ export function EditorOverlay({ scene, cssWidth, selected, locked, onSelect, onL
     const ax = l.anchor.x * l.width, ay = l.anchor.y * l.height;
     return `translate(${l.x + ax} ${l.y + ay}) rotate(${l.rotation}) translate(${-ax} ${-ay})`;
   };
+  const shared = useMemo(() => sharedEdges(sel.filter((w) => !locked.has(w.id))), [sel, locked]);
   const groupBox = sel.length > 1 ? unionBounds(sel.map((w) => w.layout)) : null;
   const readout = single && active ? readoutFor(active, single.layout, i18n) : null;
   const chipAt = single ? rotatedBounds(single.layout) : groupBox;
@@ -220,6 +235,15 @@ export function EditorOverlay({ scene, cssWidth, selected, locked, onSelect, onL
             </g>
           </g>
         )}
+        {shared.map((s, i) => {
+          const m = (s.from + s.to) / 2, hs = px(8), long = Math.min(px(28), (s.to - s.from) * 0.5);
+          const x = s.axis === 'x' ? s.pos : m, y = s.axis === 'x' ? m : s.pos;
+          return (
+            <rect key={`edge${i}`} data-handle={`edge:${i}`} data-testid={`shared-edge-${i}`} x={x - (s.axis === 'x' ? hs / 2 : long / 2)} y={y - (s.axis === 'x' ? long / 2 : hs / 2)}
+              width={s.axis === 'x' ? hs : long} height={s.axis === 'x' ? long : hs} rx={px(2)} fill="white" stroke="rgb(var(--guide))" strokeWidth={1.5} vectorEffect="non-scaling-stroke"
+              style={{ cursor: s.axis === 'x' ? 'ew-resize' : 'ns-resize' }}><title>{i18n.t('web.editor.sharedEdge')}</title></rect>
+          );
+        })}
         {groupBox && (
           <g>
             <line x1={groupBox.x + groupBox.width / 2} x2={groupBox.x + groupBox.width / 2} y1={groupBox.y} y2={groupBox.y - px(22)} stroke="rgb(var(--guide))" vectorEffect="non-scaling-stroke" pointerEvents="none" />
