@@ -574,15 +574,24 @@ function TreeRow({ it, name, widget, tempoMap, playback, locked, selected, full,
 /** Đầu vạch phát trên thước. */
 export function PlayheadHead({ playback, pps }: { playback: Playback; pps: number }) {
   const t = usePlayback(playback, (s) => s.t);
-  return <span aria-hidden className="pointer-events-none absolute bottom-0 h-3 w-2.5 -translate-x-1/2 bg-fg [clip-path:polygon(0_0,100%_0,100%_55%,50%_100%,0_55%)]" style={{ left: PAD + t * pps }} />;
+  return <span aria-hidden className="pointer-events-none absolute bottom-0 h-3 w-[11px] -translate-x-[5px] bg-fg [clip-path:polygon(0_0,100%_0,100%_55%,50%_100%,0_55%)]" style={{ left: PAD + t * pps }} />;
 }
 /** Vạch phát dọc qua các làn (dưới cột cây). Đang phát mà vạch chạy ra khỏi phần đang thấy thì cuộn theo từng trang. */
 export function PlayheadLine({ playback, pps, tree, scroller, laneW }: { playback: Playback; pps: number; tree: number; scroller: React.RefObject<HTMLDivElement>; laneW: number }) {
   const t = usePlayback(playback, (s) => s.t), playing = usePlayback(playback, (s) => s.playing);
+  // Vạch nằm ngoài phần đang thấy bên trái thì ẩn hẳn (cột cây dính chỉ che được các hàng, không che khoảng trống bên dưới).
+  const [left, setLeft] = useState(0);
+  useEffect(() => {
+    const el = scroller.current; if (!el) return;
+    const read = () => setLeft(el.scrollLeft);
+    read(); el.addEventListener('scroll', read, { passive: true });
+    return () => el.removeEventListener('scroll', read);
+  }, [scroller]);
   useEffect(() => {
     const el = scroller.current; if (!el || !playing) return;
     const x = PAD + t * pps;
     if (x < el.scrollLeft || x > el.scrollLeft + laneW) el.scrollLeft = Math.max(0, x - laneW * 0.1);
   }, [t, pps, playing, laneW, scroller]);
+  if (PAD + t * pps < left) return null;
   return <span aria-hidden className="pointer-events-none absolute bottom-0 z-10 w-px bg-fg" style={{ left: tree + PAD + t * pps, top: RULER_H }} data-testid="timeline-playhead" />;
 }

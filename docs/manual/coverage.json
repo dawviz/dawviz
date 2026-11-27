@@ -229,7 +229,7 @@
         "apps/web/src/components/Splitter.tsx",
         "apps/web/src/components/LayerTimeline.tsx"
       ],
-      "uiHash": "df2a4b4eab8c",
+      "uiHash": "1c7dc64d72a0",
       "viHash": "f22f1daba73f",
       "enHash": "fb2e4cf49876",
       "coverHashes": {
@@ -238,7 +238,7 @@
         "apps/web/src/components/EditorOverlay.tsx": "c10a644a5f66",
         "apps/web/src/lib/numberInput.ts": "8e27c53523c3",
         "apps/web/src/components/Editor.tsx": "868f90108786",
-        "apps/web/src/components/KeyframeTimeline.tsx": "523d37a825e1",
+        "apps/web/src/components/KeyframeTimeline.tsx": "49d3fabb415f",
         "apps/web/src/components/Splitter.tsx": "7ae82f8548cb",
         "apps/web/src/components/LayerTimeline.tsx": "665c6911839d"
       }
@@ -347,7 +347,7 @@
         "apps/web/src/lib/animateFields.ts",
         "packages/render-core/src/parenting.ts"
       ],
-      "uiHash": "249ab9f937c4",
+      "uiHash": "f7e73bfee2d4",
       "viHash": "792abe86f7dc",
       "enHash": "125d90afe3bd",
       "coverHashes": {
@@ -362,7 +362,7 @@
         "locales/en.json#web.ws.pianoTransition": "5f35625be938",
         "packages/render-core/src/animation.ts": "ce0b7bdd210a",
         "locales/en.json#web.anim.": "30297b2b6b1e",
-        "apps/web/src/components/KeyframeTimeline.tsx": "523d37a825e1",
+        "apps/web/src/components/KeyframeTimeline.tsx": "49d3fabb415f",
         "apps/web/src/components/AnimationInspector.tsx": "2994e9d6fe01",
         "apps/web/src/components/EaseGraph.tsx": "e6ee3b71d0b5",
         "locales/en.json#web.timeline.": "0f3e7e588c6d",
