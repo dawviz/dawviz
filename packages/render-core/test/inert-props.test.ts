@@ -67,6 +67,7 @@ const CASES: Case[] = [
     shown: { lines: { played: { enabled: true }, total: { enabled: true }, progress: { enabled: false }, tempo: { enabled: false } } } },
   // Lưới nốt (D-77): ô của Quanh vạch phát, của hàng theo cao độ, của chấm, của thanh/ô đầy; màu khi tô theo track; vạch phát rỗng; dòng số giọng tắt
   ...(['grid', 'playheadRatio', 'beatLines'] as const).map((prop): Case => ({ type: 'NOTE_GRID', prop, values: prop === 'grid' ? [8, 16] : prop === 'beatLines' ? [false, true] : NUM(0.3, 0.9), hidden: [{ span: 'SONG' }, { span: 'SONG', rows: 'PITCH', shape: 'ROUND' }], shown: { span: 'WINDOW' } })),
+  { type: 'NOTE_GRID', prop: 'smooth', values: [false, true], hidden: [{ span: 'SONG' }], shown: { span: 'WINDOW', grid: 4, cols: 8 } },
   { type: 'NOTE_GRID', prop: 'pitchRangeMode', values: ['FIT_CONTENT', 'CUSTOM'], hidden: [{ rows: 'TRACK' }, { rows: 'TRACK', span: 'WINDOW' }], shown: { rows: 'PITCH' } },
   ...(['pitchMin', 'pitchMax'] as const).map((prop): Case => ({ type: 'NOTE_GRID', prop, values: prop === 'pitchMin' ? NUM(30, 60) : NUM(80, 100), hidden: [{ rows: 'TRACK', pitchRangeMode: 'CUSTOM' }, { rows: 'PITCH', pitchRangeMode: 'FIT_CONTENT' }], shown: { rows: 'PITCH', pitchRangeMode: 'CUSTOM' } })),
   { type: 'NOTE_GRID', prop: 'dotSize', values: NUM(0.3, 0.8), hidden: [{ shape: 'FILL' }, { shape: 'FILL', span: 'WINDOW', rows: 'PITCH' }], shown: { shape: 'ROUND' } },

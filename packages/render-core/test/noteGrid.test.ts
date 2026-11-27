@@ -118,3 +118,12 @@ test('vạch phát Khung cột trên cả bài, dòng số giọng, trần số 
   assert.ok(many.length <= 6000, String(many.length));
   assert.deepEqual(at({}, 2.2), at({}, 2.2));
 });
+
+test('trôi mượt (Quanh vạch phát): lưới dời từng phần cột theo thời gian, vạch phát đứng yên, ô không tràn ra ngoài lưới; tắt thì nhảy nguyên cột', () => {
+  const props = { rows: 'TRACK', span: 'WINDOW', grid: 4, cols: 8, playheadRatio: 0.5, rowGap: 0, upcomingAlpha: 1 } as const;
+  const firstX = (smooth: boolean, t: number) => { const p = at({ ...props, smooth }, t); finite(p); const r = rects(p).filter((x) => x.h > 50 && x.fill !== '#ffffff'); assert.ok(r.every((x) => x.x >= -1e-9 && x.x + x.w <= 600 + 1e-9)); return { x: r.reduce((s, q) => s + q.x + q.w, 0), line: rects(p).find((x) => x.fill === '#ffffff')!.x }; };
+  const a = firstX(true, 2.02), b = firstX(true, 2.06), c = firstX(false, 2.02), d = firstX(false, 2.06);
+  assert.ok(Math.abs(a.line - b.line) < 1e-9);          // vạch phát đứng yên
+  assert.ok(a.x !== b.x);                               // lưới trôi liên tục
+  assert.ok(Math.abs(c.x - d.x) < 1e-9);                // chế độ cũ: cùng cột nên chưa nhúc nhích
+});
