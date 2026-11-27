@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-GRAPHICS-11: Hạt không trạng thái"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.8. Tùy biến, hiệu ứng và biểu thức (D-38, D-39, D-40) > REQ-GRAPHICS-11: Hạt không trạng thái"
 chunk: req-graphics-11-hat-khong-trang-thai.md
-source_lines: 927-930
-source_sha1: fee32c2554
+source_lines: 929-932
+source_sha1: 73016ec8ed
 ids: [REQ-GRAPHICS-11]
 ---
 #### REQ-GRAPHICS-11: Hạt không trạng thái

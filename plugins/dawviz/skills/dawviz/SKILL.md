@@ -7,7 +7,7 @@ description: Make music-visualizer videos with DAW Visualizer (DawViz) from a DA
 
 DAW Visualizer runs entirely in the browser: it reads the user's DAW project (notes, tempo, tracks), draws a video frame as a pure function of time, and exports MP4/WebM with WebCodecs. Nothing is uploaded anywhere. **Never send the user's project or audio files to any other service.**
 
-Everything you design is one **preset JSON** (scene document, `schemaVersion` `0.8.0`): canvas, layers (widgets), when each layer appears, keyframes, precomps and phases. The same preset works in all three ways of working below. Read [references/preset.md](references/preset.md) before writing one; start from an example in `examples/`.
+Everything you design is one **preset JSON** (scene document, `schemaVersion` `0.9.0`): canvas, layers (widgets), when each layer appears, keyframes, precomps and phases. The same preset works in all three ways of working below. Read [references/preset.md](references/preset.md) before writing one; start from an example in `examples/`.
 
 ## 1. Pick how you will work
 

@@ -30,7 +30,7 @@ test('preset mẫu của skill: qua bộ kiểm cộng đồng, không cảnh b�
   for (const f of files) {
     const r = checkPreset(f, fs.readFileSync(path.join(dir, f)), { community: true });
     assert.deepEqual(r.errors, [], f); assert.deepEqual(r.warnings, [], f);
-    assert.equal(JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')).schemaVersion, '0.8.0', f);
+    assert.equal(JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')).schemaVersion, '0.9.0', f);
   }
 });
 

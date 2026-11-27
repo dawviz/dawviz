@@ -27,7 +27,7 @@ test('tệp quá lớn bị từ chối TRƯỚC khi đọc nội dung', async (
 
 test('preset hỏng: JSON sai, không phải đối tượng, thiếu trường → ERR_PRESET_INVALID; mới hơn → ERR_SCHEMA_NEWER', async () => {
   for (const t of ['', '{', 'null', '[]', '"x"', '{"schemaVersion":"0.4.0"}', '\u0000\u0001']) await assert.rejects(readPresetFile(file(t)), (e: any) => e.code === 'ERR_PRESET_INVALID', JSON.stringify(t));
-  await assert.rejects(readPresetFile(file('{"schemaVersion":"0.9.0","canvas":{}}')), (e: any) => e.code === 'ERR_SCHEMA_NEWER');
+  await assert.rejects(readPresetFile(file('{"schemaVersion":"0.10.0","canvas":{}}')), (e: any) => e.code === 'ERR_SCHEMA_NEWER');
   assert.equal(parsePresetText('﻿' + JSON.stringify(defaultScene())).scene.widgets.length, 1); // BOM được bỏ
 });
 

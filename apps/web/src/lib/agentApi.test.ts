@@ -27,7 +27,7 @@ test('validateScene: hợp lệ kèm cảnh báo có đường dẫn; JSON hỏn
   const newer = validateScene({ schemaVersion: '9.0.0', canvas: {}, widgets: [] });
   assert.ok(!newer.ok && newer.error.code === 'ERR_SCHEMA_NEWER');
   assert.equal(validateScene(JSON.stringify(defaultScene())).ok, true);
-  assert.equal(SCENE_SCHEMA_VERSION, '0.8.0');
+  assert.equal(SCENE_SCHEMA_VERSION, '0.9.0');
 });
 
 test('createAgentApi: setScene chỉ áp khi hợp lệ; loadProject chờ phân tích xong; lastExport trả base64', async () => {

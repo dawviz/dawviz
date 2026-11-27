@@ -424,7 +424,7 @@ describe('preset .json trong cột Video styles (T-07)', () => {
     for (const [text, size, re] of [
       ['{ không phải json', undefined, /(damaged|hỏng)/i],
       [valid(), PRESET_LIMITS.maxBytes + 1, /(larger|lớn hơn)/i],
-      [valid({ schemaVersion: '0.9.0' }), undefined, /(newer|mới hơn)/i],
+      [valid({ schemaVersion: '0.10.0' }), undefined, /(newer|mới hơn)/i],
     ] as [string, number | undefined, RegExp][]) {
       await feed(text, size);
       await waitFor(() => expect(page()).toMatch(re));
@@ -1153,7 +1153,7 @@ describe('thẻ Editor (T-68)', () => {
     fireEvent.click(screen.getByTestId('preset-paste-add'));
     await waitFor(() => expect(document.body.textContent).toMatch(/JSON/));
     fireEvent.click(screen.getByTestId('preset-paste-open'));
-    const sc = { schemaVersion: '0.8.0', presetName: 'Dán thử', canvas: { designWidth: 1080, designHeight: 1080 }, widgets: [{ id: 't', type: 'TEXT', layout: { x: 0, y: 0, width: 500, height: 100 }, properties: { text: 'Hi' } }] };
+    const sc = { schemaVersion: '0.9.0', presetName: 'Dán thử', canvas: { designWidth: 1080, designHeight: 1080 }, widgets: [{ id: 't', type: 'TEXT', layout: { x: 0, y: 0, width: 500, height: 100 }, properties: { text: 'Hi' } }] };
     fireEvent.change(screen.getByTestId('preset-paste-text'), { target: { value: JSON.stringify(sc) } });
     fireEvent.click(screen.getByTestId('preset-paste-add'));
     await waitFor(() => expect(screen.getByTestId('video-styles').textContent).toMatch(/Dán thử/));

@@ -375,6 +375,7 @@ dawviz/
 │  │  │  ├─ music.ts
 │  │  │  ├─ musicAnalysis.ts
 │  │  │  ├─ naming.ts
+│  │  │  ├─ noteGrid.ts
 │  │  │  ├─ notes.ts
 │  │  │  ├─ noteTransition.ts
 │  │  │  ├─ parenting.ts
@@ -420,6 +421,7 @@ dawviz/
 │  │  │  ├─ musicAnalysis.test.ts
 │  │  │  ├─ notation.test.ts
 │  │  │  ├─ note-gradient.test.ts
+│  │  │  ├─ noteGrid.test.ts
 │  │  │  ├─ paper.test.ts
 │  │  │  ├─ parenting.test.ts
 │  │  │  ├─ particles.test.ts
@@ -1023,22 +1025,16 @@ type DegreeLabelAlign
 const DEGREE_LABEL_ALIGNS
 type ChordResolution
 const CHORD_RESOLUTIONS
-interface DotsProps
 const DEFAULT_PANEL
 const DEFAULT_DEGREE
-const DEFAULT_DOTS
 const DASHBOARD_TYPES
 const DASHBOARD_TEXT_FIELDS
 const MAX_PANEL_STATS
-const DOTS_GRIDS
 const panelRenderer   // ───────────────────────────── Khung ô ─────────────────────────────
 function quantizeChords(segs: readonly ChordSeg[], grid: Parameters<typeof barStartSec>[0], dur: number, res: ChordResolution): readonly ChordSeg[]
 function degreeLabelPos(align: DegreeLabelAlign, sticky: boolean, x0: number, x1: number, tw: number):    // Vị trí chữ của một khối [x0, x1] (toạ độ widget, mép trái vùng thấy là 0), chữ rộng `tw`. Không dính: đầu/giữ…
 const degreeRenderer
 function roundRectPts(x: number, y: number, w: number, h: number, r: number): number[]   // Điểm của hình chữ nhật bo góc (đa giác): dùng cho khung chỉ có viền.
-function dotsPitchRange(p: DotsProps, tracks: readonly TrackIndex[]): [number, number]   // Dải cao độ của lưới chấm: theo nốt có trong các track (FIT_CONTENT) hoặc tự đặt.
-const MAX_DOTS   // Trần số chấm mỗi khung (cột × hàng), để lưới dày không làm chậm khung hình.
-const dotsRenderer
 const DASHBOARD_RENDERERS
 ```
 
@@ -1234,6 +1230,7 @@ re-export * from './naming.ts'
 re-export * from './insight.ts'
 re-export * from './degree.ts'
 re-export * from './dashboard.ts'
+re-export * from './noteGrid.ts'
 re-export * from './keyDetect.ts'
 re-export * from './loudness.ts'
 re-export * from './notation/types.ts'
@@ -1254,9 +1251,7 @@ interface TempoInfoProps   // ────────────────�
 interface BarBeatProps
 interface KeyScaleProps
 interface VelocityProps
-interface DensityProps
 interface PitchWheelProps
-interface ArrangementProps
 interface DrumPadProps
 interface SectionProps
 interface LyricsProps
@@ -1265,9 +1260,7 @@ const DEFAULT_TEMPO_INFO
 const DEFAULT_BAR_BEAT
 const DEFAULT_KEY_SCALE
 const DEFAULT_VELOCITY
-const DEFAULT_DENSITY
 const DEFAULT_PITCH_WHEEL
-const DEFAULT_ARRANGEMENT
 const DEFAULT_DRUM_PAD
 const DEFAULT_SECTION
 const DEFAULT_LYRICS
@@ -1279,9 +1272,7 @@ const barBeatRenderer   // ─────────────────�
 re-export { keyFromHistogram, keyAt, tonicAt } from './keyDetect.ts'
 const keyScaleRenderer
 const velocityRenderer   // ───────────────────────────── P-05 Velocity ─────────────────────────────
-const densityRenderer
 const pitchWheelRenderer   // ───────────────────────────── P-07 Vòng cao độ / vòng quãng năm ─────────────────────────────
-const arrangementRenderer   // ───────────────────────────── P-08 Tổng quan bản phối ─────────────────────────────
 const GM_DRUMS   // Tên ngắn của trống GM (nốt 35–81, kênh 10).
 const drumPadRenderer
 interface Cue   // ───────────────────────────── P-10 Tên đoạn (marker) ─────────────────────────────
@@ -1484,6 +1475,33 @@ function itemSpanX(it: NotationItem, glyphs: readonly PathData[]): readonly [num
 function notationFit(lay: NotationLayout, W: number, H: number, pageH: number, align: NotationProps['align'])   // Phép đặt trang vào khung widget: tỉ lệ theo bề rộng và chiều cao trang lớn nhất (tỉ lệ không đổi khi lật tran…
 function notationPrims(lay: NotationLayout, p: NotationProps, W: number, H: number, t: number, trackColor: (track: number) => string | undefined, pos?: MusicPos, after?: (t: number, bars: number) => number): Primitive[]   // Primitive của một khung: mỗi phần tử của trang hiện tại thành một PathPrim (màu theo trạng thái nốt), nốt đan…
 const notationRenderer
+```
+
+#### `packages/render-core/src/noteGrid.ts`
+
+Lưới nốt (NOTE_GRID, D-77, T-139): một widget thay cho Mật độ nốt (DENSITY), Tổng quan bản phối (ARRANGEMENT) và Lưới chấm (DOTS).
+
+```text
+const GRID_ROWS
+const GRID_SPANS
+const GRID_LIGHTS
+const GRID_SHAPES
+const GRID_MARKS
+const GRID_STEPS   // Số ô lưới mỗi nốt tròn khi hiện quanh vạch phát: 16 = mỗi cột một móc kép.
+type GridRows
+type GridSpan
+type GridLight
+type GridShape
+type GridMark
+interface NoteGridProps
+const DEFAULT_NOTE_GRID
+const LEGACY_GRID_TYPES   // Loại cũ đọc được và đổi thành NOTE_GRID khi đọc preset (lược đồ 0.9.0).
+type LegacyGridType
+const isLegacyGridType = (t: unknown) =>
+function legacyGridProps(type: LegacyGridType, raw: unknown): Obj   // Thuộc tính thô của một widget loại cũ → thuộc tính thô của NOTE_GRID (còn qua bộ kiểm). Chỉ lấy các khoá loại…
+function gridPitchRange(p: Pick<NoteGridProps, 'pitchRangeMode' | 'pitchMin' | 'pitchMax'>, tracks: readonly TrackIndex[]): [number, number]   // Dải cao độ khi hàng theo cao độ: theo nốt có trong các track (bỏ trống) hoặc tự đặt.
+const MAX_GRID_CELLS   // Trần số ô mỗi khung (cột × hàng) để lưới dày không làm chậm khung hình: quanh vạch phát / cả bài.
+const noteGridRenderer
 ```
 
 #### `packages/render-core/src/notes.ts`
@@ -4218,6 +4236,7 @@ type SpectrumOut
 - `packages/render-core/test/musicAnalysis.test.ts`
 - `packages/render-core/test/notation.test.ts`
 - `packages/render-core/test/note-gradient.test.ts`
+- `packages/render-core/test/noteGrid.test.ts`
 - `packages/render-core/test/paper.test.ts`
 - `packages/render-core/test/parenting.test.ts`
 - `packages/render-core/test/particles.test.ts`
@@ -4244,4 +4263,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 11 thư mục src, 1951 ký hiệu công khai -->
+<!-- 11 thư mục src, 1960 ký hiệu công khai -->

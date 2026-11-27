@@ -5,7 +5,7 @@ section: "6. Cụm việc nhỏ của đợt này (T-127…T-133)"
 path: "6. Cụm việc nhỏ của đợt này (T-127…T-133)"
 chunk: 6-cum-viec-nho-cua-dot-nay-t-127-t-133.md
 source_lines: 194-205
-source_sha1: 878ee1f0a2
+source_sha1: faa5b53b06
 ids: []
 ---
 ## 6. Cụm việc nhỏ của đợt này (T-127…T-133)

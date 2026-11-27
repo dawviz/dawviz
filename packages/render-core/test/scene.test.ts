@@ -155,7 +155,7 @@ test('sanitizeScene: preset mẫu trong SRS đọc được; trường lạ bị
   const spec = sanitizeScene({ schemaVersion: SCENE_SCHEMA_VERSION, canvas: {}, widgets: [{ type: 'AUDIO_SPECTRUM', properties: { bars: 64, lạ: 1 } }] }); // Audio Spectrum có renderer (T-53): trường lạ bị bỏ, thiếu thì lấy mặc định
   assert.deepEqual(spec.scene.widgets[0].properties, { ...DEFAULT_SPECTRUM, bars: 64 });
 
-  const bad = sanitizeScene({ schemaVersion: '0.8.1', junk: 1, canvas: { designWidth: 99999, backgroundColor: 'red' },
+  const bad = sanitizeScene({ schemaVersion: '0.9.1', junk: 1, canvas: { designWidth: 99999, backgroundColor: 'red' },
     widgets: [{ type: 'NOPE' }, { type: 'PIANO_ROLL', id: 'x', properties: { lookaheadSeconds: 'fast', orientation: 'VERTICAL', pitchMin: 90, pitchMax: 40 }, layout: { rotation: 15 } }, { type: 'PIANO_ROLL', id: 'x' }] });
   const codes = bad.warnings.map((w) => `${w.code}@${w.details.path}`);
   for (const c of ['WARN_PRESET_VERSION@$.schemaVersion', 'WARN_PRESET_VALUE@$.canvas.designWidth', 'WARN_PRESET_VALUE@$.canvas.backgroundColor', 'WARN_PRESET_WIDGET_UNKNOWN@$.widgets[0].type',

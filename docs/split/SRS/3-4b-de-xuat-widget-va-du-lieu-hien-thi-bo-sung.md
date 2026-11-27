@@ -4,15 +4,17 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "3.4b. Đề xuất widget và dữ liệu hiển thị bổ sung (D-32, OI-11) **[ĐỀ XUẤT, chưa cam kết v1.0]**"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.4b. Đề xuất widget và dữ liệu hiển thị bổ sung (D-32, OI-11) **[ĐỀ XUẤT, chưa cam kết v1.0]**"
 chunk: 3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md
-source_lines: 700-727
-source_sha1: fee32c2554
-ids: [D-32, D-40, D-45, OI-01, OI-11, P-01, P-02, P-03, P-04, P-05, P-06, P-07, P-08, P-09, P-10, P-11, P-12, P-13, REQ-AST-01, REQ-GRAPHICS-05, REQ-GRAPHICS-06, SOI-18]
+source_lines: 700-729
+source_sha1: 73016ec8ed
+ids: [D-32, D-40, D-45, D-77, OI-01, OI-11, P-01, P-02, P-03, P-04, P-05, P-06, P-07, P-08, P-09, P-10, P-11, P-12, P-13, REQ-AST-01, REQ-GRAPHICS-05, REQ-GRAPHICS-06, SOI-18]
 ---
 ### 3.4b. Đề xuất widget và dữ liệu hiển thị bổ sung (D-32, OI-11) **[ĐỀ XUẤT, chưa cam kết v1.0]**
 
 > **Đã làm 2026-11-21 (T-37/38/41/42/97):** P-02…P-13 có renderer (`TEMPO_INFO`, `BAR_BEAT`, `KEY_SCALE`, `VELOCITY`, `DENSITY`, `PITCH_WHEEL`, `ARRANGEMENT`, `DRUM_PAD`, `SECTION`, `LYRICS`, `AUTOMATION`; P-01 là Piano Roll). P-12 là `scene.noteNaming` (chữ cái, solfège, kiểu Đức; chữ Nhật cần phông người dùng nên chưa có sẵn). Dữ liệu: `meta.markers[]`, `meta.lyrics[]` (MIDI, Reaper, Ableton, DAWproject), automation âm lượng/pan của Reaper, Ableton, DAWproject, FL. P-10 không có marker thì dùng phase của scene. **Giới hạn đã biết (D-45):** nhánh Ableton automation mới kiểm bằng tệp tổng hợp (chưa có tệp thật tự động hoá mixer); mute Ableton và automation tham số plugin chưa đọc; DAWproject chưa thử với tệp thật (OI-01). Tô thang âm trên bàn phím theo giọng nhận diện chưa làm.
 
 > **Đã làm 2026-11-25 (T-107, T-109):** ba widget bảng phân tích kiểu video tham chiếu 3: `PANEL` (Khung ô: số thứ tự, tiêu đề, khung, hàng số liệu tới 6 cột), `DEGREE` (Bậc hợp âm theo giọng, gom một hợp âm mỗi ô nhịp/nửa ô/phách/mỗi lần đổi, hàng phụ, dải chức năng T/SD/D) và `DOTS` (Lưới chấm theo thời gian × cao độ, lưới 1/4–1/32, số hàng tối đa); `PITCH_WHEEL` thêm nhãn bậc La Mã, nút tròn, nối nốt đang vang, vòng tiến độ, số phách, vòng nốt bass, bậc hợp âm ở giữa. Chỗ giữ chung mới: `{degree}`, `{next_chord}`, `{next_degree}`, `{chord_count}`, `{key}`, `{lows}`, `{mids}`, `{highs}`, `{level}`, `{level_avg}`, `{peak_db}` (giọng lấy `scene.tonic`, không có thì nhận diện trong 16 giây; năng lượng dải và mức âm cần âm thanh, không có thì hiện "—"). Mức âm là **dBFS tính từ RMS, không phải LUFS**; dải trầm dưới 250 Hz, cao trên 4 kHz, cửa sổ 400 ms. Preset `analysis-dashboard-16x9`; primitive vẽ `poly`; Space Grotesk 300 đóng gói. Dải phím `[ {pitch_classes} ]` giữ ô cố định (PITCH_STRIP) bỏ theo quyết định chủ dự án. Chưa làm: LUFS thật, stems, vectorscope.
+>
+> **Đổi 2026-11-27 (D-77, T-139):** Mật độ nốt (`DENSITY`, P-06), Tổng quan bản phối (`ARRANGEMENT`, P-08) và Lưới chấm (`DOTS`) gộp thành một widget **Lưới nốt** (`NOTE_GRID`): Hàng theo track/cao độ, Khoảng hiện cả bài/quanh vạch phát, Ô sáng theo có nốt/mật độ/cường độ, Hình ô đầy/chấm vuông/chấm tròn/thanh liền. Lược đồ preset 0.9.0; preset cũ đọc được, ba loại cũ đổi thành `NOTE_GRID` khi đọc và vẽ như trước (bảng ở [WIDGET-REVAMP §5b](../../design/WIDGET-REVAMP.md)).
 
 > **Cập nhật v1.1 (D-40):** toàn bộ P-01…P-13 thuộc **phạm vi bản 1.0**. Tiêu đề mục giữ nguyên để không làm hỏng liên kết. P-10 (marker), P-11 (lời) cần thêm `meta.markers[]`, `meta.lyrics[]` vào AST; P-13 cần đọc automation Ableton/DAWproject (SOI-18).
 

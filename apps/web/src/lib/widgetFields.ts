@@ -46,6 +46,10 @@ const SEC = (id: string, fields: readonly string[], rest: Omit<SectionDef, 'id' 
 const L = (path: string[], kind: FieldKind, label: string, rest: Partial<FieldDef> = {}): FieldDef => ({ path, kind, label, ...rest });
 /** Kiểu của Phổ tần (vắng = Cột). */
 const spStyle = (P: Obj) => String(P.style ?? 'BARS');
+/** Lưới nốt: quanh vạch phát, hàng theo cao độ, hình chấm (vuông/tròn). */
+const win = (P: Obj) => P.span === 'WINDOW';
+const byPitch = (P: Obj) => P.rows === 'PITCH';
+const dotShape = (P: Obj) => P.shape === 'SQUARE' || P.shape === 'ROUND';
 /** Kiểu phổ đọc dải tần tại t (cột, vùng, đường, chấm): dùng thang, dải Hz, attack/release, đảo chiều. */
 const spectral = (P: Obj) => ['BARS', 'AREA', 'LINE', 'DOTS'].includes(spStyle(P));
 /** Phổ tần: nhóm Đỉnh (T-130) chỉ hiện khi kiểu Cột/Chấm và công tắc `peakCap` bật (D-71). */
@@ -241,17 +245,6 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['trackColor'], 'colorOpt', 'inBackColor', { adv: true }),
     L(['radius'], 'num', 'radius', { adv: true, num: { min: 0, max: 50, step: 1, range: [0, 12] } }),
   ],
-  DENSITY: [
-    L(['cols'], 'num', 'inCols', { num: { min: 16, max: 400, step: 4, range: [32, 200] } }),
-    L(['colorMode'], 'choice', 'inColorMode', { options: ['TRACK', 'SOLID'], prefix: 'web.ws.inColor.' }),
-    L(['color'], 'color', 'inColor', { when: (P) => P.colorMode === 'SOLID' }),
-    L(['showPolyphony'], 'check', 'inShowPoly'),
-    L(['polyTemplate'], 'text', 'inPolyTemplate', { adv: true, when: (P) => !!P.showPolyphony, text: { max: 200 } }),
-    L(['minAlpha'], 'num', 'inMinAlpha', { adv: true, num: { min: 0, max: 1, step: 0.01 } }),
-    L(['playheadColor'], 'colorOpt', 'inPlayheadColor', { adv: true }),
-    L(['rowGap'], 'num', 'inRowGap', { adv: true, num: { min: 0, max: 20, step: 1 } }),
-    L(['cellGap'], 'num', 'inCellGap', { adv: true, num: { min: 0, max: 10, step: 0.5 } }),
-  ],
   PITCH_WHEEL: [
     L(['order'], 'choice', 'inWheelOrder', { options: ['CHROMATIC', 'FIFTHS'], prefix: 'web.ws.inWheelOrder.' }),
     L(['showNames'], 'check', 'inShowNames'),
@@ -322,38 +315,40 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['gap'], 'num', 'dgGap', { adv: true, num: { min: 0, max: 40, step: 1, range: [0, 12] } }),
     L(['keyWindowSec'], 'num', 'inKeyWindow', { adv: true, num: { min: 2, max: 120, step: 1, range: [4, 60] } }),
   ],
-  DOTS: [
-    L(['grid'], 'choice', 'dtGrid', { options: [4, 8, 16, 32], prefix: 'web.ws.dtGrid.' }),
-    L(['cols'], 'num', 'dtCols', { num: { min: 8, max: 256, step: 1, range: [16, 128] } }),
-    L(['pitchRangeMode'], 'choice', 'dtRange', { options: ['FIT_CONTENT', 'CUSTOM'], prefix: 'web.ws.dtRange.' }),
-    L(['pitchMin'], 'num', 'dtPitchMin', { when: (P) => P.pitchRangeMode === 'CUSTOM', num: { min: 0, max: 127, step: 1 } }),
-    L(['pitchMax'], 'num', 'dtPitchMax', { when: (P) => P.pitchRangeMode === 'CUSTOM', num: { min: 0, max: 127, step: 1 } }),
-    L(['maxRows'], 'num', 'dtMaxRows', { adv: true, num: { min: 8, max: 128, step: 1, range: [12, 64] } }),
-    L(['shape'], 'choice', 'dtShape', { options: ['ROUND', 'SQUARE'], prefix: 'web.ws.dtShape.' }),
-    L(['dotSize'], 'num', 'dtDotSize', { num: { min: 0.05, max: 1, step: 0.05 } }),
-    L(['colorMode'], 'choice', 'inColorMode', { options: ['TRACK', 'SOLID'], prefix: 'web.ws.inColor.' }),
-    L(['color'], 'color', 'dtColor', { when: (P) => P.colorMode === 'SOLID' }),
-    L(['emptyColor'], 'color', 'dtEmpty'),
-    L(['emptyColorB'], 'colorOpt', 'dtEmptyB', { adv: true }),
-    L(['emptyAlpha'], 'num', 'dtEmptyAlpha', { adv: true, num: { min: 0, max: 1, step: 0.05 } }),
-    L(['upcomingAlpha'], 'num', 'inUpcomingAlpha', { adv: true, num: { min: 0, max: 1, step: 0.05 } }),
-    L(['activeScale'], 'num', 'dtActiveScale', { adv: true, num: { min: 1, max: 3, step: 0.1 } }),
-    L(['velocitySize'], 'check', 'dtVelocitySize'),
-    L(['velocityMin'], 'num', 'dtVelocityMin', { when: (P) => !!P.velocitySize, num: { min: 0.05, max: 1, step: 0.05 } }),
-    L(['beatLines'], 'check', 'dtBeatLines'),
-    L(['rowLabels'], 'check', 'dtRowLabels'),
-    L(['playheadRatio'], 'num', 'dgPlayhead', { adv: true, num: { min: 0, max: 1, step: 0.01 } }),
-    L(['playheadColor'], 'colorOpt', 'inPlayheadColor', { adv: true }),
-    L(['playheadWidth'], 'num', 'inPlayheadWidth', { adv: true, when: (P) => !!P.playheadColor, num: { min: 0, max: 10, step: 0.5 } }),
-  ],
-  ARRANGEMENT: [
-    L(['cols'], 'num', 'inCols', { num: { min: 16, max: 600, step: 4, range: [32, 300] } }),
-    L(['colorMode'], 'choice', 'inColorMode', { options: ['TRACK', 'SOLID'], prefix: 'web.ws.inColor.' }),
-    L(['color'], 'color', 'inColor', { when: (P) => P.colorMode === 'SOLID' }),
-    L(['playheadColor'], 'colorOpt', 'inPlayheadColor'),
-    L(['upcomingAlpha'], 'num', 'inUpcomingAlpha', { adv: true, num: { min: 0, max: 1, step: 0.05 } }),
-    L(['playheadWidth'], 'num', 'inPlayheadWidth', { adv: true, when: (P) => !!P.playheadColor, num: { min: 0, max: 20, step: 0.5 } }),
+  // Lưới nốt (noteGrid.ts, D-77): thay Mật độ nốt, Tổng quan bản phối, Lưới chấm. Ô không áp dụng với Hàng theo / Khoảng hiện / Ô sáng theo / Hình ô thì ẩn (D-72).
+  NOTE_GRID: [
+    L(['rows'], 'choice', 'ngRows', { options: ['TRACK', 'PITCH'], prefix: 'web.ws.ngRows.' }),
+    L(['span'], 'choice', 'ngSpan', { options: ['SONG', 'WINDOW'], prefix: 'web.ws.ngSpan.' }),
+    L(['light'], 'choice', 'ngLight', { options: ['NOTES', 'DENSITY', 'VELOCITY'], prefix: 'web.ws.ngLight.' }),
+    L(['cols'], 'num', 'dtCols', { num: { min: 8, max: 600, step: 1, range: [16, 300] } }),
+    L(['grid'], 'choice', 'dtGrid', { when: win, options: [4, 8, 16, 32], prefix: 'web.ws.dtGrid.' }),
+    L(['maxRows'], 'num', 'dtMaxRows', { adv: true, num: { min: 1, max: 128, step: 1, range: [4, 64] } }),
+    L(['pitchRangeMode'], 'choice', 'dtRange', { when: byPitch, options: ['FIT_CONTENT', 'CUSTOM'], prefix: 'web.ws.dtRange.' }),
+    L(['pitchMin'], 'num', 'dtPitchMin', { when: (P) => byPitch(P) && P.pitchRangeMode === 'CUSTOM', num: { min: 0, max: 127, step: 1 } }),
+    L(['pitchMax'], 'num', 'dtPitchMax', { when: (P) => byPitch(P) && P.pitchRangeMode === 'CUSTOM', num: { min: 0, max: 127, step: 1 } }),
+    L(['shape'], 'choice', 'ngShape', { options: ['FILL', 'SQUARE', 'ROUND', 'BAR'], prefix: 'web.ws.ngShape.' }),
+    L(['dotSize'], 'num', 'ngSize', { when: (P) => P.shape !== 'FILL', num: { min: 0.05, max: 1, step: 0.05 } }),
+    L(['cellGap'], 'num', 'inCellGap', { adv: true, when: (P) => P.shape === 'FILL' || P.shape === 'BAR', num: { min: 0, max: 10, step: 0.5 } }),
     L(['rowGap'], 'num', 'inRowGap', { adv: true, num: { min: 0, max: 20, step: 1 } }),
+    L(['activeScale'], 'num', 'dtActiveScale', { adv: true, when: dotShape, num: { min: 1, max: 3, step: 0.1 } }),
+    L(['velocitySize'], 'check', 'dtVelocitySize', { when: dotShape }),
+    L(['velocityMin'], 'num', 'dtVelocityMin', { when: (P) => dotShape(P) && !!P.velocitySize, num: { min: 0.05, max: 1, step: 0.05 } }),
+    L(['beatLines'], 'check', 'dtBeatLines', { when: win }),
+    L(['rowLabels'], 'check', 'ngRowLabels'),
+    L(['colorMode'], 'choice', 'inColorMode', { options: ['TRACK', 'SOLID'], prefix: 'web.ws.inColor.' }),
+    // Hàng theo cao độ: ô trống không đặt màu thì lấy màu này, nên vẫn hiện khi tô theo track.
+    L(['color'], 'color', 'dtColor', { when: (P) => P.colorMode === 'SOLID' || byPitch(P) }),
+    L(['minAlpha'], 'num', 'inMinAlpha', { when: (P) => P.light !== 'NOTES', num: { min: 0, max: 1, step: 0.01 } }),
+    L(['upcomingAlpha'], 'num', 'inUpcomingAlpha', { adv: true, num: { min: 0, max: 1, step: 0.05 } }),
+    L(['emptyColor'], 'colorOpt', 'ngEmpty', { adv: true }),
+    L(['emptyColorB'], 'colorOpt', 'dtEmptyB', { adv: true, when: (P) => !!P.emptyColor }),
+    L(['emptyAlpha'], 'num', 'ngEmptyAlpha', { adv: true, num: { min: 0, max: 1, step: 0.05 } }),
+    L(['playheadRatio'], 'num', 'dgPlayhead', { adv: true, when: win, num: { min: 0, max: 1, step: 0.01 } }),
+    L(['playheadColor'], 'colorOpt', 'inPlayheadColor'),
+    L(['playheadMark'], 'choice', 'ngMark', { when: (P) => !!P.playheadColor, options: ['LINE', 'COLUMN'], prefix: 'web.ws.ngMark.' }),
+    L(['playheadWidth'], 'num', 'inPlayheadWidth', { adv: true, when: (P) => !!P.playheadColor, num: { min: 0, max: 20, step: 0.5 } }),
+    L(['showPolyphony'], 'check', 'inShowPoly'),
+    L(['polyTemplate'], 'text', 'inPolyTemplate', { adv: true, when: (P) => !!P.showPolyphony, text: { max: 200 } }),
   ],
   DRUM_PAD: [
     L(['source'], 'choice', 'inPadSource', { options: ['DRUMS', 'ALL'], prefix: 'web.ws.inPadSource.' }),
@@ -562,14 +557,6 @@ export const WIDGET_SECTIONS: Readonly<Partial<Record<WidgetType, readonly Secti
     SEC('blocks', ['radius', 'gap']),
     SEC('playhead', ['playheadRatio', 'playheadColor']),
   ],
-  DOTS: [
-    SEC('range', ['pitchRangeMode', 'pitchMin', 'pitchMax']),
-    SEC('cells', ['shape', 'dotSize', 'activeScale', 'velocitySize', 'velocityMin']),
-    SEC('grid', ['beatLines'], { head: 'beatLines' }),
-    SEC('labels', ['rowLabels'], { head: 'rowLabels' }),
-    SEC('colour', ['colorMode', 'color', 'emptyColor', 'emptyColorB', 'emptyAlpha', 'upcomingAlpha']),
-    SEC('playhead', ['playheadRatio', 'playheadColor', 'playheadWidth']),
-  ],
   PANEL: [
     SEC('frame', ['frame', 'frameColor', 'frameWidth', 'fillColor', 'fillAlpha'], { head: 'frame' }),
     SEC('stats', [0, 1, 2, 3, 4, 5].flatMap((i) => [`stats.${i}.label`, `stats.${i}.value`])),
@@ -578,13 +565,14 @@ export const WIDGET_SECTIONS: Readonly<Partial<Record<WidgetType, readonly Secti
     SEC('colour', ['colorMode', 'color', 'trackColor']),
     SEC('columns', ['gap', 'radius']),
   ],
-  DENSITY: [
-    SEC('colour', ['colorMode', 'color', 'minAlpha', 'playheadColor']),
+  NOTE_GRID: [
+    SEC('range', ['pitchRangeMode', 'pitchMin', 'pitchMax']),
+    SEC('cells', ['shape', 'dotSize', 'cellGap', 'rowGap', 'activeScale', 'velocitySize', 'velocityMin']),
+    SEC('grid', ['beatLines'], { head: 'beatLines' }),
+    SEC('labels', ['rowLabels'], { head: 'rowLabels' }),
+    SEC('colour', ['colorMode', 'color', 'minAlpha', 'upcomingAlpha', 'emptyColor', 'emptyColorB', 'emptyAlpha']),
+    SEC('playhead', ['playheadRatio', 'playheadColor', 'playheadMark', 'playheadWidth']),
     SEC('polyphony', ['showPolyphony', 'polyTemplate'], { head: 'showPolyphony' }),
-  ],
-  ARRANGEMENT: [
-    SEC('colour', ['colorMode', 'color', 'upcomingAlpha']),
-    SEC('playhead', ['playheadColor', 'playheadWidth']),
   ],
   DRUM_PAD: [
     SEC('colour', ['colorMode', 'hitColor', 'padColor']),
@@ -674,11 +662,10 @@ export const SETTINGS_EXEMPT: Readonly<Record<string, readonly string[]>> = {
   TEMPO_INFO: ['align', 'style'],
   BAR_BEAT: ['align', 'style'],
   KEY_SCALE: ['align', 'nameStyle', 'confStyle'],
-  DENSITY: ['polyStyle'],
   PITCH_WHEEL: ['nameStyle', 'chordStyle', 'subStyle'],
   PANEL: ['titleStyle', 'labelStyle', 'valueStyle'],
   DEGREE: ['labelStyle', 'smallStyle'],
-  DOTS: ['labelStyle'],
+  NOTE_GRID: ['polyStyle', 'labelStyle'],
   DRUM_PAD: ['labelStyle'],
   SECTION: ['align', 'style', 'nextStyle'],
   LYRICS: ['align', 'style', 'unsungStyle', 'nextStyle'],
@@ -719,4 +706,4 @@ export function advancedEdited(widget: Pick<WidgetSpec, 'type' | 'trackMappingMo
   return adv || (widget.type !== 'TEXT' && widget.type !== 'NOTATION' && TRACK_WIDGETS.includes(widget.type) && widget.trackMappingMode === 'MANUAL');
 }
 /** Widget đọc số liệu từ các track nên có mục chọn track (Ô chữ ở Cơ bản, còn lại ở Nâng cao). */
-export const TRACK_WIDGETS: readonly string[] = ['TEXT', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'CHORD_DETECTION', 'PARTICLES', 'NOTATION', 'KEY_SCALE', 'VELOCITY', 'DENSITY', 'PITCH_WHEEL', 'ARRANGEMENT', 'DRUM_PAD', 'AUTOMATION', 'PANEL', 'DEGREE', 'DOTS'];
+export const TRACK_WIDGETS: readonly string[] = ['TEXT', 'EVENT_COUNTER', 'LIVE_TRIGGER', 'CHORD_DETECTION', 'PARTICLES', 'NOTATION', 'KEY_SCALE', 'VELOCITY', 'PITCH_WHEEL', 'DRUM_PAD', 'AUTOMATION', 'PANEL', 'DEGREE', 'NOTE_GRID'];

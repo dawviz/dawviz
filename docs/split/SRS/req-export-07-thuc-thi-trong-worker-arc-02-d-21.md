@@ -4,8 +4,8 @@ doc_title: "ĐẶC TẢ YÊU CẦU PHẦN MỀM (SOFTWARE REQUIREMENTS SPECIFICA
 section: "REQ-EXPORT-07: Thực thi trong Worker (ARC-02, D-21)"
 path: "3. YÊU CẦU CHỨC NĂNG CHI TIẾT (FUNCTIONAL REQUIREMENTS) > 3.6. Đường ống xuất video ngoại tuyến (BR-06, BR-07) > REQ-EXPORT-07: Thực thi trong Worker (ARC-02, D-21)"
 chunk: req-export-07-thuc-thi-trong-worker-arc-02-d-21.md
-source_lines: 891-900
-source_sha1: fee32c2554
+source_lines: 893-902
+source_sha1: 73016ec8ed
 ids: [ARC-02, D-21, D-61, ERR_EXPORT_FAILED, REQ-EXPORT-07]
 ---
 #### REQ-EXPORT-07: Thực thi trong Worker (ARC-02, D-21)

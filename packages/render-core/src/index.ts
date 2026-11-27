@@ -36,6 +36,7 @@ export * from './naming.ts';
 export * from './insight.ts';
 export * from './degree.ts';
 export * from './dashboard.ts';
+export * from './noteGrid.ts';
 export * from './keyDetect.ts';
 export * from './loudness.ts';
 export * from './notation/types.ts';
