@@ -137,11 +137,11 @@
         "locales/en.json#web.layers.",
         "locales/en.json#web.comp."
       ],
-      "uiHash": "12b1bdeeea74",
-      "viHash": "2e289e2d353c",
-      "enHash": "5c7836343d27",
+      "uiHash": "5fceca3b2560",
+      "viHash": "183bebe783d5",
+      "enHash": "e1553d28c944",
       "coverHashes": {
-        "apps/web/src/components/Editor.tsx": "ec97b4dc4bf7",
+        "apps/web/src/components/Editor.tsx": "8ea5feed0bbf",
         "apps/web/src/components/EditorOverlay.tsx": "04ec8c01c587",
         "apps/web/src/components/StylePanel.tsx": "1a7c05d2bb56",
         "locales/en.json#web.editor.": "d19edd6798fb",
@@ -176,7 +176,7 @@
         "apps/web/src/components/LayerTimeline.tsx": "7ab2276816da",
         "apps/web/src/lib/layerTimeline.ts": "d310694f5b96",
         "locales/en.json#web.layers.": "4a4eda2648f1",
-        "locales/en.json#web.comp.": "f60606069e72"
+        "locales/en.json#web.comp.": "e1706abf8437"
       }
     },
     "04-cai-dat": {
@@ -229,7 +229,7 @@
         "apps/web/src/components/Splitter.tsx",
         "apps/web/src/components/LayerTimeline.tsx"
       ],
-      "uiHash": "47723b3761b5",
+      "uiHash": "ad79e4008773",
       "viHash": "042d62c4befa",
       "enHash": "16cf1409e9b4",
       "coverHashes": {
@@ -237,7 +237,7 @@
         "apps/web/src/lib/undoKeys.ts": "07c2c99f5cf4",
         "apps/web/src/components/EditorOverlay.tsx": "04ec8c01c587",
         "apps/web/src/lib/numberInput.ts": "8e27c53523c3",
-        "apps/web/src/components/Editor.tsx": "ec97b4dc4bf7",
+        "apps/web/src/components/Editor.tsx": "8ea5feed0bbf",
         "apps/web/src/components/KeyframeTimeline.tsx": "82277bf7d57f",
         "apps/web/src/components/Splitter.tsx": "7ae82f8548cb",
         "apps/web/src/components/LayerTimeline.tsx": "7ab2276816da"
@@ -251,11 +251,11 @@
         "locales/en.json#web.export",
         "apps/web/src/lib/pngSequence.ts"
       ],
-      "uiHash": "57cc2354a836",
+      "uiHash": "3f173c5bb738",
       "viHash": "90ecb0bae68c",
       "enHash": "c60cdf32a704",
       "coverHashes": {
-        "apps/web/src/components/ExportDialog.tsx": "f71ea4717196",
+        "apps/web/src/components/ExportDialog.tsx": "832a50c1c72b",
         "locales/en.json#web.export": "a90de91906e1",
         "apps/web/src/lib/pngSequence.ts": "2f21f016ccdb"
       }

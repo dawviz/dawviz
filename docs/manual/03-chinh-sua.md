@@ -178,7 +178,7 @@ Keyframe đặt theo giây đi theo thanh khi bạn dời thanh. Keyframe đặt
 
 Precomp gom nhiều lớp thành một lớp, như precomp của After Effects. Dùng khi muốn cả một nhóm lớp xuất hiện, dời, mờ hay chuyển động cùng nhau, ví dụ cả phần mở đầu.
 
-- **Tạo:** chọn các lớp rồi bấm Ctrl+G (hoặc nút hai khung chồng ở góc trên bên trái Timeline). Các lớp vào một precomp mới, ở đúng chỗ cũ trên khung và trên timeline. Thanh của precomp trùm từ thanh sớm nhất tới thanh muộn nhất của nhóm.
+- **Tạo:** chọn các lớp rồi bấm Ctrl+G (hoặc nút hai khung chồng ở góc trên bên trái Timeline, hoặc nút **Gom precomp** ở bảng bên phải khi chọn một lớp). Các lớp vào một precomp mới, ở đúng chỗ cũ trên khung và trên timeline. Thanh của precomp trùm từ thanh sớm nhất tới thanh muộn nhất của nhóm.
 - **Mở:** nhấp đúp vào thanh precomp, bấm nút › ở dòng của nó, hoặc bấm **Mở precomp** ở bảng bên phải. Khung video chỉ hiện nội dung của precomp; phần thời gian precomp không hiện bị làm mờ trên Timeline. Bấm Esc (khi không chọn gì) hoặc bấm **Timeline chính** ở thanh tiêu đề để quay ra.
 - **Bên trong precomp** bạn làm mọi việc như ở timeline chính: thêm, kéo, keyframe, tách lớp, thậm chí gom tiếp thành precomp con. Precomp lồng nhau được tối đa 4 cấp.
 - **Lớp precomp** có vị trí, xoay, tỉ lệ, độ đục, chuyển động, khoảng hiển thị và keyframe như mọi lớp; mọi thứ bên trong làm theo. Lớp precomp luôn đúng cỡ khung: muốn phóng to hay thu nhỏ thì dùng **Tỉ lệ** ở tầng keyframe.

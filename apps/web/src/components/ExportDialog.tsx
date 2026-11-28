@@ -121,13 +121,17 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
 
   const hasDirPicker = !auto && typeof window !== 'undefined' && 'showDirectoryPicker' in window;
   const pngBytes = useMemo(() => estimatePngBytes({ width: size.width, height: size.height, frames: pre.frames, ...(audio && wav ? { wavSeconds: range.duration, sampleRate: audio.buffer.sampleRate, channels: audio.buffer.numberOfChannels } : {}) }), [size, pre.frames, audio, wav, range]);
-  useEffect(() => { let live = true; void vp9AlphaSupported(size.width, size.height).then((v) => live && setVp9Alpha(v)); return () => { live = false; }; }, [size]);
+  const probeDelay = useRef(0); // lần dò đầu chạy ngay; các lần sau (đổi cỡ, fps…) chờ 200 ms
+  // Kéo/gõ cỡ xuất sinh nhiều giá trị liên tiếp: chờ 200 ms rồi mới dò bộ mã hoá, và giữ kết quả cũ trong lúc dò (không nháy về 'đang kiểm' làm các ô định dạng giật).
+  useEffect(() => { let live = true; const id = setTimeout(() => void vp9AlphaSupported(size.width, size.height).then((v) => live && setVp9Alpha(v)), probeDelay.current); return () => { live = false; clearTimeout(id); }; }, [size]);
   useEffect(() => {
     let live = true;
-    setSupport('checking');
-    detectSupport(browserProbe, { width: size.width, height: size.height, fps, bitrate: pre.bitrate, sampleRate: audio?.buffer.sampleRate, channels: audio?.buffer.numberOfChannels })
-      .then((x) => live && setSupport(x), () => live && setSupport({ video: {}, audio: new Set() }));
-    return () => { live = false; };
+    const id = setTimeout(() => {
+      probeDelay.current = 200;
+      detectSupport(browserProbe, { width: size.width, height: size.height, fps, bitrate: pre.bitrate, sampleRate: audio?.buffer.sampleRate, channels: audio?.buffer.numberOfChannels })
+        .then((x) => live && setSupport(x), () => live && setSupport({ video: {}, audio: new Set() }));
+    }, probeDelay.current);
+    return () => { live = false; clearTimeout(id); };
   }, [size, fps, pre.bitrate, audio]);
   // Cơ bản: tự chọn theo thứ tự ưu tiên. Nâng cao: ba ô phụ thuộc nhau; lựa chọn luôn được đưa về trạng thái hợp lệ với định dạng đang chọn.
   const effSel = useMemo(() => (support === 'checking' ? null : normalizeSelection(sel, support, !!audio)), [support, sel, audio]);

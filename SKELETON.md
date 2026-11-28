@@ -507,6 +507,8 @@ dawviz/
 │  │  ├─ markdown.mjs
 │  │  ├─ markdown.test.mjs
 │  │  └─ slug.mjs
+│  ├─ e2e/
+│  │  └─ m4-browsers.mjs
 │  ├─ notation/
 │  │  ├─ lib/
 │  │  │  └─ loadAst.mjs
@@ -4157,6 +4159,7 @@ type SpectrumOut
 - `scripts/docs-site/markdown.mjs` — Bộ chuyển Markdown → HTML tối giản, không phụ thuộc thư viện. Hỗ trợ đúng phần tài liệu của dự án dùng:
 - `scripts/docs-site/markdown.test.mjs` — Test của bộ chuyển Markdown → HTML (tiêu đề/id, inline, bảng, danh sách lồng nhau, khối code, trích dẫn, văn bản tìm kiếm).
 - `scripts/docs-site/slug.mjs` — Quy tắc tạo anchor (id) cho heading, giống GitHub: chữ thường, bỏ ký tự đặc biệt/emoji, khoảng trắng → '-'. Dùng chung cho sync-docs và docs site.
+- `scripts/e2e/m4-browsers.mjs` — Kiểm tự động M4 (T-10) trên Chromium, Firefox và WebKit: tự lưu phiên (IndexedDB), mở lại sau khi tải lại trang, navigator.storage.estimate, Blob lớn,
 - `scripts/gen-builtin-schemas.mjs` — Sinh packages/binary/src/builtin-schemas.js từ schemas/*.schema.json dựng sẵn (hiện: flp).
 - `scripts/gen-font-metrics.mjs` — Sinh bảng độ rộng ký tự (FONT_METRICS) từ CHÍNH các tệp phông đã đóng gói trong apps/web/public/fonts
 - `scripts/gen-notation-fonts.mjs` — Sinh apps/web/src/lib/notation/notationFonts.generated.ts (D-63): số đo + đường viền của TẬP CON glyph mà engraver Bản nhạc dùng,

@@ -338,6 +338,19 @@ export function Editor({ proof = true, styleName, scene, root, compPath, onCompP
     move(id, e.shiftKey ? (k > 0 ? 0 : order.length - 1) : i - k);
   };
 
+  // Ctrl/⌘+G và Ctrl/⌘+Shift+G khi tiêu điểm đã rơi ra thân trang (sau khi gom, nút vừa bấm biến mất): nếu không bắt ở đây thì trình duyệt mở "Tìm trong trang".
+  const keysRef = useRef(onKeys); keysRef.current = onKeys;
+  useEffect(() => {
+    if (!active) return;
+    const h = (ev: globalThis.KeyboardEvent) => {
+      if (ev.defaultPrevented || ev.code !== 'KeyG' || !(ev.ctrlKey || ev.metaKey) || ev.altKey || isTextEntry(ev.target)) return;
+      if ((ev.target as HTMLElement | null)?.closest?.('[role="dialog"], [role="alertdialog"]')) return;
+      keysRef.current(ev as unknown as KeyboardEvent<HTMLDivElement>);
+    };
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
+  }, [active]);
+
   // Bố cục panel đổi cỡ (lib/panelLayout.ts): sân khấu | Thiết lập (cao hết); Timeline ở đáy dưới sân khấu (D-69: cột Lớp nằm trong Timeline).
   // Dưới 1024 px các khối xếp dọc như trước; thanh chia ẩn đi.
   const panels = usePanelLayout(advanced), { r } = panels;
@@ -438,7 +451,7 @@ export function Editor({ proof = true, styleName, scene, root, compPath, onCompP
         <SettingsSearchBox />
         <div className="relative min-h-0 flex-1 overflow-y-auto max-lg:flex-none max-lg:overflow-visible">
         <Properties background={background} scene={scene} selected={live} locked={locked} name={name} advanced={advanced} actions={actions} onLock={toggleLock} order={order} move={move} widgetSections={widgetSections} onPick={(id) => setSelected([id])} layoutRef={layoutRef}
-          onDuplicate={duplicateSel} onRemove={removeSel} onDeselect={deselect} live={liveCtx} editLayouts={editLayouts} onOpenComp={openComp} onOpenKeys={openKeys} inComp={frames.length > 0} onUncompose={uncomposeSel} compSpeed={(w) => Math.round((compOf(w)?.speed ?? 1) * frameA * 100)} onCompSpeed={setCompSpeed}
+          onDuplicate={duplicateSel} onRemove={removeSel} onDeselect={deselect} live={liveCtx} editLayouts={editLayouts} onOpenComp={openComp} onOpenKeys={openKeys} inComp={frames.length > 0} onUncompose={uncomposeSel} onPrecompose={precomposeSel} compSpeed={(w) => Math.round((compOf(w)?.speed ?? 1) * frameA * 100)} onCompSpeed={setCompSpeed}
           keyInspector={single && ast && keysOpen && hasInspectorTarget(single, keySel) ? (n) => (
             <AnimationInspector n={n} widget={single} sel={keySel} tempoMap={ast.tempoMap} locked={locked.has(single.id)} getTime={() => playback.get().t} lanes={lanes}
               onAnimate={(p, v, k) => actions.animate(single.id, p, v, k)} onAnimateMany={(ch, k) => actions.animEdit({ [single.id]: { animate: ch } }, k)} onSel={onKeySel} gesture={gestureCtx} />
@@ -558,7 +571,7 @@ function AlignSection({ n, items, frame, onLayouts, locked }: { n: number; items
 
 const btn = 'flex min-h-[var(--hit)] items-center gap-1.5 rounded border border-control bg-raised px-2.5 text-xs font-medium text-fg transition hover:border-line-strong disabled:cursor-not-allowed disabled:opacity-50';
 
-function Properties({ background, scene, selected, locked, name, advanced, actions, onLock, order, move, widgetSections, onPick, layoutRef, onDuplicate, onRemove, onDeselect, keyInspector, live, editLayouts, onOpenComp, onOpenKeys, inComp, onUncompose, compSpeed, onCompSpeed }: { onUncompose(): void; compSpeed(w: WidgetSpec): number; onCompSpeed(id: string, pct: number): void; keyInspector?(n: number): ReactNode; live: LiveCtx | null; editLayouts(p: Patches): void; onDeselect(): void; background?: BackgroundState; onOpenComp(id: string): void; onOpenKeys(id: string): void; inComp: boolean; onDuplicate(): void; onRemove(): void; layoutRef?: Record<string, WidgetLayout>; onPick(id: string): void; scene: SceneDocument; selected: string[]; locked: ReadonlySet<string>; name(id: string): string; advanced: boolean; actions: EditorActions; onLock(id: string): void; order: string[]; move(id: string, to: number): void; widgetSections?: Props['widgetSections'] }) {
+function Properties({ background, scene, selected, locked, name, advanced, actions, onLock, order, move, widgetSections, onPick, layoutRef, onDuplicate, onRemove, onDeselect, keyInspector, live, editLayouts, onOpenComp, onOpenKeys, inComp, onUncompose, onPrecompose, compSpeed, onCompSpeed }: { onUncompose(): void; onPrecompose(): void; compSpeed(w: WidgetSpec): number; onCompSpeed(id: string, pct: number): void; keyInspector?(n: number): ReactNode; live: LiveCtx | null; editLayouts(p: Patches): void; onDeselect(): void; background?: BackgroundState; onOpenComp(id: string): void; onOpenKeys(id: string): void; inComp: boolean; onDuplicate(): void; onRemove(): void; layoutRef?: Record<string, WidgetLayout>; onPick(id: string): void; scene: SceneDocument; selected: string[]; locked: ReadonlySet<string>; name(id: string): string; advanced: boolean; actions: EditorActions; onLock(id: string): void; order: string[]; move(id: string, to: number): void; widgetSections?: Props['widgetSections'] }) {
   const { i18n } = useI18n();
   const ws = selected.map((id) => scene.widgets.find((w) => w.id === id)!).filter(Boolean);
   const { designWidth: W, designHeight: H } = scene.canvas;
@@ -661,6 +674,7 @@ function Properties({ background, scene, selected, locked, name, advanced, actio
         {comp
           ? <button type="button" className={btn} onClick={() => onOpenComp(w.id)} data-testid="props-open-comp"><Precomp className="h-3.5 w-3.5" />{i18n.t('web.comp.open')}</button>
           : <button type="button" className={btn} onClick={() => onOpenKeys(w.id)} data-testid="props-open-keys"><Diamond className="h-3 w-3" />{i18n.t('web.layers.openKeysBtn')}</button>}
+        {!comp && <button type="button" className={btn} disabled={lk} onClick={onPrecompose} title={`${i18n.t('web.layers.precompose')} (Ctrl+G)`} data-testid="props-precompose"><Precomp className="h-3.5 w-3.5" />{i18n.t('web.comp.precomposeBtn')}</button>}
         {comp && <button type="button" className={btn} onClick={() => onOpenKeys(w.id)} data-testid="props-open-keys"><Diamond className="h-3 w-3" />{i18n.t('web.layers.openKeysBtn')}</button>}
         {comp && <button type="button" className={btn} disabled={lk} onClick={onUncompose} title={`${i18n.t('web.comp.uncompose')} (Ctrl+Shift+G)`} data-testid="props-uncompose">{i18n.t('web.comp.uncompose')}</button>}
       </div>
