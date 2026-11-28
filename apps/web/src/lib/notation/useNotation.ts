@@ -14,7 +14,7 @@ export function notationRequestFor(w: WidgetSpec<NotationProps>, ast: UnifiedPro
   const tis = tracksFor(w, index).filter((ti) => ti.track.isVisible && !ti.notes.every((n) => n.channel === 9)); // bỏ track trống (kênh 10)
   const notes = tis.flatMap((ti) => ti.notes.map((n) => ({ id: n.id, pitch: n.pitch, startTick: n.startTick, endTick: n.endTick, startTimeSeconds: n.startTimeSeconds, endTimeSeconds: n.endTimeSeconds, velocity: n.velocity, track: ti.track.index })));
   const p = w.properties;
-  return { tracks: tis.map((ti) => ti.track.index), req: { notes, tempoMap: ast.tempoMap, props: { division: p.division, triplets: p.triplets, simplify: p.simplify, splitPitch: p.splitPitch, voices: p.voices, keyMode: p.keyMode, keyFifths: p.keyFifths, keyMinor: p.keyMinor, barsPerSystem: p.barsPerSystem, systemsPerPage: p.systemsPerPage, musicFont: p.musicFont, measureNumbers: p.measureNumbers, measureNumberSize: p.measureNumberSize, tempoMark: p.tempoMark } } };
+  return { tracks: tis.map((ti) => ti.track.index), req: { notes, tempoMap: ast.tempoMap, props: { division: p.division, triplets: p.triplets, simplify: p.simplify, splitPitch: p.splitPitch, voices: p.voices, keyMode: p.keyMode, keyFifths: p.keyFifths, keyMinor: p.keyMinor, layoutMode: p.layoutMode, barsPerSystem: p.barsPerSystem, systemsPerPage: p.systemsPerPage, musicFont: p.musicFont, measureNumbers: p.measureNumbers, measureNumberSize: p.measureNumberSize, tempoMark: p.tempoMark } } };
 }
 
 export function useNotation(scene: SceneDocument, ast: UnifiedProjectAST | null, index: TimelineIndex | null, projectId: string): NotationState {

@@ -91,5 +91,7 @@ export const RowsShorter = (p: P) => <S {...p}><path d="M3 6.5h10M3 9.5h10M8 1.5
 export const Scissors = (p: P) => <S {...p}><circle cx="4.5" cy="11.5" r="2" /><circle cx="11.5" cy="11.5" r="2" /><path d="M5.9 10 12 2.5M10.1 10 4 2.5" /></S>;
 /** Hai khung chồng nhau: precomp. */
 export const Precomp = (p: P) => <S {...p}><rect x="2.5" y="5" width="8.5" height="8.5" rx="1" /><path d="M5 5V3.5a1 1 0 0 1 1-1h6.5a1 1 0 0 1 1 1V10a1 1 0 0 1-1 1H11" /></S>;
+/** Khung nét đứt chứa hai khung nhỏ: gỡ precomp. */
+export const PrecompRelease = (p: P) => <S {...p}><rect x="1.5" y="1.5" width="13" height="13" rx="1.5" strokeDasharray="2 1.6" /><rect x="4" y="4" width="3.6" height="3.6" rx=".6" /><rect x="8.4" y="8.4" width="3.6" height="3.6" rx=".6" /></S>;
 /** Cờ đánh dấu: phase. */
 export const Flag = (p: P) => <S {...p}><path d="M3.5 14.5V2M3.5 2.5h8l-1.8 2.8 1.8 2.7h-8" /></S>;

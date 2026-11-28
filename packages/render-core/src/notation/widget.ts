@@ -25,7 +25,11 @@ export interface NotationProps {
   voices: 1 | 2;
   /** Giọng: AUTO = ước lượng; MANUAL = keyFifths/keyMode. */
   keyMode: 'AUTO' | 'MANUAL'; keyFifths: number; keyMinor: boolean;
-  /** Số ô mỗi hàng (0 = tự dàn theo bề rộng) và số hàng mỗi trang. */
+  /** Cách bày: PAGES = lật từng trang (mặc định); SCROLL = cả bài là một hàng dài cuộn ngang qua vạch phát cố định. */
+  layoutMode: 'PAGES' | 'SCROLL';
+  /** Chỉ SCROLL: vị trí vạch phát trên bề rộng widget (0,05–0,95). */
+  scrollAnchor: number;
+  /** Số ô mỗi hàng (0 = tự dàn theo bề rộng) và số hàng mỗi trang (chỉ PAGES). */
   barsPerSystem: number; systemsPerPage: number;
   /** Phông nhạc: chuẩn in (Bravura), viết tay (Petaluma), nét mảnh cổ (Gonville). */
   musicFont: 'BRAVURA' | 'PETALUMA' | 'GONVILLE';
@@ -70,7 +74,7 @@ export interface NotationProps {
 
 export const DEFAULT_NOTATION: Readonly<NotationProps> = Object.freeze({
   division: 16, triplets: true, simplify: 1, splitPitch: 60, voices: 2, keyMode: 'AUTO', keyFifths: 0, keyMinor: false,
-  barsPerSystem: 2, systemsPerPage: 1, musicFont: 'BRAVURA', measureNumbers: true, tempoMark: true, measureNumberSize: 1,
+  layoutMode: 'PAGES', scrollAnchor: 0.3, barsPerSystem: 2, systemsPerPage: 1, musicFont: 'BRAVURA', measureNumbers: true, tempoMark: true, measureNumberSize: 1,
   inkColor: '#e8ecf4', playedColor: '#8a93a8', activeColor: '#ffb347', colorMode: 'SOLID', upcomingOpacity: 1, playedOpacity: 0.7, staticOpacity: 1, opacity: 1,
   zoom: 1.35, zoomMode: 'PULSE', zoomMs: 350, glow: 0.6, glowSize: 2.5, glowMode: 'HALO',
   playhead: 'NONE', playheadColor: '#ffb347', playheadWidth: 2, rough: 0, boilFps: 0, seed: 1, align: 'CENTER', pageFadeMs: 250,
@@ -91,7 +95,7 @@ export function notationInkFor(background: string): Pick<NotationProps, 'inkColo
 }
 
 /** Thuộc tính ảnh hưởng bản dựng: đổi một trong số này thì phải engrave lại (khoá đệm). */
-export const NOTATION_ENGRAVE_KEYS = ['division', 'triplets', 'simplify', 'splitPitch', 'voices', 'keyMode', 'keyFifths', 'keyMinor', 'barsPerSystem', 'systemsPerPage', 'musicFont', 'measureNumbers', 'measureNumberSize', 'tempoMark'] as const;
+export const NOTATION_ENGRAVE_KEYS = ['division', 'triplets', 'simplify', 'splitPitch', 'voices', 'keyMode', 'keyFifths', 'keyMinor', 'layoutMode', 'barsPerSystem', 'systemsPerPage', 'musicFont', 'measureNumbers', 'measureNumberSize', 'tempoMark'] as const;
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 const smooth = (x: number) => { const k = clamp01(x); return k * k * (3 - 2 * k); };
@@ -219,11 +223,20 @@ export function notationFit(lay: NotationLayout, W: number, H: number, pageH: nu
 export function notationPrims(lay: NotationLayout, p: NotationProps, W: number, H: number, t: number, trackColor: (track: number) => string | undefined, pos?: MusicPos,
   after?: (t: number, bars: number) => number): Primitive[] {
   const out: Primitive[] = [];
-  const pi = pageIndexAt(lay, t);
+  const scroll = p.layoutMode === 'SCROLL';
+  const pi = scroll ? (lay.pages.length ? 0 : -1) : pageIndexAt(lay, t);
   if (pi < 0) return out;
   const page = lay.pages[pi];
-  const { s, tx, ty } = notationFit(lay, W, H, page.height, p.align);
-  const fade = (p.pageFadeMs > 0 && pi > 0 ? smooth((t - page.start) / (p.pageFadeMs / 1000)) : 1) * p.opacity;
+  let { s, tx, ty } = notationFit(lay, W, H, page.height, p.align);
+  // Cuộn: tỉ lệ theo chiều cao, vạch phát đứng yên ở scrollAnchor, bản nhạc trượt ngang; chỉ phần tử trong khung nhìn được vẽ.
+  let vis0 = -Infinity, vis1 = Infinity;
+  if (scroll) {
+    s = H / Math.max(1, lay.maxHeight); ty = p.align === 'TOP' ? 0 : (H - page.height * s) / 2;
+    tx = W * p.scrollAnchor - (page.systems[0] ? systemX(page.systems[0], t) : 0) * s;
+    vis0 = (-tx) / s - 30; vis1 = (W - tx) / s + 30;
+  }
+  const inView = (it: NotationItem) => { if (!scroll) return true; const [a, b] = itemSpanX(it, lay.glyphs); return b >= vis0 && a <= vis1; };
+  const fade = (!scroll && p.pageFadeMs > 0 && pi > 0 ? smooth((t - page.start) / (p.pageFadeMs / 1000)) : 1) * p.opacity;
   if (fade <= 0.004) return out;
   const rough = p.rough > 0 ? { amp: p.rough, step: p.boilFps > 0 ? Math.floor(Math.max(0, t) * p.boilFps) : 0, seed: p.seed } : undefined;
   const aura = auraAt(p, t, pos);
@@ -249,6 +262,7 @@ export function notationPrims(lay: NotationLayout, p: NotationProps, W: number, 
   };
   const active: [number, WriteState][] = [];
   page.items.forEach((it, i) => {
+    if (!inView(it)) return;
     const ws = timed ? stateOf(it) : FULL;
     if (!ws) return;
     let color = p.inkColor, alpha = p.upcomingOpacity;
@@ -268,7 +282,7 @@ export function notationPrims(lay: NotationLayout, p: NotationProps, W: number, 
     out.push(pathPrim(lay, it, i, pi, color, fade * ws.k, tx, ty, s, k !== 1 ? { k, cx: o.cx, cy: o.cy } : undefined, rough, glow, ws.cut));
   }
   if (p.playhead === 'LINE' && p.playheadWidth > 0) {
-    const sys = page.systems.find((y) => t >= y.start && t < y.end);
+    const sys = scroll ? page.systems[0] : page.systems.find((y) => t >= y.start && t < y.end);
     if (sys) out.push({ kind: 'rect', x: tx + systemX(sys, t) * s - p.playheadWidth / 2, y: ty + sys.y0 * s, w: p.playheadWidth, h: (sys.y1 - sys.y0) * s, fill: p.playheadColor, alpha: fade, radius: 0, glowColor: '', glowBlur: 0, stroke: '', strokeWidth: 0 } satisfies RectPrim);
   }
   return out;

@@ -178,3 +178,32 @@ test('góc chảy: tua tới/lui cho cùng khung (hàm thuần của t); hạt N
   const L = pianoRollLane(p.properties, W, H, 1), rowH = L.f.Lh / 37, m = flowPoint(L.f, L.playU, (84 - 60) * rowH + rowH / 2);
   assert.ok(seen && Math.abs(seen!.x - (10 + m.x)) < 1e-9 && Math.abs(seen!.y - (20 + m.y)) < 1e-9);
 });
+
+test('T-51: độ dài phím đen và độ lún phím theo cường độ; mặc định giữ nguyên', async () => {
+  const { layoutKeyboard } = await import('../src/index.ts');
+  const n = derived.index.tracks.flatMap((ti) => ti.track.notes).find((x) => x.endTimeSeconds > x.startTimeSeconds)!;
+  const t = (n.startTimeSeconds + n.endTimeSeconds) / 2, o = { height: 880, pitchMin: 21, pitchMax: 108 };
+  const base = layoutKeyboard(derived.index, t, { ...o, style: { width: 100 } }), at = (ks: typeof base, p: number) => ks.find((k) => k.pitch === p)!;
+  const black = base.find((k) => k.black)!;
+  assert.equal(black.w, 62); // mặc định 0,62 như trước
+  assert.equal(layoutKeyboard(derived.index, t, { ...o, style: { width: 100, blackLength: 0.8 } }).find((k) => k.black)!.w, 80);
+  const sunk = layoutKeyboard(derived.index, t, { ...o, style: { width: 100, pressDepth: 1 } });
+  const k0 = at(base, n.pitch), k1 = at(sunk, n.pitch);
+  assert.ok(k0.active && k1.active);
+  assert.ok(k1.w < k0.w && k1.color !== k0.color, 'phím nhấn ngắn và tối hơn khi lún');
+  assert.equal(at(sunk, n.pitch === 21 ? 22 : 21).w, at(base, n.pitch === 21 ? 22 : 21).w);
+});
+
+test('T-58: vạch chấm, vạch đôi, đầu bo tròn, vạch dưới nốt', () => {
+  const base = { playheadColor: '#fff', playheadWidth: 4, playheadStyle: 'LINE', playheadArrows: false, playheadLength: 1, playheadGlow: 0, playheadHit: 'OFF' } as const;
+  const dots = playheadPrims({ ...base, playheadStyle: 'DOTTED' }, 100, 80, 80, { k: 0, color: null });
+  assert.ok(dots.length >= 8 && dots.every((r) => r.w === 4 && r.radius === 2));
+  const dbl = playheadPrims({ ...base, playheadStyle: 'DOUBLE' }, 100, 80, 80, { k: 0, color: null });
+  assert.equal(dbl.length, 2); assert.ok(dbl[0].x < 100 && dbl[1].x > 100 - 1);
+  assert.equal(playheadPrims({ ...base, playheadRound: true }, 100, 80, 80, { k: 0, color: null })[0].radius, 2);
+  assert.equal(playheadPrims(base, 100, 80, 80, { k: 0, color: null })[0].radius, 0);
+  // dưới nốt: vạch đứng trước mọi nốt trong chuỗi vẽ
+  const w = roll({ keyboard: { ...DEFAULT_PIANO_ROLL.keyboard, enabled: false }, playheadBehind: true }), o = lay(w, 1), over = lay(roll({ keyboard: { ...DEFAULT_PIANO_ROLL.keyboard, enabled: false } }), 1);
+  const idx = (ps: Primitive[]) => ps.findIndex((r) => r.kind === 'rect' && (r as RectPrim).fill === '#ffffff' && (r as RectPrim).h === H);
+  assert.ok(idx(o) < idx(over) && idx(o) >= 0);
+});

@@ -28,6 +28,8 @@ const PIANO_NUM: Record<string, { min: number; max: number; step: number }> = {
   'playheadGlow': { min: 0, max: 1, step: 0.05 },
   'grid.opacity': { min: 0, max: 1, step: 0.05 },
   'keyboard.scaleOpacity': { min: 0, max: 1, step: 0.05 },
+  'keyboard.blackLength': { min: 0.3, max: 0.9, step: 0.02 },
+  'keyboard.pressDepth': { min: 0, max: 1, step: 0.05 },
   'noteStyle.base.opacity': { min: 0, max: 1, step: 0.05 },
   'noteStyle.base.inactiveOpacity': { min: 0, max: 1, step: 0.05 },
   'noteStyle.base.cornerRadius': { min: 0, max: 999, step: 1 },

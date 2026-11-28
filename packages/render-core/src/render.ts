@@ -137,7 +137,7 @@ export function pianoRollGeometry(p: Pick<PianoRollProps, 'keyboard' | 'playhead
 function rollProps(p: PianoRollProps): PianoRollProps {
   return { ...ROLL_EXTRA, ...p, keyboard: { ...DEFAULT_KEYBOARD_STYLE, ...p.keyboard }, grid: { ...DEFAULT_ROLL_GRID, ...(p.grid ?? {}) } };
 }
-const ROLL_EXTRA = { flowAngle: 0, flowMirror: false, labelsUpright: true, playheadStyle: 'LINE', playheadArrows: false, playheadLength: 1, playheadGlow: 0, playheadHit: 'OFF', playheadHitMs: 250 } as const;
+const ROLL_EXTRA = { flowAngle: 0, flowMirror: false, labelsUpright: true, playheadStyle: 'LINE', playheadArrows: false, playheadRound: false, playheadBehind: false, playheadLength: 1, playheadGlow: 0, playheadHit: 'OFF', playheadHitMs: 250 } as const;
 
 /**
  * Hình học làn của Piano Roll ở góc chảy bất kỳ (T-59): mọi số theo toạ độ LÀN (xem `flowFrame`). Tỉ lệ thời gian và vị trí vạch phát tính trên đoạn
@@ -219,6 +219,12 @@ export const pianoRollRenderer: WidgetRenderer<PianoRollProps> = {
         }
       }
     }
+    const drawPlayhead = () => {
+      if (!(p.playheadVisible && p.playheadWidth > 0)) return;
+      const hit = p.playheadHit !== 'OFF' ? playheadHitAt(tracks, t, p.playheadHitMs, pitchMin, pitchMax, p.noteStyle) : { k: 0, color: null };
+      out.push(...playheadPrims(p, playU, Lh, f.pitchSpan, hit), ...playheadArrowPrims(p, playU, Lh, f.pitchSpan));
+    };
+    if (p.playheadBehind) drawPlayhead(); // vạch nằm dưới nốt (T-58)
     for (const r of rects) {
       const alpha = a01(r.brightness * r.opacity);
       if (alpha <= 0.004) continue;
@@ -234,10 +240,7 @@ export const pianoRollRenderer: WidgetRenderer<PianoRollProps> = {
       const alpha = a01(r.brightness * g.alpha); if (alpha <= 0.004) continue;
       out.push({ kind: 'rect', x: r.x - g.r, y: r.y + r.h / 2 - g.r, w: 2 * g.r, h: 2 * g.r, fill: '#00000000', alpha, radius: g.r, glowColor: '', glowBlur: 0, stroke: r.color, strokeWidth: Math.max(1, r.h * 0.12) });
     }
-    if (p.playheadVisible && p.playheadWidth > 0) {
-      const hit = p.playheadHit !== 'OFF' ? playheadHitAt(tracks, t, p.playheadHitMs, pitchMin, pitchMax, p.noteStyle) : { k: 0, color: null };
-      out.push(...playheadPrims(p, playU, Lh, f.pitchSpan, hit), ...playheadArrowPrims(p, playU, Lh, f.pitchSpan));
-    }
+    if (!p.playheadBehind) drawPlayhead();
     if (kb > 0) {
       const ks = { ...DEFAULT_KEYBOARD_STYLE, ...p.keyboard, width: kb };
       const keys = layoutKeyboard({ tracks, duration: derived.index.duration }, t, { height: Lh, pitchMin, pitchMax, style: ks, noteStyle: p.noteStyle, ...(kbU !== kb ? { reach: kbU } : {}) });
@@ -268,18 +271,28 @@ const rect = (x: number, y: number, w: number, h: number, fill: string): RectPri
  * Vạch phát (T-58) trên làn, vuông góc với hướng chảy, căn giữa theo chiều cao làn. Kiểu LINE mặc định ra đúng một hình chữ nhật như trước.
  * `hit.k`: mức phản ứng khi nốt chạm (FLASH: màu ngả về màu nốt vừa chạm và sáng hơn; SWELL: dày thêm tới 3 lần).
  */
-export function playheadPrims(p: Pick<PianoRollProps, 'playheadColor' | 'playheadWidth' | 'playheadStyle' | 'playheadArrows' | 'playheadLength' | 'playheadGlow' | 'playheadHit'>, u: number, laneH: number, pitchSpan: number, hit: { k: number; color: string | null }): RectPrim[] {
+export function playheadPrims(p: Pick<PianoRollProps, 'playheadColor' | 'playheadWidth' | 'playheadStyle' | 'playheadArrows' | 'playheadLength' | 'playheadGlow' | 'playheadHit'> & { playheadRound?: boolean }, u: number, laneH: number, pitchSpan: number, hit: { k: number; color: string | null }): RectPrim[] {
   const k = p.playheadHit === 'OFF' ? 0 : Math.min(1, Math.max(0, hit.k));
   const w = p.playheadWidth * (p.playheadHit === 'SWELL' ? 1 + 2 * k : 1);
   const color = p.playheadHit === 'FLASH' && k > 0 ? mixHex(p.playheadColor, mixHex(hit.color ?? p.playheadColor, '#ffffff', 0.35), k) : p.playheadColor;
   const glowBlur = Math.max(p.playheadGlow * 24, p.playheadHit === 'FLASH' ? k * 28 : 0);
   const len = p.playheadLength >= 0.999 ? laneH : Math.min(laneH, p.playheadLength * pitchSpan), v0 = (laneH - len) / 2;
-  const glow = (r: RectPrim): RectPrim => (glowBlur > 0 ? { ...r, glowColor: color, glowBlur } : r);
+  const glow = (r: RectPrim): RectPrim => { const g = glowBlur > 0 ? { ...r, glowColor: color, glowBlur } : r; return p.playheadRound ? { ...g, radius: Math.min(g.w, g.h) / 2 } : g; };
   const out: RectPrim[] = [];
   switch (p.playheadStyle) {
     case 'DASHED': {
       const dash = Math.max(4, w * 3), gap = dash * 0.75;
       for (let v = v0; v < v0 + len - 0.01; v += dash + gap) out.push(glow(rect(u - w / 2, v, w, Math.min(dash, v0 + len - v), color)));
+      break;
+    }
+    case 'DOTTED': { // chấm tròn cách đều
+      const step = Math.max(2, w * 2);
+      for (let v = v0; v < v0 + len - 0.01; v += step) out.push({ ...glow(rect(u - w / 2, v, w, Math.min(w, v0 + len - v), color)), radius: w / 2 });
+      break;
+    }
+    case 'DOUBLE': { // hai vạch song song
+      const lw = Math.max(1, w * 0.35);
+      out.push(glow(rect(u - w / 2 - lw / 2, v0, lw, len, color)), glow(rect(u + w / 2 - lw / 2, v0, lw, len, color)));
       break;
     }
     case 'BAND': out.push(glow({ ...rect(u - w / 2, v0, w, len, color), alpha: 0.35 }), rect(u - 0.5, v0, 1, len, color)); break;

@@ -23,7 +23,7 @@ import { Crop } from './Stage.tsx';
 import { InspectorSection, ResetButton, TickField } from './Inspector.tsx';
 import { SearchEmpty, SettingsSearchBox } from './SettingsSearch.tsx';
 import { NumberField } from './NumberField.tsx';
-import { AlignBottom, AlignHCenter, AlignLeft, AlignRight, AlignTop, AlignVCenter, Diamond, DistributeH, DistributeV, Duplicate, LayerDown, LayerUp, Lock, PanelRight, Plus, Precomp, ToBack, ToFront, Trash } from './Icons.tsx';
+import { AlignBottom, AlignHCenter, AlignLeft, AlignRight, AlignTop, AlignVCenter, Diamond, DistributeH, DistributeV, Duplicate, LayerDown, LayerUp, Lock, PanelRight, Plus, Precomp, PrecompRelease, ToBack, ToFront, Trash } from './Icons.tsx';
 import { isTextEntry } from '../lib/a11y.ts';
 import { layerOrder, parentCandidates, type AnimEdit, type Doc, type LayerEdit } from '../lib/commands.ts';
 import { refKey } from '../lib/compLens.ts';
@@ -628,7 +628,8 @@ function Properties({ background, scene, selected, locked, name, advanced, actio
           <NumberField label={i18n.t('web.editor.rotateBy')} value={0} spec={{ min: -360, max: 360, step: 1 }} disabled={lockedAll}
             onChange={(d) => { const free = ws.filter((x) => !locked.has(x.id)), out = rotateGroup(free.map((w) => w.layout), d); actions.layouts(Object.fromEntries(free.map((w, i) => [w.id, round(out[i])]))); }} />
         </NumRow>
-        <div className="flex gap-1.5">
+        <div className="flex flex-wrap gap-1.5">
+          <button type="button" className={btn} onClick={onPrecompose} disabled={lockedAll} title={`${i18n.t('web.layers.precompose')} (Ctrl+G)`} data-testid="props-precompose"><Precomp className="h-3.5 w-3.5" />{i18n.t('web.comp.precomposeBtn')}</button>
           <button type="button" className={btn} onClick={onDuplicate} disabled={lockedAll} title={`${i18n.t('web.editor.duplicate')} (Ctrl+D)`} data-testid="duplicate"><Duplicate className="h-3.5 w-3.5" />{i18n.t('web.editor.duplicate')}</button>
           <button type="button" className={btn} onClick={onRemove} disabled={ws.every((x) => locked.has(x.id))} title={`${i18n.t('web.editor.remove')} (Delete)`} data-testid="remove"><Trash className="h-3.5 w-3.5" />{i18n.t('web.editor.remove')}</button>
         </div>
@@ -676,7 +677,7 @@ function Properties({ background, scene, selected, locked, name, advanced, actio
           : <button type="button" className={btn} onClick={() => onOpenKeys(w.id)} data-testid="props-open-keys"><Diamond className="h-3 w-3" />{i18n.t('web.layers.openKeysBtn')}</button>}
         {!comp && <button type="button" className={btn} disabled={lk} onClick={onPrecompose} title={`${i18n.t('web.layers.precompose')} (Ctrl+G)`} data-testid="props-precompose"><Precomp className="h-3.5 w-3.5" />{i18n.t('web.comp.precomposeBtn')}</button>}
         {comp && <button type="button" className={btn} onClick={() => onOpenKeys(w.id)} data-testid="props-open-keys"><Diamond className="h-3 w-3" />{i18n.t('web.layers.openKeysBtn')}</button>}
-        {comp && <button type="button" className={btn} disabled={lk} onClick={onUncompose} title={`${i18n.t('web.comp.uncompose')} (Ctrl+Shift+G)`} data-testid="props-uncompose">{i18n.t('web.comp.uncompose')}</button>}
+        {comp && <button type="button" className={btn} disabled={lk} onClick={onUncompose} title={`${i18n.t('web.comp.uncompose')} (Ctrl+Shift+G)`} data-testid="props-uncompose"><PrecompRelease className="h-3.5 w-3.5" />{i18n.t('web.comp.uncompose')}</button>}
       </div>
       {comp && (
         <div className="border-b border-line px-4 py-2">

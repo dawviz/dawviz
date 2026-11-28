@@ -17,6 +17,8 @@ export interface EngraveOptions {
   width?: number;
   /** Số ô mỗi hàng (0 = tự dàn theo bề rộng) và số hàng mỗi trang. */
   barsPerSystem?: number; systemsPerPage?: number;
+  /** Chế độ cuộn: cả bài là MỘT hàng dài không co giãn (bề rộng layout = bề rộng thật của hàng); bỏ qua barsPerSystem/systemsPerPage. */
+  scroll?: boolean;
   musicFont?: MusicFont;
   measureNumbers?: boolean;
   /** Cỡ số ô nhịp so với mặc định của VexFlow (1 = mặc định). */
@@ -135,6 +137,8 @@ export function engrave(model: ScoreModel, o: EngraveOptions): NotationLayout {
     cur.push(i); used += need;
   }
   if (cur.length) systems.push(cur);
+  if (o.scroll && model.measures.length) { systems.length = 0; systems.push(model.measures.map((_, i) => i)); }
+  let layoutWidth = width;
 
   // 4) Dàn và ghi lệnh vẽ từng trang
   const pages: NotationPage[] = [];
@@ -150,7 +154,8 @@ export function engrave(model: ScoreModel, o: EngraveOptions): NotationLayout {
     for (const bars of systems.slice(p, p + perPage)) {
       const heads = bars.map((mi, k) => (k === 0 ? (mi === 0 || sigChanged(mi) ? HEAD_TIME : HEAD) : sigChanged(mi) ? 30 : 0));
       const total = bars.reduce((a, mi, k) => a + minW[mi] + heads[k], 0);
-      const stretch = (width - 20) / total;
+      if (o.scroll) layoutWidth = total + 20;
+      const stretch = o.scroll ? 1 : (width - 20) / total;
       let x = 10;
       const anchors: { sec: number; x: number }[] = [];
       const staves: [Stave, Stave][] = [];
@@ -163,7 +168,6 @@ export function engrave(model: ScoreModel, o: EngraveOptions): NotationLayout {
         if (k === 0 && o.measureNumbers !== false && mi > 0) { top.setMeasure(mi + 1); const sc = o.measureNumberScale ?? 1; if (sc !== 1) top.setFontSize(parseFloat(String(top.fontInfo.size)) * sc); }
         if (mi === 0 && o.tempoBpm) top.setTempo({ duration: 'q', bpm: Math.round(o.tempoBpm) }, -10);
         if (mi === model.measures.length - 1) { top.setEndBarType(Barline.type.END); bot.setEndBarType(Barline.type.END); }
-        if (mi === 0) { top.setBegBarType(Barline.type.NONE); bot.setBegBarType(Barline.type.NONE); } // không vạch kẻ trước ô 1 (T-133)
         const start = Math.max(top.getNoteStartX(), bot.getNoteStartX());
         top.setNoteStartX(start); bot.setNoteStartX(start);
         staves.push([top, bot]);
@@ -175,7 +179,7 @@ export function engrave(model: ScoreModel, o: EngraveOptions): NotationLayout {
       });
       for (const [top, bot] of staves) { drawFramed(ctx, top); drawFramed(ctx, bot); }
       drawFramed(ctx, new StaveConnector(staves[0][0], staves[0][1]).setType('brace'));
-      if (bars[0] !== 0) drawFramed(ctx, new StaveConnector(staves[0][0], staves[0][1]).setType('singleLeft'));
+      drawFramed(ctx, new StaveConnector(staves[0][0], staves[0][1]).setType('singleLeft'));
       for (const [top, bot] of staves) drawFramed(ctx, new StaveConnector(top, bot).setType('singleRight'));
       bars.forEach((mi, k) => {
         const b = built[mi], m = model.measures[mi];
@@ -238,7 +242,7 @@ export function engrave(model: ScoreModel, o: EngraveOptions): NotationLayout {
 
   const st = model.stats;
   return {
-    version: 1, width, maxHeight: Math.max(...pages.map((p) => p.height)), pages, owners, glyphs, key: model.key,
+    version: 1, width: layoutWidth, maxHeight: Math.max(...pages.map((p) => p.height)), pages, owners, glyphs, key: model.key,
     stats: { measures: model.measures.length, notes: st.notes, exactOnsets: st.exactOnsets, meanOnsetErr: st.meanOnsetErr, engraveMs: Math.round(performance.now() - t0) },
     warnings,
   };

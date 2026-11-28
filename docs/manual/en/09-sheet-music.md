@@ -17,6 +17,7 @@ Under **Tracks**, keep **All showing** or press **Choose** and keep only the mel
 ## Common settings
 
 - **Music font**: **Engraved** (like printed music), **Handwritten** (pen strokes, handwritten text) or **Old style** (thin lines).
+- **Layout**: **Pages** (default) shows one page at a time and turns it; **Scrolling** lays the whole song out as one long line that runs past a fixed playhead (set **Playhead position** across the widget width; turn the playhead on in the drawing group). In Scrolling the page-only boxes (**Bars per line**, **Lines per page**, the page fade time) are hidden.
 - **Bars per line**: bars on one line; 0 fits them to the width. **Lines per page**: when a page ends the next one appears.
 - **Ink colour**, **Colour of the playing note**. Choose **Track colour** to colour playing notes by track.
 - **Playing note size**: 1 means no growth; 1.35 is a third bigger.

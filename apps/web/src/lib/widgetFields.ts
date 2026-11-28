@@ -403,6 +403,8 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['playheadWidth'], 'num', 'prPhWidth', { when: (P) => !!P.playheadVisible, num: { min: 0, max: 40, step: 0.5, range: [0, 12] } }),
     L(['playheadColor'], 'color', 'prPhColor', { when: (P) => !!P.playheadVisible }),
     L(['playheadArrows'], 'check', 'prPhArrows', { when: (P) => !!P.playheadVisible }),
+    L(['playheadRound'], 'check', 'prPhRound', { when: (P) => !!P.playheadVisible && P.playheadStyle !== 'DOTTED' }),
+    L(['playheadBehind'], 'check', 'prPhBehind', { when: (P) => !!P.playheadVisible }),
     L(['playheadHit'], 'choice', 'prPhHit', { when: (P) => !!P.playheadVisible, options: PLAYHEAD_HITS, prefix: 'web.ws.prPhHit.' }),
     L(['playheadHitMs'], 'num', 'prPhHitMs', { adv: true, when: (P) => !!P.playheadVisible && P.playheadHit !== 'OFF', num: { min: 30, max: 2000, step: 10, range: [50, 800] } }),
     L(['playheadLength'], 'num', 'prPhLength', { adv: true, when: (P) => !!P.playheadVisible, num: { min: 0.05, max: 1, step: 0.05 } }),
@@ -418,6 +420,8 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['keyboard', 'scaleOpacity'], 'num', 'prKbScaleOpacity', { adv: true, when: (P) => kbOn(P) && kb(P).scale !== 'OFF', num: { min: 0, max: 1, step: 0.05 } }),
     L(['keyboard', 'useTrackColor'], 'check', 'prKbTrackColor', { when: kbOn }),
     L(['keyboard', 'pressedColor'], 'color', 'prKbPressed', { when: (P) => kbOn(P) && !kb(P).useTrackColor }),
+    L(['keyboard', 'blackLength'], 'num', 'prKbBlackLength', { adv: true, when: kbOn, num: { min: 0.3, max: 0.9, step: 0.02 } }),
+    L(['keyboard', 'pressDepth'], 'num', 'prKbPressDepth', { adv: true, when: kbOn, num: { min: 0, max: 1, step: 0.05 } }),
     L(['keyboard', 'whiteColor'], 'color', 'prKbWhite', { adv: true, when: kbOn }),
     L(['keyboard', 'blackColor'], 'color', 'prKbBlack', { adv: true, when: kbOn }),
     // Lưới ô nhịp
@@ -461,8 +465,10 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
   // Bản nhạc (D-63): nhóm "bản nhạc" (đổi thì dựng lại, vài trăm ms) rồi nhóm "hình vẽ" (đổi ngay).
   NOTATION: [
     L(['musicFont'], 'select', 'ntFont', { options: ['BRAVURA', 'PETALUMA', 'GONVILLE'], prefix: 'web.ws.ntFont.' }),
-    L(['barsPerSystem'], 'num', 'ntBars', { num: { min: 0, max: 8, step: 1 } }),
-    L(['systemsPerPage'], 'num', 'ntSystems', { num: { min: 1, max: 4, step: 1 } }),
+    L(['layoutMode'], 'choice', 'ntMode', { options: ['PAGES', 'SCROLL'], prefix: 'web.ws.ntMode.', testId: 'ws-nt-mode' }),
+    L(['scrollAnchor'], 'num', 'ntAnchor', { when: (P) => P.layoutMode === 'SCROLL', num: { min: 0.05, max: 0.95, step: 0.05 } }),
+    L(['barsPerSystem'], 'num', 'ntBars', { when: (P) => P.layoutMode !== 'SCROLL', num: { min: 0, max: 8, step: 1 } }),
+    L(['systemsPerPage'], 'num', 'ntSystems', { when: (P) => P.layoutMode !== 'SCROLL', num: { min: 1, max: 4, step: 1 } }),
     L(['inkColor'], 'color', 'ntInk'),
     L(['activeColor'], 'color', 'ntActive', { when: (P) => P.colorMode === 'SOLID' }),
     L(['colorMode'], 'choice', 'ntColorMode', { options: ['SOLID', 'TRACK'], prefix: 'web.ws.ntColorMode.' }),
@@ -507,7 +513,7 @@ export const WIDGET_FIELDS: Readonly<Partial<Record<WidgetType, readonly FieldDe
     L(['boilFps'], 'num', 'ntBoil', { adv: true, when: (P) => Number(P.rough) > 0, num: { min: 0, max: 24, step: 1 } }),
     L(['seed'], 'num', 'ntSeed', { adv: true, when: (P) => Number(P.rough) > 0, num: { min: 0, max: 999999, step: 1 } }),
     L(['align'], 'choice', 'ntAlign', { adv: true, options: ['TOP', 'CENTER'], prefix: 'web.ws.ntAlign.' }),
-    L(['pageFadeMs'], 'num', 'ntPageFade', { adv: true, num: { min: 0, max: 2000, step: 10, range: [0, 1000] } }),
+    L(['pageFadeMs'], 'num', 'ntPageFade', { adv: true, when: (P) => P.layoutMode !== 'SCROLL', num: { min: 0, max: 2000, step: 10, range: [0, 1000] } }),
     L(['auraGlow'], 'num', 'ntAuraGlow', { adv: true, when: (P) => P.aura !== 'OFF', num: { min: 0, max: 1, step: 0.05 } }),
     L(['auraMin'], 'num', 'ntAuraMin', { adv: true, when: (P) => P.aura === 'BEAT' || P.aura === 'BAR' || P.aura === 'TIME', num: { min: 0, max: 1, step: 0.05 } }),
     L(['auraColor'], 'colorOpt', 'ntAuraColor', { adv: true, when: (P) => P.aura !== 'OFF' }),
@@ -545,9 +551,9 @@ export const WIDGET_SECTIONS: Readonly<Partial<Record<WidgetType, readonly Secti
   ],
   PIANO_ROLL: [
     SEC('flow', ['flowAngle', 'flowMirror', 'labelsUpright']),
-    SEC('playhead', ['playheadVisible', 'playheadStyle', 'playheadWidth', 'playheadColor', 'playheadArrows', 'playheadHit', 'playheadHitMs', 'playheadLength', 'playheadGlow'], { head: 'playheadVisible' }),
+    SEC('playhead', ['playheadVisible', 'playheadStyle', 'playheadWidth', 'playheadColor', 'playheadArrows', 'playheadRound', 'playheadBehind', 'playheadHit', 'playheadHitMs', 'playheadLength', 'playheadGlow'], { head: 'playheadVisible' }),
     SEC('keyboard', ['keyboard.enabled', 'keyboard.shape', 'keyboard.labels', 'keyboard.labelOctave', 'keyboard.labelColor', 'keyboard.scale', 'keyboard.scaleColor', 'keyboard.scaleOpacity',
-      'keyboard.useTrackColor', 'keyboard.pressedColor', 'keyboard.whiteColor', 'keyboard.blackColor'], { head: 'keyboard.enabled' }),
+      'keyboard.useTrackColor', 'keyboard.pressedColor', 'keyboard.blackLength', 'keyboard.pressDepth', 'keyboard.whiteColor', 'keyboard.blackColor'], { head: 'keyboard.enabled' }),
     SEC('grid', ['grid.bars', 'grid.beats', 'grid.numbers', 'grid.color', 'grid.opacity']),
   ],
   DEGREE: [
@@ -613,7 +619,7 @@ export const WIDGET_SECTIONS: Readonly<Partial<Record<WidgetType, readonly Secti
       'animator.fromOpacity', 'animator.fromX', 'animator.fromY', 'animator.fromScale', 'animator.fromColor', 'animator.countUp', 'animator.seed'], { head: 'animator.enabled' }),
   ],
   NOTATION: [
-    SEC('score', ['musicFont', 'barsPerSystem', 'systemsPerPage', 'division', 'triplets', 'simplify', 'voices', 'splitPitch', 'keyMode', 'keyFifths', 'keyMinor',
+    SEC('score', ['musicFont', 'layoutMode', 'scrollAnchor', 'barsPerSystem', 'systemsPerPage', 'division', 'triplets', 'simplify', 'voices', 'splitPitch', 'keyMode', 'keyFifths', 'keyMinor',
       'measureNumbers', 'measureNumberSize', 'tempoMark', 'align', 'pageFadeMs']),
     SEC('colour', ['colorMode', 'inkColor', 'activeColor', 'playedColor', 'opacity', 'playedOpacity', 'staticOpacity', 'upcomingOpacity']),
     SEC('zoom', ['zoom', 'zoomMode', 'zoomMs']),

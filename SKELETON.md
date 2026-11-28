@@ -1651,7 +1651,7 @@ function playheadHitAt(tracks: TrackIndex[], t: number, ms: number, pitchMin: nu
 function keyboardScaleAt(mode: KeyboardStyle['scale'], tonic: number | undefined, tracks: TrackIndex[], t: number):    // Thang âm đánh dấu trên bàn phím tại t (T-51/T-41): tập lớp cao độ và nốt chủ; null = tắt hoặc chưa đủ nốt để …
 const KEY_WINDOW_SEC   // Cửa sổ nhận diện giọng cho đánh dấu thang âm (giây), như mặc định widget Giọng.
 const pianoRollRenderer
-function playheadPrims(p: Pick<PianoRollProps, 'playheadColor' | 'playheadWidth' | 'playheadStyle' | 'playheadArrows' | 'playheadLength' | 'playheadGlow' | 'playheadHit'>, u: number, laneH: number, pitchSpan: number, hit: { k: number; color: string | null }): RectPrim[]   // Vạch phát (T-58) trên làn, vuông góc với hướng chảy, căn giữa theo chiều cao làn. Kiểu LINE mặc định ra đúng …
+function playheadPrims(p: Pick<PianoRollProps, 'playheadColor' | 'playheadWidth' | 'playheadStyle' | 'playheadArrows' | 'playheadLength' | 'playheadGlow' | 'playheadHit'> & { playheadRound?: boolean }, u: number, laneH: number, pitchSpan: number, hit: { k: number; color: string | null }): RectPrim[]   // Vạch phát (T-58) trên làn, vuông góc với hướng chảy, căn giữa theo chiều cao làn. Kiểu LINE mặc định ra đúng …
 function playheadArrowPrims(p: Pick<PianoRollProps, 'playheadColor' | 'playheadWidth' | 'playheadArrows' | 'playheadLength'>, u: number, laneH: number, pitchSpan: number): PolyPrim[]   // Đầu mũi tên hai đầu của vạch phát (T-58): hai tam giác đặc chỉ vào trong, nằm gọn trong đoạn vạch. Rỗng khi `…
 function keyLabels(f: FlowFrame, keys: KeyRect[], ks: KeyboardStyle, kb: number, kbU: number, rowH: number, naming: NoteNaming, upright: boolean): TextPrim[]   // Tên nốt trên phím (T-51, P-12). Cỡ chữ theo chiều cao một hàng phím; quá nhỏ (< 5 pt) thì không vẽ. Tâm nhãn …
 const WIDGET_RENDERERS   // Bảng renderer theo loại. Widget chưa có renderer được bỏ qua khi vẽ (vẫn giữ trong Scene).
@@ -2180,6 +2180,7 @@ const RowsTaller = (p: P) =>   // Kéo cho hàng cao hơn / thấp hơn (timelin
 const RowsShorter = (p: P) =>
 const Scissors = (p: P) =>   // Kéo cắt: tách lớp tại vạch phát.
 const Precomp = (p: P) =>   // Hai khung chồng nhau: precomp.
+const PrecompRelease = (p: P) =>   // Khung nét đứt chứa hai khung nhỏ: gỡ precomp.
 const Flag = (p: P) =>   // Cờ đánh dấu: phase.
 ```
 
@@ -4298,4 +4299,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 11 thư mục src, 1974 ký hiệu công khai -->
+<!-- 11 thư mục src, 1975 ký hiệu công khai -->
