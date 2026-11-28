@@ -5,7 +5,7 @@ section: "8. Quyết định đề xuất"
 path: "8. Quyết định đề xuất"
 chunk: 8-quyet-dinh-de-xuat.md
 source_lines: 207-218
-source_sha1: 32d290c14b
+source_sha1: 24e38c7000
 ids: [AD-08, AD-09, AD-10, AD-11, AD-12, D-06, D-38, OI-16]
 ---
 ## 8. Quyết định đề xuất

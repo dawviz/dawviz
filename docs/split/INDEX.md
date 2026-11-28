@@ -194,7 +194,7 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [9. Yêu cầu tương ứng (đã đưa vào SRS §3.8)](CUSTOMIZATION/9-yeu-cau-tuong-ung-da-dua-vao-srs-3-8.md) · 894 ký tự
 - [10. Khả thi](CUSTOMIZATION/10-kha-thi.md) · 1646 ký tự
 - [11. Vấn đề mở](CUSTOMIZATION/11-van-de-mo.md) · 399 ký tự
-- [12. Hướng 3D đầy đủ (sau 1.2) **[ĐỀ XUẤT, chưa chốt]**](CUSTOMIZATION/12-huong-3d-day-du-sau-1-2-de-xuat-chua-chot.md) · 3061 ký tự
+- [12. Hướng 3D đầy đủ (sau 1.2) **[ĐỀ XUẤT, chưa chốt]**](CUSTOMIZATION/12-huong-3d-day-du-sau-1-2-de-xuat-chua-chot.md) · 3187 ký tự
 
 ## ANIMATION-CATALOG.md — Danh mục hiệu ứng chuyển động và đường cong nội suy
 
@@ -292,6 +292,24 @@ Sinh tự động bởi `split_doc.py`. Không sửa tay; sửa file nguồn r�
 - [6. Cụm việc nhỏ của đợt này (T-127…T-133)](WIDGET-REVAMP/6-cum-viec-nho-cua-dot-nay-t-127-t-133.md) · 2523 ký tự
 - [7. Thứ tự làm và cách chia PR](WIDGET-REVAMP/7-thu-tu-lam-va-cach-chia-pr.md) · 768 ký tự
 - [8. Vấn đề mở](WIDGET-REVAMP/8-van-de-mo.md) · 388 ký tự
+
+## VIZ-REFERENCE.md — Tham khảo vizz.fm: mẫu visualizer 3D và cách đưa vào DawViz **[ĐỀ XUẤT, chưa chốt]**
+
+- [Tham khảo vizz.fm: mẫu visualizer 3D và cách đưa vào DawViz **[ĐỀ XUẤT, chưa chốt]** (mở đầu)](VIZ-REFERENCE/tham-khao-vizz-fm-mau-visualizer-3d-va-cach-dua.md) · 780 ký tự
+- [1. vizz.fm là gì về mặt kỹ thuật](VIZ-REFERENCE/1-vizz-fm-la-gi-ve-mat-ky-thuat.md) · 1870 ký tự
+- [2. Ba mức vẽ trong DawViz](VIZ-REFERENCE/2-ba-muc-ve-trong-dawviz.md) · 796 ký tự
+- [3. Từng visualizer](VIZ-REFERENCE/3-tung-visualizer.md) · 3833 ký tự
+- [4. Hiệu ứng chung của vizz.fm đối chiếu với ta](VIZ-REFERENCE/4-hieu-ung-chung-cua-vizz-fm-doi-chieu-voi-ta.md) · 881 ký tự
+- [5. Ràng buộc tất định](VIZ-REFERENCE/5-rang-buoc-tat-dinh.md) · 725 ký tự
+- [6. Đề xuất lộ trình](VIZ-REFERENCE/6-de-xuat-lo-trinh.md) · 969 ký tự
+
+## VISUAL-LAYERS.md — Lớp đồ hoạ: nạp PSD, hình học, phát sáng theo nhạc **[ĐỀ XUẤT, chưa chốt]**
+
+- [Lớp đồ hoạ: nạp PSD, hình học, phát sáng theo nhạc **[ĐỀ XUẤT, chưa chốt]** (mở đầu)](VISUAL-LAYERS/lop-do-hoa-nap-psd-hinh-hoc-phat-sang-theo-nhac.md) · 574 ký tự
+- [1. Nạp PSD bằng ag-psd](VISUAL-LAYERS/1-nap-psd-bang-ag-psd.md) · 3934 ký tự
+- [2. Widget Hình (SHAPE)](VISUAL-LAYERS/2-widget-hinh-shape.md) · 413 ký tự
+- [3. Phản ứng theo nhạc: cái đã có và cái cần thêm](VISUAL-LAYERS/3-phan-ung-theo-nhac-cai-da-co-va-cai-can-them.md) · 1034 ký tự
+- [4. Thứ tự đề xuất](VISUAL-LAYERS/4-thu-tu-de-xuat.md) · 445 ký tự
 
 ## PARSER-SRS.md — SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer
 

@@ -214,6 +214,14 @@
         {
           "src": "docs/design/WIDGET-REVAMP.md",
           "title": "Tu sửa widget và mở rộng sáng tạo"
+        },
+        {
+          "src": "docs/design/VIZ-REFERENCE.md",
+          "title": "Tham khảo vizz.fm: visualizer 3D"
+        },
+        {
+          "src": "docs/design/VISUAL-LAYERS.md",
+          "title": "Lớp đồ hoạ: PSD, Hình, phát sáng theo nhạc"
         }
       ]
     },

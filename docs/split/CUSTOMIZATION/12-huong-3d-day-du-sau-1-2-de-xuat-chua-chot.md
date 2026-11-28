@@ -4,11 +4,13 @@ doc_title: "Tùy biến tối đa: storyboard, chuyển cảnh nốt, đường 
 section: "12. Hướng 3D đầy đủ (sau 1.2) **[ĐỀ XUẤT, chưa chốt]**"
 path: "12. Hướng 3D đầy đủ (sau 1.2) **[ĐỀ XUẤT, chưa chốt]**"
 chunk: 12-huong-3d-day-du-sau-1-2-de-xuat-chua-chot.md
-source_lines: 255-283
-source_sha1: 32d290c14b
+source_lines: 255-285
+source_sha1: 24e38c7000
 ids: [AD-07, AD-12, D-43, D-47, REQ-GRAPHICS-05, REQ-GRAPHICS-15, REQ-PARSER-00]
 ---
 ## 12. Hướng 3D đầy đủ (sau 1.2) **[ĐỀ XUẤT, chưa chốt]**
+
+Khảo sát visualizer 3D tham chiếu (vizz.fm, three.js) và cách phân mức 2D / 2.5D / WebGL: [VIZ-REFERENCE](../../design/VIZ-REFERENCE.md).
 
 Ba mức, theo thứ tự làm:
 

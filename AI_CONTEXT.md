@@ -84,7 +84,7 @@ node plugins/dawviz/skills/dawviz/scripts/dawviz.mjs --help   # điều khiển 
 <!-- sync:begin docs-index -->
 <!-- Khối này do scripts/sync-docs.mjs sinh ra; đừng sửa tay. -->
 
-Có 25 tài liệu, 363 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
+Có 27 tài liệu, 375 mảnh. Mỗi mục là **một tệp nhỏ**; chỉ mở mảnh cần dùng. Mọi heading (kể cả cấp thấp) và neo `#…`: [docs/split/HEADINGS.md](docs/split/HEADINGS.md). Tìm nhanh: `node scripts/sync-docs.mjs --find "từ khóa"`.
 
 ### BRD.md — TÀI LIỆU YÊU CẦU NGHIỆP VỤ (BUSINESS REQUIREMENTS DOCUMENT - BRD)
 
@@ -292,7 +292,7 @@ Nguồn: `docs/design/CUSTOMIZATION.md` · [thứ tự đọc](docs/split/CUSTOM
 - [9. Yêu cầu tương ứng (đã đưa vào SRS §3.8)](docs/split/CUSTOMIZATION/9-yeu-cau-tuong-ung-da-dua-vao-srs-3-8.md) · 0.9k
 - [10. Khả thi](docs/split/CUSTOMIZATION/10-kha-thi.md) · 1.6k
 - [11. Vấn đề mở](docs/split/CUSTOMIZATION/11-van-de-mo.md) · 0.4k
-- [12. Hướng 3D đầy đủ (sau 1.2) **[ĐỀ XUẤT, chưa chốt]**](docs/split/CUSTOMIZATION/12-huong-3d-day-du-sau-1-2-de-xuat-chua-chot.md) · 3.1k
+- [12. Hướng 3D đầy đủ (sau 1.2) **[ĐỀ XUẤT, chưa chốt]**](docs/split/CUSTOMIZATION/12-huong-3d-day-du-sau-1-2-de-xuat-chua-chot.md) · 3.2k
 
 ### ANIMATION-CATALOG.md — Danh mục hiệu ứng chuyển động và đường cong nội suy
 
@@ -402,6 +402,28 @@ Nguồn: `docs/design/WIDGET-REVAMP.md` · [thứ tự đọc](docs/split/WIDGET
 - [6. Cụm việc nhỏ của đợt này (T-127…T-133)](docs/split/WIDGET-REVAMP/6-cum-viec-nho-cua-dot-nay-t-127-t-133.md) · 2.5k
 - [7. Thứ tự làm và cách chia PR](docs/split/WIDGET-REVAMP/7-thu-tu-lam-va-cach-chia-pr.md) · 0.8k
 - [8. Vấn đề mở](docs/split/WIDGET-REVAMP/8-van-de-mo.md) · 0.4k
+
+### VIZ-REFERENCE.md — Tham khảo vizz.fm: mẫu visualizer 3D và cách đưa vào DawViz **[ĐỀ XUẤT, chưa chốt]**
+
+Nguồn: `docs/design/VIZ-REFERENCE.md` · [thứ tự đọc](docs/split/VIZ-REFERENCE/_index.md)
+
+- [Tham khảo vizz.fm: mẫu visualizer 3D và cách đưa vào DawViz **[ĐỀ XUẤT, chưa chốt]** (mở đầu)](docs/split/VIZ-REFERENCE/tham-khao-vizz-fm-mau-visualizer-3d-va-cach-dua.md) · 0.8k
+- [1. vizz.fm là gì về mặt kỹ thuật](docs/split/VIZ-REFERENCE/1-vizz-fm-la-gi-ve-mat-ky-thuat.md) · 1.9k
+- [2. Ba mức vẽ trong DawViz](docs/split/VIZ-REFERENCE/2-ba-muc-ve-trong-dawviz.md) · 0.8k
+- [3. Từng visualizer](docs/split/VIZ-REFERENCE/3-tung-visualizer.md) · 3.8k
+- [4. Hiệu ứng chung của vizz.fm đối chiếu với ta](docs/split/VIZ-REFERENCE/4-hieu-ung-chung-cua-vizz-fm-doi-chieu-voi-ta.md) · 0.9k
+- [5. Ràng buộc tất định](docs/split/VIZ-REFERENCE/5-rang-buoc-tat-dinh.md) · 0.7k
+- [6. Đề xuất lộ trình](docs/split/VIZ-REFERENCE/6-de-xuat-lo-trinh.md) · 1.0k
+
+### VISUAL-LAYERS.md — Lớp đồ hoạ: nạp PSD, hình học, phát sáng theo nhạc **[ĐỀ XUẤT, chưa chốt]**
+
+Nguồn: `docs/design/VISUAL-LAYERS.md` · [thứ tự đọc](docs/split/VISUAL-LAYERS/_index.md)
+
+- [Lớp đồ hoạ: nạp PSD, hình học, phát sáng theo nhạc **[ĐỀ XUẤT, chưa chốt]** (mở đầu)](docs/split/VISUAL-LAYERS/lop-do-hoa-nap-psd-hinh-hoc-phat-sang-theo-nhac.md) · 0.6k
+- [1. Nạp PSD bằng ag-psd](docs/split/VISUAL-LAYERS/1-nap-psd-bang-ag-psd.md) · 3.9k
+- [2. Widget Hình (SHAPE)](docs/split/VISUAL-LAYERS/2-widget-hinh-shape.md) · 0.4k
+- [3. Phản ứng theo nhạc: cái đã có và cái cần thêm](docs/split/VISUAL-LAYERS/3-phan-ung-theo-nhac-cai-da-co-va-cai-can-them.md) · 1.0k
+- [4. Thứ tự đề xuất](docs/split/VISUAL-LAYERS/4-thu-tu-de-xuat.md) · 0.4k
 
 ### PARSER-SRS.md — SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer
 
