@@ -17,7 +17,7 @@ Màu mực được chọn theo nền khung: nền sáng thì mực tối, nền
 ## Thiết lập hay dùng
 
 - **Kiểu chữ nhạc**: **In** (như bản nhạc in), **Viết tay** (nét bút, chữ viết tay) hoặc **Cổ điển** (nét mảnh).
-- **Cách bày**: **Lật trang** (mặc định) hiện từng trang rồi lật; **Cuộn** trải cả bài thành một hàng dài chạy ngang qua vạch phát đứng yên (chỉnh **Vị trí vạch phát** trên bề rộng widget; nên bật vạch phát ở nhóm hình vẽ). Ở chế độ Cuộn, các ô chỉ dành cho trang (**Số ô mỗi hàng**, **Số hàng mỗi trang**, thời gian mờ khi sang trang) được ẩn.
+- **Cách bày**: **Lật trang** (mặc định) hiện từng trang rồi lật; **Cuộn** trải cả bài thành một hàng dài chạy ngang qua vạch phát đứng yên (chỉnh **Vị trí vạch phát** trên bề rộng widget; nên bật vạch phát ở nhóm hình vẽ). Bản nhạc trôi đều, không giật ở vạch nhịp, nên nốt có thể tới vạch phát sớm hoặc muộn một chút; nốt vẫn sáng đúng lúc vang. Ở chế độ Cuộn, các ô chỉ dành cho trang (**Số ô mỗi hàng**, **Số hàng mỗi trang**, thời gian mờ khi sang trang) được ẩn.
 - **Số ô mỗi hàng**: số ô nhịp trên một hàng; 0 là tự xếp theo bề rộng. **Số hàng mỗi trang**: hết trang thì sang trang mới.
 - **Màu mực**, **Màu nốt đang phát**. Chọn **Màu của track** để nốt đang phát lấy màu của track.
 - **Cỡ nốt đang phát**: 1 là không phóng to; 1,35 là to hơn một phần ba.

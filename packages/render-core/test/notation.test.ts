@@ -331,3 +331,18 @@ test('sanitizeScene NOTATION: giá trị sai về mặc định kèm cảnh báo
   assert.equal(notationInkFor('#ffffff').inkColor, '#16181d'); assert.equal(notationInkFor('#0c0e16').inkColor, DEFAULT_NOTATION.inkColor);
   assert.equal(notationInkFor('#ffffff').auraColor, DEFAULT_NOTATION.activeColor); assert.equal(notationInkFor('#0c0e16').auraColor, '');
 });
+
+test('Cuộn: systemXSmooth liên tục, khớp systemX trên đoạn đều; fit theo khoảng dọc thật (nốt có dòng kẻ phụ không bị cắt)', async () => {
+  const { systemXSmooth, layoutExtentY, notationFit } = await import('../src/index.ts');
+  const sys = { y0: 0, y1: 100, start: 0, end: 4, at: [0, 1, 1.05, 2, 4], ax: [0, 100, 300, 400, 600] }; // nhảy vọt 200 đơn vị trong 0,05 s
+  assert.ok(Math.abs(systemXSmooth(sys, 3, 0.3) - systemX(sys, 3)) < 1e-9); // đoạn tuyến tính: trung bình đối xứng = giá trị
+  let maxV = 0;
+  for (let i = 0; i < 300; i++) { const t = 0.5 + i / 300, v = (systemXSmooth(sys, t + 0.01, 0.35) - systemXSmooth(sys, t, 0.35)) / 0.01; maxV = Math.max(maxV, v); }
+  assert.ok(maxV < 500, 'tốc độ sau làm trơn không còn vọt 4000 đơn vị/giây: ' + maxV);
+  const item = { o: -1, k: 1 as const, d: [0, 0, -50, 1, 10, 260], lw: 1 };
+  const lay = { version: 1, width: 1000, maxHeight: 200, pages: [{ start: 0, end: 1, height: 200, firstBar: 0, lastBar: 0, items: [item], systems: [] }], owners: [], glyphs: [] } as unknown as NotationLayout;
+  const [y0, y1] = layoutExtentY(lay);
+  assert.ok(y0 <= -50 && y1 >= 260);
+  const f = notationFit(lay, 1000, 155, 200, 'CENTER');
+  assert.ok(f.ty + y0 * f.s >= -0.01 && f.ty + y1 * f.s <= 155.01, 'mọi nét nằm trong chiều cao widget');
+});

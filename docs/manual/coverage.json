@@ -306,12 +306,12 @@
         "locales/en.json#warn.WARN_NOTATION",
         "locales/en.json#web.export.notationPending"
       ],
-      "uiHash": "74ffcac917c3",
-      "viHash": "9dff7b638156",
-      "enHash": "713d7635add5",
+      "uiHash": "096991dc9650",
+      "viHash": "8e31b86877ef",
+      "enHash": "4ef4af607e85",
       "coverHashes": {
         "apps/web/src/lib/notation/useNotation.ts": "d7521e3769df",
-        "packages/render-core/src/notation/widget.ts": "c5e6f6425b05",
+        "packages/render-core/src/notation/widget.ts": "430d68f75906",
         "locales/en.json#web.ws.nt": "90bac6e4b5f5",
         "locales/en.json#warn.WARN_NOTATION": "a54d2c6c5a70",
         "locales/en.json#web.export.notationPending": "8d3b9fd42ea6"

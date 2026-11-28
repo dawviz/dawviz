@@ -1456,6 +1456,8 @@ interface NotationPage
 interface NotationWarning
 interface NotationLayout
 function pageIndexAt(layout: NotationLayout, t: number): number   // Trang chứa thời điểm t (tìm nhị phân theo `start`).
+function systemXSmooth(s: NotationSystem, t: number, h: number): number   // x trung bình của vạch phát trong cửa sổ [t − h, t + h] (tính đúng bằng tích phân, không lấy mẫu). Dùng cho ch…
+function layoutExtentY(lay: NotationLayout): readonly [number, number]   // Khoảng dọc của cả bản dựng (mọi trang), không hẹp hơn [0, maxHeight]. Đệm theo layout.
 function systemX(s: NotationSystem, t: number): number   // x của vạch phát trong một hàng tại t (nội suy tuyến tính giữa các mốc).
 ```
 
@@ -1477,7 +1479,8 @@ function erasePicked(p: Pick<NotationProps, 'erase' | 'eraseAmount' | 'eraseSeed
 function barsAfter(g: BarGrid, t: number, n: number): number   // Giây sau `n` ô nhịp kể từ `t` (có phần lẻ), theo lưới ô nhịp của bài.
 function eraseAt(p: Pick<NotationProps, 'eraseAfterBars' | 'eraseMs'>, off: number, t: number, after?: (t: number, bars: number) => number): number   // Mức đã xoá của một chủ kết thúc lúc `off` (0 = còn nguyên, 1 = đã xoá hết). `after` đổi (giây, số ô) → giây; …
 function itemSpanX(it: NotationItem, glyphs: readonly PathData[]): readonly [number, number]   // Hộp bao theo chiều ngang của một phần tử (đơn vị trang), có lề nhỏ cho bề dày nét. Đệm theo phần tử.
-function notationFit(lay: NotationLayout, W: number, H: number, pageH: number, align: NotationProps['align'])   // Phép đặt trang vào khung widget: tỉ lệ theo bề rộng và chiều cao trang lớn nhất (tỉ lệ không đổi khi lật tran…
+function notationFit(lay: NotationLayout, W: number, H: number, pageH: number, align: NotationProps['align'])   // Phép đặt trang vào khung widget: tỉ lệ theo bề rộng và chiều cao thật của bản dựng (kể cả nốt có dòng kẻ phụ …
+const SCROLL_SMOOTH_SEC   // Cửa sổ làm trơn tốc độ cuộn (giây, nửa bề rộng).
 function notationPrims(lay: NotationLayout, p: NotationProps, W: number, H: number, t: number, trackColor: (track: number) => string | undefined, pos?: MusicPos, after?: (t: number, bars: number) => number): Primitive[]   // Primitive của một khung: mỗi phần tử của trang hiện tại thành một PathPrim (màu theo trạng thái nốt), nốt đan…
 const notationRenderer
 ```
@@ -4299,4 +4302,4 @@ type SpectrumOut
 - `test/midi-alp.test.js`
 - `test/rpp.test.js`
 
-<!-- 11 thư mục src, 1975 ký hiệu công khai -->
+<!-- 11 thư mục src, 1978 ký hiệu công khai -->
