@@ -254,6 +254,8 @@ Canvas 2D đủ cho v1. Nếu đo thấy không đạt 60 fps xem trước, bư�
 
 ## 12. Hướng 3D đầy đủ (sau 1.2) **[ĐỀ XUẤT, chưa chốt]**
 
+Khảo sát visualizer 3D tham chiếu (vizz.fm, three.js) và cách phân mức 2D / 2.5D / WebGL: [VIZ-REFERENCE](VIZ-REFERENCE.md).
+
 Ba mức, theo thứ tự làm:
 
 | Mức | Là gì | Bản |

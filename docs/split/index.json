@@ -3933,7 +3933,7 @@
   },
   "CUSTOMIZATION.md": {
    "title": "Tùy biến tối đa: storyboard, chuyển cảnh nốt, đường cong easing, hạt, tài nguyên và preset cộng đồng",
-   "sha1": "32d290c14b",
+   "sha1": "24e38c7000",
    "chunks": [
     {
      "n": 0,
@@ -4169,10 +4169,10 @@
      "path": [
       "12. Hướng 3D đầy đủ (sau 1.2) **[ĐỀ XUẤT, chưa chốt]**"
      ],
-     "chars": 3061,
+     "chars": 3187,
      "lines": [
       255,
-      283
+      285
      ],
      "ids": [
       "AD-07",
@@ -5490,6 +5490,203 @@
      "lines": [
       219,
       224
+     ],
+     "ids": []
+    }
+   ]
+  },
+  "VIZ-REFERENCE.md": {
+   "title": "Tham khảo vizz.fm: mẫu visualizer 3D và cách đưa vào DawViz **[ĐỀ XUẤT, chưa chốt]**",
+   "sha1": "1ee00dca1b",
+   "chunks": [
+    {
+     "n": 0,
+     "file": "VIZ-REFERENCE/tham-khao-vizz-fm-mau-visualizer-3d-va-cach-dua.md",
+     "title": "Tham khảo vizz.fm: mẫu visualizer 3D và cách đưa vào DawViz **[ĐỀ XUẤT, chưa chốt]** (mở đầu)",
+     "path": [],
+     "chars": 780,
+     "lines": [
+      1,
+      4
+     ],
+     "ids": []
+    },
+    {
+     "n": 1,
+     "file": "VIZ-REFERENCE/1-vizz-fm-la-gi-ve-mat-ky-thuat.md",
+     "title": "1. vizz.fm là gì về mặt kỹ thuật",
+     "path": [
+      "1. vizz.fm là gì về mặt kỹ thuật"
+     ],
+     "chars": 1870,
+     "lines": [
+      5,
+      18
+     ],
+     "ids": []
+    },
+    {
+     "n": 2,
+     "file": "VIZ-REFERENCE/2-ba-muc-ve-trong-dawviz.md",
+     "title": "2. Ba mức vẽ trong DawViz",
+     "path": [
+      "2. Ba mức vẽ trong DawViz"
+     ],
+     "chars": 796,
+     "lines": [
+      19,
+      28
+     ],
+     "ids": [
+      "D-47"
+     ]
+    },
+    {
+     "n": 3,
+     "file": "VIZ-REFERENCE/3-tung-visualizer.md",
+     "title": "3. Từng visualizer",
+     "path": [
+      "3. Từng visualizer"
+     ],
+     "chars": 3833,
+     "lines": [
+      29,
+      48
+     ],
+     "ids": [
+      "D-77",
+      "P-02",
+      "P-13"
+     ]
+    },
+    {
+     "n": 4,
+     "file": "VIZ-REFERENCE/4-hieu-ung-chung-cua-vizz-fm-doi-chieu-voi-ta.md",
+     "title": "4. Hiệu ứng chung của vizz.fm đối chiếu với ta",
+     "path": [
+      "4. Hiệu ứng chung của vizz.fm đối chiếu với ta"
+     ],
+     "chars": 881,
+     "lines": [
+      49,
+      62
+     ],
+     "ids": [
+      "D-47"
+     ]
+    },
+    {
+     "n": 5,
+     "file": "VIZ-REFERENCE/5-rang-buoc-tat-dinh.md",
+     "title": "5. Ràng buộc tất định",
+     "path": [
+      "5. Ràng buộc tất định"
+     ],
+     "chars": 725,
+     "lines": [
+      63,
+      70
+     ],
+     "ids": [
+      "AD-07"
+     ]
+    },
+    {
+     "n": 6,
+     "file": "VIZ-REFERENCE/6-de-xuat-lo-trinh.md",
+     "title": "6. Đề xuất lộ trình",
+     "path": [
+      "6. Đề xuất lộ trình"
+     ],
+     "chars": 969,
+     "lines": [
+      71,
+      81
+     ],
+     "ids": [
+      "D-47"
+     ]
+    }
+   ]
+  },
+  "VISUAL-LAYERS.md": {
+   "title": "Lớp đồ hoạ: nạp PSD, hình học, phát sáng theo nhạc **[ĐỀ XUẤT, chưa chốt]**",
+   "sha1": "d59766186f",
+   "chunks": [
+    {
+     "n": 0,
+     "file": "VISUAL-LAYERS/lop-do-hoa-nap-psd-hinh-hoc-phat-sang-theo-nhac.md",
+     "title": "Lớp đồ hoạ: nạp PSD, hình học, phát sáng theo nhạc **[ĐỀ XUẤT, chưa chốt]** (mở đầu)",
+     "path": [],
+     "chars": 574,
+     "lines": [
+      1,
+      4
+     ],
+     "ids": [
+      "AD-12",
+      "D-69"
+     ]
+    },
+    {
+     "n": 1,
+     "file": "VISUAL-LAYERS/1-nap-psd-bang-ag-psd.md",
+     "title": "1. Nạp PSD bằng ag-psd",
+     "path": [
+      "1. Nạp PSD bằng ag-psd"
+     ],
+     "chars": 3934,
+     "lines": [
+      5,
+      47
+     ],
+     "ids": [
+      "ERR_PSD_TOO_MANY_LAYERS",
+      "ERR_PSD_UNSUPPORTED",
+      "REQ-PARSER-00",
+      "WARN_PSD_BLEND",
+      "WARN_PSD_FLATTENED"
+     ]
+    },
+    {
+     "n": 2,
+     "file": "VISUAL-LAYERS/2-widget-hinh-shape.md",
+     "title": "2. Widget Hình (SHAPE)",
+     "path": [
+      "2. Widget Hình (SHAPE)"
+     ],
+     "chars": 413,
+     "lines": [
+      48,
+      55
+     ],
+     "ids": []
+    },
+    {
+     "n": 3,
+     "file": "VISUAL-LAYERS/3-phan-ung-theo-nhac-cai-da-co-va-cai-can-them.md",
+     "title": "3. Phản ứng theo nhạc: cái đã có và cái cần thêm",
+     "path": [
+      "3. Phản ứng theo nhạc: cái đã có và cái cần thêm"
+     ],
+     "chars": 1034,
+     "lines": [
+      56,
+      66
+     ],
+     "ids": []
+    },
+    {
+     "n": 4,
+     "file": "VISUAL-LAYERS/4-thu-tu-de-xuat.md",
+     "title": "4. Thứ tự đề xuất",
+     "path": [
+      "4. Thứ tự đề xuất"
+     ],
+     "chars": 445,
+     "lines": [
+      67,
+      75
      ],
      "ids": []
     }
@@ -7835,7 +8032,8 @@
    "SRS/req-audio-01-am-thanh-theo-track-stem-ban-1-2.md",
    "SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md",
    "SRS/7-dieu-kien-nghiem-thu-va-ban-giao.md",
-   "SRS/8-cac-van-de-con-mo-cua-srs.md"
+   "SRS/8-cac-van-de-con-mo-cua-srs.md",
+   "VIZ-REFERENCE/3-tung-visualizer.md"
   ],
   "REQ-GRAPHICS-02": [
    "BRD/lich-su-phien-ban.md",
@@ -8088,7 +8286,10 @@
    "SRS/req-export-08-xuat-nen-trong-suot-de-ghep-trong.md",
    "SRS/req-graphics-15-khong-gian-2-5d-xoay-x-y-z-va-ca.md",
    "CUSTOMIZATION/12-huong-3d-day-du-sau-1-2-de-xuat-chua-chot.md",
-   "ANIMATION-CATALOG/6-hieu-ung-bien-doi-co-ban-transform.md"
+   "ANIMATION-CATALOG/6-hieu-ung-bien-doi-co-ban-transform.md",
+   "VIZ-REFERENCE/2-ba-muc-ve-trong-dawviz.md",
+   "VIZ-REFERENCE/4-hieu-ung-chung-cua-vizz-fm-doi-chieu-voi-ta.md",
+   "VIZ-REFERENCE/6-de-xuat-lo-trinh.md"
   ],
   "D-48": [
    "BRD/4-4-phan-bo-theo-ban-phat-hanh-d-40-chot-o-tai-l.md",
@@ -8275,6 +8476,7 @@
    "TECHNICAL-DESIGN/6-2-phat-lai-va-am-thanh-t-08-da-duyet-kem-8-chi.md",
    "CUSTOMIZATION/12-huong-3d-day-du-sau-1-2-de-xuat-chua-chot.md",
    "EXPRESSIONS/2-ma-doc-o-day-la-gi.md",
+   "VISUAL-LAYERS/1-nap-psd-bang-ag-psd.md",
    "PARSER-SRS/srs-dac-ta-yeu-cau-thu-vien-parser-daw-visualize.md",
    "PARSER-SRS/3-2-gioi-han-va-an-toan-req-parser-00.md"
   ],
@@ -8288,7 +8490,8 @@
    "CUSTOMIZATION/12-huong-3d-day-du-sau-1-2-de-xuat-chua-chot.md",
    "ANIMATION-CATALOG/0-cach-doc-bang.md",
    "EXPRESSIONS/3-ngon-ngu-bieu-thuc-ad-13.md",
-   "WIDGET-REVAMP/0-muc-tieu-mot-cau.md"
+   "WIDGET-REVAMP/0-muc-tieu-mot-cau.md",
+   "VIZ-REFERENCE/5-rang-buoc-tat-dinh.md"
   ],
   "AD-08": [
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
@@ -8312,7 +8515,8 @@
    "CUSTOMIZATION/8-quyet-dinh-de-xuat.md",
    "CUSTOMIZATION/12-huong-3d-day-du-sau-1-2-de-xuat-chua-chot.md",
    "ANIMATION-CATALOG/danh-muc-hieu-ung-chuyen-dong-va-duong-cong-noi.md",
-   "EXPRESSIONS/2-ma-doc-o-day-la-gi.md"
+   "EXPRESSIONS/2-ma-doc-o-day-la-gi.md",
+   "VISUAL-LAYERS/lop-do-hoa-nap-psd-hinh-hoc-phat-sang-theo-nhac.md"
   ],
   "AD-13": [
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
@@ -8481,7 +8685,8 @@
    "TDD/5-danh-sach-kiem-thu-cong-cho-at-18-chrome.md",
    "REFERENCE-VIDEOS/quyet-dinh-chuoi-canh-va-chia-se-preset-d-66.md",
    "UI-DIRECTION/3-7-khung-bo-cuc-chung-tu-vong-1-dung-cho-vong-2.md",
-   "UI-DIRECTION/5-3-cau-truc-giao-dien-d-a-e-d-53-da-chot-2026-1.md"
+   "UI-DIRECTION/5-3-cau-truc-giao-dien-d-a-e-d-53-da-chot-2026-1.md",
+   "VISUAL-LAYERS/lop-do-hoa-nap-psd-hinh-hoc-phat-sang-theo-nhac.md"
   ],
   "D-70": [
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
@@ -8524,7 +8729,8 @@
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
    "SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md",
    "WIDGET-REVAMP/5b-luoi-not-gop-mat-do-not-tong-quan-ban-phoi-lu.md",
-   "WIDGET-REVAMP/7-thu-tu-lam-va-cach-chia-pr.md"
+   "WIDGET-REVAMP/7-thu-tu-lam-va-cach-chia-pr.md",
+   "VIZ-REFERENCE/3-tung-visualizer.md"
   ],
   "D-78": [
    "BRD/7-nhat-ky-quyet-dinh-decision-log.md",
@@ -9485,7 +9691,8 @@
   ],
   "P-02": [
    "SRS/req-audio-01-am-thanh-theo-track-stem-ban-1-2.md",
-   "SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md"
+   "SRS/3-4b-de-xuat-widget-va-du-lieu-hien-thi-bo-sung.md",
+   "VIZ-REFERENCE/3-tung-visualizer.md"
   ],
   "WARN_STEM_LENGTH": [
    "SRS/req-audio-01-am-thanh-theo-track-stem-ban-1-2.md",
@@ -9854,6 +10061,18 @@
   "AD-14": [
    "EXPRESSIONS/bieu-thuc-nguoi-dung-mo-hinh-bao-mat-va-kiem-duy.md",
    "EXPRESSIONS/5-phong-thu-nhieu-lop-cho-ung-dung-ad-14.md"
+  ],
+  "ERR_PSD_TOO_MANY_LAYERS": [
+   "VISUAL-LAYERS/1-nap-psd-bang-ag-psd.md"
+  ],
+  "ERR_PSD_UNSUPPORTED": [
+   "VISUAL-LAYERS/1-nap-psd-bang-ag-psd.md"
+  ],
+  "WARN_PSD_BLEND": [
+   "VISUAL-LAYERS/1-nap-psd-bang-ag-psd.md"
+  ],
+  "WARN_PSD_FLATTENED": [
+   "VISUAL-LAYERS/1-nap-psd-bang-ag-psd.md"
   ],
   "REQ-FMT-01": [
    "PARSER-SRS/2-dinh-dang-ho-tro.md",

@@ -598,6 +598,39 @@
 - [8. Vấn đề mở](WIDGET-REVAMP/8-van-de-mo.md)
   - [8. Vấn đề mở](WIDGET-REVAMP/8-van-de-mo.md#8-vấn-đề-mở)
 
+## VIZ-REFERENCE.md
+
+- [Tham khảo vizz.fm: mẫu visualizer 3D và cách đưa vào DawViz **[ĐỀ XUẤT, chưa chốt]** (mở đầu)](VIZ-REFERENCE/tham-khao-vizz-fm-mau-visualizer-3d-va-cach-dua.md)
+- [1. vizz.fm là gì về mặt kỹ thuật](VIZ-REFERENCE/1-vizz-fm-la-gi-ve-mat-ky-thuat.md)
+  - [1. vizz.fm là gì về mặt kỹ thuật](VIZ-REFERENCE/1-vizz-fm-la-gi-ve-mat-ky-thuat.md#1-vizzfm-là-gì-về-mặt-kỹ-thuật)
+- [2. Ba mức vẽ trong DawViz](VIZ-REFERENCE/2-ba-muc-ve-trong-dawviz.md)
+  - [2. Ba mức vẽ trong DawViz](VIZ-REFERENCE/2-ba-muc-ve-trong-dawviz.md#2-ba-mức-vẽ-trong-dawviz)
+- [3. Từng visualizer](VIZ-REFERENCE/3-tung-visualizer.md)
+  - [3. Từng visualizer](VIZ-REFERENCE/3-tung-visualizer.md#3-từng-visualizer)
+- [4. Hiệu ứng chung của vizz.fm đối chiếu với ta](VIZ-REFERENCE/4-hieu-ung-chung-cua-vizz-fm-doi-chieu-voi-ta.md)
+  - [4. Hiệu ứng chung của vizz.fm đối chiếu với ta](VIZ-REFERENCE/4-hieu-ung-chung-cua-vizz-fm-doi-chieu-voi-ta.md#4-hiệu-ứng-chung-của-vizzfm-đối-chiếu-với-ta)
+- [5. Ràng buộc tất định](VIZ-REFERENCE/5-rang-buoc-tat-dinh.md)
+  - [5. Ràng buộc tất định](VIZ-REFERENCE/5-rang-buoc-tat-dinh.md#5-ràng-buộc-tất-định)
+- [6. Đề xuất lộ trình](VIZ-REFERENCE/6-de-xuat-lo-trinh.md)
+  - [6. Đề xuất lộ trình](VIZ-REFERENCE/6-de-xuat-lo-trinh.md#6-đề-xuất-lộ-trình)
+
+## VISUAL-LAYERS.md
+
+- [Lớp đồ hoạ: nạp PSD, hình học, phát sáng theo nhạc **[ĐỀ XUẤT, chưa chốt]** (mở đầu)](VISUAL-LAYERS/lop-do-hoa-nap-psd-hinh-hoc-phat-sang-theo-nhac.md)
+- [1. Nạp PSD bằng ag-psd](VISUAL-LAYERS/1-nap-psd-bang-ag-psd.md)
+  - [1. Nạp PSD bằng ag-psd](VISUAL-LAYERS/1-nap-psd-bang-ag-psd.md#1-nạp-psd-bằng-ag-psd)
+    - [1.1. Thư viện](VISUAL-LAYERS/1-nap-psd-bang-ag-psd.md#11-thư-viện)
+    - [1.2. Spike 2026-11-28 (Node, tệp PSD tự sinh)](VISUAL-LAYERS/1-nap-psd-bang-ag-psd.md#12-spike-2026-11-28-node-tệp-psd-tự-sinh)
+    - [1.3. Ánh xạ vào cảnh](VISUAL-LAYERS/1-nap-psd-bang-ag-psd.md#13-ánh-xạ-vào-cảnh)
+    - [1.4. An toàn và giới hạn](VISUAL-LAYERS/1-nap-psd-bang-ag-psd.md#14-an-toàn-và-giới-hạn)
+    - [1.5. Theo nhạc ngay khi nạp](VISUAL-LAYERS/1-nap-psd-bang-ag-psd.md#15-theo-nhạc-ngay-khi-nạp)
+- [2. Widget Hình (SHAPE)](VISUAL-LAYERS/2-widget-hinh-shape.md)
+  - [2. Widget Hình (SHAPE)](VISUAL-LAYERS/2-widget-hinh-shape.md#2-widget-hình-shape)
+- [3. Phản ứng theo nhạc: cái đã có và cái cần thêm](VISUAL-LAYERS/3-phan-ung-theo-nhac-cai-da-co-va-cai-can-them.md)
+  - [3. Phản ứng theo nhạc: cái đã có và cái cần thêm](VISUAL-LAYERS/3-phan-ung-theo-nhac-cai-da-co-va-cai-can-them.md#3-phản-ứng-theo-nhạc-cái-đã-có-và-cái-cần-thêm)
+- [4. Thứ tự đề xuất](VISUAL-LAYERS/4-thu-tu-de-xuat.md)
+  - [4. Thứ tự đề xuất](VISUAL-LAYERS/4-thu-tu-de-xuat.md#4-thứ-tự-đề-xuất)
+
 ## PARSER-SRS.md
 
 - [SRS — Đặc tả yêu cầu: Thư viện parser DAW Visualizer (mở đầu)](PARSER-SRS/srs-dac-ta-yeu-cau-thu-vien-parser-daw-visualize.md)
