@@ -2,7 +2,7 @@
 // bản dựng nằm trong Derived.notation (engraver chạy ngoài Render Core). Thiếu bản dựng (đang dựng) thì widget không vẽ gì.
 import type { LayoutCtx, PathPrim, Primitive, RectPrim, WidgetRenderer } from '../prims.ts';
 import type { WidgetSpec } from '../scene.ts';
-import { PATH_ARGS, pageIndexAt, systemX, type NotationItem, type NotationLayout, type NotationOwner, type PathData } from './types.ts';
+import { PATH_ARGS, layoutExtentY, pageIndexAt, systemX, systemXSmooth, type NotationItem, type NotationLayout, type NotationOwner, type PathData } from './types.ts';
 import { barPosAt, barStartSec, buildBarGrid, type BarGrid } from '../hud.ts';
 import { hashSigned } from './draw.ts';
 import type { UnifiedProjectAST } from '../types.ts';
@@ -209,12 +209,19 @@ export function itemSpanX(it: NotationItem, glyphs: readonly PathData[]): readon
 interface WriteState { cut?: number; k: number }
 const FULL: WriteState = Object.freeze({ k: 1 });
 
-/** Phép đặt trang vào khung widget: tỉ lệ theo bề rộng và chiều cao trang lớn nhất (tỉ lệ không đổi khi lật trang). */
+/**
+ * Phép đặt trang vào khung widget: tỉ lệ theo bề rộng và chiều cao thật của bản dựng (kể cả nốt có dòng kẻ phụ vượt khỏi khuông, nên không bị cắt
+ * ở mép widget), không đổi khi lật trang. Trang ngắn hơn (trang cuối) vẫn căn theo chiều cao của nó.
+ */
 export function notationFit(lay: NotationLayout, W: number, H: number, pageH: number, align: NotationProps['align']) {
-  const s = Math.min(W / lay.width, H / Math.max(1, lay.maxHeight));
-  const tx = (W - lay.width * s) / 2, ty = align === 'TOP' ? 0 : (H - pageH * s) / 2;
+  const [y0, y1] = layoutExtentY(lay), over = y1 - lay.maxHeight; // phần vượt dưới của trang cao nhất
+  const s = Math.min(W / lay.width, H / Math.max(1, y1 - y0));
+  const tx = (W - lay.width * s) / 2, boxH = pageH - y0 + over;
+  const ty = (align === 'TOP' ? 0 : (H - boxH * s) / 2) - y0 * s;
   return { s, tx, ty };
 }
+/** Cửa sổ làm trơn tốc độ cuộn (giây, nửa bề rộng). */
+export const SCROLL_SMOOTH_SEC = 0.35;
 
 /**
  * Primitive của một khung: mỗi phần tử của trang hiện tại thành một PathPrim (màu theo trạng thái nốt), nốt đang ngân vẽ đè
@@ -231,8 +238,9 @@ export function notationPrims(lay: NotationLayout, p: NotationProps, W: number, 
   // Cuộn: tỉ lệ theo chiều cao, vạch phát đứng yên ở scrollAnchor, bản nhạc trượt ngang; chỉ phần tử trong khung nhìn được vẽ.
   let vis0 = -Infinity, vis1 = Infinity;
   if (scroll) {
-    s = H / Math.max(1, lay.maxHeight); ty = p.align === 'TOP' ? 0 : (H - page.height * s) / 2;
-    tx = W * p.scrollAnchor - (page.systems[0] ? systemX(page.systems[0], t) : 0) * s;
+    const [y0, y1] = layoutExtentY(lay);
+    s = H / Math.max(1, y1 - y0); ty = -y0 * s;
+    tx = W * p.scrollAnchor - (page.systems[0] ? systemXSmooth(page.systems[0], t, SCROLL_SMOOTH_SEC) : 0) * s;
     vis0 = (-tx) / s - 30; vis1 = (W - tx) / s + 30;
   }
   const inView = (it: NotationItem) => { if (!scroll) return true; const [a, b] = itemSpanX(it, lay.glyphs); return b >= vis0 && a <= vis1; };
@@ -283,7 +291,7 @@ export function notationPrims(lay: NotationLayout, p: NotationProps, W: number, 
   }
   if (p.playhead === 'LINE' && p.playheadWidth > 0) {
     const sys = scroll ? page.systems[0] : page.systems.find((y) => t >= y.start && t < y.end);
-    if (sys) out.push({ kind: 'rect', x: tx + systemX(sys, t) * s - p.playheadWidth / 2, y: ty + sys.y0 * s, w: p.playheadWidth, h: (sys.y1 - sys.y0) * s, fill: p.playheadColor, alpha: fade, radius: 0, glowColor: '', glowBlur: 0, stroke: '', strokeWidth: 0 } satisfies RectPrim);
+    if (sys) out.push({ kind: 'rect', x: (scroll ? W * p.scrollAnchor : tx + systemX(sys, t) * s) - p.playheadWidth / 2, y: ty + sys.y0 * s, w: p.playheadWidth, h: (sys.y1 - sys.y0) * s, fill: p.playheadColor, alpha: fade, radius: 0, glowColor: '', glowBlur: 0, stroke: '', strokeWidth: 0 } satisfies RectPrim);
   }
   return out;
 }
