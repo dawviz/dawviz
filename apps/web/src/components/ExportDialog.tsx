@@ -10,7 +10,7 @@ import { radioKeys } from '../lib/a11y.ts';
 import { useAssets, type ExportAssets } from '../lib/assetsRuntime.ts';
 import { missingAssets } from '../lib/sessionAssets.ts';
 import type { FileTarget } from '../lib/exportProtocol.ts';
-import { AUDIO_LABEL, CONTAINER_EXT, CONTAINER_LABEL, CONTAINER_MIME, FPS_CHOICES, MAX_EDGE, MIN_SHORT_EDGE, VIDEO_LABEL, autoChoice, detectSupport, exportBaseName, exportDuration, fitRect, heightForWidth, manualChoice, normalizeRange, normalizeSelection, optionsFor, preflight, sizeForClass, sizeFromCustom, sliceAudioForRange, usableContainers, widthForHeight, type AudioId, type CodecChoice, type CodecProbe, type ContainerId, type Fps, type ProgressInfo, type Quality, type ResolutionClass, type Selection, type Support, type VideoId } from '../lib/exportPlan.ts';
+import { AUDIO_LABEL, CONTAINER_EXT, CONTAINER_LABEL, CONTAINER_MIME, FPS_CHOICES, MAX_EDGE, MIN_SHORT_EDGE, VIDEO_LABEL, autoChoice, detectSupport, exportBaseName, exportDuration, fitRect, heightForWidth, manualChoice, parseAspect, normalizeRange, normalizeSelection, optionsFor, preflight, sizeForClass, sizeFromCustom, sliceAudioForRange, usableContainers, widthForHeight, type AudioId, type CodecChoice, type CodecProbe, type ContainerId, type Fps, type ProgressInfo, type Quality, type ResolutionClass, type Selection, type Support, type VideoId } from '../lib/exportPlan.ts';
 import { downsample, formatExportReport, type ExportReport, type ExportStats } from '../lib/exportStats.ts';
 import { isExportBusy, tryExportLock, type ExportLock } from '../lib/exportLock.ts';
 import { makeExportWorker } from '../lib/exportWorker.ts';
@@ -23,6 +23,7 @@ import { TimeField } from './TimeField.tsx';
 const CLASSES: ResolutionClass[] = [720, 1080, 2160];
 /** Ô Kích thước: ba mốc hoặc "Tuỳ chỉnh" (rộng × cao, D-26). */
 type SizeChoice = ResolutionClass | 'custom';
+const RATIO_CHOICES = ['16:9', '9:16', '1:1', '4:3', '3:4', '4:5', '21:9', '2.39:1'] as const;
 const PX = { min: 2, max: 8192, step: 2, units: { px: 1 } };
 const CLASS_LABEL: Record<ResolutionClass, string> = { 720: '720p', 1080: '1080p', 2160: '4K' };
 const QUALITIES: Quality[] = ['low', 'medium', 'high'];
@@ -63,6 +64,11 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
   // Kích thước tuỳ ý (D-26): rộng × cao; "giữ tỉ lệ" thì sửa một ô, ô kia tự tính theo tỉ lệ khung video.
   const [custom, setCustom] = useState(() => (autoCustom ? { w: auto!.width!, h: auto!.height! } : { w: sizeForClass(DW, DH, 1080).width, h: sizeForClass(DW, DH, 1080).height }));
   const [keepRatio, setKeepRatio] = useState(!autoCustom);
+  // Tỉ lệ khi giữ tỉ lệ (D-26): theo khung video, một tỉ lệ có sẵn, hoặc W:H tự gõ (parseAspect).
+  const [ratioSel, setRatioSel] = useState<string>('frame');
+  const [ratioText, setRatioText] = useState('');
+  const ratio: [number, number] = ratioSel === 'frame' ? [DW, DH] : ratioSel === 'custom' ? (parseAspect(ratioText) ?? [DW, DH]) : (parseAspect(ratioSel) ?? [DW, DH]);
+  const ratioBad = ratioSel === 'custom' && !parseAspect(ratioText);
   // Đoạn xuất Start→End (D-10); `end` null = tới hết bài.
   const [part, setPart] = useState(!!auto?.range);
   const [rStart, setRStart] = useState(auto?.range?.start ?? 0);
@@ -272,7 +278,7 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
   const mb = (b: number) => i18n.number(b / 1e6, { maximumFractionDigits: 1 });
   const unsupported = choice === null;
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4" data-testid="export-dialog">
+    <div className="fixed inset-0 z-50 grid content-start justify-items-center overflow-y-auto bg-black/50 p-4 pt-[5vh]" data-testid="export-dialog">
       <div role="dialog" aria-modal="true" aria-labelledby="export-title" className="w-full max-w-md space-y-4 rounded border border-line bg-surface p-5 text-fg">
         <h2 id="export-title" className="text-[16px] font-semibold">{i18n.t('web.export.title')}</h2>
 
@@ -291,13 +297,28 @@ export function ExportDialog({ scene, ast, derived, audio, offsetMs, projectSec,
                 <span aria-hidden />
                 <div className="space-y-1.5" data-testid="export-custom">
                   <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-1.5">
-                    <NumberField label={i18n.t('web.export.width')} value={custom.w} spec={PX} range={[MIN_SHORT_EDGE, MAX_EDGE]} onChange={(w) => setCustom((c) => ({ w, h: keepRatio ? heightForWidth(w, DW, DH) : c.h }))} />
+                    <NumberField label={i18n.t('web.export.width')} value={custom.w} spec={PX} range={[MIN_SHORT_EDGE, MAX_EDGE]} onChange={(w) => setCustom((c) => ({ w, h: keepRatio ? heightForWidth(w, ratio[0], ratio[1]) : c.h }))} />
                     <span aria-hidden className="text-muted">×</span>
-                    <NumberField label={i18n.t('web.export.height')} value={custom.h} spec={PX} range={[MIN_SHORT_EDGE, MAX_EDGE]} onChange={(h) => setCustom((c) => ({ w: keepRatio ? widthForHeight(h, DW, DH) : c.w, h }))} />
+                    <NumberField label={i18n.t('web.export.height')} value={custom.h} spec={PX} range={[MIN_SHORT_EDGE, MAX_EDGE]} onChange={(h) => setCustom((c) => ({ w: keepRatio ? widthForHeight(h, ratio[0], ratio[1]) : c.w, h }))} />
                   </div>
                   <label className="flex items-center gap-2 text-xs text-muted">
-                    <input type="checkbox" checked={keepRatio} onChange={(e) => { setKeepRatio(e.target.checked); if (e.target.checked) setCustom((c) => ({ w: c.w, h: heightForWidth(c.w, DW, DH) })); }} data-testid="export-keep-ratio" />{i18n.t('web.export.keepRatio')}
+                    <input type="checkbox" checked={keepRatio} onChange={(e) => { setKeepRatio(e.target.checked); if (e.target.checked) setCustom((c) => ({ w: c.w, h: heightForWidth(c.w, ratio[0], ratio[1]) })); }} data-testid="export-keep-ratio" />{i18n.t('web.export.keepRatio')}
                   </label>
+                  {keepRatio && (
+                    <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-2 gap-y-1.5 text-xs text-muted">
+                      <label htmlFor="exp-ratio">{i18n.t('web.export.ratio')}</label>
+                      <Select id="exp-ratio" value={ratioSel} data-testid="export-ratio" onChange={(e) => { const v = e.target.value; setRatioSel(v); const r = v === 'frame' ? [DW, DH] as [number, number] : v === 'custom' ? parseAspect(ratioText) : parseAspect(v); if (r) setCustom((c) => ({ w: c.w, h: heightForWidth(c.w, r[0], r[1]) })); }}>
+                        <option value="frame">{i18n.t('web.export.ratio.frame')}</option>
+                        {RATIO_CHOICES.map((r) => <option key={r} value={r}>{r}</option>)}
+                        <option value="custom">{i18n.t('web.export.ratio.custom')}</option>
+                      </Select>
+                      {ratioSel === 'custom' && <>
+                        <span aria-hidden />
+                        <input type="text" className="field min-h-[var(--hit)] px-2 text-fg" inputMode="decimal" autoComplete="off" spellCheck={false} placeholder="21:9" value={ratioText} aria-label={i18n.t('web.export.ratio')} aria-invalid={ratioBad} data-testid="export-ratio-text"
+                          onChange={(e) => { setRatioText(e.target.value); const r = parseAspect(e.target.value); if (r) setCustom((c) => ({ w: c.w, h: heightForWidth(c.w, r[0], r[1]) })); }} />
+                      </>}
+                    </div>
+                  )}
                 </div>
               </>}
               <label htmlFor="exp-fps" className="text-muted">{i18n.t('web.export.fps')}</label>

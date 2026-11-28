@@ -59,6 +59,10 @@ export interface KeyboardStyle {
   labelOctave: boolean;
   /** '' = tự chọn (chữ tối trên phím trắng, sáng trên phím đen). */
   labelColor: string;
+  /** Độ dài phím đen so với bàn phím (0,3–0,9; mặc định 0,62 như trước). */
+  blackLength: number;
+  /** Phím nhấn lún theo cường độ (0–1; 0 = không lún): phím ngắn đi và tối đi tới ~20%/35% khi velocity 127. */
+  pressDepth: number;
 }
 export const KEYBOARD_SHAPES = ['FLAT', 'ROUNDED'] as const;
 export type KeyboardShape = typeof KEYBOARD_SHAPES[number];
@@ -68,7 +72,7 @@ export const KEY_LABEL_MODES = ['NONE', 'C', 'WHITE', 'ALL', 'ACTIVE'] as const;
 export type KeyLabelMode = typeof KEY_LABEL_MODES[number];
 
 // ---- Vạch phát tuỳ chỉnh (T-58, REQ-GRAPHICS-16 phần 1.0) và lưới ô nhịp của Piano Roll.
-export const PLAYHEAD_STYLES = ['LINE', 'DASHED', 'BAND', 'GRADIENT'] as const;
+export const PLAYHEAD_STYLES = ['LINE', 'DASHED', 'DOTTED', 'DOUBLE', 'BAND', 'GRADIENT'] as const;
 export type PlayheadStyle = typeof PLAYHEAD_STYLES[number];
 export const PLAYHEAD_HITS = ['OFF', 'FLASH', 'SWELL'] as const;
 export type PlayheadHit = typeof PLAYHEAD_HITS[number];
@@ -84,7 +88,7 @@ export const DEFAULT_NOTE_STYLE: Readonly<NoteStyle> = Object.freeze({
 });
 export const DEFAULT_KEYBOARD_STYLE: Readonly<KeyboardStyle> = Object.freeze({
   enabled: true, width: 64, whiteColor: '#e8eaf2', blackColor: '#14161f', useTrackColor: true,
-  shape: 'FLAT', pressedColor: '#7cc4ff', scale: 'OFF', scaleColor: '#f5c542', scaleOpacity: 0.35, labels: 'NONE', labelOctave: true, labelColor: '',
+  shape: 'FLAT', pressedColor: '#7cc4ff', scale: 'OFF', scaleColor: '#f5c542', scaleOpacity: 0.35, labels: 'NONE', labelOctave: true, labelColor: '', blackLength: 0.62, pressDepth: 0,
 });
 export const defaultStyleConfig = (): StyleConfig => ({ base: { ...DEFAULT_NOTE_STYLE }, tracks: {} });
 

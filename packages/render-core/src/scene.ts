@@ -115,6 +115,10 @@ export interface PianoRollProps {
   playheadStyle: PlayheadStyle;
   /** Đầu tam giác ở hai đầu vạch, chỉ vào trong. */
   playheadArrows: boolean;
+  /** Đầu vạch bo tròn (T-58). */
+  playheadRound: boolean;
+  /** Vạch phát nằm dưới nốt thay vì đè lên nốt (T-58). */
+  playheadBehind: boolean;
   /** Độ dài vạch so với chiều cao làn (0,05–1), căn giữa. */
   playheadLength: number;
   /** Phát sáng quanh vạch, 0..1. */
@@ -164,7 +168,7 @@ export const DEFAULT_PIANO_ROLL: Readonly<PianoRollProps> = Object.freeze({
   noteStyle: { base: { ...DEFAULT_NOTE_STYLE }, tracks: {} }, keyboard: { ...DEFAULT_KEYBOARD_STYLE, width: 96 }, // 96 pt ≈ 5% bề rộng 1920
   playheadColor: '#ffffff', playheadWidth: 2, playheadVisible: true,
   flowAngle: 0, flowMirror: false, labelsUpright: true,
-  playheadStyle: 'LINE', playheadArrows: false, playheadLength: 1, playheadGlow: 0, playheadHit: 'OFF', playheadHitMs: 250,
+  playheadStyle: 'LINE', playheadArrows: false, playheadRound: false, playheadBehind: false, playheadLength: 1, playheadGlow: 0, playheadHit: 'OFF', playheadHitMs: 250,
   grid: { ...DEFAULT_ROLL_GRID },
 });
 
@@ -488,6 +492,8 @@ export function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] 
           scaleOpacity: num(kb.scaleOpacity, d.keyboard.scaleOpacity, 0, 1, `${p}.properties.keyboard.scaleOpacity`),
           labels: oneOf(kb.labels, KEY_LABEL_MODES, d.keyboard.labels, `${p}.properties.keyboard.labels`),
           labelOctave: bool(kb.labelOctave, d.keyboard.labelOctave, `${p}.properties.keyboard.labelOctave`),
+          blackLength: num(kb.blackLength, d.keyboard.blackLength, 0.3, 0.9, `${p}.properties.keyboard.blackLength`),
+          pressDepth: num(kb.pressDepth, d.keyboard.pressDepth, 0, 1, `${p}.properties.keyboard.pressDepth`),
           labelColor: str(kb.labelColor, d.keyboard.labelColor, `${p}.properties.keyboard.labelColor`, (s) => s === '' || HEX.test(s)),
         },
         playheadColor: str(P.playheadColor, d.playheadColor, `${p}.properties.playheadColor`, (s) => HEX.test(s)),
@@ -498,6 +504,8 @@ export function sanitizeScene(input: unknown, opts: { fonts?: readonly string[] 
         labelsUpright: bool(P.labelsUpright, d.labelsUpright, `${p}.properties.labelsUpright`),
         playheadStyle: oneOf(P.playheadStyle, PLAYHEAD_STYLES, d.playheadStyle, `${p}.properties.playheadStyle`),
         playheadArrows: bool(P.playheadArrows, d.playheadArrows, `${p}.properties.playheadArrows`),
+        playheadRound: bool(P.playheadRound, d.playheadRound, `${p}.properties.playheadRound`),
+        playheadBehind: bool(P.playheadBehind, d.playheadBehind, `${p}.properties.playheadBehind`),
         playheadLength: num(P.playheadLength, d.playheadLength, 0.05, 1, `${p}.properties.playheadLength`),
         playheadGlow: num(P.playheadGlow, d.playheadGlow, 0, 1, `${p}.properties.playheadGlow`),
         playheadHit: oneOf(P.playheadHit, PLAYHEAD_HITS, d.playheadHit, `${p}.properties.playheadHit`),
@@ -879,6 +887,7 @@ const HUD_SANITIZERS = {
       division: pick(P.division, [8, 16, 32] as const, d.division, `${p}.division`), triplets: S.bool(P.triplets, d.triplets, `${p}.triplets`), simplify: S.num(P.simplify, d.simplify, 0.5, 4, `${p}.simplify`),
       splitPitch: int(P.splitPitch, d.splitPitch, 21, 108, `${p}.splitPitch`), voices: pick(P.voices, [1, 2] as const, d.voices, `${p}.voices`),
       keyMode: S.oneOf(P.keyMode, ['AUTO', 'MANUAL'] as const, d.keyMode, `${p}.keyMode`), keyFifths: int(P.keyFifths, d.keyFifths, -7, 7, `${p}.keyFifths`), keyMinor: S.bool(P.keyMinor, d.keyMinor, `${p}.keyMinor`),
+      layoutMode: S.oneOf(P.layoutMode, ['PAGES', 'SCROLL'] as const, d.layoutMode, `${p}.layoutMode`), scrollAnchor: S.num(P.scrollAnchor, d.scrollAnchor, 0.05, 0.95, `${p}.scrollAnchor`),
       barsPerSystem: int(P.barsPerSystem, d.barsPerSystem, 0, 8, `${p}.barsPerSystem`), systemsPerPage: int(P.systemsPerPage, d.systemsPerPage, 1, 4, `${p}.systemsPerPage`),
       musicFont: S.oneOf(P.musicFont, ['BRAVURA', 'PETALUMA', 'GONVILLE'] as const, d.musicFont, `${p}.musicFont`), measureNumbers: S.bool(P.measureNumbers, d.measureNumbers, `${p}.measureNumbers`), tempoMark: S.bool(P.tempoMark, d.tempoMark, `${p}.tempoMark`),
       measureNumberSize: S.num(P.measureNumberSize, d.measureNumberSize, 0.5, 4, `${p}.measureNumberSize`),

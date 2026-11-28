@@ -66,18 +66,19 @@ export interface KeyRect { pitch: number; x: number; y: number; w: number; h: nu
 /** `reach`: bề dài thật của dải phím tính từ mép xa (T-59: làn xoay kéo dài bàn phím ra mép làn); phần phím trắng ở đầu gần vạch phát giữ 38% `width`. Vắng = `width`. */
 export function layoutKeyboard(index: TimelineIndex, t: number, o: { height: number; pitchMin: number; pitchMax: number; style?: Partial<KeyboardStyle>; noteStyle?: StyleConfig; reach?: number }): KeyRect[] {
   const ks = { ...DEFAULT_KEYBOARD_STYLE, ...(o.style ?? {}) };
-  const rows = o.pitchMax - o.pitchMin + 1, rowH = o.height / rows, activeBy = new Map<number, string>();
+  const rows = o.pitchMax - o.pitchMin + 1, rowH = o.height / rows, activeBy = new Map<number, { color: string; vel: number }>();
   for (const ti of index.tracks) { // D-56: hai track cùng phím → màu của track đứng trước (ưu tiên cao hơn)
     if (!ti.track.isVisible) continue;
     const st = resolveNoteStyle(o.noteStyle, ti.track.id);
     for (const n of notesInRange(ti, t, t)) if (n.startTimeSeconds <= t && t < n.endTimeSeconds && n.pitch >= o.pitchMin && n.pitch <= o.pitchMax)
-      if (!activeBy.has(n.pitch)) activeBy.set(n.pitch, ks.useTrackColor ? noteColor(st, ti.track.color, n.pitch, n.velocity, [o.pitchMin, o.pitchMax]) : ks.pressedColor);
+      if (!activeBy.has(n.pitch)) activeBy.set(n.pitch, { color: ks.useTrackColor ? noteColor(st, ti.track.color, n.pitch, n.velocity, [o.pitchMin, o.pitchMax]) : ks.pressedColor, vel: n.velocity });
   }
   const keys: KeyRect[] = [];
   for (let p = o.pitchMin; p <= o.pitchMax; p++) {
-    const black = BLACK.has(p % 12), c = activeBy.get(p);
-    const reach = o.reach ?? ks.width;
-    keys.push({ pitch: p, x: 0, y: (o.pitchMax - p) * rowH, w: black ? (o.reach === undefined ? ks.width * 0.62 : reach - ks.width * 0.38) : reach, h: rowH, black, active: c !== undefined, color: c ?? (black ? ks.blackColor : ks.whiteColor) });
+    const black = BLACK.has(p % 12), a = activeBy.get(p), reach = o.reach ?? ks.width;
+    const sink = a && ks.pressDepth > 0 ? ks.pressDepth * Math.min(1, Math.max(0, a.vel / 127)) : 0; // độ lún 0–1
+    const w0 = black ? (o.reach === undefined ? ks.width * ks.blackLength : reach - ks.width * (1 - ks.blackLength)) : reach;
+    keys.push({ pitch: p, x: 0, y: (o.pitchMax - p) * rowH, w: w0 * (1 - 0.2 * sink), h: rowH, black, active: a !== undefined, color: a ? (sink > 0 ? shade(a.color, -0.35 * sink) : a.color) : (black ? ks.blackColor : ks.whiteColor) });
   }
   return keys.sort((a, b) => Number(a.black) - Number(b.black)); // phím đen vẽ sau (nằm trên)
 }

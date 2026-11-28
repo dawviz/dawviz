@@ -7,7 +7,7 @@ Bấm **Xuất video** ở góc trên bên phải (cần mở dự án trước)
 ## Chọn cấu hình
 
 - **Kích thước:** 720p, 1080p hoặc 4K, tính theo cạnh ngắn của khung. Khung vuông 1:1 ra 1080×1080, khung ngang 16:9 ra 1920×1080. Cạnh dài tối đa 4096 px; số lẻ được làm tròn thành số chẵn, và hộp thoại báo khi có làm tròn.
-- **Tuỳ chỉnh…** (cuối ô Kích thước): gõ **Rộng** và **Cao** tuỳ ý, bằng điểm ảnh. Khi **Giữ tỉ lệ khung video** đang bật, sửa một ô thì ô kia tự tính theo khung. Tắt nó để nhập cỡ khác hình khung (ví dụ khung 16:9 xuất 1080×1080): khung video được đặt giữa, phần còn lại tô màu nền, và hộp thoại báo điều này. Cạnh ngắn phải từ 128 px, cạnh dài tối đa 4096 px; số lẻ làm tròn xuống số chẵn. Cỡ quá nhỏ thì nút **Bắt đầu xuất** bị khoá và hộp thoại nói lý do.
+- **Tuỳ chỉnh…** (cuối ô Kích thước): gõ **Rộng** và **Cao** tuỳ ý, bằng điểm ảnh. Khi **Giữ tỉ lệ khung video** đang bật, sửa một ô thì ô kia tự tính theo tỉ lệ đang chọn ở ô **Tỉ lệ**: **Như khung video**, một tỉ lệ có sẵn (16:9, 9:16, 1:1, 4:3, 3:4, 4:5, 21:9, 2.39:1) hoặc **Khác (R:C)…** để gõ tỉ lệ riêng như `21:9` hay `2.39`. Tắt nó để nhập cỡ khác hình khung (ví dụ khung 16:9 xuất 1080×1080): khung video được đặt giữa, phần còn lại tô màu nền, và hộp thoại báo điều này. Cạnh ngắn phải từ 128 px, cạnh dài tối đa 4096 px; số lẻ làm tròn xuống số chẵn. Cỡ quá nhỏ thì nút **Bắt đầu xuất** bị khoá và hộp thoại nói lý do.
 - **Số khung hình/giây:** 24, 30 hoặc 60.
 - **Xuất:** **Cả bài** (mặc định) hoặc **Một đoạn**. Chọn **Một đoạn** rồi gõ **Bắt đầu** và **Kết thúc** theo dạng `1:05.5` (phút:giây) hoặc số giây. Video và âm thanh chỉ lấy đúng đoạn đó. Kết thúc phải sau bắt đầu ít nhất một khung hình, không thì nút **Bắt đầu xuất** bị khoá.
 - **Chất lượng:** Thấp, Vừa hoặc Cao. Cao cho tệp lớn hơn.

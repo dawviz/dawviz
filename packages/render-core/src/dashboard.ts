@@ -202,9 +202,9 @@ export const degreeRenderer: WidgetRenderer<DegreeProps> = {
     if (p.showDetail) drawRow(quantizeChords(chordTimeline(hud, list, 'strike'), hud.bars, dur, FINER[p.resolution]), yDetail, rowDetail, sst, p.detailColor, false);
     if (p.showBars) {
       for (let b = Math.ceil(b0); b <= Math.floor(b1); b++) {
-        const x = xOf(b); if (x < 0 || x > W) continue;
+        const x = xOf(b); if (x < 0 || x > W || b < 0) continue; // trước đầu bài (ô ≤ 0) không có vạch lẫn số
         out.push(rect(x, yBars, 1, sst.size * 0.8, p.blockColor, 0.5));
-        if (b >= 0) T.text(out, String(b + 1), x + 3, yBars + sst.size * 1.25, sst, 'left', W / win); // trước đầu bài (số ≤ 0) chỉ còn vạch, không có số
+        T.text(out, String(b + 1), x + 3, yBars + sst.size * 1.25, sst, 'left', W / win);
       }
     }
     if (p.playheadColor) {

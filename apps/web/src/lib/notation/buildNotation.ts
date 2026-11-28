@@ -31,7 +31,7 @@ export function buildNotation(req: NotationRequest): NotationLayout {
   });
   const info = new Map(notes.map((n) => [n.id, { on: n.startTimeSeconds, off: n.endTimeSeconds, track: n.track }]));
   const lay = engrave(sm, {
-    width: req.width ?? 1200, barsPerSystem: props.barsPerSystem, systemsPerPage: props.systemsPerPage, musicFont: props.musicFont,
+    width: req.width ?? 1200, barsPerSystem: props.barsPerSystem, systemsPerPage: props.systemsPerPage, scroll: props.layoutMode === 'SCROLL', musicFont: props.musicFont,
     measureNumbers: props.measureNumbers, measureNumberScale: props.measureNumberSize, tempoBpm: props.tempoMark && tempoMap.length ? tempoMap[0].bpm : undefined,
     tickToSec: toSec, noteInfo: (id) => info.get(id),
   });

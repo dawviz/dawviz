@@ -221,7 +221,7 @@ function PitchRangeRows({ value, reference, onChange }: { value: PitchRange; ref
         </div>
         {/* Lựa chọn nhanh: 88 phím đàn piano và toàn dải MIDI; nút đang đúng với dải hiện tại thì tắt. */}
         <div className="flex flex-wrap gap-1.5">
-          {([[21, 108, 'web.pitch.piano'], [0, 127, 'web.pitch.full']] as const).map(([lo, hi, key]) => (
+          {([[21, 108, 'web.pitch.piano'], [28, 103, 'web.pitch.k76'], [36, 96, 'web.pitch.k61'], [0, 127, 'web.pitch.full']] as const).map(([lo, hi, key]) => (
             <button key={key} type="button" className="btn-ghost rounded px-1.5 py-0.5 text-xs disabled:cursor-default disabled:opacity-50" disabled={value.min === lo && value.max === hi}
               onClick={() => onChange({ ...value, min: lo, max: hi })} data-testid={`pitch-preset-${lo}-${hi}`}>
               {i18n.t(key)}
