@@ -1862,6 +1862,7 @@
   "web.layers.openKeys": "Keyframes of {name}",
   "web.layers.openComp": "Open precomp {name}",
   "web.layers.openKeysBtn": "Keyframes",
+  "web.comp.precomposeBtn": "Precompose",
   "web.layers.keysOf": "Keyframes · {name}",
   "web.layers.clip": "{name}: {from} to {to}",
   "web.layers.toEnd": "the end",

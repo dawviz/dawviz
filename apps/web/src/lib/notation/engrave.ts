@@ -163,6 +163,7 @@ export function engrave(model: ScoreModel, o: EngraveOptions): NotationLayout {
         if (k === 0 && o.measureNumbers !== false && mi > 0) { top.setMeasure(mi + 1); const sc = o.measureNumberScale ?? 1; if (sc !== 1) top.setFontSize(parseFloat(String(top.fontInfo.size)) * sc); }
         if (mi === 0 && o.tempoBpm) top.setTempo({ duration: 'q', bpm: Math.round(o.tempoBpm) }, -10);
         if (mi === model.measures.length - 1) { top.setEndBarType(Barline.type.END); bot.setEndBarType(Barline.type.END); }
+        if (mi === 0) { top.setBegBarType(Barline.type.NONE); bot.setBegBarType(Barline.type.NONE); } // không vạch kẻ trước ô 1 (T-133)
         const start = Math.max(top.getNoteStartX(), bot.getNoteStartX());
         top.setNoteStartX(start); bot.setNoteStartX(start);
         staves.push([top, bot]);
@@ -174,7 +175,7 @@ export function engrave(model: ScoreModel, o: EngraveOptions): NotationLayout {
       });
       for (const [top, bot] of staves) { drawFramed(ctx, top); drawFramed(ctx, bot); }
       drawFramed(ctx, new StaveConnector(staves[0][0], staves[0][1]).setType('brace'));
-      drawFramed(ctx, new StaveConnector(staves[0][0], staves[0][1]).setType('singleLeft'));
+      if (bars[0] !== 0) drawFramed(ctx, new StaveConnector(staves[0][0], staves[0][1]).setType('singleLeft'));
       for (const [top, bot] of staves) drawFramed(ctx, new StaveConnector(top, bot).setType('singleRight'));
       bars.forEach((mi, k) => {
         const b = built[mi], m = model.measures[mi];

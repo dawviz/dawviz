@@ -1862,6 +1862,7 @@
   "web.layers.openKeys": "Keyframe của {name}",
   "web.layers.openComp": "Mở precomp {name}",
   "web.layers.openKeysBtn": "Keyframe",
+  "web.comp.precomposeBtn": "Gom precomp",
   "web.layers.keysOf": "Keyframe · {name}",
   "web.layers.clip": "{name}: từ {from} đến {to}",
   "web.layers.toEnd": "hết bài",

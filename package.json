@@ -27,6 +27,7 @@
     "test:tools": "node --test scripts/preset-check/*.test.mjs scripts/community/*.test.mjs",
     "preset:check": "node scripts/preset-check/cli.mjs",
     "a11y": "node scripts/a11y/run.mjs",
+    "e2e:m4": "node scripts/e2e/m4-browsers.mjs",
     "docs:site": "node scripts/docs-site/build.mjs",
     "docs:serve": "node scripts/docs-site/build.mjs --serve",
     "notation:e2e": "node scripts/notation/e2e.mjs"

@@ -178,7 +178,7 @@ Keyframes set in seconds move with the bar when you move it. Keyframes set on th
 
 A precomp groups several layers into one layer, like a precomp in After Effects. Use it when a whole group should appear, move, fade or animate together, for example the whole intro.
 
-- **Make one:** select the layers and press Ctrl+G (or the two-frames button at the top left of the Timeline). They go into a new precomp, in exactly the same place on the frame and in time. The precomp's bar spans from the earliest to the latest bar of the group.
+- **Make one:** select the layers and press Ctrl+G (or the two-frames button at the top left of the Timeline, or **Precompose** in the right-hand panel when a layer is selected). They go into a new precomp, in exactly the same place on the frame and in time. The precomp's bar spans from the earliest to the latest bar of the group.
 - **Open it:** double-click the precomp's bar, press the › button on its row, or press **Open precomp** in the right-hand panel. The frame shows only what is inside; the time when the precomp is not shown is dimmed in the Timeline. Press Esc (with nothing selected) or click **Main timeline** in the title bar to come back out.
 - **Inside a precomp** you work as on the main timeline: add, drag, keyframe, split, and even precompose again. Precomps nest up to 4 levels deep.
 - **A precomp layer** has position, rotation, scale, opacity, motion, display ranges and keyframes like any layer, and everything inside follows. It is always the size of the frame: to make it bigger or smaller use **Scale** on the keyframe level.
